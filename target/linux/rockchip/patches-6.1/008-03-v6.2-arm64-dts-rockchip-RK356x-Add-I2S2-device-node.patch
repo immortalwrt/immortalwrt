@@ -1,0 +1,45 @@
+From 755f37010f3eac0bdfa41bdf2308e8380a93f10c Mon Sep 17 00:00:00 2001
+From: Shengyu Qu <wiagn233@outlook.com>
+Date: Sun, 30 Oct 2022 01:09:04 +0800
+Subject: [PATCH] arm64: dts: rockchip: RK356x: Add I2S2 device node
+
+This patch adds I2S2 device tree node for RK3566/RK3568.
+
+Signed-off-by: Shengyu Qu <wiagn233@outlook.com>
+Link: https://lore.kernel.org/r/OS3P286MB259771C12F2B15A4DDF435FE98359@OS3P286MB2597.JPNP286.PROD.OUTLOOK.COM
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk356x.dtsi | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
+@@ -1108,6 +1108,28 @@
+ 		status = "disabled";
+ 	};
+ 
++	i2s2_2ch: i2s@fe420000 {
++		compatible = "rockchip,rk3568-i2s-tdm";
++		reg = <0x0 0xfe420000 0x0 0x1000>;
++		interrupts = <GIC_SPI 54 IRQ_TYPE_LEVEL_HIGH>;
++		assigned-clocks = <&cru CLK_I2S2_2CH_SRC>;
++		assigned-clock-rates = <1188000000>;
++		clocks = <&cru MCLK_I2S2_2CH>, <&cru MCLK_I2S2_2CH>, <&cru HCLK_I2S2_2CH>;
++		clock-names = "mclk_tx", "mclk_rx", "hclk";
++		dmas = <&dmac1 4>, <&dmac1 5>;
++		dma-names = "tx", "rx";
++		resets = <&cru SRST_M_I2S2_2CH>;
++		reset-names = "m";
++		rockchip,grf = <&grf>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&i2s2m0_sclktx
++				&i2s2m0_lrcktx
++				&i2s2m0_sdi
++				&i2s2m0_sdo>;
++		#sound-dai-cells = <0>;
++		status = "disabled";
++	};
++
+ 	i2s3_2ch: i2s@fe430000 {
+ 		compatible = "rockchip,rk3568-i2s-tdm";
+ 		reg = <0x0 0xfe430000 0x0 0x1000>;
