@@ -12,6 +12,7 @@ PKG_MIRROR_HASH:=a2062f5dabc79d2e5e39e55ee7659b774de3eaa67dd8b410e542f693eb9c790
 PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE
 
+PKG_FLAGS:=nonshared
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
@@ -23,7 +24,7 @@ define Package/pcat-manager
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE:=PCat System Manager
-  DEPENDS:=@TARGET_rockchip +glib2 +libgpiod +libjson-c +libusb-1.0
+  DEPENDS:=@TARGET_rockchip_armv8 +glib2 +libgpiod +libjson-c +libusb-1.0
   URL:=https://photonicat.com
 endef
 
