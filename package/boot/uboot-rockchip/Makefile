@@ -205,9 +205,16 @@ endef
 
 define U-Boot/photonicat-rk3568
   $(U-Boot/Default/rk3568)
-  NAME:=Ariaboard Photonicat
+  NAME:=Photonicat
   BUILD_DEVICES:= \
     ariaboard_photonicat
+endef
+
+define U-Boot/radxa-e25-rk3568
+  $(U-Boot/Default/rk3568)
+  NAME:=E25
+  BUILD_DEVICES:= \
+    radxa_e25
 endef
 
 define U-Boot/roc-pc-rk3568
@@ -308,6 +315,7 @@ UBOOT_TARGETS := \
   nanopi-r5c-rk3568 \
   nanopi-r5s-rk3568 \
   photonicat-rk3568 \
+  radxa-e25-rk3568 \
   roc-pc-rk3568 \
   rock-3a-rk3568 \
   nanopc-t6-rk3588 \
