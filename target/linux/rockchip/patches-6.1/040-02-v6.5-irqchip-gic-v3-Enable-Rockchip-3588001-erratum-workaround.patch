@@ -1,0 +1,33 @@
+From 567f67acac94e7bbc4cb4b71ff9773555d02609a Mon Sep 17 00:00:00 2001
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Mon, 3 Jul 2023 18:41:29 +0200
+Subject: [PATCH] irqchip/gic-v3: Enable Rockchip 3588001 erratum workaround
+ for RK3588S
+
+Commit a8707f553884 ("irqchip/gic-v3: Add Rockchip 3588001 erratum
+workaround") mentioned RK3588S (the slimmed down variant of RK3588)
+being affected, but did not check for its compatible value. Thus the
+quirk is not applied on RK3588S. Since the GIC ITS node got added to the
+upstream DT, boards using RK3588S are no longer booting without this
+quirk being applied.
+
+Fixes: 06cdac8e8407 ("arm64: dts: rockchip: add GIC ITS support to rk3588")
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20230703164129.193991-1-sebastian.reichel@collabora.com
+---
+ drivers/irqchip/irq-gic-v3-its.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+--- a/drivers/irqchip/irq-gic-v3-its.c
++++ b/drivers/irqchip/irq-gic-v3-its.c
+@@ -4746,7 +4746,8 @@ static bool __maybe_unused its_enable_rk
+ {
+ 	struct its_node *its = data;
+ 
+-	if (!of_machine_is_compatible("rockchip,rk3588"))
++	if (!of_machine_is_compatible("rockchip,rk3588") &&
++	    !of_machine_is_compatible("rockchip,rk3588s"))
+ 		return false;
+ 
+ 	its->flags |= ITS_FLAGS_FORCE_NON_SHAREABLE;
