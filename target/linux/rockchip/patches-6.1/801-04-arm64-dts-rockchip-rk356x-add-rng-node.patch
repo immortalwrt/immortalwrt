@@ -11,7 +11,7 @@ Signed-off-by: Lin Jinhan <troy.lin@rock-chips.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-@@ -1022,6 +1022,16 @@
+@@ -1022,6 +1022,15 @@
  		};
  	};
  
@@ -22,7 +22,6 @@ Signed-off-by: Lin Jinhan <troy.lin@rock-chips.com>
 +		clock-names = "clk_trng", "hclk_trng";
 +		resets = <&cru SRST_TRNG_NS>;
 +		reset-names = "reset";
-+		status = "disabled";
 +	};
 +
  	sdmmc0: mmc@fe2b0000 {
