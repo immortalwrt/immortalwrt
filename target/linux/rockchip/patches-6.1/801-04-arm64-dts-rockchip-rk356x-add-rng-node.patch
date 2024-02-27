@@ -11,7 +11,7 @@ Signed-off-by: Lin Jinhan <troy.lin@rock-chips.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-@@ -1006,6 +1006,16 @@
+@@ -1022,6 +1022,16 @@
  		};
  	};
  
