@@ -174,6 +174,30 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  };
  
+--- a/arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts
+@@ -273,6 +273,10 @@
+ 		     &gmac1m1_rgmii_clk
+ 		     &gmac1m1_clkinout
+ 		     &gmac1m1_rgmii_bus>;
++	snps,reset-gpio = <&gpio3 RK_PB0 GPIO_ACTIVE_LOW>;
++	snps,reset-active-low;
++	/* Reset time is 20ms, 100ms for rtl8211f */
++	snps,reset-delays-us = <0 20000 100000>;
+ 	status = "okay";
+ };
+ 
+@@ -593,9 +597,7 @@
+ 		reg = <0x0>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&eth_phy_rst>;
+-		reset-assert-us = <20000>;
+-		reset-deassert-us = <100000>;
+-		reset-gpios = <&gpio3 RK_PB0 GPIO_ACTIVE_LOW>;
++		realtek,led-data = <0x6d60>;
+ 	};
+ };
+ 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
 @@ -531,6 +531,17 @@

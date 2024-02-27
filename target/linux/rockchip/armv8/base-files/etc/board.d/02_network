@@ -53,6 +53,7 @@ rockchip_setup_macs()
 	local label_mac=""
 
 	case "$board" in
+	ariaboard,photonicat|\
 	ezpro,mrkaio-m68s|\
 	friendlyarm,nanopc-t6|\
 	friendlyarm,nanopi-r2c|\
