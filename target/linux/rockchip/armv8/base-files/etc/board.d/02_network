@@ -7,6 +7,7 @@ rockchip_setup_interfaces()
 	local board="$1"
 
 	case "$board" in
+	ariaboard,photonicat|\
 	ezpro,mrkaio-m68s|\
 	firefly,rk3568-roc-pc|\
 	friendlyarm,nanopi-r2c|\
