@@ -289,7 +289,7 @@ define KernelPackage/ath10k/config
        config ATH10K_THERMAL
                bool "Enable thermal sensors and throttling support"
                default y
-               depends on PACKAGE_kmod-ath10k || PACKAGE_kmod-ath10k-smallbuffers
+               depends on PACKAGE_kmod-ath10k || PACKAGE_kmod-ath10k-sdio || PACKAGE_kmod-ath10k-smallbuffers
 
 endef
 
@@ -297,7 +297,8 @@ define KernelPackage/ath10k-sdio
   $(call KernelPackage/mac80211/Default)
   TITLE:=Atheros 802.11ac SDIO wireless cards support
   URL:=https://wireless.wiki.kernel.org/en/users/drivers/ath10k
-  DEPENDS+= +kmod-ath +kmod-mmc +@DRIVER_11AC_SUPPORT
+  DEPENDS+= +kmod-ath +kmod-mmc +@DRIVER_11AC_SUPPORT \
+	+ATH10K_THERMAL:kmod-hwmon-core +ATH10K_THERMAL:kmod-thermal
   FILES:= \
 	$(PKG_BUILD_DIR)/drivers/net/wireless/ath/ath10k/ath10k_core.ko \
 	$(PKG_BUILD_DIR)/drivers/net/wireless/ath/ath10k/ath10k_sdio.ko
