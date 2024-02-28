@@ -477,9 +477,11 @@
 	sd-uhs-sdr104;
 	vmmc-supply = <&vcc3v3_sys>;
 	vqmmc-supply = <&vcc_1v8>;
+	#address-cells = <1>;
+	#size-cells = <0>;
 	status = "okay";
 
-	sdio-wifi@1 {
+	wifi@1 {
 		reg = <1>;
 		interrupt-parent = <&gpio2>;
 		interrupts = <RK_PB2 IRQ_TYPE_LEVEL_HIGH>;

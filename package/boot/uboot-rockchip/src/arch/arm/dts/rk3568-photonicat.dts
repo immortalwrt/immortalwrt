@@ -22,12 +22,6 @@
 		stdout-path = "serial2:1500000n8";
 	};
 
-	pcat-wdt {
-		compatible = "linux,wdt-pcat";
-		port = <&uart4>;
-		status = "okay";
-	};
-
 	gpio-poweroff {
 		compatible = "gpio-poweroff";
 		gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_LOW>;
@@ -51,6 +45,12 @@
 		radio-type = "wwan";
 		reset-gpios = <&gpio0 RK_PB0 GPIO_ACTIVE_LOW>;
 		shutdown-gpios = <&gpio4 RK_PC4 GPIO_ACTIVE_HIGH>;
+	};
+
+	pcat-wdt {
+		compatible = "linux,wdt-pcat";
+		port = <&uart4>;
+		status = "okay";
 	};
 
 	sdio_pwrseq: sdio-pwrseq {
@@ -445,17 +445,20 @@
 	cap-sd-highspeed;
 	cap-sdio-irq;
 	keep-power-in-suspend;
-	max-frequency = <50000000>;
 	mmc-pwrseq = <&sdio_pwrseq>;
 	non-removable;
 	pinctrl-names = "default";
 	pinctrl-0 = <&sdmmc1_bus4 &sdmmc1_clk &sdmmc1_cmd>;
-	sd-uhs-sdr20;
+	sd-uhs-sdr25;
+	sd-uhs-sdr50;
+	sd-uhs-sdr104;
 	vmmc-supply = <&vcc3v3_sys>;
 	vqmmc-supply = <&vcc_1v8>;
+	#address-cells = <1>;
+	#size-cells = <0>;
 	status = "okay";
 
-	sdio-wifi@1 {
+	wifi@1 {
 		reg = <1>;
 		interrupt-parent = <&gpio2>;
 		interrupts = <RK_PB2 IRQ_TYPE_LEVEL_HIGH>;
