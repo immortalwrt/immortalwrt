@@ -76,6 +76,16 @@
 		vin-supply = <&vcc_sysin>;
 	};
 
+	vcc3v3_sys: vcc3v3-sys-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc3v3_sys";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		vin-supply = <&vcc_syson>;
+	};
+
 	vcc_1v8: vcc-1v8-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc_1v8";
@@ -139,16 +149,6 @@
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
 		vin-supply = <&vcc_3v3>;
-	};
-
-	vcc3v3_sys: vcc3v3-sys-regulator {
-		compatible = "regulator-fixed";
-		regulator-name = "vcc3v3_sys";
-		regulator-always-on;
-		regulator-boot-on;
-		regulator-min-microvolt = <3300000>;
-		regulator-max-microvolt = <3300000>;
-		vin-supply = <&vcc_syson>;
 	};
 
 	vcc5v0_boost: vcc5v0-boost-regulator {
