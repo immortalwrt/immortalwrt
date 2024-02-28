@@ -534,6 +534,7 @@
 
 &usb_host0_xhci {
 	dr_mode = "host";
+	extcon = <&usb2phy0>;
 	status = "okay";
 };
 
@@ -546,7 +547,6 @@
 };
 
 &usb_host1_xhci {
-	extcon = <&usb2phy0>;
 	status = "okay";
 };
 
@@ -555,6 +555,7 @@
 };
 
 &usb2phy0_host {
+	phy-supply = <&vcc3v3_ngff>;
 	status = "okay";
 };
 
