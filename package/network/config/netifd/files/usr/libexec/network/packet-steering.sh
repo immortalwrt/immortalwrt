@@ -32,7 +32,7 @@ set_hex_val() {
 	echo "$val" > "$file"
 }
 
-packet_steering="$(uci get "network.@globals[0].packet_steering")"
+packet_steering="$(uci -q get "network.@globals[0].packet_steering")"
 [ "$packet_steering" != 1 ] && exit 0
 
 exec 512>/var/lock/smp_tune.lock
