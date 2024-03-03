@@ -26,7 +26,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -533,7 +533,7 @@
+@@ -534,7 +534,7 @@
  		#address-cells = <1>;
  		#size-cells = <1>;
  
@@ -35,7 +35,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  			compatible = "rockchip,rk3588-usb2phy";
  			reg = <0x8000 0x10>;
  			interrupts = <GIC_SPI 391 IRQ_TYPE_LEVEL_HIGH 0>;
-@@ -558,7 +558,7 @@
+@@ -559,7 +559,7 @@
  		#address-cells = <1>;
  		#size-cells = <1>;
  

@@ -1,0 +1,46 @@
+From a8037ceb89649659831e86a87a9329d1bb43c735 Mon Sep 17 00:00:00 2001
+From: Heiko Stuebner <heiko.stuebner@cherry.de>
+Date: Tue, 27 Feb 2024 17:46:56 +0100
+Subject: [PATCH] arm64: dts: rockchip: drop rockchip,trcm-sync-tx-only from
+ rk3588 i2s
+
+The rockchip,trcm-sync-tx-only property is at this time only documented
+for the tdm variant of Rockchip i2s controllers.
+
+While there was a series [0] adding code and binding for the property,
+it doesn't seem to have gone forward back in 2021.
+
+So for now fix the devicetree check by removing the property from rk3588
+i2s controllers until support for it gets merged.
+
+[0] https://patchwork.kernel.org/project/linux-rockchip/patch/1629796734-4243-5-git-send-email-sugar.zhang@rock-chips.com/
+
+Fixes: 8ae112a5554f ("arm64: dts: rockchip: Add rk3588s I2S nodes")
+Cc: Sugar Zhang <sugar.zhang@rock-chips.com>
+Cc: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Signed-off-by: Heiko Stuebner <heiko.stuebner@cherry.de>
+Reviewed-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+Link: https://lore.kernel.org/r/20240227164659.705271-2-heiko@sntech.de
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 2 --
+ 1 file changed, 2 deletions(-)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+@@ -1697,7 +1697,6 @@
+ 		dmas = <&dmac1 0>, <&dmac1 1>;
+ 		dma-names = "tx", "rx";
+ 		power-domains = <&power RK3588_PD_AUDIO>;
+-		rockchip,trcm-sync-tx-only;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&i2s2m1_lrck
+ 			     &i2s2m1_sclk
+@@ -1718,7 +1717,6 @@
+ 		dmas = <&dmac1 2>, <&dmac1 3>;
+ 		dma-names = "tx", "rx";
+ 		power-domains = <&power RK3588_PD_AUDIO>;
+-		rockchip,trcm-sync-tx-only;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&i2s3_lrck
+ 			     &i2s3_sclk

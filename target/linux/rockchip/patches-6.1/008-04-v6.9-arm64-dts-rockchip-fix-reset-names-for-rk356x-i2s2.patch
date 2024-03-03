@@ -1,0 +1,39 @@
+From 0fc19ab75acde78558bd0f6fe3e5f63cf8ee88b0 Mon Sep 17 00:00:00 2001
+From: Heiko Stuebner <heiko@sntech.de>
+Date: Tue, 27 Feb 2024 18:35:26 +0100
+Subject: [PATCH] arm64: dts: rockchip: fix reset-names for rk356x i2s2
+ controller
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The dtbscheck reports a warning for a wrong reset-names property for
+the i2s2 controller on rk356x socs.
+
+The other controllers on the soc provide tx and rx directions and hence
+two resets and separate clocks for each direction, while i2s2 only
+provides one reset. This was so far named just "m" which isn't part of
+the binding.
+
+The clock-names the controller uses all end in "tx", so use the matching
+"tx-m" reset-name for the i2s controller.
+
+Fixes: 755f37010f3e ("arm64: dts: rockchip: RK356x: Add I2S2 device node")
+Acked-by: Uwe Kleine-König <ukleinek@debian.org>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://lore.kernel.org/r/20240227173526.710056-2-heiko@sntech.de
+---
+ arch/arm64/boot/dts/rockchip/rk356x.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
+@@ -1119,7 +1119,7 @@
+ 		dmas = <&dmac1 4>, <&dmac1 5>;
+ 		dma-names = "tx", "rx";
+ 		resets = <&cru SRST_M_I2S2_2CH>;
+-		reset-names = "m";
++		reset-names = "tx-m";
+ 		rockchip,grf = <&grf>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&i2s2m0_sclktx

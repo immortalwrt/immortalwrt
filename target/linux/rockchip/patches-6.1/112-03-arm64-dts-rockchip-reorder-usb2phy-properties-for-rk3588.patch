@@ -26,7 +26,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -536,13 +536,13 @@
+@@ -537,13 +537,13 @@
  		u2phy2: usb2phy@8000 {
  			compatible = "rockchip,rk3588-usb2phy";
  			reg = <0x8000 0x10>;
@@ -44,7 +44,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  			status = "disabled";
  
  			u2phy2_host: host-port {
-@@ -561,13 +561,13 @@
+@@ -562,13 +562,13 @@
  		u2phy3: usb2phy@c000 {
  			compatible = "rockchip,rk3588-usb2phy";
  			reg = <0xc000 0x10>;
