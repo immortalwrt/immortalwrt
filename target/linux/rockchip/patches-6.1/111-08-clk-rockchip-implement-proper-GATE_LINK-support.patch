@@ -1,7 +1,21 @@
-From 42987730c377951c90e9cfe55652e812db4a9ac9 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Thu, 23 Nov 2023 17:58:21 +0100
-Subject: [PATCH] clk: rockchip: implement proper GATE_LINK support
+To: Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	linux-clk@vger.kernel.org
+Cc: Elaine Zhang <zhangqing@rock-chips.com>,
+	Kever Yang <kever.yang@rock-chips.com>,
+	Heiko Stuebner <heiko@sntech.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	huangtao@rock-chips.com, andy.yan@rock-chips.com,
+	devicetree@vger.kernel.org, linux-rockchip@lists.infradead.org,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	kernel@collabora.com
+Subject: [PATCH v8 7/7] clk: rockchip: implement proper GATE_LINK support
+Date: Fri, 26 Jan 2024 19:18:28 +0100	[thread overview]
+Message-ID: <20240126182919.48402-8-sebastian.reichel@collabora.com> (raw)
+In-Reply-To: <20240126182919.48402-1-sebastian.reichel@collabora.com>
 
 Recent Rockchip SoCs have a new hardware block called Native Interface
 Unit (NIU), which gates clocks to devices behind them. These effectively

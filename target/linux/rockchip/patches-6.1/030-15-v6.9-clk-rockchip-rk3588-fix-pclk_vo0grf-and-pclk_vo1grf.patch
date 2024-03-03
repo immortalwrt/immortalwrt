@@ -1,6 +1,6 @@
-From 8824bba8426bab1a05b2f285283bc0e99de678d1 Mon Sep 17 00:00:00 2001
+From 326be62eaf2e89767b7b9223f88eaf3c041b98d2 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Wed, 13 Dec 2023 19:06:30 +0100
+Date: Fri, 26 Jan 2024 19:18:25 +0100
 Subject: [PATCH] clk: rockchip: rk3588: fix pclk_vo0grf and pclk_vo1grf
 
 Currently pclk_vo1grf is not exposed, but it should be referenced
@@ -14,6 +14,8 @@ No Fixes tag has been added, since the logic requiring these clocks
 is not yet upstream anyways.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20240126182919.48402-5-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
  drivers/clk/rockchip/clk-rk3588.c | 10 ++++------
  1 file changed, 4 insertions(+), 6 deletions(-)

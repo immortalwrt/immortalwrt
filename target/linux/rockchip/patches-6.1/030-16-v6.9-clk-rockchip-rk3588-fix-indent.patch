@@ -1,12 +1,14 @@
-From 1d45059214265717c8bc1fd32b966896e91ec51d Mon Sep 17 00:00:00 2001
+From 2a6e4710672242281347103b64e01693aa823a29 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 21 Nov 2023 17:52:54 +0100
+Date: Fri, 26 Jan 2024 19:18:26 +0100
 Subject: [PATCH] clk: rockchip: rk3588: fix indent
 
 pclk_mailbox2 is the only RK3588 clock indented with one tab instead of
 two tabs. Let's fix this.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20240126182919.48402-6-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
  drivers/clk/rockchip/clk-rk3588.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
