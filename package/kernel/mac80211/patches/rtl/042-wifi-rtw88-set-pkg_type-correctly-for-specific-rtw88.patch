@@ -1,0 +1,66 @@
+From 97c75e1adeda78b3794936c617d8b86e9ebd54f5 Mon Sep 17 00:00:00 2001
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Date: Mon, 17 Apr 2023 16:03:57 +0200
+Subject: [PATCH 42/45] wifi: rtw88: set pkg_type correctly for specific
+ rtw8821c variants
+
+According to the vendor driver the pkg_type has to be set to '1'
+for some rtw8821c variants. As the pkg_type has been hardcoded to
+'0', add a field for it in struct rtw_hal and set this correctly
+in the rtw8821c part.
+With this parsing of a rtw_table is influenced and check_positive()
+in phy.c returns true for some cases here. The same is done in the
+vendor driver. However, this has no visible effect on the driver
+here.
+
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230417140358.2240429-4-s.hauer@pengutronix.de
+---
+ drivers/net/wireless/realtek/rtw88/main.c     | 2 +-
+ drivers/net/wireless/realtek/rtw88/main.h     | 1 +
+ drivers/net/wireless/realtek/rtw88/rtw8821c.c | 3 +++
+ 3 files changed, 5 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -2008,7 +2008,7 @@ static int rtw_chip_board_info_setup(str
+ 	if (!rfe_def)
+ 		return -ENODEV;
+ 
+-	rtw_phy_setup_phy_cond(rtwdev, 0);
++	rtw_phy_setup_phy_cond(rtwdev, hal->pkg_type);
+ 
+ 	rtw_phy_init_tx_power(rtwdev);
+ 	if (rfe_def->agc_btg_tbl)
+--- a/drivers/net/wireless/realtek/rtw88/main.h
++++ b/drivers/net/wireless/realtek/rtw88/main.h
+@@ -1900,6 +1900,7 @@ struct rtw_hal {
+ 	u8 cut_version;
+ 	u8 mp_chip;
+ 	u8 oem_id;
++	u8 pkg_type;
+ 	struct rtw_phy_cond phy_cond;
+ 
+ 	u8 ps_mode;
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+@@ -47,6 +47,7 @@ enum rtw8821ce_rf_set {
+ 
+ static int rtw8821c_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
+ {
++	struct rtw_hal *hal = &rtwdev->hal;
+ 	struct rtw_efuse *efuse = &rtwdev->efuse;
+ 	struct rtw8821c_efuse *map;
+ 	int i;
+@@ -70,6 +71,8 @@ static int rtw8821c_read_efuse(struct rt
+ 	efuse->tx_bb_swing_setting_2g = map->tx_bb_swing_setting_2g;
+ 	efuse->tx_bb_swing_setting_5g = map->tx_bb_swing_setting_5g;
+ 
++	hal->pkg_type = map->rfe_option & BIT(5) ? 1 : 0;
++
+ 	for (i = 0; i < 4; i++)
+ 		efuse->txpwr_idx_table[i] = map->txpwr_idx_table[i];
+ 

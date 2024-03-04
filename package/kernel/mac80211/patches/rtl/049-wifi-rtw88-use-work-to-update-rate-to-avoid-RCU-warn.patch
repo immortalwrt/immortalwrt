@@ -1,0 +1,132 @@
+From bcafcb959a57a6890e900199690c5fc47da1a304 Mon Sep 17 00:00:00 2001
+From: Ping-Ke Shih <pkshih@realtek.com>
+Date: Mon, 8 May 2023 16:54:29 +0800
+Subject: [PATCH 04/12] wifi: rtw88: use work to update rate to avoid RCU
+ warning
+
+The ieee80211_ops::sta_rc_update must be atomic, because
+ieee80211_chan_bw_change() holds rcu_read lock while calling
+drv_sta_rc_update(), so create a work to do original things.
+
+ Voluntary context switch within RCU read-side critical section!
+ WARNING: CPU: 0 PID: 4621 at kernel/rcu/tree_plugin.h:318
+ rcu_note_context_switch+0x571/0x5d0
+ CPU: 0 PID: 4621 Comm: kworker/u16:2 Tainted: G        W  OE
+ Workqueue: phy3 ieee80211_chswitch_work [mac80211]
+ RIP: 0010:rcu_note_context_switch+0x571/0x5d0
+ Call Trace:
+  <TASK>
+  __schedule+0xb0/0x1460
+  ? __mod_timer+0x116/0x360
+  schedule+0x5a/0xc0
+  schedule_timeout+0x87/0x150
+  ? trace_raw_output_tick_stop+0x60/0x60
+  wait_for_completion_timeout+0x7b/0x140
+  usb_start_wait_urb+0x82/0x160 [usbcore
+  usb_control_msg+0xe3/0x140 [usbcore
+  rtw_usb_read+0x88/0xe0 [rtw_usb
+  rtw_usb_read8+0xf/0x10 [rtw_usb
+  rtw_fw_send_h2c_command+0xa0/0x170 [rtw_core
+  rtw_fw_send_ra_info+0xc9/0xf0 [rtw_core
+  drv_sta_rc_update+0x7c/0x160 [mac80211
+  ieee80211_chan_bw_change+0xfb/0x110 [mac80211
+  ieee80211_change_chanctx+0x38/0x130 [mac80211
+  ieee80211_vif_use_reserved_switch+0x34e/0x900 [mac80211
+  ieee80211_link_use_reserved_context+0x88/0xe0 [mac80211
+  ieee80211_chswitch_work+0x95/0x170 [mac80211
+  process_one_work+0x201/0x410
+  worker_thread+0x4a/0x3b0
+  ? process_one_work+0x410/0x410
+  kthread+0xe1/0x110
+  ? kthread_complete_and_exit+0x20/0x20
+  ret_from_fork+0x1f/0x30
+  </TASK>
+
+Cc: stable@vger.kernel.org
+Fixes: c1edc86472fc ("rtw88: add ieee80211:sta_rc_update ops")
+Reported-by: Larry Finger <Larry.Finger@lwfinger.net>
+Link: https://lore.kernel.org/linux-wireless/f1e31e8e-f84e-3791-50fb-663a83c5c6e9@lwfinger.net/T/#t
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Tested-by: Larry Finger <Larry.Finger@lwfinger.net>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230508085429.46653-1-pkshih@realtek.com
+---
+ drivers/net/wireless/realtek/rtw88/mac80211.c |  2 +-
+ drivers/net/wireless/realtek/rtw88/main.c     | 15 +++++++++++++++
+ drivers/net/wireless/realtek/rtw88/main.h     |  3 +++
+ 3 files changed, 19 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/mac80211.c
++++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
+@@ -920,7 +920,7 @@ static void rtw_ops_sta_rc_update(struct
+ 	struct rtw_sta_info *si = (struct rtw_sta_info *)sta->drv_priv;
+ 
+ 	if (changed & IEEE80211_RC_BW_CHANGED)
+-		rtw_update_sta_info(rtwdev, si, true);
++		ieee80211_queue_work(rtwdev->hw, &si->rc_work);
+ }
+ 
+ const struct ieee80211_ops rtw_ops = {
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -319,6 +319,17 @@ static u8 rtw_acquire_macid(struct rtw_d
+ 	return mac_id;
+ }
+ 
++static void rtw_sta_rc_work(struct work_struct *work)
++{
++	struct rtw_sta_info *si = container_of(work, struct rtw_sta_info,
++					       rc_work);
++	struct rtw_dev *rtwdev = si->rtwdev;
++
++	mutex_lock(&rtwdev->mutex);
++	rtw_update_sta_info(rtwdev, si, true);
++	mutex_unlock(&rtwdev->mutex);
++}
++
+ int rtw_sta_add(struct rtw_dev *rtwdev, struct ieee80211_sta *sta,
+ 		struct ieee80211_vif *vif)
+ {
+@@ -329,12 +340,14 @@ int rtw_sta_add(struct rtw_dev *rtwdev,
+ 	if (si->mac_id >= RTW_MAX_MAC_ID_NUM)
+ 		return -ENOSPC;
+ 
++	si->rtwdev = rtwdev;
+ 	si->sta = sta;
+ 	si->vif = vif;
+ 	si->init_ra_lv = 1;
+ 	ewma_rssi_init(&si->avg_rssi);
+ 	for (i = 0; i < ARRAY_SIZE(sta->txq); i++)
+ 		rtw_txq_init(rtwdev, sta->txq[i]);
++	INIT_WORK(&si->rc_work, rtw_sta_rc_work);
+ 
+ 	rtw_update_sta_info(rtwdev, si, true);
+ 	rtw_fw_media_status_report(rtwdev, si->mac_id, true);
+@@ -353,6 +366,8 @@ void rtw_sta_remove(struct rtw_dev *rtwd
+ 	struct rtw_sta_info *si = (struct rtw_sta_info *)sta->drv_priv;
+ 	int i;
+ 
++	cancel_work_sync(&si->rc_work);
++
+ 	rtw_release_macid(rtwdev, si->mac_id);
+ 	if (fw_exist)
+ 		rtw_fw_media_status_report(rtwdev, si->mac_id, false);
+--- a/drivers/net/wireless/realtek/rtw88/main.h
++++ b/drivers/net/wireless/realtek/rtw88/main.h
+@@ -743,6 +743,7 @@ struct rtw_txq {
+ DECLARE_EWMA(rssi, 10, 16);
+ 
+ struct rtw_sta_info {
++	struct rtw_dev *rtwdev;
+ 	struct ieee80211_sta *sta;
+ 	struct ieee80211_vif *vif;
+ 
+@@ -767,6 +768,8 @@ struct rtw_sta_info {
+ 
+ 	bool use_cfg_mask;
+ 	struct cfg80211_bitrate_mask *mask;
++
++	struct work_struct rc_work;
+ };
+ 
+ enum rtw_bfee_role {

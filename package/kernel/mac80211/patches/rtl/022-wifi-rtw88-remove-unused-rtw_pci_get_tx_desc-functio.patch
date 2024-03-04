@@ -1,0 +1,36 @@
+From c9b6111a6f94bd186d1f0f7a04a9b37030a27738 Mon Sep 17 00:00:00 2001
+From: Tom Rix <trix@redhat.com>
+Date: Mon, 20 Mar 2023 19:34:48 -0400
+Subject: [PATCH 22/45] wifi: rtw88: remove unused rtw_pci_get_tx_desc function
+
+clang with W=1 reports
+drivers/net/wireless/realtek/rtw88/pci.c:92:21: error:
+  unused function 'rtw_pci_get_tx_desc' [-Werror,-Wunused-function]
+static inline void *rtw_pci_get_tx_desc(struct rtw_pci_tx_ring *tx_ring, u8 idx)
+                    ^
+This function is not used, so remove it.
+
+Signed-off-by: Tom Rix <trix@redhat.com>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230320233448.1729899-1-trix@redhat.com
+---
+ drivers/net/wireless/realtek/rtw88/pci.c | 7 -------
+ 1 file changed, 7 deletions(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/pci.c
++++ b/drivers/net/wireless/realtek/rtw88/pci.c
+@@ -89,13 +89,6 @@ static void rtw_pci_write32(struct rtw_d
+ 	writel(val, rtwpci->mmap + addr);
+ }
+ 
+-static inline void *rtw_pci_get_tx_desc(struct rtw_pci_tx_ring *tx_ring, u8 idx)
+-{
+-	int offset = tx_ring->r.desc_size * idx;
+-
+-	return tx_ring->r.head + offset;
+-}
+-
+ static void rtw_pci_free_tx_ring_skbs(struct rtw_dev *rtwdev,
+ 				      struct rtw_pci_tx_ring *tx_ring)
+ {

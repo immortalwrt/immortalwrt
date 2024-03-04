@@ -1,0 +1,69 @@
+From 9e688784b8a13515ee186d0ee1cfab12b6d05241 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sat, 18 Feb 2023 16:29:43 +0100
+Subject: [PATCH 57/85] wifi: rtw88: rtw8822b: Implement RTL8822BS (SDIO) efuse
+ parsing
+
+The efuse of the SDIO RTL8822BS chip has only one known member: the mac
+address is at offset 0x11a. Add a struct rtw8822bs_efuse describing this
+and use it for copying the mac address when the SDIO bus is used.
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230218152944.48842-5-martin.blumenstingl@googlemail.com
+---
+ drivers/net/wireless/realtek/rtw88/rtw8822b.c | 9 +++++++++
+ drivers/net/wireless/realtek/rtw88/rtw8822b.h | 8 +++++++-
+ 2 files changed, 16 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/rtw8822b.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
+@@ -32,6 +32,12 @@ static void rtw8822bu_efuse_parsing(stru
+ 	ether_addr_copy(efuse->addr, map->u.mac_addr);
+ }
+ 
++static void rtw8822bs_efuse_parsing(struct rtw_efuse *efuse,
++				    struct rtw8822b_efuse *map)
++{
++	ether_addr_copy(efuse->addr, map->s.mac_addr);
++}
++
+ static int rtw8822b_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
+ {
+ 	struct rtw_efuse *efuse = &rtwdev->efuse;
+@@ -65,6 +71,9 @@ static int rtw8822b_read_efuse(struct rt
+ 	case RTW_HCI_TYPE_USB:
+ 		rtw8822bu_efuse_parsing(efuse, map);
+ 		break;
++	case RTW_HCI_TYPE_SDIO:
++		rtw8822bs_efuse_parsing(efuse, map);
++		break;
+ 	default:
+ 		/* unsupported now */
+ 		return -ENOTSUPP;
+--- a/drivers/net/wireless/realtek/rtw88/rtw8822b.h
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822b.h
+@@ -65,6 +65,11 @@ struct rtw8822be_efuse {
+ 	u8 res7;
+ };
+ 
++struct rtw8822bs_efuse {
++	u8 res4[0x4a];			/* 0xd0 */
++	u8 mac_addr[ETH_ALEN];		/* 0x11a */
++} __packed;
++
+ struct rtw8822b_efuse {
+ 	__le16 rtl_id;
+ 	u8 res0[0x0e];
+@@ -92,8 +97,9 @@ struct rtw8822b_efuse {
+ 	u8 country_code[2];
+ 	u8 res[3];
+ 	union {
+-		struct rtw8822bu_efuse u;
+ 		struct rtw8822be_efuse e;
++		struct rtw8822bu_efuse u;
++		struct rtw8822bs_efuse s;
+ 	};
+ };
+ 

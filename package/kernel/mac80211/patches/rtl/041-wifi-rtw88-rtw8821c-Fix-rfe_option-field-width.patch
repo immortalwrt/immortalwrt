@@ -1,0 +1,58 @@
+From 14705f969d98187a1cc2682e0c9bd2e230b8098f Mon Sep 17 00:00:00 2001
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Date: Mon, 17 Apr 2023 16:03:56 +0200
+Subject: [PATCH 41/45] wifi: rtw88: rtw8821c: Fix rfe_option field width
+
+On my RTW8821CU chipset rfe_option reads as 0x22. Looking at the
+vendor driver suggests that the field width of rfe_option is 5 bit,
+so rfe_option should be masked with 0x1f.
+
+Without this the rfe_option comparisons with 2 further down the
+driver evaluate as false when they should really evaluate as true.
+The effect is that 2G channels do not work.
+
+rfe_option is also used as an array index into rtw8821c_rfe_defs[].
+rtw8821c_rfe_defs[34] (0x22) was added as part of adding USB support,
+likely because rfe_option reads as 0x22. As this now becomes 0x2,
+rtw8821c_rfe_defs[34] is no longer used and can be removed.
+
+Note that this might not be the whole truth. In the vendor driver
+there are indeed places where the unmasked rfe_option value is used.
+However, the driver has several places where rfe_option is tested
+with the pattern if (rfe_option == 2 || rfe_option == 0x22) or
+if (rfe_option == 4 || rfe_option == 0x24), so that rfe_option BIT(5)
+has no influence on the code path taken. We therefore mask BIT(5)
+out from rfe_option entirely until this assumption is proved wrong
+by some chip variant we do not know yet.
+
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Tested-by: Alexandru gagniuc <mr.nuke.me@gmail.com>
+Tested-by: Larry Finger <Larry.Finger@lwfinger.net>
+Tested-by: ValdikSS <iam@valdikss.org.ru>
+Cc: stable@vger.kernel.org
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230417140358.2240429-3-s.hauer@pengutronix.de
+---
+ drivers/net/wireless/realtek/rtw88/rtw8821c.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+@@ -53,7 +53,7 @@ static int rtw8821c_read_efuse(struct rt
+ 
+ 	map = (struct rtw8821c_efuse *)log_map;
+ 
+-	efuse->rfe_option = map->rfe_option;
++	efuse->rfe_option = map->rfe_option & 0x1f;
+ 	efuse->rf_board_option = map->rf_board_option;
+ 	efuse->crystal_cap = map->xtal_k;
+ 	efuse->pa_type_2g = map->pa_type;
+@@ -1546,7 +1546,6 @@ static const struct rtw_rfe_def rtw8821c
+ 	[2] = RTW_DEF_RFE_EXT(8821c, 0, 0, 2),
+ 	[4] = RTW_DEF_RFE_EXT(8821c, 0, 0, 2),
+ 	[6] = RTW_DEF_RFE(8821c, 0, 0),
+-	[34] = RTW_DEF_RFE(8821c, 0, 0),
+ };
+ 
+ static struct rtw_hw_reg rtw8821c_dig[] = {

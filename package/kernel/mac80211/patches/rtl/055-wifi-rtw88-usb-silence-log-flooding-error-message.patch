@@ -1,0 +1,41 @@
+From 1f1784a59caf3eefd127908a1a3cf224017ff9c7 Mon Sep 17 00:00:00 2001
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Date: Wed, 24 May 2023 12:39:34 +0200
+Subject: [PATCH 10/12] wifi: rtw88: usb: silence log flooding error message
+
+When receiving more rx packets than the kernel can handle the driver
+drops the packets and issues an error message. This is bad for two
+reasons. The logs are flooded with myriads of messages, but then time
+consumed for printing messages in that critical code path brings down
+the device. After some time of excessive rx load the driver responds
+with:
+
+rtw_8822cu 1-1:1.2: failed to get tx report from firmware
+rtw_8822cu 1-1:1.2: firmware failed to report density after scan
+rtw_8822cu 1-1:1.2: firmware failed to report density after scan
+
+The device stops working until being replugged.
+
+Fix this by lowering the priority to debug level and also by
+ratelimiting it.
+
+Fixes: a82dfd33d1237 ("wifi: rtw88: Add common USB chip support")
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230524103934.1019096-1-s.hauer@pengutronix.de
+---
+ drivers/net/wireless/realtek/rtw88/usb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/usb.c
++++ b/drivers/net/wireless/realtek/rtw88/usb.c
+@@ -535,7 +535,7 @@ static void rtw_usb_rx_handler(struct wo
+ 		}
+ 
+ 		if (skb_queue_len(&rtwusb->rx_queue) >= RTW_USB_MAX_RXQ_LEN) {
+-			rtw_err(rtwdev, "failed to get rx_queue, overflow\n");
++			dev_dbg_ratelimited(rtwdev->dev, "failed to get rx_queue, overflow\n");
+ 			dev_kfree_skb_any(skb);
+ 			continue;
+ 		}

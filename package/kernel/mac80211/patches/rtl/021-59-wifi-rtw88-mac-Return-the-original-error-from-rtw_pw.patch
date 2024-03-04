@@ -1,0 +1,30 @@
+From b7ed9fa2cb76ca7a3c3cd4a6d35748fe1fbda9f6 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sun, 26 Feb 2023 23:10:03 +0100
+Subject: [PATCH 59/85] wifi: rtw88: mac: Return the original error from
+ rtw_pwr_seq_parser()
+
+rtw_pwr_seq_parser() calls rtw_sub_pwr_seq_parser() which can either
+return -EBUSY, -EINVAL or 0. Propagate the original error code instead
+of unconditionally returning -EBUSY in case of an error.
+
+Fixes: e3037485c68e ("rtw88: new Realtek 802.11ac driver")
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230226221004.138331-2-martin.blumenstingl@googlemail.com
+---
+ drivers/net/wireless/realtek/rtw88/mac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/mac.c
++++ b/drivers/net/wireless/realtek/rtw88/mac.c
+@@ -236,7 +236,7 @@ static int rtw_pwr_seq_parser(struct rtw
+ 
+ 		ret = rtw_sub_pwr_seq_parser(rtwdev, intf_mask, cut_mask, cmd);
+ 		if (ret)
+-			return -EBUSY;
++			return ret;
+ 
+ 		idx++;
+ 	} while (1);

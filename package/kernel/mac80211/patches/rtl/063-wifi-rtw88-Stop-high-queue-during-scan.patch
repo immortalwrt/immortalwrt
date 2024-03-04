@@ -1,0 +1,46 @@
+From ad6741b1e0449ba8f4eb41dc28e269dc20ab9219 Mon Sep 17 00:00:00 2001
+From: Po-Hao Huang <phhuang@realtek.com>
+Date: Fri, 16 Jun 2023 20:55:38 +0800
+Subject: [PATCH 6/8] wifi: rtw88: Stop high queue during scan
+
+When traversing channel list, TX in high queue should be disabled
+along with beacon function, so packets won't be sent to incorrect
+channels.
+
+Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230616125540.36877-5-pkshih@realtek.com
+---
+ drivers/net/wireless/realtek/rtw88/main.c | 7 +++++--
+ drivers/net/wireless/realtek/rtw88/reg.h  | 1 +
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -2403,10 +2403,13 @@ void rtw_core_enable_beacon(struct rtw_d
+ 	if (!rtwdev->ap_active)
+ 		return;
+ 
+-	if (enable)
++	if (enable) {
+ 		rtw_write32_set(rtwdev, REG_BCN_CTRL, BIT_EN_BCN_FUNCTION);
+-	else
++		rtw_write32_clr(rtwdev, REG_TXPAUSE, BIT_HIGH_QUEUE);
++	} else {
+ 		rtw_write32_clr(rtwdev, REG_BCN_CTRL, BIT_EN_BCN_FUNCTION);
++		rtw_write32_set(rtwdev, REG_TXPAUSE, BIT_HIGH_QUEUE);
++	}
+ }
+ 
+ MODULE_AUTHOR("Realtek Corporation");
+--- a/drivers/net/wireless/realtek/rtw88/reg.h
++++ b/drivers/net/wireless/realtek/rtw88/reg.h
+@@ -378,6 +378,7 @@
+ #define BIT_SIFS_BK_EN		BIT(12)
+ #define REG_TXPAUSE		0x0522
+ #define BIT_AC_QUEUE		GENMASK(7, 0)
++#define BIT_HIGH_QUEUE		BIT(5)
+ #define REG_RD_CTRL		0x0524
+ #define BIT_EDCCA_MSK_CNTDOWN_EN BIT(11)
+ #define BIT_DIS_TXOP_CFE	BIT(10)

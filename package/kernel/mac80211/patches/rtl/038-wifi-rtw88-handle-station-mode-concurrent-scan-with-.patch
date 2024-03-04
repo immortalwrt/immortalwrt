@@ -1,0 +1,154 @@
+From 96fbb84de4ffce76d54de8656efe0a580081c037 Mon Sep 17 00:00:00 2001
+From: Po-Hao Huang <phhuang@realtek.com>
+Date: Fri, 14 Apr 2023 20:13:23 +0800
+Subject: [PATCH 38/45] wifi: rtw88: handle station mode concurrent scan with
+ AP mode
+
+This patch allows vifs sharing same hardware with the AP mode vif to
+do scan, do note that this could lead to packet loss or disconnection
+of the AP's clients. Since we don't have chanctx, update scan info
+upon set channel so bandwidth changes won't go unnoticed and get
+misconfigured after scan. Download beacon just before scan starts to
+allow hardware to get proper content to do beaconing. Last, beacons
+should only be transmitted in AP's operating channel. Turn related
+beacon functions off while we're in other channels so the receiving
+stations won't get confused.
+
+Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230414121323.18008-1-pkshih@realtek.com
+---
+ drivers/net/wireless/realtek/rtw88/fw.c       | 11 +++++-
+ drivers/net/wireless/realtek/rtw88/mac80211.c |  5 ++-
+ drivers/net/wireless/realtek/rtw88/main.c     | 39 +++++++++++++++++++
+ drivers/net/wireless/realtek/rtw88/main.h     |  2 +
+ 4 files changed, 55 insertions(+), 2 deletions(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/fw.c
++++ b/drivers/net/wireless/realtek/rtw88/fw.c
+@@ -2160,6 +2160,12 @@ int rtw_hw_scan_offload(struct rtw_dev *
+ 	}
+ 	rtw_fw_set_scan_offload(rtwdev, &cs_option, rtwvif, &chan_list);
+ out:
++	if (rtwdev->ap_active) {
++		ret = rtw_download_beacon(rtwdev);
++		if (ret)
++			rtw_err(rtwdev, "HW scan download beacon failed\n");
++	}
++
+ 	return ret;
+ }
+ 
+@@ -2251,6 +2257,7 @@ void rtw_hw_scan_chan_switch(struct rtw_
+ 		if (rtw_is_op_chan(rtwdev, chan)) {
+ 			rtw_store_op_chan(rtwdev, false);
+ 			ieee80211_wake_queues(rtwdev->hw);
++			rtw_core_enable_beacon(rtwdev, true);
+ 		}
+ 	} else if (id == RTW_SCAN_NOTIFY_ID_PRESWITCH) {
+ 		if (IS_CH_5G_BAND(chan)) {
+@@ -2269,8 +2276,10 @@ void rtw_hw_scan_chan_switch(struct rtw_
+ 		 * if next channel is non-op channel.
+ 		 */
+ 		if (!rtw_is_op_chan(rtwdev, chan) &&
+-		    rtw_is_op_chan(rtwdev, hal->current_channel))
++		    rtw_is_op_chan(rtwdev, hal->current_channel)) {
++			rtw_core_enable_beacon(rtwdev, false);
+ 			ieee80211_stop_queues(rtwdev->hw);
++		}
+ 	}
+ 
+ 	rtw_dbg(rtwdev, RTW_DBG_HW_SCAN,
+--- a/drivers/net/wireless/realtek/rtw88/mac80211.c
++++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
+@@ -404,7 +404,7 @@ static void rtw_ops_bss_info_changed(str
+ 	if (changed & BSS_CHANGED_BSSID) {
+ 		ether_addr_copy(rtwvif->bssid, conf->bssid);
+ 		config |= PORT_SET_BSSID;
+-		if (is_zero_ether_addr(rtwvif->bssid))
++		if (!rtw_core_check_sta_active(rtwdev))
+ 			rtw_clear_op_chan(rtwdev);
+ 		else
+ 			rtw_store_op_chan(rtwdev, true);
+@@ -452,6 +452,7 @@ static int rtw_ops_start_ap(struct ieee8
+ 
+ 	mutex_lock(&rtwdev->mutex);
+ 	rtwdev->ap_active = true;
++	rtw_store_op_chan(rtwdev, true);
+ 	chip->ops->phy_calibration(rtwdev);
+ 	mutex_unlock(&rtwdev->mutex);
+ 
+@@ -466,6 +467,8 @@ static void rtw_ops_stop_ap(struct ieee8
+ 
+ 	mutex_lock(&rtwdev->mutex);
+ 	rtwdev->ap_active = false;
++	if (!rtw_core_check_sta_active(rtwdev))
++		rtw_clear_op_chan(rtwdev);
+ 	mutex_unlock(&rtwdev->mutex);
+ }
+ 
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -830,6 +830,9 @@ void rtw_set_channel(struct rtw_dev *rtw
+ 
+ 	rtw_update_channel(rtwdev, center_chan, primary_chan, band, bandwidth);
+ 
++	if (rtwdev->scan_info.op_chan)
++		rtw_store_op_chan(rtwdev, true);
++
+ 	chip->ops->set_channel(rtwdev, center_chan, bandwidth,
+ 			       hal->current_primary_channel_index);
+ 
+@@ -2330,6 +2333,42 @@ void rtw_core_port_switch(struct rtw_dev
+ 	rtw_iterate_vifs(rtwdev, rtw_port_switch_iter, &iter_data);
+ }
+ 
++static void rtw_check_sta_active_iter(void *data, u8 *mac,
++				      struct ieee80211_vif *vif)
++{
++	struct rtw_vif *rtwvif = (struct rtw_vif *)vif->drv_priv;
++	bool *active = data;
++
++	if (*active)
++		return;
++
++	if (vif->type != NL80211_IFTYPE_STATION)
++		return;
++
++	if (vif->cfg.assoc || !is_zero_ether_addr(rtwvif->bssid))
++		*active = true;
++}
++
++bool rtw_core_check_sta_active(struct rtw_dev *rtwdev)
++{
++	bool sta_active = false;
++
++	rtw_iterate_vifs(rtwdev, rtw_check_sta_active_iter, &sta_active);
++
++	return rtwdev->ap_active || sta_active;
++}
++
++void rtw_core_enable_beacon(struct rtw_dev *rtwdev, bool enable)
++{
++	if (!rtwdev->ap_active)
++		return;
++
++	if (enable)
++		rtw_write32_set(rtwdev, REG_BCN_CTRL, BIT_EN_BCN_FUNCTION);
++	else
++		rtw_write32_clr(rtwdev, REG_BCN_CTRL, BIT_EN_BCN_FUNCTION);
++}
++
+ MODULE_AUTHOR("Realtek Corporation");
+ MODULE_DESCRIPTION("Realtek 802.11ac wireless core module");
+ MODULE_LICENSE("Dual BSD/GPL");
+--- a/drivers/net/wireless/realtek/rtw88/main.h
++++ b/drivers/net/wireless/realtek/rtw88/main.h
+@@ -2201,4 +2201,6 @@ void rtw_update_channel(struct rtw_dev *
+ 			u8 primary_channel, enum rtw_supported_band band,
+ 			enum rtw_bandwidth bandwidth);
+ void rtw_core_port_switch(struct rtw_dev *rtwdev, struct ieee80211_vif *vif);
++bool rtw_core_check_sta_active(struct rtw_dev *rtwdev);
++void rtw_core_enable_beacon(struct rtw_dev *rtwdev, bool enable);
+ #endif

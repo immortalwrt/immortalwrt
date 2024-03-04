@@ -1,0 +1,84 @@
+From ffa71c5477793f41bc7537a60aa54ac40275ab78 Mon Sep 17 00:00:00 2001
+From: Po-Hao Huang <phhuang@realtek.com>
+Date: Fri, 14 Apr 2023 20:11:30 +0800
+Subject: [PATCH 34/45] wifi: rtw88: 8822c: extend reserved page number
+
+Extend 8822c's reserved page number to accommodate additional required
+pages. Reserved page is an area of memory in the FIFO dedicated for
+special purposes. Previously only one interface is supported so 8 pages
+should suffice, extend it so we can support 2 interfaces concurrently.
+
+Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230414121135.17828-4-pkshih@realtek.com
+---
+ drivers/net/wireless/realtek/rtw88/mac.c      | 2 +-
+ drivers/net/wireless/realtek/rtw88/main.h     | 1 +
+ drivers/net/wireless/realtek/rtw88/rtw8723d.c | 1 +
+ drivers/net/wireless/realtek/rtw88/rtw8821c.c | 1 +
+ drivers/net/wireless/realtek/rtw88/rtw8822b.c | 1 +
+ drivers/net/wireless/realtek/rtw88/rtw8822c.c | 1 +
+ 6 files changed, 6 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/mac.c
++++ b/drivers/net/wireless/realtek/rtw88/mac.c
+@@ -1119,7 +1119,7 @@ static int set_trx_fifo_info(struct rtw_
+ 	u8 csi_buf_pg_num = chip->csi_buf_pg_num;
+ 
+ 	/* config rsvd page num */
+-	fifo->rsvd_drv_pg_num = 8;
++	fifo->rsvd_drv_pg_num = chip->rsvd_drv_pg_num;
+ 	fifo->txff_pg_num = chip->txff_size >> 7;
+ 	if (rtw_chip_wcpu_11n(rtwdev))
+ 		fifo->rsvd_pg_num = fifo->rsvd_drv_pg_num;
+--- a/drivers/net/wireless/realtek/rtw88/main.h
++++ b/drivers/net/wireless/realtek/rtw88/main.h
+@@ -1177,6 +1177,7 @@ struct rtw_chip_info {
+ 	u32 txff_size;
+ 	u32 rxff_size;
+ 	u32 fw_rxff_size;
++	u16 rsvd_drv_pg_num;
+ 	u8 band;
+ 	u8 page_size;
+ 	u8 csi_buf_pg_num;
+--- a/drivers/net/wireless/realtek/rtw88/rtw8723d.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8723d.c
+@@ -2743,6 +2743,7 @@ const struct rtw_chip_info rtw8723d_hw_s
+ 	.ptct_efuse_size = 96 + 1,
+ 	.txff_size = 32768,
+ 	.rxff_size = 16384,
++	.rsvd_drv_pg_num = 8,
+ 	.txgi_factor = 1,
+ 	.is_pwr_by_rate_dec = true,
+ 	.max_power_index = 0x3f,
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+@@ -1920,6 +1920,7 @@ const struct rtw_chip_info rtw8821c_hw_s
+ 	.ptct_efuse_size = 96,
+ 	.txff_size = 65536,
+ 	.rxff_size = 16384,
++	.rsvd_drv_pg_num = 8,
+ 	.txgi_factor = 1,
+ 	.is_pwr_by_rate_dec = true,
+ 	.max_power_index = 0x3f,
+--- a/drivers/net/wireless/realtek/rtw88/rtw8822b.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
+@@ -2540,6 +2540,7 @@ const struct rtw_chip_info rtw8822b_hw_s
+ 	.txff_size = 262144,
+ 	.rxff_size = 24576,
+ 	.fw_rxff_size = 12288,
++	.rsvd_drv_pg_num = 8,
+ 	.txgi_factor = 1,
+ 	.is_pwr_by_rate_dec = true,
+ 	.max_power_index = 0x3f,
+--- a/drivers/net/wireless/realtek/rtw88/rtw8822c.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
+@@ -5358,6 +5358,7 @@ const struct rtw_chip_info rtw8822c_hw_s
+ 	.txff_size = 262144,
+ 	.rxff_size = 24576,
+ 	.fw_rxff_size = 12288,
++	.rsvd_drv_pg_num = 16,
+ 	.txgi_factor = 2,
+ 	.is_pwr_by_rate_dec = false,
+ 	.max_power_index = 0x7f,

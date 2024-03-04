@@ -1,0 +1,60 @@
+From cb0ddaaa5db09d7d216fcbf0e68779be223a1128 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Mon, 15 May 2023 21:50:43 +0200
+Subject: [PATCH 06/12] wifi: rtw88: sdio: Always use two consecutive bytes for
+ word operations
+
+The Allwinner sunxi-mmc controller cannot handle word (16 bit)
+transfers. So and sdio_{read,write}w fails with messages like the
+following example using an RTL8822BS (but the same problems were also
+observed with RTL8822CS and RTL8723DS chips):
+  rtw_8822bs mmc1:0001:1: Firmware version 27.2.0, H2C version 13
+  sunxi-mmc 4021000.mmc: unaligned scatterlist: os f80 length 2
+  sunxi-mmc 4021000.mmc: map DMA failed
+  rtw_8822bs mmc1:0001:1: sdio read16 failed (0x10230): -22
+
+Use two consecutive single byte accesses for word operations instead. It
+turns out that upon closer inspection this is also what the vendor
+driver does, even though it does have support for sdio_{read,write}w. So
+we can conclude that the rtw88 chips do support word access but only on
+SDIO controllers that also support it. Since there's no way to detect if
+the controller supports word access or not the rtw88 sdio driver
+switches to the easiest approach: avoiding word access.
+
+Reported-by: Larry Finger <Larry.Finger@lwfinger.net>
+Closes: https://lore.kernel.org/linux-wireless/527585e5-9cdd-66ed-c3af-6da162f4b720@lwfinger.net/
+Reported-by: Rudi Heitbaum <rudi@heitbaum.com>
+Link: https://github.com/LibreELEC/LibreELEC.tv/pull/7837#issue-1708469467
+Fixes: 65371a3f14e7 ("wifi: rtw88: sdio: Add HCI implementation for SDIO based chipsets")
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230515195043.572375-1-martin.blumenstingl@googlemail.com
+---
+ drivers/net/wireless/realtek/rtw88/sdio.c | 8 --------
+ 1 file changed, 8 deletions(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/sdio.c
++++ b/drivers/net/wireless/realtek/rtw88/sdio.c
+@@ -87,11 +87,6 @@ static void rtw_sdio_writew(struct rtw_d
+ 	u8 buf[2];
+ 	int i;
+ 
+-	if (rtw_sdio_use_memcpy_io(rtwdev, addr, 2)) {
+-		sdio_writew(rtwsdio->sdio_func, val, addr, err_ret);
+-		return;
+-	}
+-
+ 	*(__le16 *)buf = cpu_to_le16(val);
+ 
+ 	for (i = 0; i < 2; i++) {
+@@ -125,9 +120,6 @@ static u16 rtw_sdio_readw(struct rtw_dev
+ 	u8 buf[2];
+ 	int i;
+ 
+-	if (rtw_sdio_use_memcpy_io(rtwdev, addr, 2))
+-		return sdio_readw(rtwsdio->sdio_func, addr, err_ret);
+-
+ 	for (i = 0; i < 2; i++) {
+ 		buf[i] = sdio_readb(rtwsdio->sdio_func, addr + i, err_ret);
+ 		if (*err_ret)

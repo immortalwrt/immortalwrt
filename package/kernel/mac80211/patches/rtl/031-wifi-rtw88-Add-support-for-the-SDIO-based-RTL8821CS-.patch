@@ -1,0 +1,93 @@
+From b2a777d68434375dc05a6fda5fec34a474bbf21f Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Wed, 5 Apr 2023 22:07:29 +0200
+Subject: [PATCH 31/45] wifi: rtw88: Add support for the SDIO based RTL8821CS
+ chipset
+
+Wire up RTL8821CS chipset support using the new rtw88 SDIO HCI code as
+well as the existing RTL8821C chipset code.
+
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Tested-by: Chris Morgan <macromorgan@hotmail.com>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230405200729.632435-10-martin.blumenstingl@googlemail.com
+---
+ drivers/net/wireless/realtek/rtw88/Kconfig    | 11 ++++++
+ drivers/net/wireless/realtek/rtw88/Makefile   |  3 ++
+ .../net/wireless/realtek/rtw88/rtw8821cs.c    | 36 +++++++++++++++++++
+ 3 files changed, 50 insertions(+)
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8821cs.c
+
+--- a/drivers/net/wireless/realtek/rtw88/Kconfig
++++ b/drivers/net/wireless/realtek/rtw88/Kconfig
+@@ -153,6 +153,18 @@ config RTW88_8821CE
+ 
+ 	  802.11ac PCIe wireless network adapter
+ 
++config RTW88_8821CS
++	tristate "Realtek 8821CS SDIO wireless network adapter"
++	depends on m
++	depends on MMC
++	select RTW88_CORE
++	select RTW88_SDIO
++	select RTW88_8821C
++	help
++	  Select this option will enable support for 8821CS chipset
++
++	  802.11ac SDIO wireless network adapter
++
+ config RTW88_8821CU
+ 	tristate "Realtek 8821CU USB wireless network adapter"
+ 	depends on m
+--- a/drivers/net/wireless/realtek/rtw88/Makefile
++++ b/drivers/net/wireless/realtek/rtw88/Makefile
+@@ -59,6 +59,9 @@ rtw88_8821c-objs		:= rtw8821c.o rtw8821c
+ obj-$(CPTCFG_RTW88_8821CE)	+= rtw88_8821ce.o
+ rtw88_8821ce-objs		:= rtw8821ce.o
+ 
++obj-$(CPTCFG_RTW88_8821CS)	+= rtw88_8821cs.o
++rtw88_8821cs-objs		:= rtw8821cs.o
++
+ obj-$(CPTCFG_RTW88_8821CU)	+= rtw88_8821cu.o
+ rtw88_8821cu-objs		:= rtw8821cu.o
+ 
+--- /dev/null
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821cs.c
+@@ -0,0 +1,36 @@
++// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
++/* Copyright(c) Martin Blumenstingl <martin.blumenstingl@googlemail.com>
++ */
++
++#include <linux/mmc/sdio_func.h>
++#include <linux/mmc/sdio_ids.h>
++#include <linux/module.h>
++#include "main.h"
++#include "rtw8821c.h"
++#include "sdio.h"
++
++static const struct sdio_device_id rtw_8821cs_id_table[] =  {
++	{
++		SDIO_DEVICE(SDIO_VENDOR_ID_REALTEK,
++			    SDIO_DEVICE_ID_REALTEK_RTW8821CS),
++		.driver_data = (kernel_ulong_t)&rtw8821c_hw_spec,
++	},
++	{}
++};
++MODULE_DEVICE_TABLE(sdio, rtw_8821cs_id_table);
++
++static struct sdio_driver rtw_8821cs_driver = {
++	.name = "rtw_8821cs",
++	.probe = rtw_sdio_probe,
++	.remove = rtw_sdio_remove,
++	.id_table = rtw_8821cs_id_table,
++	.drv = {
++		.pm = &rtw_sdio_pm_ops,
++		.shutdown = rtw_sdio_shutdown,
++	}
++};
++module_sdio_driver(rtw_8821cs_driver);
++
++MODULE_AUTHOR("Martin Blumenstingl <martin.blumenstingl@googlemail.com>");
++MODULE_DESCRIPTION("Realtek 802.11ac wireless 8821cs driver");
++MODULE_LICENSE("Dual BSD/GPL");

@@ -1,0 +1,34 @@
+From 24d54855ff36c7c6256cb48b735a927090142a51 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sun, 5 Feb 2023 00:30:01 +0100
+Subject: [PATCH 49/85] wifi: rtw88: mac: Use existing macros in
+ rtw_pwr_seq_parser()
+
+Replace the magic numbers for the intf_mask with their existing
+RTW_PWR_INTF_PCI_MSK and RTW_PWR_INTF_USB_MSK macros to make the code
+easier to understand.
+
+Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230204233001.1511643-5-martin.blumenstingl@googlemail.com
+---
+ drivers/net/wireless/realtek/rtw88/mac.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/mac.c
++++ b/drivers/net/wireless/realtek/rtw88/mac.c
+@@ -217,10 +217,10 @@ static int rtw_pwr_seq_parser(struct rtw
+ 	cut_mask = cut_version_to_mask(cut);
+ 	switch (rtw_hci_type(rtwdev)) {
+ 	case RTW_HCI_TYPE_PCIE:
+-		intf_mask = BIT(2);
++		intf_mask = RTW_PWR_INTF_PCI_MSK;
+ 		break;
+ 	case RTW_HCI_TYPE_USB:
+-		intf_mask = BIT(1);
++		intf_mask = RTW_PWR_INTF_USB_MSK;
+ 		break;
+ 	default:
+ 		return -EINVAL;

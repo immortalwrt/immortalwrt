@@ -1,0 +1,69 @@
+From ad0a677bce20c7fa2e8af3fd7f23c0686018202b Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sat, 18 Feb 2023 16:29:44 +0100
+Subject: [PATCH 58/85] wifi: rtw88: rtw8822c: Implement RTL8822CS (SDIO) efuse
+ parsing
+
+The efuse of the SDIO RTL8822CS chip has only one known member: the mac
+address is at offset 0x16a. Add a struct rtw8822cs_efuse describing this
+and use it for copying the mac address when the SDIO bus is used.
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230218152944.48842-6-martin.blumenstingl@googlemail.com
+---
+ drivers/net/wireless/realtek/rtw88/rtw8822c.c | 9 +++++++++
+ drivers/net/wireless/realtek/rtw88/rtw8822c.h | 8 +++++++-
+ 2 files changed, 16 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/rtw8822c.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
+@@ -35,6 +35,12 @@ static void rtw8822cu_efuse_parsing(stru
+ 	ether_addr_copy(efuse->addr, map->u.mac_addr);
+ }
+ 
++static void rtw8822cs_efuse_parsing(struct rtw_efuse *efuse,
++				    struct rtw8822c_efuse *map)
++{
++	ether_addr_copy(efuse->addr, map->s.mac_addr);
++}
++
+ static int rtw8822c_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
+ {
+ 	struct rtw_efuse *efuse = &rtwdev->efuse;
+@@ -67,6 +73,9 @@ static int rtw8822c_read_efuse(struct rt
+ 	case RTW_HCI_TYPE_USB:
+ 		rtw8822cu_efuse_parsing(efuse, map);
+ 		break;
++	case RTW_HCI_TYPE_SDIO:
++		rtw8822cs_efuse_parsing(efuse, map);
++		break;
+ 	default:
+ 		/* unsupported now */
+ 		return -ENOTSUPP;
+--- a/drivers/net/wireless/realtek/rtw88/rtw8822c.h
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822c.h
+@@ -16,6 +16,11 @@ struct rtw8822cu_efuse {
+ 	u8 res2[0x3d];
+ };
+ 
++struct rtw8822cs_efuse {
++	u8 res0[0x4a];			/* 0x120 */
++	u8 mac_addr[ETH_ALEN];		/* 0x16a */
++} __packed;
++
+ struct rtw8822ce_efuse {
+ 	u8 mac_addr[ETH_ALEN];		/* 0x120 */
+ 	u8 vender_id[2];
+@@ -91,8 +96,9 @@ struct rtw8822c_efuse {
+ 	u8 res9;
+ 	u8 res10[0x42];
+ 	union {
+-		struct rtw8822cu_efuse u;
+ 		struct rtw8822ce_efuse e;
++		struct rtw8822cu_efuse u;
++		struct rtw8822cs_efuse s;
+ 	};
+ };
+ 

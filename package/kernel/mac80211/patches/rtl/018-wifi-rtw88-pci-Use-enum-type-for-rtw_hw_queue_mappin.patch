@@ -1,0 +1,48 @@
+From 6152b649a70861e72220de9f9abf2fe570967493 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sun, 5 Feb 2023 00:29:58 +0100
+Subject: [PATCH] wifi: rtw88: pci: Use enum type for rtw_hw_queue_mapping()
+ and ac_to_hwq
+
+rtw_hw_queue_mapping() and ac_to_hwq[] hold values of type enum
+rtw_tx_queue_type. Change their types to reflect this to make it easier
+to understand this part of the code.
+
+While here, also change the array to be static const as it is not
+supposed to be modified at runtime.
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230204233001.1511643-2-martin.blumenstingl@googlemail.com
+---
+ drivers/net/wireless/realtek/rtw88/pci.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/pci.c
++++ b/drivers/net/wireless/realtek/rtw88/pci.c
+@@ -669,7 +669,7 @@ static void rtw_pci_deep_ps(struct rtw_d
+ 	spin_unlock_bh(&rtwpci->irq_lock);
+ }
+ 
+-static u8 ac_to_hwq[] = {
++static const enum rtw_tx_queue_type ac_to_hwq[] = {
+ 	[IEEE80211_AC_VO] = RTW_TX_QUEUE_VO,
+ 	[IEEE80211_AC_VI] = RTW_TX_QUEUE_VI,
+ 	[IEEE80211_AC_BE] = RTW_TX_QUEUE_BE,
+@@ -678,12 +678,12 @@ static u8 ac_to_hwq[] = {
+ 
+ static_assert(ARRAY_SIZE(ac_to_hwq) == IEEE80211_NUM_ACS);
+ 
+-static u8 rtw_hw_queue_mapping(struct sk_buff *skb)
++static enum rtw_tx_queue_type rtw_hw_queue_mapping(struct sk_buff *skb)
+ {
+ 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)skb->data;
+ 	__le16 fc = hdr->frame_control;
+ 	u8 q_mapping = skb_get_queue_mapping(skb);
+-	u8 queue;
++	enum rtw_tx_queue_type queue;
+ 
+ 	if (unlikely(ieee80211_is_beacon(fc)))
+ 		queue = RTW_TX_QUEUE_BCN;

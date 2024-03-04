@@ -1,0 +1,30 @@
+From ca6f02262c480ed49c5c6e41a0634c75b9a47dca Mon Sep 17 00:00:00 2001
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Date: Fri, 2 Dec 2022 09:12:15 +0100
+Subject: [PATCH 04/13] wifi: rtw88: Call rtw_fw_beacon_filter_config() with
+ rtwdev->mutex held
+
+rtw_fw_beacon_filter_config() is called once with rtwdev->mutex held
+and once without the mutex held. Call it consistently with rtwdev->mutex
+held.
+
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20221202081224.2779981-3-s.hauer@pengutronix.de
+---
+ drivers/net/wireless/realtek/rtw88/mac80211.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/mac80211.c
++++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
+@@ -487,8 +487,8 @@ static int rtw_ops_sta_remove(struct iee
+ {
+ 	struct rtw_dev *rtwdev = hw->priv;
+ 
+-	rtw_fw_beacon_filter_config(rtwdev, false, vif);
+ 	mutex_lock(&rtwdev->mutex);
++	rtw_fw_beacon_filter_config(rtwdev, false, vif);
+ 	rtw_sta_remove(rtwdev, sta, true);
+ 	mutex_unlock(&rtwdev->mutex);
+ 

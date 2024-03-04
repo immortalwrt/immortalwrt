@@ -1,0 +1,73 @@
+From a1b8015da57a783b3ceebd8e114afbe07536bd54 Mon Sep 17 00:00:00 2001
+From: Po-Hao Huang <phhuang@realtek.com>
+Date: Fri, 14 Apr 2023 20:13:12 +0800
+Subject: [PATCH 37/45] wifi: rtw88: prevent scan abort with other VIFs
+
+Only abort scan with current scanning VIF. If we have more than one
+interface, we could call rtw_hw_scan_abort() with the wrong VIF as
+input. This avoids potential null pointer being accessed when actually
+the other VIF is scanning.
+
+Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230414121312.17954-1-pkshih@realtek.com
+---
+ drivers/net/wireless/realtek/rtw88/fw.c       | 4 +++-
+ drivers/net/wireless/realtek/rtw88/fw.h       | 2 +-
+ drivers/net/wireless/realtek/rtw88/mac80211.c | 7 ++++---
+ 3 files changed, 8 insertions(+), 5 deletions(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/fw.c
++++ b/drivers/net/wireless/realtek/rtw88/fw.c
+@@ -2163,8 +2163,10 @@ out:
+ 	return ret;
+ }
+ 
+-void rtw_hw_scan_abort(struct rtw_dev *rtwdev, struct ieee80211_vif *vif)
++void rtw_hw_scan_abort(struct rtw_dev *rtwdev)
+ {
++	struct ieee80211_vif *vif = rtwdev->scan_info.scanning_vif;
++
+ 	if (!rtw_fw_feature_check(&rtwdev->fw, FW_FEATURE_SCAN_OFFLOAD))
+ 		return;
+ 
+--- a/drivers/net/wireless/realtek/rtw88/fw.h
++++ b/drivers/net/wireless/realtek/rtw88/fw.h
+@@ -868,5 +868,5 @@ int rtw_hw_scan_offload(struct rtw_dev *
+ 			bool enable);
+ void rtw_hw_scan_status_report(struct rtw_dev *rtwdev, struct sk_buff *skb);
+ void rtw_hw_scan_chan_switch(struct rtw_dev *rtwdev, struct sk_buff *skb);
+-void rtw_hw_scan_abort(struct rtw_dev *rtwdev, struct ieee80211_vif *vif);
++void rtw_hw_scan_abort(struct rtw_dev *rtwdev);
+ #endif
+--- a/drivers/net/wireless/realtek/rtw88/mac80211.c
++++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
+@@ -393,7 +393,8 @@ static void rtw_ops_bss_info_changed(str
+ 			 * when disconnected by peer
+ 			 */
+ 			if (test_bit(RTW_FLAG_SCANNING, rtwdev->flags))
+-				rtw_hw_scan_abort(rtwdev, vif);
++				rtw_hw_scan_abort(rtwdev);
++
+ 		}
+ 
+ 		config |= PORT_SET_NET_TYPE;
+@@ -870,7 +871,7 @@ static int rtw_ops_hw_scan(struct ieee80
+ 	rtw_hw_scan_start(rtwdev, vif, req);
+ 	ret = rtw_hw_scan_offload(rtwdev, vif, true);
+ 	if (ret) {
+-		rtw_hw_scan_abort(rtwdev, vif);
++		rtw_hw_scan_abort(rtwdev);
+ 		rtw_err(rtwdev, "HW scan failed with status: %d\n", ret);
+ 	}
+ 	mutex_unlock(&rtwdev->mutex);
+@@ -890,7 +891,7 @@ static void rtw_ops_cancel_hw_scan(struc
+ 		return;
+ 
+ 	mutex_lock(&rtwdev->mutex);
+-	rtw_hw_scan_abort(rtwdev, vif);
++	rtw_hw_scan_abort(rtwdev);
+ 	mutex_unlock(&rtwdev->mutex);
+ }
+ 

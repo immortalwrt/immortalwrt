@@ -1,0 +1,126 @@
+From ccf73f6e69c0244a979e97eb6c38f80cd6cbc116 Mon Sep 17 00:00:00 2001
+From: Po-Hao Huang <phhuang@realtek.com>
+Date: Fri, 14 Apr 2023 20:11:29 +0800
+Subject: [PATCH 33/45] wifi: rtw88: add port switch for AP mode
+
+Switch port settings if AP mode does not start on port 0 because of
+hardware limitation. For some ICs, beacons on ports other than zero
+could misbehave and do not issue properly, to fix this we change AP
+VIFs to port zero when multiple interfaces is active.
+
+Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230414121135.17828-3-pkshih@realtek.com
+---
+ drivers/net/wireless/realtek/rtw88/mac80211.c |  1 +
+ drivers/net/wireless/realtek/rtw88/main.c     | 79 +++++++++++++++++++
+ drivers/net/wireless/realtek/rtw88/main.h     |  1 +
+ 3 files changed, 81 insertions(+)
+
+--- a/drivers/net/wireless/realtek/rtw88/mac80211.c
++++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
+@@ -212,6 +212,7 @@ static int rtw_ops_add_interface(struct
+ 	rtwvif->bcn_ctrl = bcn_ctrl;
+ 	config |= PORT_SET_BCN_CTRL;
+ 	rtw_vif_port_config(rtwdev, rtwvif, config);
++	rtw_core_port_switch(rtwdev, vif);
+ 
+ 	mutex_unlock(&rtwdev->mutex);
+ 
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -2251,6 +2251,85 @@ void rtw_unregister_hw(struct rtw_dev *r
+ }
+ EXPORT_SYMBOL(rtw_unregister_hw);
+ 
++static
++void rtw_swap_reg_nbytes(struct rtw_dev *rtwdev, const struct rtw_hw_reg *reg1,
++			 const struct rtw_hw_reg *reg2, u8 nbytes)
++{
++	u8 i;
++
++	for (i = 0; i < nbytes; i++) {
++		u8 v1 = rtw_read8(rtwdev, reg1->addr + i);
++		u8 v2 = rtw_read8(rtwdev, reg2->addr + i);
++
++		rtw_write8(rtwdev, reg1->addr + i, v2);
++		rtw_write8(rtwdev, reg2->addr + i, v1);
++	}
++}
++
++static
++void rtw_swap_reg_mask(struct rtw_dev *rtwdev, const struct rtw_hw_reg *reg1,
++		       const struct rtw_hw_reg *reg2)
++{
++	u32 v1, v2;
++
++	v1 = rtw_read32_mask(rtwdev, reg1->addr, reg1->mask);
++	v2 = rtw_read32_mask(rtwdev, reg2->addr, reg2->mask);
++	rtw_write32_mask(rtwdev, reg2->addr, reg2->mask, v1);
++	rtw_write32_mask(rtwdev, reg1->addr, reg1->mask, v2);
++}
++
++struct rtw_iter_port_switch_data {
++	struct rtw_dev *rtwdev;
++	struct rtw_vif *rtwvif_ap;
++};
++
++static void rtw_port_switch_iter(void *data, u8 *mac, struct ieee80211_vif *vif)
++{
++	struct rtw_iter_port_switch_data *iter_data = data;
++	struct rtw_dev *rtwdev = iter_data->rtwdev;
++	struct rtw_vif *rtwvif_target = (struct rtw_vif *)vif->drv_priv;
++	struct rtw_vif *rtwvif_ap = iter_data->rtwvif_ap;
++	const struct rtw_hw_reg *reg1, *reg2;
++
++	if (rtwvif_target->port != RTW_PORT_0)
++		return;
++
++	rtw_dbg(rtwdev, RTW_DBG_STATE, "AP port switch from %d -> %d\n",
++		rtwvif_ap->port, rtwvif_target->port);
++
++	reg1 = &rtwvif_ap->conf->net_type;
++	reg2 = &rtwvif_target->conf->net_type;
++	rtw_swap_reg_mask(rtwdev, reg1, reg2);
++
++	reg1 = &rtwvif_ap->conf->mac_addr;
++	reg2 = &rtwvif_target->conf->mac_addr;
++	rtw_swap_reg_nbytes(rtwdev, reg1, reg2, ETH_ALEN);
++
++	reg1 = &rtwvif_ap->conf->bssid;
++	reg2 = &rtwvif_target->conf->bssid;
++	rtw_swap_reg_nbytes(rtwdev, reg1, reg2, ETH_ALEN);
++
++	reg1 = &rtwvif_ap->conf->bcn_ctrl;
++	reg2 = &rtwvif_target->conf->bcn_ctrl;
++	rtw_swap_reg_nbytes(rtwdev, reg1, reg2, 1);
++
++	swap(rtwvif_target->port, rtwvif_ap->port);
++	swap(rtwvif_target->conf, rtwvif_ap->conf);
++}
++
++void rtw_core_port_switch(struct rtw_dev *rtwdev, struct ieee80211_vif *vif)
++{
++	struct rtw_vif *rtwvif = (struct rtw_vif *)vif->drv_priv;
++	struct rtw_iter_port_switch_data iter_data;
++
++	if (vif->type != NL80211_IFTYPE_AP || rtwvif->port == RTW_PORT_0)
++		return;
++
++	iter_data.rtwdev = rtwdev;
++	iter_data.rtwvif_ap = rtwvif;
++	rtw_iterate_vifs(rtwdev, rtw_port_switch_iter, &iter_data);
++}
++
+ MODULE_AUTHOR("Realtek Corporation");
+ MODULE_DESCRIPTION("Realtek 802.11ac wireless core module");
+ MODULE_LICENSE("Dual BSD/GPL");
+--- a/drivers/net/wireless/realtek/rtw88/main.h
++++ b/drivers/net/wireless/realtek/rtw88/main.h
+@@ -2198,4 +2198,5 @@ void rtw_set_txrx_1ss(struct rtw_dev *rt
+ void rtw_update_channel(struct rtw_dev *rtwdev, u8 center_channel,
+ 			u8 primary_channel, enum rtw_supported_band band,
+ 			enum rtw_bandwidth bandwidth);
++void rtw_core_port_switch(struct rtw_dev *rtwdev, struct ieee80211_vif *vif);
+ #endif

@@ -1,0 +1,66 @@
+From 9be20a82232779c59979527dfc8febca3182fee2 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Mon, 22 May 2023 22:24:23 +0200
+Subject: [PATCH 08/12] wifi: rtw88: rtw8723d: Implement RTL8723DS (SDIO) efuse
+ parsing
+
+The efuse of the SDIO RTL8723DS chip has only one known member: the mac
+address is at offset 0x11a. Add a struct rtw8723ds_efuse describing this
+and use it for copying the mac address when the SDIO bus is used.
+
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230522202425.1827005-3-martin.blumenstingl@googlemail.com
+---
+ drivers/net/wireless/realtek/rtw88/rtw8723d.c | 9 +++++++++
+ drivers/net/wireless/realtek/rtw88/rtw8723d.h | 6 ++++++
+ 2 files changed, 15 insertions(+)
+
+--- a/drivers/net/wireless/realtek/rtw88/rtw8723d.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8723d.c
+@@ -216,6 +216,12 @@ static void rtw8723du_efuse_parsing(stru
+ 	ether_addr_copy(efuse->addr, map->u.mac_addr);
+ }
+ 
++static void rtw8723ds_efuse_parsing(struct rtw_efuse *efuse,
++				    struct rtw8723d_efuse *map)
++{
++	ether_addr_copy(efuse->addr, map->s.mac_addr);
++}
++
+ static int rtw8723d_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
+ {
+ 	struct rtw_efuse *efuse = &rtwdev->efuse;
+@@ -248,6 +254,9 @@ static int rtw8723d_read_efuse(struct rt
+ 	case RTW_HCI_TYPE_USB:
+ 		rtw8723du_efuse_parsing(efuse, map);
+ 		break;
++	case RTW_HCI_TYPE_SDIO:
++		rtw8723ds_efuse_parsing(efuse, map);
++		break;
+ 	default:
+ 		/* unsupported now */
+ 		return -ENOTSUPP;
+--- a/drivers/net/wireless/realtek/rtw88/rtw8723d.h
++++ b/drivers/net/wireless/realtek/rtw88/rtw8723d.h
+@@ -49,6 +49,11 @@ struct rtw8723du_efuse {
+ 	u8 mac_addr[ETH_ALEN];          /* 0x107 */
+ };
+ 
++struct rtw8723ds_efuse {
++	u8 res4[0x4a];			/* 0xd0 */
++	u8 mac_addr[ETH_ALEN];		/* 0x11a */
++};
++
+ struct rtw8723d_efuse {
+ 	__le16 rtl_id;
+ 	u8 rsvd[2];
+@@ -80,6 +85,7 @@ struct rtw8723d_efuse {
+ 	union {
+ 		struct rtw8723de_efuse e;
+ 		struct rtw8723du_efuse u;
++		struct rtw8723ds_efuse s;
+ 	};
+ };
+ 

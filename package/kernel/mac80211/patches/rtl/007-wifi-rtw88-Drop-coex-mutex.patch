@@ -1,0 +1,81 @@
+From aa3b7995ddabf832581c542fc198d1f2e7afac28 Mon Sep 17 00:00:00 2001
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Date: Fri, 2 Dec 2022 09:12:18 +0100
+Subject: [PATCH 07/13] wifi: rtw88: Drop coex mutex
+
+coex->mutex is used in rtw_coex_info_request() only. Most callers of this
+function hold rtwdev->mutex already, except for one callsite in the
+debugfs code. The debugfs code alone doesn't justify the extra lock, so
+acquire rtwdev->mutex there as well and drop the now unnecessary
+spinlock.
+
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20221202081224.2779981-6-s.hauer@pengutronix.de
+---
+ drivers/net/wireless/realtek/rtw88/coex.c  | 3 +--
+ drivers/net/wireless/realtek/rtw88/debug.c | 2 ++
+ drivers/net/wireless/realtek/rtw88/main.c  | 2 --
+ drivers/net/wireless/realtek/rtw88/main.h  | 2 --
+ 4 files changed, 3 insertions(+), 6 deletions(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/coex.c
++++ b/drivers/net/wireless/realtek/rtw88/coex.c
+@@ -633,7 +633,7 @@ static struct sk_buff *rtw_coex_info_req
+ 	struct rtw_coex *coex = &rtwdev->coex;
+ 	struct sk_buff *skb_resp = NULL;
+ 
+-	mutex_lock(&coex->mutex);
++	lockdep_assert_held(&rtwdev->mutex);
+ 
+ 	rtw_fw_query_bt_mp_info(rtwdev, req);
+ 
+@@ -650,7 +650,6 @@ static struct sk_buff *rtw_coex_info_req
+ 	}
+ 
+ out:
+-	mutex_unlock(&coex->mutex);
+ 	return skb_resp;
+ }
+ 
+--- a/drivers/net/wireless/realtek/rtw88/debug.c
++++ b/drivers/net/wireless/realtek/rtw88/debug.c
+@@ -841,7 +841,9 @@ static int rtw_debugfs_get_coex_info(str
+ 	struct rtw_debugfs_priv *debugfs_priv = m->private;
+ 	struct rtw_dev *rtwdev = debugfs_priv->rtwdev;
+ 
++	mutex_lock(&rtwdev->mutex);
+ 	rtw_coex_display_coex_info(rtwdev, m);
++	mutex_unlock(&rtwdev->mutex);
+ 
+ 	return 0;
+ }
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -2071,7 +2071,6 @@ int rtw_core_init(struct rtw_dev *rtwdev
+ 	spin_lock_init(&rtwdev->tx_report.q_lock);
+ 
+ 	mutex_init(&rtwdev->mutex);
+-	mutex_init(&rtwdev->coex.mutex);
+ 	mutex_init(&rtwdev->hal.tx_power_mutex);
+ 
+ 	init_waitqueue_head(&rtwdev->coex.wait);
+@@ -2143,7 +2142,6 @@ void rtw_core_deinit(struct rtw_dev *rtw
+ 	}
+ 
+ 	mutex_destroy(&rtwdev->mutex);
+-	mutex_destroy(&rtwdev->coex.mutex);
+ 	mutex_destroy(&rtwdev->hal.tx_power_mutex);
+ }
+ EXPORT_SYMBOL(rtw_core_deinit);
+--- a/drivers/net/wireless/realtek/rtw88/main.h
++++ b/drivers/net/wireless/realtek/rtw88/main.h
+@@ -1501,8 +1501,6 @@ struct rtw_coex_stat {
+ };
+ 
+ struct rtw_coex {
+-	/* protects coex info request section */
+-	struct mutex mutex;
+ 	struct sk_buff_head queue;
+ 	wait_queue_head_t wait;
+ 

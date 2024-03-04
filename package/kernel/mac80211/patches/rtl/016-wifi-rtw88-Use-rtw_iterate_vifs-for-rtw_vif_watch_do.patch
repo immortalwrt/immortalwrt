@@ -1,0 +1,39 @@
+From 313f6dc7c5ed723d0c5691553eff4c0090f16bb8 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sun, 8 Jan 2023 22:13:23 +0100
+Subject: [PATCH] wifi: rtw88: Use rtw_iterate_vifs() for
+ rtw_vif_watch_dog_iter()
+
+USB and (upcoming) SDIO support may sleep in the read/write handlers.
+Make rtw_watch_dog_work() use rtw_iterate_vifs() to prevent "scheduling
+while atomic" or "Voluntary context switch within RCU read-side
+critical section!" warnings when accessing the registers using an SDIO
+card (which is where this issue has been spotted in the real world but
+it also affects USB cards).
+
+Fixes: 78d5bf925f30 ("wifi: rtw88: iterate over vif/sta list non-atomically")
+Suggested-by: Ping-Ke Shih <pkshih@realtek.com>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230108211324.442823-3-martin.blumenstingl@googlemail.com
+---
+ drivers/net/wireless/realtek/rtw88/main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -241,8 +241,10 @@ static void rtw_watch_dog_work(struct wo
+ 	rtw_phy_dynamic_mechanism(rtwdev);
+ 
+ 	data.rtwdev = rtwdev;
+-	/* use atomic version to avoid taking local->iflist_mtx mutex */
+-	rtw_iterate_vifs_atomic(rtwdev, rtw_vif_watch_dog_iter, &data);
++	/* rtw_iterate_vifs internally uses an atomic iterator which is needed
++	 * to avoid taking local->iflist_mtx mutex
++	 */
++	rtw_iterate_vifs(rtwdev, rtw_vif_watch_dog_iter, &data);
+ 
+ 	/* fw supports only one station associated to enter lps, if there are
+ 	 * more than two stations associated to the AP, then we can not enter

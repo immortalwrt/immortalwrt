@@ -1,0 +1,73 @@
+From 172591baa2cc1ec04869a0d798821a6ca9a2f4b4 Mon Sep 17 00:00:00 2001
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Date: Mon, 17 Apr 2023 16:03:58 +0200
+Subject: [PATCH 43/45] wifi: rtw88: call rtw8821c_switch_rf_set() according to
+ chip variant
+
+We have to call rtw8821c_switch_rf_set() with SWITCH_TO_WLG or
+SWITCH_TO_BTG according to the chip variant as denoted in rfe_option.
+The information which argument to use for which variant has been
+taken from the vendor driver.
+
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230417140358.2240429-5-s.hauer@pengutronix.de
+---
+ drivers/net/wireless/realtek/rtw88/main.h     |  1 +
+ drivers/net/wireless/realtek/rtw88/rtw8821c.c | 19 +++++++++++++++----
+ 2 files changed, 16 insertions(+), 4 deletions(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/main.h
++++ b/drivers/net/wireless/realtek/rtw88/main.h
+@@ -1902,6 +1902,7 @@ struct rtw_hal {
+ 	u8 oem_id;
+ 	u8 pkg_type;
+ 	struct rtw_phy_cond phy_cond;
++	bool rfe_btg;
+ 
+ 	u8 ps_mode;
+ 	u8 current_channel;
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
+@@ -73,6 +73,17 @@ static int rtw8821c_read_efuse(struct rt
+ 
+ 	hal->pkg_type = map->rfe_option & BIT(5) ? 1 : 0;
+ 
++	switch (efuse->rfe_option) {
++	case 0x2:
++	case 0x4:
++	case 0x7:
++	case 0xa:
++	case 0xc:
++	case 0xf:
++		hal->rfe_btg = true;
++		break;
++	}
++
+ 	for (i = 0; i < 4; i++)
+ 		efuse->txpwr_idx_table[i] = map->txpwr_idx_table[i];
+ 
+@@ -298,6 +309,7 @@ static void rtw8821c_switch_rf_set(struc
+ 
+ static void rtw8821c_set_channel_rf(struct rtw_dev *rtwdev, u8 channel, u8 bw)
+ {
++	struct rtw_hal *hal = &rtwdev->hal;
+ 	u32 rf_reg18;
+ 
+ 	rf_reg18 = rtw_read_rf(rtwdev, RF_PATH_A, 0x18, RFREG_MASK);
+@@ -329,11 +341,10 @@ static void rtw8821c_set_channel_rf(stru
+ 	}
+ 
+ 	if (channel <= 14) {
+-		if (rtwdev->efuse.rfe_option == 0)
+-			rtw8821c_switch_rf_set(rtwdev, SWITCH_TO_WLG);
+-		else if (rtwdev->efuse.rfe_option == 2 ||
+-			 rtwdev->efuse.rfe_option == 4)
++		if (hal->rfe_btg)
+ 			rtw8821c_switch_rf_set(rtwdev, SWITCH_TO_BTG);
++		else
++			rtw8821c_switch_rf_set(rtwdev, SWITCH_TO_WLG);
+ 		rtw_write_rf(rtwdev, RF_PATH_A, RF_LUTDBG, BIT(6), 0x1);
+ 		rtw_write_rf(rtwdev, RF_PATH_A, 0x64, 0xf, 0xf);
+ 	} else {

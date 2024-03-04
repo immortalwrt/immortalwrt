@@ -1,0 +1,72 @@
+From 8a1e2fd8e2da5c8b8c438e20ebffef6881cc9ab8 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sun, 8 Jan 2023 22:13:22 +0100
+Subject: [PATCH] wifi: rtw88: Move register access from rtw_bf_assoc() outside
+ the RCU
+
+USB and (upcoming) SDIO support may sleep in the read/write handlers.
+Shrink the RCU critical section so it only cover the call to
+ieee80211_find_sta() and finding the ic_vht_cap/vht_cap based on the
+found station. This moves the chip's BFEE configuration outside the
+rcu_read_lock section and thus prevent "scheduling while atomic" or
+"Voluntary context switch within RCU read-side critical section!"
+warnings when accessing the registers using an SDIO card (which is
+where this issue has been spotted in the real world - but it also
+affects USB cards).
+
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230108211324.442823-2-martin.blumenstingl@googlemail.com
+---
+ drivers/net/wireless/realtek/rtw88/bf.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/bf.c
++++ b/drivers/net/wireless/realtek/rtw88/bf.c
+@@ -49,19 +49,23 @@ void rtw_bf_assoc(struct rtw_dev *rtwdev
+ 
+ 	sta = ieee80211_find_sta(vif, bssid);
+ 	if (!sta) {
++		rcu_read_unlock();
++
+ 		rtw_warn(rtwdev, "failed to find station entry for bss %pM\n",
+ 			 bssid);
+-		goto out_unlock;
++		return;
+ 	}
+ 
+ 	ic_vht_cap = &hw->wiphy->bands[NL80211_BAND_5GHZ]->vht_cap;
+ 	vht_cap = &sta->deflink.vht_cap;
+ 
++	rcu_read_unlock();
++
+ 	if ((ic_vht_cap->cap & IEEE80211_VHT_CAP_MU_BEAMFORMEE_CAPABLE) &&
+ 	    (vht_cap->cap & IEEE80211_VHT_CAP_MU_BEAMFORMER_CAPABLE)) {
+ 		if (bfinfo->bfer_mu_cnt >= chip->bfer_mu_max_num) {
+ 			rtw_dbg(rtwdev, RTW_DBG_BF, "mu bfer number over limit\n");
+-			goto out_unlock;
++			return;
+ 		}
+ 
+ 		ether_addr_copy(bfee->mac_addr, bssid);
+@@ -75,7 +79,7 @@ void rtw_bf_assoc(struct rtw_dev *rtwdev
+ 		   (vht_cap->cap & IEEE80211_VHT_CAP_SU_BEAMFORMER_CAPABLE)) {
+ 		if (bfinfo->bfer_su_cnt >= chip->bfer_su_max_num) {
+ 			rtw_dbg(rtwdev, RTW_DBG_BF, "su bfer number over limit\n");
+-			goto out_unlock;
++			return;
+ 		}
+ 
+ 		sound_dim = vht_cap->cap &
+@@ -98,9 +102,6 @@ void rtw_bf_assoc(struct rtw_dev *rtwdev
+ 
+ 		rtw_chip_config_bfee(rtwdev, rtwvif, bfee, true);
+ 	}
+-
+-out_unlock:
+-	rcu_read_unlock();
+ }
+ 
+ void rtw_bf_init_bfer_entry_mu(struct rtw_dev *rtwdev,

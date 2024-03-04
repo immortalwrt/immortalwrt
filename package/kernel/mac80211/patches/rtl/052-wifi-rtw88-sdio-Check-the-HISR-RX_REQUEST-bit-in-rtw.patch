@@ -1,0 +1,84 @@
+From e967229ead0e6c5047a1cfd5a0db58ceb930800b Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Mon, 22 May 2023 22:24:22 +0200
+Subject: [PATCH 07/12] wifi: rtw88: sdio: Check the HISR RX_REQUEST bit in
+ rtw_sdio_rx_isr()
+
+rtw_sdio_rx_isr() is responsible for receiving data from the wifi chip
+and is called from the SDIO interrupt handler when the interrupt status
+register (HISR) has the RX_REQUEST bit set. After the first batch of
+data has been processed by the driver the wifi chip may have more data
+ready to be read, which is managed by a loop in rtw_sdio_rx_isr().
+
+It turns out that there are cases where the RX buffer length (from the
+REG_SDIO_RX0_REQ_LEN register) does not match the data we receive. The
+following two cases were observed with a RTL8723DS card:
+- RX length is smaller than the total packet length including overhead
+  and actual data bytes (whose length is part of the buffer we read from
+  the wifi chip and is stored in rtw_rx_pkt_stat.pkt_len). This can
+  result in errors like:
+    skbuff: skb_over_panic: text:ffff8000011924ac len:3341 put:3341
+  (one case observed was: RX buffer length = 1536 bytes but
+   rtw_rx_pkt_stat.pkt_len = 1546 bytes, this is not valid as it means
+   we need to read beyond the end of the buffer)
+- RX length looks valid but rtw_rx_pkt_stat.pkt_len is zero
+
+Check if the RX_REQUEST is set in the HISR register for each iteration
+inside rtw_sdio_rx_isr(). This mimics what the RTL8723DS vendor driver
+does and makes the driver only read more data if the RX_REQUEST bit is
+set (which seems to be a way for the card's hardware or firmware to
+tell the host that data is ready to be processed).
+
+For RTW_WCPU_11AC chips this check is not needed. The RTL8822BS vendor
+driver for example states that this check is unnecessary (but still uses
+it) and the RTL8822CS drops this check entirely.
+
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230522202425.1827005-2-martin.blumenstingl@googlemail.com
+---
+ drivers/net/wireless/realtek/rtw88/sdio.c | 24 ++++++++++++++++++++---
+ 1 file changed, 21 insertions(+), 3 deletions(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/sdio.c
++++ b/drivers/net/wireless/realtek/rtw88/sdio.c
+@@ -998,9 +998,9 @@ static void rtw_sdio_rxfifo_recv(struct
+ 
+ static void rtw_sdio_rx_isr(struct rtw_dev *rtwdev)
+ {
+-	u32 rx_len, total_rx_bytes = 0;
++	u32 rx_len, hisr, total_rx_bytes = 0;
+ 
+-	while (total_rx_bytes < SZ_64K) {
++	do {
+ 		if (rtw_chip_wcpu_11n(rtwdev))
+ 			rx_len = rtw_read16(rtwdev, REG_SDIO_RX0_REQ_LEN);
+ 		else
+@@ -1012,7 +1012,25 @@ static void rtw_sdio_rx_isr(struct rtw_d
+ 		rtw_sdio_rxfifo_recv(rtwdev, rx_len);
+ 
+ 		total_rx_bytes += rx_len;
+-	}
++
++		if (rtw_chip_wcpu_11n(rtwdev)) {
++			/* Stop if no more RX requests are pending, even if
++			 * rx_len could be greater than zero in the next
++			 * iteration. This is needed because the RX buffer may
++			 * already contain data while either HW or FW are not
++			 * done filling that buffer yet. Still reading the
++			 * buffer can result in packets where
++			 * rtw_rx_pkt_stat.pkt_len is zero or points beyond the
++			 * end of the buffer.
++			 */
++			hisr = rtw_read32(rtwdev, REG_SDIO_HISR);
++		} else {
++			/* RTW_WCPU_11AC chips have improved hardware or
++			 * firmware and can use rx_len unconditionally.
++			 */
++			hisr = REG_SDIO_HISR_RX_REQUEST;
++		}
++	} while (total_rx_bytes < SZ_64K && hisr & REG_SDIO_HISR_RX_REQUEST);
+ }
+ 
+ static void rtw_sdio_handle_interrupt(struct sdio_func *sdio_func)

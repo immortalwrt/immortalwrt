@@ -1,0 +1,41 @@
+From 91ccdbb94feadb0d8bf3b35c841b33ac95f2f45f Mon Sep 17 00:00:00 2001
+From: Ping-Ke Shih <pkshih@realtek.com>
+Date: Wed, 7 Jun 2023 09:27:41 +0800
+Subject: [PATCH 12/12] wifi: rtw88: add missing unwind goto for
+ __rtw_download_firmware()
+
+This flaw is detected by smatch:
+  drivers/net/wireless/realtek/rtw88/mac.c:748 __rtw_download_firmware()
+  warn: missing unwind goto?
+
+Though most things of dlfw_fail have been done by
+download_firmware_end_flow() and wlan_cpu_enable(), an exception is that
+download_firmware_end_flow() clear BIT_MCUFWDL_EN bit conditionally.
+So, make this change to clear the bit.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
+Closes: https://lore.kernel.org/r/202306052310.OVhcUjZ3-lkp@intel.com/
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230607012741.10353-1-pkshih@realtek.com
+---
+ drivers/net/wireless/realtek/rtw88/mac.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/mac.c
++++ b/drivers/net/wireless/realtek/rtw88/mac.c
+@@ -794,8 +794,10 @@ static int __rtw_download_firmware(struc
+ 
+ 	wlan_cpu_enable(rtwdev, true);
+ 
+-	if (!ltecoex_reg_write(rtwdev, 0x38, ltecoex_bckp))
+-		return -EBUSY;
++	if (!ltecoex_reg_write(rtwdev, 0x38, ltecoex_bckp)) {
++		ret = -EBUSY;
++		goto dlfw_fail;
++	}
+ 
+ 	ret = download_firmware_validate(rtwdev);
+ 	if (ret)

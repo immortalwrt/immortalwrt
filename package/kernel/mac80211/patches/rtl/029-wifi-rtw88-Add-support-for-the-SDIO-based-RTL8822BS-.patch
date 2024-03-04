@@ -1,0 +1,94 @@
+From 095e62dd74276dd801c04d9a2a9afcd922811218 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Wed, 5 Apr 2023 22:07:27 +0200
+Subject: [PATCH 29/45] wifi: rtw88: Add support for the SDIO based RTL8822BS
+ chipset
+
+Wire up RTL8822BS chipset support using the new rtw88 SDIO HCI code as
+well as the existing RTL8822B chipset code.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230405200729.632435-8-martin.blumenstingl@googlemail.com
+---
+ drivers/net/wireless/realtek/rtw88/Kconfig    | 11 ++++++
+ drivers/net/wireless/realtek/rtw88/Makefile   |  3 ++
+ .../net/wireless/realtek/rtw88/rtw8822bs.c    | 36 +++++++++++++++++++
+ 3 files changed, 50 insertions(+)
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822bs.c
+
+--- a/drivers/net/wireless/realtek/rtw88/Kconfig
++++ b/drivers/net/wireless/realtek/rtw88/Kconfig
+@@ -56,6 +56,19 @@ config RTW88_8822BE
+ 
+ 	  802.11ac PCIe wireless network adapter
+ 
++config RTW88_8822BS
++	tristate "Realtek 8822BS SDIO wireless network adapter"
++	depends on m
++	depends on MMC
++	select RTW88_CORE
++	select RTW88_SDIO
++	select RTW88_8822B
++	help
++	  Select this option will enable support for 8822BS chipset
++
++	  802.11ac SDIO wireless network adapter
++
++
+ config RTW88_8822BU
+ 	tristate "Realtek 8822BU USB wireless network adapter"
+ 	depends on m
+--- a/drivers/net/wireless/realtek/rtw88/Makefile
++++ b/drivers/net/wireless/realtek/rtw88/Makefile
+@@ -26,6 +26,9 @@ rtw88_8822b-objs		:= rtw8822b.o rtw8822b
+ obj-$(CPTCFG_RTW88_8822BE)	+= rtw88_8822be.o
+ rtw88_8822be-objs		:= rtw8822be.o
+ 
++obj-$(CPTCFG_RTW88_8822BS)	+= rtw88_8822bs.o
++rtw88_8822bs-objs		:= rtw8822bs.o
++
+ obj-$(CPTCFG_RTW88_8822BU)	+= rtw88_8822bu.o
+ rtw88_8822bu-objs		:= rtw8822bu.o
+ 
+--- /dev/null
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822bs.c
+@@ -0,0 +1,36 @@
++// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
++/* Copyright(c) Jernej Skrabec <jernej.skrabec@gmail.com>
++ */
++
++#include <linux/mmc/sdio_func.h>
++#include <linux/mmc/sdio_ids.h>
++#include <linux/module.h>
++#include "main.h"
++#include "rtw8822b.h"
++#include "sdio.h"
++
++static const struct sdio_device_id rtw_8822bs_id_table[] =  {
++	{
++		SDIO_DEVICE(SDIO_VENDOR_ID_REALTEK,
++			    SDIO_DEVICE_ID_REALTEK_RTW8822BS),
++		.driver_data = (kernel_ulong_t)&rtw8822b_hw_spec,
++	},
++	{}
++};
++MODULE_DEVICE_TABLE(sdio, rtw_8822bs_id_table);
++
++static struct sdio_driver rtw_8822bs_driver = {
++	.name = "rtw_8822bs",
++	.probe = rtw_sdio_probe,
++	.remove = rtw_sdio_remove,
++	.id_table = rtw_8822bs_id_table,
++	.drv = {
++		.pm = &rtw_sdio_pm_ops,
++		.shutdown = rtw_sdio_shutdown,
++	}
++};
++module_sdio_driver(rtw_8822bs_driver);
++
++MODULE_AUTHOR("Jernej Skrabec <jernej.skrabec@gmail.com>");
++MODULE_DESCRIPTION("Realtek 802.11ac wireless 8822bs driver");
++MODULE_LICENSE("Dual BSD/GPL");

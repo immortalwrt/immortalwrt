@@ -1,0 +1,35 @@
+From 225622256b1b7156624e281e1c0251c292ea24cd Mon Sep 17 00:00:00 2001
+From: Zhang Shurong <zhang_shurong@foxmail.com>
+Date: Thu, 27 Apr 2023 01:02:20 +0800
+Subject: [PATCH 01/12] wifi: rtw88: fix incorrect error codes in
+ rtw_debugfs_copy_from_user
+
+If there is a failure during copy_from_user or user-provided data
+buffer is invalid, rtw_debugfs_copy_from_user should return negative
+error code instead of a positive value count.
+
+Fix this bug by returning correct error code. Moreover, the check
+of buffer against null is removed since it will be handled by
+copy_from_user.
+
+Signed-off-by: Zhang Shurong <zhang_shurong@foxmail.com>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/tencent_D2EB102CC7435C0110154E62ECA6A7D67505@qq.com
+---
+ drivers/net/wireless/realtek/rtw88/debug.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/debug.c
++++ b/drivers/net/wireless/realtek/rtw88/debug.c
+@@ -183,8 +183,8 @@ static int rtw_debugfs_copy_from_user(ch
+ 
+ 	tmp_len = (count > size - 1 ? size - 1 : count);
+ 
+-	if (!buffer || copy_from_user(tmp, buffer, tmp_len))
+-		return count;
++	if (copy_from_user(tmp, buffer, tmp_len))
++		return -EFAULT;
+ 
+ 	tmp[tmp_len] = '\0';
+ 

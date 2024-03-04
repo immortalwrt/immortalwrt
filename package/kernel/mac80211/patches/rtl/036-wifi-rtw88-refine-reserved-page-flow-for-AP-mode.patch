@@ -1,0 +1,50 @@
+From 982f4a2004f712ce7aed7f7e69fa64e4c06eee7d Mon Sep 17 00:00:00 2001
+From: Po-Hao Huang <phhuang@realtek.com>
+Date: Fri, 14 Apr 2023 20:13:00 +0800
+Subject: [PATCH 36/45] wifi: rtw88: refine reserved page flow for AP mode
+
+Only gather reserved pages from AP interface after it has started. Or
+else ieee80211_beacon_get_*() returns NULL and causes other VIFs'
+reserved pages fail to download. Update location of current reserved page
+after beacon renews so offsets changed by beacon can be recognized.
+
+Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230414121300.17900-1-pkshih@realtek.com
+---
+ drivers/net/wireless/realtek/rtw88/fw.c       | 5 +++++
+ drivers/net/wireless/realtek/rtw88/mac80211.c | 1 +
+ 2 files changed, 6 insertions(+)
+
+--- a/drivers/net/wireless/realtek/rtw88/fw.c
++++ b/drivers/net/wireless/realtek/rtw88/fw.c
+@@ -1393,6 +1393,10 @@ static void rtw_build_rsvd_page_iter(voi
+ 	struct rtw_vif *rtwvif = (struct rtw_vif *)vif->drv_priv;
+ 	struct rtw_rsvd_page *rsvd_pkt;
+ 
++	/* AP not yet started, don't gather its rsvd pages */
++	if (vif->type == NL80211_IFTYPE_AP && !rtwdev->ap_active)
++		return;
++
+ 	list_for_each_entry(rsvd_pkt, &rtwvif->rsvd_page_list, vif_list) {
+ 		if (rsvd_pkt->type == RSVD_BEACON)
+ 			list_add(&rsvd_pkt->build_list,
+@@ -1614,6 +1618,7 @@ void rtw_fw_update_beacon_work(struct wo
+ 
+ 	mutex_lock(&rtwdev->mutex);
+ 	rtw_fw_download_rsvd_page(rtwdev);
++	rtw_send_rsvd_page_h2c(rtwdev);
+ 	mutex_unlock(&rtwdev->mutex);
+ }
+ 
+--- a/drivers/net/wireless/realtek/rtw88/mac80211.c
++++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
+@@ -417,6 +417,7 @@ static void rtw_ops_bss_info_changed(str
+ 	if (changed & BSS_CHANGED_BEACON) {
+ 		rtw_set_dtim_period(rtwdev, conf->dtim_period);
+ 		rtw_fw_download_rsvd_page(rtwdev);
++		rtw_send_rsvd_page_h2c(rtwdev);
+ 	}
+ 
+ 	if (changed & BSS_CHANGED_BEACON_ENABLED) {

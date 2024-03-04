@@ -1,0 +1,173 @@
+From 77005533777267736fca64fa376b8a835cb8806b Mon Sep 17 00:00:00 2001
+From: Zhang Shurong <zhang_shurong@foxmail.com>
+Date: Thu, 27 Apr 2023 01:02:21 +0800
+Subject: [PATCH 02/12] wifi: rtw88: fix incorrect error codes in
+ rtw_debugfs_set_*
+
+If there is a failure during copy_from_user or user-provided data
+buffer is invalid, rtw_debugfs_set_* should return negative
+error code instead of a positive value count.
+
+Fix this bug by returning correct error code.
+
+Signed-off-by: Zhang Shurong <zhang_shurong@foxmail.com>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/tencent_53140CC2A3468101955F02EB66AA96780B05@qq.com
+---
+ drivers/net/wireless/realtek/rtw88/debug.c | 55 ++++++++++++++++------
+ 1 file changed, 41 insertions(+), 14 deletions(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/debug.c
++++ b/drivers/net/wireless/realtek/rtw88/debug.c
+@@ -201,13 +201,16 @@ static ssize_t rtw_debugfs_set_read_reg(
+ 	char tmp[32 + 1];
+ 	u32 addr, len;
+ 	int num;
++	int ret;
+ 
+-	rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 2);
++	ret = rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 2);
++	if (ret)
++		return ret;
+ 
+ 	num = sscanf(tmp, "%x %x", &addr, &len);
+ 
+ 	if (num !=  2)
+-		return count;
++		return -EINVAL;
+ 
+ 	if (len != 1 && len != 2 && len != 4) {
+ 		rtw_warn(rtwdev, "read reg setting wrong len\n");
+@@ -288,8 +291,11 @@ static ssize_t rtw_debugfs_set_rsvd_page
+ 	char tmp[32 + 1];
+ 	u32 offset, page_num;
+ 	int num;
++	int ret;
+ 
+-	rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 2);
++	ret = rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 2);
++	if (ret)
++		return ret;
+ 
+ 	num = sscanf(tmp, "%d %d", &offset, &page_num);
+ 
+@@ -314,8 +320,11 @@ static ssize_t rtw_debugfs_set_single_in
+ 	char tmp[32 + 1];
+ 	u32 input;
+ 	int num;
++	int ret;
+ 
+-	rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 1);
++	ret = rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 1);
++	if (ret)
++		return ret;
+ 
+ 	num = kstrtoint(tmp, 0, &input);
+ 
+@@ -338,14 +347,17 @@ static ssize_t rtw_debugfs_set_write_reg
+ 	char tmp[32 + 1];
+ 	u32 addr, val, len;
+ 	int num;
++	int ret;
+ 
+-	rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 3);
++	ret = rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 3);
++	if (ret)
++		return ret;
+ 
+ 	/* write BB/MAC register */
+ 	num = sscanf(tmp, "%x %x %x", &addr, &val, &len);
+ 
+ 	if (num !=  3)
+-		return count;
++		return -EINVAL;
+ 
+ 	switch (len) {
+ 	case 1:
+@@ -381,8 +393,11 @@ static ssize_t rtw_debugfs_set_h2c(struc
+ 	char tmp[32 + 1];
+ 	u8 param[8];
+ 	int num;
++	int ret;
+ 
+-	rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 3);
++	ret = rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 3);
++	if (ret)
++		return ret;
+ 
+ 	num = sscanf(tmp, "%hhx,%hhx,%hhx,%hhx,%hhx,%hhx,%hhx,%hhx",
+ 		     &param[0], &param[1], &param[2], &param[3],
+@@ -408,14 +423,17 @@ static ssize_t rtw_debugfs_set_rf_write(
+ 	char tmp[32 + 1];
+ 	u32 path, addr, mask, val;
+ 	int num;
++	int ret;
+ 
+-	rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 4);
++	ret = rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 4);
++	if (ret)
++		return ret;
+ 
+ 	num = sscanf(tmp, "%x %x %x %x", &path, &addr, &mask, &val);
+ 
+ 	if (num !=  4) {
+ 		rtw_warn(rtwdev, "invalid args, [path] [addr] [mask] [val]\n");
+-		return count;
++		return -EINVAL;
+ 	}
+ 
+ 	mutex_lock(&rtwdev->mutex);
+@@ -438,14 +456,17 @@ static ssize_t rtw_debugfs_set_rf_read(s
+ 	char tmp[32 + 1];
+ 	u32 path, addr, mask;
+ 	int num;
++	int ret;
+ 
+-	rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 3);
++	ret = rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 3);
++	if (ret)
++		return ret;
+ 
+ 	num = sscanf(tmp, "%x %x %x", &path, &addr, &mask);
+ 
+ 	if (num !=  3) {
+ 		rtw_warn(rtwdev, "invalid args, [path] [addr] [mask] [val]\n");
+-		return count;
++		return -EINVAL;
+ 	}
+ 
+ 	debugfs_priv->rf_path = path;
+@@ -467,7 +488,9 @@ static ssize_t rtw_debugfs_set_fix_rate(
+ 	char tmp[32 + 1];
+ 	int ret;
+ 
+-	rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 1);
++	ret = rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 1);
++	if (ret)
++		return ret;
+ 
+ 	ret = kstrtou8(tmp, 0, &fix_rate);
+ 	if (ret) {
+@@ -860,7 +883,9 @@ static ssize_t rtw_debugfs_set_coex_enab
+ 	bool enable;
+ 	int ret;
+ 
+-	rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 1);
++	ret = rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 1);
++	if (ret)
++		return ret;
+ 
+ 	ret = kstrtobool(tmp, &enable);
+ 	if (ret) {
+@@ -930,7 +955,9 @@ static ssize_t rtw_debugfs_set_fw_crash(
+ 	bool input;
+ 	int ret;
+ 
+-	rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 1);
++	ret = rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 1);
++	if (ret)
++		return ret;
+ 
+ 	ret = kstrtobool(tmp, &input);
+ 	if (ret)

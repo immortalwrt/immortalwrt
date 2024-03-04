@@ -1,0 +1,93 @@
+From 455afa45edb3f1dbc1371201c5ee486bb9a8cd1a Mon Sep 17 00:00:00 2001
+From: Po-Hao Huang <phhuang@realtek.com>
+Date: Fri, 16 Jun 2023 20:55:39 +0800
+Subject: [PATCH 7/8] wifi: rtw88: refine register based H2C command
+
+Since register based H2C commands don't need endian conversion.
+Introduce a new API that don't do conversion and send it directly.
+New caller are expected to encode with cpu order and gradually
+replace the old ones.
+
+Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230616125540.36877-6-pkshih@realtek.com
+---
+ drivers/net/wireless/realtek/rtw88/fw.c | 51 +++++++++++++++++++++++++
+ drivers/net/wireless/realtek/rtw88/fw.h |  5 +++
+ 2 files changed, 56 insertions(+)
+
+--- a/drivers/net/wireless/realtek/rtw88/fw.c
++++ b/drivers/net/wireless/realtek/rtw88/fw.c
+@@ -308,6 +308,57 @@ void rtw_fw_c2h_cmd_isr(struct rtw_dev *
+ }
+ EXPORT_SYMBOL(rtw_fw_c2h_cmd_isr);
+ 
++static void rtw_fw_send_h2c_command_register(struct rtw_dev *rtwdev,
++					     struct rtw_h2c_register *h2c)
++{
++	u32 box_reg, box_ex_reg;
++	u8 box_state, box;
++	int ret;
++
++	rtw_dbg(rtwdev, RTW_DBG_FW, "send H2C content %08x %08x\n", h2c->w0,
++		h2c->w1);
++
++	lockdep_assert_held(&rtwdev->mutex);
++
++	box = rtwdev->h2c.last_box_num;
++	switch (box) {
++	case 0:
++		box_reg = REG_HMEBOX0;
++		box_ex_reg = REG_HMEBOX0_EX;
++		break;
++	case 1:
++		box_reg = REG_HMEBOX1;
++		box_ex_reg = REG_HMEBOX1_EX;
++		break;
++	case 2:
++		box_reg = REG_HMEBOX2;
++		box_ex_reg = REG_HMEBOX2_EX;
++		break;
++	case 3:
++		box_reg = REG_HMEBOX3;
++		box_ex_reg = REG_HMEBOX3_EX;
++		break;
++	default:
++		WARN(1, "invalid h2c mail box number\n");
++		return;
++	}
++
++	ret = read_poll_timeout_atomic(rtw_read8, box_state,
++				       !((box_state >> box) & 0x1), 100, 3000,
++				       false, rtwdev, REG_HMETFR);
++
++	if (ret) {
++		rtw_err(rtwdev, "failed to send h2c command\n");
++		return;
++	}
++
++	rtw_write32(rtwdev, box_ex_reg, h2c->w1);
++	rtw_write32(rtwdev, box_reg, h2c->w0);
++
++	if (++rtwdev->h2c.last_box_num >= 4)
++		rtwdev->h2c.last_box_num = 0;
++}
++
+ static void rtw_fw_send_h2c_command(struct rtw_dev *rtwdev,
+ 				    u8 *h2c)
+ {
+--- a/drivers/net/wireless/realtek/rtw88/fw.h
++++ b/drivers/net/wireless/realtek/rtw88/fw.h
+@@ -81,6 +81,11 @@ struct rtw_c2h_adaptivity {
+ 	u8 option;
+ } __packed;
+ 
++struct rtw_h2c_register {
++	u32 w0;
++	u32 w1;
++} __packed;
++
+ struct rtw_h2c_cmd {
+ 	__le32 msg;
+ 	__le32 msg_ext;

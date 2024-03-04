@@ -1,0 +1,46 @@
+From 6c6d62ae8271bd4b55dd2ba4b7ed552162823880 Mon Sep 17 00:00:00 2001
+From: Simon Horman <horms@kernel.org>
+Date: Tue, 18 Apr 2023 13:29:22 +0200
+Subject: [PATCH 45/45] wifi: rtw88: Update spelling in main.h
+
+Update spelling in comments in main.h
+
+Found by inspection.
+
+Signed-off-by: Simon Horman <horms@kernel.org>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230418-rtw88-starspell-v1-1-70e52a23979b@kernel.org
+---
+ drivers/net/wireless/realtek/rtw88/main.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/main.h
++++ b/drivers/net/wireless/realtek/rtw88/main.h
+@@ -88,7 +88,7 @@ enum rtw_supported_band {
+ 	RTW_BAND_60G = BIT(NL80211_BAND_60GHZ),
+ };
+ 
+-/* now, support upto 80M bw */
++/* now, support up to 80M bw */
+ #define RTW_MAX_CHANNEL_WIDTH RTW_CHANNEL_WIDTH_80
+ 
+ enum rtw_bandwidth {
+@@ -1881,7 +1881,7 @@ enum rtw_sar_bands {
+ 	RTW_SAR_BAND_NR,
+ };
+ 
+-/* the union is reserved for other knids of SAR sources
++/* the union is reserved for other kinds of SAR sources
+  * which might not re-use same format with array common.
+  */
+ union rtw_sar_cfg {
+@@ -2032,7 +2032,7 @@ struct rtw_dev {
+ 	struct rtw_tx_report tx_report;
+ 
+ 	struct {
+-		/* incicate the mail box to use with fw */
++		/* indicate the mail box to use with fw */
+ 		u8 last_box_num;
+ 		u32 seq;
+ 	} h2c;

@@ -1,0 +1,96 @@
+From 076f786a0ae14a81f40314b96a2d815e264bc213 Mon Sep 17 00:00:00 2001
+From: Po-Hao Huang <phhuang@realtek.com>
+Date: Fri, 16 Jun 2023 20:55:36 +0800
+Subject: [PATCH 4/8] wifi: rtw88: Fix AP mode incorrect DTIM behavior
+
+Broadcast and multicast packets in high queue should be transmitted
+all at once during DTIM. But without proper settings, hardware fails
+to recognize that there are multiple packets and fetches only one.
+Fix this by signaling hardware with more data bit set when there are
+packets in the high queue.
+
+Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230616125540.36877-3-pkshih@realtek.com
+---
+ drivers/net/wireless/realtek/rtw88/mac80211.c | 2 ++
+ drivers/net/wireless/realtek/rtw88/reg.h      | 1 +
+ drivers/net/wireless/realtek/rtw88/tx.c       | 7 ++++++-
+ drivers/net/wireless/realtek/rtw88/tx.h       | 1 +
+ drivers/net/wireless/realtek/rtw88/usb.c      | 3 +++
+ 5 files changed, 13 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/mac80211.c
++++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
+@@ -453,6 +453,7 @@ static int rtw_ops_start_ap(struct ieee8
+ 	const struct rtw_chip_info *chip = rtwdev->chip;
+ 
+ 	mutex_lock(&rtwdev->mutex);
++	rtw_write32_set(rtwdev, REG_TCR, BIT_TCR_UPDATE_HGQMD);
+ 	rtwdev->ap_active = true;
+ 	rtw_store_op_chan(rtwdev, true);
+ 	chip->ops->phy_calibration(rtwdev);
+@@ -468,6 +469,7 @@ static void rtw_ops_stop_ap(struct ieee8
+ 	struct rtw_dev *rtwdev = hw->priv;
+ 
+ 	mutex_lock(&rtwdev->mutex);
++	rtw_write32_clr(rtwdev, REG_TCR, BIT_TCR_UPDATE_HGQMD);
+ 	rtwdev->ap_active = false;
+ 	if (!rtw_core_check_sta_active(rtwdev))
+ 		rtw_clear_op_chan(rtwdev);
+--- a/drivers/net/wireless/realtek/rtw88/reg.h
++++ b/drivers/net/wireless/realtek/rtw88/reg.h
+@@ -410,6 +410,7 @@
+ #define REG_TCR			0x0604
+ #define BIT_PWRMGT_HWDATA_EN	BIT(7)
+ #define BIT_TCR_UPDATE_TIMIE	BIT(5)
++#define BIT_TCR_UPDATE_HGQMD	BIT(4)
+ #define REG_RCR			0x0608
+ #define BIT_APP_FCS		BIT(31)
+ #define BIT_APP_MIC		BIT(30)
+--- a/drivers/net/wireless/realtek/rtw88/tx.c
++++ b/drivers/net/wireless/realtek/rtw88/tx.c
+@@ -35,6 +35,10 @@ void rtw_tx_stats(struct rtw_dev *rtwdev
+ void rtw_tx_fill_tx_desc(struct rtw_tx_pkt_info *pkt_info, struct sk_buff *skb)
+ {
+ 	struct rtw_tx_desc *tx_desc = (struct rtw_tx_desc *)skb->data;
++	bool more_data = false;
++
++	if (pkt_info->qsel == TX_DESC_QSEL_HIGH)
++		more_data = true;
+ 
+ 	tx_desc->w0 = le32_encode_bits(pkt_info->tx_pkt_size, RTW_TX_DESC_W0_TXPKTSIZE) |
+ 		      le32_encode_bits(pkt_info->offset, RTW_TX_DESC_W0_OFFSET) |
+@@ -45,7 +49,8 @@ void rtw_tx_fill_tx_desc(struct rtw_tx_p
+ 	tx_desc->w1 = le32_encode_bits(pkt_info->qsel, RTW_TX_DESC_W1_QSEL) |
+ 		      le32_encode_bits(pkt_info->rate_id, RTW_TX_DESC_W1_RATE_ID) |
+ 		      le32_encode_bits(pkt_info->sec_type, RTW_TX_DESC_W1_SEC_TYPE) |
+-		      le32_encode_bits(pkt_info->pkt_offset, RTW_TX_DESC_W1_PKT_OFFSET);
++		      le32_encode_bits(pkt_info->pkt_offset, RTW_TX_DESC_W1_PKT_OFFSET) |
++		      le32_encode_bits(more_data, RTW_TX_DESC_W1_MORE_DATA);
+ 
+ 	tx_desc->w2 = le32_encode_bits(pkt_info->ampdu_en, RTW_TX_DESC_W2_AGG_EN) |
+ 		      le32_encode_bits(pkt_info->report, RTW_TX_DESC_W2_SPE_RPT) |
+--- a/drivers/net/wireless/realtek/rtw88/tx.h
++++ b/drivers/net/wireless/realtek/rtw88/tx.h
+@@ -31,6 +31,7 @@ struct rtw_tx_desc {
+ #define RTW_TX_DESC_W1_RATE_ID GENMASK(20, 16)
+ #define RTW_TX_DESC_W1_SEC_TYPE GENMASK(23, 22)
+ #define RTW_TX_DESC_W1_PKT_OFFSET GENMASK(28, 24)
++#define RTW_TX_DESC_W1_MORE_DATA BIT(29)
+ #define RTW_TX_DESC_W2_AGG_EN BIT(12)
+ #define RTW_TX_DESC_W2_SPE_RPT BIT(19)
+ #define RTW_TX_DESC_W2_AMPDU_DEN GENMASK(22, 20)
+--- a/drivers/net/wireless/realtek/rtw88/usb.c
++++ b/drivers/net/wireless/realtek/rtw88/usb.c
+@@ -469,6 +469,9 @@ static u8 rtw_usb_tx_queue_mapping_to_qs
+ 
+ 	if (unlikely(ieee80211_is_mgmt(fc) || ieee80211_is_ctl(fc)))
+ 		qsel = TX_DESC_QSEL_MGMT;
++	else if (is_broadcast_ether_addr(hdr->addr1) ||
++		 is_multicast_ether_addr(hdr->addr1))
++		qsel = TX_DESC_QSEL_HIGH;
+ 	else if (skb_get_queue_mapping(skb) <= IEEE80211_AC_BK)
+ 		qsel = skb->priority;
+ 	else

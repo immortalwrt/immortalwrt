@@ -1,0 +1,38 @@
+From a5d25f9ff91831f3a87aca96480a8b080546ccb8 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Wed, 5 Apr 2023 22:07:24 +0200
+Subject: [PATCH 27/45] wifi: rtw88: main: Add the {cpwm,rpwm}_addr for SDIO
+ based chipsets
+
+Initialize the rpwm_addr and cpwm_addr for power-saving support on SDIO
+based chipsets.
+
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230405200729.632435-5-martin.blumenstingl@googlemail.com
+---
+ drivers/net/wireless/realtek/rtw88/main.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -18,6 +18,7 @@
+ #include "debug.h"
+ #include "bf.h"
+ #include "sar.h"
++#include "sdio.h"
+ 
+ bool rtw_disable_lps_deep_mode;
+ EXPORT_SYMBOL(rtw_disable_lps_deep_mode);
+@@ -1785,6 +1786,10 @@ static int rtw_chip_parameter_setup(stru
+ 		rtwdev->hci.rpwm_addr = 0x03d9;
+ 		rtwdev->hci.cpwm_addr = 0x03da;
+ 		break;
++	case RTW_HCI_TYPE_SDIO:
++		rtwdev->hci.rpwm_addr = REG_SDIO_HRPWM1;
++		rtwdev->hci.cpwm_addr = REG_SDIO_HCPWM1_V2;
++		break;
+ 	case RTW_HCI_TYPE_USB:
+ 		rtwdev->hci.rpwm_addr = 0xfe58;
+ 		rtwdev->hci.cpwm_addr = 0xfe57;

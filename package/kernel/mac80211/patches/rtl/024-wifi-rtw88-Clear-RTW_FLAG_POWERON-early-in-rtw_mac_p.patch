@@ -1,0 +1,60 @@
+From 6a92566088b1a37c1cf2c4b6b5fb733dc5bdc6a6 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Wed, 5 Apr 2023 22:07:21 +0200
+Subject: [PATCH 24/45] wifi: rtw88: Clear RTW_FLAG_POWERON early in
+ rtw_mac_power_switch()
+
+The SDIO HCI implementation needs to know when the MAC is powered on.
+This is needed because 32-bit register access has to be split into 4x
+8-bit register access when the MAC is not fully powered on or while
+powering off. When the MAC is powered on 32-bit register access can be
+used to reduce the number of transfers but splitting into 4x 8-bit
+register access still works in that case.
+
+During the power on sequence is how RTW_FLAG_POWERON is only set when
+the power on sequence has completed successfully. During power off
+however RTW_FLAG_POWERON is set. This means that the upcoming SDIO HCI
+implementation does not know that it has to use 4x 8-bit register
+accessors. Clear the RTW_FLAG_POWERON flag early when powering off the
+MAC so the whole power off sequence is processed with RTW_FLAG_POWERON
+unset. This will make it possible to use the RTW_FLAG_POWERON flag in
+the upcoming SDIO HCI implementation.
+
+Note that a failure in rtw_pwr_seq_parser() while applying
+chip->pwr_off_seq can theoretically result in the RTW_FLAG_POWERON
+flag being cleared while the chip is still powered on. However,
+depending on when the failure occurs in the power off sequence the
+chip may be on or off. Even the original approach of clearing
+RTW_FLAG_POWERON only when the power off sequence has been applied
+successfully could end up in some corner case where the chip is
+powered off but RTW_FLAG_POWERON was not cleared.
+
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230405200729.632435-2-martin.blumenstingl@googlemail.com
+---
+ drivers/net/wireless/realtek/rtw88/mac.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/mac.c
++++ b/drivers/net/wireless/realtek/rtw88/mac.c
+@@ -273,6 +273,9 @@ static int rtw_mac_power_switch(struct r
+ 	if (pwr_on == cur_pwr)
+ 		return -EALREADY;
+ 
++	if (!pwr_on)
++		clear_bit(RTW_FLAG_POWERON, rtwdev->flags);
++
+ 	pwr_seq = pwr_on ? chip->pwr_on_seq : chip->pwr_off_seq;
+ 	ret = rtw_pwr_seq_parser(rtwdev, pwr_seq);
+ 	if (ret)
+@@ -280,8 +283,6 @@ static int rtw_mac_power_switch(struct r
+ 
+ 	if (pwr_on)
+ 		set_bit(RTW_FLAG_POWERON, rtwdev->flags);
+-	else
+-		clear_bit(RTW_FLAG_POWERON, rtwdev->flags);
+ 
+ 	return 0;
+ }

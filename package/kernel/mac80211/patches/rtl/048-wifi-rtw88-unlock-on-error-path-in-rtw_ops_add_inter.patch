@@ -1,0 +1,31 @@
+From e2ff1181b3d48257aab26bfd2165f3c7d271499f Mon Sep 17 00:00:00 2001
+From: Dan Carpenter <dan.carpenter@linaro.org>
+Date: Wed, 3 May 2023 18:09:55 +0300
+Subject: [PATCH 03/12] wifi: rtw88: unlock on error path in
+ rtw_ops_add_interface()
+
+Call mutex_unlock(&rtwdev->mutex); before returning on this error path.
+
+Fixes: f0e741e4ddbc ("wifi: rtw88: add bitmap for dynamic port settings")
+Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/ddd10a74-5982-4f65-8c59-c1cca558d239@kili.mountain
+---
+ drivers/net/wireless/realtek/rtw88/mac80211.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/mac80211.c
++++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
+@@ -173,8 +173,10 @@ static int rtw_ops_add_interface(struct
+ 	mutex_lock(&rtwdev->mutex);
+ 
+ 	port = find_first_zero_bit(rtwdev->hw_port, RTW_PORT_NUM);
+-	if (port >= RTW_PORT_NUM)
++	if (port >= RTW_PORT_NUM) {
++		mutex_unlock(&rtwdev->mutex);
+ 		return -EINVAL;
++	}
+ 	set_bit(port, rtwdev->hw_port);
+ 
+ 	rtwvif->port = port;

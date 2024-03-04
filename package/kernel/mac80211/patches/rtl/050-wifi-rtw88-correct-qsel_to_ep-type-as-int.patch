@@ -1,0 +1,35 @@
+From 8e4942db5f5ed7b7d9690d93235b3ca49c5c59ce Mon Sep 17 00:00:00 2001
+From: Ping-Ke Shih <pkshih@realtek.com>
+Date: Mon, 8 May 2023 16:55:39 +0800
+Subject: [PATCH 05/12] wifi: rtw88: correct qsel_to_ep[] type as int
+
+qsel_to_ep[] can be assigned negative value, so change type from 'u8' to
+'int'. Otherwise, Smatch static checker warns:
+  drivers/net/wireless/realtek/rtw88/usb.c:219 rtw_usb_parse() warn:
+  assigning (-22) to unsigned variable 'rtwusb->qsel_to_ep[8]'
+
+Cc: stable@vger.kernel.org
+Fixes: a6f187f92bcc ("wifi: rtw88: usb: fix priority queue to endpoint mapping")
+Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
+Link: https://lore.kernel.org/linux-wireless/c3f70197-829d-48ed-ae15-66a9de80fa90@kili.mountain/
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Acked-by: Sascha Hauer <s.hauer@pengutronix.de>
+Tested-by: Larry Finger <Larry.Finger@lwfinger.net>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230508085539.46795-1-pkshih@realtek.com
+---
+ drivers/net/wireless/realtek/rtw88/usb.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/usb.h
++++ b/drivers/net/wireless/realtek/rtw88/usb.h
+@@ -78,7 +78,7 @@ struct rtw_usb {
+ 	u8 pipe_interrupt;
+ 	u8 pipe_in;
+ 	u8 out_ep[RTW_USB_EP_MAX];
+-	u8 qsel_to_ep[TX_DESC_QSEL_MAX];
++	int qsel_to_ep[TX_DESC_QSEL_MAX];
+ 	u8 usb_txagg_num;
+ 
+ 	struct workqueue_struct *txwq, *rxwq;

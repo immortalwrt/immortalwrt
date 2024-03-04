@@ -1,0 +1,73 @@
+From dee121b45dd1eef42b5da093bf1ebeb80a7955bb Mon Sep 17 00:00:00 2001
+From: Ji-Pin Jou <neo_jou@realtek.com>
+Date: Thu, 24 Nov 2022 14:44:42 +0800
+Subject: [PATCH 01/13] wifi: rtw88: fix race condition when doing H2C command
+
+For SDIO/USB interface, since the tranferring speed is slower than
+that in PCIE, it may have race condition when the driver sets down
+H2C command to the FW.
+
+In the function rtw_fw_send_h2c_command, before the patch, box_reg
+is written first, then box_ex_reg is written. FW starts to work and
+fetch the value of box_ex_reg,  when the most significant byte of
+box_reg(4 bytes) is written. Meanwhile, for SDIO/USB interface,
+since the transferring speed is slow, the driver is still in writing
+the new value of box_ex_reg through the bus, and FW may get the
+wrong value of box_ex_reg at the moment.
+
+To prevent the above driver/FW racing situation, box_ex_reg is
+written first then box_reg. Furthermore, it is written in 4 bytes at
+a time, instead of written in one byte one by one. It can increase
+the speed for SDIO/USB interface.
+
+Signed-off-by: Ji-Pin Jou <neo_jou@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20221124064442.28042-1-pkshih@realtek.com
+---
+ drivers/net/wireless/realtek/rtw88/fw.c | 8 +++-----
+ drivers/net/wireless/realtek/rtw88/fw.h | 5 +++++
+ 2 files changed, 8 insertions(+), 5 deletions(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/fw.c
++++ b/drivers/net/wireless/realtek/rtw88/fw.c
+@@ -311,10 +311,10 @@ EXPORT_SYMBOL(rtw_fw_c2h_cmd_isr);
+ static void rtw_fw_send_h2c_command(struct rtw_dev *rtwdev,
+ 				    u8 *h2c)
+ {
++	struct rtw_h2c_cmd *h2c_cmd = (struct rtw_h2c_cmd *)h2c;
+ 	u8 box;
+ 	u8 box_state;
+ 	u32 box_reg, box_ex_reg;
+-	int idx;
+ 	int ret;
+ 
+ 	rtw_dbg(rtwdev, RTW_DBG_FW,
+@@ -356,10 +356,8 @@ static void rtw_fw_send_h2c_command(stru
+ 		goto out;
+ 	}
+ 
+-	for (idx = 0; idx < 4; idx++)
+-		rtw_write8(rtwdev, box_reg + idx, h2c[idx]);
+-	for (idx = 0; idx < 4; idx++)
+-		rtw_write8(rtwdev, box_ex_reg + idx, h2c[idx + 4]);
++	rtw_write32(rtwdev, box_ex_reg, le32_to_cpu(h2c_cmd->msg_ext));
++	rtw_write32(rtwdev, box_reg, le32_to_cpu(h2c_cmd->msg));
+ 
+ 	if (++rtwdev->h2c.last_box_num >= 4)
+ 		rtwdev->h2c.last_box_num = 0;
+--- a/drivers/net/wireless/realtek/rtw88/fw.h
++++ b/drivers/net/wireless/realtek/rtw88/fw.h
+@@ -81,6 +81,11 @@ struct rtw_c2h_adaptivity {
+ 	u8 option;
+ } __packed;
+ 
++struct rtw_h2c_cmd {
++	__le32 msg;
++	__le32 msg_ext;
++} __packed;
++
+ enum rtw_rsvd_packet_type {
+ 	RSVD_BEACON,
+ 	RSVD_DUMMY,

@@ -1,0 +1,187 @@
+From 8f9245f0ac82177554d990f12d5a9071db6305e4 Mon Sep 17 00:00:00 2001
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Date: Fri, 2 Dec 2022 09:12:24 +0100
+Subject: [PATCH 13/13] wifi: rtw88: Add rtw8723du chipset support
+
+Add support for the rtw8723du chipset based on
+https://github.com/ulli-kroll/rtw88-usb.git
+
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20221202081224.2779981-12-s.hauer@pengutronix.de
+---
+ drivers/net/wireless/realtek/rtw88/Kconfig    | 13 +++++++
+ drivers/net/wireless/realtek/rtw88/Makefile   |  3 ++
+ drivers/net/wireless/realtek/rtw88/rtw8723d.c | 28 +++++++++++++++
+ drivers/net/wireless/realtek/rtw88/rtw8723d.h | 13 ++++++-
+ .../net/wireless/realtek/rtw88/rtw8723du.c    | 36 +++++++++++++++++++
+ 5 files changed, 92 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8723du.c
+
+--- a/drivers/net/wireless/realtek/rtw88/Kconfig
++++ b/drivers/net/wireless/realtek/rtw88/Kconfig
+@@ -99,6 +99,18 @@ config RTW88_8723DE
+ 
+ 	  802.11n PCIe wireless network adapter
+ 
++config RTW88_8723DU
++	tristate "Realtek 8723DU USB wireless network adapter"
++	depends on m
++	depends on USB
++	select RTW88_CORE
++	select RTW88_USB
++	select RTW88_8723D
++	help
++	  Select this option will enable support for 8723DU chipset
++
++	  802.11n USB wireless network adapter
++
+ config RTW88_8821CE
+ 	tristate "Realtek 8821CE PCI wireless network adapter"
+ 	depends on m
+@@ -113,6 +125,7 @@ config RTW88_8821CE
+ 
+ config RTW88_8821CU
+ 	tristate "Realtek 8821CU USB wireless network adapter"
++	depends on m
+ 	depends on USB
+ 	select RTW88_CORE
+ 	select RTW88_USB
+--- a/drivers/net/wireless/realtek/rtw88/Makefile
++++ b/drivers/net/wireless/realtek/rtw88/Makefile
+@@ -44,6 +44,9 @@ rtw88_8723d-objs		:= rtw8723d.o rtw8723d
+ obj-$(CPTCFG_RTW88_8723DE)	+= rtw88_8723de.o
+ rtw88_8723de-objs		:= rtw8723de.o
+ 
++obj-$(CPTCFG_RTW88_8723DU)	+= rtw88_8723du.o
++rtw88_8723du-objs		:= rtw8723du.o
++
+ obj-$(CPTCFG_RTW88_8821C)	+= rtw88_8821c.o
+ rtw88_8821c-objs		:= rtw8821c.o rtw8821c_table.o
+ 
+--- a/drivers/net/wireless/realtek/rtw88/rtw8723d.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8723d.c
+@@ -210,6 +210,12 @@ static void rtw8723de_efuse_parsing(stru
+ 	ether_addr_copy(efuse->addr, map->e.mac_addr);
+ }
+ 
++static void rtw8723du_efuse_parsing(struct rtw_efuse *efuse,
++				    struct rtw8723d_efuse *map)
++{
++	ether_addr_copy(efuse->addr, map->u.mac_addr);
++}
++
+ static int rtw8723d_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
+ {
+ 	struct rtw_efuse *efuse = &rtwdev->efuse;
+@@ -239,6 +245,9 @@ static int rtw8723d_read_efuse(struct rt
+ 	case RTW_HCI_TYPE_PCIE:
+ 		rtw8723de_efuse_parsing(efuse, map);
+ 		break;
++	case RTW_HCI_TYPE_USB:
++		rtw8723du_efuse_parsing(efuse, map);
++		break;
+ 	default:
+ 		/* unsupported now */
+ 		return -ENOTSUPP;
+@@ -1945,6 +1954,24 @@ static void rtw8723d_pwr_track(struct rt
+ 	dm_info->pwr_trk_triggered = false;
+ }
+ 
++static void rtw8723d_fill_txdesc_checksum(struct rtw_dev *rtwdev,
++					  struct rtw_tx_pkt_info *pkt_info,
++					  u8 *txdesc)
++{
++	size_t words = 32 / 2; /* calculate the first 32 bytes (16 words) */
++	__le16 chksum = 0;
++	__le16 *data = (__le16 *)(txdesc);
++
++	SET_TX_DESC_TXDESC_CHECKSUM(txdesc, 0x0000);
++
++	while (words--)
++		chksum ^= *data++;
++
++	chksum = ~chksum;
++
++	SET_TX_DESC_TXDESC_CHECKSUM(txdesc, __le16_to_cpu(chksum));
++}
++
+ static struct rtw_chip_ops rtw8723d_ops = {
+ 	.phy_set_param		= rtw8723d_phy_set_param,
+ 	.read_efuse		= rtw8723d_read_efuse,
+@@ -1965,6 +1992,7 @@ static struct rtw_chip_ops rtw8723d_ops
+ 	.config_bfee		= NULL,
+ 	.set_gid_table		= NULL,
+ 	.cfg_csi_rate		= NULL,
++	.fill_txdesc_checksum	= rtw8723d_fill_txdesc_checksum,
+ 
+ 	.coex_set_init		= rtw8723d_coex_cfg_init,
+ 	.coex_set_ant_switch	= NULL,
+--- a/drivers/net/wireless/realtek/rtw88/rtw8723d.h
++++ b/drivers/net/wireless/realtek/rtw88/rtw8723d.h
+@@ -41,6 +41,14 @@ struct rtw8723de_efuse {
+ 	u8 sub_device_id[2];
+ };
+ 
++struct rtw8723du_efuse {
++	u8 res4[48];                    /* 0xd0 */
++	u8 vender_id[2];                /* 0x100 */
++	u8 product_id[2];               /* 0x102 */
++	u8 usb_option;                  /* 0x104 */
++	u8 mac_addr[ETH_ALEN];          /* 0x107 */
++};
++
+ struct rtw8723d_efuse {
+ 	__le16 rtl_id;
+ 	u8 rsvd[2];
+@@ -69,7 +77,10 @@ struct rtw8723d_efuse {
+ 	u8 rfe_option;
+ 	u8 country_code[2];
+ 	u8 res[3];
+-	struct rtw8723de_efuse e;
++	union {
++		struct rtw8723de_efuse e;
++		struct rtw8723du_efuse u;
++	};
+ };
+ 
+ extern const struct rtw_chip_info rtw8723d_hw_spec;
+--- /dev/null
++++ b/drivers/net/wireless/realtek/rtw88/rtw8723du.c
+@@ -0,0 +1,36 @@
++// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
++/* Copyright(c) 2018-2019  Realtek Corporation
++ */
++
++#include <linux/module.h>
++#include <linux/usb.h>
++#include "main.h"
++#include "rtw8723d.h"
++#include "usb.h"
++
++static const struct usb_device_id rtw_8723du_id_table[] = {
++	{ USB_DEVICE_AND_INTERFACE_INFO(RTW_USB_VENDOR_ID_REALTEK, 0xd723, 0xff, 0xff, 0xff),
++	  .driver_info = (kernel_ulong_t)&(rtw8723d_hw_spec) }, /* 8723DU 1*1 */
++	{ USB_DEVICE_AND_INTERFACE_INFO(0x7392, 0xd611, 0xff, 0xff, 0xff),
++	  .driver_info = (kernel_ulong_t)&(rtw8723d_hw_spec) }, /* Edimax EW-7611ULB V2 */
++	{ },
++};
++MODULE_DEVICE_TABLE(usb, rtw_8723du_id_table);
++
++static int rtw8723du_probe(struct usb_interface *intf,
++			   const struct usb_device_id *id)
++{
++	return rtw_usb_probe(intf, id);
++}
++
++static struct usb_driver rtw_8723du_driver = {
++	.name = "rtw_8723du",
++	.id_table = rtw_8723du_id_table,
++	.probe = rtw8723du_probe,
++	.disconnect = rtw_usb_disconnect,
++};
++module_usb_driver(rtw_8723du_driver);
++
++MODULE_AUTHOR("Hans Ulli Kroll <linux@ulli-kroll.de>");
++MODULE_DESCRIPTION("Realtek 802.11n wireless 8723du driver");
++MODULE_LICENSE("Dual BSD/GPL");

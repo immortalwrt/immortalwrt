@@ -1,0 +1,58 @@
+From d16836cdcc3b17734f6aae165268d2f1777a4f74 Mon Sep 17 00:00:00 2001
+From: Po-Hao Huang <phhuang@realtek.com>
+Date: Fri, 14 Apr 2023 20:13:31 +0800
+Subject: [PATCH 39/45] wifi: rtw88: 8822c: add iface combination
+
+Allow 8822c to operate two interface concurrently, only 1 AP mode plus
+1 station mode under same frequency is supported. Combination of other
+types will not be added until requested.
+
+Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230414121331.18062-1-pkshih@realtek.com
+---
+ drivers/net/wireless/realtek/rtw88/main.c | 25 +++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -103,6 +103,26 @@ static struct ieee80211_rate rtw_ratetab
+ 	{.bitrate = 540, .hw_value = 0x0b,},
+ };
+ 
++static const struct ieee80211_iface_limit rtw_iface_limits[] = {
++	{
++		.max = 1,
++		.types = BIT(NL80211_IFTYPE_STATION),
++	},
++	{
++		.max = 1,
++		.types = BIT(NL80211_IFTYPE_AP),
++	}
++};
++
++static const struct ieee80211_iface_combination rtw_iface_combs[] = {
++	{
++		.limits = rtw_iface_limits,
++		.n_limits = ARRAY_SIZE(rtw_iface_limits),
++		.max_interfaces = 2,
++		.num_different_channels = 1,
++	}
++};
++
+ u16 rtw_desc_to_bitrate(u8 desc_rate)
+ {
+ 	struct ieee80211_rate rate;
+@@ -2205,6 +2225,11 @@ int rtw_register_hw(struct rtw_dev *rtwd
+ 	hw->wiphy->max_scan_ssids = RTW_SCAN_MAX_SSIDS;
+ 	hw->wiphy->max_scan_ie_len = rtw_get_max_scan_ie_len(rtwdev);
+ 
++	if (rtwdev->chip->id == RTW_CHIP_TYPE_8822C) {
++		hw->wiphy->iface_combinations = rtw_iface_combs;
++		hw->wiphy->n_iface_combinations = ARRAY_SIZE(rtw_iface_combs);
++	}
++
+ 	wiphy_ext_feature_set(hw->wiphy, NL80211_EXT_FEATURE_CAN_REPLACE_PTK0);
+ 	wiphy_ext_feature_set(hw->wiphy, NL80211_EXT_FEATURE_SCAN_RANDOM_SN);
+ 	wiphy_ext_feature_set(hw->wiphy, NL80211_EXT_FEATURE_SET_SCAN_DWELL);

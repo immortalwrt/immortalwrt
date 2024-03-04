@@ -1,0 +1,47 @@
+From 2931978cd74f4a643deeea5b211523001d95aa44 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sun, 8 Jan 2023 22:13:24 +0100
+Subject: [PATCH] wifi: rtw88: Use non-atomic sta iterator in
+ rtw_ra_mask_info_update()
+
+USB and (upcoming) SDIO support may sleep in the read/write handlers.
+Use non-atomic rtw_iterate_stas() in rtw_ra_mask_info_update() because
+the iterator function rtw_ra_mask_info_update_iter() needs to read and
+write registers from within rtw_update_sta_info(). Using the non-atomic
+iterator ensures that we can sleep during USB and SDIO register reads
+and writes. This fixes "scheduling while atomic" or "Voluntary context
+switch within RCU read-side critical section!" warnings as seen by SDIO
+card users (but it also affects USB cards).
+
+Fixes: 78d5bf925f30 ("wifi: rtw88: iterate over vif/sta list non-atomically")
+Suggested-by: Ping-Ke Shih <pkshih@realtek.com>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230108211324.442823-4-martin.blumenstingl@googlemail.com
+---
+ drivers/net/wireless/realtek/rtw88/mac80211.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/mac80211.c
++++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
+@@ -737,7 +737,7 @@ static void rtw_ra_mask_info_update(stru
+ 	br_data.rtwdev = rtwdev;
+ 	br_data.vif = vif;
+ 	br_data.mask = mask;
+-	rtw_iterate_stas_atomic(rtwdev, rtw_ra_mask_info_update_iter, &br_data);
++	rtw_iterate_stas(rtwdev, rtw_ra_mask_info_update_iter, &br_data);
+ }
+ 
+ static int rtw_ops_set_bitrate_mask(struct ieee80211_hw *hw,
+@@ -746,7 +746,9 @@ static int rtw_ops_set_bitrate_mask(stru
+ {
+ 	struct rtw_dev *rtwdev = hw->priv;
+ 
++	mutex_lock(&rtwdev->mutex);
+ 	rtw_ra_mask_info_update(rtwdev, vif, mask);
++	mutex_unlock(&rtwdev->mutex);
+ 
+ 	return 0;
+ }

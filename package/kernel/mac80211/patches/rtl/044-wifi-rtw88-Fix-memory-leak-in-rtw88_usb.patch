@@ -1,0 +1,56 @@
+From 59a3a312009723e3e5082899655fdcc420e2b47a Mon Sep 17 00:00:00 2001
+From: Larry Finger <Larry.Finger@lwfinger.net>
+Date: Mon, 17 Apr 2023 11:03:31 -0500
+Subject: [PATCH 44/45] wifi: rtw88: Fix memory leak in rtw88_usb
+
+Kmemleak shows the following leak arising from routine in the usb
+probe routine:
+
+unreferenced object 0xffff895cb29bba00 (size 512):
+  comm "(udev-worker)", pid 534, jiffies 4294903932 (age 102751.088s)
+  hex dump (first 32 bytes):
+    77 30 30 30 00 00 00 00 02 2f 2d 2b 30 00 00 00  w000...../-+0...
+    02 00 2a 28 00 00 00 00 ff 55 ff ff ff 00 00 00  ..*(.....U......
+  backtrace:
+    [<ffffffff9265fa36>] kmalloc_trace+0x26/0x90
+    [<ffffffffc17eec41>] rtw_usb_probe+0x2f1/0x680 [rtw_usb]
+    [<ffffffffc03e19fd>] usb_probe_interface+0xdd/0x2e0 [usbcore]
+    [<ffffffff92b4f2fe>] really_probe+0x18e/0x3d0
+    [<ffffffff92b4f5b8>] __driver_probe_device+0x78/0x160
+    [<ffffffff92b4f6bf>] driver_probe_device+0x1f/0x90
+    [<ffffffff92b4f8df>] __driver_attach+0xbf/0x1b0
+    [<ffffffff92b4d350>] bus_for_each_dev+0x70/0xc0
+    [<ffffffff92b4e51e>] bus_add_driver+0x10e/0x210
+    [<ffffffff92b50935>] driver_register+0x55/0xf0
+    [<ffffffffc03e0708>] usb_register_driver+0x88/0x140 [usbcore]
+    [<ffffffff92401153>] do_one_initcall+0x43/0x210
+    [<ffffffff9254f42a>] do_init_module+0x4a/0x200
+    [<ffffffff92551d1c>] __do_sys_finit_module+0xac/0x120
+    [<ffffffff92ee6626>] do_syscall_64+0x56/0x80
+    [<ffffffff9300006a>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+The leak was verified to be real by unloading the driver, which resulted
+in a dangling pointer to the allocation.
+
+The allocated memory is freed in rtw_usb_intf_deinit().
+
+Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Ping-Ke Shih <pkshih@realtek.com>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230417160331.23071-1-Larry.Finger@lwfinger.net
+---
+ drivers/net/wireless/realtek/rtw88/usb.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/drivers/net/wireless/realtek/rtw88/usb.c
++++ b/drivers/net/wireless/realtek/rtw88/usb.c
+@@ -804,6 +804,7 @@ static void rtw_usb_intf_deinit(struct r
+ 	struct rtw_usb *rtwusb = rtw_get_usb_priv(rtwdev);
+ 
+ 	usb_put_dev(rtwusb->udev);
++	kfree(rtwusb->usb_data);
+ 	usb_set_intfdata(intf, NULL);
+ }
+ 

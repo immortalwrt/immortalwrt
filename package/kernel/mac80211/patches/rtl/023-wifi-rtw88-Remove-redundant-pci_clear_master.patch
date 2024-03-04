@@ -1,0 +1,42 @@
+From e665c6d67e541ac7520fa8c5175ad2c0213f247e Mon Sep 17 00:00:00 2001
+From: Cai Huoqing <cai.huoqing@linux.dev>
+Date: Thu, 23 Mar 2023 19:26:12 +0800
+Subject: [PATCH 23/45] wifi: rtw88: Remove redundant pci_clear_master
+
+Remove pci_clear_master to simplify the code,
+the bus-mastering is also cleared in do_pci_disable_device,
+like this:
+./drivers/pci/pci.c:2197
+static void do_pci_disable_device(struct pci_dev *dev)
+{
+	u16 pci_command;
+
+	pci_read_config_word(dev, PCI_COMMAND, &pci_command);
+	if (pci_command & PCI_COMMAND_MASTER) {
+		pci_command &= ~PCI_COMMAND_MASTER;
+		pci_write_config_word(dev, PCI_COMMAND, pci_command);
+	}
+
+	pcibios_disable_device(dev);
+}.
+And dev->is_busmaster is set to 0 in pci_disable_device.
+
+Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230323112613.7550-4-cai.huoqing@linux.dev
+---
+ drivers/net/wireless/realtek/rtw88/pci.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/pci.c
++++ b/drivers/net/wireless/realtek/rtw88/pci.c
+@@ -1545,7 +1545,6 @@ static int rtw_pci_claim(struct rtw_dev
+ 
+ static void rtw_pci_declaim(struct rtw_dev *rtwdev, struct pci_dev *pdev)
+ {
+-	pci_clear_master(pdev);
+ 	pci_disable_device(pdev);
+ }
+ 

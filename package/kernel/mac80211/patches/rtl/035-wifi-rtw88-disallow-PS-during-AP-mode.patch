@@ -1,0 +1,73 @@
+From 5ec69129f195f340acb15b8535cb372ccdbcf5d7 Mon Sep 17 00:00:00 2001
+From: Po-Hao Huang <phhuang@realtek.com>
+Date: Fri, 14 Apr 2023 20:11:31 +0800
+Subject: [PATCH 35/45] wifi: rtw88: disallow PS during AP mode
+
+Firmware can't support PS mode during AP mode, so disallow this case.
+
+Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230414121135.17828-5-pkshih@realtek.com
+---
+ drivers/net/wireless/realtek/rtw88/mac80211.c | 13 +++++++++++++
+ drivers/net/wireless/realtek/rtw88/main.c     |  2 +-
+ drivers/net/wireless/realtek/rtw88/main.h     |  1 +
+ 3 files changed, 15 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/mac80211.c
++++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
+@@ -449,12 +449,24 @@ static int rtw_ops_start_ap(struct ieee8
+ 	const struct rtw_chip_info *chip = rtwdev->chip;
+ 
+ 	mutex_lock(&rtwdev->mutex);
++	rtwdev->ap_active = true;
+ 	chip->ops->phy_calibration(rtwdev);
+ 	mutex_unlock(&rtwdev->mutex);
+ 
+ 	return 0;
+ }
+ 
++static void rtw_ops_stop_ap(struct ieee80211_hw *hw,
++			    struct ieee80211_vif *vif,
++			    struct ieee80211_bss_conf *link_conf)
++{
++	struct rtw_dev *rtwdev = hw->priv;
++
++	mutex_lock(&rtwdev->mutex);
++	rtwdev->ap_active = false;
++	mutex_unlock(&rtwdev->mutex);
++}
++
+ static int rtw_ops_conf_tx(struct ieee80211_hw *hw,
+ 			   struct ieee80211_vif *vif,
+ 			   unsigned int link_id, u16 ac,
+@@ -916,6 +928,7 @@ const struct ieee80211_ops rtw_ops = {
+ 	.configure_filter	= rtw_ops_configure_filter,
+ 	.bss_info_changed	= rtw_ops_bss_info_changed,
+ 	.start_ap		= rtw_ops_start_ap,
++	.stop_ap		= rtw_ops_stop_ap,
+ 	.conf_tx		= rtw_ops_conf_tx,
+ 	.sta_add		= rtw_ops_sta_add,
+ 	.sta_remove		= rtw_ops_sta_remove,
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -257,7 +257,7 @@ static void rtw_watch_dog_work(struct wo
+ 	 * threshold.
+ 	 */
+ 	if (rtwdev->ps_enabled && data.rtwvif && !ps_active &&
+-	    !rtwdev->beacon_loss)
++	    !rtwdev->beacon_loss && !rtwdev->ap_active)
+ 		rtw_enter_lps(rtwdev, data.rtwvif->port);
+ 
+ 	rtwdev->watch_dog_cnt++;
+--- a/drivers/net/wireless/realtek/rtw88/main.h
++++ b/drivers/net/wireless/realtek/rtw88/main.h
+@@ -2058,6 +2058,7 @@ struct rtw_dev {
+ 
+ 	bool need_rfk;
+ 	struct completion fw_scan_density;
++	bool ap_active;
+ 
+ 	/* hci related data, must be last */
+ 	u8 priv[] __aligned(sizeof(void *));

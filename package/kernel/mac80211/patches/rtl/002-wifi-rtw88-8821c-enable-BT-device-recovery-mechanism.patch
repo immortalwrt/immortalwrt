@@ -1,0 +1,100 @@
+From 91759247856dc65b69f71812a0903f59680f9890 Mon Sep 17 00:00:00 2001
+From: Ping-Ke Shih <pkshih@realtek.com>
+Date: Mon, 28 Nov 2022 15:56:53 +0800
+Subject: [PATCH 02/13] wifi: rtw88: 8821c: enable BT device recovery mechanism
+
+8821ce is a combo card, and BT is a USB device that could get card lost
+during stress test, and need WiFi firmware to detect and recover it, so
+driver sends a H2C to enable this mechanism.
+
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20221128075653.5221-1-pkshih@realtek.com
+---
+ drivers/net/wireless/realtek/rtw88/fw.c  | 10 ++++++++++
+ drivers/net/wireless/realtek/rtw88/fw.h  |  6 ++++++
+ drivers/net/wireless/realtek/rtw88/mac.c | 18 +++++++++++++++++-
+ 3 files changed, 33 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/fw.c
++++ b/drivers/net/wireless/realtek/rtw88/fw.c
+@@ -822,6 +822,16 @@ void rtw_fw_set_nlo_info(struct rtw_dev
+ 	rtw_fw_send_h2c_command(rtwdev, h2c_pkt);
+ }
+ 
++void rtw_fw_set_recover_bt_device(struct rtw_dev *rtwdev)
++{
++	u8 h2c_pkt[H2C_PKT_SIZE] = {0};
++
++	SET_H2C_CMD_ID_CLASS(h2c_pkt, H2C_CMD_RECOVER_BT_DEV);
++	SET_RECOVER_BT_DEV_EN(h2c_pkt, 1);
++
++	rtw_fw_send_h2c_command(rtwdev, h2c_pkt);
++}
++
+ void rtw_fw_set_pg_info(struct rtw_dev *rtwdev)
+ {
+ 	struct rtw_lps_conf *conf = &rtwdev->lps_conf;
+--- a/drivers/net/wireless/realtek/rtw88/fw.h
++++ b/drivers/net/wireless/realtek/rtw88/fw.h
+@@ -555,6 +555,8 @@ static inline void rtw_h2c_pkt_set_heade
+ #define H2C_CMD_AOAC_GLOBAL_INFO	0x82
+ #define H2C_CMD_NLO_INFO		0x8C
+ 
++#define H2C_CMD_RECOVER_BT_DEV		0xD1
++
+ #define SET_H2C_CMD_ID_CLASS(h2c_pkt, value)				       \
+ 	le32p_replace_bits((__le32 *)(h2c_pkt) + 0x00, value, GENMASK(7, 0))
+ 
+@@ -754,6 +756,9 @@ static inline void rtw_h2c_pkt_set_heade
+ #define SET_NLO_LOC_NLO_INFO(h2c_pkt, value)                                   \
+ 	le32p_replace_bits((__le32 *)(h2c_pkt) + 0x00, value, GENMASK(23, 16))
+ 
++#define SET_RECOVER_BT_DEV_EN(h2c_pkt, value)				       \
++	le32p_replace_bits((__le32 *)(h2c_pkt) + 0x00, value, BIT(8))
++
+ #define GET_FW_DUMP_LEN(_header)					\
+ 	le32_get_bits(*((__le32 *)(_header) + 0x00), GENMASK(15, 0))
+ #define GET_FW_DUMP_SEQ(_header)					\
+@@ -843,6 +848,7 @@ void rtw_fw_set_aoac_global_info_cmd(str
+ 				     u8 group_key_enc);
+ 
+ void rtw_fw_set_nlo_info(struct rtw_dev *rtwdev, bool enable);
++void rtw_fw_set_recover_bt_device(struct rtw_dev *rtwdev);
+ void rtw_fw_update_pkt_probe_req(struct rtw_dev *rtwdev,
+ 				 struct cfg80211_ssid *ssid);
+ void rtw_fw_channel_switch(struct rtw_dev *rtwdev, bool enable);
+--- a/drivers/net/wireless/realtek/rtw88/mac.c
++++ b/drivers/net/wireless/realtek/rtw88/mac.c
+@@ -916,7 +916,8 @@ out:
+ 	return ret;
+ }
+ 
+-int rtw_download_firmware(struct rtw_dev *rtwdev, struct rtw_fw_state *fw)
++static
++int _rtw_download_firmware(struct rtw_dev *rtwdev, struct rtw_fw_state *fw)
+ {
+ 	if (rtw_chip_wcpu_11n(rtwdev))
+ 		return __rtw_download_firmware_legacy(rtwdev, fw);
+@@ -924,6 +925,21 @@ int rtw_download_firmware(struct rtw_dev
+ 	return __rtw_download_firmware(rtwdev, fw);
+ }
+ 
++int rtw_download_firmware(struct rtw_dev *rtwdev, struct rtw_fw_state *fw)
++{
++	int ret;
++
++	ret = _rtw_download_firmware(rtwdev, fw);
++	if (ret)
++		return ret;
++
++	if (rtw_hci_type(rtwdev) == RTW_HCI_TYPE_PCIE &&
++	    rtwdev->chip->id == RTW_CHIP_TYPE_8821C)
++		rtw_fw_set_recover_bt_device(rtwdev);
++
++	return 0;
++}
++
+ static u32 get_priority_queues(struct rtw_dev *rtwdev, u32 queues)
+ {
+ 	const struct rtw_rqpn *rqpn = rtwdev->fifo.rqpn;

@@ -1,0 +1,89 @@
+From c90897960c19f5bad59fcd391901ac1b7787c50b Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sun, 5 Feb 2023 00:29:59 +0100
+Subject: [PATCH] wifi: rtw88: pci: Change queue datatype to enum
+ rtw_tx_queue_type
+
+This makes it easier to understand which values are allowed for the
+"queue" variable when using the enum instead of an u8.
+
+Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230204233001.1511643-3-martin.blumenstingl@googlemail.com
+---
+ drivers/net/wireless/realtek/rtw88/pci.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
+
+--- a/drivers/net/wireless/realtek/rtw88/pci.c
++++ b/drivers/net/wireless/realtek/rtw88/pci.c
+@@ -30,7 +30,8 @@ static u32 rtw_pci_tx_queue_idx_addr[] =
+ 	[RTW_TX_QUEUE_H2C]	= RTK_PCI_TXBD_IDX_H2CQ,
+ };
+ 
+-static u8 rtw_pci_get_tx_qsel(struct sk_buff *skb, u8 queue)
++static u8 rtw_pci_get_tx_qsel(struct sk_buff *skb,
++			      enum rtw_tx_queue_type queue)
+ {
+ 	switch (queue) {
+ 	case RTW_TX_QUEUE_BCN:
+@@ -542,7 +543,7 @@ static int rtw_pci_setup(struct rtw_dev
+ static void rtw_pci_dma_release(struct rtw_dev *rtwdev, struct rtw_pci *rtwpci)
+ {
+ 	struct rtw_pci_tx_ring *tx_ring;
+-	u8 queue;
++	enum rtw_tx_queue_type queue;
+ 
+ 	rtw_pci_reset_trx_ring(rtwdev);
+ 	for (queue = 0; queue < RTK_MAX_TX_QUEUE_NUM; queue++) {
+@@ -608,8 +609,8 @@ static void rtw_pci_deep_ps_enter(struct
+ {
+ 	struct rtw_pci *rtwpci = (struct rtw_pci *)rtwdev->priv;
+ 	struct rtw_pci_tx_ring *tx_ring;
++	enum rtw_tx_queue_type queue;
+ 	bool tx_empty = true;
+-	u8 queue;
+ 
+ 	if (rtw_fw_feature_check(&rtwdev->fw, FW_FEATURE_TX_WAKE))
+ 		goto enter_deep_ps;
+@@ -803,7 +804,8 @@ static void rtw_pci_flush_queues(struct
+ 	__rtw_pci_flush_queues(rtwdev, pci_queues, drop);
+ }
+ 
+-static void rtw_pci_tx_kick_off_queue(struct rtw_dev *rtwdev, u8 queue)
++static void rtw_pci_tx_kick_off_queue(struct rtw_dev *rtwdev,
++				      enum rtw_tx_queue_type queue)
+ {
+ 	struct rtw_pci *rtwpci = (struct rtw_pci *)rtwdev->priv;
+ 	struct rtw_pci_tx_ring *ring;
+@@ -822,7 +824,7 @@ static void rtw_pci_tx_kick_off_queue(st
+ static void rtw_pci_tx_kick_off(struct rtw_dev *rtwdev)
+ {
+ 	struct rtw_pci *rtwpci = (struct rtw_pci *)rtwdev->priv;
+-	u8 queue;
++	enum rtw_tx_queue_type queue;
+ 
+ 	for (queue = 0; queue < RTK_MAX_TX_QUEUE_NUM; queue++)
+ 		if (test_and_clear_bit(queue, rtwpci->tx_queued))
+@@ -831,7 +833,8 @@ static void rtw_pci_tx_kick_off(struct r
+ 
+ static int rtw_pci_tx_write_data(struct rtw_dev *rtwdev,
+ 				 struct rtw_tx_pkt_info *pkt_info,
+-				 struct sk_buff *skb, u8 queue)
++				 struct sk_buff *skb,
++				 enum rtw_tx_queue_type queue)
+ {
+ 	struct rtw_pci *rtwpci = (struct rtw_pci *)rtwdev->priv;
+ 	const struct rtw_chip_info *chip = rtwdev->chip;
+@@ -949,9 +952,9 @@ static int rtw_pci_tx_write(struct rtw_d
+ 			    struct rtw_tx_pkt_info *pkt_info,
+ 			    struct sk_buff *skb)
+ {
++	enum rtw_tx_queue_type queue = rtw_hw_queue_mapping(skb);
+ 	struct rtw_pci *rtwpci = (struct rtw_pci *)rtwdev->priv;
+ 	struct rtw_pci_tx_ring *ring;
+-	u8 queue = rtw_hw_queue_mapping(skb);
+ 	int ret;
+ 
+ 	ret = rtw_pci_tx_write_data(rtwdev, pkt_info, skb, queue);
