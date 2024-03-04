@@ -263,7 +263,7 @@ Signed-off-by: Martin Botka <martin.botka@somainline.org>
  
  	kfree(opp_tokens);
  
-@@ -159,8 +252,18 @@ static struct platform_driver sun50i_cpu
+@@ -159,8 +252,19 @@ static struct platform_driver sun50i_cpu
  	},
  };
  
@@ -280,10 +280,11 @@ Signed-off-by: Martin Botka <martin.botka@somainline.org>
 -	{ .compatible = "allwinner,sun50i-h6" },
 +	{ .compatible = "allwinner,sun50i-h6", .data = &sun50i_h6_data },
 +	{ .compatible = "allwinner,sun50i-h616", .data = &sun50i_h616_data },
++	{ .compatible = "allwinner,sun50i-h618", .data = &sun50i_h616_data },
  	{}
  };
  MODULE_DEVICE_TABLE(of, sun50i_cpufreq_match_list);
-@@ -196,8 +299,8 @@ static int __init sun50i_cpufreq_init(vo
+@@ -196,8 +300,8 @@ static int __init sun50i_cpufreq_init(vo
  		return ret;
  
  	sun50i_cpufreq_pdev =

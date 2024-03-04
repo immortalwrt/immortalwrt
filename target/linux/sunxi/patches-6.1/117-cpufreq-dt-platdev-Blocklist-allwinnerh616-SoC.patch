@@ -38,11 +38,12 @@ Signed-off-by: Martin Botka <martin.botka@somainline.org>
 
 --- a/drivers/cpufreq/cpufreq-dt-platdev.c
 +++ b/drivers/cpufreq/cpufreq-dt-platdev.c
-@@ -102,6 +102,7 @@ static const struct of_device_id allowli
+@@ -102,6 +102,8 @@ static const struct of_device_id allowli
   */
  static const struct of_device_id blocklist[] __initconst = {
  	{ .compatible = "allwinner,sun50i-h6", },
 +	{ .compatible = "allwinner,sun50i-h616", },
++	{ .compatible = "allwinner,sun50i-h618", },
  
  	{ .compatible = "arm,vexpress", },
  
