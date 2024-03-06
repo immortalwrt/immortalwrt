@@ -1,27 +1,7 @@
-From: Andre Przywara <andre.przywara@arm.com>
-To: Vasily Khoruzhick <anarsoul@gmail.com>,
-	Yangtao Li <tiny.windzz@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>
-Cc: "Rafael J . Wysocki" <rafael@kernel.org>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Zhang Rui <rui.zhang@intel.com>,
-	Lukasz Luba <lukasz.luba@arm.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Martin Botka <martin.botka@somainline.org>,
-	Maksim Kiselev <bigunclemax@gmail.com>,
-	Bob McChesney <bob@electricworry.net>,
-	linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-sunxi@lists.linux.dev
-Subject: [PATCH v4 7/7] arm64: dts: allwinner: h616: Add thermal sensor and zones
-Date: Fri,  9 Feb 2024 14:42:21 +0000	[thread overview]
-Message-ID: <20240209144221.3602382-8-andre.przywara@arm.com> (raw)
-In-Reply-To: <20240209144221.3602382-1-andre.przywara@arm.com>
-
+From f4318af40544b8e7ff5a6b667ede60e6cf808262 Mon Sep 17 00:00:00 2001
 From: Martin Botka <martin.botka@somainline.org>
+Date: Mon, 19 Feb 2024 15:36:39 +0000
+Subject: [PATCH] arm64: dts: allwinner: h616: Add thermal sensor and zones
 
 There are four thermal sensors:
 - CPU
@@ -33,6 +13,9 @@ Add the thermal sensor configuration and the thermal zones.
 
 Signed-off-by: Martin Botka <martin.botka@somainline.org>
 Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Link: https://lore.kernel.org/r/20240219153639.179814-8-andre.przywara@arm.com
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 ---
  .../arm64/boot/dts/allwinner/sun50i-h616.dtsi | 88 +++++++++++++++++++
  1 file changed, 88 insertions(+)

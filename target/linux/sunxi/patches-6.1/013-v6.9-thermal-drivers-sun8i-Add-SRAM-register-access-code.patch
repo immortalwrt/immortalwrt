@@ -1,25 +1,7 @@
+From f8b54d1120b81ed57bed96cc8e814ba08886d1e5 Mon Sep 17 00:00:00 2001
 From: Andre Przywara <andre.przywara@arm.com>
-To: Vasily Khoruzhick <anarsoul@gmail.com>,
-	Yangtao Li <tiny.windzz@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>
-Cc: "Rafael J . Wysocki" <rafael@kernel.org>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Zhang Rui <rui.zhang@intel.com>,
-	Lukasz Luba <lukasz.luba@arm.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Martin Botka <martin.botka@somainline.org>,
-	Maksim Kiselev <bigunclemax@gmail.com>,
-	Bob McChesney <bob@electricworry.net>,
-	linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-sunxi@lists.linux.dev
-Subject: [PATCH v4 5/7] thermal: sun8i: add SRAM register access code
-Date: Fri,  9 Feb 2024 14:42:19 +0000	[thread overview]
-Message-ID: <20240209144221.3602382-6-andre.przywara@arm.com> (raw)
-In-Reply-To: <20240209144221.3602382-1-andre.przywara@arm.com>
+Date: Mon, 19 Feb 2024 15:36:37 +0000
+Subject: [PATCH] thermal/drivers/sun8i: Add SRAM register access code
 
 The Allwinner H616 SoC needs to clear a bit in one register in the SRAM
 controller, to report reasonable temperature values. On reset, bit 16 in
@@ -34,9 +16,12 @@ the SRAM controller device via a DT phandle link, then clear just this
 single bit.
 
 Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Acked-by: Vasily Khoruzhick <anarsoul@gmail.com>
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Link: https://lore.kernel.org/r/20240219153639.179814-6-andre.przywara@arm.com
 ---
- drivers/thermal/sun8i_thermal.c | 50 +++++++++++++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
+ drivers/thermal/sun8i_thermal.c | 51 +++++++++++++++++++++++++++++++++
+ 1 file changed, 51 insertions(+)
 
 --- a/drivers/thermal/sun8i_thermal.c
 +++ b/drivers/thermal/sun8i_thermal.c
@@ -56,7 +41,7 @@ Signed-off-by: Andre Przywara <andre.przywara@arm.com>
  	int		sensor_num;
  	int		offset;
  	int		scale;
-@@ -85,6 +87,7 @@ struct ths_device {
+@@ -85,12 +87,16 @@ struct ths_device {
  	const struct ths_thermal_chip		*chip;
  	struct device				*dev;
  	struct regmap				*regmap;
@@ -64,7 +49,16 @@ Signed-off-by: Andre Przywara <andre.przywara@arm.com>
  	struct reset_control			*reset;
  	struct clk				*bus_clk;
  	struct clk                              *mod_clk;
-@@ -337,6 +340,34 @@ static void sun8i_ths_reset_control_asse
+ 	struct tsensor				sensor[MAX_SENSOR_NUM];
+ };
+ 
++/* The H616 needs to have a bit 16 in the SRAM control register cleared. */
++static const struct reg_field sun8i_ths_sram_reg_field = REG_FIELD(0x0, 16, 16);
++
+ /* Temp Unit: millidegree Celsius */
+ static int sun8i_ths_calc_temp(struct ths_device *tmdev,
+ 			       int id, int reg)
+@@ -337,6 +343,34 @@ static void sun8i_ths_reset_control_asse
  	reset_control_assert(data);
  }
  
@@ -99,13 +93,11 @@ Signed-off-by: Andre Przywara <andre.przywara@arm.com>
  static int sun8i_ths_resource_init(struct ths_device *tmdev)
  {
  	struct device *dev = tmdev->dev;
-@@ -381,6 +412,21 @@ static int sun8i_ths_resource_init(struc
+@@ -381,6 +415,19 @@ static int sun8i_ths_resource_init(struc
  	if (ret)
  		return ret;
  
 +	if (tmdev->chip->needs_sram) {
-+		const struct reg_field sun8i_sram_reg_field =
-+			REG_FIELD(0x0, 16, 16);
 +		struct regmap *regmap;
 +
 +		regmap = sun8i_ths_get_sram_regmap(dev->of_node);
@@ -113,7 +105,7 @@ Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 +			return PTR_ERR(regmap);
 +		tmdev->sram_regmap_field = devm_regmap_field_alloc(dev,
 +						      regmap,
-+						      sun8i_sram_reg_field);
++						      sun8i_ths_sram_reg_field);
 +		if (IS_ERR(tmdev->sram_regmap_field))
 +			return PTR_ERR(tmdev->sram_regmap_field);
 +	}
@@ -121,7 +113,7 @@ Signed-off-by: Andre Przywara <andre.przywara@arm.com>
  	ret = sun8i_ths_calibrate(tmdev);
  	if (ret)
  		return ret;
-@@ -427,6 +473,10 @@ static int sun50i_h6_thermal_init(struct
+@@ -427,6 +474,10 @@ static int sun50i_h6_thermal_init(struct
  {
  	int val;
  
