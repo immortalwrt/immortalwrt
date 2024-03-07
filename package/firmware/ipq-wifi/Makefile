@@ -6,9 +6,9 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/firmware/qca-wireless.git
-PKG_SOURCE_DATE:=2024-02-25
-PKG_SOURCE_VERSION:=fc30aeeb8ec5d069710a446f4eb5e30fc26145c1
-PKG_MIRROR_HASH:=7fe83e3f36541444e0385a56fa8a048772d0531e16787cc10bce29775c7db235
+PKG_SOURCE_DATE:=2024-03-04
+PKG_SOURCE_VERSION:=38c02ae4302f9cb73f6914574239fe84799caa84
+PKG_MIRROR_HASH:=0f6a2dea8466ea0e8df3262bff643d60b1725f2218589c41d9f87fb37843c362
 
 PKG_FLAGS:=nonshared
 
@@ -40,6 +40,7 @@ ALLWIFIBOARDS:= \
 	linksys_mx5300 \
 	netgear_lbr20 \
 	netgear_rax120v2 \
+	netgear_wax214 \
 	netgear_wax218 \
 	netgear_wax620 \
 	netgear_wax630 \
@@ -157,6 +158,7 @@ $(eval $(call generate-ipq-wifi-package,linksys_mx4200,Linksys MX4200))
 $(eval $(call generate-ipq-wifi-package,linksys_mx5300,Linksys MX5300))
 $(eval $(call generate-ipq-wifi-package,netgear_lbr20,Netgear LBR20))
 $(eval $(call generate-ipq-wifi-package,netgear_rax120v2,Netgear RAX120v2))
+$(eval $(call generate-ipq-wifi-package,netgear_wax214,Netgear WAX214))
 $(eval $(call generate-ipq-wifi-package,netgear_wax218,Netgear WAX218))
 $(eval $(call generate-ipq-wifi-package,netgear_wax620,Netgear WAX620))
 $(eval $(call generate-ipq-wifi-package,netgear_wax630,Netgear WAX630))
