@@ -585,6 +585,18 @@ define Device/cudy_wr1300-v2
 endef
 TARGET_DEVICES += cudy_wr1300-v2
 
+define Device/cudy_wr1300-v3
+  $(Device/dsa-migration)
+  IMAGE_SIZE := 15872k
+  DEVICE_VENDOR := Cudy
+  DEVICE_MODEL := WR1300
+  DEVICE_VARIANT := v3
+  DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap \
+	-uboot-envtools
+  SUPPORTED_DEVICES += cudy,wr1300 R30
+endef
+TARGET_DEVICES += cudy_wr1300-v3
+
 define Device/cudy_wr2100
   $(Device/dsa-migration)
   DEVICE_VENDOR := Cudy
@@ -2323,6 +2335,20 @@ define Device/tplink_er605-v2
 endef
 TARGET_DEVICES += tplink_er605-v2
 
+define Device/tplink_ex220-v1
+  $(Device/dsa-migration)
+  DEVICE_VENDOR := TP-Link
+  DEVICE_MODEL := EX220
+  DEVICE_VARIANT := v1
+  DEVICE_PACKAGES := kmod-mt7915-firmware -uboot-envtools
+  TPLINK_BOARD_ID := EX220-V1
+  KERNEL_LOADADDR := 0x82000000
+  KERNEL := kernel-bin | relocate-kernel 0x80001000 | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
+  IMAGE_SIZE := 15744k
+endef
+TARGET_DEVICES += tplink_ex220-v1
+
 define Device/tplink_mr600-v2-eu
   $(Device/dsa-migration)
   $(Device/tplink-v2)
@@ -2808,6 +2834,16 @@ define Device/yuncore_fap690
   DEVICE_PACKAGES := kmod-mt7915-firmware -uboot-envtools
 endef
 TARGET_DEVICES += yuncore_fap690
+
+define Device/yuncore_g720
+  $(Device/dsa-migration)
+  DEVICE_VENDOR := YunCore
+  DEVICE_MODEL := G720
+  DEVICE_PACKAGES := kmod-mt7915-firmware
+  IMAGE_SIZE := 15808k
+  SUPPORTED_DEVICES += mt7621-rfb-ax-nor
+endef
+TARGET_DEVICES += yuncore_g720
 
 define Device/zbtlink_zbt-we1326
   $(Device/dsa-migration)
