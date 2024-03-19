@@ -2527,6 +2527,7 @@ define Device/ubnt_edgerouter_common
 	ubnt-erx-factory-image $(KDIR)/tmp/$$(KERNEL_INITRAMFS_PREFIX)-factory.tar
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   DEVICE_PACKAGES += -wpad-basic-openssl -uboot-envtools
+  DEFAULT := n
 endef
 
 define Device/ubnt_edgerouter-x
