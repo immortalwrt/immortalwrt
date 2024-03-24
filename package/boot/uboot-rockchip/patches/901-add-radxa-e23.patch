@@ -1,6 +1,6 @@
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -175,6 +175,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3568) += \
+@@ -178,6 +178,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3568) += \
  	rk3566-quartz64-a.dtb \
  	rk3566-quartz64-b.dtb \
  	rk3566-radxa-cm3-io.dtb \
