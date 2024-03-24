@@ -228,7 +228,7 @@ define Device/radxa_e23
   BOOT_FLOW := pine64-img
   DEVICE_PACKAGES := kmod-r8125
 endef
-TARGET_DEVICES += radxa_cm3-io
+TARGET_DEVICES += radxa_e23
 
 define Device/radxa_e25
   DEVICE_VENDOR := Radxa
