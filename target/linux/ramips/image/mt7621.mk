@@ -229,6 +229,20 @@ define Device/alfa-network_ax1800rm
 endef
 TARGET_DEVICES += alfa-network_ax1800rm
 
+define Device/ws7915
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 16064k
+  DEVICE_VENDOR := Huasifei
+  DEVICE_MODEL := WS7915
+  DEVICE_VARIANT := 16M
+  DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 \
+		kmod-usb-ledtrig-usbport \
+		kmod-mt7915e kmod-mt76 -wpad-wolfssl
+  SUPPORTED_DEVICES += ws7915 huasifei,ws7915
+endef
+TARGET_DEVICES += ws7915
+
 define Device/alfa-network_quad-e4g
   $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
