@@ -143,7 +143,7 @@
  #endif /* __LINUX_KMOD_H__ */
 --- a/include/linux/umh.h
 +++ b/include/linux/umh.h
-@@ -22,6 +22,7 @@ struct subprocess_info {
+@@ -23,6 +23,7 @@ struct subprocess_info {
  	const char *path;
  	char **argv;
  	char **envp;
@@ -153,15 +153,15 @@
  	int (*init)(struct subprocess_info *info, struct cred *new);
 --- a/kernel/umh.c
 +++ b/kernel/umh.c
-@@ -28,6 +28,7 @@
- #include <linux/async.h>
+@@ -29,6 +29,7 @@
  #include <linux/uaccess.h>
  #include <linux/initrd.h>
+ #include <linux/freezer.h>
 +#include <linux/pipe_fs_i.h>
  
  #include <trace/events/module.h>
  
-@@ -73,6 +74,28 @@ static int call_usermodehelper_exec_asyn
+@@ -71,6 +72,28 @@ static int call_usermodehelper_exec_asyn
  	flush_signal_handlers(current, 1);
  	spin_unlock_irq(&current->sighand->siglock);
  
@@ -190,7 +190,7 @@
  	/*
  	 * Initial kernel threads share ther FS with init, in order to
  	 * get the init root directory. But we've now created a new
-@@ -332,6 +355,20 @@ static void helper_unlock(void)
+@@ -330,6 +353,20 @@ static void helper_unlock(void)
  		wake_up(&running_helpers_waitq);
  }
  

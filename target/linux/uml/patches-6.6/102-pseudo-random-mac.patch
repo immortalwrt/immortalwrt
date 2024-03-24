@@ -11,7 +11,7 @@ Applies to vanilla kernel 3.9.4.
 ===============================================================================
 --- a/arch/um/drivers/Kconfig
 +++ b/arch/um/drivers/Kconfig
-@@ -136,6 +136,20 @@ config UML_NET
+@@ -143,6 +143,20 @@ config UML_NET
  	  enable at least one of the following transport options to actually
  	  make use of UML networking.
  
@@ -100,12 +100,12 @@ Applies to vanilla kernel 3.9.4.
 +
  void uml_net_setup_etheraddr(struct net_device *dev, char *str)
  {
- 	unsigned char *addr = dev->dev_addr;
+ 	u8 addr[ETH_ALEN];
 +	u8 hash[SHA1_DIGEST_SIZE];
  	char *end;
  	int i;
  
-@@ -319,9 +373,26 @@ void uml_net_setup_etheraddr(struct net_
+@@ -320,9 +374,26 @@ void uml_net_setup_etheraddr(struct net_
  	return;
  
  random:
@@ -120,7 +120,7 @@ Applies to vanilla kernel 3.9.4.
 +		printk(KERN_WARNING
 +		       "Could not compute digest to use as ethernet address for device %s. "
 +		       "Using random address instead.\n", dev->name);
-+		random_ether_addr(addr);
++		eth_random_addr(addr);
 +	}
 +	else {
 +		for (i=0; i < 6; i++)
@@ -134,7 +134,7 @@ Applies to vanilla kernel 3.9.4.
  static DEFINE_SPINLOCK(devices_lock);
 --- a/kernel/umh.c
 +++ b/kernel/umh.c
-@@ -356,12 +356,12 @@ static void helper_unlock(void)
+@@ -354,12 +354,12 @@ static void helper_unlock(void)
  }
  
  int call_usermodehelper_stdoutpipe(struct subprocess_info *sub_info,
