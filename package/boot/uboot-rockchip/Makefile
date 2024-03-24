@@ -158,6 +158,13 @@ define U-Boot/radxa-cm3-io-rk3566
     radxa_cm3-io
 endef
 
+define U-Boot/radxa-e23-rk3566
+  $(U-Boot/Default/rk3566)
+  NAME:=E23
+  BUILD_DEVICES:= \
+    radxa_e23
+endef
+
 
 # RK3568 boards
 
@@ -309,6 +316,7 @@ UBOOT_TARGETS := \
   rock-pi-e-rk3328 \
   rock64-rk3328 \
   radxa-cm3-io-rk3566 \
+  radxa-e23-rk3566 \
   fastrhino-r66s-rk3568 \
   fastrhino-r68s-rk3568 \
   mrkaio-m68s-rk3568 \

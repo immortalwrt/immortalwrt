@@ -219,6 +219,17 @@ define Device/radxa_cm3-io
 endef
 TARGET_DEVICES += radxa_cm3-io
 
+define Device/radxa_e23
+  DEVICE_VENDOR := Radxa
+  DEVICE_MODEL := E23
+  SOC := rk3566
+  DEVICE_DTS := rockchip/rk3566-radxa-e23
+  UBOOT_DEVICE_NAME := radxa-e23-rk3566
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-r8125
+endef
+TARGET_DEVICES += radxa_cm3-io
+
 define Device/radxa_e25
   DEVICE_VENDOR := Radxa
   DEVICE_MODEL := E25

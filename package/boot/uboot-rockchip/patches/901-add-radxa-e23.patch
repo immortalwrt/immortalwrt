@@ -1,0 +1,349 @@
+--- a/arch/arm/dts/Makefile
++++ b/arch/arm/dts/Makefile
+@@ -175,6 +175,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3568) += \
+ 	rk3566-quartz64-a.dtb \
+ 	rk3566-quartz64-b.dtb \
+ 	rk3566-radxa-cm3-io.dtb \
++	rk3566-radxa-e23.dtb \
+ 	rk3566-soquartz-blade.dtb \
+ 	rk3566-soquartz-cm4.dtb \
+ 	rk3566-soquartz-model-a.dtb \
+--- /dev/null
++++ b/arch/arm/dts/rk3566-radxa-e23-u-boot.dtsi
+@@ -0,0 +1,18 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * (C) Copyright 2021 Rockchip Electronics Co., Ltd
++ */
++
++#include "rk356x-u-boot.dtsi"
++
++/ {
++	chosen {
++		stdout-path = &uart2;
++	};
++};
++
++&uart2 {
++	clock-frequency = <24000000>;
++	bootph-all;
++	status = "okay";
++};
+--- /dev/null
++++ b/configs/radxa-e23-rk3566_defconfig
+@@ -0,0 +1,87 @@
++CONFIG_ARM=y
++CONFIG_SKIP_LOWLEVEL_INIT=y
++CONFIG_COUNTER_FREQUENCY=24000000
++CONFIG_ARCH_ROCKCHIP=y
++CONFIG_TEXT_BASE=0x00a00000
++CONFIG_SPL_LIBCOMMON_SUPPORT=y
++CONFIG_SPL_LIBGENERIC_SUPPORT=y
++CONFIG_NR_DRAM_BANKS=2
++CONFIG_HAS_CUSTOM_SYS_INIT_SP_ADDR=y
++CONFIG_CUSTOM_SYS_INIT_SP_ADDR=0xc00000
++CONFIG_PCI=y
++CONFIG_CMD_PCI=y
++CONFIG_RTL8169=y
++CONFIG_DEFAULT_DEVICE_TREE="rk3566-radxa-e23"
++CONFIG_ROCKCHIP_RK3568=y
++CONFIG_SPL_ROCKCHIP_COMMON_BOARD=y
++CONFIG_SPL_SERIAL=y
++CONFIG_SPL_STACK_R_ADDR=0x600000
++CONFIG_SPL_STACK=0x400000
++CONFIG_DEBUG_UART_BASE=0xFE660000
++CONFIG_DEBUG_UART_CLOCK=24000000
++CONFIG_SYS_LOAD_ADDR=0xc00800
++CONFIG_DEBUG_UART=y
++CONFIG_FIT=y
++CONFIG_FIT_VERBOSE=y
++CONFIG_SPL_FIT_SIGNATURE=y
++CONFIG_SPL_LOAD_FIT=y
++CONFIG_LEGACY_IMAGE_FORMAT=y
++CONFIG_DEFAULT_FDT_FILE="rockchip/rk3566-radxa-e23.dtb"
++# CONFIG_DISPLAY_CPUINFO is not set
++CONFIG_DISPLAY_BOARDINFO_LATE=y
++CONFIG_SPL_MAX_SIZE=0x40000
++CONFIG_SPL_PAD_TO=0x7f8000
++CONFIG_SPL_HAS_BSS_LINKER_SECTION=y
++CONFIG_SPL_BSS_START_ADDR=0x4000000
++CONFIG_SPL_BSS_MAX_SIZE=0x4000
++# CONFIG_SPL_RAW_IMAGE_SUPPORT is not set
++# CONFIG_SPL_SHARES_INIT_SP_ADDR is not set
++CONFIG_SPL_STACK_R=y
++CONFIG_SPL_ATF=y
++CONFIG_CMD_GPIO=y
++CONFIG_CMD_GPT=y
++CONFIG_CMD_I2C=y
++CONFIG_CMD_MMC=y
++CONFIG_CMD_USB=y
++# CONFIG_CMD_SETEXPR is not set
++CONFIG_CMD_PMIC=y
++CONFIG_CMD_REGULATOR=y
++# CONFIG_SPL_DOS_PARTITION is not set
++CONFIG_SPL_OF_CONTROL=y
++CONFIG_OF_LIVE=y
++CONFIG_OF_SPL_REMOVE_PROPS="clock-names interrupt-parent assigned-clocks assigned-clock-rates assigned-clock-parents"
++CONFIG_SPL_DM_SEQ_ALIAS=y
++CONFIG_SPL_REGMAP=y
++CONFIG_SPL_SYSCON=y
++CONFIG_SPL_CLK=y
++CONFIG_ROCKCHIP_GPIO=y
++CONFIG_SYS_I2C_ROCKCHIP=y
++CONFIG_MISC=y
++CONFIG_SUPPORT_EMMC_RPMB=y
++CONFIG_MMC_DW=y
++CONFIG_MMC_DW_ROCKCHIP=y
++CONFIG_MMC_SDHCI=y
++CONFIG_MMC_SDHCI_SDMA=y
++CONFIG_MMC_SDHCI_ROCKCHIP=y
++CONFIG_PHY_REALTEK=y
++CONFIG_DWC_ETH_QOS=y
++CONFIG_DWC_ETH_QOS_ROCKCHIP=y
++CONFIG_PHY_ROCKCHIP_INNO_USB2=y
++CONFIG_PHY_ROCKCHIP_NANENG_COMBOPHY=y
++CONFIG_SPL_PINCTRL=y
++CONFIG_DM_PMIC=y
++CONFIG_PMIC_RK8XX=y
++CONFIG_REGULATOR_RK8XX=y
++CONFIG_PWM_ROCKCHIP=y
++CONFIG_SPL_RAM=y
++CONFIG_BAUDRATE=1500000
++CONFIG_DEBUG_UART_SHIFT=2
++CONFIG_SYS_NS16550_MEM32=y
++CONFIG_SYSRESET=y
++CONFIG_USB=y
++CONFIG_USB_XHCI_HCD=y
++CONFIG_USB_EHCI_HCD=y
++CONFIG_USB_EHCI_GENERIC=y
++CONFIG_USB_DWC3=y
++CONFIG_USB_DWC3_GENERIC=y
++CONFIG_ERRNO_STR=y
+--- /dev/null
++++ b/arch/arm/dts/rk3566-radxa-e23.dts
+@@ -0,0 +1,225 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2022 Radxa Limited
++ * Copyright (c) 2022 Amarula Solutions(India)
++ */
++
++/dts-v1/;
++#include <dt-bindings/soc/rockchip,vop2.h>
++#include "rk3566.dtsi"
++#include "rk3566-radxa-cm3.dtsi"
++
++/ {
++	model = "Radxa Compute Module 3(CM3) E23 Board";
++	compatible = "radxa,E23", "radxa,cm3", "rockchip,rk3566";
++
++	aliases {
++		ethernet0 = &gmac1;
++		mmc1 = &sdmmc0;
++	};
++
++	chosen: chosen {
++		stdout-path = "serial2:1500000n8";
++	};
++
++	gmac1_clkin: external-gmac1-clock {
++		compatible = "fixed-clock";
++		clock-frequency = <125000000>;
++		clock-output-names = "gmac1_clkin";
++		#clock-cells = <0>;
++	};
++
++	vcc5v0_usb30: vcc5v0-usb30-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc5v0_usb30";
++		enable-active-high;
++		gpio = <&gpio3 RK_PC2 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&vcc5v0_usb30_en_h>;
++		regulator-always-on;
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		vin-supply = <&vcc_sys>;
++	};
++
++	vcc3v0_sd: vcc3v0-sd-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc3v0_sd";
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		vin-supply = <&vcc3v3_sys>;
++	};
++};
++
++&combphy1 {
++	status = "okay";
++};
++
++&combphy2 {
++	status = "okay";
++};
++
++&gmac1 {
++	assigned-clocks = <&cru SCLK_GMAC1_RX_TX>, <&cru SCLK_GMAC1_RGMII_SPEED>, <&cru SCLK_GMAC1>;
++	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>, <&cru SCLK_GMAC1>, <&gmac1_clkin>;
++	assigned-clock-rates = <0>, <125000000>;
++	clock_in_out = "input";
++	phy-handle = <&rgmii_phy1>;
++	phy-mode = "rgmii";
++	phy-supply = <&vcc_3v3>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&gmac1m0_miim
++		     &gmac1m0_tx_bus2
++		     &gmac1m0_rx_bus2
++		     &gmac1m0_rgmii_clk
++		     &gmac1m0_rgmii_bus
++		     &gmac1m0_clkinout>;
++	snps,reset-gpio = <&gpio4 RK_PC2 GPIO_ACTIVE_LOW>;
++	snps,reset-active-low;
++	/* Reset time is 20ms, 100ms for rtl8211f */
++	snps,reset-delays-us = <0 20000 100000>;
++	tx_delay = <0x46>;
++	rx_delay = <0x2e>;
++	status = "okay";
++};
++
++&mdio1 {
++	rgmii_phy1: ethernet-phy@0 {
++		compatible = "ethernet-phy-ieee802.3-c22";
++		reg = <0x0>;
++	};
++};
++
++&pinctrl {
++	gmac1 {
++		gmac1m0_miim: gmac1m0-miim {
++			rockchip,pins =
++				/* gmac1_mdcm0 */
++				<3 RK_PC4 3 &pcfg_pull_none_drv_level_15>,
++				/* gmac1_mdiom0 */
++				<3 RK_PC5 3 &pcfg_pull_none_drv_level_15>;
++		};
++
++		gmac1m0_rx_bus2: gmac1m0-rx-bus2 {
++			rockchip,pins =
++				/* gmac1_rxd0m0 */
++				<3 RK_PB1 3 &pcfg_pull_none_drv_level_15>,
++				/* gmac1_rxd1m0 */
++				<3 RK_PB2 3 &pcfg_pull_none_drv_level_15>,
++				/* gmac1_rxdvcrsm0 */
++				<3 RK_PB3 3 &pcfg_pull_none_drv_level_15>;
++		};
++
++		gmac1m0_tx_bus2: gmac1m0-tx-bus2 {
++			rockchip,pins =
++				/* gmac1_txd0m0 */
++				<3 RK_PB5 3 &pcfg_pull_none_drv_level_15>,
++				/* gmac1_txd1m0 */
++				<3 RK_PB6 3 &pcfg_pull_none_drv_level_15>,
++				/* gmac1_txenm0 */
++				<3 RK_PB7 3 &pcfg_pull_none_drv_level_15>;
++		};
++
++		gmac1m0_rgmii_clk: gmac1m0-rgmii-clk {
++			rockchip,pins =
++				/* gmac1_rxclkm0 */
++				<3 RK_PA7 3 &pcfg_pull_none_drv_level_15>,
++				/* gmac1_txclkm0 */
++				<3 RK_PA6 3 &pcfg_pull_none_drv_level_15>;
++		};
++
++		gmac1m0_rgmii_bus: gmac1m0-rgmii-bus {
++			rockchip,pins =
++				/* gmac1_rxd2m0 */
++				<3 RK_PA4 3 &pcfg_pull_none_drv_level_15>,
++				/* gmac1_rxd3m0 */
++				<3 RK_PA5 3 &pcfg_pull_none_drv_level_15>,
++				/* gmac1_txd2m0 */
++				<3 RK_PA2 3 &pcfg_pull_none_drv_level_15>,
++				/* gmac1_txd3m0 */
++				<3 RK_PA3 3 &pcfg_pull_none_drv_level_15>;
++		};
++
++		gmac1m0_clkinout: gmac1m0-clkinout {
++			rockchip,pins =
++				/* gmac1_mclkinoutm0 */
++				<3 RK_PC0 3 &pcfg_pull_none_drv_level_15>;
++		};
++	};
++
++	sdcard {
++		sdmmc_pwren: sdmmc-pwren {
++			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
++	usb {
++		vcc5v0_usb30_en_h: vcc5v0-host-en-h {
++			rockchip,pins = <3 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++};
++
++&sdmmc0 {
++	bus-width = <4>;
++	cap-mmc-highspeed;
++	cap-sd-highspeed;
++	disable-wp;
++	vqmmc-supply = <&vccio_sd>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&sdmmc0_bus4 &sdmmc0_clk &sdmmc0_cmd &sdmmc0_det &sdmmc0_pwren>;
++	status = "okay";
++};
++
++&uart2 {
++	status = "okay";
++};
++
++&usb2phy0_host {
++	phy-supply = <&vcc5v0_usb30>;
++	status = "okay";
++};
++
++&usb2phy1_host {
++	status = "okay";
++};
++
++&usb2phy1_otg {
++	status = "okay";
++};
++
++&usb_host0_ehci {
++	status = "okay";
++};
++
++&usb_host1_xhci {
++	status = "okay";
++};
++
++&usb2phy0_otg {
++	status = "okay";
++};
++
++&usb_host0_xhci {
++	status = "okay";
++};
++
++&vop {
++	assigned-clocks = <&cru DCLK_VOP0>, <&cru DCLK_VOP1>;
++	assigned-clock-parents = <&pmucru PLL_HPLL>, <&cru PLL_VPLL>;
++	status = "okay";
++};
++
++&vop_mmu {
++	status = "okay";
++};
++
++&pcie2x1 {
++       pinctrl-names = "default";
++       pinctrl-0 = <&pcie20m2_pins>;
++       reset-gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
++       vpcie3v3-supply = <&vcc3v3_sys>;
++       status = "okay";
++};
