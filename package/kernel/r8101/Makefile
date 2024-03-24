@@ -24,7 +24,6 @@ include $(INCLUDE_DIR)/package.mk
 define KernelPackage/r8101
   TITLE:=Driver for Realtek r8101 chipsets
   SUBMENU:=Network Devices
-  VERSION:=$(LINUX_VERSION)+$(PKG_VERSION)-$(BOARD)-$(PKG_RELEASE)
   DEPENDS:=@PCI_SUPPORT
   FILES:= $(PKG_BUILD_DIR)/src/r8101.ko
   AUTOLOAD:=$(call AutoProbe,r8101)
