@@ -53,7 +53,8 @@ case "$board" in
 		wifi
 		;;
 	cetron,ct3003-stock|\
-	cetron,ct3003-ubootmod)
+	cetron,ct3003-ubootmod|\
+	nokia,ea0326gmp)
 		addr=$(cat /sys/class/net/eth0/address)
 		[ "$PHYNBR" = "0" ] && macaddr_add $addr 1 > /sys${DEVPATH}/macaddress
 		[ "$PHYNBR" = "1" ] && macaddr_add $addr 2 > /sys${DEVPATH}/macaddress
