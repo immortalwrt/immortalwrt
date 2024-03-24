@@ -1,0 +1,17 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ *  Copyright(c) 2017 Kristian Evensen <kristian.evensen@gmail.com>.
+ *  Copyright(c) 2017 Piotr Dymacz <pepe2k@gmail.com>.
+ *  All rights reserved.
+ */
+
+#include "mt7621_ws7915.dtsi"
+
+/ {
+	compatible = "huasifei,ws7915", "huasifei,ws7915", "mediatek,mt7621-soc";
+	model = "Huasifei,ws7915";
+};
+
+&firmware {
+	reg = <0x50000 0xfb0000>;
+};
