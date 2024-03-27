@@ -79,7 +79,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  /* AXP22x ranges are shared with the AXP809, as they cover the same range */
  static const struct regmap_range axp22x_writeable_ranges[] = {
  	regmap_reg_range(AXP20X_DATACACHE(0), AXP20X_IRQ5_STATE),
-@@ -219,6 +249,19 @@ static const struct resource axp152_pek_
+@@ -220,6 +250,19 @@ static const struct resource axp152_pek_
  	DEFINE_RES_IRQ_NAMED(AXP152_IRQ_PEK_FAL_EDGE, "PEK_DBF"),
  };
  
@@ -99,7 +99,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  static const struct resource axp20x_ac_power_supply_resources[] = {
  	DEFINE_RES_IRQ_NAMED(AXP20X_IRQ_ACIN_PLUGIN, "ACIN_PLUGIN"),
  	DEFINE_RES_IRQ_NAMED(AXP20X_IRQ_ACIN_REMOVAL, "ACIN_REMOVAL"),
-@@ -301,6 +344,15 @@ static const struct regmap_config axp152
+@@ -302,6 +345,15 @@ static const struct regmap_config axp152
  	.cache_type	= REGCACHE_RBTREE,
  };
  
@@ -115,7 +115,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  static const struct regmap_config axp20x_regmap_config = {
  	.reg_bits	= 8,
  	.val_bits	= 8,
-@@ -378,6 +430,42 @@ static const struct regmap_irq axp152_re
+@@ -379,6 +431,42 @@ static const struct regmap_irq axp152_re
  	INIT_REGMAP_IRQ(AXP152, GPIO0_INPUT,		2, 0),
  };
  
@@ -158,7 +158,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  static const struct regmap_irq axp20x_regmap_irqs[] = {
  	INIT_REGMAP_IRQ(AXP20X, ACIN_OVER_V,		0, 7),
  	INIT_REGMAP_IRQ(AXP20X, ACIN_PLUGIN,		0, 6),
-@@ -615,6 +703,32 @@ static const struct regmap_irq_chip axp1
+@@ -616,6 +704,32 @@ static const struct regmap_irq_chip axp1
  	.num_regs		= 3,
  };
  
@@ -191,7 +191,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  static const struct regmap_irq_chip axp20x_regmap_irq_chip = {
  	.name			= "axp20x_irq_chip",
  	.status_base		= AXP20X_IRQ1_STATE,
-@@ -711,6 +825,27 @@ static const struct regmap_irq_chip axp1
+@@ -712,6 +826,27 @@ static const struct regmap_irq_chip axp1
  	.num_regs		= 2,
  };
  
@@ -219,7 +219,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  static const struct mfd_cell axp20x_cells[] = {
  	{
  		.name		= "axp20x-gpio",
-@@ -1028,6 +1163,12 @@ int axp20x_match_device(struct axp20x_de
+@@ -1029,6 +1164,12 @@ int axp20x_match_device(struct axp20x_de
  		axp20x->regmap_cfg = &axp152_regmap_config;
  		axp20x->regmap_irq_chip = &axp152_regmap_irq_chip;
  		break;
@@ -338,7 +338,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  	AXP20X_LDO1 = 0,
  	AXP20X_LDO2,
  	AXP20X_LDO3,
-@@ -530,6 +578,42 @@ enum {
+@@ -531,6 +579,42 @@ enum {
  	AXP152_IRQ_GPIO0_INPUT,
  };
  

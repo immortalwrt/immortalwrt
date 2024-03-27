@@ -58,7 +58,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  	"AXP803",
  	"AXP806",
  	"AXP809",
-@@ -155,6 +156,25 @@ static const struct regmap_range axp806_
+@@ -156,6 +157,25 @@ static const struct regmap_range axp806_
  	regmap_reg_range(AXP806_REG_ADDR_EXT, AXP806_REG_ADDR_EXT),
  };
  
@@ -84,7 +84,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  static const struct regmap_range axp806_volatile_ranges[] = {
  	regmap_reg_range(AXP20X_IRQ1_STATE, AXP20X_IRQ2_STATE),
  };
-@@ -247,6 +267,11 @@ static const struct resource axp288_fuel
+@@ -248,6 +268,11 @@ static const struct resource axp288_fuel
  	DEFINE_RES_IRQ(AXP288_IRQ_WL1),
  };
  
@@ -96,7 +96,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  static const struct resource axp803_pek_resources[] = {
  	DEFINE_RES_IRQ_NAMED(AXP803_IRQ_PEK_RIS_EDGE, "PEK_DBR"),
  	DEFINE_RES_IRQ_NAMED(AXP803_IRQ_PEK_FAL_EDGE, "PEK_DBF"),
-@@ -303,6 +328,15 @@ static const struct regmap_config axp288
+@@ -304,6 +329,15 @@ static const struct regmap_config axp288
  	.cache_type	= REGCACHE_RBTREE,
  };
  
@@ -112,7 +112,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  static const struct regmap_config axp806_regmap_config = {
  	.reg_bits	= 8,
  	.val_bits	= 8,
-@@ -455,6 +489,16 @@ static const struct regmap_irq axp288_re
+@@ -456,6 +490,16 @@ static const struct regmap_irq axp288_re
  	INIT_REGMAP_IRQ(AXP288, BC_USB_CHNG,            5, 1),
  };
  
@@ -129,7 +129,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  static const struct regmap_irq axp803_regmap_irqs[] = {
  	INIT_REGMAP_IRQ(AXP803, ACIN_OVER_V,		0, 7),
  	INIT_REGMAP_IRQ(AXP803, ACIN_PLUGIN,		0, 6),
-@@ -609,6 +653,17 @@ static const struct regmap_irq_chip axp2
+@@ -610,6 +654,17 @@ static const struct regmap_irq_chip axp2
  
  };
  
@@ -147,7 +147,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  static const struct regmap_irq_chip axp803_regmap_irq_chip = {
  	.name			= "axp803",
  	.status_base		= AXP20X_IRQ1_STATE,
-@@ -751,6 +806,11 @@ static const struct mfd_cell axp152_cell
+@@ -752,6 +807,11 @@ static const struct mfd_cell axp152_cell
  	},
  };
  
@@ -159,7 +159,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  static const struct resource axp288_adc_resources[] = {
  	DEFINE_RES_IRQ_NAMED(AXP288_IRQ_GPADC, "GPADC"),
  };
-@@ -920,8 +980,18 @@ static const struct mfd_cell axp_regulat
+@@ -921,8 +981,18 @@ static const struct mfd_cell axp_regulat
  static int axp20x_power_off(struct sys_off_data *data)
  {
  	struct axp20x_dev *axp20x = data->cb_data;
@@ -179,7 +179,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  
  	/* Give capacitors etc. time to drain to avoid kernel panic msg. */
  	mdelay(500);
-@@ -984,6 +1054,12 @@ int axp20x_match_device(struct axp20x_de
+@@ -985,6 +1055,12 @@ int axp20x_match_device(struct axp20x_de
  		axp20x->regmap_irq_chip = &axp288_regmap_irq_chip;
  		axp20x->irq_flags = IRQF_TRIGGER_LOW;
  		break;
@@ -237,7 +237,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
  	AXP806_DCDCA = 0,
  	AXP806_DCDCB,
  	AXP806_DCDCC,
-@@ -613,6 +635,16 @@ enum axp288_irqs {
+@@ -616,6 +638,16 @@ enum axp288_irqs {
  	AXP288_IRQ_BC_USB_CHNG,
  };
  

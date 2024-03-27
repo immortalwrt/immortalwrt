@@ -57,7 +57,7 @@ Link: https://lore.kernel.org/r/TY3P286MB261162D57695AC8164ED50E298609@TY3P286MB
  };
  
  static const struct regmap_range axp152_writeable_ranges[] = {
-@@ -168,6 +169,31 @@ static const struct regmap_access_table
+@@ -169,6 +170,31 @@ static const struct regmap_access_table
  	.n_yes_ranges	= ARRAY_SIZE(axp806_volatile_ranges),
  };
  
@@ -89,7 +89,7 @@ Link: https://lore.kernel.org/r/TY3P286MB261162D57695AC8164ED50E298609@TY3P286MB
  static const struct resource axp152_pek_resources[] = {
  	DEFINE_RES_IRQ_NAMED(AXP152_IRQ_PEK_RIS_EDGE, "PEK_DBR"),
  	DEFINE_RES_IRQ_NAMED(AXP152_IRQ_PEK_FAL_EDGE, "PEK_DBF"),
-@@ -236,6 +262,11 @@ static const struct resource axp809_pek_
+@@ -237,6 +263,11 @@ static const struct resource axp809_pek_
  	DEFINE_RES_IRQ_NAMED(AXP809_IRQ_PEK_FAL_EDGE, "PEK_DBF"),
  };
  
@@ -101,7 +101,7 @@ Link: https://lore.kernel.org/r/TY3P286MB261162D57695AC8164ED50E298609@TY3P286MB
  static const struct regmap_config axp152_regmap_config = {
  	.reg_bits	= 8,
  	.val_bits	= 8,
-@@ -281,6 +312,15 @@ static const struct regmap_config axp806
+@@ -282,6 +313,15 @@ static const struct regmap_config axp806
  	.cache_type	= REGCACHE_RBTREE,
  };
  
@@ -117,7 +117,7 @@ Link: https://lore.kernel.org/r/TY3P286MB261162D57695AC8164ED50E298609@TY3P286MB
  #define INIT_REGMAP_IRQ(_variant, _irq, _off, _mask)			\
  	[_variant##_IRQ_##_irq] = { .reg_offset = (_off), .mask = BIT(_mask) }
  
-@@ -502,6 +542,23 @@ static const struct regmap_irq axp809_re
+@@ -503,6 +543,23 @@ static const struct regmap_irq axp809_re
  	INIT_REGMAP_IRQ(AXP809, GPIO0_INPUT,		4, 0),
  };
  
@@ -141,7 +141,7 @@ Link: https://lore.kernel.org/r/TY3P286MB261162D57695AC8164ED50E298609@TY3P286MB
  static const struct regmap_irq_chip axp152_regmap_irq_chip = {
  	.name			= "axp152_irq_chip",
  	.status_base		= AXP152_IRQ1_STATE,
-@@ -588,6 +645,17 @@ static const struct regmap_irq_chip axp8
+@@ -589,6 +646,17 @@ static const struct regmap_irq_chip axp8
  	.num_regs		= 5,
  };
  
@@ -159,7 +159,7 @@ Link: https://lore.kernel.org/r/TY3P286MB261162D57695AC8164ED50E298609@TY3P286MB
  static const struct mfd_cell axp20x_cells[] = {
  	{
  		.name		= "axp20x-gpio",
-@@ -832,6 +900,23 @@ static const struct mfd_cell axp813_cell
+@@ -833,6 +901,23 @@ static const struct mfd_cell axp813_cell
  	},
  };
  
@@ -183,7 +183,7 @@ Link: https://lore.kernel.org/r/TY3P286MB261162D57695AC8164ED50E298609@TY3P286MB
  static int axp20x_power_off(struct sys_off_data *data)
  {
  	struct axp20x_dev *axp20x = data->cb_data;
-@@ -941,6 +1026,28 @@ int axp20x_match_device(struct axp20x_de
+@@ -942,6 +1027,28 @@ int axp20x_match_device(struct axp20x_de
  		 */
  		axp20x->regmap_irq_chip = &axp803_regmap_irq_chip;
  		break;
@@ -317,7 +317,7 @@ Link: https://lore.kernel.org/r/TY3P286MB261162D57695AC8164ED50E298609@TY3P286MB
  /* IRQs */
  enum {
  	AXP152_IRQ_LDO0IN_CONNECT = 1,
-@@ -632,6 +700,23 @@ enum axp809_irqs {
+@@ -637,6 +705,23 @@ enum axp809_irqs {
  	AXP809_IRQ_GPIO0_INPUT,
  };
  
