@@ -83,6 +83,7 @@ platform_do_upgrade() {
 	bananapi,bpi-r3|\
 	bananapi,bpi-r3-mini|\
 	bananapi,bpi-r4|\
+	nokia,ea0326gmp|\
 	xiaomi,redmi-router-ax6000-ubootmod)
 		[ -e /dev/fit0 ] && fitblk /dev/fit0
 		[ -e /dev/fitrw ] && fitblk /dev/fitrw
@@ -130,7 +131,6 @@ platform_do_upgrade() {
 	h3c,magic-nx30-pro|\
 	jcg,q30-pro|\
 	mediatek,mt7981-rfb|\
-	nokia,ea0326gmp|\
 	qihoo,360t7|\
 	tplink,tl-xdr4288|\
 	tplink,tl-xdr6086|\
