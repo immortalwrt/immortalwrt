@@ -2,6 +2,7 @@
 
 USE_PROCD=1
 START=45
+STOP=89
 
 start_service() {
 	procd_open_instance
