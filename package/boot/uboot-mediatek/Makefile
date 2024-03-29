@@ -268,7 +268,7 @@ define U-Boot/mt7981_jcg_q30-pro
 endef
 
 define U-Boot/mt7981_nokia_ea0326gmp
-  NAME:=Qihoo 360T7
+  NAME:=Nokia EA0326GMP
   BUILD_SUBTARGET:=filogic
   BUILD_DEVICES:=nokia_ea0326gmp
   UBOOT_CONFIG:=mt7981_nokia_ea0326gmp
