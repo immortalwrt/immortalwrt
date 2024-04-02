@@ -56,6 +56,7 @@ bananapi,bpi-r3|\
 bananapi,bpi-r3-mini|\
 bananapi,bpi-r4|\
 bananapi,bpi-r4-poe|\
+cmcc,rax3000m|\
 jdcloud,re-cp-03)
 	. /lib/upgrade/common.sh
 
@@ -80,16 +81,6 @@ netgear,wax220|\
 zbtlink,zbt-z8102ax|\
 zbtlink,zbt-z8103ax)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x20000" "0x20000"
-	;;
-cmcc,rax3000m)
-	case "$(cmdline_get_var root)" in
-	/dev/mmc*)
-		ubootenv_add_mmc_default
-		;;
-	*)
-		ubootenv_add_ubi_default
-		;;
-	esac
 	;;
 comfast,cf-e393ax)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x20000" "0x80000"
