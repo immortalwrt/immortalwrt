@@ -140,19 +140,6 @@ mediatek_setup_macs()
 	bananapi,bpi-r4)
 		wan_mac=$(macaddr_add $(cat /sys/class/net/eth0/address) 1)
 		;;
-	bananapi,bpi-r3-mini)
-		lan_mac=$(macaddr_generate_from_mmc_cid mmcblk0)
-		wan_mac=$(macaddr_add "$lan_mac" 1)
-		;;
-	cmcc,rax3000m)
-		case "$(cmdline_get_var root)" in
-		/dev/mmc*)
-			wan_mac=$(mmc_get_mac_binary factory 0x2a)
-			lan_mac=$(mmc_get_mac_binary factory 0x24)
-			label_mac=$wan_mac
-		;;
-		esac
-		;;
 	h3c,magic-nx30-pro|\
 	h3c,magic-nx30-pro-nmbm)
 		wan_mac=$(mtd_get_mac_ascii pdt_data_1 ethaddr)
