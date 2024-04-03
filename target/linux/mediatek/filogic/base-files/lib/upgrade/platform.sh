@@ -165,7 +165,7 @@ platform_do_upgrade() {
 		CI_KERNPART="fit"
 		CI_ROOTPART="ubi_rootfs"
 		nand_do_upgrade "$1"
-                ;;
+		;;
 	unielec,u7981-01*)
 		local rootdev="$(cmdline_get_var root)"
 		rootdev="${rootdev##*/}"
@@ -221,6 +221,8 @@ platform_copy_config() {
 	acer,predator-w6|\
 	glinet,gl-mt2500|\
 	glinet,gl-mt6000|\
+	glinet,gl-x3000|\
+	glinet,gl-xe3000|\
 	jdcloud,re-cp-03|\
 	ubnt,unifi-6-plus)
 		emmc_copy_config
@@ -240,15 +242,6 @@ platform_copy_config() {
 			emmc_copy_config
 			;;
 		esac
-		;;
-	acer,predator-w6|\
-	glinet,gl-mt2500|\
-	glinet,gl-mt6000|\
-	glinet,gl-x3000|\
-	glinet,gl-xe3000|\
-	jdcloud,re-cp-03|\
-	ubnt,unifi-6-plus)
-		emmc_copy_config
 		;;
 	esac
 }
