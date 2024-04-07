@@ -15,7 +15,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
-@@ -161,6 +161,17 @@
+@@ -160,6 +160,17 @@
  		vin-supply = <&vcc5v0_sys>;
  	};
  
@@ -33,7 +33,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	vdd_4g_3v3: vdd-4g-3v3-regulator {
  		compatible = "regulator-fixed";
  		enable-active-high;
-@@ -560,7 +571,7 @@
+@@ -559,7 +570,7 @@
  	no-mmc;
  	no-sdio;
  	sd-uhs-sdr104;

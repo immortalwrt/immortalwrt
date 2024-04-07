@@ -19,7 +19,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
-@@ -114,21 +114,6 @@
+@@ -113,21 +113,6 @@
  		regulator-max-microvolt = <1100000>;
  		vin-supply = <&vcc5v0_sys>;
  	};
@@ -41,7 +41,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  };
  
  &combphy0_ps {
-@@ -335,12 +320,6 @@
+@@ -334,12 +319,6 @@
  			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
  		};
  	};
@@ -54,7 +54,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  };
  
  &pwm1 {
-@@ -392,7 +371,7 @@
+@@ -390,7 +369,7 @@
  	sd-uhs-sdr25;
  	sd-uhs-sdr50;
  	sd-uhs-sdr104;

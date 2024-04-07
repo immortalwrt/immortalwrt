@@ -13,7 +13,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
 
 --- a/drivers/devfreq/Kconfig
 +++ b/drivers/devfreq/Kconfig
-@@ -130,6 +130,18 @@ config ARM_MEDIATEK_CCI_DEVFREQ
+@@ -129,6 +129,18 @@ config ARM_MEDIATEK_CCI_DEVFREQ
  	  buck voltages and update a proper CCI frequency. Use the notification
  	  to get the regulator status.
  

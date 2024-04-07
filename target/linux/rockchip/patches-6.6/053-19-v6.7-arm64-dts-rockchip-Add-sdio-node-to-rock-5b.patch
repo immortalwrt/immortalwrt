@@ -25,10 +25,10 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  		mmc0 = &sdhci;
  		mmc1 = &sdmmc;
 +		mmc2 = &sdio;
- 		serial2 = &uart2;
  	};
  
-@@ -113,6 +114,21 @@
+ 	chosen {
+@@ -112,6 +113,21 @@
  		regulator-max-microvolt = <1100000>;
  		vin-supply = <&vcc5v0_sys>;
  	};
@@ -50,7 +50,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  };
  
  &combphy0_ps {
-@@ -319,6 +335,12 @@
+@@ -318,6 +334,12 @@
  			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
  		};
  	};
@@ -63,7 +63,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  };
  
  &pwm1 {
-@@ -356,6 +378,27 @@
+@@ -354,6 +376,27 @@
  	status = "okay";
  };
  

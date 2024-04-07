@@ -15,7 +15,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
 --- a/drivers/usb/dwc3/core.c
 +++ b/drivers/usb/dwc3/core.c
-@@ -821,8 +821,20 @@ static int dwc3_clk_enable(struct dwc3 *
+@@ -817,8 +817,20 @@ static int dwc3_clk_enable(struct dwc3 *
  	if (ret)
  		goto disable_ref_clk;
  
@@ -36,7 +36,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  disable_ref_clk:
  	clk_disable_unprepare(dwc->ref_clk);
  disable_bus_clk:
-@@ -832,6 +844,8 @@ disable_bus_clk:
+@@ -828,6 +840,8 @@ disable_bus_clk:
  
  static void dwc3_clk_disable(struct dwc3 *dwc)
  {
@@ -45,9 +45,9 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	clk_disable_unprepare(dwc->susp_clk);
  	clk_disable_unprepare(dwc->ref_clk);
  	clk_disable_unprepare(dwc->bus_clk);
-@@ -1926,6 +1940,18 @@ static int dwc3_probe(struct platform_de
- 				goto put_usb_psy;
- 			}
+@@ -1834,6 +1848,18 @@ static int dwc3_get_clocks(struct dwc3 *
+ 			return dev_err_probe(dev, PTR_ERR(dwc->susp_clk),
+ 					"could not get suspend clock\n");
  		}
 +
 +		dwc->utmi_clk = devm_clk_get_optional(dev, "utmi");
@@ -63,10 +63,10 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		}
  	}
  
- 	ret = reset_control_deassert(dwc->reset);
+ 	return 0;
 --- a/drivers/usb/dwc3/core.h
 +++ b/drivers/usb/dwc3/core.h
-@@ -991,6 +991,8 @@ struct dwc3_scratchpad_array {
+@@ -996,6 +996,8 @@ struct dwc3_scratchpad_array {
   * @bus_clk: clock for accessing the registers
   * @ref_clk: reference clock
   * @susp_clk: clock used when the SS phy is in low power (S3) state
@@ -75,7 +75,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
   * @reset: reset control
   * @regs: base address for our registers
   * @regs_size: address space size
-@@ -1159,6 +1161,8 @@ struct dwc3 {
+@@ -1165,6 +1167,8 @@ struct dwc3 {
  	struct clk		*bus_clk;
  	struct clk		*ref_clk;
  	struct clk		*susp_clk;

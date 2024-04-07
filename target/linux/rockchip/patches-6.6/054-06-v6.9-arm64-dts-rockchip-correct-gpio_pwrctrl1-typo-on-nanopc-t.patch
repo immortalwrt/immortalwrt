@@ -15,7 +15,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
-@@ -591,7 +591,7 @@
+@@ -590,7 +590,7 @@
  		#gpio-cells = <2>;
  
  		rk806_dvs1_null: dvs1-null-pins {

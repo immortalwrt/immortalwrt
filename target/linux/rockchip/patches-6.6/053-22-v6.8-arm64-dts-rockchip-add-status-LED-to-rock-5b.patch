@@ -22,7 +22,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  #include "rk3588.dtsi"
  
  / {
-@@ -37,6 +38,19 @@
+@@ -36,6 +37,19 @@
  		pinctrl-0 = <&hp_detect>;
  	};
  
@@ -42,7 +42,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	fan: pwm-fan {
  		compatible = "pwm-fan";
  		cooling-levels = <0 95 145 195 255>;
-@@ -285,6 +299,12 @@
+@@ -284,6 +298,12 @@
  		};
  	};
  

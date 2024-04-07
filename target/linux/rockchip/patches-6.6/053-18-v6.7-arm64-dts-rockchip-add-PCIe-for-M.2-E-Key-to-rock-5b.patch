@@ -15,7 +15,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
-@@ -44,6 +44,21 @@
+@@ -43,6 +43,21 @@
  		#cooling-cells = <2>;
  	};
  
@@ -37,7 +37,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	vcc3v3_pcie2x1l2: vcc3v3-pcie2x1l2-regulator {
  		compatible = "regulator-fixed";
  		regulator-name = "vcc3v3_pcie2x1l2";
-@@ -104,6 +119,10 @@
+@@ -103,6 +118,10 @@
  	status = "okay";
  };
  
@@ -48,7 +48,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  &cpu_b0 {
  	cpu-supply = <&vdd_cpu_big0_s0>;
  };
-@@ -230,6 +249,14 @@
+@@ -229,6 +248,14 @@
  	};
  };
  
@@ -63,7 +63,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  &pcie2x1l2 {
  	pinctrl-names = "default";
  	pinctrl-0 = <&pcie2_2_rst>;
-@@ -264,6 +291,14 @@
+@@ -263,6 +290,14 @@
  	};
  
  	pcie2 {

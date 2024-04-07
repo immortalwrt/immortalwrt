@@ -187,7 +187,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	status = "okay";
  };
  
-@@ -593,9 +597,7 @@
+@@ -592,9 +596,7 @@
  		reg = <0x0>;
  		pinctrl-names = "default";
  		pinctrl-0 = <&eth_phy_rst>;
@@ -200,7 +200,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  
 --- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
-@@ -531,6 +531,17 @@
+@@ -530,6 +530,17 @@
  	pinctrl-names = "default";
  	pinctrl-0 = <&pcie2_0_rst>;
  	status = "okay";
@@ -218,7 +218,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  };
  
  &pcie2x1l1 {
-@@ -547,6 +558,17 @@
+@@ -546,6 +557,17 @@
  	pinctrl-names = "default";
  	pinctrl-0 = <&pcie2_2_rst>;
  	status = "okay";

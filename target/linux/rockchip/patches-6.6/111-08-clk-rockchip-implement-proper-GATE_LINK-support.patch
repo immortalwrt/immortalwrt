@@ -295,7 +295,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +core_initcall(rockchip_clk_rk3588_drv_register);
 --- a/drivers/clk/rockchip/clk.c
 +++ b/drivers/clk/rockchip/clk.c
-@@ -19,9 +19,13 @@
+@@ -19,8 +19,12 @@
  #include <linux/clk-provider.h>
  #include <linux/io.h>
  #include <linux/mfd/syscon.h>
@@ -304,12 +304,11 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +#include <linux/pm_runtime.h>
  #include <linux/regmap.h>
  #include <linux/reboot.h>
- #include <linux/rational.h>
 +#include <linux/platform_device.h>
  
  #include "../clk-fractional-divider.h"
  #include "clk.h"
-@@ -377,7 +381,7 @@ struct rockchip_clk_provider *rockchip_c
+@@ -376,7 +380,7 @@ struct rockchip_clk_provider *rockchip_c
  		goto err_free;
  
  	for (i = 0; i < nr_clks; ++i)
@@ -318,7 +317,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  
  	ctx->reg_base = base;
  	ctx->clk_data.clks = clk_table;
-@@ -447,6 +451,66 @@ unsigned long rockchip_clk_find_max_clk_
+@@ -446,6 +450,66 @@ unsigned long rockchip_clk_find_max_clk_
  }
  EXPORT_SYMBOL_GPL(rockchip_clk_find_max_clk_id);
  
@@ -385,7 +384,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  void rockchip_clk_register_branches(struct rockchip_clk_provider *ctx,
  				    struct rockchip_clk_branch *list,
  				    unsigned int nr_clk)
-@@ -527,6 +591,9 @@ void rockchip_clk_register_branches(stru
+@@ -526,6 +590,9 @@ void rockchip_clk_register_branches(stru
  				ctx->reg_base + list->gate_offset,
  				list->gate_shift, list->gate_flags, &ctx->lock);
  			break;

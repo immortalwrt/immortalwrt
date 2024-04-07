@@ -14,7 +14,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -385,6 +385,11 @@
+@@ -394,6 +394,11 @@
  		#clock-cells = <0>;
  	};
  
@@ -26,7 +26,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	timer {
  		compatible = "arm,armv8-timer";
  		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_HIGH 0>,
-@@ -497,6 +502,16 @@
+@@ -506,6 +511,16 @@
  		reg = <0x0 0xfd58c000 0x0 0x1000>;
  	};
  
@@ -43,7 +43,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	php_grf: syscon@fd5b0000 {
  		compatible = "rockchip,rk3588-php-grf", "syscon";
  		reg = <0x0 0xfd5b0000 0x0 0x1000>;
-@@ -616,6 +631,74 @@
+@@ -625,6 +640,74 @@
  		status = "disabled";
  	};
  

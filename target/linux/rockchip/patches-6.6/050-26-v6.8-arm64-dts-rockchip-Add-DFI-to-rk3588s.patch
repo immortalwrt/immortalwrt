@@ -18,7 +18,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -434,6 +434,11 @@
+@@ -443,6 +443,11 @@
  		status = "disabled";
  	};
  
@@ -30,7 +30,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	sys_grf: syscon@fd58c000 {
  		compatible = "rockchip,rk3588-sys-grf", "syscon";
  		reg = <0x0 0xfd58c000 0x0 0x1000>;
-@@ -1320,6 +1325,17 @@
+@@ -1330,6 +1335,17 @@
  		};
  	};
  

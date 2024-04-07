@@ -16,7 +16,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
-@@ -29,6 +29,26 @@
+@@ -28,6 +28,26 @@
  		pwms = <&pwm2 0 25000 0>;
  	};
  
@@ -43,7 +43,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	vcc12v_dcin: vcc12v-dcin-regulator {
  		compatible = "regulator-fixed";
  		regulator-name = "vcc12v_dcin";
-@@ -87,6 +107,10 @@
+@@ -86,6 +106,10 @@
  	status = "okay";
  };
  
@@ -54,7 +54,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  &cpu_b0 {
  	cpu-supply = <&vdd_cpu_big0_s0>;
  };
-@@ -163,7 +187,20 @@
+@@ -162,7 +186,20 @@
  	};
  };
  
@@ -75,7 +75,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	rtl8211f {
  		rtl8211f_rst: rtl8211f-rst {
  			rockchip,pins = <4 RK_PB3 RK_FUNC_GPIO &pcfg_pull_none>;
-@@ -177,6 +214,12 @@
+@@ -176,6 +213,12 @@
  		};
  	};
  

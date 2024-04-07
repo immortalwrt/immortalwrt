@@ -41,7 +41,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  		iounmap(reg_base);
 --- a/drivers/clk/rockchip/clk.c
 +++ b/drivers/clk/rockchip/clk.c
-@@ -430,6 +430,23 @@ void rockchip_clk_register_plls(struct r
+@@ -429,6 +429,23 @@ void rockchip_clk_register_plls(struct r
  }
  EXPORT_SYMBOL_GPL(rockchip_clk_register_plls);
  

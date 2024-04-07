@@ -18,7 +18,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -439,6 +439,27 @@
+@@ -448,6 +448,27 @@
  		reg = <0x0 0xfd58a000 0x0 0x10000>;
  	};
  

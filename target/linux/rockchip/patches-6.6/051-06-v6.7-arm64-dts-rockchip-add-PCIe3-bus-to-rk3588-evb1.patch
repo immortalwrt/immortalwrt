@@ -14,7 +14,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
-@@ -49,6 +49,26 @@
+@@ -48,6 +48,26 @@
  		vin-supply = <&avcc_1v8_s0>;
  	};
  
@@ -41,7 +41,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	vcc12v_dcin: vcc12v-dcin-regulator {
  		compatible = "regulator-fixed";
  		regulator-name = "vcc12v_dcin";
-@@ -58,6 +78,19 @@
+@@ -57,6 +77,19 @@
  		regulator-max-microvolt = <12000000>;
  	};
  
@@ -61,7 +61,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	vcc5v0_host: vcc5v0-host-regulator {
  		compatible = "regulator-fixed";
  		regulator-name = "vcc5v0_host";
-@@ -194,6 +227,18 @@
+@@ -193,6 +226,18 @@
  	status = "okay";
  };
  
@@ -80,7 +80,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  &pinctrl {
  	rtl8111 {
  		rtl8111_isolate: rtl8111-isolate {
-@@ -220,6 +265,16 @@
+@@ -219,6 +264,16 @@
  		};
  	};
  

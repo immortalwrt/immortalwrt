@@ -15,7 +15,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
-@@ -44,6 +44,15 @@
+@@ -43,6 +43,15 @@
  		#cooling-cells = <2>;
  	};
  
@@ -31,7 +31,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	vcc5v0_host: vcc5v0-host-regulator {
  		compatible = "regulator-fixed";
  		regulator-name = "vcc5v0_host";
-@@ -78,6 +87,10 @@
+@@ -77,6 +86,10 @@
  	};
  };
  
@@ -42,7 +42,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  &cpu_b0 {
  	cpu-supply = <&vdd_cpu_big0_s0>;
  };
-@@ -204,6 +217,14 @@
+@@ -203,6 +216,14 @@
  	};
  };
  
@@ -57,7 +57,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  &pinctrl {
  	hym8563 {
  		hym8563_int: hym8563-int {
-@@ -217,6 +238,12 @@
+@@ -216,6 +237,12 @@
  		};
  	};
  

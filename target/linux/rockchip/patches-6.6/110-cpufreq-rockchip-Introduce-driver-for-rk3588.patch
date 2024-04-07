@@ -24,7 +24,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
 --- a/drivers/cpufreq/Kconfig.arm
 +++ b/drivers/cpufreq/Kconfig.arm
-@@ -180,6 +180,16 @@ config ARM_RASPBERRYPI_CPUFREQ
+@@ -190,6 +190,16 @@ config ARM_RASPBERRYPI_CPUFREQ
  
  	  If in doubt, say N.
  
@@ -38,24 +38,24 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +
 +	  If in doubt, say N.
 +
- config ARM_S3C_CPUFREQ
- 	bool
- 	help
+ config ARM_S3C64XX_CPUFREQ
+ 	bool "Samsung S3C64XX"
+ 	depends on CPU_S3C6410
 --- a/drivers/cpufreq/Makefile
 +++ b/drivers/cpufreq/Makefile
-@@ -70,6 +70,7 @@ obj-$(CONFIG_PXA3xx)			+= pxa3xx-cpufreq
+@@ -71,6 +71,7 @@ obj-$(CONFIG_PXA3xx)			+= pxa3xx-cpufreq
  obj-$(CONFIG_ARM_QCOM_CPUFREQ_HW)	+= qcom-cpufreq-hw.o
  obj-$(CONFIG_ARM_QCOM_CPUFREQ_NVMEM)	+= qcom-cpufreq-nvmem.o
  obj-$(CONFIG_ARM_RASPBERRYPI_CPUFREQ) 	+= raspberrypi-cpufreq.o
 +obj-$(CONFIG_ARM_ROCKCHIP_CPUFREQ)	+= rockchip-cpufreq.o
- obj-$(CONFIG_ARM_S3C2410_CPUFREQ)	+= s3c2410-cpufreq.o
- obj-$(CONFIG_ARM_S3C2412_CPUFREQ)	+= s3c2412-cpufreq.o
- obj-$(CONFIG_ARM_S3C2416_CPUFREQ)	+= s3c2416-cpufreq.o
+ obj-$(CONFIG_ARM_S3C64XX_CPUFREQ)	+= s3c64xx-cpufreq.o
+ obj-$(CONFIG_ARM_S5PV210_CPUFREQ)	+= s5pv210-cpufreq.o
+ obj-$(CONFIG_ARM_SA1110_CPUFREQ)	+= sa1110-cpufreq.o
 --- a/drivers/cpufreq/cpufreq-dt-platdev.c
 +++ b/drivers/cpufreq/cpufreq-dt-platdev.c
-@@ -154,6 +154,8 @@ static const struct of_device_id blockli
- 	{ .compatible = "qcom,sm8250", },
- 	{ .compatible = "qcom,sm8350", },
+@@ -166,6 +166,8 @@ static const struct of_device_id blockli
+ 	{ .compatible = "qcom,sm8450", },
+ 	{ .compatible = "qcom,sm8550", },
  
 +	{ .compatible = "rockchip,rk3588", },
 +

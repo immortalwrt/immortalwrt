@@ -17,7 +17,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
-@@ -160,6 +160,18 @@
+@@ -159,6 +159,18 @@
  		regulator-max-microvolt = <3300000>;
  		vin-supply = <&vcc5v0_sys>;
  	};
@@ -36,7 +36,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  };
  
  &combphy0_ps {
-@@ -505,6 +517,10 @@
+@@ -504,6 +516,10 @@
  	};
  
  	usb {
@@ -47,7 +47,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  		typec5v_pwren: typec5v-pwren {
  			rockchip,pins = <1 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
  		};
-@@ -885,6 +901,7 @@
+@@ -884,6 +900,7 @@
  };
  
  &u2phy2_host {
