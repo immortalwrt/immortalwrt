@@ -19,7 +19,6 @@ endchoice
 config GCC_USE_DEFAULT_VERSION
 	bool
 	default y if !TOOLCHAINOPTS || GCC_USE_VERSION_13
-	imply KERNEL_WERROR
 
 config GCC_USE_GRAPHITE
 	bool
