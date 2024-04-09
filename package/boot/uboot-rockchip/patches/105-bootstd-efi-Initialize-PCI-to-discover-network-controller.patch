@@ -34,9 +34,9 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  #include <malloc.h>
  #include <mapmem.h>
  #include <mmc.h>
-@@ -453,6 +454,14 @@ static int distro_efi_boot(struct udevic
- 		fdt = env_get_hex("fdt_addr_r", 0);
- 	}
+@@ -403,6 +404,14 @@ static int distro_efi_read_bootflow(stru
+ {
+ 	int ret;
  
 +	/* init PCI first since this is often used to provide Ehternet */
 +	if (IS_ENABLED(CONFIG_NETDEVICES) && IS_ENABLED(CONFIG_PCI) &&
@@ -47,5 +47,5 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
 +	}
 +
  	/*
- 	 * At some point we can add a real interface to bootefi so we can call
- 	 * this directly. For now, go through the CLI, like distro boot.
+ 	 * bootmeth_efi doesn't allocate any buffer neither for blk nor net device
+ 	 * set flag to avoid freeing static buffer.
