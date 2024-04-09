@@ -72,7 +72,6 @@ DEFAULT_PACKAGES.tweak:=\
 	luci-app-opkg \
 	luci-compat \
 	luci-lib-base \
-	luci-lib-fs \
 	luci-lib-ipkg
 
 ifneq ($(DUMP),)
