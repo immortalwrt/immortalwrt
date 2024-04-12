@@ -56,6 +56,7 @@ bananapi,bpi-r4)
 	;;
 cetron,ct3003-stock|\
 cetron,ct3003-ubootmod|\
+edgecore,eap111|\
 h3c,magic-nx30-pro-nmbm|\
 netgear,wax220|\
 zbtlink,zbt-z8102ax|\
