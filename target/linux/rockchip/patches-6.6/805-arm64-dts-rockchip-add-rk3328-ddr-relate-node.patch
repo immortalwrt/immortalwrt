@@ -28,7 +28,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  
  / {
  	compatible = "rockchip,rk3328";
-@@ -1034,6 +1035,78 @@
+@@ -1040,6 +1041,78 @@
  		status = "disabled";
  	};
  
