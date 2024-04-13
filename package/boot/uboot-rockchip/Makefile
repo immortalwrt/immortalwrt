@@ -331,7 +331,15 @@ UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 UBOOT_CUSTOMIZE_CONFIG := \
 	--disable SPL_FIT_SIGNATURE \
 	--disable TOOLS_MKEFICAPSULE \
-	--set-str MKIMAGE_DTC_PATH $(PKG_BUILD_DIR)/scripts/dtc/dtc
+	--set-str MKIMAGE_DTC_PATH $(PKG_BUILD_DIR)/scripts/dtc/dtc \
+	$(if $(TPL),, \
+		--disable CONFIG_CMD_DFU \
+		--disable CMD_EFIDEBUG \
+		--disable CMD_NVEDIT_EFI \
+		--disable DFU_MMC \
+		--disable EFI_CAPSULE_ON_DISK \
+		--disable EFI_CAPSULE_FIRMWARE_RAW \
+	)
 
 UBOOT_MAKE_FLAGS += \
   BL31=$(STAGING_DIR_IMAGE)/$(ATF) \
