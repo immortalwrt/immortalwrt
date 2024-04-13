@@ -333,7 +333,7 @@ UBOOT_CUSTOMIZE_CONFIG := \
 	--disable TOOLS_MKEFICAPSULE \
 	--set-str MKIMAGE_DTC_PATH $(PKG_BUILD_DIR)/scripts/dtc/dtc \
 	$(if $(TPL),, \
-		--disable CONFIG_CMD_DFU \
+		--disable CMD_DFU \
 		--disable CMD_EFIDEBUG \
 		--disable CMD_NVEDIT_EFI \
 		--disable DFU_MMC \
