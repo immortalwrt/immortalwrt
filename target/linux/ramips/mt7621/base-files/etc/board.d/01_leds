@@ -267,6 +267,10 @@ zyxel,lte3301-plus)
 zyxel,lte5398-m904)
 	ucidef_set_led_netdev "internet" "LTE/3G Internet Activity" "green:internet" "wwan0" "rx tx"
 	;;
+huasifei,ws7915)
+	ucidef_set_led_netdev "wlan2g" "wlan2g" "wlan0" "wlan0" "link tx rx"
+	ucidef_set_led_netdev "wlan5g" "wlan5g" "wlan1" "wlan1" "link tx rx"
+	;;
 esac
 
 board_config_flush
