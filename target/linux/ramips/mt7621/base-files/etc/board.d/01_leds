@@ -176,6 +176,10 @@ zbt,z2101ax)
 huasifei,x721)
 	ucidef_set_led_netdev "wwan0" "wwan0" "lte" "wwan0" "link tx rx"
 	;;
+huasifei,ws7915-32)
+	ucidef_set_led_netdev "wlan2g" "wlan2g" "wlan0" "wlan0" "link tx rx"
+	ucidef_set_led_netdev "wlan5g" "wlan5g" "wlan1" "wlan1" "link tx rx"
+	;;
 esac
 
 board_config_flush
