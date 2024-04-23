@@ -2,8 +2,6 @@ name: Bug report
 description: Create a bug report to help us improve
 labels:
   - bug
-  - bug-report
-  - to-triage
 body:
   - type: textarea
     id: description
