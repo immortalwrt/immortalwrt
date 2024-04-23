@@ -17,7 +17,7 @@
 &soc {
 	apc_apm: apm@b111000 {
 		compatible = "qcom,ipq807x-apm";
-		reg = <0x0 0xb111000 0x0 0x1000>;
+		reg = <0xb111000 0x1000>;
 		reg-names = "pm-apcc-glb";
 		qcom,apm-post-halt-delay = <0x2>;
 		qcom,apm-halt-clk-delay = <0x11>;
@@ -27,7 +27,7 @@
 
 	apc_cpr: cpr4-ctrl@b018000 {
 		compatible = "qcom,cpr4-ipq6018-apss-regulator";
-		reg = <0x0 0xb018000 0x0 0x4000>, <0x0 0xa4000 0x0 0x1000>, <0x0 0x0193d008 0x0 0x4>;
+		reg = <0xb018000 0x4000>, <0xa4000 0x1000>, <0x0193d008 0x4>;
 		reg-names = "cpr_ctrl", "fuse_base", "cpr_tcsr_reg";
 		interrupts = <GIC_SPI 15 IRQ_TYPE_EDGE_RISING>;
 		interrupt-names = "cpr";

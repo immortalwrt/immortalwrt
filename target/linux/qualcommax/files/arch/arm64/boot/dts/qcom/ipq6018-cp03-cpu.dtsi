@@ -16,25 +16,18 @@
 
 &CPU0 {
 	operating-points-v2 = <&cpu_opp_table>;
-	voltage-tolerance = <1>;
-	cpu-supply = <&apc_vreg>;
 };
 
 &CPU1 {
 	operating-points-v2 = <&cpu_opp_table>;
-	voltage-tolerance = <1>;
-	cpu-supply = <&apc_vreg>;
 };
 
 &CPU2 {
 	operating-points-v2 = <&cpu_opp_table>;
-	voltage-tolerance = <1>;
-	cpu-supply = <&apc_vreg>;
 };
 
 &CPU3 {
 	operating-points-v2 = <&cpu_opp_table>;
-	cpu-supply = <&apc_vreg>;
 };
 
 &cpus {
@@ -57,24 +50,9 @@
 			opp-microvolt = <2>;
 			clock-latency-ns = <200000>;
 		};
-		opp-1320000000 {
-			opp-hz = /bits/ 64 <1320000000>;
-			opp-microvolt = <3>;
-			clock-latency-ns = <200000>;
-		};
-		opp-1440000000 {
-			opp-hz = /bits/ 64 <1440000000>;
-			opp-microvolt = <4>;
-			clock-latency-ns = <200000>;
-		};
-		opp-1608000000 {
-			opp-hz = /bits/ 64 <1608000000>;
-			opp-microvolt = <5>;
-			clock-latency-ns = <200000>;
-		};
-		opp-1800000000 {
-			opp-hz = /bits/ 64 <1800000000>;
-			opp-microvolt = <6>;
+		opp-1200000000 {
+			opp-hz = /bits/ 64 <1200000000>;
+			opp-microvolt = <2>;
 			clock-latency-ns = <200000>;
 		};
 	};
