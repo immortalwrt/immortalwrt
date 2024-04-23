@@ -10,7 +10,9 @@ platform_check_image() {
 
 platform_do_upgrade() {
 	case "$(board_name)" in
-	netgear,wax214)
+	netgear,wax214
+        pangu,l6018|\
+	wf,hr6001)
 		nand_do_upgrade "$1"
 		;;
 	*)
