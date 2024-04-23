@@ -8,14 +8,16 @@
 	compatible = "bolt,bl201", "ralink,mt7620a-soc";
 	model = "Bolt BL201";
 
-	chosen {
-		bootargs = "console=ttyS0,115200";
-
+	aliases {
 		led-boot = &power_red;
 		led-failsafe = &power_red;
 		led-running = &power_blue;
 		led-upgrade = &power_red;
 		label-mac-device = &ethernet;
+	};
+
+	chosen {
+		bootargs = "console=ttyS0,115200";
 	};
 
 	leds {

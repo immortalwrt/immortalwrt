@@ -56,6 +56,7 @@ bananapi,bpi-r4)
 	;;
 cetron,ct3003-stock|\
 cetron,ct3003-ubootmod|\
+edgecore,eap111|\
 h3c,magic-nx30-pro-nmbm|\
 netgear,wax220|\
 zbtlink,zbt-z8102ax|\
@@ -83,8 +84,13 @@ glinet,gl-mt6000)
 glinet,gl-mt3000)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x80000" "0x20000"
 	;;
+dlink,aquila-pro-ai-m30-a1)
+	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x40000" "0x40000"
+	;;
 h3c,magic-nx30-pro|\
 jcg,q30-pro|\
+netcore,n60|\
+nokia,ea0326gmp|\
 qihoo,360t7|\
 tplink,tl-xdr4288|\
 tplink,tl-xdr6086|\
@@ -109,6 +115,10 @@ mercusys,mr90x-v1|\
 routerich,ax3000)
 	local envdev=/dev/mtd$(find_mtd_index "u-boot-env")
 	ubootenv_add_uci_config "$envdev" "0x0" "0x20000" "0x20000" "1"
+	;;
+openembed,som7981)
+	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x80000" "0x80000"
+	ubootenv_add_uci_sys_config "/dev/mtd3" "0x0" "0x100000" "0x100000"
 	;;
 ubnt,unifi-6-plus)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x80000" "0x10000"

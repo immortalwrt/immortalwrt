@@ -305,8 +305,8 @@ Subject: [PATCH] add xiaomi redmi ax6s
 +bootcmd=run boot_or_recovery
 +bootconf=config-1
 +bootdelay=0
-+bootfile=openwrt-mediatek-mt7622-xiaomi_redmi-router-ax6s-initramfs-recovery.itb
-+bootfile_upg=openwrt-mediatek-mt7622-xiaomi_redmi-router-ax6s-squashfs-sysupgrade.itb
++bootfile=immortalwrt-mediatek-mt7622-xiaomi_redmi-router-ax6s-initramfs-recovery.itb
++bootfile_upg=immortalwrt-mediatek-mt7622-xiaomi_redmi-router-ax6s-squashfs-sysupgrade.itb
 +boot_or_recovery=run boot_production ; led $bootled_pwr off ; led $bootled_rec on ; if ubi check fit ; then run boot_tftp_forever ; else run tftp_production ; fi
 +boot_tftp=tftpboot $loadaddr $bootfile && bootm $loadaddr#$bootconf
 +boot_tftp_forever=while true ; do run boot_tftp ; sleep 1 ; done

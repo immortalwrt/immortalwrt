@@ -11,19 +11,6 @@ define Device/8devices_mango-dvk
 endef
 TARGET_DEVICES += 8devices_mango-dvk
 
-define Device/netgear_wax214
-       $(call Device/FitImage)
-       $(call Device/UbiFit)
-       DEVICE_VENDOR := Netgear
-       DEVICE_MODEL := WAX214
-       BLOCKSIZE := 128k
-       PAGESIZE := 2048
-       DEVICE_DTS_CONFIG := config@cp03-c1
-       SOC := ipq6010
-       DEVICE_PACKAGES := ipq-wifi-netgear_wax214
-endef
-TARGET_DEVICES += netgear_wax214
-
 define Device/wf_hr6001
 	$(call Device/FitImage)
 	$(call Device/UbiFit)
@@ -37,15 +24,16 @@ define Device/wf_hr6001
 endef
 TARGET_DEVICES += wf_hr6001
 
-define Device/pangu_l6018
-	$(call Device/FitImage)
-	$(call Device/UbiFit)
-	DEVICE_VENDOR := PANGU
-	DEVICE_MODEL := L6018
-	BLOCKSIZE := 128k
-	PAGESIZE := 2048
-	DEVICE_DTS_CONFIG := config@cp01-c3
-	SOC := ipq6018
-	DEVICE_PACKAGES :=  uboot-envtools
+define Device/netgear_wax214
+       $(call Device/FitImage)
+       $(call Device/UbiFit)
+       DEVICE_VENDOR := Netgear
+       DEVICE_MODEL := WAX214
+       BLOCKSIZE := 128k
+       PAGESIZE := 2048
+       DEVICE_DTS_CONFIG := config@cp03-c1
+       SOC := ipq6010
+       DEVICE_PACKAGES := ipq-wifi-netgear_wax214
 endef
-TARGET_DEVICES += pangu_l6018
+TARGET_DEVICES += netgear_wax214
+

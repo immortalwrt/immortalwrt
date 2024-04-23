@@ -7,7 +7,7 @@ include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=r8101
 PKG_VERSION:=1.038.02
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=@IMMORTALWRT
@@ -24,7 +24,6 @@ include $(INCLUDE_DIR)/package.mk
 define KernelPackage/r8101
   TITLE:=Driver for Realtek r8101 chipsets
   SUBMENU:=Network Devices
-  VERSION:=$(LINUX_VERSION)+$(PKG_VERSION)-$(BOARD)-$(PKG_RELEASE)
   DEPENDS:=@PCI_SUPPORT
   FILES:= $(PKG_BUILD_DIR)/src/r8101.ko
   AUTOLOAD:=$(call AutoProbe,r8101)

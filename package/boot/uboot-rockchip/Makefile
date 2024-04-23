@@ -5,9 +5,9 @@
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
-PKG_VERSION:=2024.01
+PKG_VERSION:=2024.04
 PKG_RELEASE:=1
-PKG_HASH:=b99611f1ed237bf3541bdc8434b68c96a6e05967061f992443cb30aabebef5b3
+PKG_HASH:=18a853fe39fad7ad03a90cc2d4275aeaed6da69735defac3492b80508843dd4a
 
 PKG_MAINTAINER:=Tobias Maedel <openwrt@tbspace.de>
 
@@ -331,7 +331,15 @@ UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 UBOOT_CUSTOMIZE_CONFIG := \
 	--disable SPL_FIT_SIGNATURE \
 	--disable TOOLS_MKEFICAPSULE \
-	--set-str MKIMAGE_DTC_PATH $(PKG_BUILD_DIR)/scripts/dtc/dtc
+	--set-str MKIMAGE_DTC_PATH $(PKG_BUILD_DIR)/scripts/dtc/dtc \
+	$(if $(TPL),, \
+		--disable CMD_DFU \
+		--disable CMD_EFIDEBUG \
+		--disable CMD_NVEDIT_EFI \
+		--disable DFU_MMC \
+		--disable EFI_CAPSULE_ON_DISK \
+		--disable EFI_CAPSULE_FIRMWARE_RAW \
+	)
 
 UBOOT_MAKE_FLAGS += \
   BL31=$(STAGING_DIR_IMAGE)/$(ATF) \

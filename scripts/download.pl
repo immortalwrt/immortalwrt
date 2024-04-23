@@ -332,7 +332,6 @@ foreach my $mirror (@ARGV) {
 	}
 }
 
-# push @mirrors, 'https://mirror01.download.immortalwrt.eu.org';
 push @mirrors, 'https://mirror2.immortalwrt.org/sources';
 push @mirrors, 'https://mirror.immortalwrt.org/sources';
 push @mirrors, 'https://sources-cdn.immortalwrt.org';

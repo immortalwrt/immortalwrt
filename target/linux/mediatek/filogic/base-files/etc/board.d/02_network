@@ -16,6 +16,7 @@ mediatek_setup_interfaces()
 	h3c,magic-nx30-pro|\
 	h3c,magic-nx30-pro-nmbm|\
 	imou,lc-hx3001-ubootmod|\
+	nokia,ea0326gmp|\
 	zbtlink,zbt-z8103ax)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" eth1
 		;;
@@ -38,6 +39,8 @@ mediatek_setup_interfaces()
 	asus,tuf-ax4200|\
 	jdcloud,re-cp-03|\
 	mediatek,mt7981-rfb|\
+	netcore,n60|\
+	unielec,u7981-01*|\
 	zbtlink,zbt-z8102ax|\
 	zyxel,ex5601-t0-stock|\
 	zyxel,ex5601-t0-ubootmod)
@@ -49,7 +52,8 @@ mediatek_setup_interfaces()
 	bananapi,bpi-r3)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 sfp2" "eth1 wan"
 		;;
-	bananapi,bpi-r3-mini)
+	bananapi,bpi-r3-mini|\
+	edgecore,eap111)
 		ucidef_set_interfaces_lan_wan eth0 eth1
 		;;
 	bananapi,bpi-r4)
@@ -58,10 +62,14 @@ mediatek_setup_interfaces()
 	comfast,cf-e393ax)
 		ucidef_set_interfaces_lan_wan "lan1" eth1
 		;;
+	dlink,aquila-pro-ai-m30-a1)
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" internet
+		;;
 	glinet,gl-mt2500|\
 	glinet,gl-mt3000|\
 	glinet,gl-x3000|\
-	glinet,gl-xe3000)
+	glinet,gl-xe3000|\
+	openembed,som7981)
 		ucidef_set_interfaces_lan_wan eth1 eth0
 		;;
 	glinet,gl-mt6000|\
