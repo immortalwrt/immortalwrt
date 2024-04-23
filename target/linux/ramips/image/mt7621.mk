@@ -243,6 +243,20 @@ define Device/ws7915
 endef
 TARGET_DEVICES += ws7915
 
+define Device/ws7915-32
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 32448k
+  DEVICE_VENDOR := Huasifei
+  DEVICE_MODEL := WS7915-32
+  DEVICE_VARIANT := 32M
+  DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 \
+		kmod-usb-ledtrig-usbport \
+		kmod-mt7915e kmod-mt76 -wpad-wolfssl
+  SUPPORTED_DEVICES += ws7915-32 huasifei,ws7915-32
+endef
+TARGET_DEVICES += ws7915-32
+
 define Device/alfa-network_quad-e4g
   $(Device/dsa-migration)
   IMAGE_SIZE := 16064k
