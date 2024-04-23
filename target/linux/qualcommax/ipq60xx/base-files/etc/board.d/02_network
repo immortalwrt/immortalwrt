@@ -23,7 +23,14 @@ ipq60xx_setup_interfaces()
 	*)
 		echo "Unsupported hardware. Network interfaces not initialized"
 		;;
-	esac
+        pangu,l6018|\
+	wf,hr6001)
+                ucidef_set_interfaces_lan_wan "eth0 eth1 eth2 eth3" "eth4"
+        ;;
+	*)
+		echo "Unsupported hardware. Network interfaces not initialized"
+		;;
+	   esac
 }
 
 board_config_update
