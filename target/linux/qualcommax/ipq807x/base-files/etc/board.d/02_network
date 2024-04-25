@@ -28,6 +28,7 @@ ipq807x_setup_interfaces()
 	prpl,haze|\
 	redmi,ax6|\
 	redmi,ax6-stock|\
+	spectrum,sax1v1k|\
 	xiaomi,ax3600|\
 	xiaomi,ax3600-stock)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" "wan"
@@ -71,7 +72,6 @@ ipq807x_setup_macs()
 	local label_mac=""
 
 	case "$board" in
-		linksys,mx4200v1|\
 		linksys,mx4200v2)
 			label_mac=$(mtd_get_mac_ascii devinfo hw_mac_addr)
 			for i in $(seq 3 5); do
