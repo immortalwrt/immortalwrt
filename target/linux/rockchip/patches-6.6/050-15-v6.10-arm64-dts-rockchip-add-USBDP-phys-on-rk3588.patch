@@ -1,28 +1,17 @@
+From e18e5e8188f2671abf63abe7db5f21555705130f Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-To: Heiko Stuebner <heiko@sntech.de>, Vinod Koul <vkoul@kernel.org>,
-	Kishon Vijay Abraham I <kishon@kernel.org>,
-	linux-rockchip@lists.infradead.org,
-	linux-phy@lists.infradead.org
-Cc: Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Frank Wang <frank.wang@rock-chips.com>,
-	Kever Yang <kever.yang@rock-chips.com>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Sebastian Reichel <sebastian.reichel@collabora.com>,
-	kernel@collabora.com
-Subject: [PATCH v2 08/12] arm64: dts: rockchip: add USBDP phys on rk3588
-Date: Tue, 13 Feb 2024 17:32:42 +0100	[thread overview]
-Message-ID: <20240213163609.44930-9-sebastian.reichel@collabora.com> (raw)
-In-Reply-To: <20240213163609.44930-1-sebastian.reichel@collabora.com>
+Date: Tue, 9 Apr 2024 00:50:33 +0200
+Subject: [PATCH] arm64: dts: rockchip: add USBDP phys on rk3588
 
 Add both USB3-DisplayPort PHYs to RK3588 SoC DT.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20240408225109.128953-7-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
- arch/arm64/boot/dts/rockchip/rk3588.dtsi  | 61 +++++++++++++++++++
- arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 72 +++++++++++++++++++++++
- 2 files changed, 133 insertions(+)
+ arch/arm64/boot/dts/rockchip/rk3588.dtsi  | 52 +++++++++++++++++++
+ arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 63 +++++++++++++++++++++++
+ 2 files changed, 115 insertions(+)
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588.dtsi
@@ -63,13 +52,14 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	i2s8_8ch: i2s@fddc8000 {
  		compatible = "rockchip,rk3588-i2s-tdm";
  		reg = <0x0 0xfddc8000 0x0 0x1000>;
-@@ -310,6 +340,37 @@
+@@ -310,6 +340,28 @@
  		};
  	};
  
 +	usbdp_phy1: phy@fed90000 {
 +		compatible = "rockchip,rk3588-usbdp-phy";
 +		reg = <0x0 0xfed90000 0x0 0x10000>;
++		#phy-cells = <1>;
 +		clocks = <&cru CLK_USBDPPHY_MIPIDCPPHY_REF>,
 +			 <&cru CLK_USBDP_PHY1_IMMORTAL>,
 +			 <&cru PCLK_USBDPPHY1>,
@@ -86,16 +76,6 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		rockchip,usbdpphy-grf = <&usbdpphy1_grf>;
 +		rockchip,vo-grf = <&vo0_grf>;
 +		status = "disabled";
-+
-+		usbdp_phy1_dp: dp-port {
-+			#phy-cells = <0>;
-+			status = "disabled";
-+		};
-+
-+		usbdp_phy1_u3: usb3-port {
-+			#phy-cells = <0>;
-+			status = "disabled";
-+		};
 +	};
 +
  	combphy1_ps: phy@fee10000 {
@@ -164,13 +144,14 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	usb2phy2_grf: syscon@fd5d8000 {
  		compatible = "rockchip,rk3588-usb2phy-grf", "syscon", "simple-mfd";
  		reg = <0x0 0xfd5d8000 0x0 0x4000>;
-@@ -2360,6 +2401,37 @@
+@@ -2360,6 +2401,28 @@
  		#dma-cells = <1>;
  	};
  
 +	usbdp_phy0: phy@fed80000 {
 +		compatible = "rockchip,rk3588-usbdp-phy";
 +		reg = <0x0 0xfed80000 0x0 0x10000>;
++		#phy-cells = <1>;
 +		clocks = <&cru CLK_USBDPPHY_MIPIDCPPHY_REF>,
 +			 <&cru CLK_USBDP_PHY0_IMMORTAL>,
 +			 <&cru PCLK_USBDPPHY0>,
@@ -187,16 +168,6 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		rockchip,usbdpphy-grf = <&usbdpphy0_grf>;
 +		rockchip,vo-grf = <&vo0_grf>;
 +		status = "disabled";
-+
-+		usbdp_phy0_dp: dp-port {
-+			#phy-cells = <0>;
-+			status = "disabled";
-+		};
-+
-+		usbdp_phy0_u3: usb3-port {
-+			#phy-cells = <0>;
-+			status = "disabled";
-+		};
 +	};
 +
  	combphy0_ps: phy@fee00000 {

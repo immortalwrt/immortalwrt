@@ -16,7 +16,7 @@
  	TxDescStartAddrLow	= 0x20,
  	TxDescStartAddrHigh	= 0x24,
  	TxHDescStartAddrLow	= 0x28,
-@@ -2181,6 +2183,22 @@ void r8169_apply_firmware(struct rtl8169
+@@ -2204,6 +2206,22 @@ void r8169_apply_firmware(struct rtl8169
  	}
  }
  
@@ -39,7 +39,7 @@
  static void rtl8168_config_eee_mac(struct rtl8169_private *tp)
  {
  	/* Adjust EEE LED frequency */
-@@ -3321,6 +3339,7 @@ static void rtl_hw_start_8168h_1(struct
+@@ -3344,6 +3362,7 @@ static void rtl_hw_start_8168h_1(struct
  	r8168_mac_ocp_write(tp, 0xe63e, 0x0000);
  	r8168_mac_ocp_write(tp, 0xc094, 0x0000);
  	r8168_mac_ocp_write(tp, 0xc09e, 0x0000);
@@ -47,7 +47,7 @@
  }
  
  static void rtl_hw_start_8168ep(struct rtl8169_private *tp)
-@@ -3672,6 +3691,7 @@ static void rtl_hw_start_8125b(struct rt
+@@ -3695,6 +3714,7 @@ static void rtl_hw_start_8125b(struct rt
  	rtl_set_def_aspm_entry_latency(tp);
  	rtl_ephy_init(tp, e_info_8125b);
  	rtl_hw_start_8125_common(tp);

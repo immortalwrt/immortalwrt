@@ -484,7 +484,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 @@ -9,11 +9,16 @@
  
  / {
- 	model = "Radxa ROCK 5 Model A";
+ 	model = "Radxa ROCK 5A";
 -	compatible = "radxa,rock-5a", "rockchip,rk3588s";
 +	compatible = "radxa,rock-5a", "rockchip,rk3588";
  

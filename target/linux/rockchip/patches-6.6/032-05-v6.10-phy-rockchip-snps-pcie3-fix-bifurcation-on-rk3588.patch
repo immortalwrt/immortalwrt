@@ -1,0 +1,95 @@
+From f8020dfb311d2b6cf657668792aaa5fa8863a7dd Mon Sep 17 00:00:00 2001
+From: Michal Tomek <mtdev79b@gmail.com>
+Date: Thu, 4 Apr 2024 19:11:26 +0200
+Subject: [PATCH] phy: rockchip-snps-pcie3: fix bifurcation on rk3588
+
+So far all RK3588 boards use fully aggregated PCIe. CM3588 is one
+of the few boards using this feature and apparently it is broken.
+
+The PHY offers the following mapping options:
+
+  port 0 lane 0 - always mapped to controller 0 (4L)
+  port 0 lane 1 - to controller 0 or 2 (1L0)
+  port 1 lane 0 - to controller 0 or 1 (2L)
+  port 1 lane 1 - to controller 0, 1 or 3 (1L1)
+
+The data-lanes DT property maps these as follows:
+
+  0 = no controller (unsupported by the HW)
+  1 = 4L
+  2 = 2L
+  3 = 1L0
+  4 = 1L1
+
+That allows the following configurations with first column being the
+mainline data-lane mapping, second column being the downstream name,
+third column being PCIE3PHY_GRF_CMN_CON0 and PHP_GRF_PCIESEL register
+values and final column being the user visible lane setup:
+
+  <1 1 1 1> = AGGREG = [4 0] = x4 (aggregation)
+  <1 1 2 2> = NANBNB = [0 0] = x2 x2 (no bif.)
+  <1 3 2 2> = NANBBI = [1 1] = x2 x1x1 (bif. of port 0)
+  <1 1 2 4> = NABINB = [2 2] = x1x1 x2 (bif. of port 1)
+  <1 3 2 4> = NABIBI = [3 3] = x1x1 x1x1 (bif. of both ports)
+
+The driver currently does not program PHP_GRF_PCIESEL correctly, which
+is fixed by this patch. As a side-effect the new logic is much simpler
+than the old logic.
+
+Fixes: 2e9bffc4f713 ("phy: rockchip: Support PCIe v3")
+Signed-off-by: Michal Tomek <mtdev79b@gmail.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Acked-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://lore.kernel.org/r/20240404-rk3588-pcie-bifurcation-fixes-v1-1-9907136eeafd@kernel.org
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+---
+ .../phy/rockchip/phy-rockchip-snps-pcie3.c    | 24 +++++++------------
+ 1 file changed, 8 insertions(+), 16 deletions(-)
+
+--- a/drivers/phy/rockchip/phy-rockchip-snps-pcie3.c
++++ b/drivers/phy/rockchip/phy-rockchip-snps-pcie3.c
+@@ -132,7 +132,7 @@ static const struct rockchip_p3phy_ops r
+ static int rockchip_p3phy_rk3588_init(struct rockchip_p3phy_priv *priv)
+ {
+ 	u32 reg = 0;
+-	u8 mode = 0;
++	u8 mode = RK3588_LANE_AGGREGATION; /* default */
+ 	int ret;
+ 
+ 	/* Deassert PCIe PMA output clamp mode */
+@@ -140,28 +140,20 @@ static int rockchip_p3phy_rk3588_init(st
+ 
+ 	/* Set bifurcation if needed */
+ 	for (int i = 0; i < priv->num_lanes; i++) {
+-		if (!priv->lanes[i])
+-			mode |= (BIT(i) << 3);
+-
+ 		if (priv->lanes[i] > 1)
+-			mode |= (BIT(i) >> 1);
+-	}
+-
+-	if (!mode)
+-		reg = RK3588_LANE_AGGREGATION;
+-	else {
+-		if (mode & (BIT(0) | BIT(1)))
+-			reg |= RK3588_BIFURCATION_LANE_0_1;
+-
+-		if (mode & (BIT(2) | BIT(3)))
+-			reg |= RK3588_BIFURCATION_LANE_2_3;
++			mode &= ~RK3588_LANE_AGGREGATION;
++		if (priv->lanes[i] == 3)
++			mode |= RK3588_BIFURCATION_LANE_0_1;
++		if (priv->lanes[i] == 4)
++			mode |= RK3588_BIFURCATION_LANE_2_3;
+ 	}
+ 
++	reg = mode;
+ 	regmap_write(priv->phy_grf, RK3588_PCIE3PHY_GRF_CMN_CON0, (0x7<<16) | reg);
+ 
+ 	/* Set pcie1ln_sel in PHP_GRF_PCIESEL_CON */
+ 	if (!IS_ERR(priv->pipe_grf)) {
+-		reg = (mode & (BIT(6) | BIT(7))) >> 6;
++		reg = mode & 3;
+ 		if (reg)
+ 			regmap_write(priv->pipe_grf, PHP_GRF_PCIESEL_CON,
+ 				     (reg << 16) | reg);

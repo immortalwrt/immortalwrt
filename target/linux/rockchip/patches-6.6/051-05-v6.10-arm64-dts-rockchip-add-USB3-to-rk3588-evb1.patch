@@ -1,28 +1,17 @@
+From b37146b5a555dd871cb0805446826ab2fc8d285a Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-To: Heiko Stuebner <heiko@sntech.de>, Vinod Koul <vkoul@kernel.org>,
-	Kishon Vijay Abraham I <kishon@kernel.org>,
-	linux-rockchip@lists.infradead.org,
-	linux-phy@lists.infradead.org
-Cc: Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Frank Wang <frank.wang@rock-chips.com>,
-	Kever Yang <kever.yang@rock-chips.com>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Sebastian Reichel <sebastian.reichel@collabora.com>,
-	kernel@collabora.com
-Subject: [PATCH v2 10/12] arm64: dts: rockchip: add USB3 to rk3588-evb1
-Date: Tue, 13 Feb 2024 17:32:44 +0100	[thread overview]
-Message-ID: <20240213163609.44930-11-sebastian.reichel@collabora.com> (raw)
-In-Reply-To: <20240213163609.44930-1-sebastian.reichel@collabora.com>
+Date: Tue, 9 Apr 2024 00:50:35 +0200
+Subject: [PATCH] arm64: dts: rockchip: add USB3 to rk3588-evb1
 
 Add support for the board's USB3 connectors. It has 1x USB Type-A
 and 1x USB Type-C.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20240408225109.128953-9-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
- .../boot/dts/rockchip/rk3588-evb1-v10.dts     | 151 ++++++++++++++++++
- 1 file changed, 151 insertions(+)
+ .../boot/dts/rockchip/rk3588-evb1-v10.dts     | 147 ++++++++++++++++++
+ 1 file changed, 147 insertions(+)
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts
@@ -34,26 +23,26 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  #include "rk3588.dtsi"
  
  / {
-@@ -166,6 +167,18 @@
- 		regulator-max-microvolt = <5000000>;
- 		vin-supply = <&vcc5v0_usbdcin>;
+@@ -101,6 +102,18 @@
+ 		vin-supply = <&avcc_1v8_s0>;
  	};
-+
-+	vbus5v0_typec: vbus5v0-typec {
+ 
++	vbus5v0_typec: vbus5v0-typec-regulator {
 +		compatible = "regulator-fixed";
++		enable-active-high;
++		gpio = <&gpio4 RK_PD0 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&typec5v_pwren>;
 +		regulator-name = "vbus5v0_typec";
 +		regulator-min-microvolt = <5000000>;
 +		regulator-max-microvolt = <5000000>;
-+		enable-active-high;
-+		gpio = <&gpio4 RK_PD0 GPIO_ACTIVE_HIGH>;
 +		vin-supply = <&vcc5v0_usb>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&typec5v_pwren>;
 +	};
- };
- 
- &combphy0_ps {
-@@ -226,6 +239,56 @@
++
+ 	vcc12v_dcin: vcc12v-dcin-regulator {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vcc12v_dcin";
+@@ -226,6 +239,59 @@
  &i2c2 {
  	status = "okay";
  
@@ -71,13 +60,13 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +			compatible = "usb-c-connector";
 +			label = "USB-C";
 +			data-role = "dual";
-+			power-role = "dual";
-+			try-power-role = "source";
 +			op-sink-microwatt = <1000000>;
++			power-role = "dual";
 +			sink-pdos =
 +				<PDO_FIXED(5000, 1000, PDO_FIXED_USB_COMM)>;
 +			source-pdos =
 +				<PDO_FIXED(5000, 3000, PDO_FIXED_USB_COMM)>;
++			try-power-role = "source";
 +
 +			ports {
 +				#address-cells = <1>;
@@ -85,6 +74,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +
 +				port@0 {
 +					reg = <0>;
++
 +					usbc0_orien_sw: endpoint {
 +						remote-endpoint = <&usbdp_phy0_orientation_switch>;
 +					};
@@ -92,6 +82,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +
 +				port@1 {
 +					reg = <1>;
++
 +					usbc0_role_sw: endpoint {
 +						remote-endpoint = <&dwc3_0_role_switch>;
 +					};
@@ -99,6 +90,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +
 +				port@2 {
 +					reg = <2>;
++
 +					dp_altmode_mux: endpoint {
 +						remote-endpoint = <&usbdp_phy0_dp_altmode_mux>;
 +					};
@@ -110,24 +102,24 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	hym8563: rtc@51 {
  		compatible = "haoyu,hym8563";
  		reg = <0x51>;
-@@ -312,6 +375,16 @@
+@@ -312,6 +378,16 @@
  			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
  		};
  	};
 +
 +	usb-typec {
-+		usbc0_int: usbc0-int {
-+			rockchip,pins = <3 RK_PB4 RK_FUNC_GPIO &pcfg_pull_up>;
-+		};
-+
 +		typec5v_pwren: typec5v-pwren {
 +			rockchip,pins = <4 RK_PD0 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		usbc0_int: usbc0-int {
++			rockchip,pins = <3 RK_PB4 RK_FUNC_GPIO &pcfg_pull_up>;
 +		};
 +	};
  };
  
  &pwm2 {
-@@ -944,6 +1017,22 @@
+@@ -944,6 +1020,22 @@
  	status = "okay";
  };
  
@@ -150,14 +142,14 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &u2phy2 {
  	status = "okay";
  };
-@@ -982,3 +1071,65 @@
+@@ -982,3 +1074,58 @@
  &usb_host1_ohci {
  	status = "okay";
  };
 +
 +&usbdp_phy0 {
-+	orientation-switch;
 +	mode-switch;
++	orientation-switch;
 +	sbu1-dc-gpios = <&gpio4 RK_PA6 GPIO_ACTIVE_HIGH>;
 +	sbu2-dc-gpios = <&gpio4 RK_PA7 GPIO_ACTIVE_HIGH>;
 +	status = "okay";
@@ -178,10 +170,6 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	};
 +};
 +
-+&usbdp_phy0_u3 {
-+	status = "okay";
-+};
-+
 +&usbdp_phy1 {
 +	/*
 +	 * USBDP PHY1 is wired to a female USB3 Type-A connector. Additionally
@@ -193,10 +181,6 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	status = "okay";
 +};
 +
-+&usbdp_phy1_u3 {
-+	status = "okay";
-+};
-+
 +&usb_host0_xhci {
 +	dr_mode = "otg";
 +	usb-role-switch;
@@ -205,6 +189,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	port {
 +		#address-cells = <1>;
 +		#size-cells = <0>;
++
 +		dwc3_0_role_switch: endpoint@0 {
 +			reg = <0>;
 +			remote-endpoint = <&usbc0_role_sw>;

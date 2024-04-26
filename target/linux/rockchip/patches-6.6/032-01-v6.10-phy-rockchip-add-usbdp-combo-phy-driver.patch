@@ -1,20 +1,7 @@
+From 2f70bbddeb457580cef3ceb574506083b9272188 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-To: Heiko Stuebner <heiko@sntech.de>, Vinod Koul <vkoul@kernel.org>,
-	Kishon Vijay Abraham I <kishon@kernel.org>,
-	linux-rockchip@lists.infradead.org,
-	linux-phy@lists.infradead.org
-Cc: Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Frank Wang <frank.wang@rock-chips.com>,
-	Kever Yang <kever.yang@rock-chips.com>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Sebastian Reichel <sebastian.reichel@collabora.com>,
-	kernel@collabora.com, Zhang Yubing <yubing.zhang@rock-chips.com>
-Subject: [PATCH v2 04/12] phy: rockchip: add usbdp combo phy driver
-Date: Tue, 13 Feb 2024 17:32:38 +0100	[thread overview]
-Message-ID: <20240213163609.44930-5-sebastian.reichel@collabora.com> (raw)
-In-Reply-To: <20240213163609.44930-1-sebastian.reichel@collabora.com>
+Date: Tue, 9 Apr 2024 00:50:29 +0200
+Subject: [PATCH] phy: rockchip: add usbdp combo phy driver
 
 This adds a new USBDP combo PHY with Samsung IP block driver.
 
@@ -36,11 +23,13 @@ Signed-off-by: Zhang Yubing <yubing.zhang@rock-chips.com>
 Co-developed-by: Frank Wang <frank.wang@rock-chips.com>
 Signed-off-by: Frank Wang <frank.wang@rock-chips.com>
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20240408225109.128953-3-sebastian.reichel@collabora.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
  drivers/phy/rockchip/Kconfig              |   12 +
  drivers/phy/rockchip/Makefile             |    1 +
- drivers/phy/rockchip/phy-rockchip-usbdp.c | 1639 +++++++++++++++++++++
- 3 files changed, 1652 insertions(+)
+ drivers/phy/rockchip/phy-rockchip-usbdp.c | 1608 +++++++++++++++++++++
+ 3 files changed, 1621 insertions(+)
  create mode 100644 drivers/phy/rockchip/phy-rockchip-usbdp.c
 
 --- a/drivers/phy/rockchip/Kconfig
@@ -70,27 +59,25 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +obj-$(CONFIG_PHY_ROCKCHIP_USBDP)	+= phy-rockchip-usbdp.o
 --- /dev/null
 +++ b/drivers/phy/rockchip/phy-rockchip-usbdp.c
-@@ -0,0 +1,1639 @@
+@@ -0,0 +1,1608 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +/*
 + * Rockchip USBDP Combo PHY with Samsung IP block driver
 + *
-+ * Copyright (C) 2021 Rockchip Electronics Co., Ltd
++ * Copyright (C) 2021-2024 Rockchip Electronics Co., Ltd
++ * Copyright (C) 2024 Collabora Ltd
 + */
 +
++#include <dt-bindings/phy/phy.h>
 +#include <linux/bitfield.h>
 +#include <linux/bits.h>
 +#include <linux/clk.h>
-+#include <linux/clk-provider.h>
 +#include <linux/delay.h>
 +#include <linux/gpio.h>
-+#include <linux/io.h>
-+#include <linux/iopoll.h>
-+#include <linux/kernel.h>
 +#include <linux/mfd/syscon.h>
++#include <linux/mod_devicetable.h>
 +#include <linux/module.h>
 +#include <linux/mutex.h>
-+#include <linux/of.h>
 +#include <linux/phy/phy.h>
 +#include <linux/platform_device.h>
 +#include <linux/property.h>
@@ -172,11 +159,19 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +
 +struct rk_udphy_grf_reg {
 +	unsigned int	offset;
-+	unsigned int	bitend;
-+	unsigned int	bitstart;
 +	unsigned int	disable;
 +	unsigned int	enable;
 +};
++
++#define _RK_UDPHY_GEN_GRF_REG(offset, mask, disable, enable) \
++{\
++	offset, \
++	FIELD_PREP_CONST(mask, disable) | (mask << BIT_WRITEABLE_SHIFT), \
++	FIELD_PREP_CONST(mask, enable) | (mask << BIT_WRITEABLE_SHIFT), \
++}
++
++#define RK_UDPHY_GEN_GRF_REG(offset, bitend, bitstart, disable, enable) \
++	_RK_UDPHY_GEN_GRF_REG(offset, GENMASK(bitend, bitstart), disable, enable)
 +
 +struct rk_udphy_grf_cfg {
 +	/* u2phy-grf */
@@ -261,6 +256,10 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +
 +	/* PHY const config */
 +	const struct rk_udphy_cfg *cfgs;
++
++	/* PHY devices */
++	struct phy *phy_dp;
++	struct phy *phy_u3;
 +};
 +
 +static const struct rk_udphy_dp_tx_drv_ctrl rk3588_dp_tx_drv_ctrl_rbr_hbr[4][4] = {
@@ -480,13 +479,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +static inline int rk_udphy_grfreg_write(struct regmap *base,
 +					const struct rk_udphy_grf_reg *reg, bool en)
 +{
-+	u32 val, mask, tmp;
-+
-+	tmp = en ? reg->enable : reg->disable;
-+	mask = GENMASK(reg->bitend, reg->bitstart);
-+	val = (tmp << reg->bitstart) | (mask << BIT_WRITEABLE_SHIFT);
-+
-+	return regmap_write(base, reg->offset, val);
++	return regmap_write(base, reg->offset, en ? reg->enable : reg->disable);
 +}
 +
 +static int rk_udphy_clk_init(struct rk_udphy *udphy, struct device *dev)
@@ -605,7 +598,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 + * ---------------------------------------------------------------------------
 + */
 +
-+static int rk_udphy_dplane_select(struct rk_udphy *udphy)
++static void rk_udphy_dplane_select(struct rk_udphy *udphy)
 +{
 +	const struct rk_udphy_cfg *cfg = udphy->cfgs;
 +	u32 value = 0;
@@ -615,12 +608,15 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		value |= 2 << udphy->dp_lane_sel[2] * 2;
 +		value |= 3 << udphy->dp_lane_sel[3] * 2;
 +		fallthrough;
++
 +	case UDPHY_MODE_DP_USB:
 +		value |= 0 << udphy->dp_lane_sel[0] * 2;
 +		value |= 1 << udphy->dp_lane_sel[1] * 2;
 +		break;
++
 +	case UDPHY_MODE_USB:
 +		break;
++
 +	default:
 +		break;
 +	}
@@ -629,8 +625,6 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		     ((DP_AUX_DIN_SEL | DP_AUX_DOUT_SEL | DP_LANE_SEL_ALL) << 16) |
 +		     FIELD_PREP(DP_AUX_DIN_SEL, udphy->dp_aux_din_sel) |
 +		     FIELD_PREP(DP_AUX_DOUT_SEL, udphy->dp_aux_dout_sel) | value);
-+
-+	return 0;
 +}
 +
 +static int rk_udphy_dplane_get(struct rk_udphy *udphy)
@@ -641,11 +635,12 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	case UDPHY_MODE_DP:
 +		dp_lanes = 4;
 +		break;
++
 +	case UDPHY_MODE_DP_USB:
 +		dp_lanes = 2;
 +		break;
++
 +	case UDPHY_MODE_USB:
-+		fallthrough;
 +	default:
 +		dp_lanes = 0;
 +		break;
@@ -654,7 +649,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	return dp_lanes;
 +}
 +
-+static int rk_udphy_dplane_enable(struct rk_udphy *udphy, int dp_lanes)
++static void rk_udphy_dplane_enable(struct rk_udphy *udphy, int dp_lanes)
 +{
 +	u32 val = 0;
 +	int i;
@@ -668,11 +663,9 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	if (!dp_lanes)
 +		regmap_update_bits(udphy->pma_regmap, CMN_DP_RSTN_OFFSET,
 +				   CMN_DP_CMN_RSTN, FIELD_PREP(CMN_DP_CMN_RSTN, 0x0));
-+
-+	return 0;
 +}
 +
-+static int rk_udphy_dp_hpd_event_trigger(struct rk_udphy *udphy, bool hpd)
++static void rk_udphy_dp_hpd_event_trigger(struct rk_udphy *udphy, bool hpd)
 +{
 +	const struct rk_udphy_cfg *cfg = udphy->cfgs;
 +
@@ -680,14 +673,12 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	udphy->dp_sink_hpd_cfg = hpd;
 +
 +	if (!udphy->dp_in_use)
-+		return 0;
++		return;
 +
 +	rk_udphy_grfreg_write(udphy->vogrf, &cfg->vogrfcfg[udphy->id].hpd_trigger, hpd);
-+
-+	return 0;
 +}
 +
-+static int rk_udphy_set_typec_default_mapping(struct rk_udphy *udphy)
++static void rk_udphy_set_typec_default_mapping(struct rk_udphy *udphy)
 +{
 +	if (udphy->flip) {
 +		udphy->dp_lane_sel[0] = 0;
@@ -718,8 +709,6 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	}
 +
 +	udphy->mode = UDPHY_MODE_DP_USB;
-+
-+	return 0;
 +}
 +
 +static int rk_udphy_orien_sw_set(struct typec_switch_dev *sw,
@@ -788,6 +777,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		if (ret)
 +			return ret;
 +		break;
++
 +	case 26000000:
 +		/* register default is 26MHz */
 +		ret = regmap_multi_reg_write(udphy->pma_regmap, rk_udphy_26m_refclk_cfg,
@@ -795,6 +785,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		if (ret)
 +			return ret;
 +		break;
++
 +	default:
 +		dev_err(udphy->dev, "unsupported refclk freq %ld\n", rate);
 +		return -EINVAL;
@@ -921,7 +912,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +
 +static int rk_udphy_setup(struct rk_udphy *udphy)
 +{
-+	int ret = 0;
++	int ret;
 +
 +	ret = clk_bulk_prepare_enable(udphy->num_clks, udphy->clks);
 +	if (ret) {
@@ -939,12 +930,10 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	return 0;
 +}
 +
-+static int rk_udphy_disable(struct rk_udphy *udphy)
++static void rk_udphy_disable(struct rk_udphy *udphy)
 +{
 +	clk_bulk_disable_unprepare(udphy->num_clks, udphy->clks);
 +	rk_udphy_reset_assert_all(udphy);
-+
-+	return 0;
 +}
 +
 +static int rk_udphy_parse_lane_mux_data(struct rk_udphy *udphy)
@@ -1058,11 +1047,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	if (ret)
 +		return ret;
 +
-+	ret = rk_udphy_reset_init(udphy, dev);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
++	return rk_udphy_reset_init(udphy, dev);
 +}
 +
 +static int rk_udphy_power_on(struct rk_udphy *udphy, u8 mode)
@@ -1088,9 +1073,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		if (udphy->mode == UDPHY_MODE_DP)
 +			rk_udphy_u3_port_disable(udphy, true);
 +
-+		ret = rk_udphy_disable(udphy);
-+		if (ret)
-+			return ret;
++		rk_udphy_disable(udphy);
 +		ret = rk_udphy_setup(udphy);
 +		if (ret)
 +			return ret;
@@ -1101,27 +1084,20 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	return 0;
 +}
 +
-+static int rk_udphy_power_off(struct rk_udphy *udphy, u8 mode)
++static void rk_udphy_power_off(struct rk_udphy *udphy, u8 mode)
 +{
-+	int ret;
-+
 +	if (!(udphy->mode & mode)) {
 +		dev_info(udphy->dev, "mode 0x%02x is not support\n", mode);
-+		return 0;
++		return;
 +	}
 +
 +	if (!udphy->status)
-+		return 0;
++		return;
 +
 +	udphy->status &= ~mode;
 +
-+	if (udphy->status == UDPHY_MODE_NONE) {
-+		ret = rk_udphy_disable(udphy);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
++	if (udphy->status == UDPHY_MODE_NONE)
++		rk_udphy_disable(udphy);
 +}
 +
 +static int rk_udphy_dp_phy_init(struct phy *phy)
@@ -1162,11 +1138,9 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	if (ret)
 +		goto unlock;
 +
-+	ret = rk_udphy_dplane_enable(udphy, dp_lanes);
-+	if (ret)
-+		goto unlock;
++	rk_udphy_dplane_enable(udphy, dp_lanes);
 +
-+	ret = rk_udphy_dplane_select(udphy);
++	rk_udphy_dplane_select(udphy);
 +
 +unlock:
 +	mutex_unlock(&udphy->mutex);
@@ -1182,18 +1156,13 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +static int rk_udphy_dp_phy_power_off(struct phy *phy)
 +{
 +	struct rk_udphy *udphy = phy_get_drvdata(phy);
-+	int ret;
 +
 +	mutex_lock(&udphy->mutex);
-+	ret = rk_udphy_dplane_enable(udphy, 0);
-+	if (ret)
-+		goto unlock;
-+
-+	ret = rk_udphy_power_off(udphy, UDPHY_MODE_DP);
-+
-+unlock:
++	rk_udphy_dplane_enable(udphy, 0);
++	rk_udphy_power_off(udphy, UDPHY_MODE_DP);
 +	mutex_unlock(&udphy->mutex);
-+	return ret;
++
++	return 0;
 +}
 +
 +static int rk_udphy_dp_phy_verify_link_rate(unsigned int link_rate)
@@ -1204,6 +1173,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	case 5400:
 +	case 8100:
 +		break;
++
 +	default:
 +		return -EINVAL;
 +	}
@@ -1228,6 +1198,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	case 4:
 +		/* valid lane count. */
 +		break;
++
 +	default:
 +		return -EINVAL;
 +	}
@@ -1300,15 +1271,19 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		case 1620:
 +			udphy->bw = DP_BW_RBR;
 +			break;
++
 +		case 2700:
 +			udphy->bw = DP_BW_HBR;
 +			break;
++
 +		case 5400:
 +			udphy->bw = DP_BW_HBR2;
 +			break;
++
 +		case 8100:
 +			udphy->bw = DP_BW_HBR3;
 +			break;
++
 +		default:
 +			return -EINVAL;
 +		}
@@ -1342,6 +1317,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +						   FIELD_PREP(LN_ANA_TX_SER_TXCLK_INV,
 +						   udphy->lane_mux_sel[lane]));
 +				break;
++
 +			case 5400:
 +			case 8100:
 +				regmap_update_bits(udphy->pma_regmap,
@@ -1371,7 +1347,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +static int rk_udphy_usb3_phy_init(struct phy *phy)
 +{
 +	struct rk_udphy *udphy = phy_get_drvdata(phy);
-+	int ret = 0;
++	int ret;
 +
 +	mutex_lock(&udphy->mutex);
 +	/* DP only or high-speed, disable U3 port */
@@ -1390,18 +1366,17 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +static int rk_udphy_usb3_phy_exit(struct phy *phy)
 +{
 +	struct rk_udphy *udphy = phy_get_drvdata(phy);
-+	int ret = 0;
 +
 +	mutex_lock(&udphy->mutex);
 +	/* DP only or high-speed */
 +	if (!(udphy->mode & UDPHY_MODE_USB) || udphy->hs)
 +		goto unlock;
 +
-+	ret = rk_udphy_power_off(udphy, UDPHY_MODE_USB);
++	rk_udphy_power_off(udphy, UDPHY_MODE_USB);
 +
 +unlock:
 +	mutex_unlock(&udphy->mutex);
-+	return ret;
++	return 0;
 +}
 +
 +static const struct phy_ops rk_udphy_usb3_phy_ops = {
@@ -1420,7 +1395,6 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +
 +	switch (state->mode) {
 +	case TYPEC_DP_STATE_C:
-+		fallthrough;
 +	case TYPEC_DP_STATE_E:
 +		udphy->lane_mux_sel[0] = PHY_LANE_MUX_DP;
 +		udphy->lane_mux_sel[1] = PHY_LANE_MUX_DP;
@@ -1428,8 +1402,8 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		udphy->lane_mux_sel[3] = PHY_LANE_MUX_DP;
 +		mode = UDPHY_MODE_DP;
 +		break;
++
 +	case TYPEC_DP_STATE_D:
-+		fallthrough;
 +	default:
 +		if (udphy->flip) {
 +			udphy->lane_mux_sel[0] = PHY_LANE_MUX_DP;
@@ -1496,25 +1470,6 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +					udphy);
 +}
 +
-+static u32 rk_udphy_dp_get_max_link_rate(struct rk_udphy *udphy,
-+					 struct fwnode_handle *np)
-+{
-+	u32 max_link_rate;
-+	int ret;
-+
-+	ret = fwnode_property_read_u32(np, "max-link-rate", &max_link_rate);
-+	if (ret)
-+		return 8100;
-+
-+	ret = rk_udphy_dp_phy_verify_link_rate(max_link_rate);
-+	if (ret) {
-+		dev_warn(udphy->dev, "invalid max-link-rate: %d\n", max_link_rate);
-+		max_link_rate = 8100;
-+	}
-+
-+	return max_link_rate;
-+}
-+
 +static const struct regmap_config rk_udphy_pma_regmap_cfg = {
 +	.reg_bits = 32,
 +	.reg_stride = 4,
@@ -1523,10 +1478,26 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	.max_register = 0x20dc,
 +};
 +
++static struct phy *rk_udphy_phy_xlate(struct device *dev, const struct of_phandle_args *args)
++{
++	struct rk_udphy *udphy = dev_get_drvdata(dev);
++
++	if (args->args_count == 0)
++		return ERR_PTR(-EINVAL);
++
++	switch (args->args[0]) {
++	case PHY_TYPE_USB3:
++		return udphy->phy_u3;
++	case PHY_TYPE_DP:
++		return udphy->phy_dp;
++	}
++
++	return ERR_PTR(-EINVAL);
++}
++
 +static int rk_udphy_probe(struct platform_device *pdev)
 +{
 +	struct device *dev = &pdev->dev;
-+	struct fwnode_handle *child;
 +	struct phy_provider *phy_provider;
 +	struct resource *res;
 +	struct rk_udphy *udphy;
@@ -1586,36 +1557,23 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +			return ret;
 +	}
 +
-+	fwnode_for_each_available_child_node(dev_fwnode(dev), child) {
-+		const char *name = fwnode_get_name(child);
-+		const struct phy_ops *ops;
-+		struct phy *phy;
-+
-+		if (!strcmp(name, "dp-port")) {
-+			ops = &rk_udphy_dp_phy_ops;
-+		} else if (!strcmp(name, "usb3-port")) {
-+			ops = &rk_udphy_usb3_phy_ops;
-+		} else {
-+			/* e.g. ports node used by orientation switch */
-+			continue;
-+		}
-+
-+		phy = devm_phy_create(dev, to_of_node(child), ops);
-+		if (IS_ERR(phy)) {
-+			fwnode_handle_put(child);
-+			ret = PTR_ERR(phy);
-+			return dev_err_probe(dev, ret, "failed to create phy: %pfwP\n", child);
-+		}
-+
-+		if (ops == &rk_udphy_dp_phy_ops) {
-+			phy_set_bus_width(phy, rk_udphy_dplane_get(udphy));
-+			phy->attrs.max_link_rate = rk_udphy_dp_get_max_link_rate(udphy, child);
-+		}
-+
-+		phy_set_drvdata(phy, udphy);
++	udphy->phy_u3 = devm_phy_create(dev, dev->of_node, &rk_udphy_usb3_phy_ops);
++	if (IS_ERR(udphy->phy_u3)) {
++		ret = PTR_ERR(udphy->phy_u3);
++		return dev_err_probe(dev, ret, "failed to create USB3 phy\n");
 +	}
++	phy_set_drvdata(udphy->phy_u3, udphy);
 +
-+	phy_provider = devm_of_phy_provider_register(dev, of_phy_simple_xlate);
++	udphy->phy_dp = devm_phy_create(dev, dev->of_node, &rk_udphy_dp_phy_ops);
++	if (IS_ERR(udphy->phy_dp)) {
++		ret = PTR_ERR(udphy->phy_dp);
++		return dev_err_probe(dev, ret, "failed to create DP phy\n");
++	}
++	phy_set_bus_width(udphy->phy_dp, rk_udphy_dplane_get(udphy));
++	udphy->phy_dp->attrs.max_link_rate = 8100;
++	phy_set_drvdata(udphy->phy_dp, udphy);
++
++	phy_provider = devm_of_phy_provider_register(dev, rk_udphy_phy_xlate);
 +	if (IS_ERR(phy_provider)) {
 +		ret = PTR_ERR(phy_provider);
 +		return dev_err_probe(dev, ret, "failed to register phy provider\n");
@@ -1652,24 +1610,24 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	.rst_list = rk_udphy_rst_list,
 +	.grfcfg	= {
 +		/* u2phy-grf */
-+		.bvalid_phy_con		= { 0x0008, 1, 0, 0x2, 0x3 },
-+		.bvalid_grf_con		= { 0x0010, 3, 2, 0x2, 0x3 },
++		.bvalid_phy_con		= RK_UDPHY_GEN_GRF_REG(0x0008, 1, 0, 0x2, 0x3),
++		.bvalid_grf_con		= RK_UDPHY_GEN_GRF_REG(0x0010, 3, 2, 0x2, 0x3),
 +
 +		/* usb-grf */
-+		.usb3otg0_cfg		= { 0x001c, 15, 0, 0x1100, 0x0188 },
-+		.usb3otg1_cfg		= { 0x0034, 15, 0, 0x1100, 0x0188 },
++		.usb3otg0_cfg		= RK_UDPHY_GEN_GRF_REG(0x001c, 15, 0, 0x1100, 0x0188),
++		.usb3otg1_cfg		= RK_UDPHY_GEN_GRF_REG(0x0034, 15, 0, 0x1100, 0x0188),
 +
 +		/* usbdpphy-grf */
-+		.low_pwrn		= { 0x0004, 13, 13, 0, 1 },
-+		.rx_lfps		= { 0x0004, 14, 14, 0, 1 },
++		.low_pwrn		= RK_UDPHY_GEN_GRF_REG(0x0004, 13, 13, 0, 1),
++		.rx_lfps		= RK_UDPHY_GEN_GRF_REG(0x0004, 14, 14, 0, 1),
 +	},
 +	.vogrfcfg = {
 +		{
-+			.hpd_trigger	= { 0x0000, 11, 10, 1, 3 },
++			.hpd_trigger	= RK_UDPHY_GEN_GRF_REG(0x0000, 11, 10, 1, 3),
 +			.dp_lane_reg	= 0x0000,
 +		},
 +		{
-+			.hpd_trigger	= { 0x0008, 11, 10, 1, 3 },
++			.hpd_trigger	= RK_UDPHY_GEN_GRF_REG(0x0008, 11, 10, 1, 3),
 +			.dp_lane_reg	= 0x0008,
 +		},
 +	},

@@ -25,7 +25,7 @@ Change-Id: I6624b6af2ede3c2fca61c0f753a08a33ce69a6d2
  #define GRF_PCIE30PHY_CON6			0x18
  #define GRF_PCIE30PHY_CON9			0x24
  #define GRF_PCIE30PHY_DA_OCM			(BIT(15) | BIT(31))
-@@ -64,6 +65,10 @@ struct rockchip_p3phy_ops {
+@@ -73,6 +74,10 @@ struct rockchip_p3phy_ops {
  	int (*phy_init)(struct rockchip_p3phy_priv *priv);
  };
  
@@ -36,7 +36,7 @@ Change-Id: I6624b6af2ede3c2fca61c0f753a08a33ce69a6d2
  static int rockchip_p3phy_set_mode(struct phy *phy, enum phy_mode mode, int submode)
  {
  	struct rockchip_p3phy_priv *priv = phy_get_drvdata(phy);
-@@ -88,13 +93,14 @@ static int rockchip_p3phy_rk3568_init(st
+@@ -97,13 +102,14 @@ static int rockchip_p3phy_rk3568_init(st
  {
  	struct phy *phy = priv->phy;
  	bool bifurcation = false;
@@ -52,7 +52,7 @@ Change-Id: I6624b6af2ede3c2fca61c0f753a08a33ce69a6d2
  		dev_info(&phy->dev, "lane number %d, val %d\n", i, priv->lanes[i]);
  		if (priv->lanes[i] > 1)
  			bifurcation = true;
-@@ -113,16 +119,35 @@ static int rockchip_p3phy_rk3568_init(st
+@@ -122,16 +128,35 @@ static int rockchip_p3phy_rk3568_init(st
  			     GRF_PCIE30PHY_WR_EN & ~RK3568_BIFURCATION_LANE_0_1);
  	}
  

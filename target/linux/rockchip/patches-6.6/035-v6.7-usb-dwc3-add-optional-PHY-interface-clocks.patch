@@ -1,6 +1,6 @@
-From c686cce2ef2634168938e37caa2a0f8e1de65a94 Mon Sep 17 00:00:00 2001
+From 97789b93b792fc97ad4476b79e0f38ffa8e7e0ee Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Thu, 20 Jul 2023 18:59:37 +0200
+Date: Fri, 20 Oct 2023 16:11:41 +0200
 Subject: [PATCH] usb: dwc3: add optional PHY interface clocks
 
 On Rockchip RK3588 one of the DWC3 cores is integrated weirdly and
@@ -8,10 +8,13 @@ requires two extra clocks to be enabled. Without these extra clocks
 hot-plugging USB devices is broken.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Acked-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Link: https://lore.kernel.org/r/20231020150022.48725-3-sebastian.reichel@collabora.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc3/core.c | 26 ++++++++++++++++++++++++++
+ drivers/usb/dwc3/core.c | 28 ++++++++++++++++++++++++++++
  drivers/usb/dwc3/core.h |  4 ++++
- 2 files changed, 30 insertions(+)
+ 2 files changed, 32 insertions(+)
 
 --- a/drivers/usb/dwc3/core.c
 +++ b/drivers/usb/dwc3/core.c
@@ -45,25 +48,27 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	clk_disable_unprepare(dwc->susp_clk);
  	clk_disable_unprepare(dwc->ref_clk);
  	clk_disable_unprepare(dwc->bus_clk);
-@@ -1834,6 +1848,18 @@ static int dwc3_get_clocks(struct dwc3 *
- 			return dev_err_probe(dev, PTR_ERR(dwc->susp_clk),
- 					"could not get suspend clock\n");
+@@ -1838,6 +1852,20 @@ static int dwc3_get_clocks(struct dwc3 *
  		}
-+
-+		dwc->utmi_clk = devm_clk_get_optional(dev, "utmi");
-+		if (IS_ERR(dwc->utmi_clk)) {
-+			return dev_err_probe(dev, PTR_ERR(dwc->utmi_clk),
-+					"could not get utmi clock\n");
-+		}
-+
-+		dwc->pipe_clk = devm_clk_get_optional(dev, "pipe");
-+		if (IS_ERR(dwc->pipe_clk)) {
-+			return dev_err_probe(dev, PTR_ERR(dwc->pipe_clk),
-+					"could not get pipe clock\n");
-+		}
  	}
  
++	/* specific to Rockchip RK3588 */
++	dwc->utmi_clk = devm_clk_get_optional(dev, "utmi");
++	if (IS_ERR(dwc->utmi_clk)) {
++		return dev_err_probe(dev, PTR_ERR(dwc->utmi_clk),
++				"could not get utmi clock\n");
++	}
++
++	/* specific to Rockchip RK3588 */
++	dwc->pipe_clk = devm_clk_get_optional(dev, "pipe");
++	if (IS_ERR(dwc->pipe_clk)) {
++		return dev_err_probe(dev, PTR_ERR(dwc->pipe_clk),
++				"could not get pipe clock\n");
++	}
++
  	return 0;
+ }
+ 
 --- a/drivers/usb/dwc3/core.h
 +++ b/drivers/usb/dwc3/core.h
 @@ -996,6 +996,8 @@ struct dwc3_scratchpad_array {
@@ -75,7 +80,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
   * @reset: reset control
   * @regs: base address for our registers
   * @regs_size: address space size
-@@ -1165,6 +1167,8 @@ struct dwc3 {
+@@ -1166,6 +1168,8 @@ struct dwc3 {
  	struct clk		*bus_clk;
  	struct clk		*ref_clk;
  	struct clk		*susp_clk;

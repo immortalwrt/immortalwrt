@@ -1,25 +1,14 @@
+From 4e07a95f7402de092cd71b2cb96c69f85c98f251 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-To: Heiko Stuebner <heiko@sntech.de>, Vinod Koul <vkoul@kernel.org>,
-	Kishon Vijay Abraham I <kishon@kernel.org>,
-	linux-rockchip@lists.infradead.org,
-	linux-phy@lists.infradead.org
-Cc: Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Frank Wang <frank.wang@rock-chips.com>,
-	Kever Yang <kever.yang@rock-chips.com>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Sebastian Reichel <sebastian.reichel@collabora.com>,
-	kernel@collabora.com
-Subject: [PATCH v2 06/12] arm64: dts: rockchip: Fix usb2phy nodename for rk3588
-Date: Tue, 13 Feb 2024 17:32:40 +0100	[thread overview]
-Message-ID: <20240213163609.44930-7-sebastian.reichel@collabora.com> (raw)
-In-Reply-To: <20240213163609.44930-1-sebastian.reichel@collabora.com>
+Date: Tue, 9 Apr 2024 00:50:31 +0200
+Subject: [PATCH] arm64: dts: rockchip: fix usb2phy nodename for rk3588
 
 usb2-phy should be named usb2phy according to the DT binding,
 so let's fix it up accordingly.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20240408225109.128953-5-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
  arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
