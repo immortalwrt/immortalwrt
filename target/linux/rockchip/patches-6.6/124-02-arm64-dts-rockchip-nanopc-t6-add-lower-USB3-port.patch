@@ -63,15 +63,11 @@
  &u2phy2 {
  	status = "okay";
  };
-@@ -939,6 +974,14 @@
+@@ -939,6 +974,10@@
  	status = "okay";
  };
  
 +&usbdp_phy1 {
-+	status = "okay";
-+};
-+
-+&usbdp_phy1_u3 {
 +	status = "okay";
 +};
 +

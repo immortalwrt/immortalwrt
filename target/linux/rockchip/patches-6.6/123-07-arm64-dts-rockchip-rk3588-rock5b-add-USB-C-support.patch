@@ -139,7 +139,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &u2phy1 {
  	status = "okay";
  };
-@@ -784,6 +862,33 @@
+@@ -784,6 +862,29 @@
  	status = "okay";
  };
  
@@ -164,10 +164,6 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +			remote-endpoint = <&usbc0_sbu>;
 +		};
 +	};
-+};
-+
-+&usbdp_phy0_u3 {
-+	status = "okay";
 +};
 +
  &usb_host0_ehci {

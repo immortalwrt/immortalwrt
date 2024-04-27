@@ -800,10 +800,6 @@
 	status = "okay";
 };
 
-&usbdp_phy0_u3 {
-	status = "okay";
-};
-
 &usb_host0_ehci {
 	status = "okay";
 };

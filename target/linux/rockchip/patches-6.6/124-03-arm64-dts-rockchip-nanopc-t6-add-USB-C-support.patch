@@ -71,7 +71,7 @@
  &u2phy1 {
  	status = "okay";
  };
-@@ -974,6 +1024,33 @@
+@@ -974,6 +1024,29 @@
  	status = "okay";
  };
  
@@ -96,10 +96,6 @@
 +			remote-endpoint = <&dp_altmode_mux>;
 +		};
 +	};
-+};
-+
-+&usbdp_phy0_u3 {
-+	status = "okay";
 +};
 +
  &usbdp_phy1 {
