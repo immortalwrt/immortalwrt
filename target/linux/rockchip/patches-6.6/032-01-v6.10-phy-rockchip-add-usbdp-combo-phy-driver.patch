@@ -1478,7 +1478,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
 +	.max_register = 0x20dc,
 +};
 +
-+static struct phy *rk_udphy_phy_xlate(struct device *dev, const struct of_phandle_args *args)
++static struct phy *rk_udphy_phy_xlate(struct device *dev, struct of_phandle_args *args)
 +{
 +	struct rk_udphy *udphy = dev_get_drvdata(dev);
 +
