@@ -1,0 +1,42 @@
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+To: Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	linux-clk@vger.kernel.org
+Cc: Elaine Zhang <zhangqing@rock-chips.com>,
+	Kever Yang <kever.yang@rock-chips.com>,
+	Heiko Stuebner <heiko@sntech.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	huangtao@rock-chips.com, andy.yan@rock-chips.com,
+	Michal Tomek <mtdev79b@gmail.com>, Ilya K <me@0upti.me>,
+	Chad LeClair <leclair@gmail.com>,
+	devicetree@vger.kernel.org, linux-rockchip@lists.infradead.org,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	kernel@collabora.com
+Subject: [PATCH v9 2/7] clk: rockchip: handle missing clocks with -EPROBE_DEFER
+Date: Mon, 25 Mar 2024 20:33:33 +0100	[thread overview]
+Message-ID: <20240325193609.237182-3-sebastian.reichel@collabora.com> (raw)
+In-Reply-To: <20240325193609.237182-1-sebastian.reichel@collabora.com>
+
+In the future some clocks will be registered using CLK_OF_DECLARE
+and some are registered later from the driver probe routine. Any
+clock handled by the probe routine should return -EPROBE_DEFER
+until that routine has been called.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ drivers/clk/rockchip/clk.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/clk/rockchip/clk.c
++++ b/drivers/clk/rockchip/clk.c
+@@ -376,7 +376,7 @@ struct rockchip_clk_provider *rockchip_c
+ 		goto err_free;
+ 
+ 	for (i = 0; i < nr_clks; ++i)
+-		clk_table[i] = ERR_PTR(-ENOENT);
++		clk_table[i] = ERR_PTR(-EPROBE_DEFER);
+ 
+ 	ctx->reg_base = base;
+ 	ctx->clk_data.clks = clk_table;
