@@ -69,3 +69,22 @@ define KernelPackage/saradc-rockchip/description
 endef
 
 $(eval $(call KernelPackage,saradc-rockchip))
+
+define KernelPackage/video-hantro-rockchip
+  SUBMENU:=$(VIDEO_MENU)
+  TITLE:=Hantro VPU support
+  DEPENDS:=@TARGET_rockchip kmod-video-core +kmod-video-mem2mem +kmod-video-dma
+  KCONFIG:= \
+	CONFIG_VIDEO_HANTRO \
+	CONFIG_VIDEO_HANTRO_ROCKCHIP=y
+  FILES:=$(LINUX_DIR)/drivers/media/$(V4L2_MEM2MEM_DIR)/verisilicon/hantro-vpu.ko
+  AUTOLOAD:=$(call AutoProbe,hantro-vpu)
+  $(call AddDepends/video)
+endef
+
+define KernelPackage/video-hantro-rockchip/description
+ Support for the Hantro IP based Video Processing Units present on
+ Rockchip SoCs, which accelerate video and image encoding and decoding.
+endef
+
+$(eval $(call KernelPackage,video-hantro-rockchip))
