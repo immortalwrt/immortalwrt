@@ -71,7 +71,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
 --- a/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
 +++ b/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
-@@ -1066,13 +1066,18 @@ static void t7xx_hw_info_init(struct cld
+@@ -1067,13 +1067,18 @@ static void t7xx_hw_info_init(struct cld
  	struct t7xx_cldma_hw *hw_info = &md_ctrl->hw_info;
  	u32 phy_ao_base, phy_pd_base;
  

@@ -256,7 +256,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
  		goto err_free_port;
 --- a/drivers/usb/class/cdc-wdm.c
 +++ b/drivers/usb/class/cdc-wdm.c
-@@ -929,7 +929,8 @@ static void wdm_wwan_init(struct wdm_dev
+@@ -933,7 +933,8 @@ static void wdm_wwan_init(struct wdm_dev
  		return;
  	}
  

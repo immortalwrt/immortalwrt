@@ -78,7 +78,7 @@ Cc: netdev@vger.kernel.org
 
 --- a/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
 +++ b/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
-@@ -1293,9 +1293,9 @@ int t7xx_cldma_init(struct cldma_ctrl *m
+@@ -1294,9 +1294,9 @@ int t7xx_cldma_init(struct cldma_ctrl *m
  	for (i = 0; i < CLDMA_TXQ_NUM; i++) {
  		md_cd_queue_struct_init(&md_ctrl->txq[i], md_ctrl, MTK_TX, i);
  		md_ctrl->txq[i].worker =
@@ -91,7 +91,7 @@ Cc: netdev@vger.kernel.org
  		if (!md_ctrl->txq[i].worker)
  			goto err_workqueue;
  
-@@ -1306,9 +1306,10 @@ int t7xx_cldma_init(struct cldma_ctrl *m
+@@ -1307,9 +1307,10 @@ int t7xx_cldma_init(struct cldma_ctrl *m
  		md_cd_queue_struct_init(&md_ctrl->rxq[i], md_ctrl, MTK_RX, i);
  		INIT_WORK(&md_ctrl->rxq[i].cldma_work, t7xx_cldma_rx_done);
  
