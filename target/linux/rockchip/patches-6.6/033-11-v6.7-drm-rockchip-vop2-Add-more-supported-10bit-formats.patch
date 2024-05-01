@@ -1,0 +1,162 @@
+From bfd8a5c228fa3bb97884f77529c09e8745da08b9 Mon Sep 17 00:00:00 2001
+From: Andy Yan <andy.yan@rock-chips.com>
+Date: Wed, 18 Oct 2023 17:43:18 +0800
+Subject: [PATCH] drm/rockchip: vop2: Add more supported 10bit formats
+
+Add 10 bit RGB and AFBC based YUV format supported
+by vop2.
+
+Signed-off-by: Andy Yan <andy.yan@rock-chips.com>
+Acked-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20231018094318.2476081-1-andyshrk@163.com
+---
+ drivers/gpu/drm/rockchip/rockchip_drm_vop2.c | 45 +++++++++++++++++++-
+ drivers/gpu/drm/rockchip/rockchip_vop2_reg.c | 22 +++++++---
+ 2 files changed, 61 insertions(+), 6 deletions(-)
+
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
+@@ -299,6 +299,11 @@ static u32 vop2_get_bpp(const struct drm
+ static enum vop2_data_format vop2_convert_format(u32 format)
+ {
+ 	switch (format) {
++	case DRM_FORMAT_XRGB2101010:
++	case DRM_FORMAT_ARGB2101010:
++	case DRM_FORMAT_XBGR2101010:
++	case DRM_FORMAT_ABGR2101010:
++		return VOP2_FMT_XRGB101010;
+ 	case DRM_FORMAT_XRGB8888:
+ 	case DRM_FORMAT_ARGB8888:
+ 	case DRM_FORMAT_XBGR8888:
+@@ -311,10 +316,19 @@ static enum vop2_data_format vop2_conver
+ 	case DRM_FORMAT_BGR565:
+ 		return VOP2_FMT_RGB565;
+ 	case DRM_FORMAT_NV12:
++	case DRM_FORMAT_NV21:
++	case DRM_FORMAT_YUV420_8BIT:
+ 		return VOP2_FMT_YUV420SP;
++	case DRM_FORMAT_NV15:
++	case DRM_FORMAT_YUV420_10BIT:
++		return VOP2_FMT_YUV420SP_10;
+ 	case DRM_FORMAT_NV16:
++	case DRM_FORMAT_NV61:
+ 		return VOP2_FMT_YUV422SP;
++	case DRM_FORMAT_Y210:
++		return VOP2_FMT_YUV422SP_10;
+ 	case DRM_FORMAT_NV24:
++	case DRM_FORMAT_NV42:
+ 		return VOP2_FMT_YUV444SP;
+ 	case DRM_FORMAT_YUYV:
+ 	case DRM_FORMAT_YVYU:
+@@ -331,6 +345,11 @@ static enum vop2_data_format vop2_conver
+ static enum vop2_afbc_format vop2_convert_afbc_format(u32 format)
+ {
+ 	switch (format) {
++	case DRM_FORMAT_XRGB2101010:
++	case DRM_FORMAT_ARGB2101010:
++	case DRM_FORMAT_XBGR2101010:
++	case DRM_FORMAT_ABGR2101010:
++		return VOP2_AFBC_FMT_ARGB2101010;
+ 	case DRM_FORMAT_XRGB8888:
+ 	case DRM_FORMAT_ARGB8888:
+ 	case DRM_FORMAT_XBGR8888:
+@@ -342,6 +361,17 @@ static enum vop2_afbc_format vop2_conver
+ 	case DRM_FORMAT_RGB565:
+ 	case DRM_FORMAT_BGR565:
+ 		return VOP2_AFBC_FMT_RGB565;
++	case DRM_FORMAT_YUV420_8BIT:
++		return VOP2_AFBC_FMT_YUV420;
++	case DRM_FORMAT_YUV420_10BIT:
++		return VOP2_AFBC_FMT_YUV420_10BIT;
++	case DRM_FORMAT_YVYU:
++	case DRM_FORMAT_YUYV:
++	case DRM_FORMAT_VYUY:
++	case DRM_FORMAT_UYVY:
++		return VOP2_AFBC_FMT_YUV422;
++	case DRM_FORMAT_Y210:
++		return VOP2_AFBC_FMT_YUV422_10BIT;
+ 	default:
+ 		return VOP2_AFBC_FMT_INVALID;
+ 	}
+@@ -352,6 +382,8 @@ static enum vop2_afbc_format vop2_conver
+ static bool vop2_win_rb_swap(u32 format)
+ {
+ 	switch (format) {
++	case DRM_FORMAT_XBGR2101010:
++	case DRM_FORMAT_ABGR2101010:
+ 	case DRM_FORMAT_XBGR8888:
+ 	case DRM_FORMAT_ABGR8888:
+ 	case DRM_FORMAT_BGR888:
+@@ -364,7 +396,15 @@ static bool vop2_win_rb_swap(u32 format)
+ 
+ static bool vop2_afbc_uv_swap(u32 format)
+ {
+-	return false;
++	switch (format) {
++	case DRM_FORMAT_YUYV:
++	case DRM_FORMAT_Y210:
++	case DRM_FORMAT_YUV420_8BIT:
++	case DRM_FORMAT_YUV420_10BIT:
++		return true;
++	default:
++		return false;
++	}
+ }
+ 
+ static bool vop2_win_uv_swap(u32 format)
+@@ -373,6 +413,9 @@ static bool vop2_win_uv_swap(u32 format)
+ 	case DRM_FORMAT_NV12:
+ 	case DRM_FORMAT_NV16:
+ 	case DRM_FORMAT_NV24:
++	case DRM_FORMAT_NV15:
++	case DRM_FORMAT_YUYV:
++	case DRM_FORMAT_UYVY:
+ 		return true;
+ 	default:
+ 		return false;
+--- a/drivers/gpu/drm/rockchip/rockchip_vop2_reg.c
++++ b/drivers/gpu/drm/rockchip/rockchip_vop2_reg.c
+@@ -16,6 +16,10 @@
+ #include "rockchip_drm_vop2.h"
+ 
+ static const uint32_t formats_win_full_10bit[] = {
++	DRM_FORMAT_XRGB2101010,
++	DRM_FORMAT_ARGB2101010,
++	DRM_FORMAT_XBGR2101010,
++	DRM_FORMAT_ABGR2101010,
+ 	DRM_FORMAT_XRGB8888,
+ 	DRM_FORMAT_ARGB8888,
+ 	DRM_FORMAT_XBGR8888,
+@@ -24,6 +28,10 @@ static const uint32_t formats_win_full_1
+ 	DRM_FORMAT_BGR888,
+ 	DRM_FORMAT_RGB565,
+ 	DRM_FORMAT_BGR565,
++	DRM_FORMAT_YUV420_8BIT, /* yuv420_8bit non-Linear mode only */
++	DRM_FORMAT_YUV420_10BIT, /* yuv420_10bit non-Linear mode only */
++	DRM_FORMAT_YUYV, /* yuv422_8bit non-Linear mode only*/
++	DRM_FORMAT_Y210, /* yuv422_10bit non-Linear mode only */
+ };
+ 
+ static const uint32_t formats_win_full_10bit_yuyv[] = {
+@@ -35,11 +43,15 @@ static const uint32_t formats_win_full_1
+ 	DRM_FORMAT_BGR888,
+ 	DRM_FORMAT_RGB565,
+ 	DRM_FORMAT_BGR565,
+-	DRM_FORMAT_NV12,
+-	DRM_FORMAT_NV16,
+-	DRM_FORMAT_NV24,
+-	DRM_FORMAT_YVYU,
+-	DRM_FORMAT_VYUY,
++	DRM_FORMAT_NV12, /* yuv420_8bit linear mode, 2 plane */
++	DRM_FORMAT_NV21, /* yuv420_8bit linear mode, 2 plane */
++	DRM_FORMAT_NV15, /* yuv420_10bit linear mode, 2 plane, no padding */
++	DRM_FORMAT_NV16, /* yuv422_8bit linear mode, 2 plane */
++	DRM_FORMAT_NV61, /* yuv422_8bit linear mode, 2 plane */
++	DRM_FORMAT_NV24, /* yuv444_8bit linear mode, 2 plane */
++	DRM_FORMAT_NV42, /* yuv444_8bit linear mode, 2 plane */
++	DRM_FORMAT_YVYU, /* yuv422_8bit[YVYU] linear mode */
++	DRM_FORMAT_VYUY, /* yuv422_8bit[VYUY] linear mode */
+ };
+ 
+ static const uint32_t formats_win_lite[] = {

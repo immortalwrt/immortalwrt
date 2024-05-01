@@ -1,0 +1,29 @@
+From 253a1d33e5cfdf62525f5d6ed2bf03acbadd1582 Mon Sep 17 00:00:00 2001
+From: Yang Li <yang.lee@linux.alibaba.com>
+Date: Fri, 21 Apr 2023 16:13:03 +0800
+Subject: [PATCH] drm/rockchip: dsi: Use
+ devm_platform_get_and_ioremap_resource()
+
+Convert platform_get_resource(), devm_ioremap_resource() to a single
+call to devm_platform_get_and_ioremap_resource(), as this is exactly
+what this function does.
+
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20230421081303.122452-1-yang.lee@linux.alibaba.com
+---
+ drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+--- a/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
++++ b/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
+@@ -1358,8 +1358,7 @@ static int dw_mipi_dsi_rockchip_probe(st
+ 	if (!dsi)
+ 		return -ENOMEM;
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	dsi->base = devm_ioremap_resource(dev, res);
++	dsi->base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+ 	if (IS_ERR(dsi->base)) {
+ 		DRM_DEV_ERROR(dev, "Unable to get dsi registers\n");
+ 		return PTR_ERR(dsi->base);
