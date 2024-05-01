@@ -42,7 +42,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	vcc12v_dcin: vcc12v-dcin-regulator {
  		compatible = "regulator-fixed";
  		regulator-name = "vcc12v_dcin";
-@@ -226,6 +239,59 @@
+@@ -232,6 +245,59 @@
  &i2c2 {
  	status = "okay";
  
@@ -102,7 +102,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	hym8563: rtc@51 {
  		compatible = "haoyu,hym8563";
  		reg = <0x51>;
-@@ -312,6 +378,16 @@
+@@ -318,6 +384,16 @@
  			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
  		};
  	};
@@ -119,7 +119,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  };
  
  &pwm2 {
-@@ -944,6 +1020,22 @@
+@@ -958,6 +1034,22 @@
  	status = "okay";
  };
  
@@ -142,7 +142,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  &u2phy2 {
  	status = "okay";
  };
-@@ -982,3 +1074,58 @@
+@@ -996,3 +1088,58 @@
  &usb_host1_ohci {
  	status = "okay";
  };

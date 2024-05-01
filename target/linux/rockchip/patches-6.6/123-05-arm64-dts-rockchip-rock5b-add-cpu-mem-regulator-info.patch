@@ -55,4 +55,4 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	mem-supply = <&vdd_cpu_lit_mem_s0>;
  };
  
- &i2c0 {
+ &gpu {

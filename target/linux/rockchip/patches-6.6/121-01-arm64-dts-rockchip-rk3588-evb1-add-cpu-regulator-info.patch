@@ -35,7 +35,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &gmac0 {
  	clock_in_out = "output";
  	phy-handle = <&rgmii_phy>;
-@@ -1054,6 +1069,10 @@
+@@ -1068,6 +1083,10 @@
  	status = "okay";
  };
  

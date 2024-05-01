@@ -306,7 +306,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  			i-cache-size = <65536>;
  			i-cache-line-size = <64>;
 @@ -399,6 +617,230 @@
- 		ports = <&vop_out>;
+ 		#clock-cells = <0>;
  	};
  
 +	thermal_zones: thermal-zones {
@@ -536,7 +536,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	timer {
  		compatible = "arm,armv8-timer";
  		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_HIGH 0>,
-@@ -555,6 +997,16 @@
+@@ -611,6 +1053,16 @@
  		reg = <0x0 0xfd5ac000 0x0 0x4000>;
  	};
  

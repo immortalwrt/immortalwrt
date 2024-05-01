@@ -63,7 +63,7 @@
  &u2phy2 {
  	status = "okay";
  };
-@@ -939,6 +974,10@@
+@@ -939,6 +974,10 @@
  	status = "okay";
  };
  
@@ -74,7 +74,7 @@
  &usb_host0_ehci {
  	status = "okay";
  };
-@@ -954,3 +997,7 @@
+@@ -954,3 +993,7 @@
  &usb_host1_ohci {
  	status = "okay";
  };

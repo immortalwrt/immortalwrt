@@ -44,7 +44,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  		reg = <0x0 0xfd5b8000 0x0 0x10000>;
 --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -436,6 +436,28 @@
+@@ -492,6 +492,28 @@
  		};
  	};
  
