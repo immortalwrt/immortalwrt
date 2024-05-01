@@ -1,0 +1,78 @@
+From fe7acaa727e135621c062caa2d6d3ad4ad0b0185 Mon Sep 17 00:00:00 2001
+From: Danilo Krummrich <dakr@redhat.com>
+Date: Wed, 20 Sep 2023 16:42:35 +0200
+Subject: [PATCH] drm/gpuvm: allow building as module
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Currently, the DRM GPUVM does not have any core dependencies preventing
+a module build.
+
+Also, new features from subsequent patches require helpers (namely
+drm_exec) which can be built as module.
+
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Danilo Krummrich <dakr@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20230920144343.64830-3-dakr@redhat.com
+---
+ drivers/gpu/drm/Kconfig         | 7 +++++++
+ drivers/gpu/drm/Makefile        | 2 +-
+ drivers/gpu/drm/drm_gpuvm.c     | 3 +++
+ drivers/gpu/drm/nouveau/Kconfig | 1 +
+ 4 files changed, 12 insertions(+), 1 deletion(-)
+
+--- a/drivers/gpu/drm/Kconfig
++++ b/drivers/gpu/drm/Kconfig
+@@ -217,6 +217,13 @@ config DRM_EXEC
+ 	help
+ 	  Execution context for command submissions
+ 
++config DRM_GPUVM
++	tristate
++	depends on DRM
++	help
++	  GPU-VM representation providing helpers to manage a GPUs virtual
++	  address space
++
+ config DRM_BUDDY
+ 	tristate
+ 	depends on DRM
+--- a/drivers/gpu/drm/Makefile
++++ b/drivers/gpu/drm/Makefile
+@@ -45,7 +45,6 @@ drm-y := \
+ 	drm_vblank.o \
+ 	drm_vblank_work.o \
+ 	drm_vma_manager.o \
+-	drm_gpuvm.o \
+ 	drm_writeback.o
+ drm-$(CONFIG_DRM_LEGACY) += \
+ 	drm_agpsupport.o \
+@@ -81,6 +80,7 @@ obj-$(CONFIG_DRM_PANEL_ORIENTATION_QUIRK
+ #
+ #
+ obj-$(CONFIG_DRM_EXEC) += drm_exec.o
++obj-$(CONFIG_DRM_GPUVM) += drm_gpuvm.o
+ 
+ obj-$(CONFIG_DRM_BUDDY) += drm_buddy.o
+ 
+--- a/drivers/gpu/drm/drm_gpuvm.c
++++ b/drivers/gpu/drm/drm_gpuvm.c
+@@ -1721,3 +1721,6 @@ drm_gpuva_ops_free(struct drm_gpuvm *gpu
+ 	kfree(ops);
+ }
+ EXPORT_SYMBOL_GPL(drm_gpuva_ops_free);
++
++MODULE_DESCRIPTION("DRM GPUVM");
++MODULE_LICENSE("GPL");
+--- a/drivers/gpu/drm/nouveau/Kconfig
++++ b/drivers/gpu/drm/nouveau/Kconfig
+@@ -11,6 +11,7 @@ config DRM_NOUVEAU
+ 	select DRM_TTM
+ 	select DRM_TTM_HELPER
+ 	select DRM_EXEC
++	select DRM_GPUVM
+ 	select DRM_SCHED
+ 	select I2C
+ 	select I2C_ALGOBIT

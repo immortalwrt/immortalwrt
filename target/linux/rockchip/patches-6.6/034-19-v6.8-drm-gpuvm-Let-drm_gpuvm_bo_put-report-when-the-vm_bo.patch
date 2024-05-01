@@ -1,0 +1,59 @@
+From c50a291d621aa7abaa27b05f56d450a388b64948 Mon Sep 17 00:00:00 2001
+From: Boris Brezillon <boris.brezillon@collabora.com>
+Date: Mon, 4 Dec 2023 16:14:06 +0100
+Subject: [PATCH] drm/gpuvm: Let drm_gpuvm_bo_put() report when the vm_bo
+ object is destroyed
+
+Some users need to release resources attached to the vm_bo object when
+it's destroyed. In Panthor's case, we need to release the pin ref so
+BO pages can be returned to the system when all GPU mappings are gone.
+
+This could be done through a custom drm_gpuvm::vm_bo_free() hook, but
+this has all sort of locking implications that would force us to expose
+a drm_gem_shmem_unpin_locked() helper, not to mention the fact that
+having a ::vm_bo_free() implementation without a ::vm_bo_alloc() one
+seems odd. So let's keep things simple, and extend drm_gpuvm_bo_put()
+to report when the object is destroyed.
+
+Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
+Reviewed-by: Danilo Krummrich <dakr@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20231204151406.1977285-1-boris.brezillon@collabora.com
+---
+ drivers/gpu/drm/drm_gpuvm.c | 8 ++++++--
+ include/drm/drm_gpuvm.h     | 2 +-
+ 2 files changed, 7 insertions(+), 3 deletions(-)
+
+--- a/drivers/gpu/drm/drm_gpuvm.c
++++ b/drivers/gpu/drm/drm_gpuvm.c
+@@ -1529,14 +1529,18 @@ drm_gpuvm_bo_destroy(struct kref *kref)
+  * hold the dma-resv or driver specific GEM gpuva lock.
+  *
+  * This function may only be called from non-atomic context.
++ *
++ * Returns: true if vm_bo was destroyed, false otherwise.
+  */
+-void
++bool
+ drm_gpuvm_bo_put(struct drm_gpuvm_bo *vm_bo)
+ {
+ 	might_sleep();
+ 
+ 	if (vm_bo)
+-		kref_put(&vm_bo->kref, drm_gpuvm_bo_destroy);
++		return !!kref_put(&vm_bo->kref, drm_gpuvm_bo_destroy);
++
++	return false;
+ }
+ EXPORT_SYMBOL_GPL(drm_gpuvm_bo_put);
+ 
+--- a/include/drm/drm_gpuvm.h
++++ b/include/drm/drm_gpuvm.h
+@@ -721,7 +721,7 @@ drm_gpuvm_bo_get(struct drm_gpuvm_bo *vm
+ 	return vm_bo;
+ }
+ 
+-void drm_gpuvm_bo_put(struct drm_gpuvm_bo *vm_bo);
++bool drm_gpuvm_bo_put(struct drm_gpuvm_bo *vm_bo);
+ 
+ struct drm_gpuvm_bo *
+ drm_gpuvm_bo_find(struct drm_gpuvm *gpuvm,

@@ -1,0 +1,46 @@
+From d76653c32dd16d78e56208b4819134e766257c06 Mon Sep 17 00:00:00 2001
+From: Nathan Chancellor <nathan@kernel.org>
+Date: Thu, 28 Mar 2024 09:22:07 -0700
+Subject: [PATCH] drm/panthor: Fix clang -Wunused-but-set-variable in
+ tick_ctx_apply()
+
+Clang warns (or errors with CONFIG_WERROR):
+
+  drivers/gpu/drm/panthor/panthor_sched.c:2048:6: error: variable 'csg_mod_mask' set but not used [-Werror,-Wunused-but-set-variable]
+   2048 |         u32 csg_mod_mask = 0, free_csg_slots = 0;
+        |             ^
+  1 error generated.
+
+The variable is an artifact left over from refactoring that occurred
+during the development of the initial series for this driver. Remove it
+to resolve the warning.
+
+Fixes: de8548813824 ("drm/panthor: Add the scheduler logical block")
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Steven Price <steven.price@arm.com>
+Reviewed-by: Justin Stitt <justinstitt@google.com>
+Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20240328-panthor-drop-csg_mod_mask-v1-1-5a80be3df581@kernel.org
+---
+ drivers/gpu/drm/panthor/panthor_sched.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+--- a/drivers/gpu/drm/panthor/panthor_sched.c
++++ b/drivers/gpu/drm/panthor/panthor_sched.c
+@@ -2045,7 +2045,7 @@ tick_ctx_apply(struct panthor_scheduler
+ 	struct panthor_device *ptdev = sched->ptdev;
+ 	struct panthor_csg_slot *csg_slot;
+ 	int prio, new_csg_prio = MAX_CSG_PRIO, i;
+-	u32 csg_mod_mask = 0, free_csg_slots = 0;
++	u32 free_csg_slots = 0;
+ 	struct panthor_csg_slots_upd_ctx upd_ctx;
+ 	int ret;
+ 
+@@ -2139,7 +2139,6 @@ tick_ctx_apply(struct panthor_scheduler
+ 
+ 			csg_iface = panthor_fw_get_csg_iface(ptdev, csg_id);
+ 			csg_slot = &sched->csg_slots[csg_id];
+-			csg_mod_mask |= BIT(csg_id);
+ 			group_bind_locked(group, csg_id);
+ 			csg_slot_prog_locked(ptdev, csg_id, new_csg_prio--);
+ 			csgs_upd_ctx_queue_reqs(ptdev, &upd_ctx, csg_id,

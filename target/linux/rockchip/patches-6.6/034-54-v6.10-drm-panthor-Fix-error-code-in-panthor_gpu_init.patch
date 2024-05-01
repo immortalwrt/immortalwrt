@@ -1,0 +1,33 @@
+From 99b74db1e27145bdf0afb85559aa70d951569ac3 Mon Sep 17 00:00:00 2001
+From: Dan Carpenter <dan.carpenter@linaro.org>
+Date: Tue, 2 Apr 2024 12:56:19 +0300
+Subject: [PATCH] drm/panthor: Fix error code in panthor_gpu_init()
+
+This code accidentally returns zero/success on error because of a typo.
+It should be "irq" instead of "ret".  The other thing is that if
+platform_get_irq_byname() were to return zero then the error code would
+be cmplicated.  Fortunately, it does not so we can just change <= to
+< 0.
+
+Fixes: 5cd894e258c4 ("drm/panthor: Add the GPU logical block")
+Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
+Reviewed-by: Boris Brezillon <boris.brezillon@collabora.com>
+Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/d753e684-43ee-45c2-a1fd-86222da204e1@moroto.mountain
+---
+ drivers/gpu/drm/panthor/panthor_gpu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- a/drivers/gpu/drm/panthor/panthor_gpu.c
++++ b/drivers/gpu/drm/panthor/panthor_gpu.c
+@@ -211,8 +211,8 @@ int panthor_gpu_init(struct panthor_devi
+ 		return ret;
+ 
+ 	irq = platform_get_irq_byname(to_platform_device(ptdev->base.dev), "gpu");
+-	if (irq <= 0)
+-		return ret;
++	if (irq < 0)
++		return irq;
+ 
+ 	ret = panthor_request_gpu_irq(ptdev, &ptdev->gpu->irq, irq, GPU_INTERRUPTS_MASK);
+ 	if (ret)

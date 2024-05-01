@@ -1,0 +1,31 @@
+From eb1dc10a6ee3559310436ab62db93b72310a2a18 Mon Sep 17 00:00:00 2001
+From: Boris Brezillon <boris.brezillon@collabora.com>
+Date: Mon, 4 Mar 2024 10:08:11 +0100
+Subject: [PATCH] drm/panthor: Explicitly include mm.h for the {virt,
+ __phys)_to_pfn() defs
+
+Something on arm[64] must be including <asm/page.h>, but things fail
+to compile on sparc64. Make sure this header is included (through
+linux/mm.h) so this driver can be compile-tested on all supported
+architectures.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202403031142.Vl4pW7X6-lkp@intel.com/
+Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
+Reviewed-by: Liviu Dudau <liviu.dudau@arm.com>
+Reviewed-by: Steven Price <steven.price@arm.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20240304090812.3941084-3-boris.brezillon@collabora.com
+---
+ drivers/gpu/drm/panthor/panthor_device.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/drivers/gpu/drm/panthor/panthor_device.c
++++ b/drivers/gpu/drm/panthor/panthor_device.c
+@@ -4,6 +4,7 @@
+ /* Copyright 2023 Collabora ltd. */
+ 
+ #include <linux/clk.h>
++#include <linux/mm.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_domain.h>
+ #include <linux/pm_runtime.h>

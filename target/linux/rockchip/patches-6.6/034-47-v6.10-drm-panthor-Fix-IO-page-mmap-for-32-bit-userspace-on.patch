@@ -1,0 +1,142 @@
+From 11f0275cc1b90b4b9bf37a5ebc27c0a9b2451b4e Mon Sep 17 00:00:00 2001
+From: Boris Brezillon <boris.brezillon@collabora.com>
+Date: Tue, 26 Mar 2024 12:12:03 +0100
+Subject: [PATCH] drm/panthor: Fix IO-page mmap() for 32-bit userspace on
+ 64-bit kernel
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+When mapping an IO region, the pseudo-file offset is dependent on the
+userspace architecture. panthor_device_mmio_offset() abstracts that
+away for us by turning a userspace MMIO offset into its kernel
+equivalent, but we were not updating vm_area_struct::vm_pgoff
+accordingly, leading us to attach the MMIO region to the wrong file
+offset.
+
+This has implications when we start mixing 64 bit and 32 bit apps, but
+that's only really a problem when we start having more that 2^43 bytes of
+memory allocated, which is very unlikely to happen.
+
+What's more problematic is the fact this turns our
+unmap_mapping_range(DRM_PANTHOR_USER_MMIO_OFFSET) calls, which are
+supposed to kill the MMIO mapping when entering suspend, into NOPs.
+Which means we either keep the dummy flush_id mapping active at all
+times, or we risk a BUS_FAULT if the MMIO region was mapped, and the
+GPU is suspended after that.
+
+Solve that by patching vm_pgoff early in panthor_mmap(). With
+this in place, we no longer need the panthor_device_mmio_offset()
+helper.
+
+v3:
+- No changes
+
+v2:
+- Kill panthor_device_mmio_offset()
+
+Fixes: 5fe909cae118 ("drm/panthor: Add the device logical block")
+Reported-by: Adrián Larumbe <adrian.larumbe@collabora.com>
+Reported-by: Lukas F. Hartmann <lukas@mntmn.com>
+Closes: https://gitlab.freedesktop.org/mesa/mesa/-/issues/10835
+Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
+Reviewed-by: Steven Price <steven.price@arm.com>
+Reviewed-by: Liviu Dudau <liviu.dudau@arm.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20240326111205.510019-1-boris.brezillon@collabora.com
+---
+ drivers/gpu/drm/panthor/panthor_device.c |  8 ++++----
+ drivers/gpu/drm/panthor/panthor_device.h | 24 ------------------------
+ drivers/gpu/drm/panthor/panthor_drv.c    | 17 ++++++++++++++++-
+ 3 files changed, 20 insertions(+), 29 deletions(-)
+
+--- a/drivers/gpu/drm/panthor/panthor_device.c
++++ b/drivers/gpu/drm/panthor/panthor_device.c
+@@ -348,7 +348,7 @@ static vm_fault_t panthor_mmio_vm_fault(
+ {
+ 	struct vm_area_struct *vma = vmf->vma;
+ 	struct panthor_device *ptdev = vma->vm_private_data;
+-	u64 id = (u64)vma->vm_pgoff << PAGE_SHIFT;
++	u64 offset = (u64)vma->vm_pgoff << PAGE_SHIFT;
+ 	unsigned long pfn;
+ 	pgprot_t pgprot;
+ 	vm_fault_t ret;
+@@ -361,7 +361,7 @@ static vm_fault_t panthor_mmio_vm_fault(
+ 	mutex_lock(&ptdev->pm.mmio_lock);
+ 	active = atomic_read(&ptdev->pm.state) == PANTHOR_DEVICE_PM_STATE_ACTIVE;
+ 
+-	switch (panthor_device_mmio_offset(id)) {
++	switch (offset) {
+ 	case DRM_PANTHOR_USER_FLUSH_ID_MMIO_OFFSET:
+ 		if (active)
+ 			pfn = __phys_to_pfn(ptdev->phys_addr + CSF_GPU_LATEST_FLUSH_ID);
+@@ -392,9 +392,9 @@ static const struct vm_operations_struct
+ 
+ int panthor_device_mmap_io(struct panthor_device *ptdev, struct vm_area_struct *vma)
+ {
+-	u64 id = (u64)vma->vm_pgoff << PAGE_SHIFT;
++	u64 offset = (u64)vma->vm_pgoff << PAGE_SHIFT;
+ 
+-	switch (panthor_device_mmio_offset(id)) {
++	switch (offset) {
+ 	case DRM_PANTHOR_USER_FLUSH_ID_MMIO_OFFSET:
+ 		if (vma->vm_end - vma->vm_start != PAGE_SIZE ||
+ 		    (vma->vm_flags & (VM_WRITE | VM_EXEC)))
+--- a/drivers/gpu/drm/panthor/panthor_device.h
++++ b/drivers/gpu/drm/panthor/panthor_device.h
+@@ -365,30 +365,6 @@ static int panthor_request_ ## __name ##
+ 					 pirq);							\
+ }
+ 
+-/**
+- * panthor_device_mmio_offset() - Turn a user MMIO offset into a kernel one
+- * @offset: Offset to convert.
+- *
+- * With 32-bit systems being limited by the 32-bit representation of mmap2's
+- * pgoffset field, we need to make the MMIO offset arch specific. This function
+- * converts a user MMIO offset into something the kernel driver understands.
+- *
+- * If the kernel and userspace architecture match, the offset is unchanged. If
+- * the kernel is 64-bit and userspace is 32-bit, the offset is adjusted to match
+- * 64-bit offsets. 32-bit kernel with 64-bit userspace is impossible.
+- *
+- * Return: Adjusted offset.
+- */
+-static inline u64 panthor_device_mmio_offset(u64 offset)
+-{
+-#ifdef CONFIG_ARM64
+-	if (test_tsk_thread_flag(current, TIF_32BIT))
+-		offset += DRM_PANTHOR_USER_MMIO_OFFSET_64BIT - DRM_PANTHOR_USER_MMIO_OFFSET_32BIT;
+-#endif
+-
+-	return offset;
+-}
+-
+ extern struct workqueue_struct *panthor_cleanup_wq;
+ 
+ #endif
+--- a/drivers/gpu/drm/panthor/panthor_drv.c
++++ b/drivers/gpu/drm/panthor/panthor_drv.c
+@@ -1326,7 +1326,22 @@ static int panthor_mmap(struct file *fil
+ 	if (!drm_dev_enter(file->minor->dev, &cookie))
+ 		return -ENODEV;
+ 
+-	if (panthor_device_mmio_offset(offset) >= DRM_PANTHOR_USER_MMIO_OFFSET)
++#ifdef CONFIG_ARM64
++	/*
++	 * With 32-bit systems being limited by the 32-bit representation of
++	 * mmap2's pgoffset field, we need to make the MMIO offset arch
++	 * specific. This converts a user MMIO offset into something the kernel
++	 * driver understands.
++	 */
++	if (test_tsk_thread_flag(current, TIF_32BIT) &&
++	    offset >= DRM_PANTHOR_USER_MMIO_OFFSET_32BIT) {
++		offset += DRM_PANTHOR_USER_MMIO_OFFSET_64BIT -
++			  DRM_PANTHOR_USER_MMIO_OFFSET_32BIT;
++		vma->vm_pgoff = offset >> PAGE_SHIFT;
++	}
++#endif
++
++	if (offset >= DRM_PANTHOR_USER_MMIO_OFFSET)
+ 		ret = panthor_device_mmap_io(ptdev, vma);
+ 	else
+ 		ret = drm_gem_mmap(filp, vma);

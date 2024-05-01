@@ -1,0 +1,58 @@
+From be7ffc821f5fc2eb30944562a04901c10892cc7c Mon Sep 17 00:00:00 2001
+From: Liviu Dudau <liviu.dudau@arm.com>
+Date: Tue, 2 Apr 2024 22:54:23 +0100
+Subject: [PATCH] drm/panthor: Fix some kerneldoc warnings
+
+When compiling with W=1 the build process will flag empty comments,
+misnamed documented variables and incorrect tagging of functions.
+Fix them in one go.
+
+Fixes: de8548813824 ("drm/panthor: Add the scheduler logical block")
+Cc: Boris Brezillon <boris.brezillon@collabora.com>
+Cc: Steven Price <steven.price@arm.com>
+Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
+Reviewed-by: Boris Brezillon <boris.brezillon@collabora.com>
+Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20240402215423.360341-2-liviu.dudau@arm.com
+---
+ drivers/gpu/drm/panthor/panthor_sched.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+--- a/drivers/gpu/drm/panthor/panthor_sched.c
++++ b/drivers/gpu/drm/panthor/panthor_sched.c
+@@ -517,7 +517,7 @@ struct panthor_group {
+ 	/** @max_compute_cores: Maximum number of shader cores used for compute jobs. */
+ 	u8 max_compute_cores;
+ 
+-	/** @max_compute_cores: Maximum number of shader cores used for fragment jobs. */
++	/** @max_fragment_cores: Maximum number of shader cores used for fragment jobs. */
+ 	u8 max_fragment_cores;
+ 
+ 	/** @max_tiler_cores: Maximum number of tiler cores used for tiler jobs. */
+@@ -993,7 +993,7 @@ cs_slot_prog_locked(struct panthor_devic
+ }
+ 
+ /**
+- * @cs_slot_reset_locked() - Reset a queue slot
++ * cs_slot_reset_locked() - Reset a queue slot
+  * @ptdev: Device.
+  * @csg_id: Group slot.
+  * @cs_id: Queue slot.
+@@ -1591,7 +1591,7 @@ static void sched_process_idle_event_loc
+ }
+ 
+ /**
+- * panthor_sched_process_global_irq() - Process the scheduling part of a global IRQ
++ * sched_process_global_irq_locked() - Process the scheduling part of a global IRQ
+  * @ptdev: Device.
+  */
+ static void sched_process_global_irq_locked(struct panthor_device *ptdev)
+@@ -1660,8 +1660,6 @@ static const struct dma_fence_ops pantho
+ 	.get_timeline_name = queue_fence_get_timeline_name,
+ };
+ 
+-/**
+- */
+ struct panthor_csg_slots_upd_ctx {
+ 	u32 update_mask;
+ 	u32 timedout_mask;

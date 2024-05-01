@@ -1,0 +1,61 @@
+From 9297cfc9405bc6b60540b8b8aaf930b7e449e15a Mon Sep 17 00:00:00 2001
+From: Danilo Krummrich <dakr@redhat.com>
+Date: Wed, 8 Nov 2023 01:12:33 +0100
+Subject: [PATCH] drm/gpuvm: export drm_gpuvm_range_valid()
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Drivers may use this function to validate userspace requests in advance,
+hence export it.
+
+Acked-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Reviewed-by: Boris Brezillon <boris.brezillon@collabora.com>
+Signed-off-by: Danilo Krummrich <dakr@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-4-dakr@redhat.com
+---
+ drivers/gpu/drm/drm_gpuvm.c | 14 +++++++++++++-
+ include/drm/drm_gpuvm.h     |  1 +
+ 2 files changed, 14 insertions(+), 1 deletion(-)
+
+--- a/drivers/gpu/drm/drm_gpuvm.c
++++ b/drivers/gpu/drm/drm_gpuvm.c
+@@ -643,7 +643,18 @@ drm_gpuvm_in_kernel_node(struct drm_gpuv
+ 	return krange && addr < kend && kstart < end;
+ }
+ 
+-static bool
++/**
++ * drm_gpuvm_range_valid() - checks whether the given range is valid for the
++ * given &drm_gpuvm
++ * @gpuvm: the GPUVM to check the range for
++ * @addr: the base address
++ * @range: the range starting from the base address
++ *
++ * Checks whether the range is within the GPUVM's managed boundaries.
++ *
++ * Returns: true for a valid range, false otherwise
++ */
++bool
+ drm_gpuvm_range_valid(struct drm_gpuvm *gpuvm,
+ 		      u64 addr, u64 range)
+ {
+@@ -651,6 +662,7 @@ drm_gpuvm_range_valid(struct drm_gpuvm *
+ 	       drm_gpuvm_in_mm_range(gpuvm, addr, range) &&
+ 	       !drm_gpuvm_in_kernel_node(gpuvm, addr, range);
+ }
++EXPORT_SYMBOL_GPL(drm_gpuvm_range_valid);
+ 
+ /**
+  * drm_gpuvm_init() - initialize a &drm_gpuvm
+--- a/include/drm/drm_gpuvm.h
++++ b/include/drm/drm_gpuvm.h
+@@ -253,6 +253,7 @@ void drm_gpuvm_init(struct drm_gpuvm *gp
+ 		    const struct drm_gpuvm_ops *ops);
+ void drm_gpuvm_destroy(struct drm_gpuvm *gpuvm);
+ 
++bool drm_gpuvm_range_valid(struct drm_gpuvm *gpuvm, u64 addr, u64 range);
+ bool drm_gpuvm_interval_empty(struct drm_gpuvm *gpuvm, u64 addr, u64 range);
+ 
+ static inline struct drm_gpuva *

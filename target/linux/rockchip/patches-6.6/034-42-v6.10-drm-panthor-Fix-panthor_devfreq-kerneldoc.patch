@@ -1,0 +1,27 @@
+From 9c86b03863844ce69f99aa66404c79492ec9e208 Mon Sep 17 00:00:00 2001
+From: Boris Brezillon <boris.brezillon@collabora.com>
+Date: Mon, 4 Mar 2024 10:08:10 +0100
+Subject: [PATCH] drm/panthor: Fix panthor_devfreq kerneldoc
+
+Missing '*' to have a valid kerneldoc prefix.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202403031019.6jvrOqGT-lkp@intel.com/
+Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
+Reviewed-by: Steven Price <steven.price@arm.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20240304090812.3941084-2-boris.brezillon@collabora.com
+---
+ drivers/gpu/drm/panthor/panthor_devfreq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/gpu/drm/panthor/panthor_devfreq.c
++++ b/drivers/gpu/drm/panthor/panthor_devfreq.c
+@@ -34,7 +34,7 @@ struct panthor_devfreq {
+ 	/** @last_busy_state: True if the GPU was busy last time we updated the state. */
+ 	bool last_busy_state;
+ 
+-	/*
++	/**
+ 	 * @lock: Lock used to protect busy_time, idle_time, time_last_update and
+ 	 * last_busy_state.
+ 	 *
