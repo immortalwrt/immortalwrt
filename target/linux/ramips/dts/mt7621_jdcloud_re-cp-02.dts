@@ -61,6 +61,10 @@
 	};
 };
 
+&ethphy4 {
+	/delete-property/ interrupts;
+};
+
 &gmac0 {
 	nvmem-cells = <&macaddr_factory_3fff4>;
 	nvmem-cell-names = "mac-address";
@@ -73,12 +77,6 @@
 
 	nvmem-cells = <&macaddr_factory_3fffa>;
 	nvmem-cell-names = "mac-address";
-};
-
-&mdio {
-	ethphy4: ethernet-phy@4 {
-		reg = <4>;
-	};
 };
 
 &pcie {
