@@ -1530,7 +1530,7 @@ define Device/jdcloud_re-cp-02
   $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16000k
-  DEVICE_VENDOR := JD-Cloud
+  DEVICE_VENDOR := JDCloud
   DEVICE_MODEL := RE-CP-02
   DEVICE_PACKAGES := kmod-mt7915-firmware kmod-sdhci-mt7620 automount
 endef
