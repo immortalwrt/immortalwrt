@@ -168,6 +168,13 @@ define U-Boot/Default/rk3568
   TPL:=$(RK3568_TPL)
 endef
 
+define U-Boot/bpi-r2-pro-rk3568
+  $(U-Boot/Default/rk3568)
+  NAME:=Bananapi-R2 Pro
+  BUILD_DEVICES:= \
+    sinovoip_bpi-r2-pro
+endef
+
 define U-Boot/fastrhino-r66s-rk3568
   $(U-Boot/Default/rk3568)
   NAME:=FastRhino R66S
@@ -309,6 +316,7 @@ UBOOT_TARGETS := \
   rock-pi-e-rk3328 \
   rock64-rk3328 \
   radxa-cm3-io-rk3566 \
+  bpi-r2-pro-rk3568 \
   fastrhino-r66s-rk3568 \
   fastrhino-r68s-rk3568 \
   mrkaio-m68s-rk3568 \

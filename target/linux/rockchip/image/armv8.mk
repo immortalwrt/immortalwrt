@@ -280,6 +280,15 @@ define Device/radxa_rock-pi-e
 endef
 TARGET_DEVICES += radxa_rock-pi-e
 
+define Device/sinovoip_bpi-r2-pro
+  DEVICE_VENDOR := Sinovoip
+  DEVICE_MODEL := Bananapi-R2 Pro
+  SOC := rk3568
+  SUPPORTED_DEVICES := sinovoip,rk3568-bpi-r2pro
+  DEVICE_PACKAGES := kmod-ata-ahci-dwc
+endef
+TARGET_DEVICES += sinovoip_bpi-r2-pro
+
 define Device/xunlong_orangepi-5
   DEVICE_VENDOR := Xunlong
   DEVICE_MODEL := Orange Pi 5
