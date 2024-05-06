@@ -285,6 +285,7 @@ define Device/sinovoip_bpi-r2-pro
   DEVICE_MODEL := Bananapi-R2 Pro
   SOC := rk3568
   SUPPORTED_DEVICES := sinovoip,rk3568-bpi-r2pro
+  BOOT_FLOW := pine64-img
   DEVICE_PACKAGES := kmod-ata-ahci-dwc
 endef
 TARGET_DEVICES += sinovoip_bpi-r2-pro
