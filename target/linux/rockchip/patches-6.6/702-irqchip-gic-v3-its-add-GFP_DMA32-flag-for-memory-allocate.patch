@@ -83,7 +83,7 @@ Signed-off-by: XiaoDong Huang <derrick.huang@rock-chips.com>
  	if (alloc_lpis) {
  		lpi_map = its_lpi_alloc(nvecs, &lpi_base, &nr_lpis);
  		if (lpi_map)
-@@ -5096,6 +5112,7 @@ static int __init its_probe_one(struct i
+@@ -5091,6 +5107,7 @@ static int __init its_probe_one(struct i
  	struct page *page;
  	u32 ctlr;
  	int err;
@@ -91,7 +91,7 @@ Signed-off-by: XiaoDong Huang <derrick.huang@rock-chips.com>
  
  	its_enable_quirks(its);
  
-@@ -5129,7 +5146,10 @@ static int __init its_probe_one(struct i
+@@ -5124,7 +5141,10 @@ static int __init its_probe_one(struct i
  		}
  	}
  
