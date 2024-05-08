@@ -12,15 +12,8 @@ if ! uci -q get system.@imm_init[0].lang > "/dev/null"; then
 	EOF
 fi
 
-if ! uci -q get system.@imm_init[0].dhcp > "/dev/null"; then
-	uci -q batch <<-EOF
-		set dhcp.@dnsmasq[0].logfacility="/dev/null"
-		commit dhcp
-
-		set system.@imm_init[0].dhcp="1"
-		commit system
-	EOF
-fi
+sed -i "/log-facility/d" "/etc/dnsmasq.conf"
+echo "log-facility=/dev/null" >> "/etc/dnsmasq.conf"
 
 ln -sf "/sbin/ip" "/usr/bin/ip"
 
