@@ -6,6 +6,12 @@
 	chosen {
 		stdout-path = &uart2;
 	};
+
+	pcat-wdt {
+		compatible = "linux,wdt-pcat";
+		port = <&uart4>;
+		status = "okay";
+	};
 };
 
 &gpio0 {

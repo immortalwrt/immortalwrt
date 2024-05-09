@@ -47,12 +47,6 @@
 		shutdown-gpios = <&gpio4 RK_PC4 GPIO_ACTIVE_HIGH>;
 	};
 
-	pcat-wdt {
-		compatible = "linux,wdt-pcat";
-		port = <&uart4>;
-		status = "okay";
-	};
-
 	sdio_pwrseq: sdio-pwrseq {
 		compatible = "mmc-pwrseq-simple";
 		clocks = <&pmucru CLK_RTC_32K>;
