@@ -17,16 +17,18 @@
 		     "mediatek,mt7988a";
 
 	aliases {
-		serial0 = &uart0;
+		ethernet0 = &gmac0;
+		ethernet1 = &gmac1;
 		led-boot = &led_green;
 		led-failsafe = &led_green;
 		led-running = &led_green;
 		led-upgrade = &led_green;
+		serial0 = &uart0;
 	};
 
 	chosen {
 		stdout-path = &uart0;
-		bootargs = "console=ttyS0,115200n1 loglevel=8 pci=pcie_bus_perf ubi.block=0,fit root=/dev/fit0";
+		bootargs = "console=ttyS0,115200n1 loglevel=8 pci=pcie_bus_perf ubi.block=0,fit root=/dev/fit0 rootwait";
 		rootdisk-spim-nand = <&ubi_rootfs>;
 	};
 

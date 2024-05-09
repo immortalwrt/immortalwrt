@@ -20,7 +20,7 @@ Signed-off-by: Aviana Cruz <gwencroft@proton.me>
  leasetime		string	12h			DHCPv4 address leasetime
  start			integer	100			DHCPv4 pool start
  limit			integer	150			DHCPv4 pool size
--preferred_lifetime	string	12h			Value for the preferred lifetime
+-preferred_lifetime	string	7d			Value for the preferred lifetime
 +max_preferred_lifetime	string	45m			Upper limit for the preferred lifetime
 +							for a prefix
 +max_valid_lifetime	string	90m			Upper limit for the valid lifetime
@@ -84,7 +84,7 @@ Signed-off-by: Aviana Cruz <gwencroft@proton.me>
  	iface->ndp = MODE_DISABLED;
  	iface->learn_routes = 1;
  	iface->dhcp_leasetime = 43200;
--	iface->preferred_lifetime = 43200;
+-	iface->preferred_lifetime = 604800; /* rfc4861#section-6.2.1: AdvPreferredLifetime 7 days */
 +	iface->max_preferred_lifetime = ND_PREFERRED_LIMIT;
 +	iface->max_valid_lifetime = ND_VALID_LIMIT;
  	iface->dhcpv4_start.s_addr = htonl(START_DEFAULT);
@@ -105,14 +105,14 @@ Signed-off-by: Aviana Cruz <gwencroft@proton.me>
 +			iface->max_preferred_lifetime = time;
 +		} else {
  			syslog(LOG_ERR, "Invalid %s value configured for interface '%s'",
--			       iface_attrs[IFACE_ATTR_PREFERRED_LIFETIME].name, iface->name);
+-					iface_attrs[IFACE_ATTR_PREFERRED_LIFETIME].name, iface->name);
 +			       iface_attrs[IFACE_ATTR_MAX_PREFERRED_LIFETIME].name, iface->name);
 +		}
 +	}
- 
++ 
 +	if ((c = tb[IFACE_ATTR_MAX_VALID_LIFETIME])) {
 +		double time = parse_leasetime(c);
-+
+ 
 +		if (time >= 0) {
 +			iface->max_valid_lifetime = time;
 +		} else {
@@ -122,7 +122,7 @@ Signed-off-by: Aviana Cruz <gwencroft@proton.me>
  	}
  
  	if ((c = tb[IFACE_ATTR_START])) {
-@@ -978,9 +990,6 @@ int config_parse_interface(void *data, s
+@@ -979,9 +991,6 @@ int config_parse_interface(void *data, s
  	if ((c = tb[IFACE_ATTR_RA_LIFETIME]))
  		iface->ra_lifetime = blobmsg_get_u32(c);
  
@@ -138,8 +138,8 @@ Signed-off-by: Aviana Cruz <gwencroft@proton.me>
  
  static inline bool valid_addr(const struct odhcpd_ipaddr *addr, time_t now)
  {
--	return (addr->prefix <= 96 && addr->preferred > (uint32_t)now);
-+	return (addr->prefix <= 96 && addr->valid > (uint32_t)now && addr->preferred > (uint32_t)now);
+-	return (addr->prefix <= 96 && addr->preferred_lt > (uint32_t)now);
++	return (addr->prefix <= 96 && addr->valid_lt > (uint32_t)now && addr->preferred_lt > (uint32_t)now);
  }
  
  static size_t get_preferred_addr(const struct odhcpd_ipaddr *addrs, const size_t addrlen)
@@ -147,18 +147,18 @@ Signed-off-by: Aviana Cruz <gwencroft@proton.me>
  	}
  
  	if (a) {
--		uint32_t leasetime, pref;
+-		uint32_t leasetime, preferred_lt;
 +		uint32_t leasetime;
  
  		if (a->leasetime) {
  			leasetime = a->leasetime;
--			pref = a->leasetime;
+-			preferred_lt = a->leasetime;
  		} else {
  			leasetime = iface->dhcp_leasetime;
--			pref = iface->preferred_lifetime;
+-			preferred_lt = iface->preferred_lifetime;
  		}
  
--		uint32_t valid = leasetime;
+-		uint32_t valid_lt = leasetime;
 +		uint32_t floor_preferred_lifetime, floor_valid_lifetime; /* For calculating T1 / T2 */
 +
 +		if (iface->max_preferred_lifetime && iface->max_preferred_lifetime < leasetime) {
@@ -175,60 +175,59 @@ Signed-off-by: Aviana Cruz <gwencroft@proton.me>
  
  		struct odhcpd_ipaddr *addrs = (a->managed) ? a->managed : iface->addr6;
  		size_t addrlen = (a->managed) ? (size_t)a->managed_size : iface->addr6_len;
-@@ -1071,17 +1081,19 @@ static size_t build_ia(uint8_t *buf, siz
- 			prefix_pref = addrs[i].preferred;
- 			prefix_valid = addrs[i].valid;
+@@ -1071,15 +1081,20 @@ static size_t build_ia(uint8_t *buf, siz
+ 			prefix_preferred_lt = addrs[i].preferred_lt;
+ 			prefix_valid_lt = addrs[i].valid_lt;
  
--			if (prefix_pref != UINT32_MAX)
-+			if (prefix_pref != UINT32_MAX) {
- 				prefix_pref -= now;
+-			if (prefix_preferred_lt != UINT32_MAX)
++			if (prefix_preferred_lt != UINT32_MAX) {
+ 				prefix_preferred_lt -= now;
  
--			if (prefix_pref > pref)
--				prefix_pref = pref;
-+				if (iface->max_preferred_lifetime && prefix_pref > iface->max_preferred_lifetime)
-+					prefix_pref = iface->max_preferred_lifetime;
+-			if (prefix_preferred_lt > preferred_lt)
+-				prefix_preferred_lt = preferred_lt;
++				if (iface->max_preferred_lifetime && prefix_preferred_lt > iface->max_preferred_lifetime)
++					prefix_preferred_lt = iface->max_preferred_lifetime;
 +			}
  
--			if (prefix_valid != UINT32_MAX)
-+			if (prefix_valid != UINT32_MAX) {
- 				prefix_valid -= now;
+-			if (prefix_valid_lt != UINT32_MAX)
++			if (prefix_valid_lt != UINT32_MAX) {
+ 				prefix_valid_lt -= now;
  
--			if (prefix_valid > leasetime)
--				prefix_valid = leasetime;
-+				if (iface->max_valid_lifetime && prefix_valid > iface->max_valid_lifetime)
-+					prefix_valid = iface->max_valid_lifetime;
++				if (iface->max_valid_lifetime && prefix_valid_lt > iface->max_valid_lifetime)
++					prefix_valid_lt = iface->max_valid_lifetime;
 +			}
++
+ 			if (prefix_valid_lt > leasetime)
+ 				prefix_valid_lt = leasetime;
  
- 			if (prefix_pref > prefix_valid)
- 				prefix_pref = prefix_valid;
-@@ -1133,24 +1145,24 @@ static size_t build_ia(uint8_t *buf, siz
+@@ -1133,24 +1148,24 @@ static size_t build_ia(uint8_t *buf, siz
  
  			/* Calculate T1 / T2 based on non-deprecated addresses */
- 			if (prefix_pref > 0) {
--				if (prefix_pref < pref)
--					pref = prefix_pref;
-+				if (floor_preferred_lifetime > prefix_pref)
-+					floor_preferred_lifetime = prefix_pref;
+ 			if (prefix_preferred_lt > 0) {
+-				if (prefix_preferred_lt < preferred_lt)
+-					preferred_lt = prefix_preferred_lt;
++				if (floor_preferred_lifetime > prefix_preferred_lt)
++					floor_preferred_lifetime = prefix_preferred_lt;
  
--				if (prefix_valid < valid)
--					valid = prefix_valid;
-+				if (floor_valid_lifetime > prefix_valid)
-+					floor_valid_lifetime = prefix_valid;
+-				if (prefix_valid_lt < valid_lt)
+-					valid_lt = prefix_valid_lt;
++				if (floor_valid_lifetime > prefix_valid_lt)
++					floor_valid_lifetime = prefix_valid_lt;
  			}
  		}
  
  		if (!INFINITE_VALID(a->valid_until))
- 			/* UINT32_MAX is considered as infinite leasetime */
--			a->valid_until = (valid == UINT32_MAX) ? 0 : valid + now;
+ 			/* UINT32_MAX is RFC defined as infinite lease-time */
+-			a->valid_until = (valid_lt == UINT32_MAX) ? 0 : valid_lt + now;
 +			a->valid_until = (floor_valid_lifetime == UINT32_MAX) ? 0 : floor_valid_lifetime + now;
  
  		if (!INFINITE_VALID(a->preferred_until))
- 			/* UINT32_MAX is considered as infinite leasetime */
--			a->preferred_until = (pref == UINT32_MAX) ? 0 : pref + now;
+ 			/* UINT32_MAX is RFC defined as infinite lease-time */
+-			a->preferred_until = (preferred_lt == UINT32_MAX) ? 0 : preferred_lt + now;
 +			a->preferred_until = (floor_preferred_lifetime == UINT32_MAX) ? 0 : floor_preferred_lifetime + now;
  
--		o_ia.t1 = htonl((pref == UINT32_MAX) ? pref : pref * 5 / 10);
--		o_ia.t2 = htonl((pref == UINT32_MAX) ? pref : pref * 8 / 10);
+-		o_ia.t1 = htonl((preferred_lt == UINT32_MAX) ? preferred_lt : preferred_lt * 5 / 10);
+-		o_ia.t2 = htonl((preferred_lt == UINT32_MAX) ? preferred_lt : preferred_lt * 8 / 10);
 +		o_ia.t1 = htonl((floor_preferred_lifetime == UINT32_MAX) ? floor_preferred_lifetime : floor_preferred_lifetime * 5 / 10);
 +		o_ia.t2 = htonl((floor_preferred_lifetime == UINT32_MAX) ? floor_preferred_lifetime : floor_preferred_lifetime * 8 / 10);
  
@@ -267,7 +266,7 @@ Signed-off-by: Aviana Cruz <gwencroft@proton.me>
  	uint32_t dhcp_leasetime;
 --- a/src/router.c
 +++ b/src/router.c
-@@ -371,7 +371,7 @@ static int calc_adv_interval(struct inte
+@@ -376,7 +376,7 @@ static int calc_adv_interval(struct inte
  
  static uint32_t calc_ra_lifetime(struct interface *iface, uint32_t maxival)
  {
@@ -276,43 +275,44 @@ Signed-off-by: Aviana Cruz <gwencroft@proton.me>
  
  	if (iface->ra_lifetime >= 0) {
  		lifetime = iface->ra_lifetime;
-@@ -590,16 +590,15 @@ static int send_router_advert(struct int
- 		if (addr->preferred > (uint32_t)now) {
- 			preferred = TIME_LEFT(addr->preferred, now);
+@@ -600,17 +600,16 @@ static int send_router_advert(struct int
+ 		if (addr->preferred_lt > (uint32_t)now) {
+ 			preferred_lt = TIME_LEFT(addr->preferred_lt, now);
  
--			if (iface->ra_useleasetime &&
--			    preferred > iface->preferred_lifetime)
--				preferred = iface->preferred_lifetime;
-+			if (iface->max_preferred_lifetime && preferred > iface->max_preferred_lifetime)
-+				preferred = iface->max_preferred_lifetime;
+-			if (preferred_lt > iface->preferred_lifetime) {
+-				/* set to possibly user mandated preferred_lt */
+-				preferred_lt = iface->preferred_lifetime;
++			if (iface->max_preferred_lifetime && preferred_lt > iface->max_preferred_lifetime) {
++				preferred_lt = iface->max_preferred_lifetime;
+ 			}
  		}
  
- 		if (addr->valid > (uint32_t)now) {
- 			valid = TIME_LEFT(addr->valid, now);
+ 		if (addr->valid_lt > (uint32_t)now) {
+ 			valid_lt = TIME_LEFT(addr->valid_lt, now);
  
--			if (iface->ra_useleasetime && valid > iface->dhcp_leasetime)
--				valid = iface->dhcp_leasetime;
-+			if (iface->max_valid_lifetime && valid > iface->max_valid_lifetime)
-+				valid = iface->max_valid_lifetime;
+-			if (iface->ra_useleasetime && valid_lt > iface->dhcp_leasetime)
+-				valid_lt = iface->dhcp_leasetime;
++			if (iface->max_valid_lifetime && valid_lt > iface->max_valid_lifetime)
++				valid_lt = iface->max_valid_lifetime;
  		}
  
- 		if (minvalid > valid)
-@@ -643,9 +642,9 @@ static int send_router_advert(struct int
+ 		if (preferred_lt > valid_lt) {
+@@ -663,9 +662,9 @@ static int send_router_advert(struct int
  
  		if (default_route) {
  			syslog(LOG_WARNING, "A default route is present but there is no public prefix "
--					    "on %s thus we don't announce a default route by overriding ra_lifetime!", iface->name);
-+					    "on %s thus we don't announce a default route by setting ra_lifetime to zero!", iface->name);
+-						"on %s thus we announce no default route by overriding ra_lifetime to 0!", iface->name);
++						"on %s thus we announce no default route by setting ra_lifetime to 0!", iface->name);
  		} else {
--			syslog(LOG_WARNING, "No default route present, overriding ra_lifetime!");
-+			syslog(LOG_WARNING, "No default route present, setting ra_lifetime to zero!");
+-			syslog(LOG_WARNING, "No default route present, overriding ra_lifetime to 0!");
++			syslog(LOG_WARNING, "No default route present, setting ra_lifetime to 0!");
  		}
  	}
  
-@@ -710,7 +709,7 @@ static int send_router_advert(struct int
+@@ -730,7 +729,7 @@ static int send_router_advert(struct int
  
  	if (iface->pref64_length) {
- 		/* RFC 8781 § 4.1 rounding up lifetime to multiply of 8 */
+ 		/* RFC 8781 § 4.1 rounding up lifetime to multiple of 8 */
 -		uint16_t pref64_lifetime = lifetime < (UINT16_MAX - 7) ? lifetime + 7 : UINT16_MAX;
 +		uint16_t pref64_lifetime = lifetime < (UINT16_MAX - 7) ? lifetime + 7 : (UINT16_MAX - 7);
  		uint8_t prefix_length_code;
