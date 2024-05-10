@@ -1,33 +1,20 @@
 --- a/drivers/net/ethernet/realtek/r8169_main.c
 +++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2206,6 +2206,22 @@ void r8169_apply_firmware(struct rtl8169
- 	}
- }
+@@ -5260,6 +5260,7 @@ static int rtl_init_one(struct pci_dev *
+ 	int jumbo_max, region, rc;
+ 	enum mac_version chipset;
+ 	struct net_device *dev;
++	const char *devname = of_get_property(pdev->dev.of_node, "label", NULL);
+ 	u32 txconfig;
+ 	u16 xid;
  
-+static int rtl8169_devname_configuration(struct rtl8169_private *tp)
-+{
-+	const char *devname;
-+	int ret;
-+
-+	ret = of_property_read_string(tp->pci_dev->dev.of_node,
-+				      "label", &devname);
-+
-+	if (ret)
-+		return ret;
-+
-+	strlcpy(tp->dev->name, devname, IFNAMSIZ);
-+
-+	return 0;
-+}
-+
- static int rtl8169_led_configuration(struct rtl8169_private *tp)
- {
- 	u32 led_data;
-@@ -3714,6 +3730,7 @@ static void rtl_hw_start_8125b(struct rt
- 	rtl_set_def_aspm_entry_latency(tp);
- 	rtl_ephy_init(tp, e_info_8125b);
- 	rtl_hw_start_8125_common(tp);
-+	rtl8169_devname_configuration(tp);
- 	rtl8169_led_configuration(tp);
- }
+@@ -5267,6 +5268,9 @@ static int rtl_init_one(struct pci_dev *
+ 	if (!dev)
+ 		return -ENOMEM;
  
++	if (devname)
++		strlcpy(dev->name, devname, IFNAMSIZ);
++
+ 	SET_NETDEV_DEV(dev, &pdev->dev);
+ 	dev->netdev_ops = &rtl_netdev_ops;
+ 	tp = netdev_priv(dev);
