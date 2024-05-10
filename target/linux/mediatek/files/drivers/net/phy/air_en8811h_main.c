@@ -51,9 +51,7 @@ static const u16 led_dur = UNIT_LED_BLINK_DURATION << AIR_LED_BLK_DUR_64M;
 /***********************************************************
  *                  F U N C T I O N S
  ***********************************************************/
-
-
-static int MDIOWriteBuf(struct phy_device *phydev, unsigned long address,
+static int air_mdio_write_buf(struct phy_device *phydev, unsigned long address,
 		unsigned long array_size, const unsigned char *buffer)
 {
 	unsigned int write_data, offset;
@@ -125,18 +123,18 @@ static int en8811h_load_firmware(struct phy_device *phydev)
 	if (ret < 0)
 		return ret;
 	/* Download DM */
-	ret = MDIOWriteBuf(phydev, 0x00000000, EthMD32_dm_size, EthMD32_dm);
+	ret = air_mdio_write_buf(phydev, 0x00000000, EthMD32_dm_size, EthMD32_dm);
 	if (ret < 0) {
 		dev_err(dev,
-			"MDIOWriteBuf 0x00000000 fail, ret: %d\n", ret);
+			"air_mdio_write_buf 0x00000000 fail, ret: %d\n", ret);
 		return ret;
 	}
 
 	/* Download PM */
-	ret = MDIOWriteBuf(phydev, 0x00100000, EthMD32_pm_size, EthMD32_pm);
+	ret = air_mdio_write_buf(phydev, 0x00100000, EthMD32_pm_size, EthMD32_pm);
 	if (ret < 0) {
 		dev_err(dev,
-			"MDIOWriteBuf 0x00100000 fail , ret: %d\n", ret);
+			"air_mdio_write_buf 0x00100000 fail , ret: %d\n", ret);
 		return ret;
 	}
 	pbus_value = air_buckpbus_reg_read(phydev, 0x800000);
@@ -358,18 +356,10 @@ static int en8811h_probe(struct phy_device *phydev)
 			"EN8811H initialize fail!\n");
 		goto priv_free;
 	}
-	/* Mode selection*/
-	dev_info(dev, "EN8811H Mode 1 !\n");
-	ret = air_mii_cl45_write(phydev, 0x1e, 0x800c, 0x0);
-	if (ret < 0)
-		goto priv_free;
-	ret = air_mii_cl45_write(phydev, 0x1e, 0x800d, 0x0);
-	if (ret < 0)
-		goto priv_free;
-	ret = air_mii_cl45_write(phydev, 0x1e, 0x800e, 0x1101);
-	if (ret < 0)
-		goto priv_free;
-	ret = air_mii_cl45_write(phydev, 0x1e, 0x800f, 0x0002);
+	ret |= air_mii_cl45_write(phydev, 0x1e, 0x800c, 0x0);
+	ret |= air_mii_cl45_write(phydev, 0x1e, 0x800d, 0x0);
+	ret |= air_mii_cl45_write(phydev, 0x1e, 0x800e, 0x1101);
+	ret |= air_mii_cl45_write(phydev, 0x1e, 0x800f, 0x0002);
 	if (ret < 0)
 		goto priv_free;
 	/* Serdes polarity */
@@ -390,6 +380,13 @@ static int en8811h_probe(struct phy_device *phydev)
 	dev_info(dev, "Tx, Rx Polarity : %08x\n", pbus_value);
 	pbus_value = air_buckpbus_reg_read(phydev, 0x3b3c);
 	dev_info(dev, "MD32 FW Version : %08x\n", pbus_value);
+	if (priv->surge) {
+		ret = air_surge_5ohm_config(phydev);
+		if (ret < 0)
+			dev_err(dev,
+				"air_surge_5ohm_config fail. (ret=%d)\n", ret);
+	} else
+		dev_info(dev, "Surge Protection Mode - 0R\n");
 #if defined(AIR_LED_SUPPORT)
 	ret = en8811h_led_init(phydev);
 	if (ret < 0) {

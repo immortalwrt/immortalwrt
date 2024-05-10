@@ -31,6 +31,8 @@
 #define DEBUGFS_DBG_REG_SHOW        "dbg_regs_show"
 #define DEBUGFS_TEMPERATURE         "temp"
 #define DEBUGFS_LP_SPEED            "lp_speed"
+#define DEBUGFS_MII_CL22_OP          "cl22_op"
+#define DEBUGFS_MII_CL45_OP		     "cl45_op"
 
 enum air_port_mode {
 	AIR_PORT_MODE_FORCE_100,
@@ -82,6 +84,7 @@ unsigned int air_buckpbus_reg_read(struct phy_device *phydev,
 int air_buckpbus_reg_write(struct phy_device *phydev,
 	unsigned int pbus_address, unsigned int pbus_data);
 int en8811h_of_init(struct phy_device *phydev);
+int air_surge_5ohm_config(struct phy_device *phydev);
 #ifdef CONFIG_AIROHA_EN8811H_PHY_DEBUGFS
 int airphy_debugfs_init(struct phy_device *phydev);
 void airphy_debugfs_remove(struct phy_device *phydev);

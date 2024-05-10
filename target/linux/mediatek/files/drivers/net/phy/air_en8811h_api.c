@@ -334,6 +334,22 @@ int air_buckpbus_reg_write(struct phy_device *phydev,
 	}
 	return ret;
 }
+
+int air_surge_5ohm_config(struct phy_device *phydev)
+{
+	int ret = 0;
+	struct device *dev = phydev_dev(phydev);
+
+	ret |= air_mii_cl45_write(phydev, 0x1e, 0x800c, 0x0);
+	ret |= air_mii_cl45_write(phydev, 0x1e, 0x800d, 0x0);
+	ret |= air_mii_cl45_write(phydev, 0x1e, 0x800e, 0x1101);
+	ret |= air_mii_cl45_write(phydev, 0x1e, 0x800f, 0x00b0);
+	if (ret < 0)
+		return ret;
+	dev_info(dev, "surge protection mode - 5R\n");
+	return ret;
+}
+
 #if defined(CONFIG_OF)
 int en8811h_of_init(struct phy_device *phydev)
 {
@@ -346,12 +362,12 @@ int en8811h_of_init(struct phy_device *phydev)
 	if (of_find_property(of_node, "airoha,polarity", NULL)) {
 		if (of_property_read_u32(of_node, "airoha,polarity",
 					 &val) != 0) {
-			phydev_err(phydev, "airoha,polarity value is invalid.");
+			dev_err(dev, "airoha,polarity value is invalid.");
 			return -EINVAL;
 		}
 		if (val < AIR_POL_TX_REV_RX_NOR ||
 		    val > AIR_POL_TX_NOR_RX_REV) {
-			phydev_err(phydev,
+			dev_err(dev,
 				   "airoha,polarity value %u out of range.",
 				   val);
 			return -EINVAL;
@@ -359,6 +375,25 @@ int en8811h_of_init(struct phy_device *phydev)
 		priv->pol = val;
 	} else
 		priv->pol = AIR_POL_TX_NOR_RX_NOR;
+
+	if (of_find_property(of_node, "airoha,surge", NULL)) {
+		if (of_property_read_u32(of_node, "airoha,surge",
+					 &val) != 0) {
+			dev_err(dev, "airoha,surge value is invalid.");
+			return -EINVAL;
+		}
+		if (val < 0 || val > 1) {
+			dev_err(dev,
+				   "airoha,surge value %u out of range.",
+				   val);
+			return -EINVAL;
+		}
+		if (val)
+			priv->surge = 1;
+		else
+			priv->surge = 0;
+	} else
+		priv->surge = 0;
 
 	return 0;
 }
@@ -710,7 +745,7 @@ static int airphy_fcm_counter_show(struct phy_device *phydev,
 	seq_puts(seq, "| Tx to Line side_T        :");
 	pkt_cnt = air_buckpbus_reg_read(phydev, 0xe0088);
 	seq_printf(seq, "%010u |\n", pkt_cnt);
-	ret = air_buckpbus_reg_write(phydev, 0xe0074, 0xf);
+	ret = air_buckpbus_reg_write(phydev, 0xe0074, 0x3);
 	if (ret < 0)
 		return ret;
 	return 0;
@@ -1169,8 +1204,12 @@ static int airphy_temp_show(struct seq_file *seq, void *v)
 	u32 pbus_value = 0;
 
 	seq_puts(seq, "<<AIR EN8811H Temp>>\n");
-	air_mii_cl45_write(phydev, 0x1e, 0x800e, 0x1100);
-	air_mii_cl45_write(phydev, 0x1e, 0x800f, 0xe5);
+	ret |= air_mii_cl45_write(phydev, 0x1e, 0x800e, 0x1100);
+	ret |= air_mii_cl45_write(phydev, 0x1e, 0x800f, 0xe5);
+	if (ret < 0) {
+		pr_notice("\nmii_cl45_write fail\n");
+		return -EIO;
+	}
 	pbus_value = air_buckpbus_reg_read(phydev, 0x3B38);
 	seq_printf(seq, "| Temperature  : %dC |\n",
 						pbus_value);
@@ -1285,6 +1324,114 @@ static int airphy_lp_speed_open(struct inode *inode, struct file *file)
 	return single_open(file, airphy_lp_speed, inode->i_private);
 }
 
+static void airphy_debugfs_mii_cl22_help(void)
+{
+	pr_notice("\nUsage:\n"
+			"[debugfs] = /sys/kernel/debug/mdio-bus\':[phy_addr]\n"
+			"Read:\n"
+			"echo r [phy_register] > /[debugfs]/mii_mgr_op\n"
+			"Write:\n"
+			"echo w [phy_register] [value] > /[debugfs]/mii_mgr_op\n");
+}
+
+
+static ssize_t airphy_debugfs_cl22(struct file *file,
+					const char __user *buffer, size_t count,
+					loff_t *data)
+{
+	struct phy_device *phydev = file->private_data;
+	struct mii_bus *mbus = phydev_mdio_bus(phydev);
+	int addr = phydev_addr(phydev);
+	char buf[64];
+	int ret = 0;
+	unsigned int reg, val;
+
+	memset(buf, 0, 64);
+	if (count > sizeof(buf) - 1)
+		return -EINVAL;
+	if (copy_from_user(buf, buffer, count))
+		return -EFAULT;
+
+	if (buf[0] == 'w') {
+		if (sscanf(buf, "w %x %x", &reg, &val) == -1)
+			return -EFAULT;
+
+		pr_notice("\nphy=%d, reg=0x%x, val=0x%x\n",
+			phydev_addr(phydev), reg, val);
+		ret = air_mii_cl22_write(mbus, addr, reg, val);
+		if (ret < 0) {
+			pr_notice("\nmii_cl22_write fail\n");
+			return -EIO;
+		}
+		val = air_mii_cl22_read(mbus, addr, reg);
+		pr_notice("\nphy=%d, reg=0x%x, val=0x%x confirm..\n",
+			phydev_addr(phydev), reg, val);
+	} else if (buf[0] == 'r') {
+		if (sscanf(buf, "r %x", &reg) == -1)
+			return -EFAULT;
+
+		val = air_mii_cl22_read(mbus, addr, reg);
+		pr_notice("\nphy=%d, reg=0x%x, val=0x%x\n",
+		phydev_addr(phydev), reg, val);
+	} else
+		airphy_debugfs_mii_cl22_help();
+
+	return count;
+}
+
+static void airphy_debugfs_mii_cl45_help(void)
+{
+	pr_notice("\nUsage:\n"
+			"[debugfs] = /sys/kernel/debug/mdio-bus\':[phy_addr]\n"
+			"Read:\n"
+			"echo r [device number] [phy_register] > /[debugfs]/mii_mgr_cl45_op\n"
+			"Write:\n"
+			"echo w [device number] [phy_register] [value] > /[debugfs]/mii_mgr_cl45_op\n");
+}
+
+
+static ssize_t airphy_debugfs_cl45(struct file *file,
+					const char __user *buffer, size_t count,
+					loff_t *data)
+{
+	struct phy_device *phydev = file->private_data;
+	char buf[64];
+	int ret = 0;
+	unsigned int reg, val, devnum;
+
+	memset(buf, 0, 64);
+	if (count > sizeof(buf) - 1)
+		return -EINVAL;
+	if (copy_from_user(buf, buffer, count))
+		return -EFAULT;
+
+	if (buf[0] == 'w') {
+		if (sscanf(buf, "w %x %x %x", &devnum, &reg, &val) == -1)
+			return -EFAULT;
+
+		pr_notice("\nphy=%d, devnum=0x%x, reg=0x%x, val=0x%x\n",
+			phydev_addr(phydev), devnum, reg, val);
+		ret = air_mii_cl45_write(phydev, devnum, reg, val);
+		if (ret < 0) {
+			pr_notice("\nmii_cl45_write fail\n");
+			return -EIO;
+		}
+		val = air_mii_cl45_read(phydev, devnum, reg);
+		pr_notice("\nphy=%d, devnum=0x%x, reg=0x%x, val=0x%x confirm..\n",
+			phydev_addr(phydev), devnum, reg, val);
+	} else if (buf[0] == 'r') {
+		if (sscanf(buf, "r %x %x", &devnum, &reg) == -1)
+			return -EFAULT;
+
+		val = air_mii_cl45_read(phydev, devnum, reg);
+		pr_notice("\nphy=%d, devnum=0x%x, reg=0x%x, val=0x%x\n",
+		phydev_addr(phydev), devnum, reg, val);
+	} else
+		airphy_debugfs_mii_cl45_help();
+
+	return count;
+}
+
 static const struct file_operations airphy_lp_speed_fops = {
 	.owner = THIS_MODULE,
 	.open = airphy_lp_speed_open,
@@ -1361,6 +1508,20 @@ static const struct file_operations airphy_temp_fops = {
 	.release = single_release,
 };
 
+static const struct file_operations airphy_debugfs_cl22_fops = {
+	.owner = THIS_MODULE,
+	.open = simple_open,
+	.write = airphy_debugfs_cl22,
+	.llseek = noop_llseek,
+};
+
+static const struct file_operations airphy_debugfs_cl45_fops = {
+	.owner = THIS_MODULE,
+	.open = simple_open,
+	.write = airphy_debugfs_cl45,
+	.llseek = noop_llseek,
+};
+
 int airphy_debugfs_init(struct phy_device *phydev)
 {
 	int ret = 0;
@@ -1404,6 +1565,12 @@ int airphy_debugfs_init(struct phy_device *phydev)
 	debugfs_create_file(DEBUGFS_LP_SPEED, S_IFREG | 0444,
 					dir, phydev,
 					&airphy_lp_speed_fops);
+	debugfs_create_file(DEBUGFS_MII_CL22_OP, S_IFREG | 0200,
+					dir, phydev,
+					&airphy_debugfs_cl22_fops);
+	debugfs_create_file(DEBUGFS_MII_CL45_OP, S_IFREG | 0200,
+					dir, phydev,
+					&airphy_debugfs_cl45_fops);
 
 	priv->debugfs_root = dir;
 	return ret;
