@@ -577,7 +577,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-3-s.h
  static inline void rk3288_writel(struct rockchip_lvds *lvds, u32 offset,
  				 u32 val)
  {
-@@ -604,7 +610,7 @@ static int rockchip_lvds_bind(struct dev
+@@ -603,7 +609,7 @@ static int rockchip_lvds_bind(struct dev
  		goto err_put_remote;
  	}
  
@@ -586,7 +586,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-3-s.h
  	encoder->possible_crtcs = drm_of_find_possible_crtcs(drm_dev,
  							     dev->of_node);
  
-@@ -669,10 +675,10 @@ static void rockchip_lvds_unbind(struct
+@@ -668,10 +674,10 @@ static void rockchip_lvds_unbind(struct
  	const struct drm_encoder_helper_funcs *encoder_funcs;
  
  	encoder_funcs = lvds->soc_data->helper_funcs;

@@ -42,7 +42,7 @@ Change-Id: I7275cbf011061f11968505a7570230d2d789e9fc
  		tmp &= ~GICR_PENDBASER_SHAREABILITY_MASK;
  
  	if (!(tmp & GICR_PENDBASER_SHAREABILITY_MASK)) {
-@@ -5127,7 +5130,8 @@ static int __init its_probe_one(struct r
+@@ -5131,7 +5134,8 @@ static int __init its_probe_one(struct r
  	tmp = gits_read_cbaser(its->base + GITS_CBASER);
  
  	if (of_machine_is_compatible("rockchip,rk3568") ||

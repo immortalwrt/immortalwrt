@@ -45,7 +45,7 @@ Signed-off-by: XiaoDong Huang <derrick.huang@rock-chips.com>
  	if (!(tmp & GICR_PENDBASER_SHAREABILITY_MASK)) {
  		/*
  		 * The HW reports non-shareable, we must remove the
-@@ -5110,6 +5122,10 @@ static int __init its_probe_one(struct r
+@@ -5114,6 +5126,10 @@ static int __init its_probe_one(struct r
  	gits_write_cbaser(baser, its->base + GITS_CBASER);
  	tmp = gits_read_cbaser(its->base + GITS_CBASER);
  
