@@ -9,18 +9,6 @@
 	compatible = "unielec,u4019","qcom,ipq4019";
 
 	soc {
-		rng@22000 {
-			status = "okay";
-		};
-
-		mdio@90000 {
-			status = "okay";
-			pinctrl-0 = <&mdio_pins>;
-			pinctrl-names = "default";
-			reset-gpios = <&tlmm 47 GPIO_ACTIVE_LOW>;
-			reset-delay-us = <2000>;
-		};
-
 		tcsr@1949000 {
 			compatible = "qcom,tcsr";
 			reg = <0x1949000 0x100>;
@@ -44,10 +32,6 @@
 			compatible = "qcom,tcsr";
 			reg = <0x1957000 0x100>;
 			qcom,wifi_noc_memtype_m0_m2 = <TCSR_WIFI_NOC_MEMTYPE_M0_M2>;
-		};
-
-		watchdog@b017000 {
-			status = "okay";
 		};
 
 		aliases {
@@ -80,6 +64,14 @@
 			};
 		};
 	};
+};
+
+&watchdog {
+	status = "okay";
+};
+
+&prng {
+	status = "okay";
 };
 
 &blsp_dma {
@@ -202,6 +194,14 @@
 			#trigger-source-cells = <0>;
 		};
 	};
+};
+
+&mdio {
+	status = "okay";
+	pinctrl-0 = <&mdio_pins>;
+	pinctrl-names = "default";
+	reset-gpios = <&tlmm 47 GPIO_ACTIVE_LOW>;
+	reset-delay-us = <2000>;
 };
 
 &wifi0 {
