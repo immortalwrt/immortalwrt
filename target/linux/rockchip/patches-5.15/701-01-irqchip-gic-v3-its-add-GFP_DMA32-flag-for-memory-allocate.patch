@@ -83,7 +83,7 @@ Signed-off-by: XiaoDong Huang <derrick.huang@rock-chips.com>
  	if (alloc_lpis) {
  		lpi_map = its_lpi_alloc(nvecs, &lpi_base, &nr_lpis);
  		if (lpi_map)
-@@ -4995,6 +5011,7 @@ static int __init its_probe_one(struct r
+@@ -4990,6 +5006,7 @@ static int __init its_probe_one(struct r
  	u64 baser, tmp, typer;
  	struct page *page;
  	int err;
@@ -91,7 +91,7 @@ Signed-off-by: XiaoDong Huang <derrick.huang@rock-chips.com>
  
  	its_base = ioremap(res->start, SZ_64K);
  	if (!its_base) {
-@@ -5063,7 +5080,10 @@ static int __init its_probe_one(struct r
+@@ -5058,7 +5075,10 @@ static int __init its_probe_one(struct r
  
  	its->numa_node = numa_node;
  
