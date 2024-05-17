@@ -19,10 +19,10 @@
 	};
 };
 
-&pcie2x1l1 {
+&pcie2x1l2 {
 	/delete-node/ pcie@0,0;
 };
 
-&pcie2x1l2 {
-	/delete-node/ pcie@0,0;
+&rtl8125_1 {
+	/delete-property/ label;
 };
