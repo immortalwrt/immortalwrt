@@ -1,34 +1,20 @@
 --- a/src/r8125_n.c
 +++ b/src/r8125_n.c
-@@ -13628,6 +13628,23 @@ rtl8125_setup_mqs_reg(struct rtl8125_pri
- }
+@@ -15305,6 +15305,7 @@ rtl8125_init_board(struct pci_dev *pdev,
+         void __iomem *ioaddr;
+         struct net_device *dev;
+         struct rtl8125_private *tp;
++        const char *devname = of_get_property(pdev->dev.of_node, "label", NULL);
+         int rc = -ENOMEM, i, pm_cap;
  
- static int
-+rtl8125_devname_configuration(struct rtl8125_private *tp)
-+{
-+        const char *devname;
-+        int ret;
-+
-+        ret = of_property_read_string(tp->pci_dev->dev.of_node,
-+                                      "label", &devname);
-+
-+        if (ret)
-+                return ret;
-+
-+        strlcpy(tp->dev->name, devname, IFNAMSIZ);
-+
-+        return 0;
-+}
-+
-+static int
- rtl8125_led_configuration(struct rtl8125_private *tp)
- {
-         const int led_regs[] = { 0x18, 0x86, 0x84, 0x96 }; /* LEDSEL 0-3 */
-@@ -14280,6 +14297,7 @@ rtl8125_init_software_variable(struct ne
-         else if (tp->InitRxDescType == RX_DESC_RING_TYPE_4)
-                 tp->rtl8125_rx_config &= ~EnableRxDescV4_1;
+         assert(ioaddr_out != NULL);
+@@ -15319,6 +15320,9 @@ rtl8125_init_board(struct pci_dev *pdev,
+                 goto err_out;
+         }
  
-+        rtl8125_devname_configuration(tp);
-         rtl8125_led_configuration(tp);
- 
-         tp->NicCustLedValue = RTL_R16(tp, CustomLED);
++        if (devname)
++                strscpy(dev->name, devname, IFNAMSIZ);
++
+         SET_MODULE_OWNER(dev);
+         SET_NETDEV_DEV(dev, &pdev->dev);
+         tp = netdev_priv(dev);
