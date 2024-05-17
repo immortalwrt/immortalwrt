@@ -23,8 +23,8 @@
 +static int
  rtl8125_led_configuration(struct rtl8125_private *tp)
  {
-         u32 led_data;
-@@ -14278,6 +14295,7 @@ rtl8125_init_software_variable(struct ne
+         const int led_regs[] = { 0x18, 0x86, 0x84, 0x96 }; /* LEDSEL 0-3 */
+@@ -14280,6 +14297,7 @@ rtl8125_init_software_variable(struct ne
          else if (tp->InitRxDescType == RX_DESC_RING_TYPE_4)
                  tp->rtl8125_rx_config &= ~EnableRxDescV4_1;
  

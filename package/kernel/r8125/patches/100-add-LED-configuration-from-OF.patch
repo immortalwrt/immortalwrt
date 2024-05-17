@@ -8,23 +8,25 @@
  #include <linux/if_vlan.h>
  #include <linux/crc32.h>
  #include <linux/interrupt.h>
-@@ -13626,6 +13627,23 @@ rtl8125_setup_mqs_reg(struct rtl8125_pri
+@@ -13626,6 +13627,25 @@ rtl8125_setup_mqs_reg(struct rtl8125_pri
                  tp->imr_reg[i] = (u16)(IMR1_8125 + (i - 1) * 4);
  }
  
 +static int
 +rtl8125_led_configuration(struct rtl8125_private *tp)
 +{
-+        u32 led_data;
-+        int ret;
++        const int led_regs[] = { 0x18, 0x86, 0x84, 0x96 }; /* LEDSEL 0-3 */
++        u32 led_data[4];
++        int ret, i;
 +
-+        ret = of_property_read_u32(tp->pci_dev->dev.of_node,
-+                                  "realtek,led-data", &led_data);
++        ret = of_property_read_u32_array(tp->pci_dev->dev.of_node,
++                                  "realtek,led-data", led_data, 4);
 +
 +        if (ret)
 +                return ret;
 +
-+        RTL_W16(tp, CustomLED, led_data);
++        for (i = 0; i < 4; i++)
++                RTL_W16(tp, led_regs[i], led_data[i]);
 +
 +        return 0;
 +}
@@ -32,7 +34,7 @@
  static void
  rtl8125_init_software_variable(struct net_device *dev)
  {
-@@ -14260,6 +14278,8 @@ rtl8125_init_software_variable(struct ne
+@@ -14260,6 +14280,8 @@ rtl8125_init_software_variable(struct ne
          else if (tp->InitRxDescType == RX_DESC_RING_TYPE_4)
                  tp->rtl8125_rx_config &= ~EnableRxDescV4_1;
  
