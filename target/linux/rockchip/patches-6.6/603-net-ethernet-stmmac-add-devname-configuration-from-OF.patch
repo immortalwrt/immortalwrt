@@ -13,7 +13,7 @@
  		return -ENOMEM;
  
 +	if (devname)
-+		strlcpy(ndev->name, devname, IFNAMSIZ);
++		strscpy(ndev->name, devname, IFNAMSIZ);
 +
  	SET_NETDEV_DEV(ndev, device);
  

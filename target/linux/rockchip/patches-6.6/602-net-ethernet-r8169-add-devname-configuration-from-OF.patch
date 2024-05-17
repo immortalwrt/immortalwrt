@@ -13,7 +13,7 @@
  		return -ENOMEM;
  
 +	if (devname)
-+		strlcpy(dev->name, devname, IFNAMSIZ);
++		strscpy(dev->name, devname, IFNAMSIZ);
 +
  	SET_NETDEV_DEV(dev, &pdev->dev);
  	dev->netdev_ops = &rtl_netdev_ops;
