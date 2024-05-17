@@ -980,6 +980,33 @@ define Device/edimax_rg21s
 endef
 TARGET_DEVICES += edimax_rg21s
 
+define Device/elecom_wrc-gs
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  DEVICE_VENDOR := ELECOM
+  IMAGES += factory.bin
+  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
+	elecom-wrc-gs-factory $$$$(ELECOM_HWNAME) 0.00 -N | \
+	append-string MT7621_ELECOM_$$$$(ELECOM_HWNAME)
+  DEVICE_PACKAGES := kmod-mt7615-firmware -uboot-envtools
+endef
+
+define Device/elecom_wmc-m1267gst2
+  $(Device/elecom_wrc-gs)
+  IMAGE_SIZE := 24576k
+  DEVICE_MODEL := WMC-M1267GST2
+  ELECOM_HWNAME := WMC-DLGST2
+endef
+TARGET_DEVICES += elecom_wmc-m1267gst2
+
+define Device/elecom_wmc-s1267gs2
+  $(Device/elecom_wrc-gs)
+  IMAGE_SIZE := 24576k
+  DEVICE_MODEL := WMC-S1267GS2
+  ELECOM_HWNAME := WMC-DLGST2
+endef
+TARGET_DEVICES += elecom_wmc-s1267gs2
+
 define Device/elecom_wrc-1167ghbk2-s
   $(Device/dsa-migration)
   IMAGE_SIZE := 15488k
@@ -991,17 +1018,6 @@ define Device/elecom_wrc-1167ghbk2-s
   DEVICE_PACKAGES := kmod-mt7615-firmware -uboot-envtools
 endef
 TARGET_DEVICES += elecom_wrc-1167ghbk2-s
-
-define Device/elecom_wrc-gs
-  $(Device/dsa-migration)
-  $(Device/uimage-lzma-loader)
-  DEVICE_VENDOR := ELECOM
-  IMAGES += factory.bin
-  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
-	elecom-wrc-gs-factory $$$$(ELECOM_HWNAME) 0.00 -N | \
-	append-string MT7621_ELECOM_$$$$(ELECOM_HWNAME)
-  DEVICE_PACKAGES := kmod-mt7615-firmware -uboot-envtools
-endef
 
 define Device/elecom_wrc-1167gs2-b
   $(Device/elecom_wrc-gs)
@@ -1538,7 +1554,6 @@ TARGET_DEVICES += jcg_y2
 
 define Device/jdcloud_re-cp-02
   $(Device/dsa-migration)
-  $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 16000k
   DEVICE_VENDOR := JDCloud
   DEVICE_MODEL := RE-CP-02
