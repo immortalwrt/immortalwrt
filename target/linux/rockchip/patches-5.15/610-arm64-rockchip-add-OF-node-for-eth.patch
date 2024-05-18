@@ -193,6 +193,48 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  &sdhci {
  	bus-width = <8>;
  	max-frequency = <200000000>;
+--- a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5c.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5c.dts
+@@ -65,6 +65,19 @@
+ 	reset-gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
+ 	vpcie3v3-supply = <&vcc3v3_pcie>;
+ 	status = "okay";
++
++	pcie@0,0 {
++		reg = <0x00100000 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++
++		rtl8125_1: pcie-eth@10,0 {
++			compatible = "pci10ec,8125";
++			reg = <0x000000 0 0 0 0>;
++
++			realtek,led-data = <0x0 0x0 0x2b 0x200>;
++		};
++ 	};
+ };
+ 
+ &pcie3x2 {
+@@ -72,6 +85,19 @@
+ 	reset-gpios = <&gpio0 RK_PB6 GPIO_ACTIVE_HIGH>;
+ 	vpcie3v3-supply = <&vcc3v3_pcie>;
+ 	status = "okay";
++
++	pcie@0,0 {
++		reg = <0x00200000 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++
++		rtl8125_2: pcie-eth@20,0 {
++			compatible = "pci10ec,8125";
++			reg = <0x000000 0 0 0 0>;
++
++			realtek,led-data = <0x0 0x0 0x2b 0x200>;
++		};
++ 	};
+ };
+ 
+ &pinctrl {
 --- a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dts
 @@ -72,6 +72,7 @@
@@ -203,3 +245,43 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  };
  
+@@ -79,6 +80,19 @@
+ 	num-lanes = <1>;
+ 	reset-gpios = <&gpio0 RK_PB6 GPIO_ACTIVE_HIGH>;
+ 	status = "okay";
++
++	pcie@0,0 {
++		reg = <0x00000000 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++
++		rtl8125_1: pcie@1,0 {
++			compatible = "pci10ec,8125";
++			reg = <0x000000 0 0 0 0>;
++
++			realtek,led-data = <0x0 0x0 0x2b 0x200>;
++		};
++	};
+ };
+ 
+ &pcie30phy {
+@@ -91,6 +105,19 @@
+ 	reset-gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
+ 	vpcie3v3-supply = <&vcc3v3_pcie>;
+ 	status = "okay";
++
++	pcie@0,0 {
++		reg = <0x00100000 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++
++		rtl8125_2: pcie@10,0 {
++			compatible = "pci10ec,8125";
++			reg = <0x000000 0 0 0 0>;
++
++			realtek,led-data = <0x0 0x0 0x2b 0x200>;
++		};
++	};
+ };
+ 
+ &pcie3x2 {
