@@ -183,11 +183,11 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  };
  
 +&rtl8125_1 {
-+	label = "eth4";
++	label = "eth3";
 +};
 +
 +&rtl8125_2 {
-+	label = "eth3";
++	label = "eth2";
 +};
 +
  &sdhci {
