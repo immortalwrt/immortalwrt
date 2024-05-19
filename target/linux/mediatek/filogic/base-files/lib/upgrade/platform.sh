@@ -84,7 +84,8 @@ platform_do_upgrade() {
 	bananapi,bpi-r3-mini|\
 	bananapi,bpi-r4|\
 	bananapi,bpi-r4-poe|\
-	jdcloud,re-cp-03)
+	jdcloud,re-cp-03|\
+	mediatek,mt7988a-rfb)
 		[ -e /dev/fit0 ] && fitblk /dev/fit0
 		[ -e /dev/fitrw ] && fitblk /dev/fitrw
 		bootdev="$(fitblk_get_bootdev)"
