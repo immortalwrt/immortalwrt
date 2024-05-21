@@ -47,6 +47,7 @@ apk = \
   IPKG_INSTROOT=$(1) \
   $(FAKEROOT) $(STAGING_DIR_HOST)/bin/apk \
 	--root $(1) \
+	--repositories-file /dev/zero \
 	--keys-dir $(TOPDIR) \
 	--no-cache \
 	--no-logfile \
@@ -111,7 +112,6 @@ define prepare_rootfs
 	)
 
 	@-find $(1) -name CVS -o -name .svn -o -name .git -o -name '.#*' | $(XARGS) rm -rf
-	@-find $(1)/usr/cache/apk/ -name '*.apk' -delete
 	rm -rf \
 		$(1)/boot \
 		$(1)/tmp/* \

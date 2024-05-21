@@ -85,7 +85,8 @@ platform_do_upgrade() {
 	bananapi,bpi-r4|\
 	bananapi,bpi-r4-poe|\
 	jdcloud,re-cp-03|\
-	mediatek,mt7988a-rfb)
+	mediatek,mt7988a-rfb|\
+	openwrt,one)
 		[ -e /dev/fit0 ] && fitblk /dev/fit0
 		[ -e /dev/fitrw ] && fitblk /dev/fitrw
 		bootdev="$(fitblk_get_bootdev)"
