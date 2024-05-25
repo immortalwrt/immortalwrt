@@ -110,7 +110,7 @@ define Device/abt_asr3000-ubootmod
   DEVICE_MODEL := ASR3000 (custom U-Boot layout)
   DEVICE_DTS := mt7981b-abt-asr3000-ubootmod
   DEVICE_DTS_DIR := ../dts
-  DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
   PAGESIZE := 2048
@@ -162,8 +162,7 @@ TARGET_DEVICES += acer_predator-w6
 define Device/adtran_smartrg
   DEVICE_VENDOR := Adtran
   DEVICE_DTS_DIR := ../dts
-  DEVICE_PACKAGES := e2fsprogs f2fsck mkf2fs kmod-hwmon-pwmfan \
-		     kmod-mt7915e kmod-mt7986-firmware mt7986-wo-firmware
+  DEVICE_PACKAGES := e2fsprogs f2fsck mkf2fs kmod-hwmon-pwmfan
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 
@@ -171,6 +170,7 @@ define Device/smartrg_sdg-8612
 $(call Device/adtran_smartrg)
   DEVICE_MODEL := SDG-8612
   DEVICE_DTS := mt7986a-smartrg-SDG-8612
+  DEVICE_PACKAGES += kmod-mt7915e kmod-mt7986-firmware mt7986-wo-firmware
 endef
 TARGET_DEVICES += smartrg_sdg-8612
 
@@ -178,6 +178,7 @@ define Device/smartrg_sdg-8614
 $(call Device/adtran_smartrg)
   DEVICE_MODEL := SDG-8614
   DEVICE_DTS := mt7986a-smartrg-SDG-8614
+  DEVICE_PACKAGES += kmod-mt7915e kmod-mt7986-firmware mt7986-wo-firmware
 endef
 TARGET_DEVICES += smartrg_sdg-8614
 
@@ -185,7 +186,7 @@ define Device/smartrg_sdg-8622
 $(call Device/adtran_smartrg)
   DEVICE_MODEL := SDG-8622
   DEVICE_DTS := mt7986a-smartrg-SDG-8622
-  DEVICE_PACKAGES += kmod-mt7915e kmod-mt7915-firmware
+  DEVICE_PACKAGES += kmod-mt7915e kmod-mt7915-firmware kmod-mt7986-firmware mt7986-wo-firmware
 endef
 TARGET_DEVICES += smartrg_sdg-8622
 
@@ -193,9 +194,25 @@ define Device/smartrg_sdg-8632
 $(call Device/adtran_smartrg)
   DEVICE_MODEL := SDG-8632
   DEVICE_DTS := mt7986a-smartrg-SDG-8632
-  DEVICE_PACKAGES += kmod-mt7915e kmod-mt7915-firmware
+  DEVICE_PACKAGES += kmod-mt7915e kmod-mt7915-firmware kmod-mt7986-firmware mt7986-wo-firmware
 endef
 TARGET_DEVICES += smartrg_sdg-8632
+
+define Device/smartrg_sdg-8733
+$(call Device/adtran_smartrg)
+  DEVICE_MODEL := SDG-8733
+  DEVICE_DTS := mt7988a-smartrg-SDG-8733
+  DEVICE_PACKAGES += kmod-mt7996-firmware kmod-phy-aquantia kmod-usb3
+endef
+TARGET_DEVICES += smartrg_sdg-8733
+
+define Device/smartrg_sdg-8734
+$(call Device/adtran_smartrg)
+  DEVICE_MODEL := SDG-8734
+  DEVICE_DTS := mt7988a-smartrg-SDG-8734
+  DEVICE_PACKAGES += kmod-mt7996-firmware kmod-phy-aquantia kmod-sfp kmod-usb3
+endef
+TARGET_DEVICES += smartrg_sdg-8734
 
 define Device/asus_rt-ax59u
   DEVICE_VENDOR := ASUS
@@ -425,7 +442,7 @@ define Device/cetron_ct3003-ubootmod
   DEVICE_VARIANT := (custom U-Boot layout)
   DEVICE_DTS := mt7981b-cetron-ct3003-ubootmod
   DEVICE_DTS_DIR := ../dts
-  DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
   PAGESIZE := 2048
@@ -447,7 +464,7 @@ define Device/cmcc_a10-ubootmod
   DEVICE_VARIANT := (custom U-Boot layout)
   DEVICE_DTS := mt7981b-cmcc-a10-ubootmod
   DEVICE_DTS_DIR := ../dts
-  DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
   PAGESIZE := 2048
@@ -698,7 +715,7 @@ define Device/glinet_gl-x3000-xe3000-common
   DEVICE_DTS_DIR := ../dts
   DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware mkf2fs \
     kmod-fs-f2fs kmod-hwmon-pwmfan kmod-usb3 kmod-usb-serial-option \
-    kmod-usb-storage kmod-usb-net-qmi-wwan uqmi
+    kmod-usb-storage kmod-usb-net-qmi-wwan uqmi automount
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 
@@ -750,7 +767,7 @@ define Device/h3c_magic-nx30-pro-nmbm
   DEVICE_VARIANT := (NMBM layout)
   DEVICE_DTS := mt7981b-h3c-magic-nx30-pro-nmbm
   DEVICE_DTS_DIR := ../dts
-  DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
   PAGESIZE := 2048
@@ -772,7 +789,7 @@ define Device/imou_lc-hx3001-ubootmod
   DEVICE_VARIANT := (custom U-Boot layout)
   DEVICE_DTS := mt7981b-imou-lc-hx3001-ubootmod
   DEVICE_DTS_DIR := ../dts
-  DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware
   SUPPORTED_DEVICES += imou,lc-hx3001
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
@@ -848,7 +865,7 @@ define Device/livinet_zr-3020-common
   DEVICE_VENDOR := Livinet
   DEVICE_MODEL := ZR-3020
   DEVICE_DTS_DIR := ../dts
-  DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
   PAGESIZE := 2048
@@ -1098,7 +1115,7 @@ define Device/nokia_ea0326gmp
   DEVICE_MODEL := EA0326GMP
   DEVICE_DTS := mt7981b-nokia-ea0326gmp
   DEVICE_DTS_DIR := ../dts
-  DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
   PAGESIZE := 2048
