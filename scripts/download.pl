@@ -288,6 +288,7 @@ foreach my $mirror (@ARGV) {
 		push @mirrors, "https://mirrors.aliyun.com/gnu/$1";
 		push @mirrors, "https://mirrors.tuna.tsinghua.edu.cn/gnu/$1";
 		push @mirrors, "https://mirrors.ustc.edu.cn/gnu/$1";
+		push @mirrors, "https://ftpmirror.gnu.org/$1";
 		push @mirrors, "https://mirror.csclub.uwaterloo.ca/gnu/$1";
 		push @mirrors, "https://mirror.netcologne.de/gnu/$1";
 		push @mirrors, "https://ftp.kddilabs.jp/GNU/gnu/$1";
@@ -296,6 +297,7 @@ foreach my $mirror (@ARGV) {
 		push @mirrors, "https://mirrors.rit.edu/gnu/$1";
 		push @mirrors, "https://ftp.gnu.org/gnu/$1";
 	} elsif ($mirror =~ /^\@SAVANNAH\/(.+)$/) {
+		push @mirrors, "https://download.savannah.nongnu.org/releases/$1";
 		push @mirrors, "https://mirror.netcologne.de/savannah/$1";
 		push @mirrors, "https://mirror.csclub.uwaterloo.ca/nongnu/$1";
 		push @mirrors, "https://ftp.acc.umu.se/mirror/gnu.org/savannah/$1";
