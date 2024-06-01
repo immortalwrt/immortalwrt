@@ -68,7 +68,7 @@
 + * parse_nss_mirred()
 + *	Parse and validate the nssmirred action statement.
 + */
-+static int parse_nss_mirred(struct action_util *a, int *argc_p, char ***argv_p,
++static int parse_nss_mirred(const struct action_util *a, int *argc_p, char ***argv_p,
 +	     int tca_id, struct nlmsghdr *n)
 +{
 +	int idx, argc = *argc_p;
@@ -142,7 +142,7 @@
 + * print_nss_mirred()
 + *	Print information related to nssmirred action.
 + */
-+static int print_nss_mirred(struct action_util *au, FILE * f, struct rtattr *arg)
++static int print_nss_mirred(const struct action_util *au, FILE * f, struct rtattr *arg)
 +{
 +	struct tc_nss_mirred *p;
 +	struct rtattr *tb[TCA_NSS_MIRRED_MAX + 1];
