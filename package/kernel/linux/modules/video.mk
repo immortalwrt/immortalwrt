@@ -459,7 +459,8 @@ define KernelPackage/drm-imx
 	CONFIG_DRM_IMX_LDB=n \
 	CONFIG_DRM_IMX_HDMI=n
   FILES:= \
-	$(LINUX_DIR)/drivers/gpu/drm/imx/imxdrm.ko \
+	$(LINUX_DIR)/drivers/gpu/drm/imx/imxdrm.ko@lt6.6 \
+	$(LINUX_DIR)/drivers/gpu/drm/imx/ipuv3/imxdrm.ko@ge6.6 \
 	$(LINUX_DIR)/drivers/gpu/drm/drm_dma_helper.ko@ge6.1 \
 	$(LINUX_DIR)/drivers/gpu/ipu-v3/imx-ipu-v3.ko
   AUTOLOAD:=$(call AutoLoad,08,imxdrm imx-ipu-v3 imx-ipuv3-crtc)
@@ -474,14 +475,15 @@ $(eval $(call KernelPackage,drm-imx))
 define KernelPackage/drm-imx-hdmi
   SUBMENU:=$(VIDEO_MENU)
   TITLE:=Freescale i.MX HDMI DRM support
-  DEPENDS:=+kmod-sound-core kmod-drm-imx +LINUX_6_1:kmod-drm-display-helper
+  DEPENDS:=+kmod-sound-core kmod-drm-imx kmod-drm-display-helper
   KCONFIG:=CONFIG_DRM_IMX_HDMI \
 	CONFIG_DRM_DW_HDMI_AHB_AUDIO \
 	CONFIG_DRM_DW_HDMI_I2S_AUDIO
   FILES:= \
 	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-hdmi.ko \
 	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.ko \
-	$(LINUX_DIR)/drivers/gpu/drm/imx/dw_hdmi-imx.ko
+	$(LINUX_DIR)/drivers/gpu/drm/imx/dw_hdmi-imx.ko@lt6.6 \
+	$(LINUX_DIR)/drivers/gpu/drm/imx/ipuv3/dw_hdmi-imx.ko@ge6.6
   AUTOLOAD:=$(call AutoLoad,08,dw-hdmi dw-hdmi-ahb-audio.ko dw_hdmi-imx)
 endef
 
@@ -494,7 +496,7 @@ $(eval $(call KernelPackage,drm-imx-hdmi))
 define KernelPackage/drm-imx-ldb
   SUBMENU:=$(VIDEO_MENU)
   TITLE:=Freescale i.MX LVDS DRM support
-  DEPENDS:=@(TARGET_imx&&!TARGET_imx_cortexa53) +kmod-backlight kmod-drm-imx
+  DEPENDS:=@(TARGET_imx&&TARGET_imx_cortexa9) +kmod-backlight kmod-drm-imx
   KCONFIG:=CONFIG_DRM_IMX_LDB \
 	CONFIG_DRM_PANEL_SIMPLE \
 	CONFIG_DRM_PANEL=y \
@@ -505,7 +507,8 @@ define KernelPackage/drm-imx-ldb
 	CONFIG_DRM_PANEL_LVDS=n \
 	CONFIG_DRM_PANEL_S6E8AA0=n \
 	CONFIG_DRM_PANEL_SITRONIX_ST7789V=n
-  FILES:=$(LINUX_DIR)/drivers/gpu/drm/imx/imx-ldb.ko \
+  FILES:=$(LINUX_DIR)/drivers/gpu/drm/imx/imx-ldb.ko@lt6.6 \
+	$(LINUX_DIR)/drivers/gpu/drm/imx/ipuv3/imx-ldb.ko@ge6.6 \
 	$(LINUX_DIR)/drivers/gpu/drm/panel/panel-simple.ko \
 	$(LINUX_DIR)/drivers/gpu/drm/drm_dp_aux_bus.ko@lt6.1
   AUTOLOAD:=$(call AutoLoad,08,imx-ldb)

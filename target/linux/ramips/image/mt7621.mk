@@ -7,7 +7,13 @@ include ./common-tp-link.mk
 
 DEFAULT_SOC := mt7621
 
-DEVICE_VARS += ELECOM_HWNAME LINKSYS_HWNAME DLINK_HWID
+DEVICE_VARS += BUFFALO_TRX_MAGIC ELECOM_HWNAME LINKSYS_HWNAME DLINK_HWID
+
+define Image/Prepare
+	# For UBI we want only one extra block
+	rm -f $(KDIR)/ubi_mark
+	echo -ne '\xde\xad\xc0\xde' > $(KDIR)/ubi_mark
+endef
 
 define Build/append-dlink-covr-metadata
 	echo -ne '{"supported_devices": "$(1)", "firmware": "' > $@metadata.tmp
@@ -533,6 +539,46 @@ define Device/buffalo_wsr-2533dhpl
   DEFAULT := n
 endef
 TARGET_DEVICES += buffalo_wsr-2533dhpl
+
+define Device/buffalo_wsr-2533dhplx
+  $(Device/dsa-migration)
+  DEVICE_VENDOR := Buffalo
+  DEVICE_PACKAGES := kmod-mt7615-firmware -uboot-envtools
+  BUFFALO_TAG_PLATFORM := MTK
+  BUFFALO_TAG_VERSION := 9.99
+  BUFFALO_TAG_MINOR := 9.99
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  UBINIZE_OPTS := -E 5
+  KERNEL_SIZE := 6144k
+  IMAGES += factory.bin factory-uboot.bin
+  IMAGE/factory.bin = append-ubi | \
+	buffalo-trx $$$$(BUFFALO_TRX_MAGIC) $$$$@ $(KDIR)/ubi_mark |\
+	buffalo-enc $$(DEVICE_MODEL) 9.99 -l | \
+	buffalo-tag-dhp $$(DEVICE_MODEL) JP JP | buffalo-enc-tag -l | \
+	buffalo-dhp-image
+  IMAGE/factory-uboot.bin := append-ubi | \
+	buffalo-trx $$$$(BUFFALO_TRX_MAGIC) $$$$@ $(KDIR)/ubi_mark | append-metadata
+  IMAGE/sysupgrade.bin := \
+	buffalo-trx $$$$(BUFFALO_TRX_MAGIC) $(KDIR)/tmp/$$(DEVICE_NAME).null | \
+	sysupgrade-tar kernel=$$$$@ | append-metadata
+endef
+
+define Device/buffalo_wsr-2533dhpl2
+  $(Device/buffalo_wsr-2533dhplx)
+  DEVICE_MODEL := WSR-2533DHPL2
+  BUFFALO_TRX_MAGIC := 0x324c4850
+  IMAGE_SIZE := 62592k
+endef
+TARGET_DEVICES += buffalo_wsr-2533dhpl2
+
+define Device/buffalo_wsr-2533dhpls
+  $(Device/buffalo_wsr-2533dhplx)
+  DEVICE_MODEL := WSR-2533DHPLS
+  BUFFALO_TRX_MAGIC := 0x534c4844
+  IMAGE_SIZE := 24576k
+endef
+TARGET_DEVICES += buffalo_wsr-2533dhpls
 
 define Device/buffalo_wsr-600dhp
   $(Device/dsa-migration)
@@ -1783,7 +1829,7 @@ define Device/MikroTik
   DEVICE_PACKAGES := kmod-usb3 -uboot-envtools
   KERNEL_NAME := vmlinuz
   KERNEL := kernel-bin | append-dtb-elf
-  IMAGE/sysupgrade.bin := append-kernel | kernel2minor -s 1024 | \
+  IMAGE/sysupgrade.bin := append-kernel | yaffs-filesystem -L | \
 	pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs | check-size | \
 	append-metadata
 endef

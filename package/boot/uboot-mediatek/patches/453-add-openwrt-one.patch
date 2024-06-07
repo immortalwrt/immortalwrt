@@ -3844,9 +3844,9 @@
 +bootcmd=run check_button ; run led_start ; mtd read recovery ${loadaddr} ; bootm ; run led_loop_error
 +bootconf=config-1
 +bootdelay=0
-+bootfile=openwrt-mediatek-filogic-openwrt_one-initramfs.itb
-+bootfile_bl2_nor=openwrt-mediatek-filogic-openwrt_one-nor-preloader.bin
-+bootfile_fip_nor=openwrt-mediatek-filogic-openwrt_one-nor-bl31-uboot.fip
++bootfile=immortalwrt-mediatek-filogic-openwrt_one-initramfs.itb
++bootfile_bl2_nor=immortalwrt-mediatek-filogic-openwrt_one-nor-preloader.bin
++bootfile_fip_nor=immortalwrt-mediatek-filogic-openwrt_one-nor-bl31-uboot.fip
 +bootmenu_0=Initialize environment.=run _firstboot
 +bootmenu_0d=Run default boot command.=run bootcmd
 +bootmenu_1=Boot system via TFTP.=run tftp_boot ; run bootmenu_confirm_return
@@ -3871,8 +3871,8 @@
 +led_start=led green off ; led red off; led white on
 +loadaddr=0x46000000
 +preboot=run led_boot
-+recoverfile_bl2=openwrt-mediatek-filogic-openwrt_one-snand-preloader.bin
-+recoverfile_ubi=openwrt-mediatek-filogic-openwrt_one-factory.ubi
++recoverfile_bl2=immortalwrt-mediatek-filogic-openwrt_one-snand-preloader.bin
++recoverfile_ubi=immortalwrt-mediatek-filogic-openwrt_one-factory.ubi
 +recovery_write_bl2=mtd erase bl2 && for offset in 0x0 0x40000 0x80000; do mtd write bl2 $loadaddr $offset 0x40000 ; done
 +recovery_write_ubi=mtd erase ubi && mtd write ubi $loadaddr 0 ${filesize}
 +serverip=192.168.11.23
@@ -3895,10 +3895,10 @@
 +bootcmd=run check_buttons ; run led_start ; run boot_calibration ; run boot_production ; run boot_recovery
 +bootconf=config-1
 +bootdelay=0
-+bootfile=openwrt-mediatek-filogic-openwrt_one-initramfs.itb
-+bootfile_bl2=openwrt-mediatek-filogic-openwrt_one-snand-preloader.bin
-+bootfile_fip=openwrt-mediatek-filogic-openwrt_one-snand-bl31-uboot.fip
-+bootfile_upg=openwrt-mediatek-filogic-openwrt_one-squashfs-sysupgrade.itb
++bootfile=immortalwrt-mediatek-filogic-openwrt_one-initramfs.itb
++bootfile_bl2=immortalwrt-mediatek-filogic-openwrt_one-snand-preloader.bin
++bootfile_fip=immortalwrt-mediatek-filogic-openwrt_one-snand-bl31-uboot.fip
++bootfile_upg=immortalwrt-mediatek-filogic-openwrt_one-squashfs-sysupgrade.itb
 +bootmenu_confirm_return=askenv - Press ENTER to return to menu ; run led_boot ; bootmenu 60
 +bootmenu_default=0
 +bootmenu_delay=0
