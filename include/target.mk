@@ -6,6 +6,16 @@
 ifneq ($(__target_inc),1)
 __target_inc=1
 
+ifneq ($(DUMP),)
+  # Parse generic config that might be set before a .config is generated to modify the
+  # default package configuration
+  # Keep DYNAMIC_DEF_PKG_CONF in sync with toplevel.mk to reflect the same configs
+  DYNAMIC_DEF_PKG_CONF := CONFIG_USE_APK CONFIG_SELINUX CONFIG_SMALL_FLASH CONFIG_SECCOMP
+  $(foreach config, $(DYNAMIC_DEF_PKG_CONF), \
+    $(eval $(config) := $(shell grep "$(config)=y" $(TOPDIR)/.config 2>/dev/null)) \
+  )
+endif
+
 # default device type
 DEVICE_TYPE?=router
 
@@ -26,8 +36,8 @@ DEFAULT_PACKAGES:=\
 	urandom-seed \
 	urngd
 
-ifdef CONFIG_USE_APK
-DEFAULT_PACKAGES+=apk
+ifneq ($(CONFIG_USE_APK),)
+DEFAULT_PACKAGES+=apk-openssl
 else
 DEFAULT_PACKAGES+=opkg
 endif
