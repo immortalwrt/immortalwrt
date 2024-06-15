@@ -55,7 +55,7 @@
 			label = "blue:lte4";
 			gpios = <&gpio1 11 GPIO_ACTIVE_LOW>;
 		};
-		
+
 		led-lte5 {
 			label = "red:lte5";
 			gpios = <&gpio2 24 GPIO_ACTIVE_LOW>;
@@ -83,20 +83,20 @@
 			gpios = <&gpio3 0 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "phy1tpt";
 		};
-		
+
 		led-wlan5 {
 			function = LED_FUNCTION_WLAN_5GHZ;
 			color = <LED_COLOR_ID_BLUE>;
 			gpios = <&gpio1 5 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "phy0tpt";
 		};
-		
+
 		led-lan {
 			function = LED_FUNCTION_LAN;
 			color = <LED_COLOR_ID_GREEN>;
 			gpios = <&gpio2 3 GPIO_ACTIVE_LOW>;
 		};
-		
+
 		led-wan {
 			function = LED_FUNCTION_WAN;
 			color = <LED_COLOR_ID_GREEN>;
@@ -232,7 +232,7 @@
 &wmac {
 	nvmem-cells = <&eeprom_factory_0>;
 	nvmem-cell-names = "eeprom";
-	
+
 	pinctrl-names = "default", "pa_gpio";
 	pinctrl-0 = <&pa_pins>;
 	pinctrl-1 = <&pa_gpio_pins>;
