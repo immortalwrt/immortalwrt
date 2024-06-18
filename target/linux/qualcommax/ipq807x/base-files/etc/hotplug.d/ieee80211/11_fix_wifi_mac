@@ -23,13 +23,6 @@ case "$board" in
 		[ "$PHYNBR" = "0" ] && macaddr_add $(get_mac_label) 2 > /sys${DEVPATH}/macaddress
 		[ "$PHYNBR" = "1" ] && macaddr_add $(get_mac_label) 3 > /sys${DEVPATH}/macaddress
 		;;
-	netgear,sxr80|\
-	netgear,sxs80)
-		[ "$PHYNBR" = "0" ] && mtd_get_mac_binary boarddata1 0x0c > /sys${DEVPATH}/macaddress
-		#boarddata1 doesn't have a MAC for the 2G interface
-		[ "$PHYNBR" = "1" ] && macaddr_setbit_la $(get_mac_label) > /sys${DEVPATH}/macaddress
-		[ "$PHYNBR" = "2" ] && mtd_get_mac_binary boarddata1 0x12 > /sys${DEVPATH}/macaddress
-		;;
 	zte,mf269-stock)
 		mac_addr="$(mtd_get_mac_binary mac 0x0)"
 		[ "$mac_addr" != "00:00:00:00:00:00" ] || mac_addr="$(get_mac_binary "$(find_mtd_chardev mac)" 0x20000)"
