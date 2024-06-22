@@ -64,7 +64,7 @@
  #endif
 --- a/net/bridge/br_netlink.c
 +++ b/net/bridge/br_netlink.c
-@@ -656,6 +656,7 @@ void br_info_notify(int event, const str
+@@ -657,6 +657,7 @@ void br_info_notify(int event, const str
  		kfree_skb(skb);
  		goto errout;
  	}
@@ -89,7 +89,7 @@
  MODULE_LICENSE("GPL");
 --- a/net/bridge/br_device.c
 +++ b/net/bridge/br_device.c
-@@ -83,6 +83,13 @@ netdev_tx_t br_dev_xmit(struct sk_buff *
+@@ -89,6 +89,13 @@ netdev_tx_t br_dev_xmit(struct sk_buff *
  	if (is_broadcast_ether_addr(dest)) {
  		br_flood(br, skb, BR_PKT_BROADCAST, false, true, vid);
  	} else if (is_multicast_ether_addr(dest)) {

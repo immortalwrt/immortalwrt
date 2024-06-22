@@ -22,7 +22,7 @@
  	keys {
 --- a/arch/arm64/boot/dts/qcom/ipq8070-rm2-6.dts
 +++ b/arch/arm64/boot/dts/qcom/ipq8070-rm2-6.dts
-@@ -32,7 +32,7 @@
+@@ -33,7 +33,7 @@
  
  	chosen {
  		stdout-path = "serial0:115200n8";
@@ -44,7 +44,7 @@
  	keys {
 --- a/arch/arm64/boot/dts/qcom/ipq8071-mf269.dts
 +++ b/arch/arm64/boot/dts/qcom/ipq8071-mf269.dts
-@@ -24,7 +24,7 @@
+@@ -25,7 +25,7 @@
  
  	chosen {
  		stdout-path = "serial0:115200n8";
@@ -55,7 +55,7 @@
  	keys {
 --- a/arch/arm64/boot/dts/qcom/ipq8072-ax880.dts
 +++ b/arch/arm64/boot/dts/qcom/ipq8072-ax880.dts
-@@ -29,7 +29,7 @@
+@@ -30,7 +30,7 @@
  
  	chosen {
  		stdout-path = "serial0:115200n8";
@@ -88,7 +88,7 @@
  	keys {
 --- a/arch/arm64/boot/dts/qcom/ipq8174-mx4200.dtsi
 +++ b/arch/arm64/boot/dts/qcom/ipq8174-mx4200.dtsi
-@@ -29,7 +29,7 @@
+@@ -30,7 +30,7 @@
  
  	chosen {
  		stdout-path = "serial0:115200n8";
