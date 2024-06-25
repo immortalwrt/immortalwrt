@@ -2,8 +2,8 @@
 
 # Project ImmortalWrt
 
-ImmortalWrt is a fork of [OpenWrt](https://openwrt.org), with more packages ported, more devices supported, better performance, and special optimizations for mainland China users.<br/>
-Compared the official one, we allow to use hacks or non-upstreamable patches / modifications to achieve our purpose. Source from anywhere.
+ImmortalWrt is a fork of [OpenWrt](https://openwrt.org), with more packages ported, more devices supported, default optimized profiles and localization modifications for mainland China users.<br/>
+Compared to upstream, we allow to use (non-upstreamable) modifications/hacks to provide better feature/performance/support.
 
 Default login address: http://192.168.1.1 or http://immortalwrt.lan, username: __root__, password: _none_.
 
@@ -22,7 +22,7 @@ To build your own firmware you need a GNU/Linux, BSD or macOS system (case sensi
 
   The following tools are needed to compile ImmortalWrt, the package names vary between distributions.
 
-  - Here is an example for Ubuntu users:<br/>
+  - Here is an example for Debian/Ubuntu users:<br/>
     - Method 1:
       <details>
         <summary>Setup dependencies via APT</summary>
