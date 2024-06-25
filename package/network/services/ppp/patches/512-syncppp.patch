@@ -1,15 +1,16 @@
 --- a/pppd/chap-new.c
 +++ b/pppd/chap-new.c
-@@ -37,6 +37,8 @@
+@@ -37,6 +37,9 @@
  #include "chap-new.h"
  #include "chap-md5.h"
  
++#include <semaphore.h>
 +#include "syncppp.h"
 +
  #ifdef CHAPMS
  #include "chap_ms.h"
  #define MDTYPE_ALL (MDTYPE_MICROSOFT_V2 | MDTYPE_MICROSOFT | MDTYPE_MD5)
-@@ -523,6 +525,18 @@ chap_respond(struct chap_client_state *cs, int id,
+@@ -523,6 +526,18 @@ chap_respond(struct chap_client_state *c
  	p[2] = len >> 8;
  	p[3] = len;
  
@@ -61,7 +62,7 @@
  # MS-CHAP authentication protocol.  Also, edit plugins/radius/Makefile.linux.
 --- a/pppd/options.c
 +++ b/pppd/options.c
-@@ -127,6 +127,7 @@ bool	dump_options;		/* print out option values */
+@@ -127,6 +127,7 @@ bool	dump_options;		/* print out option
  bool	dryrun;			/* print out option values and exit */
  char	*domain;		/* domain name set by domain option */
  int	child_wait = 5;		/* # seconds to wait for children at exit */
@@ -81,7 +82,7 @@
        OPT_PRIV|OPT_LLIMIT|OPT_INITONLY, NULL, 0, -1 },
 --- a/pppd/pppd.h
 +++ b/pppd/pppd.h
-@@ -335,6 +335,7 @@ extern char	*bundle_name;	/* bundle name for multilink */
+@@ -336,6 +336,7 @@ extern char	*bundle_name;	/* bundle name
  extern bool	dump_options;	/* print out option values */
  extern bool	dryrun;		/* check everything, print options, exit */
  extern int	child_wait;	/* # seconds to wait for children at end */
@@ -105,7 +106,7 @@
 +{
 +    int flags;
 +    int value;
-+    sem_t *block; 
++    sem_t *block;
 +    sem_t *count;
 +    struct timespec ts;
 +
@@ -169,21 +170,23 @@
 +
 --- /dev/null
 +++ b/pppd/syncppp.h
-@@ -0,0 +1,3 @@
+@@ -0,0 +1,4 @@
 +#define SEM_BLOCK_NAME  "block"
 +#define SEM_COUNT_NAME  "count"
 +#define SYNCPPP_TIMEOUT 5
++extern int syncppp(int nproc);
 --- a/pppd/upap.c
 +++ b/pppd/upap.c
-@@ -50,6 +50,7 @@
+@@ -50,6 +50,8 @@
  #include "pppd.h"
  #include "upap.h"
  
++#include <semaphore.h>
 +#include "syncppp.h"
  
  static bool hide_password = 1;
  
-@@ -540,6 +541,18 @@ upap_sauthreq(upap_state *u)
+@@ -540,6 +542,18 @@ upap_sauthreq(upap_state *u)
      PUTCHAR(u->us_passwdlen, outp);
      BCOPY(u->us_passwd, outp, u->us_passwdlen);
  
