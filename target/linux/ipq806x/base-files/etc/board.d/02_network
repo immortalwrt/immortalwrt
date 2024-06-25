@@ -23,6 +23,7 @@ ipq806x_setup_interfaces()
 	netgear,r7500 |\
 	netgear,r7500v2 |\
 	qcom,ipq8064-ap148 |\
+	linksys,e8350-v1 |\
 	linksys,ea7500-v1 |\
 	linksys,ea8500 |\
 	nec,wg2600hp3 |\
@@ -95,15 +96,16 @@ ipq806x_setup_macs()
 			ucidef_set_interface_macaddr "lan" "$hw_mac_addr"
 			ucidef_set_interface_macaddr "wan" "$hw_mac_addr"
 		;;
-		ruijie,rg-mtfi-m520)
-			hw_mac_addr=$(mtd_get_mac_ascii PRODUCTINFO ethaddr)
-			ucidef_set_interface_macaddr "wan" "$hw_mac_addr"
-			ucidef_set_interface_macaddr "lan" "$(macaddr_add $hw_mac_addr 1)"
-		;;
+		linksys,e8350-v1 |\
 		zyxel,nbg6817)
 			hw_mac_addr=$(mtd_get_mac_ascii 0:appsblenv ethaddr)
 			ucidef_set_interface_macaddr "lan" "$(macaddr_add $hw_mac_addr 2)"
 			ucidef_set_interface_macaddr "wan" "$(macaddr_add $hw_mac_addr 3)"
+		;;
+		ruijie,rg-mtfi-m520)
+			hw_mac_addr=$(mtd_get_mac_ascii PRODUCTINFO ethaddr)
+			ucidef_set_interface_macaddr "wan" "$hw_mac_addr"
+			ucidef_set_interface_macaddr "lan" "$(macaddr_add $hw_mac_addr 1)"
 		;;
 		asrock,g10)
 			hw_mac_addr=$(mtd_get_mac_ascii hwconfig HW.LAN.MAC.Address)
