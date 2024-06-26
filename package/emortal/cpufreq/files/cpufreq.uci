@@ -39,10 +39,10 @@ case "$DISTRIB_TARGET" in
 		;;
 	"rockchip/armv8")
 		if echo "$CPU_POLICYS" | grep -q "6"; then
-			# RK3588/S
-			uci_write_config 0 schedutil 1008000 1800000
-			uci_write_config 4 schedutil 816000 2208000
-			uci_write_config 6 schedutil 816000 2208000
+			# RK3588/J/S
+			uci_write_config 0 schedutil "$CPU_MIN_FREQ" "$CPU_MAX_FREQ"
+			uci_write_config 4 schedutil "$CPU_MIN_FREQ" "$CPU_MAX_FREQ"
+			uci_write_config 6 schedutil "$CPU_MIN_FREQ" "$CPU_MAX_FREQ"
 		elif echo "$CPU_POLICYS" | grep -q "4"; then
 			# RK3399
 			uci_write_config 0 schedutil 600000 1608000
