@@ -17,7 +17,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20240119190841.1619443-1-har
 
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
-@@ -1985,8 +1985,10 @@ static void vop2_crtc_atomic_enable(stru
+@@ -1987,8 +1987,10 @@ static void vop2_crtc_atomic_enable(stru
  		clock = vop2_set_intf_mux(vp, rkencoder->crtc_endpoint_id, polflags);
  	}
  

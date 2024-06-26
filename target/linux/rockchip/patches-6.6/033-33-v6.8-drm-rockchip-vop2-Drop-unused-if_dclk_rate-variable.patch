@@ -27,7 +27,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20240105174007.98054-1-crist
 
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
-@@ -1680,7 +1680,6 @@ static unsigned long rk3588_calc_cru_cfg
+@@ -1682,7 +1682,6 @@ static unsigned long rk3588_calc_cru_cfg
  	unsigned long dclk_core_rate = v_pixclk >> 2;
  	unsigned long dclk_rate = v_pixclk;
  	unsigned long dclk_out_rate;
@@ -35,7 +35,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20240105174007.98054-1-crist
  	unsigned long if_pixclk_rate;
  	int K = 1;
  
-@@ -1695,8 +1694,8 @@ static unsigned long rk3588_calc_cru_cfg
+@@ -1697,8 +1696,8 @@ static unsigned long rk3588_calc_cru_cfg
  		}
  
  		if_pixclk_rate = (dclk_core_rate << 1) / K;

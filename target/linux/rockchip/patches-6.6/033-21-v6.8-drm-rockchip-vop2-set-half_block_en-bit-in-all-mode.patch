@@ -40,7 +40,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115730.1784893-1-and
  static u32 vop2_afbc_transform_offset(struct drm_plane_state *pstate,
  				      bool afbc_half_block_en)
  {
-@@ -1144,6 +1156,7 @@ static void vop2_plane_atomic_update(str
+@@ -1146,6 +1158,7 @@ static void vop2_plane_atomic_update(str
  	bool rotate_90 = pstate->rotation & DRM_MODE_ROTATE_90;
  	struct rockchip_gem_object *rk_obj;
  	unsigned long offset;
@@ -48,7 +48,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115730.1784893-1-and
  	bool afbc_en;
  	dma_addr_t yrgb_mst;
  	dma_addr_t uv_mst;
-@@ -1236,6 +1249,7 @@ static void vop2_plane_atomic_update(str
+@@ -1238,6 +1251,7 @@ static void vop2_plane_atomic_update(str
  	dsp_info = (dsp_h - 1) << 16 | ((dsp_w - 1) & 0xffff);
  
  	format = vop2_convert_format(fb->format->format);
@@ -56,7 +56,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115730.1784893-1-and
  
  	drm_dbg(vop2->drm, "vp%d update %s[%dx%d->%dx%d@%dx%d] fmt[%p4cc_%s] addr[%pad]\n",
  		vp->id, win->data->name, actual_w, actual_h, dsp_w, dsp_h,
-@@ -1243,6 +1257,9 @@ static void vop2_plane_atomic_update(str
+@@ -1245,6 +1259,9 @@ static void vop2_plane_atomic_update(str
  		&fb->format->format,
  		afbc_en ? "AFBC" : "", &yrgb_mst);
  
@@ -66,7 +66,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115730.1784893-1-and
  	if (afbc_en) {
  		u32 stride;
  
-@@ -1283,13 +1300,7 @@ static void vop2_plane_atomic_update(str
+@@ -1285,13 +1302,7 @@ static void vop2_plane_atomic_update(str
  		vop2_win_write(win, VOP2_WIN_AFBC_UV_SWAP, uv_swap);
  		vop2_win_write(win, VOP2_WIN_AFBC_AUTO_GATING_EN, 0);
  		vop2_win_write(win, VOP2_WIN_AFBC_BLOCK_SPLIT_EN, 0);

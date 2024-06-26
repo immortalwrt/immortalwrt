@@ -16,7 +16,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231013122051.1594164-1-and
 
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
-@@ -2250,8 +2250,6 @@ static struct vop2_video_port *find_vp_w
+@@ -2252,8 +2252,6 @@ static struct vop2_video_port *find_vp_w
  	return NULL;
  }
  
@@ -25,7 +25,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231013122051.1594164-1-and
  static int vop2_create_crtcs(struct vop2 *vop2)
  {
  	const struct vop2_data *vop2_data = vop2->data;
-@@ -2370,7 +2368,7 @@ static int vop2_create_crtcs(struct vop2
+@@ -2372,7 +2370,7 @@ static int vop2_create_crtcs(struct vop2
  		struct vop2_video_port *vp = &vop2->vps[i];
  
  		if (vp->crtc.port)

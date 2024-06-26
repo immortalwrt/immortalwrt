@@ -59,7 +59,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231018094239.2475851-1-and
  }
  
  static bool vop2_win_uv_swap(u32 format)
-@@ -1232,7 +1212,6 @@ static void vop2_plane_atomic_update(str
+@@ -1234,7 +1214,6 @@ static void vop2_plane_atomic_update(str
  			drm_err(vop2->drm, "vp%d %s stride[%d] not 64 pixel aligned\n",
  				vp->id, win->data->name, stride);
  
@@ -67,7 +67,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231018094239.2475851-1-and
  		uv_swap = vop2_afbc_uv_swap(fb->format->format);
  		/*
  		 * This is a workaround for crazy IC design, Cluster
-@@ -1249,7 +1228,6 @@ static void vop2_plane_atomic_update(str
+@@ -1251,7 +1230,6 @@ static void vop2_plane_atomic_update(str
  		if (vop2_cluster_window(win))
  			vop2_win_write(win, VOP2_WIN_AFBC_ENABLE, 1);
  		vop2_win_write(win, VOP2_WIN_AFBC_FORMAT, afbc_format);

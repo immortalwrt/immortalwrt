@@ -46,7 +46,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231018094210.2475771-1-and
  	u32 vir_width = (fb->pitches[0] << 3) / bpp;
  	u32 width = drm_rect_width(src) >> 16;
  	u32 height = drm_rect_height(src) >> 16;
-@@ -1080,7 +1094,7 @@ static void vop2_plane_atomic_update(str
+@@ -1082,7 +1096,7 @@ static void vop2_plane_atomic_update(str
  	struct drm_display_mode *adjusted_mode = &crtc->state->adjusted_mode;
  	struct vop2 *vop2 = win->vop2;
  	struct drm_framebuffer *fb = pstate->fb;

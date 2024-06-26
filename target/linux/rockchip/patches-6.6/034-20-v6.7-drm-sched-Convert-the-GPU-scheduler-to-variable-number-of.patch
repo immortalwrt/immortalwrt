@@ -63,7 +63,7 @@ Link: https://lore.kernel.org/r/20231023032251.164775-1-luben.tuikov@amd.com
  				   ring->sched_score, ring->name,
 --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_job.c
 +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_job.c
-@@ -325,8 +325,8 @@ void amdgpu_job_stop_all_jobs_on_sched(s
+@@ -328,8 +328,8 @@ void amdgpu_job_stop_all_jobs_on_sched(s
  	int i;
  
  	/* Signal all jobs not yet scheduled */

@@ -36,7 +36,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115719.1784834-1-and
  static struct vop2_video_port *to_vop2_video_port(struct drm_crtc *crtc)
  {
  	return container_of(crtc, struct vop2_video_port, crtc);
-@@ -883,7 +885,11 @@ static void vop2_enable(struct vop2 *vop
+@@ -885,7 +887,11 @@ static void vop2_enable(struct vop2 *vop
  		return;
  	}
  
@@ -49,7 +49,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115719.1784834-1-and
  
  	if (vop2->data->soc_id == 3566)
  		vop2_writel(vop2, RK3568_OTP_WIN_EN, 1);
-@@ -913,8 +919,6 @@ static void vop2_disable(struct vop2 *vo
+@@ -915,8 +921,6 @@ static void vop2_disable(struct vop2 *vo
  
  	pm_runtime_put_sync(vop2->dev);
  

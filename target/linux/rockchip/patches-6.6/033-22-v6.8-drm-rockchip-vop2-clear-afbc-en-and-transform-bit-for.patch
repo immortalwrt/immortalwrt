@@ -22,7 +22,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115741.1784954-1-and
 
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
-@@ -1312,6 +1312,11 @@ static void vop2_plane_atomic_update(str
+@@ -1314,6 +1314,11 @@ static void vop2_plane_atomic_update(str
  		vop2_win_write(win, VOP2_WIN_AFBC_ROTATE_270, rotate_270);
  		vop2_win_write(win, VOP2_WIN_AFBC_ROTATE_90, rotate_90);
  	} else {

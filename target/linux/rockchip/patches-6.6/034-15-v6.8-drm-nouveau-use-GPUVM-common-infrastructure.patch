@@ -25,7 +25,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231113221202.7203-1-dakr@r
 
 --- a/drivers/gpu/drm/nouveau/nouveau_bo.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_bo.c
-@@ -1062,17 +1062,18 @@ nouveau_bo_move(struct ttm_buffer_object
+@@ -1056,17 +1056,18 @@ nouveau_bo_move(struct ttm_buffer_object
  {
  	struct nouveau_drm *drm = nouveau_bdev(bo->bdev);
  	struct nouveau_bo *nvbo = nouveau_bo(bo);
@@ -45,7 +45,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231113221202.7203-1-dakr@r
  	nouveau_bo_move_ntfy(bo, new_reg);
  	ret = ttm_bo_wait_ctx(bo, ctx);
  	if (ret)
-@@ -1137,6 +1138,7 @@ out:
+@@ -1131,6 +1132,7 @@ out:
  out_ntfy:
  	if (ret) {
  		nouveau_bo_move_ntfy(bo, bo->resource);

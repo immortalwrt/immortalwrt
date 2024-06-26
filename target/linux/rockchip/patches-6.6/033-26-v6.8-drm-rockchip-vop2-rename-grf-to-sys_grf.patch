@@ -27,7 +27,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115826.1785190-1-and
  
  	/* physical map length of vop2 register */
  	u32 len;
-@@ -1524,9 +1524,9 @@ static void rk3568_set_intf_mux(struct v
+@@ -1526,9 +1526,9 @@ static void rk3568_set_intf_mux(struct v
  		dip &= ~RK3568_DSP_IF_POL__RGB_LVDS_PIN_POL;
  		dip |= FIELD_PREP(RK3568_DSP_IF_POL__RGB_LVDS_PIN_POL, polflags);
  		if (polflags & POLFLAG_DCLK_INV)
@@ -39,7 +39,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115826.1785190-1-and
  		break;
  	case ROCKCHIP_VOP2_EP_HDMI0:
  		die &= ~RK3568_SYS_DSP_INFACE_EN_HDMI_MUX;
-@@ -2767,7 +2767,7 @@ static int vop2_bind(struct device *dev,
+@@ -2769,7 +2769,7 @@ static int vop2_bind(struct device *dev,
  			return PTR_ERR(vop2->lut_regs);
  	}
  

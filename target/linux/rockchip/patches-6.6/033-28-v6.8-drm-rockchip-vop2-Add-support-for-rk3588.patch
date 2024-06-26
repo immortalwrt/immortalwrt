@@ -86,7 +86,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  static bool is_yuv_output(u32 bus_format)
  {
  	switch (bus_format) {
-@@ -879,13 +911,32 @@ static int vop2_core_clks_prepare_enable
+@@ -881,13 +913,32 @@ static int vop2_core_clks_prepare_enable
  		goto err;
  	}
  
@@ -119,7 +119,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  static void vop2_enable(struct vop2 *vop2)
  {
  	int ret;
-@@ -917,6 +968,9 @@ static void vop2_enable(struct vop2 *vop
+@@ -919,6 +970,9 @@ static void vop2_enable(struct vop2 *vop
  	if (vop2->data->soc_id == 3566)
  		vop2_writel(vop2, RK3568_OTP_WIN_EN, 1);
  
@@ -129,7 +129,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  	vop2_writel(vop2, RK3568_REG_CFG_DONE, RK3568_REG_CFG_DONE__GLB_CFG_DONE_EN);
  
  	/*
-@@ -942,6 +996,7 @@ static void vop2_disable(struct vop2 *vo
+@@ -944,6 +998,7 @@ static void vop2_disable(struct vop2 *vo
  
  	pm_runtime_put_sync(vop2->dev);
  
@@ -137,7 +137,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  	clk_disable_unprepare(vop2->aclk);
  	clk_disable_unprepare(vop2->hclk);
  }
-@@ -1309,7 +1364,19 @@ static void vop2_plane_atomic_update(str
+@@ -1311,7 +1366,19 @@ static void vop2_plane_atomic_update(str
  			vop2_win_write(win, VOP2_WIN_AFBC_ENABLE, 1);
  		vop2_win_write(win, VOP2_WIN_AFBC_FORMAT, afbc_format);
  		vop2_win_write(win, VOP2_WIN_AFBC_UV_SWAP, uv_swap);
@@ -158,7 +158,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  		vop2_win_write(win, VOP2_WIN_AFBC_BLOCK_SPLIT_EN, 0);
  		transform_offset = vop2_afbc_transform_offset(pstate, half_block_en);
  		vop2_win_write(win, VOP2_WIN_AFBC_HDR_PTR, yrgb_mst);
-@@ -1507,10 +1574,10 @@ static void vop2_post_config(struct drm_
+@@ -1509,10 +1576,10 @@ static void vop2_post_config(struct drm_
  	vop2_vp_write(vp, RK3568_VP_DSP_BG, 0);
  }
  
@@ -171,7 +171,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  	u32 die, dip;
  
  	die = vop2_readl(vop2, RK3568_DSP_IF_EN);
-@@ -1572,13 +1639,281 @@ static void rk3568_set_intf_mux(struct v
+@@ -1574,13 +1641,281 @@ static void rk3568_set_intf_mux(struct v
  		break;
  	default:
  		drm_err(vop2->drm, "Invalid interface id %d on vp%d\n", id, vp->id);
@@ -454,7 +454,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  }
  
  static int us_to_vertical_line(struct drm_display_mode *mode, int us)
-@@ -1648,9 +1983,17 @@ static void vop2_crtc_atomic_enable(stru
+@@ -1650,9 +1985,17 @@ static void vop2_crtc_atomic_enable(stru
  	drm_for_each_encoder_mask(encoder, crtc->dev, crtc_state->encoder_mask) {
  		struct rockchip_encoder *rkencoder = to_rockchip_encoder(encoder);
  
@@ -473,7 +473,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  	if (vcstate->output_mode == ROCKCHIP_OUT_MODE_AAAA &&
  	    !(vp_data->feature & VOP_FEATURE_OUTPUT_10BIT))
  		out_mode = ROCKCHIP_OUT_MODE_P888;
-@@ -1661,6 +2004,8 @@ static void vop2_crtc_atomic_enable(stru
+@@ -1663,6 +2006,8 @@ static void vop2_crtc_atomic_enable(stru
  
  	if (vop2_output_uv_swap(vcstate->bus_format, vcstate->output_mode))
  		dsp_ctrl |= RK3568_VP_DSP_CTRL__DSP_RB_SWAP;
@@ -482,7 +482,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  
  	if (vcstate->yuv_overlay)
  		dsp_ctrl |= RK3568_VP_DSP_CTRL__POST_DSP_OUT_R2Y;
-@@ -2022,6 +2367,14 @@ static void vop2_setup_layer_mixer(struc
+@@ -2024,6 +2369,14 @@ static void vop2_setup_layer_mixer(struc
  			port_sel &= ~RK3568_OVL_PORT_SEL__CLUSTER1;
  			port_sel |= FIELD_PREP(RK3568_OVL_PORT_SEL__CLUSTER1, vp->id);
  			break;
@@ -497,7 +497,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  		case ROCKCHIP_VOP2_ESMART0:
  			port_sel &= ~RK3568_OVL_PORT_SEL__ESMART0;
  			port_sel |= FIELD_PREP(RK3568_OVL_PORT_SEL__ESMART0, vp->id);
-@@ -2030,6 +2383,14 @@ static void vop2_setup_layer_mixer(struc
+@@ -2032,6 +2385,14 @@ static void vop2_setup_layer_mixer(struc
  			port_sel &= ~RK3568_OVL_PORT_SEL__ESMART1;
  			port_sel |= FIELD_PREP(RK3568_OVL_PORT_SEL__ESMART1, vp->id);
  			break;
@@ -512,7 +512,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  		case ROCKCHIP_VOP2_SMART0:
  			port_sel &= ~RK3568_OVL_PORT_SEL__SMART0;
  			port_sel |= FIELD_PREP(RK3568_OVL_PORT_SEL__SMART0, vp->id);
-@@ -2766,8 +3127,29 @@ static int vop2_bind(struct device *dev,
+@@ -2768,8 +3129,29 @@ static int vop2_bind(struct device *dev,
  		if (IS_ERR(vop2->lut_regs))
  			return PTR_ERR(vop2->lut_regs);
  	}
@@ -543,7 +543,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  
  	vop2->hclk = devm_clk_get(vop2->dev, "hclk");
  	if (IS_ERR(vop2->hclk)) {
-@@ -2781,6 +3163,12 @@ static int vop2_bind(struct device *dev,
+@@ -2783,6 +3165,12 @@ static int vop2_bind(struct device *dev,
  		return PTR_ERR(vop2->aclk);
  	}
  

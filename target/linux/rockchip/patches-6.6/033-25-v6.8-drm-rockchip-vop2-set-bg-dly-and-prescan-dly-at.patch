@@ -19,7 +19,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115815.1785131-1-and
 
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
-@@ -1460,8 +1460,18 @@ static void vop2_post_config(struct drm_
+@@ -1462,8 +1462,18 @@ static void vop2_post_config(struct drm_
  	u32 top_margin = 100, bottom_margin = 100;
  	u16 hsize = hdisplay * (left_margin + right_margin) / 200;
  	u16 vsize = vdisplay * (top_margin + bottom_margin) / 200;
@@ -38,7 +38,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115815.1785131-1-and
  
  	vsize = rounddown(vsize, 2);
  	hsize = rounddown(hsize, 2);
-@@ -1956,11 +1966,6 @@ static void vop2_setup_layer_mixer(struc
+@@ -1958,11 +1968,6 @@ static void vop2_setup_layer_mixer(struc
  	u32 layer_sel = 0;
  	u32 port_sel;
  	unsigned int nlayer, ofs;
@@ -50,7 +50,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115815.1785131-1-and
  	u32 ovl_ctrl;
  	int i;
  	struct vop2_video_port *vp0 = &vop2->vps[0];
-@@ -1968,17 +1973,6 @@ static void vop2_setup_layer_mixer(struc
+@@ -1970,17 +1975,6 @@ static void vop2_setup_layer_mixer(struc
  	struct vop2_video_port *vp2 = &vop2->vps[2];
  	struct rockchip_crtc_state *vcstate = to_rockchip_crtc_state(vp->crtc.state);
  

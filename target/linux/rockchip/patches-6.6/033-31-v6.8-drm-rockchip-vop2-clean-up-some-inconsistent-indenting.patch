@@ -18,7 +18,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231219062635.100718-1-jiap
 
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
-@@ -1701,8 +1701,8 @@ static unsigned long rk3588_calc_cru_cfg
+@@ -1703,8 +1703,8 @@ static unsigned long rk3588_calc_cru_cfg
  		 * *if_pixclk_div = dclk_rate / if_pixclk_rate;
  		 * *if_dclk_div = dclk_rate / if_dclk_rate;
  		 */

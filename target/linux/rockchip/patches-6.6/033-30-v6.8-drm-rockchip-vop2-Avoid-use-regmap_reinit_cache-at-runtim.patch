@@ -35,7 +35,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231217084415.2373043-1-and
 
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
-@@ -959,12 +959,6 @@ static void vop2_enable(struct vop2 *vop
+@@ -961,12 +961,6 @@ static void vop2_enable(struct vop2 *vop
  		return;
  	}
  
@@ -48,7 +48,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231217084415.2373043-1-and
  	if (vop2->data->soc_id == 3566)
  		vop2_writel(vop2, RK3568_OTP_WIN_EN, 1);
  
-@@ -996,6 +990,8 @@ static void vop2_disable(struct vop2 *vo
+@@ -998,6 +992,8 @@ static void vop2_disable(struct vop2 *vo
  
  	pm_runtime_put_sync(vop2->dev);
  
