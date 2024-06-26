@@ -15,8 +15,7 @@ define Device/ariaboard_photonicat
   DEVICE_MODEL := Photonicat
   SOC := rk3568
   BOOT_FLOW := pine64-img
-  DEVICE_PACKAGES := pcat-manager kmod-ath10k-sdio \
-	ath10k-firmware-qca9377-sdio wpad-openssl \
+  DEVICE_PACKAGES := kmod-ath10k-sdio ath10k-firmware-qca9377-sdio wpad-openssl \
 	kmod-usb-net-cdc-mbim kmod-usb-net-qmi-wwan kmod-usb-serial-option uqmi
 endef
 TARGET_DEVICES += ariaboard_photonicat
