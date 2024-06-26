@@ -16,7 +16,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -480,6 +480,62 @@
+@@ -501,6 +501,62 @@
  		status = "disabled";
  	};
  

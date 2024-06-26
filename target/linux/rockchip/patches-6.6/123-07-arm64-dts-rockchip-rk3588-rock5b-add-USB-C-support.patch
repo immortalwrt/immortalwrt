@@ -51,7 +51,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	};
  
  	vcc_1v1_nldo_s3: vcc-1v1-nldo-s3-regulator {
-@@ -237,6 +248,61 @@
+@@ -229,6 +240,61 @@
  	};
  };
  
@@ -113,7 +113,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &i2c6 {
  	status = "okay";
  
-@@ -366,6 +432,10 @@
+@@ -388,6 +454,10 @@
  		vcc5v0_host_en: vcc5v0-host-en {
  			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
  		};
@@ -124,7 +124,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	};
  };
  
-@@ -758,6 +828,14 @@
+@@ -798,6 +868,14 @@
  	status = "okay";
  };
  
@@ -139,7 +139,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &u2phy1 {
  	status = "okay";
  };
-@@ -789,6 +867,29 @@
+@@ -829,6 +907,29 @@
  	status = "okay";
  };
  
@@ -169,7 +169,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  &usb_host0_ehci {
  	status = "okay";
  };
-@@ -797,6 +898,20 @@
+@@ -837,6 +938,20 @@
  	status = "okay";
  };
  

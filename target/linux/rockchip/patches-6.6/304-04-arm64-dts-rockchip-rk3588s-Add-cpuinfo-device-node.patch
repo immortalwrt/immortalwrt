@@ -9,9 +9,9 @@ Change-Id: I050cc7f6398500e705b27c588948201e571817ea
  arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 18 ++++++++++++++++++
  1 file changed, 18 insertions(+)
 
---- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -565,6 +565,12 @@
+--- a/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
+@@ -348,6 +348,12 @@
  		};
  	};
  

@@ -39,105 +39,129 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	timer {
  		compatible = "arm,armv8-timer";
  		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_HIGH 0>,
-@@ -436,50 +436,6 @@
+@@ -436,6 +436,62 @@
  		};
  	};
  
--	usb_host0_ehci: usb@fc800000 {
--		compatible = "rockchip,rk3588-ehci", "generic-ehci";
--		reg = <0x0 0xfc800000 0x0 0x40000>;
--		interrupts = <GIC_SPI 215 IRQ_TYPE_LEVEL_HIGH 0>;
--		clocks = <&cru HCLK_HOST0>, <&cru HCLK_HOST_ARB0>, <&cru ACLK_USB>, <&u2phy2>;
--		phys = <&u2phy2_host>;
--		phy-names = "usb";
--		power-domains = <&power RK3588_PD_USB>;
--		status = "disabled";
--	};
--
--	usb_host0_ohci: usb@fc840000 {
--		compatible = "rockchip,rk3588-ohci", "generic-ohci";
--		reg = <0x0 0xfc840000 0x0 0x40000>;
--		interrupts = <GIC_SPI 216 IRQ_TYPE_LEVEL_HIGH 0>;
--		clocks = <&cru HCLK_HOST0>, <&cru HCLK_HOST_ARB0>, <&cru ACLK_USB>, <&u2phy2>;
--		phys = <&u2phy2_host>;
--		phy-names = "usb";
--		power-domains = <&power RK3588_PD_USB>;
--		status = "disabled";
--	};
--
--	usb_host1_ehci: usb@fc880000 {
--		compatible = "rockchip,rk3588-ehci", "generic-ehci";
--		reg = <0x0 0xfc880000 0x0 0x40000>;
--		interrupts = <GIC_SPI 218 IRQ_TYPE_LEVEL_HIGH 0>;
--		clocks = <&cru HCLK_HOST1>, <&cru HCLK_HOST_ARB1>, <&cru ACLK_USB>, <&u2phy3>;
--		phys = <&u2phy3_host>;
--		phy-names = "usb";
--		power-domains = <&power RK3588_PD_USB>;
--		status = "disabled";
--	};
--
--	usb_host1_ohci: usb@fc8c0000 {
--		compatible = "rockchip,rk3588-ohci", "generic-ohci";
--		reg = <0x0 0xfc8c0000 0x0 0x40000>;
--		interrupts = <GIC_SPI 219 IRQ_TYPE_LEVEL_HIGH 0>;
--		clocks = <&cru HCLK_HOST1>, <&cru HCLK_HOST_ARB1>, <&cru ACLK_USB>, <&u2phy3>;
--		phys = <&u2phy3_host>;
--		phy-names = "usb";
--		power-domains = <&power RK3588_PD_USB>;
--		status = "disabled";
--	};
--
- 	gpu: gpu@fb000000 {
- 		compatible = "rockchip,rk3588-mali", "arm,mali-valhall-csf";
- 		reg = <0x0 0xfb000000 0x0 0x200000>;
-@@ -536,6 +492,50 @@
- 		};
++	gpu: gpu@fb000000 {
++		compatible = "rockchip,rk3588-mali", "arm,mali-valhall-csf";
++		reg = <0x0 0xfb000000 0x0 0x200000>;
++		#cooling-cells = <2>;
++		assigned-clocks = <&scmi_clk SCMI_CLK_GPU>;
++		assigned-clock-rates = <200000000>;
++		clocks = <&cru CLK_GPU>, <&cru CLK_GPU_COREGROUP>,
++			 <&cru CLK_GPU_STACKS>;
++		clock-names = "core", "coregroup", "stacks";
++		dynamic-power-coefficient = <2982>;
++		interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_HIGH 0>,
++			     <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH 0>,
++			     <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH 0>;
++		interrupt-names = "job", "mmu", "gpu";
++		operating-points-v2 = <&gpu_opp_table>;
++		power-domains = <&power RK3588_PD_GPU>;
++		status = "disabled";
++
++		gpu_opp_table: opp-table {
++			compatible = "operating-points-v2";
++
++			opp-300000000 {
++				opp-hz = /bits/ 64 <300000000>;
++				opp-microvolt = <675000 675000 850000>;
++			};
++			opp-400000000 {
++				opp-hz = /bits/ 64 <400000000>;
++				opp-microvolt = <675000 675000 850000>;
++			};
++			opp-500000000 {
++				opp-hz = /bits/ 64 <500000000>;
++				opp-microvolt = <675000 675000 850000>;
++			};
++			opp-600000000 {
++				opp-hz = /bits/ 64 <600000000>;
++				opp-microvolt = <675000 675000 850000>;
++			};
++			opp-700000000 {
++				opp-hz = /bits/ 64 <700000000>;
++				opp-microvolt = <700000 700000 850000>;
++			};
++			opp-800000000 {
++				opp-hz = /bits/ 64 <800000000>;
++				opp-microvolt = <750000 750000 850000>;
++			};
++			opp-900000000 {
++				opp-hz = /bits/ 64 <900000000>;
++				opp-microvolt = <800000 800000 850000>;
++			};
++			opp-1000000000 {
++				opp-hz = /bits/ 64 <1000000000>;
++				opp-microvolt = <850000 850000 850000>;
++			};
++		};
++	};
++
+ 	usb_host0_ehci: usb@fc800000 {
+ 		compatible = "rockchip,rk3588-ehci", "generic-ehci";
+ 		reg = <0x0 0xfc800000 0x0 0x40000>;
+@@ -501,62 +557,6 @@
+ 		status = "disabled";
  	};
  
-+	usb_host0_ehci: usb@fc800000 {
-+		compatible = "rockchip,rk3588-ehci", "generic-ehci";
-+		reg = <0x0 0xfc800000 0x0 0x40000>;
-+		interrupts = <GIC_SPI 215 IRQ_TYPE_LEVEL_HIGH 0>;
-+		clocks = <&cru HCLK_HOST0>, <&cru HCLK_HOST_ARB0>, <&cru ACLK_USB>, <&u2phy2>;
-+		phys = <&u2phy2_host>;
-+		phy-names = "usb";
-+		power-domains = <&power RK3588_PD_USB>;
-+		status = "disabled";
-+	};
-+
-+	usb_host0_ohci: usb@fc840000 {
-+		compatible = "rockchip,rk3588-ohci", "generic-ohci";
-+		reg = <0x0 0xfc840000 0x0 0x40000>;
-+		interrupts = <GIC_SPI 216 IRQ_TYPE_LEVEL_HIGH 0>;
-+		clocks = <&cru HCLK_HOST0>, <&cru HCLK_HOST_ARB0>, <&cru ACLK_USB>, <&u2phy2>;
-+		phys = <&u2phy2_host>;
-+		phy-names = "usb";
-+		power-domains = <&power RK3588_PD_USB>;
-+		status = "disabled";
-+	};
-+
-+	usb_host1_ehci: usb@fc880000 {
-+		compatible = "rockchip,rk3588-ehci", "generic-ehci";
-+		reg = <0x0 0xfc880000 0x0 0x40000>;
-+		interrupts = <GIC_SPI 218 IRQ_TYPE_LEVEL_HIGH 0>;
-+		clocks = <&cru HCLK_HOST1>, <&cru HCLK_HOST_ARB1>, <&cru ACLK_USB>, <&u2phy3>;
-+		phys = <&u2phy3_host>;
-+		phy-names = "usb";
-+		power-domains = <&power RK3588_PD_USB>;
-+		status = "disabled";
-+	};
-+
-+	usb_host1_ohci: usb@fc8c0000 {
-+		compatible = "rockchip,rk3588-ohci", "generic-ohci";
-+		reg = <0x0 0xfc8c0000 0x0 0x40000>;
-+		interrupts = <GIC_SPI 219 IRQ_TYPE_LEVEL_HIGH 0>;
-+		clocks = <&cru HCLK_HOST1>, <&cru HCLK_HOST_ARB1>, <&cru ACLK_USB>, <&u2phy3>;
-+		phys = <&u2phy3_host>;
-+		phy-names = "usb";
-+		power-domains = <&power RK3588_PD_USB>;
-+		status = "disabled";
-+	};
-+
+-	gpu: gpu@fb000000 {
+-		compatible = "rockchip,rk3588-mali", "arm,mali-valhall-csf";
+-		reg = <0x0 0xfb000000 0x0 0x200000>;
+-		#cooling-cells = <2>;
+-		assigned-clocks = <&scmi_clk SCMI_CLK_GPU>;
+-		assigned-clock-rates = <200000000>;
+-		clocks = <&cru CLK_GPU>, <&cru CLK_GPU_COREGROUP>,
+-			 <&cru CLK_GPU_STACKS>;
+-		clock-names = "core", "coregroup", "stacks";
+-		dynamic-power-coefficient = <2982>;
+-		interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_HIGH 0>,
+-			     <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH 0>,
+-			     <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH 0>;
+-		interrupt-names = "job", "mmu", "gpu";
+-		operating-points-v2 = <&gpu_opp_table>;
+-		power-domains = <&power RK3588_PD_GPU>;
+-		status = "disabled";
+-
+-		gpu_opp_table: opp-table {
+-			compatible = "operating-points-v2";
+-
+-			opp-300000000 {
+-				opp-hz = /bits/ 64 <300000000>;
+-				opp-microvolt = <675000 675000 850000>;
+-			};
+-			opp-400000000 {
+-				opp-hz = /bits/ 64 <400000000>;
+-				opp-microvolt = <675000 675000 850000>;
+-			};
+-			opp-500000000 {
+-				opp-hz = /bits/ 64 <500000000>;
+-				opp-microvolt = <675000 675000 850000>;
+-			};
+-			opp-600000000 {
+-				opp-hz = /bits/ 64 <600000000>;
+-				opp-microvolt = <675000 675000 850000>;
+-			};
+-			opp-700000000 {
+-				opp-hz = /bits/ 64 <700000000>;
+-				opp-microvolt = <700000 700000 850000>;
+-			};
+-			opp-800000000 {
+-				opp-hz = /bits/ 64 <800000000>;
+-				opp-microvolt = <750000 750000 850000>;
+-			};
+-			opp-900000000 {
+-				opp-hz = /bits/ 64 <900000000>;
+-				opp-microvolt = <800000 800000 850000>;
+-			};
+-			opp-1000000000 {
+-				opp-hz = /bits/ 64 <1000000000>;
+-				opp-microvolt = <850000 850000 850000>;
+-			};
+-		};
+-	};
+-
  	pmu1grf: syscon@fd58a000 {
  		compatible = "rockchip,rk3588-pmugrf", "syscon", "simple-mfd";
  		reg = <0x0 0xfd58a000 0x0 0x10000>;

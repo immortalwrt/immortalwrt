@@ -18,8 +18,8 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -448,6 +448,27 @@
- 		reg = <0x0 0xfd58a000 0x0 0x10000>;
+@@ -443,6 +443,27 @@
+ 		status = "disabled";
  	};
  
 +	usb_host2_xhci: usb@fcd00000 {
@@ -43,6 +43,6 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 +		status = "disabled";
 +	};
 +
- 	sys_grf: syscon@fd58c000 {
- 		compatible = "rockchip,rk3588-sys-grf", "syscon";
- 		reg = <0x0 0xfd58c000 0x0 0x1000>;
+ 	pmu1grf: syscon@fd58a000 {
+ 		compatible = "rockchip,rk3588-pmugrf", "syscon", "simple-mfd";
+ 		reg = <0x0 0xfd58a000 0x0 0x10000>;

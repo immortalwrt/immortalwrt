@@ -57,7 +57,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	status = "okay";
 --- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
-@@ -375,8 +375,7 @@
+@@ -405,8 +405,7 @@
  	no-sdio;
  	no-sd;
  	non-removable;
@@ -67,7 +67,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	status = "okay";
  };
  
-@@ -388,7 +387,7 @@
+@@ -418,7 +417,7 @@
  	cap-mmc-highspeed;
  	cap-sd-highspeed;
  	disable-wp;
