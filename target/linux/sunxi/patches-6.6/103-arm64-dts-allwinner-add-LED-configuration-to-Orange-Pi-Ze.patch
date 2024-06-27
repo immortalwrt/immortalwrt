@@ -1,0 +1,13 @@
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero3.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero3.dts
+@@ -24,7 +24,10 @@
+ };
+ 
+ &ext_rgmii_phy {
++	motorcomm,auto-sleep-disabled;
+ 	motorcomm,clk-out-frequency-hz = <125000000>;
++	motorcomm,keep-pll-enabled;
++	motorcomm,led-data = <0xe004 0x0 0x2600 0x0070 0x000a>;
+ };
+ 
+ &mmc0 {
