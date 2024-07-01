@@ -158,6 +158,13 @@ define U-Boot/radxa-cm3-io-rk3566
     radxa_cm3-io
 endef
 
+define U-Boot/radxa-zero-3e-rk3566
+  $(U-Boot/Default/rk3566)
+  NAME:=ZERO 3E
+  BUILD_DEVICES:= \
+    radxa_zero-3e
+endef
+
 
 # RK3568 boards
 
@@ -316,6 +323,7 @@ UBOOT_TARGETS := \
   rock-pi-e-rk3328 \
   rock64-rk3328 \
   radxa-cm3-io-rk3566 \
+  radxa-zero-3e-rk3566 \
   bpi-r2-pro-rk3568 \
   fastrhino-r66s-rk3568 \
   fastrhino-r68s-rk3568 \
