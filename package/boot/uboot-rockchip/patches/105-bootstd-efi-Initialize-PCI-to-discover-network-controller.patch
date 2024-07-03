@@ -26,15 +26,15 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
 
 --- a/boot/bootmeth_efi.c
 +++ b/boot/bootmeth_efi.c
-@@ -16,6 +16,7 @@
- #include <dm.h>
+@@ -17,6 +17,7 @@
+ #include <efi_default_filename.h>
  #include <efi_loader.h>
  #include <fs.h>
 +#include <init.h>
  #include <malloc.h>
  #include <mapmem.h>
  #include <mmc.h>
-@@ -403,6 +404,14 @@ static int distro_efi_read_bootflow(stru
+@@ -365,6 +366,14 @@ static int distro_efi_read_bootflow(stru
  {
  	int ret;
  
