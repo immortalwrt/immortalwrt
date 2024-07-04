@@ -22,8 +22,8 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  #include <linux/crc32.h>
  #include <linux/if_vlan.h>
  #include <linux/uaccess.h>
-@@ -10419,6 +10420,22 @@ static void rtl_disable_spi(struct r8152
- 	ocp_write_word(tp, MCU_TYPE_USB, 0xcbf0, ocp_data);
+@@ -12599,6 +12600,22 @@ out:
+ 	return ret;
  }
  
 +static int r8152_led_configuration(struct r8152 *tp)
@@ -36,39 +36,48 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +
 +	if (ret)
 +		return ret;
-+	
++
 +	ocp_write_word(tp, MCU_TYPE_PLA, PLA_LEDSEL, led_data);
 +
 +	return 0;
 +}
 +
- static void r8152b_init(struct r8152 *tp)
+ static int r8152b_init(struct r8152 *tp)
  {
- 	u32 ocp_data;
-@@ -10482,6 +10499,8 @@ static void r8152b_init(struct r8152 *tp
- 	ocp_data = ocp_read_word(tp, MCU_TYPE_USB, USB_USB_CTRL);
- 	ocp_data &= ~(RX_AGG_DISABLE | RX_ZERO_EN);
- 	ocp_write_word(tp, MCU_TYPE_USB, USB_USB_CTRL, ocp_data);
-+
-+	r8152_led_configuration(tp);
- }
+ 	int ret;
+@@ -12698,6 +12715,8 @@ static int r8152b_init(struct r8152 *tp)
+ 	ret = ocp_word_clr_bits(tp, MCU_TYPE_USB, USB_USB_CTRL,
+ 				RX_AGG_DISABLE | RX_ZERO_EN);
  
- static void r8153_init(struct r8152 *tp)
-@@ -10619,6 +10638,8 @@ static void r8153_init(struct r8152 *tp)
- 		tp->coalesce = COALESCE_SLOW;
++	r8152_led_configuration(tp);
++
+ out:
+ 	return (ret < 0) ? ret : 0;
+ }
+@@ -12886,6 +12905,8 @@ static int r8153_init(struct r8152 *tp)
  		break;
  	}
-+
-+	r8152_led_configuration(tp);
- }
  
- static void r8153b_init(struct r8152 *tp)
-@@ -10711,6 +10732,8 @@ static void r8153b_init(struct r8152 *tp
- 	rtl_tally_reset(tp);
++	r8152_led_configuration(tp);
++
+ out:
+ 	return (ret < 0) ? ret : 0;
+ }
+@@ -13016,6 +13037,8 @@ static int r8153b_init(struct r8152 *tp)
  
  	tp->coalesce = 15000;	/* 15 us */
-+
-+	r8152_led_configuration(tp);
- }
  
- static void r8153c_init(struct r8152 *tp)
++	r8152_led_configuration(tp);
++
+ out:
+ 	return (ret < 0) ? ret : 0;
+ }
+@@ -13127,6 +13150,8 @@ static int r8153c_init(struct r8152 *tp)
+ 
+ 	tp->coalesce = 15000;	/* 15 us */
+ 
++	r8152_led_configuration(tp);
++
+ out:
+ 	return (ret < 0) ? ret : 0;
+ }
