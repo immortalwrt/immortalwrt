@@ -248,7 +248,6 @@ config OPENSSL_ENGINE
 	bool "Enable engine support"
 	select OPENSSL_WITH_DEPRECATED
 	default y
-	select PACKAGE_libopenssl-devcrypto
 	help
 		This enables alternative cryptography implementations,
 		most commonly for interfacing with external crypto devices,
@@ -262,7 +261,6 @@ config OPENSSL_ENGINE
 
 config OPENSSL_ENGINE_BUILTIN
 	bool "Build chosen engines into libcrypto"
-	default y
 	depends on OPENSSL_ENGINE
 	help
 		This builds all chosen engines into libcrypto.so, instead of building
@@ -272,7 +270,6 @@ config OPENSSL_ENGINE_BUILTIN
 
 config OPENSSL_ENGINE_BUILTIN_AFALG
 	bool
-	default y
 	prompt "Acceleration support through AF_ALG sockets engine"
 	depends on OPENSSL_ENGINE_BUILTIN && KERNEL_AIO
 	select PACKAGE_libopenssl-conf
@@ -282,7 +279,6 @@ config OPENSSL_ENGINE_BUILTIN_AFALG
 
 config OPENSSL_ENGINE_BUILTIN_DEVCRYPTO
 	bool
-	default y
 	prompt "Acceleration support through /dev/crypto"
 	depends on OPENSSL_ENGINE_BUILTIN
 	select PACKAGE_libopenssl-conf
