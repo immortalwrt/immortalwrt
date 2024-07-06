@@ -17,8 +17,8 @@
 		led-boot = &mesh_led;
 		led-failsafe = &mesh_led;
 		led-upgrade = &mesh_led;
-		serial0 = &uart0;
 		label-mac-device = &gmac1;
+		serial0 = &uart0;
 	};
 
 	chosen {
@@ -42,7 +42,7 @@
 			label = "mesh";
 			linux,code = <BTN_9>;
 			linux,input-type = <EV_SW>;
-			gpios = <&pio 0 GPIO_ACTIVE_HIGH>;
+			gpios = <&pio 0 GPIO_ACTIVE_LOW>;
 		};
 	};
 
@@ -150,7 +150,6 @@
 			partition@0 {
 				label = "BL2";
 				reg = <0x00000 0x100000>;
-				read-only;
 			};
 
 			partition@100000 {
@@ -180,6 +179,7 @@
 			factory: partition@280000 {
 				label = "Factory";
 				reg = <0x280000 0x100000>;
+				read-only;
 			};
 
 			partition@380000 {
@@ -202,7 +202,7 @@
 
 		port@0 {
 			reg = <0>;
-			label = "lan1";
+			label = "lan3";
 		};
 
 		port@1 {
@@ -212,7 +212,7 @@
 
 		port@2 {
 			reg = <2>;
-			label = "lan3";
+			label = "lan1";
 		};
 
 		port@6 {
