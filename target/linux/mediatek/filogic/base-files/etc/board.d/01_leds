@@ -6,6 +6,7 @@ board=$(board_name)
 board_config_update
 
 case $board in
+abt,asr3000|\
 abt,asr3000-ubootmod)
 	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth1"
 	ucidef_set_led_netdev "wlan2g" "WLAN2G" "green:wlan2g" "phy0-ap0"

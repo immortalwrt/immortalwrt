@@ -8,6 +8,7 @@ mediatek_setup_interfaces()
 	local board="$1"
 
 	case $board in
+	abt,asr3000|\
 	abt,asr3000-ubootmod|\
 	cmcc,rax3000m|\
 	cmcc,rax3000m-emmc-ubootmod|\
