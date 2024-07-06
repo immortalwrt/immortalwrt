@@ -337,7 +337,6 @@ UBOOT_TARGETS := \
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 
 UBOOT_CUSTOMIZE_CONFIG := \
-	--disable SPL_FIT_SIGNATURE \
 	--disable TOOLS_MKEFICAPSULE \
 	--set-str MKIMAGE_DTC_PATH $(PKG_BUILD_DIR)/scripts/dtc/dtc \
 	$(if $(TPL),, \
@@ -347,6 +346,7 @@ UBOOT_CUSTOMIZE_CONFIG := \
 		--disable DFU_MMC \
 		--disable EFI_CAPSULE_ON_DISK \
 		--disable EFI_CAPSULE_FIRMWARE_RAW \
+		--disable SPL_FIT_SIGNATURE \
 	)
 
 UBOOT_MAKE_FLAGS += \
