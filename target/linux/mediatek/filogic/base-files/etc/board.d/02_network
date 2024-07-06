@@ -11,7 +11,7 @@ mediatek_setup_interfaces()
 	acelink,ew-7886cax)
 		ucidef_set_interface_lan "eth0" "dhcp"
 		;;
-	abt,asr3000-ubootmod|\
+	abt,asr3000|\
 	cmcc,rax3000m|\
 	h3c,magic-nx30-pro|\
 	h3c,magic-nx30-pro-nmbm|\
