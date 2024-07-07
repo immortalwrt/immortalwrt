@@ -80,7 +80,11 @@ platform_do_upgrade() {
 		CI_KERNPART="fit"
 		nand_do_upgrade "$1"
 		;;
-	acer,predator-w6)
+	acer,predator-w6|\
+	smartrg,sdg-8612|\
+	smartrg,sdg-8614|\
+	smartrg,sdg-8622|\
+	smartrg,sdg-8632)
 		CI_KERNPART="kernel"
 		CI_ROOTPART="rootfs"
 		emmc_do_upgrade "$1"
@@ -132,8 +136,9 @@ platform_do_upgrade() {
 		CI_ROOTPART="rootfs"
 		emmc_do_upgrade "$1"
 		;;
+	cudy,re3000-v1|\
 	cudy,wr3000-v1|\
-	cudy,re3000-v1)
+	yuncore,ax835)
 		default_do_upgrade "$1"
 		;;
 	jdcloud,re-cp-03)

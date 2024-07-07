@@ -81,6 +81,10 @@ case "$board" in
 	jdcloud,re-cp-03)
 		[ "$PHYNBR" = "1" ] && mmc_get_mac_binary factory 0xa > /sys${DEVPATH}/macaddress
 		;;
+	comfast,cf-e393ax)
+		addr=$(mtd_get_mac_binary "Factory" 0x8000)
+		[ "$PHYNBR" = "1" ] && macaddr_add $addr 1 > /sys${DEVPATH}/macaddress
+		;;
 	cudy,re3000-v1|\
 	cudy,tr3000-v1)
 		addr=$(mtd_get_mac_binary bdinfo 0xde00)
@@ -143,6 +147,15 @@ case "$board" in
 		addr=$(cat /sys/class/net/eth0/address)
 		[ "$PHYNBR" = "0" ] && macaddr_add $addr 2 > /sys${DEVPATH}/macaddress
 		[ "$PHYNBR" = "1" ] && macaddr_add $addr 3 > /sys${DEVPATH}/macaddress
+		;;
+	smartrg,sdg-8612|\
+	smartrg,sdg-8614|\
+	smartrg,sdg-8622|\
+	smartrg,sdg-8632)
+		addr=$(mmc_get_mac_ascii mfginfo MFG_MAC)
+		[ "$PHYNBR" = "0" ] && macaddr_add $addr 2 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && macaddr_add $addr 3 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "2" ] && macaddr_add $addr 4 > /sys${DEVPATH}/macaddress
 		;;
 	tplink,tl-xdr4288|\
 	tplink,tl-xdr6086|\
