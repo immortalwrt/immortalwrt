@@ -341,7 +341,7 @@
  
  struct Qdisc *qdisc_lookup_rcu(struct net_device *dev, u32 handle)
  {
-@@ -2389,4 +2390,26 @@ static int __init pktsched_init(void)
+@@ -2390,4 +2391,26 @@ static int __init pktsched_init(void)
  	return 0;
  }
  
@@ -370,7 +370,7 @@
  subsys_initcall(pktsched_init);
 --- a/net/sched/sch_generic.c
 +++ b/net/sched/sch_generic.c
-@@ -1069,6 +1069,7 @@ static void __qdisc_destroy(struct Qdisc
+@@ -1073,6 +1073,7 @@ static void __qdisc_destroy(struct Qdisc
  
  	call_rcu(&qdisc->rcu, qdisc_free_cb);
  }
@@ -388,7 +388,7 @@
  	u32			limit;
  	const struct Qdisc_ops	*ops;
  	struct qdisc_size_table	__rcu *stab;
-@@ -751,6 +752,42 @@ static inline bool skb_skip_tc_classify(
+@@ -752,6 +753,42 @@ static inline bool skb_skip_tc_classify(
  	return false;
  }
  
@@ -431,7 +431,7 @@
  /* Reset all TX qdiscs greater than index of a device.  */
  static inline void qdisc_reset_all_tx_gt(struct net_device *dev, unsigned int i)
  {
-@@ -1323,4 +1360,9 @@ static inline void qdisc_synchronize(con
+@@ -1324,4 +1361,9 @@ static inline void qdisc_synchronize(con
  		msleep(1);
  }
  
