@@ -1,3 +1,5 @@
+diff --git a/arch/arm64/boot/dts/qcom/ipq6010-wax214.dts b/arch/arm64/boot/dts/qcom/ipq6010-wax214.dts
+index 90a4828c17..bb13f6fb4a 100644
 --- a/arch/arm64/boot/dts/qcom/ipq6010-wax214.dts
 +++ b/arch/arm64/boot/dts/qcom/ipq6010-wax214.dts
 @@ -25,7 +25,7 @@
@@ -5,10 +7,25 @@
  	chosen {
  		stdout-path = "serial0:115200n8";
 -		bootargs-append = " root=/dev/ubiblock0_1";
-+		bootargs-append = " coherent_pool=2M swiotlb=noforce root=/dev/ubiblock0_1";
++		bootargs-append = " root=/dev/ubiblock0_1 coherent_pool=2M swiotlb=noforce";
  	};
  
  	keys {
+diff --git a/arch/arm64/boot/dts/qcom/ipq6018-fap650.dts b/arch/arm64/boot/dts/qcom/ipq6018-fap650.dts
+index e9ebcc9063..7420dc75dc 100644
+--- a/arch/arm64/boot/dts/qcom/ipq6018-fap650.dts
++++ b/arch/arm64/boot/dts/qcom/ipq6018-fap650.dts
+@@ -30,7 +30,7 @@
+ 
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+-		bootargs-append = " root=/dev/ubiblock0_1";
++		bootargs-append = " root=/dev/ubiblock0_1 coherent_pool=2M swiotlb=noforce";
+ 	};
+ 
+ 	keys {
+diff --git a/arch/arm64/boot/dts/qcom/ipq8070-cax1800.dts b/arch/arm64/boot/dts/qcom/ipq8070-cax1800.dts
+index 4359c3d5b1..8ca6eb6dac 100644
 --- a/arch/arm64/boot/dts/qcom/ipq8070-cax1800.dts
 +++ b/arch/arm64/boot/dts/qcom/ipq8070-cax1800.dts
 @@ -27,7 +27,7 @@
@@ -16,10 +33,12 @@
  	chosen {
  		stdout-path = "serial0:115200n8";
 -		bootargs-append = " root=/dev/ubiblock0_1";
-+		bootargs-append = " coherent_pool=2M swiotlb=noforce root=/dev/ubiblock0_1";
++		bootargs-append = " root=/dev/ubiblock0_1 coherent_pool=2M swiotlb=noforce";
  	};
  
  	keys {
+diff --git a/arch/arm64/boot/dts/qcom/ipq8070-rm2-6.dts b/arch/arm64/boot/dts/qcom/ipq8070-rm2-6.dts
+index 52a9468f99..7ba0bda97c 100644
 --- a/arch/arm64/boot/dts/qcom/ipq8070-rm2-6.dts
 +++ b/arch/arm64/boot/dts/qcom/ipq8070-rm2-6.dts
 @@ -33,7 +33,7 @@
@@ -27,10 +46,12 @@
  	chosen {
  		stdout-path = "serial0:115200n8";
 -		bootargs-append = " root=/dev/ubiblock0_1";
-+		bootargs-append = " coherent_pool=2M swiotlb=noforce root=/dev/ubiblock0_1";
++		bootargs-append = " root=/dev/ubiblock0_1 coherent_pool=2M swiotlb=noforce";
  	};
  
  	keys {
+diff --git a/arch/arm64/boot/dts/qcom/ipq8071-ax3600.dtsi b/arch/arm64/boot/dts/qcom/ipq8071-ax3600.dtsi
+index c2c5f4ce83..f198df9183 100644
 --- a/arch/arm64/boot/dts/qcom/ipq8071-ax3600.dtsi
 +++ b/arch/arm64/boot/dts/qcom/ipq8071-ax3600.dtsi
 @@ -20,7 +20,7 @@
@@ -38,10 +59,25 @@
  	chosen {
  		stdout-path = "serial0:115200n8";
 -		bootargs-append = " root=/dev/ubiblock0_0";
-+		bootargs-append = " coherent_pool=2M swiotlb=noforce root=/dev/ubiblock0_0";
++		bootargs-append = " root=/dev/ubiblock0_0 coherent_pool=2M swiotlb=noforce";
  	};
  
  	keys {
+diff --git a/arch/arm64/boot/dts/qcom/ipq8071-eap102.dts b/arch/arm64/boot/dts/qcom/ipq8071-eap102.dts
+index bcf0285220..760a00fc7f 100644
+--- a/arch/arm64/boot/dts/qcom/ipq8071-eap102.dts
++++ b/arch/arm64/boot/dts/qcom/ipq8071-eap102.dts
+@@ -30,7 +30,7 @@
+ 
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+-		bootargs-append = " root=/dev/ubiblock0_1";
++		bootargs-append = " root=/dev/ubiblock0_1 coherent_pool=2M swiotlb=noforce";
+ 	};
+ 
+ 	keys {
+diff --git a/arch/arm64/boot/dts/qcom/ipq8071-mf269.dts b/arch/arm64/boot/dts/qcom/ipq8071-mf269.dts
+index c5b21bd29a..3ff700fe63 100644
 --- a/arch/arm64/boot/dts/qcom/ipq8071-mf269.dts
 +++ b/arch/arm64/boot/dts/qcom/ipq8071-mf269.dts
 @@ -25,7 +25,7 @@
@@ -49,10 +85,25 @@
  	chosen {
  		stdout-path = "serial0:115200n8";
 -		bootargs-append = " root=/dev/ubiblock0_0";
-+		bootargs-append = " coherent_pool=2M swiotlb=noforce root=/dev/ubiblock0_0";
++		bootargs-append = " root=/dev/ubiblock0_0 coherent_pool=2M swiotlb=noforce";
  	};
  
  	keys {
+diff --git a/arch/arm64/boot/dts/qcom/ipq8072-aw1000.dts b/arch/arm64/boot/dts/qcom/ipq8072-aw1000.dts
+index fbad0e79e5..28b5bc3506 100644
+--- a/arch/arm64/boot/dts/qcom/ipq8072-aw1000.dts
++++ b/arch/arm64/boot/dts/qcom/ipq8072-aw1000.dts
+@@ -35,7 +35,7 @@
+ 
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+-		bootargs-append = " root=/dev/ubiblock0_1";
++		bootargs-append = " root=/dev/ubiblock0_1 coherent_pool=2M swiotlb=noforce";
+ 	};
+ 
+ 	gpio-export {
+diff --git a/arch/arm64/boot/dts/qcom/ipq8072-ax880.dts b/arch/arm64/boot/dts/qcom/ipq8072-ax880.dts
+index af5a497b39..3510705344 100644
 --- a/arch/arm64/boot/dts/qcom/ipq8072-ax880.dts
 +++ b/arch/arm64/boot/dts/qcom/ipq8072-ax880.dts
 @@ -30,7 +30,7 @@
@@ -60,10 +111,64 @@
  	chosen {
  		stdout-path = "serial0:115200n8";
 -		bootargs-append = " root=/dev/ubiblock0_1";
-+		bootargs-append = " coherent_pool=2M swiotlb=noforce root=/dev/ubiblock0_1";
++		bootargs-append = " root=/dev/ubiblock0_1 coherent_pool=2M swiotlb=noforce";
  	};
  
  	keys {
+diff --git a/arch/arm64/boot/dts/qcom/ipq8072-ax9000.dts b/arch/arm64/boot/dts/qcom/ipq8072-ax9000.dts
+index fe5a136722..b555b9e6d5 100644
+--- a/arch/arm64/boot/dts/qcom/ipq8072-ax9000.dts
++++ b/arch/arm64/boot/dts/qcom/ipq8072-ax9000.dts
+@@ -26,7 +26,7 @@
+ 
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+-		bootargs-append = " root=/dev/ubiblock0_0";
++		bootargs-append = " root=/dev/ubiblock0_0 coherent_pool=2M swiotlb=noforce";
+ 	};
+ 
+ 	keys {
+diff --git a/arch/arm64/boot/dts/qcom/ipq8072-dl-wrx36.dts b/arch/arm64/boot/dts/qcom/ipq8072-dl-wrx36.dts
+index 24dd51b47f..8096807d3a 100644
+--- a/arch/arm64/boot/dts/qcom/ipq8072-dl-wrx36.dts
++++ b/arch/arm64/boot/dts/qcom/ipq8072-dl-wrx36.dts
+@@ -32,7 +32,7 @@
+ 
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+-		bootargs-append = " root=/dev/ubiblock0_1";
++		bootargs-append = " root=/dev/ubiblock0_1 coherent_pool=2M swiotlb=noforce";
+ 	};
+ 
+ 	keys {
+diff --git a/arch/arm64/boot/dts/qcom/ipq8072-mx5300.dts b/arch/arm64/boot/dts/qcom/ipq8072-mx5300.dts
+index 6e2e95c00a..02106cf753 100644
+--- a/arch/arm64/boot/dts/qcom/ipq8072-mx5300.dts
++++ b/arch/arm64/boot/dts/qcom/ipq8072-mx5300.dts
+@@ -33,7 +33,7 @@
+ 
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+-		bootargs-append = " root=/dev/ubiblock0_0 rootfstype=squashfs ro";
++		bootargs-append = " root=/dev/ubiblock0_0 rootfstype=squashfs ro coherent_pool=2M swiotlb=noforce";
+ 	};
+ 
+ 	keys {
+diff --git a/arch/arm64/boot/dts/qcom/ipq8072-mx8500.dts b/arch/arm64/boot/dts/qcom/ipq8072-mx8500.dts
+index a4fcb3e18d..075faf8f12 100644
+--- a/arch/arm64/boot/dts/qcom/ipq8072-mx8500.dts
++++ b/arch/arm64/boot/dts/qcom/ipq8072-mx8500.dts
+@@ -25,7 +25,7 @@
+ 
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+-		bootargs-append = " root=/dev/ubiblock0_0 rootfstype=squashfs ro";
++		bootargs-append = " root=/dev/ubiblock0_0 rootfstype=squashfs ro coherent_pool=2M swiotlb=noforce";
+ 	};
+ 
+ 	gpio_export {
+diff --git a/arch/arm64/boot/dts/qcom/ipq8072-wax218.dts b/arch/arm64/boot/dts/qcom/ipq8072-wax218.dts
+index 2c1e0f5e47..2354aff1bb 100644
 --- a/arch/arm64/boot/dts/qcom/ipq8072-wax218.dts
 +++ b/arch/arm64/boot/dts/qcom/ipq8072-wax218.dts
 @@ -27,7 +27,7 @@
@@ -71,10 +176,25 @@
  		 * That fails to create a UBI block device, so add it here.
  		*/
 -		bootargs-append = " ubi.block=0,rootfs root=/dev/ubiblock0_1";
-+		bootargs-append = " coherent_pool=2M swiotlb=noforce ubi.block=0,rootfs root=/dev/ubiblock0_1";
++		bootargs-append = " ubi.block=0,rootfs root=/dev/ubiblock0_1 coherent_pool=2M swiotlb=noforce";
  	};
  
  	keys {
+diff --git a/arch/arm64/boot/dts/qcom/ipq8072-wax620.dts b/arch/arm64/boot/dts/qcom/ipq8072-wax620.dts
+index 5762899889..32b84c7560 100644
+--- a/arch/arm64/boot/dts/qcom/ipq8072-wax620.dts
++++ b/arch/arm64/boot/dts/qcom/ipq8072-wax620.dts
+@@ -30,7 +30,7 @@
+ 		 * Netgear's U-Boot adds "ubi.mtd=rootfs root=mtd:ubi_rootfs"
+ 		 * That fails to create a UBI block device, so add it here.
+ 		*/
+-		bootargs-append = " root=/dev/ubiblock0_1";
++		bootargs-append = " root=/dev/ubiblock0_1 coherent_pool=2M swiotlb=noforce";
+ 	};
+ 
+ 	keys {
+diff --git a/arch/arm64/boot/dts/qcom/ipq8072-wpq873.dts b/arch/arm64/boot/dts/qcom/ipq8072-wpq873.dts
+index ebc68e15a8..d6690d1b66 100644
 --- a/arch/arm64/boot/dts/qcom/ipq8072-wpq873.dts
 +++ b/arch/arm64/boot/dts/qcom/ipq8072-wpq873.dts
 @@ -31,7 +31,7 @@
@@ -82,10 +202,77 @@
  	chosen {
  		stdout-path = "serial0:115200n8";
 -		bootargs-append = " root=/dev/ubiblock0_1";
-+		bootargs-append = " coherent_pool=2M swiotlb=noforce root=/dev/ubiblock0_1";
++		bootargs-append = " root=/dev/ubiblock0_1 coherent_pool=2M swiotlb=noforce";
  	};
  
  	keys {
+diff --git a/arch/arm64/boot/dts/qcom/ipq8072-zbt-z800ax.dts b/arch/arm64/boot/dts/qcom/ipq8072-zbt-z800ax.dts
+index 2398bf9295..99b746245e 100644
+--- a/arch/arm64/boot/dts/qcom/ipq8072-zbt-z800ax.dts
++++ b/arch/arm64/boot/dts/qcom/ipq8072-zbt-z800ax.dts
+@@ -33,7 +33,7 @@
+ 
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+-		bootargs-append = " root=/dev/ubiblock0_1";
++		bootargs-append = " root=/dev/ubiblock0_1 coherent_pool=2M swiotlb=noforce";
+ 	};
+ 
+ 	gpio-export {
+diff --git a/arch/arm64/boot/dts/qcom/ipq8074-rax120v2.dts b/arch/arm64/boot/dts/qcom/ipq8074-rax120v2.dts
+index 5331f98587..57e0bde3cb 100644
+--- a/arch/arm64/boot/dts/qcom/ipq8074-rax120v2.dts
++++ b/arch/arm64/boot/dts/qcom/ipq8074-rax120v2.dts
+@@ -25,7 +25,7 @@
+ 
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+-		bootargs-append = " ubi.mtd=rootfs root=/dev/ubiblock0_0";
++		bootargs-append = " ubi.mtd=rootfs root=/dev/ubiblock0_0 coherent_pool=2M swiotlb=noforce";
+ 	};
+ 
+ 	keys {
+diff --git a/arch/arm64/boot/dts/qcom/ipq8074-sxk80.dtsi b/arch/arm64/boot/dts/qcom/ipq8074-sxk80.dtsi
+index 7a29f945d5..315472635b 100644
+--- a/arch/arm64/boot/dts/qcom/ipq8074-sxk80.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq8074-sxk80.dtsi
+@@ -26,7 +26,7 @@
+ 
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+-		bootargs-append = " ubi.mtd=rootfs root=/dev/ubiblock0_0";
++		bootargs-append = " ubi.mtd=rootfs root=/dev/ubiblock0_0 coherent_pool=2M swiotlb=noforce";
+ 	};
+ 
+ 	keys {
+diff --git a/arch/arm64/boot/dts/qcom/ipq8074-wax630.dts b/arch/arm64/boot/dts/qcom/ipq8074-wax630.dts
+index d241ae642a..bb400beb0f 100644
+--- a/arch/arm64/boot/dts/qcom/ipq8074-wax630.dts
++++ b/arch/arm64/boot/dts/qcom/ipq8074-wax630.dts
+@@ -29,7 +29,7 @@
+ 
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+-		bootargs-append = " root=/dev/ubiblock0_1";
++		bootargs-append = " root=/dev/ubiblock0_1 coherent_pool=2M swiotlb=noforce";
+ 	};
+ 
+ 	keys {
+diff --git a/arch/arm64/boot/dts/qcom/ipq8074-wxr-5950ax12.dts b/arch/arm64/boot/dts/qcom/ipq8074-wxr-5950ax12.dts
+index 5f463b6c62..52d9f9c4e9 100644
+--- a/arch/arm64/boot/dts/qcom/ipq8074-wxr-5950ax12.dts
++++ b/arch/arm64/boot/dts/qcom/ipq8074-wxr-5950ax12.dts
+@@ -25,7 +25,7 @@
+ 
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+-		bootargs-append = " ubi.mtd=user_property root=/dev/ubiblock1_0";
++		bootargs-append = " ubi.mtd=user_property root=/dev/ubiblock1_0 coherent_pool=2M swiotlb=noforce";
+ 	};
+ 
+ 	leds {
+diff --git a/arch/arm64/boot/dts/qcom/ipq8174-mx4200.dtsi b/arch/arm64/boot/dts/qcom/ipq8174-mx4200.dtsi
+index 741c00bdcb..a4a379bb4a 100644
 --- a/arch/arm64/boot/dts/qcom/ipq8174-mx4200.dtsi
 +++ b/arch/arm64/boot/dts/qcom/ipq8174-mx4200.dtsi
 @@ -30,7 +30,7 @@
@@ -93,7 +280,7 @@
  	chosen {
  		stdout-path = "serial0:115200n8";
 -		bootargs-append = " root=/dev/ubiblock0_0";
-+		bootargs-append = " coherent_pool=2M swiotlb=noforce root=/dev/ubiblock0_0";
++		bootargs-append = " root=/dev/ubiblock0_0 coherent_pool=2M swiotlb=noforce";
  	};
  
  	keys {
