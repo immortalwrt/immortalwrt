@@ -219,6 +219,8 @@ endef
 
 define U-Boot/radxa-e25-rk3568
   $(U-Boot/Default/rk3568)
+  DEPENDS:=+PACKAGE_u-boot-$(1):trusted-firmware-a-rk3568-e25
+  TPL:=$(RK3568_TPL_E25)
   NAME:=E25
   BUILD_DEVICES:= \
     radxa_e25
