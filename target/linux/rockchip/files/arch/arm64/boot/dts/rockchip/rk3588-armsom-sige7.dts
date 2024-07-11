@@ -57,7 +57,6 @@
 			color = <LED_COLOR_ID_RED>;
 			function = LED_FUNCTION_STATUS;
 			gpios = <&gpio4 RK_PC5 GPIO_ACTIVE_HIGH>;
-			default-state = "on";
 		};
 	};
 
@@ -397,6 +396,8 @@
 			interrupt-parent = <&gpio0>;
 			interrupts = <RK_PB2 IRQ_TYPE_LEVEL_LOW>;
 			interrupt-names = "host-wake";
+			pinctrl-names = "default";
+			pinctrl-0 = <&wifi_reg_on_h>;
 		};
 	};
 };
@@ -460,9 +461,15 @@
 		};
 	};
 
+	pcie20 {
+		wifi_reg_on_h: wifi-reg-on-h {
+			rockchip,pins = <0 RK_PC4 RK_FUNC_GPIO &pcfg_pull_down>;
+		};
+	};
+
 	pcie30 {
 		pcie30_pwren_h: pcie30-pwren-h {
-			rockchip,pins = <1 RK_PA4 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins = <1 RK_PA4 RK_FUNC_GPIO &pcfg_pull_down>;
 		};
 	};
 
@@ -499,7 +506,6 @@
 &sdhci {
 	bus-width = <8>;
 	cap-mmc-highspeed;
-	mmc-hs200-1_8v;
 	mmc-hs400-1_8v;
 	mmc-hs400-enhanced-strobe;
 	no-sdio;
