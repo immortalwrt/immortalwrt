@@ -271,6 +271,13 @@ define U-Boot/rock5b-rk3588
     radxa_rock-5b
 endef
 
+define U-Boot/sige7-rk3588
+  $(U-Boot/Default/rk3588)
+  NAME:=Sige7
+  BUILD_DEVICES:= \
+    armsom_sige7
+endef
+
 
 # RK3588S boards
 
@@ -331,6 +338,7 @@ UBOOT_TARGETS := \
   nanopc-t6-rk3588 \
   orangepi-5-plus-rk3588 \
   rock5b-rk3588 \
+  sige7-rk3588 \
   nanopi-r6c-rk3588s \
   nanopi-r6s-rk3588s \
   orangepi-5-rk3588s \
