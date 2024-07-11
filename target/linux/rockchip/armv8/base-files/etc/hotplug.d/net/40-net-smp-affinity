@@ -30,6 +30,7 @@ set_interface_core() {
 
 case "$(board_name)" in
 ariaboard,photonicat|\
+armsom,sige7|\
 ezpro,mrkaio-m68s|\
 firefly,rk3568-roc-pc|\
 friendlyarm,nanopi-r5c|\

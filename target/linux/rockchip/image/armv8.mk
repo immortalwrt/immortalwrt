@@ -20,6 +20,19 @@ define Device/ariaboard_photonicat
 endef
 TARGET_DEVICES += ariaboard_photonicat
 
+define Device/armsom_sige7
+  DEVICE_VENDOR := ArmSoM
+  DEVICE_MODEL := Sige7
+  DEVICE_ALT0_VENDOR := Bananapi
+  DEVICE_ALT0_MODEL := BPi-M7
+  SOC := rk3588
+  DEVICE_DTS := rockchip/rk3588-armsom-sige7
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-brcmfmac kmod-r8125 wpad-openssl \
+	brcmfmac-firmware-43752-pcie brcmfmac-nvram-43752-pcie
+endef
+TARGET_DEVICES += armsom_sige7
+
 define Device/ezpro_mrkaio-m68s
   DEVICE_VENDOR := EZPRO
   DEVICE_MODEL := Mrkaio M68S
