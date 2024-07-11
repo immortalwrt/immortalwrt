@@ -86,7 +86,7 @@ Link: https://lore.kernel.org/r/20231023032251.164775-1-luben.tuikov@amd.com
  			     dev_name(gpu->dev), gpu->dev);
 --- a/drivers/gpu/drm/lima/lima_sched.c
 +++ b/drivers/gpu/drm/lima/lima_sched.c
-@@ -488,7 +488,9 @@ int lima_sched_pipe_init(struct lima_sch
+@@ -495,7 +495,9 @@ int lima_sched_pipe_init(struct lima_sch
  
  	INIT_WORK(&pipe->recover_work, lima_sched_recover_work);
  
