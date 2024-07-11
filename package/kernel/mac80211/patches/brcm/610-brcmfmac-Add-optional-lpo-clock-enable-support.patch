@@ -1,0 +1,60 @@
+From: Jacobe Zang <jacobe.zang@wesion.com>
+To: robh@kernel.org, krzk+dt@kernel.org, heiko@sntech.de,
+	kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+	kuba@kernel.org, pabeni@redhat.com, conor+dt@kernel.org
+Cc: efectn@protonmail.com, dsimic@manjaro.org, jagan@edgeble.ai,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+	arend@broadcom.com, linux-wireless@vger.kernel.org,
+	netdev@vger.kernel.org, megi@xff.cz, duoming@zju.edu.cn,
+	bhelgaas@google.com, minipli@grsecurity.net,
+	brcm80211@lists.linux.dev, brcm80211-dev-list.pdl@broadcom.com,
+	nick@khadas.com, Jacobe Zang <jacobe.zang@wesion.com>
+Subject: [PATCH v3 4/5] wifi: brcmfmac: Add optional lpo clock enable support
+Date: Sun, 30 Jun 2024 15:36:04 +0800	[thread overview]
+Message-ID: <20240630073605.2164346-5-jacobe.zang@wesion.com> (raw)
+In-Reply-To: <20240630073605.2164346-1-jacobe.zang@wesion.com>
+
+WiFi modules often require 32kHz clock to function. Add support to
+enable the clock to PCIe driver.
+
+Co-developed-by: Ondrej Jirman <megi@xff.cz>
+Signed-off-by: Ondrej Jirman <megi@xff.cz>
+Signed-off-by: Jacobe Zang <jacobe.zang@wesion.com>
+---
+ .../net/wireless/broadcom/brcm80211/brcmfmac/pcie.c    | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+@@ -3,6 +3,7 @@
+  * Copyright (c) 2014 Broadcom Corporation
+  */
+ 
++#include <linux/clk.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/firmware.h>
+@@ -2411,6 +2412,7 @@ brcmf_pcie_probe(struct pci_dev *pdev, c
+ 	struct brcmf_pciedev *pcie_bus_dev;
+ 	struct brcmf_core *core;
+ 	struct brcmf_bus *bus;
++	struct clk *clk;
+ 
+ 	if (!id) {
+ 		id = pci_match_id(brcmf_pcie_devid_table, pdev);
+@@ -2422,6 +2424,14 @@ brcmf_pcie_probe(struct pci_dev *pdev, c
+ 
+ 	brcmf_dbg(PCIE, "Enter %x:%x\n", pdev->vendor, pdev->device);
+ 
++	clk = devm_clk_get_optional_enabled(&pdev->dev, "lpo");
++	if (IS_ERR(clk))
++		return PTR_ERR(clk);
++	if (clk) {
++		brcmf_dbg(PCIE, "enabling 32kHz clock\n", pdev->vendor, pdev->device);
++		clk_set_rate(clk, 32768);
++	}
++
+ 	ret = -ENOMEM;
+ 	devinfo = kzalloc(sizeof(*devinfo), GFP_KERNEL);
+ 	if (devinfo == NULL)

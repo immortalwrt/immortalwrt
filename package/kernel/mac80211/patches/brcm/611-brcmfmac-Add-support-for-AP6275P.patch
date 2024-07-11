@@ -1,0 +1,82 @@
+From: Jacobe Zang <jacobe.zang@wesion.com>
+To: robh@kernel.org, krzk+dt@kernel.org, heiko@sntech.de,
+	kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+	kuba@kernel.org, pabeni@redhat.com, conor+dt@kernel.org
+Cc: efectn@protonmail.com, dsimic@manjaro.org, jagan@edgeble.ai,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+	arend@broadcom.com, linux-wireless@vger.kernel.org,
+	netdev@vger.kernel.org, megi@xff.cz, duoming@zju.edu.cn,
+	bhelgaas@google.com, minipli@grsecurity.net,
+	brcm80211@lists.linux.dev, brcm80211-dev-list.pdl@broadcom.com,
+	nick@khadas.com, Jacobe Zang <jacobe.zang@wesion.com>
+Subject: [PATCH v3 5/5] wifi: brcmfmac: Add support for AP6275P
+Date: Sun, 30 Jun 2024 15:36:05 +0800	[thread overview]
+Message-ID: <20240630073605.2164346-6-jacobe.zang@wesion.com> (raw)
+In-Reply-To: <20240630073605.2164346-1-jacobe.zang@wesion.com>
+
+This module features BCM43752A2 chipset. The firmware requires
+randomness seeding, so enabled it.
+
+Co-developed-by: Ondrej Jirman <megi@xff.cz>
+Signed-off-by: Ondrej Jirman <megi@xff.cz>
+Signed-off-by: Jacobe Zang <jacobe.zang@wesion.com>
+Link: https://megous.com/git/linux/commit/?h=ap6275p-6.10&id=1a99573bc8ed412e60e1969c0b29d53a0e5782e0
+---
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c      | 5 ++++-
+ .../net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h    | 2 ++
+ 2 files changed, 6 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+@@ -71,6 +71,7 @@ BRCMF_FW_CLM_DEF(4377B3, "brcmfmac4377b3
+ BRCMF_FW_CLM_DEF(4378B1, "brcmfmac4378b1-pcie");
+ BRCMF_FW_CLM_DEF(4378B3, "brcmfmac4378b3-pcie");
+ BRCMF_FW_CLM_DEF(4387C2, "brcmfmac4387c2-pcie");
++BRCMF_FW_CLM_DEF(43752, "brcmfmac43752-pcie");
+ 
+ /* firmware config files */
+ MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.txt");
+@@ -105,6 +106,7 @@ static const struct brcmf_firmware_mappi
+ 	BRCMF_FW_ENTRY(BRCM_CC_43664_CHIP_ID, 0xFFFFFFF0, 4366C),
+ 	BRCMF_FW_ENTRY(BRCM_CC_43666_CHIP_ID, 0xFFFFFFF0, 4366C),
+ 	BRCMF_FW_ENTRY(BRCM_CC_4371_CHIP_ID, 0xFFFFFFFF, 4371),
++	BRCMF_FW_ENTRY(BRCM_CC_43752_CHIP_ID, 0xFFFFFFFF, 43752),
+ 	BRCMF_FW_ENTRY(BRCM_CC_4377_CHIP_ID, 0xFFFFFFFF, 4377B3), /* revision ID 4 */
+ 	BRCMF_FW_ENTRY(BRCM_CC_4378_CHIP_ID, 0x0000000F, 4378B1), /* revision ID 3 */
+ 	BRCMF_FW_ENTRY(BRCM_CC_4378_CHIP_ID, 0xFFFFFFE0, 4378B3), /* revision ID 5 */
+@@ -1721,7 +1723,7 @@ static int brcmf_pcie_download_fw_nvram(
+ 		memcpy_toio(devinfo->tcm + address, nvram, nvram_len);
+ 		brcmf_fw_nvram_free(nvram);
+ 
+-		if (devinfo->otp.valid) {
++		if (devinfo->otp.valid || devinfo->ci->chip == BRCM_CC_43752_CHIP_ID) {
+ 			size_t rand_len = BRCMF_RANDOM_SEED_LENGTH;
+ 			struct brcmf_random_seed_footer footer = {
+ 				.length = cpu_to_le32(rand_len),
+@@ -2710,6 +2712,7 @@ static const struct pci_device_id brcmf_
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4366_5G_DEVICE_ID, BCA),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4371_DEVICE_ID, WCC),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_43596_DEVICE_ID, CYW),
++	BRCMF_PCIE_DEVICE(BRCM_PCIE_43752_DEVICE_ID, WCC),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4377_DEVICE_ID, WCC),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4378_DEVICE_ID, WCC),
+ 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4387_DEVICE_ID, WCC),
+--- a/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
++++ b/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
+@@ -52,6 +52,7 @@
+ #define BRCM_CC_43664_CHIP_ID		43664
+ #define BRCM_CC_43666_CHIP_ID		43666
+ #define BRCM_CC_4371_CHIP_ID		0x4371
++#define BRCM_CC_43752_CHIP_ID		43752
+ #define BRCM_CC_4377_CHIP_ID		0x4377
+ #define BRCM_CC_4378_CHIP_ID		0x4378
+ #define BRCM_CC_4387_CHIP_ID		0x4387
+@@ -94,6 +95,7 @@
+ #define BRCM_PCIE_4366_5G_DEVICE_ID	0x43c5
+ #define BRCM_PCIE_4371_DEVICE_ID	0x440d
+ #define BRCM_PCIE_43596_DEVICE_ID	0x4415
++#define BRCM_PCIE_43752_DEVICE_ID	0x449d
+ #define BRCM_PCIE_4377_DEVICE_ID	0x4488
+ #define BRCM_PCIE_4378_DEVICE_ID	0x4425
+ #define BRCM_PCIE_4387_DEVICE_ID	0x4433
