@@ -27,7 +27,7 @@
 		stdout-path = "serial0:115200n8";
 	};
 
-	memory {
+	memory@40000000 {
 		reg = <0 0x40000000 0 0x40000000>;
 	};
 
@@ -51,17 +51,20 @@
 		compatible = "gpio-leds";
 
 		led-0 {
-			label = "blue:status";
+			color = <LED_COLOR_ID_BLUE>;
+			function = LED_FUNCTION_STATUS;
 			gpios = <&pio 7 GPIO_ACTIVE_HIGH>;
 		};
 
 		red_led: led-1 {
-			label = "red:status";
+			color = <LED_COLOR_ID_RED>;
+			function = LED_FUNCTION_STATUS;
 			gpios = <&pio 11 GPIO_ACTIVE_HIGH>;
 		};
 
 		green_led: led-2 {
-			label = "green:status";
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_STATUS;
 			gpios = <&pio 12 GPIO_ACTIVE_LOW>;
 		};
 	};

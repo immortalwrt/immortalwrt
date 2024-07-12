@@ -51,7 +51,7 @@ hostapd_ucode_update_bss_list(struct hostapd_iface *iface, uc_value_t *if_bss, u
 	int i;
 
 	list = ucv_array_new(vm);
-	for (i = 0; i < iface->num_bss; i++) {
+	for (i = 0; iface->bss && i < iface->num_bss; i++) {
 		struct hostapd_data *hapd = iface->bss[i];
 		uc_value_t *val = hostapd_ucode_bss_get_uval(hapd);
 
@@ -86,12 +86,16 @@ static uc_value_t *
 uc_hostapd_add_iface(uc_vm_t *vm, size_t nargs)
 {
 	uc_value_t *iface = uc_fn_arg(0);
+	char *data;
 	int ret;
 
 	if (ucv_type(iface) != UC_STRING)
 		return ucv_int64_new(-1);
 
-	ret = hostapd_add_iface(interfaces, ucv_string_get(iface));
+	data = strdup(ucv_string_get(iface));
+	ret = hostapd_add_iface(interfaces, data);
+	free(data);
+
 	hostapd_ucode_update_interfaces();
 
 	return ucv_int64_new(ret);
