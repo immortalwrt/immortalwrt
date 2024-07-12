@@ -271,14 +271,14 @@
 +serverip=192.168.1.254
 +loadaddr=0x46000000
 +console=earlycon=uart8250,mmio32,0x11002000 console=ttyS0
-+bootargs=root=/dev/mmcblk0p65
++bootargs=root=/dev/mmcblk0p65 rootwait
 +bootcmd=if pstore check ; then run boot_recovery ; else run boot_emmc ; fi
 +bootconf=config-1
 +bootdelay=0
-+bootfile=openwrt-mediatek-filogic-jdcloud_re-cp-03-initramfs-recovery.itb
-+bootfile_bl2=openwrt-mediatek-filogic-jdcloud_re-cp-03-preloader.bin
-+bootfile_fip=openwrt-mediatek-filogic-jdcloud_re-cp-03-bl31-uboot.fip
-+bootfile_upg=openwrt-mediatek-filogic-jdcloud_re-cp-03-squashfs-sysupgrade.itb
++bootfile=immortalwrt-mediatek-filogic-jdcloud_re-cp-03-initramfs-recovery.itb
++bootfile_bl2=immortalwrt-mediatek-filogic-jdcloud_re-cp-03-preloader.bin
++bootfile_fip=immortalwrt-mediatek-filogic-jdcloud_re-cp-03-bl31-uboot.fip
++bootfile_upg=immortalwrt-mediatek-filogic-jdcloud_re-cp-03-squashfs-sysupgrade.itb
 +bootled_pwr=red:status
 +bootled_rec=blue:status
 +bootmenu_confirm_return=askenv - Press ENTER to return to menu ; bootmenu 60
