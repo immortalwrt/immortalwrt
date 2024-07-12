@@ -20,7 +20,7 @@ Link: https://lore.kernel.org/r/20230414121135.17828-2-pkshih@realtek.com
 
 --- a/drivers/net/wireless/realtek/rtw88/mac80211.c
 +++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
-@@ -155,25 +155,30 @@ static int rtw_ops_add_interface(struct
+@@ -146,25 +146,30 @@ static int rtw_ops_add_interface(struct
  	struct rtw_vif *rtwvif = (struct rtw_vif *)vif->drv_priv;
  	enum rtw_net_type net_type;
  	u32 config = 0;
@@ -54,7 +54,7 @@ Link: https://lore.kernel.org/r/20230414121135.17828-2-pkshih@realtek.com
  	rtw_leave_lps_deep(rtwdev);
  
  	switch (vif->type) {
-@@ -195,6 +200,7 @@ static int rtw_ops_add_interface(struct
+@@ -186,6 +191,7 @@ static int rtw_ops_add_interface(struct
  		break;
  	default:
  		WARN_ON(1);
@@ -62,9 +62,9 @@ Link: https://lore.kernel.org/r/20230414121135.17828-2-pkshih@realtek.com
  		mutex_unlock(&rtwdev->mutex);
  		return -EINVAL;
  	}
-@@ -236,6 +242,7 @@ static void rtw_ops_remove_interface(str
- 	rtwvif->bcn_ctrl = 0;
- 	config |= PORT_SET_BCN_CTRL;
+@@ -425,6 +431,7 @@ static void rtw_ops_bss_info_changed(str
+ 		rtw_recalc_lps(rtwdev, NULL);
+ 
  	rtw_vif_port_config(rtwdev, rtwvif, config);
 +	clear_bit(rtwvif->port, rtwdev->hw_port);
  
@@ -72,7 +72,7 @@ Link: https://lore.kernel.org/r/20230414121135.17828-2-pkshih@realtek.com
  }
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -610,6 +610,7 @@ free:
+@@ -625,6 +625,7 @@ free:
  	rcu_read_unlock();
  	rtw_iterate_stas_atomic(rtwdev, rtw_reset_sta_iter, rtwdev);
  	rtw_iterate_vifs_atomic(rtwdev, rtw_reset_vif_iter, rtwdev);
@@ -98,7 +98,7 @@ Link: https://lore.kernel.org/r/20230414121135.17828-2-pkshih@realtek.com
  enum rtw_wow_flags {
  	RTW_WOW_FLAG_EN_MAGIC_PKT,
  	RTW_WOW_FLAG_EN_REKEY_PKT,
-@@ -2036,6 +2045,7 @@ struct rtw_dev {
+@@ -2039,6 +2048,7 @@ struct rtw_dev {
  	u8 sta_cnt;
  	u32 rts_threshold;
  

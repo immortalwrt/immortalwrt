@@ -17,7 +17,7 @@ Link: https://lore.kernel.org/r/20230414121135.17828-5-pkshih@realtek.com
 
 --- a/drivers/net/wireless/realtek/rtw88/mac80211.c
 +++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
-@@ -449,12 +449,24 @@ static int rtw_ops_start_ap(struct ieee8
+@@ -445,12 +445,24 @@ static int rtw_ops_start_ap(struct ieee8
  	const struct rtw_chip_info *chip = rtwdev->chip;
  
  	mutex_lock(&rtwdev->mutex);
@@ -42,7 +42,7 @@ Link: https://lore.kernel.org/r/20230414121135.17828-5-pkshih@realtek.com
  static int rtw_ops_conf_tx(struct ieee80211_hw *hw,
  			   struct ieee80211_vif *vif,
  			   unsigned int link_id, u16 ac,
-@@ -916,6 +928,7 @@ const struct ieee80211_ops rtw_ops = {
+@@ -912,6 +924,7 @@ const struct ieee80211_ops rtw_ops = {
  	.configure_filter	= rtw_ops_configure_filter,
  	.bss_info_changed	= rtw_ops_bss_info_changed,
  	.start_ap		= rtw_ops_start_ap,
@@ -63,7 +63,7 @@ Link: https://lore.kernel.org/r/20230414121135.17828-5-pkshih@realtek.com
  	rtwdev->watch_dog_cnt++;
 --- a/drivers/net/wireless/realtek/rtw88/main.h
 +++ b/drivers/net/wireless/realtek/rtw88/main.h
-@@ -2058,6 +2058,7 @@ struct rtw_dev {
+@@ -2061,6 +2061,7 @@ struct rtw_dev {
  
  	bool need_rfk;
  	struct completion fw_scan_density;

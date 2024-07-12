@@ -62,7 +62,7 @@ Link: https://lore.kernel.org/r/20230414121323.18008-1-pkshih@realtek.com
  	rtw_dbg(rtwdev, RTW_DBG_HW_SCAN,
 --- a/drivers/net/wireless/realtek/rtw88/mac80211.c
 +++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
-@@ -404,7 +404,7 @@ static void rtw_ops_bss_info_changed(str
+@@ -396,7 +396,7 @@ static void rtw_ops_bss_info_changed(str
  	if (changed & BSS_CHANGED_BSSID) {
  		ether_addr_copy(rtwvif->bssid, conf->bssid);
  		config |= PORT_SET_BSSID;
@@ -71,7 +71,7 @@ Link: https://lore.kernel.org/r/20230414121323.18008-1-pkshih@realtek.com
  			rtw_clear_op_chan(rtwdev);
  		else
  			rtw_store_op_chan(rtwdev, true);
-@@ -452,6 +452,7 @@ static int rtw_ops_start_ap(struct ieee8
+@@ -448,6 +448,7 @@ static int rtw_ops_start_ap(struct ieee8
  
  	mutex_lock(&rtwdev->mutex);
  	rtwdev->ap_active = true;
@@ -79,7 +79,7 @@ Link: https://lore.kernel.org/r/20230414121323.18008-1-pkshih@realtek.com
  	chip->ops->phy_calibration(rtwdev);
  	mutex_unlock(&rtwdev->mutex);
  
-@@ -466,6 +467,8 @@ static void rtw_ops_stop_ap(struct ieee8
+@@ -462,6 +463,8 @@ static void rtw_ops_stop_ap(struct ieee8
  
  	mutex_lock(&rtwdev->mutex);
  	rtwdev->ap_active = false;
@@ -90,7 +90,7 @@ Link: https://lore.kernel.org/r/20230414121323.18008-1-pkshih@realtek.com
  
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -830,6 +830,9 @@ void rtw_set_channel(struct rtw_dev *rtw
+@@ -845,6 +845,9 @@ void rtw_set_channel(struct rtw_dev *rtw
  
  	rtw_update_channel(rtwdev, center_chan, primary_chan, band, bandwidth);
  
@@ -100,7 +100,7 @@ Link: https://lore.kernel.org/r/20230414121323.18008-1-pkshih@realtek.com
  	chip->ops->set_channel(rtwdev, center_chan, bandwidth,
  			       hal->current_primary_channel_index);
  
-@@ -2330,6 +2333,42 @@ void rtw_core_port_switch(struct rtw_dev
+@@ -2343,6 +2346,42 @@ void rtw_core_port_switch(struct rtw_dev
  	rtw_iterate_vifs(rtwdev, rtw_port_switch_iter, &iter_data);
  }
  
@@ -145,7 +145,7 @@ Link: https://lore.kernel.org/r/20230414121323.18008-1-pkshih@realtek.com
  MODULE_LICENSE("Dual BSD/GPL");
 --- a/drivers/net/wireless/realtek/rtw88/main.h
 +++ b/drivers/net/wireless/realtek/rtw88/main.h
-@@ -2201,4 +2201,6 @@ void rtw_update_channel(struct rtw_dev *
+@@ -2204,4 +2204,6 @@ void rtw_update_channel(struct rtw_dev *
  			u8 primary_channel, enum rtw_supported_band band,
  			enum rtw_bandwidth bandwidth);
  void rtw_core_port_switch(struct rtw_dev *rtwdev, struct ieee80211_vif *vif);

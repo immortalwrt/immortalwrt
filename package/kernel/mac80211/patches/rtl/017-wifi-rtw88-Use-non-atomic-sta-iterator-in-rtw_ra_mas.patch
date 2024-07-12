@@ -26,7 +26,7 @@ Link: https://lore.kernel.org/r/20230108211324.442823-4-martin.blumenstingl@goog
 
 --- a/drivers/net/wireless/realtek/rtw88/mac80211.c
 +++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
-@@ -737,7 +737,7 @@ static void rtw_ra_mask_info_update(stru
+@@ -733,7 +733,7 @@ static void rtw_ra_mask_info_update(stru
  	br_data.rtwdev = rtwdev;
  	br_data.vif = vif;
  	br_data.mask = mask;
@@ -35,7 +35,7 @@ Link: https://lore.kernel.org/r/20230108211324.442823-4-martin.blumenstingl@goog
  }
  
  static int rtw_ops_set_bitrate_mask(struct ieee80211_hw *hw,
-@@ -746,7 +746,9 @@ static int rtw_ops_set_bitrate_mask(stru
+@@ -742,7 +742,9 @@ static int rtw_ops_set_bitrate_mask(stru
  {
  	struct rtw_dev *rtwdev = hw->priv;
  

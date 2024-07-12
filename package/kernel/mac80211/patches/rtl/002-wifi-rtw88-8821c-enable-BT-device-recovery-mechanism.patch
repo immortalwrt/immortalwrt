@@ -66,7 +66,7 @@ Link: https://lore.kernel.org/r/20221128075653.5221-1-pkshih@realtek.com
  void rtw_fw_channel_switch(struct rtw_dev *rtwdev, bool enable);
 --- a/drivers/net/wireless/realtek/rtw88/mac.c
 +++ b/drivers/net/wireless/realtek/rtw88/mac.c
-@@ -916,7 +916,8 @@ out:
+@@ -918,7 +918,8 @@ out:
  	return ret;
  }
  
@@ -76,7 +76,7 @@ Link: https://lore.kernel.org/r/20221128075653.5221-1-pkshih@realtek.com
  {
  	if (rtw_chip_wcpu_11n(rtwdev))
  		return __rtw_download_firmware_legacy(rtwdev, fw);
-@@ -924,6 +925,21 @@ int rtw_download_firmware(struct rtw_dev
+@@ -926,6 +927,21 @@ int rtw_download_firmware(struct rtw_dev
  	return __rtw_download_firmware(rtwdev, fw);
  }
  

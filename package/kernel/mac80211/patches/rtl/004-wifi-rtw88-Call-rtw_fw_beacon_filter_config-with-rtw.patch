@@ -18,7 +18,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-3-s.hauer@pengutronix.de
 
 --- a/drivers/net/wireless/realtek/rtw88/mac80211.c
 +++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
-@@ -487,8 +487,8 @@ static int rtw_ops_sta_remove(struct iee
+@@ -483,8 +483,8 @@ static int rtw_ops_sta_remove(struct iee
  {
  	struct rtw_dev *rtwdev = hw->priv;
  

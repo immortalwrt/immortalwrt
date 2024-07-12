@@ -26,7 +26,7 @@ Link: https://lore.kernel.org/r/20230418-rtw88-starspell-v1-1-70e52a23979b@kerne
  #define RTW_MAX_CHANNEL_WIDTH RTW_CHANNEL_WIDTH_80
  
  enum rtw_bandwidth {
-@@ -1881,7 +1881,7 @@ enum rtw_sar_bands {
+@@ -1884,7 +1884,7 @@ enum rtw_sar_bands {
  	RTW_SAR_BAND_NR,
  };
  
@@ -35,7 +35,7 @@ Link: https://lore.kernel.org/r/20230418-rtw88-starspell-v1-1-70e52a23979b@kerne
   * which might not re-use same format with array common.
   */
  union rtw_sar_cfg {
-@@ -2032,7 +2032,7 @@ struct rtw_dev {
+@@ -2035,7 +2035,7 @@ struct rtw_dev {
  	struct rtw_tx_report tx_report;
  
  	struct {

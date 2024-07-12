@@ -20,7 +20,7 @@ Link: https://lore.kernel.org/r/20230417140358.2240429-5-s.hauer@pengutronix.de
 
 --- a/drivers/net/wireless/realtek/rtw88/main.h
 +++ b/drivers/net/wireless/realtek/rtw88/main.h
-@@ -1902,6 +1902,7 @@ struct rtw_hal {
+@@ -1905,6 +1905,7 @@ struct rtw_hal {
  	u8 oem_id;
  	u8 pkg_type;
  	struct rtw_phy_cond phy_cond;

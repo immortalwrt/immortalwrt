@@ -89,7 +89,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-5-s.hauer@pengutronix.de
  void
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -2067,7 +2067,6 @@ int rtw_core_init(struct rtw_dev *rtwdev
+@@ -2080,7 +2080,6 @@ int rtw_core_init(struct rtw_dev *rtwdev
  	skb_queue_head_init(&rtwdev->coex.queue);
  	skb_queue_head_init(&rtwdev->tx_report.queue);
  
@@ -99,7 +99,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-5-s.hauer@pengutronix.de
  
 --- a/drivers/net/wireless/realtek/rtw88/main.h
 +++ b/drivers/net/wireless/realtek/rtw88/main.h
-@@ -2020,8 +2020,6 @@ struct rtw_dev {
+@@ -2023,8 +2023,6 @@ struct rtw_dev {
  	struct {
  		/* incicate the mail box to use with fw */
  		u8 last_box_num;

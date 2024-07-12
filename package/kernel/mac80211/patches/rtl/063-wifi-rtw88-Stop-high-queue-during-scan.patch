@@ -18,7 +18,7 @@ Link: https://lore.kernel.org/r/20230616125540.36877-5-pkshih@realtek.com
 
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -2403,10 +2403,13 @@ void rtw_core_enable_beacon(struct rtw_d
+@@ -2401,10 +2401,13 @@ void rtw_core_enable_beacon(struct rtw_d
  	if (!rtwdev->ap_active)
  		return;
  

@@ -110,7 +110,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-4-s.hauer@pengutronix.de
  static inline u32
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -2067,7 +2067,6 @@ int rtw_core_init(struct rtw_dev *rtwdev
+@@ -2080,7 +2080,6 @@ int rtw_core_init(struct rtw_dev *rtwdev
  	skb_queue_head_init(&rtwdev->coex.queue);
  	skb_queue_head_init(&rtwdev->tx_report.queue);
  
@@ -120,7 +120,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-4-s.hauer@pengutronix.de
  	spin_lock_init(&rtwdev->tx_report.q_lock);
 --- a/drivers/net/wireless/realtek/rtw88/main.h
 +++ b/drivers/net/wireless/realtek/rtw88/main.h
-@@ -1995,9 +1995,6 @@ struct rtw_dev {
+@@ -1998,9 +1998,6 @@ struct rtw_dev {
  	/* ensures exclusive access from mac80211 callbacks */
  	struct mutex mutex;
  

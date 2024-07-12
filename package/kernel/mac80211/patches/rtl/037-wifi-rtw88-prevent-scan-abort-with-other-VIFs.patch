@@ -43,7 +43,7 @@ Link: https://lore.kernel.org/r/20230414121312.17954-1-pkshih@realtek.com
  #endif
 --- a/drivers/net/wireless/realtek/rtw88/mac80211.c
 +++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
-@@ -393,7 +393,8 @@ static void rtw_ops_bss_info_changed(str
+@@ -385,7 +385,8 @@ static void rtw_ops_bss_info_changed(str
  			 * when disconnected by peer
  			 */
  			if (test_bit(RTW_FLAG_SCANNING, rtwdev->flags))
@@ -53,7 +53,7 @@ Link: https://lore.kernel.org/r/20230414121312.17954-1-pkshih@realtek.com
  		}
  
  		config |= PORT_SET_NET_TYPE;
-@@ -870,7 +871,7 @@ static int rtw_ops_hw_scan(struct ieee80
+@@ -866,7 +867,7 @@ static int rtw_ops_hw_scan(struct ieee80
  	rtw_hw_scan_start(rtwdev, vif, req);
  	ret = rtw_hw_scan_offload(rtwdev, vif, true);
  	if (ret) {
@@ -62,7 +62,7 @@ Link: https://lore.kernel.org/r/20230414121312.17954-1-pkshih@realtek.com
  		rtw_err(rtwdev, "HW scan failed with status: %d\n", ret);
  	}
  	mutex_unlock(&rtwdev->mutex);
-@@ -890,7 +891,7 @@ static void rtw_ops_cancel_hw_scan(struc
+@@ -886,7 +887,7 @@ static void rtw_ops_cancel_hw_scan(struc
  		return;
  
  	mutex_lock(&rtwdev->mutex);

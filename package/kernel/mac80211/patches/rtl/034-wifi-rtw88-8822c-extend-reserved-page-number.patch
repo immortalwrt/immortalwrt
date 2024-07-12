@@ -34,7 +34,7 @@ Link: https://lore.kernel.org/r/20230414121135.17828-4-pkshih@realtek.com
  		fifo->rsvd_pg_num = fifo->rsvd_drv_pg_num;
 --- a/drivers/net/wireless/realtek/rtw88/main.h
 +++ b/drivers/net/wireless/realtek/rtw88/main.h
-@@ -1177,6 +1177,7 @@ struct rtw_chip_info {
+@@ -1180,6 +1180,7 @@ struct rtw_chip_info {
  	u32 txff_size;
  	u32 rxff_size;
  	u32 fw_rxff_size;

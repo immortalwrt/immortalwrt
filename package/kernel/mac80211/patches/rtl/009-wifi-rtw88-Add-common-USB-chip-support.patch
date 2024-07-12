@@ -50,7 +50,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-8-s.hauer@pengutronix.de
 +rtw88_usb-objs			:= usb.o
 --- a/drivers/net/wireless/realtek/rtw88/mac.c
 +++ b/drivers/net/wireless/realtek/rtw88/mac.c
-@@ -1058,6 +1058,9 @@ static int txdma_queue_mapping(struct rt
+@@ -1060,6 +1060,9 @@ static int txdma_queue_mapping(struct rt
  	if (rtw_chip_wcpu_11ac(rtwdev))
  		rtw_write32(rtwdev, REG_H2CQ_CSR, BIT_H2CQ_FULL);
  
@@ -62,7 +62,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-8-s.hauer@pengutronix.de
  
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -1783,6 +1783,10 @@ static int rtw_chip_parameter_setup(stru
+@@ -1798,6 +1798,10 @@ static int rtw_chip_parameter_setup(stru
  		rtwdev->hci.rpwm_addr = 0x03d9;
  		rtwdev->hci.cpwm_addr = 0x03da;
  		break;
@@ -75,7 +75,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-8-s.hauer@pengutronix.de
  		return -EINVAL;
 --- a/drivers/net/wireless/realtek/rtw88/main.h
 +++ b/drivers/net/wireless/realtek/rtw88/main.h
-@@ -871,6 +871,10 @@ struct rtw_chip_ops {
+@@ -874,6 +874,10 @@ struct rtw_chip_ops {
  			       bool is_tx2_path);
  	void (*config_txrx_mode)(struct rtw_dev *rtwdev, u8 tx_path,
  				 u8 rx_path, bool is_tx2_path);

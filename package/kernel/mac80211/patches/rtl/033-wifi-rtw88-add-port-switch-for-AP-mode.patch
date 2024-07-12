@@ -20,17 +20,17 @@ Link: https://lore.kernel.org/r/20230414121135.17828-3-pkshih@realtek.com
 
 --- a/drivers/net/wireless/realtek/rtw88/mac80211.c
 +++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
-@@ -212,6 +212,7 @@ static int rtw_ops_add_interface(struct
+@@ -203,6 +203,7 @@ static int rtw_ops_add_interface(struct
  	rtwvif->bcn_ctrl = bcn_ctrl;
  	config |= PORT_SET_BCN_CTRL;
  	rtw_vif_port_config(rtwdev, rtwvif, config);
 +	rtw_core_port_switch(rtwdev, vif);
+ 	rtw_recalc_lps(rtwdev, vif);
  
  	mutex_unlock(&rtwdev->mutex);
- 
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -2251,6 +2251,85 @@ void rtw_unregister_hw(struct rtw_dev *r
+@@ -2264,6 +2264,85 @@ void rtw_unregister_hw(struct rtw_dev *r
  }
  EXPORT_SYMBOL(rtw_unregister_hw);
  
@@ -118,7 +118,7 @@ Link: https://lore.kernel.org/r/20230414121135.17828-3-pkshih@realtek.com
  MODULE_LICENSE("Dual BSD/GPL");
 --- a/drivers/net/wireless/realtek/rtw88/main.h
 +++ b/drivers/net/wireless/realtek/rtw88/main.h
-@@ -2198,4 +2198,5 @@ void rtw_set_txrx_1ss(struct rtw_dev *rt
+@@ -2201,4 +2201,5 @@ void rtw_set_txrx_1ss(struct rtw_dev *rt
  void rtw_update_channel(struct rtw_dev *rtwdev, u8 center_channel,
  			u8 primary_channel, enum rtw_supported_band band,
  			enum rtw_bandwidth bandwidth);

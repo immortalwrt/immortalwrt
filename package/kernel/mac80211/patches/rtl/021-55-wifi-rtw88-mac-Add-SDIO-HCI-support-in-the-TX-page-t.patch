@@ -18,7 +18,7 @@ Link: https://lore.kernel.org/r/20230218152944.48842-3-martin.blumenstingl@googl
 
 --- a/drivers/net/wireless/realtek/rtw88/mac.c
 +++ b/drivers/net/wireless/realtek/rtw88/mac.c
-@@ -1043,6 +1043,9 @@ static int txdma_queue_mapping(struct rt
+@@ -1045,6 +1045,9 @@ static int txdma_queue_mapping(struct rt
  		else
  			return -EINVAL;
  		break;
@@ -28,7 +28,7 @@ Link: https://lore.kernel.org/r/20230218152944.48842-3-martin.blumenstingl@googl
  	default:
  		return -EINVAL;
  	}
-@@ -1205,6 +1208,9 @@ static int priority_queue_cfg(struct rtw
+@@ -1207,6 +1210,9 @@ static int priority_queue_cfg(struct rtw
  		else
  			return -EINVAL;
  		break;

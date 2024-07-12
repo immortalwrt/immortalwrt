@@ -26,7 +26,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-2-s.hauer@pengutronix.de
 
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -1731,7 +1731,8 @@ static void rtw_load_firmware_cb(const s
+@@ -1746,7 +1746,8 @@ static void rtw_load_firmware_cb(const s
  	update_firmware_info(rtwdev, fw);
  	complete_all(&fw->completion);
  
@@ -36,7 +36,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-2-s.hauer@pengutronix.de
  		 fw->version, fw->sub_version, fw->sub_index, fw->h2c_version);
  }
  
-@@ -1757,6 +1758,7 @@ static int rtw_load_firmware(struct rtw_
+@@ -1772,6 +1773,7 @@ static int rtw_load_firmware(struct rtw_
  		return -ENOENT;
  	}
  
@@ -46,7 +46,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-2-s.hauer@pengutronix.de
  
 --- a/drivers/net/wireless/realtek/rtw88/main.h
 +++ b/drivers/net/wireless/realtek/rtw88/main.h
-@@ -1851,6 +1851,7 @@ struct rtw_fw_state {
+@@ -1854,6 +1854,7 @@ struct rtw_fw_state {
  	u16 h2c_version;
  	u32 feature;
  	u32 feature_ext;

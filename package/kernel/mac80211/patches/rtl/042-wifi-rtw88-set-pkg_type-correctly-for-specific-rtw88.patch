@@ -26,7 +26,7 @@ Link: https://lore.kernel.org/r/20230417140358.2240429-4-s.hauer@pengutronix.de
 
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -2008,7 +2008,7 @@ static int rtw_chip_board_info_setup(str
+@@ -2023,7 +2023,7 @@ static int rtw_chip_board_info_setup(str
  	if (!rfe_def)
  		return -ENODEV;
  
@@ -34,10 +34,10 @@ Link: https://lore.kernel.org/r/20230417140358.2240429-4-s.hauer@pengutronix.de
 +	rtw_phy_setup_phy_cond(rtwdev, hal->pkg_type);
  
  	rtw_phy_init_tx_power(rtwdev);
- 	if (rfe_def->agc_btg_tbl)
+ 	rtw_load_table(rtwdev, rfe_def->phy_pg_tbl);
 --- a/drivers/net/wireless/realtek/rtw88/main.h
 +++ b/drivers/net/wireless/realtek/rtw88/main.h
-@@ -1900,6 +1900,7 @@ struct rtw_hal {
+@@ -1903,6 +1903,7 @@ struct rtw_hal {
  	u8 cut_version;
  	u8 mp_chip;
  	u8 oem_id;
