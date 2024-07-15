@@ -1,6 +1,6 @@
 --- a/os_dep/linux/os_intfs.c
 +++ b/os_dep/linux/os_intfs.c
-@@ -254,7 +254,7 @@ int rtw_bfee_rf_number = 0; /*Beamformee
+@@ -258,7 +258,7 @@ int rtw_bfee_rf_number = 0; /*Beamformee
  #endif /* CONFIG_80211N_HT */
  
  #ifdef CONFIG_80211AC_VHT
@@ -9,7 +9,7 @@
  module_param(rtw_vht_enable, int, 0644);
  
  int rtw_ampdu_factor = 7;
-@@ -324,7 +324,7 @@ int rtw_drv_ant_band_switch = 1; /* 0:OF
+@@ -328,7 +328,7 @@ int rtw_drv_ant_band_switch = 1; /* 0:OF
  int rtw_single_ant_path; /*0:main ant , 1:aux ant , Fixed single antenna path, default main ant*/
  
  /* 0: doesn't switch, 1: switch from usb2.0 to usb 3.0 2: switch from usb3.0 to usb 2.0 */
