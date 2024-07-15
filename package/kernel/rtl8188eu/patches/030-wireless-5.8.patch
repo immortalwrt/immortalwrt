@@ -167,19 +167,6 @@
  	if (wdev->connected) {
  	#else
  	if (wdev->current_bss) {
---- a/os_dep/linux/os_intfs.c
-+++ b/os_dep/linux/os_intfs.c
-@@ -1618,7 +1618,9 @@ int rtw_os_ndev_register(_adapter *adapt
- 	u8 rtnl_lock_needed = rtw_rtnl_lock_needed(dvobj);
- 
- #ifdef CONFIG_RTW_NAPI
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
-+#ifdef BUILD_OPENWRT
-+	netif_napi_add(ndev, &adapter->napi, rtw_recv_napi_poll);
-+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
-         netif_napi_add_weight(ndev, &adapter->napi, rtw_recv_napi_poll, RTL_NAPI_WEIGHT);
- #else
-         netif_napi_add(ndev, &adapter->napi, rtw_recv_napi_poll, RTL_NAPI_WEIGHT);
 --- a/os_dep/linux/usb_intf.c
 +++ b/os_dep/linux/usb_intf.c
 @@ -306,7 +306,7 @@ struct rtw_usb_drv usb_drv = {
