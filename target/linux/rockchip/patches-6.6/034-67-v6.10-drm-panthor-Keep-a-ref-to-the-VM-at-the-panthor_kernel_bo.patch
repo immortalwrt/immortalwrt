@@ -1,0 +1,174 @@
+From ff60c8da0aaf7ecf5f4d48bebeb3c1f52b2088dd Mon Sep 17 00:00:00 2001
+From: Boris Brezillon <boris.brezillon@collabora.com>
+Date: Thu, 2 May 2024 20:38:10 +0200
+Subject: [PATCH] drm/panthor: Keep a ref to the VM at the panthor_kernel_bo
+ level
+
+Avoids use-after-free situations when panthor_fw_unplug() is called
+and the kernel BO was mapped to the FW VM.
+
+Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
+Reviewed-by: Steven Price <steven.price@arm.com>
+Reviewed-by: Liviu Dudau <liviu.dudau@arm.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20240502183813.1612017-3-boris.brezillon@collabora.com
+---
+ drivers/gpu/drm/panthor/panthor_fw.c    |  4 ++--
+ drivers/gpu/drm/panthor/panthor_gem.c   |  8 +++++---
+ drivers/gpu/drm/panthor/panthor_gem.h   |  8 ++++++--
+ drivers/gpu/drm/panthor/panthor_heap.c  |  8 ++++----
+ drivers/gpu/drm/panthor/panthor_sched.c | 11 +++++------
+ 5 files changed, 22 insertions(+), 17 deletions(-)
+
+--- a/drivers/gpu/drm/panthor/panthor_fw.c
++++ b/drivers/gpu/drm/panthor/panthor_fw.c
+@@ -453,7 +453,7 @@ panthor_fw_alloc_queue_iface_mem(struct
+ 
+ 	ret = panthor_kernel_bo_vmap(mem);
+ 	if (ret) {
+-		panthor_kernel_bo_destroy(panthor_fw_vm(ptdev), mem);
++		panthor_kernel_bo_destroy(mem);
+ 		return ERR_PTR(ret);
+ 	}
+ 
+@@ -1134,7 +1134,7 @@ void panthor_fw_unplug(struct panthor_de
+ 	panthor_fw_stop(ptdev);
+ 
+ 	list_for_each_entry(section, &ptdev->fw->sections, node)
+-		panthor_kernel_bo_destroy(panthor_fw_vm(ptdev), section->mem);
++		panthor_kernel_bo_destroy(section->mem);
+ 
+ 	/* We intentionally don't call panthor_vm_idle() and let
+ 	 * panthor_mmu_unplug() release the AS we acquired with
+--- a/drivers/gpu/drm/panthor/panthor_gem.c
++++ b/drivers/gpu/drm/panthor/panthor_gem.c
+@@ -26,18 +26,18 @@ static void panthor_gem_free_object(stru
+ 
+ /**
+  * panthor_kernel_bo_destroy() - Destroy a kernel buffer object
+- * @vm: The VM this BO was mapped to.
+  * @bo: Kernel buffer object to destroy. If NULL or an ERR_PTR(), the destruction
+  * is skipped.
+  */
+-void panthor_kernel_bo_destroy(struct panthor_vm *vm,
+-			       struct panthor_kernel_bo *bo)
++void panthor_kernel_bo_destroy(struct panthor_kernel_bo *bo)
+ {
++	struct panthor_vm *vm;
+ 	int ret;
+ 
+ 	if (IS_ERR_OR_NULL(bo))
+ 		return;
+ 
++	vm = bo->vm;
+ 	panthor_kernel_bo_vunmap(bo);
+ 
+ 	if (drm_WARN_ON(bo->obj->dev,
+@@ -53,6 +53,7 @@ void panthor_kernel_bo_destroy(struct pa
+ 	drm_gem_object_put(bo->obj);
+ 
+ out_free_bo:
++	panthor_vm_put(vm);
+ 	kfree(bo);
+ }
+ 
+@@ -106,6 +107,7 @@ panthor_kernel_bo_create(struct panthor_
+ 	if (ret)
+ 		goto err_free_va;
+ 
++	kbo->vm = panthor_vm_get(vm);
+ 	bo->exclusive_vm_root_gem = panthor_vm_root_gem(vm);
+ 	drm_gem_object_get(bo->exclusive_vm_root_gem);
+ 	bo->base.base.resv = bo->exclusive_vm_root_gem->resv;
+--- a/drivers/gpu/drm/panthor/panthor_gem.h
++++ b/drivers/gpu/drm/panthor/panthor_gem.h
+@@ -62,6 +62,11 @@ struct panthor_kernel_bo {
+ 	struct drm_gem_object *obj;
+ 
+ 	/**
++	 * @vm: VM this private buffer is attached to.
++	 */
++	struct panthor_vm *vm;
++
++	/**
+ 	 * @va_node: VA space allocated to this GEM.
+ 	 */
+ 	struct drm_mm_node va_node;
+@@ -136,7 +141,6 @@ panthor_kernel_bo_create(struct panthor_
+ 			 size_t size, u32 bo_flags, u32 vm_map_flags,
+ 			 u64 gpu_va);
+ 
+-void panthor_kernel_bo_destroy(struct panthor_vm *vm,
+-			       struct panthor_kernel_bo *bo);
++void panthor_kernel_bo_destroy(struct panthor_kernel_bo *bo);
+ 
+ #endif /* __PANTHOR_GEM_H__ */
+--- a/drivers/gpu/drm/panthor/panthor_heap.c
++++ b/drivers/gpu/drm/panthor/panthor_heap.c
+@@ -127,7 +127,7 @@ static void panthor_free_heap_chunk(stru
+ 	heap->chunk_count--;
+ 	mutex_unlock(&heap->lock);
+ 
+-	panthor_kernel_bo_destroy(vm, chunk->bo);
++	panthor_kernel_bo_destroy(chunk->bo);
+ 	kfree(chunk);
+ }
+ 
+@@ -183,7 +183,7 @@ static int panthor_alloc_heap_chunk(stru
+ 	return 0;
+ 
+ err_destroy_bo:
+-	panthor_kernel_bo_destroy(vm, chunk->bo);
++	panthor_kernel_bo_destroy(chunk->bo);
+ 
+ err_free_chunk:
+ 	kfree(chunk);
+@@ -395,7 +395,7 @@ int panthor_heap_return_chunk(struct pan
+ 	mutex_unlock(&heap->lock);
+ 
+ 	if (removed) {
+-		panthor_kernel_bo_destroy(pool->vm, chunk->bo);
++		panthor_kernel_bo_destroy(chunk->bo);
+ 		kfree(chunk);
+ 		ret = 0;
+ 	} else {
+@@ -595,7 +595,7 @@ void panthor_heap_pool_destroy(struct pa
+ 		drm_WARN_ON(&pool->ptdev->base, panthor_heap_destroy_locked(pool, i));
+ 
+ 	if (!IS_ERR_OR_NULL(pool->gpu_contexts))
+-		panthor_kernel_bo_destroy(pool->vm, pool->gpu_contexts);
++		panthor_kernel_bo_destroy(pool->gpu_contexts);
+ 
+ 	/* Reflects the fact the pool has been destroyed. */
+ 	pool->vm = NULL;
+--- a/drivers/gpu/drm/panthor/panthor_sched.c
++++ b/drivers/gpu/drm/panthor/panthor_sched.c
+@@ -826,8 +826,8 @@ static void group_free_queue(struct pant
+ 
+ 	panthor_queue_put_syncwait_obj(queue);
+ 
+-	panthor_kernel_bo_destroy(group->vm, queue->ringbuf);
+-	panthor_kernel_bo_destroy(panthor_fw_vm(group->ptdev), queue->iface.mem);
++	panthor_kernel_bo_destroy(queue->ringbuf);
++	panthor_kernel_bo_destroy(queue->iface.mem);
+ 
+ 	kfree(queue);
+ }
+@@ -837,15 +837,14 @@ static void group_release_work(struct wo
+ 	struct panthor_group *group = container_of(work,
+ 						   struct panthor_group,
+ 						   release_work);
+-	struct panthor_device *ptdev = group->ptdev;
+ 	u32 i;
+ 
+ 	for (i = 0; i < group->queue_count; i++)
+ 		group_free_queue(group, group->queues[i]);
+ 
+-	panthor_kernel_bo_destroy(panthor_fw_vm(ptdev), group->suspend_buf);
+-	panthor_kernel_bo_destroy(panthor_fw_vm(ptdev), group->protm_suspend_buf);
+-	panthor_kernel_bo_destroy(group->vm, group->syncobjs);
++	panthor_kernel_bo_destroy(group->suspend_buf);
++	panthor_kernel_bo_destroy(group->protm_suspend_buf);
++	panthor_kernel_bo_destroy(group->syncobjs);
+ 
+ 	panthor_vm_put(group->vm);
+ 	kfree(group);

@@ -29,7 +29,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  &cpu_b0 {
  	cpu-supply = <&vdd_cpu_big0_s0>;
  };
-@@ -733,3 +737,7 @@
+@@ -734,3 +738,7 @@
  &usb_host1_ohci {
  	status = "okay";
  };

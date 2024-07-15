@@ -101,7 +101,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  			continue;
  
  		spin_lock(&ring->sched.job_list_lock);
-@@ -4752,7 +4752,7 @@ int amdgpu_device_pre_asic_reset(struct
+@@ -4755,7 +4755,7 @@ int amdgpu_device_pre_asic_reset(struct
  	for (i = 0; i < AMDGPU_MAX_RINGS; ++i) {
  		struct amdgpu_ring *ring = adev->rings[i];
  
@@ -110,7 +110,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  			continue;
  
  		/* Clear job fence from fence drv to avoid force_completion
-@@ -5292,7 +5292,7 @@ int amdgpu_device_gpu_recover(struct amd
+@@ -5295,7 +5295,7 @@ int amdgpu_device_gpu_recover(struct amd
  		for (i = 0; i < AMDGPU_MAX_RINGS; ++i) {
  			struct amdgpu_ring *ring = tmp_adev->rings[i];
  
@@ -119,7 +119,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  				continue;
  
  			drm_sched_stop(&ring->sched, job ? &job->base : NULL);
-@@ -5367,7 +5367,7 @@ skip_hw_reset:
+@@ -5370,7 +5370,7 @@ skip_hw_reset:
  		for (i = 0; i < AMDGPU_MAX_RINGS; ++i) {
  			struct amdgpu_ring *ring = tmp_adev->rings[i];
  
@@ -128,7 +128,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  				continue;
  
  			drm_sched_start(&ring->sched, true);
-@@ -5693,7 +5693,7 @@ pci_ers_result_t amdgpu_pci_error_detect
+@@ -5696,7 +5696,7 @@ pci_ers_result_t amdgpu_pci_error_detect
  		for (i = 0; i < AMDGPU_MAX_RINGS; ++i) {
  			struct amdgpu_ring *ring = adev->rings[i];
  
@@ -137,7 +137,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  				continue;
  
  			drm_sched_stop(&ring->sched, NULL);
-@@ -5821,7 +5821,7 @@ void amdgpu_pci_resume(struct pci_dev *p
+@@ -5824,7 +5824,7 @@ void amdgpu_pci_resume(struct pci_dev *p
  	for (i = 0; i < AMDGPU_MAX_RINGS; ++i) {
  		struct amdgpu_ring *ring = adev->rings[i];
  
