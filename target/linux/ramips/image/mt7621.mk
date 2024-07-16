@@ -1384,9 +1384,9 @@ define Device/iodata_wn-ax1167gr
   IMAGE_SIZE := 15552k
   DEVICE_VENDOR := I-O DATA
   DEVICE_MODEL := WN-AX1167GR
-  ARTIFACTS := initramfs-factory.bin
-  ARTIFACT/initramfs-factory.bin := append-image-stage initramfs-kernel.bin | \
-	check-size 7680k | senao-header -r 0x30a -p 0x1055 -t 4
+  # ARTIFACTS := initramfs-factory.bin
+  # ARTIFACT/initramfs-factory.bin := append-image-stage initramfs-kernel.bin | \
+  # 	check-size 7680k | senao-header -r 0x30a -p 0x1055 -t 4
   DEVICE_PACKAGES := kmod-mt7603 kmod-mt76x2 -uboot-envtools
 endef
 TARGET_DEVICES += iodata_wn-ax1167gr
