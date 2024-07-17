@@ -107,7 +107,7 @@ endef
 
 define Device/abt_asr3000
   DEVICE_VENDOR := ABT
-  DEVICE_MODEL := ASR3000
+  DEVICE_MODEL := ASR3000 (OpenWrt U-Boot layout)
   DEVICE_DTS := mt7981b-abt-asr3000
   DEVICE_DTS_DIR := ../dts
   DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware
