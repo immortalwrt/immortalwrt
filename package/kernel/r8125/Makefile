@@ -8,7 +8,7 @@ include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=r8125
 PKG_VERSION:=9.013.02-2
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/awesometic/realtek-r8125-dkms/tar.gz/$(PKG_VERSION)?
@@ -17,6 +17,8 @@ PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/realtek-$(PKG_NAME)-dkms-$(PKG_VERSION)
 
 PKG_LICENSE:=GPL-2.0-only
 PKG_LICENSE_FILE:=LICENSE
+
+PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -33,7 +35,11 @@ define KernelPackage/r8125/description
 endef
 
 define Build/Compile
-	+$(KERNEL_MAKE) M=$(PKG_BUILD_DIR)/src modules
+	+$(KERNEL_MAKE) $(PKG_JOBS) \
+		M=$(PKG_BUILD_DIR)/src \
+		CONFIG_ASPM=n \
+		CONFIG_RSS_SUPPORT=y \
+		modules
 endef
 
 $(eval $(call KernelPackage,r8125))
