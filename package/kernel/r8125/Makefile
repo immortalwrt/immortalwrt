@@ -38,7 +38,7 @@ define Build/Compile
 	+$(KERNEL_MAKE) $(PKG_JOBS) \
 		M=$(PKG_BUILD_DIR)/src \
 		CONFIG_ASPM=n \
-		CONFIG_RSS_SUPPORT=y \
+		ENABLE_RSS_SUPPORT=y \
 		modules
 endef
 
