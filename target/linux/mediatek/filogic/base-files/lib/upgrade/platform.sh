@@ -65,16 +65,21 @@ platform_do_upgrade() {
 
 	case "$board" in
 	abt,asr3000|\
+	bananapi,bpi-r3|\
+	bananapi,bpi-r3-mini|\
+	bananapi,bpi-r4|\
+	bananapi,bpi-r4-poe|\
+	cmcc,rax3000m|\
+	jdcloud,re-cp-03|\
+	mediatek,mt7988a-rfb|\
 	nokia,ea0326gmp|\
+	openwrt,one|\
 	tplink,tl-xdr4288|\
 	tplink,tl-xdr6086|\
 	tplink,tl-xdr6088|\
 	tplink,tl-xtr8488|\
 	xiaomi,redmi-router-ax6000-ubootmod)
-		[ -e /dev/fit0 ] && fitblk /dev/fit0
-		[ -e /dev/fitrw ] && fitblk /dev/fitrw
-		CI_KERNPART="fit"
-		nand_do_upgrade "$1"
+		fit_do_upgrade "$1"
 		;;
 	acer,predator-w6|\
 	smartrg,sdg-8612|\
@@ -93,32 +98,6 @@ platform_do_upgrade() {
 		CI_UBIPART="UBI_DEV"
 		CI_KERNPART="linux"
 		nand_do_upgrade "$1"
-		;;
-	bananapi,bpi-r3|\
-	bananapi,bpi-r3-mini|\
-	bananapi,bpi-r4|\
-	bananapi,bpi-r4-poe|\
-	cmcc,rax3000m|\
-	jdcloud,re-cp-03|\
-	mediatek,mt7988a-rfb|\
-	openwrt,one)
-		[ -e /dev/fit0 ] && fitblk /dev/fit0
-		[ -e /dev/fitrw ] && fitblk /dev/fitrw
-		bootdev="$(fitblk_get_bootdev)"
-		case "$bootdev" in
-		mmcblk*)
-			EMMC_KERN_DEV="/dev/$bootdev"
-			emmc_do_upgrade "$1"
-			;;
-		mtdblock*)
-			PART_NAME="/dev/mtd${bootdev:8}"
-			default_do_upgrade "$1"
-			;;
-		ubiblock*)
-			CI_KERNPART="fit"
-			nand_do_upgrade "$1"
-			;;
-		esac
 		;;
 	cudy,re3000-v1|\
 	cudy,wr3000-v1|\
@@ -239,11 +218,9 @@ platform_copy_config() {
 	bananapi,bpi-r4|\
 	bananapi,bpi-r4-poe|\
 	cmcc,rax3000m)
-		case "$(fitblk_get_bootdev)" in
-		mmcblk*)
+		if [ "$CI_METHOD" = "emmc" ]; then
 			emmc_copy_config
-			;;
-		esac
+		fi
 		;;
 	esac
 }
