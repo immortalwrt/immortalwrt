@@ -40,7 +40,7 @@ Link: https://lore.kernel.org/bpf/20220223012814.1898677-1-connoro@google.com
  		err = btf_alloc_id(btf);
 --- a/lib/Kconfig.debug
 +++ b/lib/Kconfig.debug
-@@ -336,6 +336,16 @@ config DEBUG_INFO_BTF_MODULES
+@@ -337,6 +337,16 @@ config DEBUG_INFO_BTF_MODULES
  	help
  	  Generate compact split BTF type information for kernel modules.
  

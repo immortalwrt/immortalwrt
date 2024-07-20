@@ -1,0 +1,144 @@
+From 3d717fad5081b8e3bda76d86907fad95398cbde8 Mon Sep 17 00:00:00 2001
+From: Kees Cook <keescook@chromium.org>
+Date: Tue, 28 Sep 2021 16:09:45 -0700
+Subject: [PATCH] bpf: Replace "want address" users of BPF_CAST_CALL with
+ BPF_CALL_IMM
+
+In order to keep ahead of cases in the kernel where Control Flow
+Integrity (CFI) may trip over function call casts, enabling
+-Wcast-function-type is helpful. To that end, BPF_CAST_CALL causes
+various warnings and is one of the last places in the kernel triggering
+this warning.
+
+Most places using BPF_CAST_CALL actually just want a void * to perform
+math on. It's not actually performing a call, so just use a different
+helper to get the void *, by way of the new BPF_CALL_IMM() helper, which
+can clean up a common copy/paste idiom as well.
+
+This change results in no object code difference.
+
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://github.com/KSPP/linux/issues/20
+Link: https://lore.kernel.org/lkml/CAEf4Bzb46=-J5Fxc3mMZ8JQPtK1uoE0q6+g6WPz53Cvx=CBEhw@mail.gmail.com
+Link: https://lore.kernel.org/bpf/20210928230946.4062144-2-keescook@chromium.org
+---
+ include/linux/filter.h |  6 +++++-
+ kernel/bpf/hashtab.c   |  6 +++---
+ kernel/bpf/verifier.c  | 26 +++++++++-----------------
+ lib/test_bpf.c         |  2 +-
+ 4 files changed, 18 insertions(+), 22 deletions(-)
+
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -365,13 +365,17 @@ static inline bool insn_is_zext(const st
+ #define BPF_CAST_CALL(x)					\
+ 		((u64 (*)(u64, u64, u64, u64, u64))(x))
+ 
++/* Convert function address to BPF immediate */
++
++#define BPF_CALL_IMM(x)	((void *)(x) - (void *)__bpf_call_base)
++
+ #define BPF_EMIT_CALL(FUNC)					\
+ 	((struct bpf_insn) {					\
+ 		.code  = BPF_JMP | BPF_CALL,			\
+ 		.dst_reg = 0,					\
+ 		.src_reg = 0,					\
+ 		.off   = 0,					\
+-		.imm   = ((FUNC) - __bpf_call_base) })
++		.imm   = BPF_CALL_IMM(FUNC) })
+ 
+ /* Raw code statement block */
+ 
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -681,7 +681,7 @@ static int htab_map_gen_lookup(struct bp
+ 
+ 	BUILD_BUG_ON(!__same_type(&__htab_map_lookup_elem,
+ 		     (void *(*)(struct bpf_map *map, void *key))NULL));
+-	*insn++ = BPF_EMIT_CALL(BPF_CAST_CALL(__htab_map_lookup_elem));
++	*insn++ = BPF_EMIT_CALL(__htab_map_lookup_elem);
+ 	*insn++ = BPF_JMP_IMM(BPF_JEQ, ret, 0, 1);
+ 	*insn++ = BPF_ALU64_IMM(BPF_ADD, ret,
+ 				offsetof(struct htab_elem, key) +
+@@ -722,7 +722,7 @@ static int htab_lru_map_gen_lookup(struc
+ 
+ 	BUILD_BUG_ON(!__same_type(&__htab_map_lookup_elem,
+ 		     (void *(*)(struct bpf_map *map, void *key))NULL));
+-	*insn++ = BPF_EMIT_CALL(BPF_CAST_CALL(__htab_map_lookup_elem));
++	*insn++ = BPF_EMIT_CALL(__htab_map_lookup_elem);
+ 	*insn++ = BPF_JMP_IMM(BPF_JEQ, ret, 0, 4);
+ 	*insn++ = BPF_LDX_MEM(BPF_B, ref_reg, ret,
+ 			      offsetof(struct htab_elem, lru_node) +
+@@ -2417,7 +2417,7 @@ static int htab_of_map_gen_lookup(struct
+ 
+ 	BUILD_BUG_ON(!__same_type(&__htab_map_lookup_elem,
+ 		     (void *(*)(struct bpf_map *map, void *key))NULL));
+-	*insn++ = BPF_EMIT_CALL(BPF_CAST_CALL(__htab_map_lookup_elem));
++	*insn++ = BPF_EMIT_CALL(__htab_map_lookup_elem);
+ 	*insn++ = BPF_JMP_IMM(BPF_JEQ, ret, 0, 2);
+ 	*insn++ = BPF_ALU64_IMM(BPF_ADD, ret,
+ 				offsetof(struct htab_elem, key) +
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -1736,7 +1736,7 @@ static int add_kfunc_call(struct bpf_ver
+ 
+ 	desc = &tab->descs[tab->nr_descs++];
+ 	desc->func_id = func_id;
+-	desc->imm = BPF_CAST_CALL(addr) - __bpf_call_base;
++	desc->imm = BPF_CALL_IMM(addr);
+ 	err = btf_distill_func_proto(&env->log, btf_vmlinux,
+ 				     func_proto, func_name,
+ 				     &desc->func_model);
+@@ -12778,8 +12778,7 @@ static int jit_subprogs(struct bpf_verif
+ 			if (!bpf_pseudo_call(insn))
+ 				continue;
+ 			subprog = insn->off;
+-			insn->imm = BPF_CAST_CALL(func[subprog]->bpf_func) -
+-				    __bpf_call_base;
++			insn->imm = BPF_CALL_IMM(func[subprog]->bpf_func);
+ 		}
+ 
+ 		/* we use the aux data to keep a list of the start addresses
+@@ -13267,32 +13266,25 @@ static int do_misc_fixups(struct bpf_ver
+ patch_map_ops_generic:
+ 			switch (insn->imm) {
+ 			case BPF_FUNC_map_lookup_elem:
+-				insn->imm = BPF_CAST_CALL(ops->map_lookup_elem) -
+-					    __bpf_call_base;
++				insn->imm = BPF_CALL_IMM(ops->map_lookup_elem);
+ 				continue;
+ 			case BPF_FUNC_map_update_elem:
+-				insn->imm = BPF_CAST_CALL(ops->map_update_elem) -
+-					    __bpf_call_base;
++				insn->imm = BPF_CALL_IMM(ops->map_update_elem);
+ 				continue;
+ 			case BPF_FUNC_map_delete_elem:
+-				insn->imm = BPF_CAST_CALL(ops->map_delete_elem) -
+-					    __bpf_call_base;
++				insn->imm = BPF_CALL_IMM(ops->map_delete_elem);
+ 				continue;
+ 			case BPF_FUNC_map_push_elem:
+-				insn->imm = BPF_CAST_CALL(ops->map_push_elem) -
+-					    __bpf_call_base;
++				insn->imm = BPF_CALL_IMM(ops->map_push_elem);
+ 				continue;
+ 			case BPF_FUNC_map_pop_elem:
+-				insn->imm = BPF_CAST_CALL(ops->map_pop_elem) -
+-					    __bpf_call_base;
++				insn->imm = BPF_CALL_IMM(ops->map_pop_elem);
+ 				continue;
+ 			case BPF_FUNC_map_peek_elem:
+-				insn->imm = BPF_CAST_CALL(ops->map_peek_elem) -
+-					    __bpf_call_base;
++				insn->imm = BPF_CALL_IMM(ops->map_peek_elem);
+ 				continue;
+ 			case BPF_FUNC_redirect_map:
+-				insn->imm = BPF_CAST_CALL(ops->map_redirect) -
+-					    __bpf_call_base;
++				insn->imm = BPF_CALL_IMM(ops->map_redirect);
+ 				continue;
+ 			}
+ 

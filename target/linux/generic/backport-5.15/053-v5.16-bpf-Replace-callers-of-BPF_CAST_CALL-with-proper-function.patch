@@ -1,0 +1,133 @@
+From 102acbacfd9a96d101abd96d1a7a5bf92b7c3e8e Mon Sep 17 00:00:00 2001
+From: Kees Cook <keescook@chromium.org>
+Date: Tue, 28 Sep 2021 16:09:46 -0700
+Subject: [PATCH] bpf: Replace callers of BPF_CAST_CALL with proper function
+ typedef
+
+In order to keep ahead of cases in the kernel where Control Flow
+Integrity (CFI) may trip over function call casts, enabling
+-Wcast-function-type is helpful. To that end, BPF_CAST_CALL causes
+various warnings and is one of the last places in the kernel
+triggering this warning.
+
+For actual function calls, replace BPF_CAST_CALL() with a typedef, which
+captures the same details about the given function pointers.
+
+This change results in no object code difference.
+
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Acked-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Link: https://github.com/KSPP/linux/issues/20
+Link: https://lore.kernel.org/lkml/CAEf4Bzb46=-J5Fxc3mMZ8JQPtK1uoE0q6+g6WPz53Cvx=CBEhw@mail.gmail.com
+Link: https://lore.kernel.org/bpf/20210928230946.4062144-3-keescook@chromium.org
+---
+ include/linux/bpf.h    | 4 +++-
+ include/linux/filter.h | 5 -----
+ kernel/bpf/arraymap.c  | 7 +++----
+ kernel/bpf/hashtab.c   | 7 +++----
+ kernel/bpf/helpers.c   | 5 ++---
+ 5 files changed, 11 insertions(+), 17 deletions(-)
+
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -48,6 +48,7 @@ extern struct idr btf_idr;
+ extern spinlock_t btf_idr_lock;
+ extern struct kobject *btf_kobj;
+ 
++typedef u64 (*bpf_callback_t)(u64, u64, u64, u64, u64);
+ typedef int (*bpf_iter_init_seq_priv_t)(void *private_data,
+ 					struct bpf_iter_aux_info *aux);
+ typedef void (*bpf_iter_fini_seq_priv_t)(void *private_data);
+@@ -146,7 +147,8 @@ struct bpf_map_ops {
+ 	int (*map_set_for_each_callback_args)(struct bpf_verifier_env *env,
+ 					      struct bpf_func_state *caller,
+ 					      struct bpf_func_state *callee);
+-	int (*map_for_each_callback)(struct bpf_map *map, void *callback_fn,
++	int (*map_for_each_callback)(struct bpf_map *map,
++				     bpf_callback_t callback_fn,
+ 				     void *callback_ctx, u64 flags);
+ 
+ 	/* BTF name and id of struct allocated by map_alloc */
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -360,11 +360,6 @@ static inline bool insn_is_zext(const st
+ 		.off   = 0,					\
+ 		.imm   = TGT })
+ 
+-/* Function call */
+-
+-#define BPF_CAST_CALL(x)					\
+-		((u64 (*)(u64, u64, u64, u64, u64))(x))
+-
+ /* Convert function address to BPF immediate */
+ 
+ #define BPF_CALL_IMM(x)	((void *)(x) - (void *)__bpf_call_base)
+--- a/kernel/bpf/arraymap.c
++++ b/kernel/bpf/arraymap.c
+@@ -651,7 +651,7 @@ static const struct bpf_iter_seq_info it
+ 	.seq_priv_size		= sizeof(struct bpf_iter_seq_array_map_info),
+ };
+ 
+-static int bpf_for_each_array_elem(struct bpf_map *map, void *callback_fn,
++static int bpf_for_each_array_elem(struct bpf_map *map, bpf_callback_t callback_fn,
+ 				   void *callback_ctx, u64 flags)
+ {
+ 	u32 i, key, num_elems = 0;
+@@ -674,9 +674,8 @@ static int bpf_for_each_array_elem(struc
+ 			val = array->value + array->elem_size * i;
+ 		num_elems++;
+ 		key = i;
+-		ret = BPF_CAST_CALL(callback_fn)((u64)(long)map,
+-					(u64)(long)&key, (u64)(long)val,
+-					(u64)(long)callback_ctx, 0);
++		ret = callback_fn((u64)(long)map, (u64)(long)&key,
++				  (u64)(long)val, (u64)(long)callback_ctx, 0);
+ 		/* return value: 0 - continue, 1 - stop and return */
+ 		if (ret)
+ 			break;
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -2069,7 +2069,7 @@ static const struct bpf_iter_seq_info it
+ 	.seq_priv_size		= sizeof(struct bpf_iter_seq_hash_map_info),
+ };
+ 
+-static int bpf_for_each_hash_elem(struct bpf_map *map, void *callback_fn,
++static int bpf_for_each_hash_elem(struct bpf_map *map, bpf_callback_t callback_fn,
+ 				  void *callback_ctx, u64 flags)
+ {
+ 	struct bpf_htab *htab = container_of(map, struct bpf_htab, map);
+@@ -2109,9 +2109,8 @@ static int bpf_for_each_hash_elem(struct
+ 				val = elem->key + roundup_key_size;
+ 			}
+ 			num_elems++;
+-			ret = BPF_CAST_CALL(callback_fn)((u64)(long)map,
+-					(u64)(long)key, (u64)(long)val,
+-					(u64)(long)callback_ctx, 0);
++			ret = callback_fn((u64)(long)map, (u64)(long)key,
++					  (u64)(long)val, (u64)(long)callback_ctx, 0);
+ 			/* return value: 0 - continue, 1 - stop and return */
+ 			if (ret) {
+ 				rcu_read_unlock();
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -1068,7 +1068,7 @@ static enum hrtimer_restart bpf_timer_cb
+ 	struct bpf_hrtimer *t = container_of(hrtimer, struct bpf_hrtimer, timer);
+ 	struct bpf_map *map = t->map;
+ 	void *value = t->value;
+-	void *callback_fn;
++	bpf_callback_t callback_fn;
+ 	void *key;
+ 	u32 idx;
+ 
+@@ -1093,8 +1093,7 @@ static enum hrtimer_restart bpf_timer_cb
+ 		key = value - round_up(map->key_size, 8);
+ 	}
+ 
+-	BPF_CAST_CALL(callback_fn)((u64)(long)map, (u64)(long)key,
+-				   (u64)(long)value, 0, 0);
++	callback_fn((u64)(long)map, (u64)(long)key, (u64)(long)value, 0, 0);
+ 	/* The verifier checked that return value is zero. */
+ 
+ 	this_cpu_write(hrtimer_running, NULL);
