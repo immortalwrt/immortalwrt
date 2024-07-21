@@ -1,0 +1,130 @@
+From be2ef8161572ec1973124ebc50f56dafc2925e07 Mon Sep 17 00:00:00 2001
+From: Andrii Nakryiko <andrii@kernel.org>
+Date: Fri, 4 Nov 2022 09:36:46 -0700
+Subject: [PATCH] bpf: allow precision tracking for programs with subprogs
+
+Stop forcing precise=true for SCALAR registers when BPF program has any
+subprograms. Current restriction means that any BPF program, as soon as
+it uses subprograms, will end up not getting any of the precision
+tracking benefits in reduction of number of verified states.
+
+This patch keeps the fallback mark_all_scalars_precise() behavior if
+precise marking has to cross function frames. E.g., if subprogram
+requires R1 (first input arg) to be marked precise, ideally we'd need to
+backtrack to the parent function and keep marking R1 and its
+dependencies as precise. But right now we give up and force all the
+SCALARs in any of the current and parent states to be forced to
+precise=true. We can lift that restriction in the future.
+
+But this patch fixes two issues identified when trying to enable
+precision tracking for subprogs.
+
+First, prevent "escaping" from top-most state in a global subprog. While
+with entry-level BPF program we never end up requesting precision for
+R1-R5 registers, because R2-R5 are not initialized (and so not readable
+in correct BPF program), and R1 is PTR_TO_CTX, not SCALAR, and so is
+implicitly precise. With global subprogs, though, it's different, as
+global subprog a) can have up to 5 SCALAR input arguments, which might
+get marked as precise=true and b) it is validated in isolation from its
+main entry BPF program. b) means that we can end up exhausting parent
+state chain and still not mark all registers in reg_mask as precise,
+which would lead to verifier bug warning.
+
+To handle that, we need to consider two cases. First, if the very first
+state is not immediately "checkpointed" (i.e., stored in state lookup
+hashtable), it will get correct first_insn_idx and last_insn_idx
+instruction set during state checkpointing. As such, this case is
+already handled and __mark_chain_precision() already handles that by
+just doing nothing when we reach to the very first parent state.
+st->parent will be NULL and we'll just stop. Perhaps some extra check
+for reg_mask and stack_mask is due here, but this patch doesn't address
+that issue.
+
+More problematic second case is when global function's initial state is
+immediately checkpointed before we manage to process the very first
+instruction. This is happening because when there is a call to global
+subprog from the main program the very first subprog's instruction is
+marked as pruning point, so before we manage to process first
+instruction we have to check and checkpoint state. This patch adds
+a special handling for such "empty" state, which is identified by having
+st->last_insn_idx set to -1. In such case, we check that we are indeed
+validating global subprog, and with some sanity checking we mark input
+args as precise if requested.
+
+Note that we also initialize state->first_insn_idx with correct start
+insn_idx offset. For main program zero is correct value, but for any
+subprog it's quite confusing to not have first_insn_idx set. This
+doesn't have any functional impact, but helps with debugging and state
+printing. We also explicitly initialize state->last_insns_idx instead of
+relying on is_state_visited() to do this with env->prev_insns_idx, which
+will be -1 on the very first instruction. This concludes necessary
+changes to handle specifically global subprog's precision tracking.
+
+Second identified problem was missed handling of BPF helper functions
+that call into subprogs (e.g., bpf_loop and few others). From precision
+tracking and backtracking logic's standpoint those are effectively calls
+into subprogs and should be called as BPF_PSEUDO_CALL calls.
+
+This patch takes the least intrusive way and just checks against a short
+list of current BPF helpers that do call subprogs, encapsulated in
+is_callback_calling_function() function. But to prevent accidentally
+forgetting to add new BPF helpers to this "list", we also do a sanity
+check in __check_func_call, which has to be called for each such special
+BPF helper, to validate that BPF helper is indeed recognized as
+callback-calling one. This should catch any missed checks in the future.
+Adding some special flags to be added in function proto definitions
+seemed like an overkill in this case.
+
+With the above changes, it's possible to remove forceful setting of
+reg->precise to true in __mark_reg_unknown, which turns on precision
+tracking both inside subprogs and entry progs that have subprogs. No
+warnings or errors were detected across all the selftests, but also when
+validating with veristat against internal Meta BPF objects and Cilium
+objects. Further, in some BPF programs there are noticeable reduction in
+number of states and instructions validated due to more effective
+precision tracking, especially benefiting syncookie test.
+
+$ ./veristat -C -e file,prog,insns,states ~/baseline-results.csv ~/subprog-precise-results.csv  | grep -v '+0'
+File                                      Program                     Total insns (A)  Total insns (B)  Total insns (DIFF)  Total states (A)  Total states (B)  Total states (DIFF)
+----------------------------------------  --------------------------  ---------------  ---------------  ------------------  ----------------  ----------------  -------------------
+pyperf600_bpf_loop.bpf.linked1.o          on_event                               3966             3678       -288 (-7.26%)               306               276         -30 (-9.80%)
+pyperf_global.bpf.linked1.o               on_event                               7563             7530        -33 (-0.44%)               520               517          -3 (-0.58%)
+pyperf_subprogs.bpf.linked1.o             on_event                              36358            36934       +576 (+1.58%)              2499              2531         +32 (+1.28%)
+setget_sockopt.bpf.linked1.o              skops_sockopt                          3965             4038        +73 (+1.84%)               343               347          +4 (+1.17%)
+test_cls_redirect_subprogs.bpf.linked1.o  cls_redirect                          64965            64901        -64 (-0.10%)              4619              4612          -7 (-0.15%)
+test_misc_tcp_hdr_options.bpf.linked1.o   misc_estab                             1491             1307      -184 (-12.34%)               110               100         -10 (-9.09%)
+test_pkt_access.bpf.linked1.o             test_pkt_access                         354              349         -5 (-1.41%)                25                24          -1 (-4.00%)
+test_sock_fields.bpf.linked1.o            egress_read_sock_fields                 435              375       -60 (-13.79%)                22                20          -2 (-9.09%)
+test_sysctl_loop2.bpf.linked1.o           sysctl_tcp_mem                         1508             1501         -7 (-0.46%)                29                28          -1 (-3.45%)
+test_tc_dtime.bpf.linked1.o               egress_fwdns_prio100                    468              435        -33 (-7.05%)                45                41          -4 (-8.89%)
+test_tc_dtime.bpf.linked1.o               ingress_fwdns_prio100                   398              408        +10 (+2.51%)                42                39          -3 (-7.14%)
+test_tc_dtime.bpf.linked1.o               ingress_fwdns_prio101                  1096              842      -254 (-23.18%)                97                73        -24 (-24.74%)
+test_tcp_hdr_options.bpf.linked1.o        estab                                  2758             2408      -350 (-12.69%)               208               181        -27 (-12.98%)
+test_urandom_usdt.bpf.linked1.o           urand_read_with_sema                    466              448        -18 (-3.86%)                31                28          -3 (-9.68%)
+test_urandom_usdt.bpf.linked1.o           urand_read_without_sema                 466              448        -18 (-3.86%)                31                28          -3 (-9.68%)
+test_urandom_usdt.bpf.linked1.o           urandlib_read_with_sema                 466              448        -18 (-3.86%)                31                28          -3 (-9.68%)
+test_urandom_usdt.bpf.linked1.o           urandlib_read_without_sema              466              448        -18 (-3.86%)                31                28          -3 (-9.68%)
+test_xdp_noinline.bpf.linked1.o           balancer_ingress_v6                    4302             4294         -8 (-0.19%)               257               256          -1 (-0.39%)
+xdp_synproxy_kern.bpf.linked1.o           syncookie_tc                         583722           405757   -177965 (-30.49%)             35846             25735     -10111 (-28.21%)
+xdp_synproxy_kern.bpf.linked1.o           syncookie_xdp                        609123           479055   -130068 (-21.35%)             35452             29145      -6307 (-17.79%)
+----------------------------------------  --------------------------  ---------------  ---------------  ------------------  ----------------  ----------------  -------------------
+
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/r/20221104163649.121784-4-andrii@kernel.org
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+---
+ kernel/bpf/verifier.c | 62 ++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 61 insertions(+), 1 deletion(-)
+
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -520,7 +520,8 @@ static bool is_ptr_cast_function(enum bp
+ static bool is_callback_calling_function(enum bpf_func_id func_id)
+ {
+ 	return func_id == BPF_FUNC_for_each_map_elem ||
+-	       func_id == BPF_FUNC_timer_set_callback;
++	       func_id == BPF_FUNC_timer_set_callback ||
++	       func_id == BPF_FUNC_loop;
+ }
+ 
+ static bool is_cmpxchg_insn(const struct bpf_insn *insn)
