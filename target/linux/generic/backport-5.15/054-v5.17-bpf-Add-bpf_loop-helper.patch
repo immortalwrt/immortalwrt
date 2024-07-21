@@ -83,10 +83,15 @@ Link: https://lore.kernel.org/bpf/20211130030622.4131246-2-joannekoong@fb.com
   */
  #define __BPF_FUNC_MAPPER(FN)		\
  	FN(unspec),			\
-@@ -5074,6 +5098,7 @@ union bpf_attr {
+@@ -5074,6 +5098,12 @@ union bpf_attr {
  	FN(get_func_ip),		\
  	FN(get_attach_cookie),		\
  	FN(task_pt_regs),		\
++	FN(get_branch_snapshot),	\
++	FN(trace_vprintk),		\
++	FN(skc_to_unix_sock),		\
++	FN(kallsyms_lookup_name),	\
++	FN(find_vma),			\
 +	FN(loop),			\
  	/* */
  
@@ -287,10 +292,15 @@ Link: https://lore.kernel.org/bpf/20211130030622.4131246-2-joannekoong@fb.com
   */
  #define __BPF_FUNC_MAPPER(FN)		\
  	FN(unspec),			\
-@@ -5074,6 +5098,7 @@ union bpf_attr {
+@@ -5074,6 +5098,12 @@ union bpf_attr {
  	FN(get_func_ip),		\
  	FN(get_attach_cookie),		\
  	FN(task_pt_regs),		\
++	FN(get_branch_snapshot),	\
+++	FN(trace_vprintk),		\
++	FN(skc_to_unix_sock),		\
++	FN(kallsyms_lookup_name),	\
++	FN(find_vma),			\
 +	FN(loop),			\
  	/* */
  
