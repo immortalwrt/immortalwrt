@@ -350,7 +350,7 @@
 +	else if (likely(!atomic_dec_and_test(&skb->users)))
 +		return;
 +	*/
-+
+ 
 +	/* If possible we'd like to recycle any skb rather than just free it,
 +	 * but in order to do that we need to release any head state too.
 +	 * We don't want to do this later because we'll be in a pre-emption
@@ -364,7 +364,7 @@
 +	 */
 +	if (likely(skb->head) && likely(skb_recycler_consume(skb)))
 +		return;
- 
++
 +#ifdef CONFIG_TRACEPOINTS
  	trace_consume_skb(skb, __builtin_return_address(0));
 -	__kfree_skb(skb);
