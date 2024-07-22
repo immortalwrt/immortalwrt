@@ -239,7 +239,7 @@ define Device/radxa_e25
   UBOOT_DEVICE_NAME := radxa-e25-rk3568
   BOOT_FLOW := pine64-img
   BOOT_SCRIPT := radxa-e25
-  DEVICE_PACKAGES := kmod-r8125 kmod-ata-ahci-platform
+  DEVICE_PACKAGES := kmod-r8125 kmod-ata-ahci-dwc
 endef
 TARGET_DEVICES += radxa_e25
 

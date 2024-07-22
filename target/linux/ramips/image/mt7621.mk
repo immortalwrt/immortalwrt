@@ -605,7 +605,7 @@ define Device/comfast_cf-e390ax
   $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
   IMAGE_SIZE := 15808k
-  DEVICE_VENDOR := ComFast
+  DEVICE_VENDOR := COMFAST
   DEVICE_MODEL := CF-E390AX
   DEVICE_PACKAGES := kmod-mt7915-firmware -uboot-envtools
   IMAGES += factory.bin
@@ -619,7 +619,7 @@ define Device/comfast_cf-ew72-v2
     $(Device/dsa-migration)
     $(Device/uimage-lzma-loader)
     IMAGE_SIZE := 15808k
-    DEVICE_VENDOR := ComFast
+    DEVICE_VENDOR := COMFAST
     DEVICE_MODEL := CF-EW72 V2
     DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap \
         -uboot-envtools
@@ -1662,6 +1662,19 @@ define Device/keenetic_kn-3010
 endef
 TARGET_DEVICES += keenetic_kn-3010
 
+define Device/keenetic_kn-3510
+  $(Device/nand)
+  $(Device/uimage-lzma-loader)
+  IMAGE_SIZE := 121088k
+  DEVICE_VENDOR := Keenetic
+  DEVICE_MODEL := KN-3510
+  DEVICE_PACKAGES := kmod-mt7915-firmware -uboot-envtools
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
+	check-size | zyimage -d 0x803510 -v "KN-3510"
+endef
+TARGET_DEVICES += keenetic_kn-3510
+
 define Device/lenovo_newifi-d1
   $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
@@ -2125,6 +2138,24 @@ define Device/netgear_wax202
 	append-ubi | check-size | netgear-encrypted-factory
 endef
 TARGET_DEVICES += netgear_wax202
+
+define Device/netgear_wax214v2
+  $(Device/nand)
+  DEVICE_VENDOR := NETGEAR
+  DEVICE_MODEL := WAX214v2
+  DEVICE_PACKAGES := kmod-mt7915-firmware
+  NETGEAR_ENC_MODEL := WAX214v2
+  NETGEAR_ENC_REGION := US
+  IMAGE_SIZE := 38912k
+  KERNEL_LOADADDR := 0x82000000
+  KERNEL := kernel-bin | relocate-kernel 0x80001000 | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb | \
+	append-squashfs4-fakeroot
+  IMAGES += factory.img
+  IMAGE/factory.img := append-kernel | pad-to $$(KERNEL_SIZE) | \
+	append-ubi | check-size | netgear-encrypted-factory
+endef
+TARGET_DEVICES += netgear_wax214v2
 
 define Device/netgear_wndr3700-v5
   $(Device/dsa-migration)
