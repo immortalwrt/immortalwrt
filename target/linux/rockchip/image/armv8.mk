@@ -249,6 +249,7 @@ define Device/radxa_rock-3a
   SOC := rk3568
   SUPPORTED_DEVICES := radxa,rock3a
   BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-usb-net-cdc-ncm kmod-usb-net-rndis
 endef
 TARGET_DEVICES += radxa_rock-3a
 
@@ -292,6 +293,15 @@ define Device/radxa_rock-pi-e
   BOOT_FLOW := pine64-bin
 endef
 TARGET_DEVICES += radxa_rock-pi-e
+
+define Device/radxa_rock-pi-s
+  DEVICE_VENDOR := Radxa
+  DEVICE_MODEL := ROCK Pi S
+  SOC := rk3308
+  BOOT_SCRIPT := rock-pi-s
+  DEVICE_PACKAGES := kmod-usb-net-cdc-ncm kmod-usb-net-rndis
+endef
+TARGET_DEVICES += radxa_rock-pi-s
 
 define Device/sinovoip_bpi-r2-pro
   DEVICE_VENDOR := Bananapi

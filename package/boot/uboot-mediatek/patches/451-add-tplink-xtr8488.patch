@@ -133,7 +133,7 @@
 +CONFIG_LMB_MAX_REGIONS=64
 --- /dev/null
 +++ b/arch/arm/dts/mt7986a-tplink-tl-xtr8488.dts
-@@ -0,0 +1,200 @@
+@@ -0,0 +1,196 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2021 MediaTek Inc.
@@ -161,48 +161,44 @@
 +		reg = <0x40000000 0x40000000>;
 +	};
 +
-+	gpio-keys {
++	keys {
 +		compatible = "gpio-keys";
 +
-+		button-reset {
++		reset {
 +			label = "reset";
 +			linux,code = <KEY_RESTART>;
 +			gpios = <&gpio 15 GPIO_ACTIVE_LOW>;
 +		};
 +
-+		button-turbo {
-+			label = "turbo";
-+			linux,code = <BTN_1>;
-+			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
-+		};
-+
-+		button-wps {
++		wps {
 +			label = "wps";
 +			linux,code = <KEY_WPS_BUTTON>;
 +			gpios = <&gpio 16 GPIO_ACTIVE_LOW>;
 +		};
 +
++		turbo {
++			label = "turbo";
++			linux,code = <BTN_1>;
++			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
++		};
 +	};
 +
-+	gpio-leds {
++	leds {
 +		compatible = "gpio-leds";
 +
-+		led_status_red: led-0 {
++		status_red {
 +			label = "red:status";
 +			gpios = <&gpio 7 GPIO_ACTIVE_HIGH>;
-+			default-state = "off";
 +		};
 +
-+		led_status_green: led-1 {
++		status_green {
 +			label = "green:status";
 +			gpios = <&gpio 8 GPIO_ACTIVE_HIGH>;
-+			default-state = "on";
 +		};
 +
-+		led-2 {
++		turbo {
 +			label = "green:turbo";
 +			gpios = <&gpio 12 GPIO_ACTIVE_LOW>;
-+			default-state = "off";
 +		};
 +	};
 +};
@@ -336,13 +332,11 @@
 +};
 --- /dev/null
 +++ b/tplink_tl-xtr8488_env
-@@ -0,0 +1,56 @@
-+ethaddr_factory=mtd read config 0x40080000 0x0 0x20000 && env readmem -b ethaddr 0x4008001c 0x6 ; setenv ethaddr_factory
+@@ -0,0 +1,57 @@
 +ipaddr=192.168.1.1
 +serverip=192.168.1.254
 +loadaddr=0x46000000
 +console=earlycon=uart8250,mmio32,0x11002000 console=ttyS0
-+bootargs=root=/dev/fit0 rootwait
 +bootcmd=if pstore check ; then run boot_recovery ; else run boot_ubi ; fi
 +bootconf=config-1
 +bootdelay=0
@@ -378,6 +372,8 @@
 +boot_tftp=tftpboot $loadaddr $bootfile && bootm $loadaddr#$bootconf
 +boot_tftp_write_fip=tftpboot $loadaddr $bootfile_fip && run mtd_write_fip && run reset_factory
 +boot_tftp_write_bl2=tftpboot $loadaddr $bootfile_bl2 && run mtd_write_bl2
++part_default=production
++part_recovery=recovery
 +reset_factory=ubi part ubi ; mw $loadaddr 0x0 0x800 ; ubi write $loadaddr ubootenv 0x800 ; ubi write $loadaddr ubootenv2 0x800
 +mtd_write_fip=mtd erase fip && mtd write fip $loadaddr
 +mtd_write_bl2=mtd erase bl2 && mtd write bl2 $loadaddr
@@ -389,6 +385,7 @@
 +ubi_remove_rootfs=ubi check rootfs_data && ubi remove rootfs_data
 +ubi_write_production=ubi check fit && ubi remove fit ; run ubi_remove_rootfs ; ubi create fit $filesize dynamic && ubi write $loadaddr fit $filesize
 +ubi_write_recovery=ubi check recovery && ubi remove recovery ; run ubi_remove_rootfs ; ubi create recovery $filesize dynamic && ubi write $loadaddr recovery $filesize
++ethaddr_factory=mtd read config 0x40080000 0x0 0x20000 && env readmem -b ethaddr 0x4008001c 0x6 ; setenv ethaddr_factory
 +_init_env=setenv _init_env ; run ubi_create_env ; saveenv ; saveenv
 +_firstboot=setenv _firstboot ; run ethaddr_factory ; run _switch_to_menu ; run _init_env ; run boot_first
 +_switch_to_menu=setenv _switch_to_menu ; setenv bootdelay 3 ; setenv bootmenu_delay 3 ; setenv bootmenu_0 $bootmenu_0d ; setenv bootmenu_0d ; run _bootmenu_update_title

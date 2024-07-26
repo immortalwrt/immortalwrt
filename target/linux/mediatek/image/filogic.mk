@@ -1310,14 +1310,14 @@ define Device/tplink_tl-xtr8488
   DEVICE_DTS := mt7986a-tplink-tl-xtr8488
   $(call Device/tplink_tl-xdr-common)
   DEVICE_PACKAGES += kmod-mt7915-firmware
-  ARTIFACT/bl31-uboot.fip := mt7986-bl31-uboot tplink_tl-xtr8488
   ARTIFACT/preloader.bin := mt7986-bl2 spim-nand-ddr4
+  ARTIFACT/bl31-uboot.fip := mt7986-bl31-uboot tplink_tl-xtr8488
 endef
 TARGET_DEVICES += tplink_tl-xtr8488
 
 define Device/ubnt_unifi-6-plus
   DEVICE_VENDOR := Ubiquiti
-  DEVICE_MODEL := UniFi 6 Plus
+  DEVICE_MODEL := UniFi U6+
   DEVICE_DTS := mt7981a-ubnt-unifi-6-plus
   DEVICE_DTS_DIR := ../dts
   DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware e2fsprogs f2fsck mkf2fs fdisk partx-utils

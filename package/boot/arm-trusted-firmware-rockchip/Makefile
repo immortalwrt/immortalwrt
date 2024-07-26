@@ -24,6 +24,19 @@ define Trusted-Firmware-A/Default
   BUILD_TARGET:=rockchip
 endef
 
+define Trusted-Firmware-A/rk3308
+  BUILD_SUBTARGET:=armv8
+  ATF:=rk33/$(RK3308_ATF)
+  TPL:=rk33/$(RK3308_TPL)
+endef
+
+define Trusted-Firmware-A/rk3308-rock-pi-s
+  NAME:=Radxa ROCK Pi S board
+  BUILD_SUBTARGET:=armv8
+  ATF:=rk33/$(RK3308_ATF)
+  TPL:=rk33/$(RK3308_TPL_ROCK_PI_S)
+endef
+
 define Trusted-Firmware-A/rk3328
   BUILD_SUBTARGET:=armv8
   ATF:=rk33/$(RK3328_ATF)
@@ -64,6 +77,8 @@ define Trusted-Firmware-A/rk3588
 endef
 
 TFA_TARGETS:= \
+	rk3308 \
+	rk3308-rock-pi-s \
 	rk3328 \
 	rk3399 \
 	rk3566 \

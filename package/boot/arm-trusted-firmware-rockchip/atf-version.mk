@@ -1,3 +1,7 @@
+RK3308_ATF:=rk3308_bl31_v2.26.elf
+RK3308_TPL:=rk3308_ddr_589MHz_uart2_m1_v2.07.bin
+RK3308_TPL_ROCK_PI_S:=rk3308_ddr_589MHz_uart0_m0_v2.07.bin
+
 RK3328_ATF:=rk322xh_bl31_v1.49.elf
 RK3328_TPL:=rk3328_ddr_333MHz_v1.19.bin
 RK3328_LOADER:=rk322xh_miniloader_v2.50.bin
