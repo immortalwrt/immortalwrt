@@ -297,7 +297,7 @@ Link: https://lore.kernel.org/bpf/20211130030622.4131246-2-joannekoong@fb.com
  	FN(get_attach_cookie),		\
  	FN(task_pt_regs),		\
 +	FN(get_branch_snapshot),	\
-++	FN(trace_vprintk),		\
++	FN(trace_vprintk),		\
 +	FN(skc_to_unix_sock),		\
 +	FN(kallsyms_lookup_name),	\
 +	FN(find_vma),			\
