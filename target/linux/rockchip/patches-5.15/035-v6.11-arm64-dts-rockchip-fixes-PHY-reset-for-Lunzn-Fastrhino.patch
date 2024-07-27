@@ -1,0 +1,60 @@
+From e261bd74000ca80e5483ba8a8bda509de8cbe7fd Mon Sep 17 00:00:00 2001
+From: Chukun Pan <amadeus@jmu.edu.cn>
+Date: Sun, 30 Jun 2024 23:00:07 +0800
+Subject: [PATCH] arm64: dts: rockchip: fixes PHY reset for Lunzn Fastrhino
+ R68S
+
+Fixed the PHY address and reset GPIOs (does not match the corresponding
+pinctrl) for gmac0 and gmac1.
+
+Fixes: b9f8ca655d80 ("arm64: dts: rockchip: Add Lunzn Fastrhino R68S")
+Signed-off-by: Chukun Pan <amadeus@jmu.edu.cn>
+Link: https://lore.kernel.org/r/20240630150010.55729-7-amadeus@jmu.edu.cn
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ .../boot/dts/rockchip/rk3568-fastrhino-r68s.dts      | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r68s.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r68s.dts
+@@ -39,7 +39,7 @@
+ 		     &gmac0_rx_bus2
+ 		     &gmac0_rgmii_clk
+ 		     &gmac0_rgmii_bus>;
+-	snps,reset-gpio = <&gpio0 RK_PB0 GPIO_ACTIVE_LOW>;
++	snps,reset-gpio = <&gpio1 RK_PB0 GPIO_ACTIVE_LOW>;
+ 	snps,reset-active-low;
+ 	/* Reset time is 15ms, 50ms for rtl8211f */
+ 	snps,reset-delays-us = <0 15000 50000>;
+@@ -61,7 +61,7 @@
+ 		     &gmac1m1_rx_bus2
+ 		     &gmac1m1_rgmii_clk
+ 		     &gmac1m1_rgmii_bus>;
+-	snps,reset-gpio = <&gpio0 RK_PB1 GPIO_ACTIVE_LOW>;
++	snps,reset-gpio = <&gpio1 RK_PB1 GPIO_ACTIVE_LOW>;
+ 	snps,reset-active-low;
+ 	/* Reset time is 15ms, 50ms for rtl8211f */
+ 	snps,reset-delays-us = <0 15000 50000>;
+@@ -71,18 +71,18 @@
+ };
+ 
+ &mdio0 {
+-	rgmii_phy0: ethernet-phy@0 {
++	rgmii_phy0: ethernet-phy@1 {
+ 		compatible = "ethernet-phy-ieee802.3-c22";
+-		reg = <0>;
++		reg = <0x1>;
+ 		pinctrl-0 = <&eth_phy0_reset_pin>;
+ 		pinctrl-names = "default";
+ 	};
+ };
+ 
+ &mdio1 {
+-	rgmii_phy1: ethernet-phy@0 {
++	rgmii_phy1: ethernet-phy@1 {
+ 		compatible = "ethernet-phy-ieee802.3-c22";
+-		reg = <0>;
++		reg = <0x1>;
+ 		pinctrl-0 = <&eth_phy1_reset_pin>;
+ 		pinctrl-names = "default";
+ 	};

@@ -1,0 +1,61 @@
+From cfeac8e5d05815521f5c5568680735a92ee91fe4 Mon Sep 17 00:00:00 2001
+From: Chukun Pan <amadeus@jmu.edu.cn>
+Date: Sun, 30 Jun 2024 23:00:04 +0800
+Subject: [PATCH] arm64: dts: rockchip: fix pmu_io supply for Lunzn Fastrhino
+ R6xS
+
+Fixes pmu_io_domains supply according to the schematic. Among them,
+the vccio3 is responsible for the io voltage of sdcard. There is no
+sdcard slot on the R68S, and it's connected to vcc_3v3, so describe
+the supply of vccio3 separately.
+
+Fixes: c79dab407afd ("arm64: dts: rockchip: Add Lunzn Fastrhino R66S")
+Fixes: b9f8ca655d80 ("arm64: dts: rockchip: Add Lunzn Fastrhino R68S")
+Signed-off-by: Chukun Pan <amadeus@jmu.edu.cn>
+Link: https://lore.kernel.org/r/20240630150010.55729-4-amadeus@jmu.edu.cn
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dts  | 4 ++++
+ arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi | 4 ++--
+ arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r68s.dts  | 4 ++++
+ 3 files changed, 10 insertions(+), 2 deletions(-)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dts
+@@ -11,6 +11,10 @@
+ 	};
+ };
+ 
++&pmu_io_domains {
++	vccio3-supply = <&vccio_sd>;
++};
++
+ &sdmmc0 {
+ 	bus-width = <4>;
+ 	cap-mmc-highspeed;
+--- a/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi
+@@ -401,8 +401,8 @@
+ &pmu_io_domains {
+ 	pmuio1-supply = <&vcc3v3_pmu>;
+ 	pmuio2-supply = <&vcc3v3_pmu>;
+-	vccio1-supply = <&vccio_acodec>;
+-	vccio3-supply = <&vccio_sd>;
++	vccio1-supply = <&vcc_3v3>;
++	vccio2-supply = <&vcc_1v8>;
+ 	vccio4-supply = <&vcc_1v8>;
+ 	vccio5-supply = <&vcc_3v3>;
+ 	vccio6-supply = <&vcc_1v8>;
+--- a/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r68s.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r68s.dts
+@@ -102,6 +102,10 @@
+ 	};
+ };
+ 
++&pmu_io_domains {
++	vccio3-supply = <&vcc_3v3>;
++};
++
+ &sdhci {
+ 	bus-width = <8>;
+ 	max-frequency = <200000000>;

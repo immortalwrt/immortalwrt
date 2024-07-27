@@ -1,0 +1,57 @@
+From 9e823ba92118510c0d1c050b67bb000f9b9a73d7 Mon Sep 17 00:00:00 2001
+From: Chukun Pan <amadeus@jmu.edu.cn>
+Date: Mon, 1 Jul 2024 22:30:26 +0800
+Subject: [PATCH] arm64: dts: rockchip: fix usb regulator for Lunzn Fastrhino
+ R6xS
+
+Remove the non-existent usb_host regulator and fix the supply according
+to the schematic. Also remove the unnecessary always-on and boot-on for
+the usb_otg regulator.
+
+Fixes: c79dab407afd ("arm64: dts: rockchip: Add Lunzn Fastrhino R66S")
+Signed-off-by: Chukun Pan <amadeus@jmu.edu.cn>
+Link: https://lore.kernel.org/r/20240701143028.1203997-2-amadeus@jmu.edu.cn
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ .../boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi | 16 ++++------------
+ 1 file changed, 4 insertions(+), 12 deletions(-)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi
+@@ -78,15 +78,6 @@
+ 		vin-supply = <&vcc12v_dcin>;
+ 	};
+ 
+-	vcc5v0_usb_host: vcc5v0-usb-host-regulator {
+-		compatible = "regulator-fixed";
+-		regulator-name = "vcc5v0_usb_host";
+-		regulator-always-on;
+-		regulator-boot-on;
+-		regulator-min-microvolt = <5000000>;
+-		regulator-max-microvolt = <5000000>;
+-	};
+-
+ 	vcc5v0_usb_otg: vcc5v0-usb-otg-regulator {
+ 		compatible = "regulator-fixed";
+ 		enable-active-high;
+@@ -94,8 +85,9 @@
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&vcc5v0_usb_otg_en>;
+ 		regulator-name = "vcc5v0_usb_otg";
+-		regulator-always-on;
+-		regulator-boot-on;
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		vin-supply = <&vcc5v0_sys>;
+ 	};
+ };
+ 
+@@ -464,7 +456,7 @@
+ };
+ 
+ &usb2phy0_host {
+-	phy-supply = <&vcc5v0_usb_host>;
++	phy-supply = <&vcc5v0_sys>;
+ 	status = "okay";
+ };
+ 
