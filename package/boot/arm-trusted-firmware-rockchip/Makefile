@@ -86,6 +86,21 @@ TFA_TARGETS:= \
 	rk3568-e25 \
 	rk3588
 
+ifeq ($(BUILD_VARIANT),rk3308-rock-pi-s)
+  define Download/rk3308-tpl-rock-pi-s
+    FILE:=$(RK3308_TPL_ROCK_PI_S)
+    URL:=https://github.com/radxa/rkbin/raw/5696fab20dcac57c1458f72dc7604ba60e553adf/bin/rk33/
+    HASH:=8a1a42df23cccb86a2dabc14a5c0e9227d64a51b9b83e9968ef5af3b30787f7d
+  endef
+
+  define Build/Prepare
+	$(eval $(call Download,rk3308-tpl-rock-pi-s))
+	$(call Build/Prepare/Default)
+
+	$(CP) $(DL_DIR)/$(RK3308_TPL_ROCK_PI_S) $(PKG_BUILD_DIR)/bin/rk33/
+  endef
+endif
+
 ifeq ($(BUILD_VARIANT),rk3568-e25)
   define Download/rk3568-tpl-e25
     FILE:=$(RK3568_TPL_E25)
