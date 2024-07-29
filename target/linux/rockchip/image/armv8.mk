@@ -298,6 +298,7 @@ define Device/radxa_rock-pi-s
   DEVICE_VENDOR := Radxa
   DEVICE_MODEL := ROCK Pi S
   SOC := rk3308
+  BOOT_FLOW := pine64-img
   BOOT_SCRIPT := rock-pi-s
   DEVICE_PACKAGES := kmod-usb-net-cdc-ncm kmod-usb-net-rndis
 endef
