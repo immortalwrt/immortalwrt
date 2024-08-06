@@ -1,20 +1,15 @@
-From: Heiko Stuebner <heiko@sntech.de>
-To: srinivas.kandagatla@linaro.org
-Cc: heiko@sntech.de, linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	quentin.schulz@cherry.de,
-	Heiko Stuebner <heiko.stuebner@cherry.de>
-Subject: [PATCH 3/3] nvmem: rockchip-efuse: set type to OTP
-Date: Tue,  7 May 2024 14:22:56 +0200	[thread overview]
-Message-ID: <20240507122256.3765362-4-heiko@sntech.de> (raw)
-In-Reply-To: <20240507122256.3765362-1-heiko@sntech.de>
-
+From ba64a04474d2989f397982c48e405cfd785e2dd5 Mon Sep 17 00:00:00 2001
 From: Heiko Stuebner <heiko.stuebner@cherry.de>
+Date: Fri, 5 Jul 2024 08:48:43 +0100
+Subject: [PATCH] nvmem: rockchip-efuse: set type to OTP
 
 This device currently reports an "Unknown" type in sysfs.
 Since it is an eFuse hardware device, set its type to OTP.
 
 Signed-off-by: Heiko Stuebner <heiko.stuebner@cherry.de>
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20240705074852.423202-7-srinivas.kandagatla@linaro.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
  drivers/nvmem/rockchip-efuse.c | 1 +
  1 file changed, 1 insertion(+)

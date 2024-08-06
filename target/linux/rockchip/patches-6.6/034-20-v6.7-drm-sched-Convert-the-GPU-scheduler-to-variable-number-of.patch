@@ -76,7 +76,7 @@ Link: https://lore.kernel.org/r/20231023032251.164775-1-luben.tuikov@amd.com
  			while ((s_job = to_drm_sched_job(spsc_queue_pop(&s_entity->job_queue)))) {
 --- a/drivers/gpu/drm/etnaviv/etnaviv_sched.c
 +++ b/drivers/gpu/drm/etnaviv/etnaviv_sched.c
-@@ -135,6 +135,7 @@ int etnaviv_sched_init(struct etnaviv_gp
+@@ -134,6 +134,7 @@ int etnaviv_sched_init(struct etnaviv_gp
  	int ret;
  
  	ret = drm_sched_init(&gpu->sched, &etnaviv_sched_ops,

@@ -27,7 +27,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	};
  
  	chosen: chosen {
-@@ -747,6 +748,9 @@
+@@ -743,6 +744,9 @@
  	non-removable;
  	pinctrl-names = "default";
  	pinctrl-0 = <&sdmmc2m0_bus4 &sdmmc2m0_cmd &sdmmc2m0_clk>;

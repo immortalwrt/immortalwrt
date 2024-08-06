@@ -75,7 +75,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  				   timeout, adev->reset_domain->wq,
 --- a/drivers/gpu/drm/etnaviv/etnaviv_sched.c
 +++ b/drivers/gpu/drm/etnaviv/etnaviv_sched.c
-@@ -134,7 +134,7 @@ int etnaviv_sched_init(struct etnaviv_gp
+@@ -133,7 +133,7 @@ int etnaviv_sched_init(struct etnaviv_gp
  {
  	int ret;
  

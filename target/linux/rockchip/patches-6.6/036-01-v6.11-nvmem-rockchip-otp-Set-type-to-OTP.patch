@@ -1,19 +1,14 @@
-From: Heiko Stuebner <heiko@sntech.de>
-To: srinivas.kandagatla@linaro.org
-Cc: heiko@sntech.de, linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	quentin.schulz@cherry.de,
-	Heiko Stuebner <heiko.stuebner@cherry.de>
-Subject: [PATCH 2/3] nvmem: rockchip-otp: Set type to OTP
-Date: Tue,  7 May 2024 14:22:55 +0200	[thread overview]
-Message-ID: <20240507122256.3765362-3-heiko@sntech.de> (raw)
-In-Reply-To: <20240507122256.3765362-1-heiko@sntech.de>
-
+From 39f95600d8c53355b212a117e91a6ba15e0cac47 Mon Sep 17 00:00:00 2001
 From: Heiko Stuebner <heiko.stuebner@cherry.de>
+Date: Fri, 5 Jul 2024 08:48:42 +0100
+Subject: [PATCH] nvmem: rockchip-otp: Set type to OTP
 
 The Rockchip OTP is obviously an OTP memory, so document this fact.
 
 Signed-off-by: Heiko Stuebner <heiko.stuebner@cherry.de>
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20240705074852.423202-6-srinivas.kandagatla@linaro.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
  drivers/nvmem/rockchip-otp.c | 1 +
  1 file changed, 1 insertion(+)

@@ -104,7 +104,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  &pinctrl {
 --- a/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi
-@@ -373,6 +373,19 @@
+@@ -369,6 +369,19 @@
  	reset-gpios = <&gpio0 RK_PC3 GPIO_ACTIVE_HIGH>;
  	vpcie3v3-supply = <&vcc3v3_pcie>;
  	status = "okay";
@@ -124,7 +124,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  };
  
  &pcie3x2 {
-@@ -380,6 +393,19 @@
+@@ -376,6 +389,19 @@
  	reset-gpios = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
  	vpcie3v3-supply = <&vcc3v3_pcie>;
  	status = "okay";
@@ -163,7 +163,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	phy-mode = "rgmii-id";
  	pinctrl-names = "default";
 @@ -76,6 +78,7 @@
- 		reg = <0>;
+ 		reg = <0x1>;
  		pinctrl-0 = <&eth_phy0_reset_pin>;
  		pinctrl-names = "default";
 +		realtek,led-data = <0x6d60>;
@@ -171,15 +171,15 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  };
  
 @@ -85,6 +88,7 @@
- 		reg = <0>;
+ 		reg = <0x1>;
  		pinctrl-0 = <&eth_phy1_reset_pin>;
  		pinctrl-names = "default";
 +		realtek,led-data = <0x6d60>;
  	};
  };
  
-@@ -102,6 +106,14 @@
- 	};
+@@ -106,6 +110,14 @@
+ 	vccio3-supply = <&vcc_3v3>;
  };
  
 +&rtl8125_1 {
@@ -298,7 +298,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	status = "okay";
  };
  
-@@ -592,9 +596,7 @@
+@@ -588,9 +592,7 @@
  		reg = <0x0>;
  		pinctrl-names = "default";
  		pinctrl-0 = <&eth_phy_rst>;

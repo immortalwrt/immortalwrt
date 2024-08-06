@@ -24,7 +24,7 @@ Signed-off-by: Lin Jinhan <troy.lin@rock-chips.com>
  	phy-names = "usb2-phy", "usb3-phy";
 --- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-@@ -1122,6 +1122,16 @@
+@@ -1123,6 +1123,16 @@
  		};
  	};
  

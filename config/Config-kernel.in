@@ -550,9 +550,8 @@ config KERNEL_BPF_EVENTS
 	  or logging.
 
 config KERNEL_PROBE_EVENTS_BTF_ARGS
-	bool
-	depends on KERNEL_KPROBE_EVENTS && KERNEL_DEBUG_INFO_BTF
-	default n
+	bool "Support BTF function arguments for probe events"
+	depends on KERNEL_DEBUG_INFO_BTF && KERNEL_KPROBE_EVENTS && LINUX_6_6
 
 config KERNEL_BPF_KPROBE_OVERRIDE
 	bool
