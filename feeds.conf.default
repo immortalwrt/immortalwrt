@@ -2,3 +2,4 @@ src-git packages https://github.com/immortalwrt/packages.git;openwrt-23.05
 src-git luci https://github.com/immortalwrt/luci.git;openwrt-23.05
 src-git routing https://github.com/openwrt/routing.git;openwrt-23.05
 src-git telephony https://github.com/openwrt/telephony.git;openwrt-23.05
+src-gz kiddin9 https://github.com/kiddin9/openwrt-packages.git;openwrt-23.05
