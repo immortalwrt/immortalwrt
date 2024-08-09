@@ -96,7 +96,7 @@ endef
 
 define U-Boot/rock-pi-e-rk3328
   $(U-Boot/Default/rk3328)
-  NAME:=Rock Pi E
+  NAME:=ROCK Pi E
   BUILD_DEVICES:= \
     radxa_rock-pi-e
 endef
@@ -155,7 +155,7 @@ endef
 
 define U-Boot/rock-pi-4-rk3399
   $(U-Boot/Default/rk3399)
-  NAME:=Rock Pi 4
+  NAME:=ROCK Pi 4
   BUILD_DEVICES:= \
     radxa_rock-pi-4a
 endef
@@ -292,7 +292,7 @@ endef
 
 define U-Boot/rock5b-rk3588
   $(U-Boot/Default/rk3588)
-  NAME:=Rock 5B
+  NAME:=ROCK 5B
   BUILD_DEVICES:= \
     radxa_rock-5b
 endef
@@ -330,7 +330,7 @@ endef
 
 define U-Boot/rock5a-rk3588s
   $(U-Boot/Default/rk3588)
-  NAME:=Rock 5A
+  NAME:=ROCK 5A
   BUILD_DEVICES:= \
     radxa_rock-5a
 endef
