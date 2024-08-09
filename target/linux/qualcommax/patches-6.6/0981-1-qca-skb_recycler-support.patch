@@ -388,7 +388,7 @@
  
  	data = kmalloc_reserve(&size, gfp_mask, NUMA_NO_NODE, NULL);
  	if (!data)
-@@ -4865,6 +4971,14 @@ static void skb_extensions_init(void) {}
+@@ -4869,6 +4975,14 @@ static void skb_extensions_init(void) {}
  
  void __init skb_init(void)
  {
@@ -403,7 +403,7 @@
  	skbuff_cache = kmem_cache_create_usercopy("skbuff_head_cache",
  					      sizeof(struct sk_buff),
  					      0,
-@@ -4890,6 +5004,7 @@ void __init skb_init(void)
+@@ -4894,6 +5008,7 @@ void __init skb_init(void)
  						SKB_SMALL_HEAD_HEADROOM,
  						NULL);
  	skb_extensions_init();
@@ -411,7 +411,7 @@
  }
  
  static int
-@@ -6393,6 +6508,8 @@ static int pskb_carve_inside_header(stru
+@@ -6397,6 +6512,8 @@ static int pskb_carve_inside_header(stru
  	if (skb_pfmemalloc(skb))
  		gfp_mask |= __GFP_MEMALLOC;
  
@@ -420,7 +420,7 @@
  	data = kmalloc_reserve(&size, gfp_mask, NUMA_NO_NODE, NULL);
  	if (!data)
  		return -ENOMEM;
-@@ -6509,6 +6626,8 @@ static int pskb_carve_inside_nonlinear(s
+@@ -6513,6 +6630,8 @@ static int pskb_carve_inside_nonlinear(s
  	if (skb_pfmemalloc(skb))
  		gfp_mask |= __GFP_MEMALLOC;
  

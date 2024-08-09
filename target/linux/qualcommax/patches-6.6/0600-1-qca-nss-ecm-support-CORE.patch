@@ -610,7 +610,7 @@
  	return 0;
  
  out_remove_new_fa:
-@@ -1775,6 +1781,9 @@ int fib_table_delete(struct net *net, st
+@@ -1776,6 +1782,9 @@ int fib_table_delete(struct net *net, st
  	if (fa_to_delete->fa_state & FA_S_ACCESSED)
  		rt_cache_flush(cfg->fc_nlinfo.nl_net);
  
@@ -620,7 +620,7 @@
  	fib_release_info(fa_to_delete->fa_info);
  	alias_free_mem_rcu(fa_to_delete);
  	return 0;
-@@ -2407,6 +2416,20 @@ void __init fib_trie_init(void)
+@@ -2408,6 +2417,20 @@ void __init fib_trie_init(void)
  					   0, SLAB_PANIC | SLAB_ACCOUNT, NULL);
  }
  
