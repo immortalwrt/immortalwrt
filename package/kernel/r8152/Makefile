@@ -26,7 +26,7 @@ define KernelPackage/usb-net-rtl8152-vendor
   SUBMENU:=USB Support
   DEPENDS:=+kmod-usb-net
   CONFLICTS:=kmod-usb-net-rtl8152
-  FILES:= $(PKG_BUILD_DIR)/r8152.ko
+  FILES:=$(PKG_BUILD_DIR)/r8152.ko
   AUTOLOAD:=$(call AutoProbe,r8152)
 endef
 
