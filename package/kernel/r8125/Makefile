@@ -2,14 +2,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=r8125
 PKG_VERSION:=9.013.02
-PKG_RELEASE:=4
+PKG_RELEASE:=3
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
-PKG_SOURCE_URL:=https://github.com/Noltari/rtl8125/releases/download/$(PKG_VERSION)
+PKG_SOURCE_URL:=https://github.com/openwrt/rtl8125/releases/download/$(PKG_VERSION)
 PKG_HASH:=d36410ee99c956f250d9cd08340d8c36567d190f420a8ee128ff6e51225aac0c
 
 PKG_BUILD_PARALLEL:=1
-PKG_LICENSE:=GPL-2.0-only
+PKG_LICENSE:=GPLv2
 PKG_MAINTAINER:=Alvaro Fernandez Rojas <noltari@gmail.com>
 
 include $(INCLUDE_DIR)/kernel.mk
@@ -21,16 +21,12 @@ define KernelPackage/r8125
   DEPENDS:=@PCI_SUPPORT
   FILES:=$(PKG_BUILD_DIR)/src/r8125.ko
   AUTOLOAD:=$(call AutoProbe,r8125)
-  PROVIDES:=kmod-r8169
-endef
-
-define KernelPackage/r8125/description
-  This package contains a driver for Realtek r8125 chipsets.
+  PROVIDES:=kmod-r8169 kmod-r8125-rss
 endef
 
 define Build/Compile
 	+$(KERNEL_MAKE) $(PKG_JOBS) \
-		M=$(PKG_BUILD_DIR)/src \
+		M="$(PKG_BUILD_DIR)/src" \
 		CONFIG_ASPM=n \
 		ENABLE_RSS_SUPPORT=y \
 		modules
