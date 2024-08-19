@@ -1,6 +1,6 @@
 --- a/src/r8125_n.c
 +++ b/src/r8125_n.c
-@@ -43,6 +43,7 @@
+@@ -44,6 +44,7 @@
  #include <linux/etherdevice.h>
  #include <linux/delay.h>
  #include <linux/mii.h>
@@ -8,7 +8,7 @@
  #include <linux/if_vlan.h>
  #include <linux/crc32.h>
  #include <linux/interrupt.h>
-@@ -13626,6 +13627,25 @@ rtl8125_setup_mqs_reg(struct rtl8125_pri
+@@ -13666,6 +13667,25 @@ rtl8125_setup_mqs_reg(struct rtl8125_pri
                  tp->imr_reg[i] = (u16)(IMR1_8125 + (i - 1) * 4);
  }
  
@@ -34,7 +34,7 @@
  static void
  rtl8125_init_software_variable(struct net_device *dev)
  {
-@@ -14260,6 +14280,8 @@ rtl8125_init_software_variable(struct ne
+@@ -14300,6 +14320,8 @@ rtl8125_init_software_variable(struct ne
          else if (tp->InitRxDescType == RX_DESC_RING_TYPE_4)
                  tp->rtl8125_rx_config &= ~EnableRxDescV4_1;
  
