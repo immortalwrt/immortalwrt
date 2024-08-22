@@ -44,6 +44,9 @@ Package/brcmfmac-firmware-43456-sdio = $(call Package/armbian-firmware-default,B
 define Package/brcmfmac-firmware-43456-sdio/install
 	$(INSTALL_DIR) $(1)/lib/firmware/brcm
 	$(INSTALL_DATA) \
+		$(PKG_BUILD_DIR)/brcm/BCM4345C5.hcd \
+		$(1)/lib/firmware/brcm/
+	$(INSTALL_DATA) \
 		$(PKG_BUILD_DIR)/brcm/brcmfmac43456-sdio.bin \
 		$(1)/lib/firmware/brcm/
 	$(INSTALL_DATA) \
