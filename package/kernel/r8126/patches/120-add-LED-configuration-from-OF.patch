@@ -1,6 +1,6 @@
 --- a/src/r8126_n.c
 +++ b/src/r8126_n.c
-@@ -43,6 +43,7 @@
+@@ -44,6 +44,7 @@
  #include <linux/etherdevice.h>
  #include <linux/delay.h>
  #include <linux/mii.h>
@@ -8,7 +8,7 @@
  #include <linux/if_vlan.h>
  #include <linux/crc32.h>
  #include <linux/interrupt.h>
-@@ -11610,6 +11611,25 @@ rtl8126_setup_mqs_reg(struct rtl8126_pri
+@@ -11652,6 +11653,25 @@ rtl8126_setup_mqs_reg(struct rtl8126_pri
          }
  }
  
@@ -34,7 +34,7 @@
  static void
  rtl8126_init_software_variable(struct net_device *dev)
  {
-@@ -11982,6 +12002,8 @@ rtl8126_init_software_variable(struct ne
+@@ -12024,6 +12044,8 @@ rtl8126_init_software_variable(struct ne
          if (tp->InitRxDescType == RX_DESC_RING_TYPE_3)
                  tp->rtl8126_rx_config |= EnableRxDescV3;
  
