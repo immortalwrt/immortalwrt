@@ -92,7 +92,7 @@ define Package/brcmfmac-nvram-4356-sdio/install
 		$(PKG_BUILD_DIR)/rkwifi/nvram_ap6356s.txt \
 		$(1)/lib/firmware/brcm/brcmfmac4356-sdio.AP6356S.txt
 	$(LN) \
-		brcmfmac4356.AP6356S.txt \
+		brcmfmac4356-sdio.AP6356S.txt \
 		$(1)/lib/firmware/brcm/brcmfmac4356-sdio.friendlyarm,nanopc-t4.txt
 endef
 $(eval $(call BuildPackage,brcmfmac-nvram-4356-sdio))
