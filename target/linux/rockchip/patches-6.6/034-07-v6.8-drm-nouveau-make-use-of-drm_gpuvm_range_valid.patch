@@ -42,7 +42,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-5-dakr@
  		return -EINVAL;
  
  	return 0;
-@@ -1834,9 +1822,6 @@ nouveau_uvmm_init(struct nouveau_uvmm *u
+@@ -1836,9 +1824,6 @@ nouveau_uvmm_init(struct nouveau_uvmm *u
  		goto out_unlock;
  	}
  

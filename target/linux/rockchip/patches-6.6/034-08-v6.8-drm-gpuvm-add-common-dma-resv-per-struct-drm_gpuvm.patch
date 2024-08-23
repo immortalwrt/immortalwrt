@@ -118,7 +118,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-6-dakr@
  
 --- a/drivers/gpu/drm/nouveau/nouveau_uvmm.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_uvmm.c
-@@ -1797,8 +1797,9 @@ nouveau_uvmm_init(struct nouveau_uvmm *u
+@@ -1799,8 +1799,9 @@ nouveau_uvmm_init(struct nouveau_uvmm *u
  		  u64 kernel_managed_addr, u64 kernel_managed_size)
  {
  	struct drm_device *drm = cli->drm->dev;
@@ -129,7 +129,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-6-dakr@
  
  	mutex_init(&uvmm->mutex);
  	dma_resv_init(&uvmm->resv);
-@@ -1822,11 +1823,19 @@ nouveau_uvmm_init(struct nouveau_uvmm *u
+@@ -1824,11 +1825,19 @@ nouveau_uvmm_init(struct nouveau_uvmm *u
  		goto out_unlock;
  	}
  

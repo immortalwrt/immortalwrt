@@ -338,7 +338,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231113221202.7203-1-dakr@r
  	list_for_each_op(op, &bind_job->ops) {
  		switch (op->op) {
  		case OP_MAP_SPARSE:
-@@ -1290,55 +1337,13 @@ nouveau_uvmm_bind_job_submit(struct nouv
+@@ -1290,57 +1337,13 @@ nouveau_uvmm_bind_job_submit(struct nouv
  		}
  	}
  
@@ -376,6 +376,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231113221202.7203-1-dakr@r
 -
 -		drm_gpuva_for_each_op(va_op, op->ops) {
 -			struct drm_gem_object *obj = op_gem_obj(va_op);
+-			struct nouveau_bo *nvbo;
 -
 -			if (unlikely(!obj))
 -				continue;
@@ -386,8 +387,9 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231113221202.7203-1-dakr@r
 -			if (unlikely(va_op->op == DRM_GPUVA_OP_UNMAP))
 -				continue;
 -
--			ret = nouveau_bo_validate(nouveau_gem_object(obj),
--						  true, false);
+-			nvbo = nouveau_gem_object(obj);
+-			nouveau_bo_placement_set(nvbo, nvbo->valid_domains, 0);
+-			ret = nouveau_bo_validate(nvbo, true, false);
 -			if (ret) {
 -				op = list_last_op(&bind_job->ops);
 -				goto unwind;
@@ -400,7 +402,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231113221202.7203-1-dakr@r
  		}
  	}
  
-@@ -1413,21 +1418,17 @@ unwind:
+@@ -1415,21 +1418,17 @@ unwind:
  	}
  
  	nouveau_uvmm_unlock(uvmm);
@@ -428,7 +430,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231113221202.7203-1-dakr@r
  }
  
  static struct dma_fence *
-@@ -1815,8 +1816,17 @@ nouveau_uvmm_free(struct drm_gpuvm *gpuv
+@@ -1817,8 +1816,18 @@ nouveau_uvmm_free(struct drm_gpuvm *gpuv
  	kfree(uvmm);
  }
  
@@ -437,6 +439,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231113221202.7203-1-dakr@r
 +{
 +	struct nouveau_bo *nvbo = nouveau_gem_object(vm_bo->obj);
 +
++	nouveau_bo_placement_set(nvbo, nvbo->valid_domains, 0);
 +	return nouveau_bo_validate(nvbo, true, false);
 +}
 +

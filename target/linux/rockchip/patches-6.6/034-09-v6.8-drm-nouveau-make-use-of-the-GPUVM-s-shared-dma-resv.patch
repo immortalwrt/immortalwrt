@@ -96,7 +96,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-7-dakr@
  }
 --- a/drivers/gpu/drm/nouveau/nouveau_uvmm.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_uvmm.c
-@@ -1802,7 +1802,6 @@ nouveau_uvmm_init(struct nouveau_uvmm *u
+@@ -1804,7 +1804,6 @@ nouveau_uvmm_init(struct nouveau_uvmm *u
  	int ret;
  
  	mutex_init(&uvmm->mutex);
@@ -104,7 +104,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-7-dakr@
  	mt_init_flags(&uvmm->region_mt, MT_FLAGS_LOCK_EXTERN);
  	mt_set_external_lock(&uvmm->region_mt, &uvmm->mutex);
  
-@@ -1842,14 +1841,14 @@ nouveau_uvmm_init(struct nouveau_uvmm *u
+@@ -1844,14 +1843,14 @@ nouveau_uvmm_init(struct nouveau_uvmm *u
  			    kernel_managed_addr, kernel_managed_size,
  			    NULL, 0, &cli->uvmm.vmm.vmm);
  	if (ret)
@@ -121,7 +121,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-7-dakr@
  	drm_gpuvm_destroy(&uvmm->base);
  out_unlock:
  	mutex_unlock(&cli->mutex);
-@@ -1907,6 +1906,4 @@ nouveau_uvmm_fini(struct nouveau_uvmm *u
+@@ -1909,6 +1908,4 @@ nouveau_uvmm_fini(struct nouveau_uvmm *u
  	nouveau_vmm_fini(&uvmm->vmm);
  	drm_gpuvm_destroy(&uvmm->base);
  	mutex_unlock(&cli->mutex);

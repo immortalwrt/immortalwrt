@@ -48,7 +48,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-8-dakr@
  	gpuvm->r_obj = r_obj;
 --- a/drivers/gpu/drm/nouveau/nouveau_uvmm.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_uvmm.c
-@@ -1828,7 +1828,7 @@ nouveau_uvmm_init(struct nouveau_uvmm *u
+@@ -1830,7 +1830,7 @@ nouveau_uvmm_init(struct nouveau_uvmm *u
  		goto out_unlock;
  	}
  

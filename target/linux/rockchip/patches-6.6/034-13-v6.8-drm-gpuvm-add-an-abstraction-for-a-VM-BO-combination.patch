@@ -645,7 +645,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-11-dakr
  		}
  
  		ret = bind_validate_op(job, op);
-@@ -1352,7 +1367,7 @@ nouveau_uvmm_bind_job_submit(struct nouv
+@@ -1354,7 +1369,7 @@ nouveau_uvmm_bind_job_submit(struct nouv
  		case OP_UNMAP_SPARSE:
  		case OP_MAP:
  		case OP_UNMAP:
@@ -654,7 +654,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-11-dakr
  			break;
  		default:
  			break;
-@@ -1499,6 +1514,12 @@ nouveau_uvmm_bind_job_free_work_fn(struc
+@@ -1501,6 +1516,12 @@ nouveau_uvmm_bind_job_free_work_fn(struc
  		if (!IS_ERR_OR_NULL(op->ops))
  			drm_gpuva_ops_free(&uvmm->base, op->ops);
  
@@ -667,7 +667,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-11-dakr
  		if (obj)
  			drm_gem_object_put(obj);
  	}
-@@ -1752,15 +1773,18 @@ void
+@@ -1754,15 +1775,18 @@ void
  nouveau_uvmm_bo_map_all(struct nouveau_bo *nvbo, struct nouveau_mem *mem)
  {
  	struct drm_gem_object *obj = &nvbo->bo.base;
@@ -690,7 +690,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-11-dakr
  	}
  }
  
-@@ -1768,15 +1792,18 @@ void
+@@ -1770,15 +1794,18 @@ void
  nouveau_uvmm_bo_unmap_all(struct nouveau_bo *nvbo)
  {
  	struct drm_gem_object *obj = &nvbo->bo.base;

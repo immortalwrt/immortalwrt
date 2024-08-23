@@ -116,7 +116,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-2-dakr@
  
 --- a/drivers/gpu/drm/nouveau/nouveau_uvmm.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_uvmm.c
-@@ -1808,6 +1808,7 @@ int
+@@ -1810,6 +1810,7 @@ int
  nouveau_uvmm_init(struct nouveau_uvmm *uvmm, struct nouveau_cli *cli,
  		  u64 kernel_managed_addr, u64 kernel_managed_size)
  {
@@ -124,7 +124,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-2-dakr@
  	int ret;
  	u64 kernel_managed_end = kernel_managed_addr + kernel_managed_size;
  
-@@ -1836,7 +1837,7 @@ nouveau_uvmm_init(struct nouveau_uvmm *u
+@@ -1838,7 +1839,7 @@ nouveau_uvmm_init(struct nouveau_uvmm *u
  	uvmm->kernel_managed_addr = kernel_managed_addr;
  	uvmm->kernel_managed_size = kernel_managed_size;
  

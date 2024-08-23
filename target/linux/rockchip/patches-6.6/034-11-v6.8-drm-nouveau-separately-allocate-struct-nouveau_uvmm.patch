@@ -68,7 +68,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-9-dakr@
  static inline struct nouveau_uvmm *
 --- a/drivers/gpu/drm/nouveau/nouveau_uvmm.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_uvmm.c
-@@ -1636,18 +1636,6 @@ err_free:
+@@ -1638,18 +1638,6 @@ err_free:
  	return ret;
  }
  
@@ -87,7 +87,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-9-dakr@
  static int
  nouveau_uvmm_vm_bind(struct nouveau_uvmm_bind_job_args *args)
  {
-@@ -1793,17 +1781,25 @@ nouveau_uvmm_bo_unmap_all(struct nouveau
+@@ -1795,17 +1783,25 @@ nouveau_uvmm_bo_unmap_all(struct nouveau
  }
  
  int
@@ -119,7 +119,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-9-dakr@
  
  	mutex_lock(&cli->mutex);
  
-@@ -1812,44 +1808,49 @@ nouveau_uvmm_init(struct nouveau_uvmm *u
+@@ -1814,44 +1810,49 @@ nouveau_uvmm_init(struct nouveau_uvmm *u
  		goto out_unlock;
  	}
  
@@ -180,7 +180,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-9-dakr@
  out_unlock:
  	mutex_unlock(&cli->mutex);
  	return ret;
-@@ -1864,9 +1865,6 @@ nouveau_uvmm_fini(struct nouveau_uvmm *u
+@@ -1866,9 +1867,6 @@ nouveau_uvmm_fini(struct nouveau_uvmm *u
  	struct nouveau_sched_entity *entity = &cli->sched_entity;
  	struct drm_gpuva *va, *next;
  
@@ -190,7 +190,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-9-dakr@
  	rmb(); /* for list_empty to work without lock */
  	wait_event(entity->job.wq, list_empty(&entity->job.list.head));
  
-@@ -1905,5 +1903,6 @@ nouveau_uvmm_fini(struct nouveau_uvmm *u
+@@ -1907,5 +1905,6 @@ nouveau_uvmm_fini(struct nouveau_uvmm *u
  	mutex_lock(&cli->mutex);
  	nouveau_vmm_fini(&uvmm->vmm);
  	drm_gpuvm_destroy(&uvmm->base);

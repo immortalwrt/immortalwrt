@@ -118,7 +118,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-10-dakr
  
 --- a/drivers/gpu/drm/nouveau/nouveau_uvmm.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_uvmm.c
-@@ -1780,6 +1780,18 @@ nouveau_uvmm_bo_unmap_all(struct nouveau
+@@ -1782,6 +1782,18 @@ nouveau_uvmm_bo_unmap_all(struct nouveau
  	}
  }
  
@@ -137,7 +137,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-10-dakr
  int
  nouveau_uvmm_ioctl_vm_init(struct drm_device *dev,
  			   void *data,
-@@ -1830,7 +1842,7 @@ nouveau_uvmm_ioctl_vm_init(struct drm_de
+@@ -1832,7 +1844,7 @@ nouveau_uvmm_ioctl_vm_init(struct drm_de
  		       NOUVEAU_VA_SPACE_END,
  		       init->kernel_managed_addr,
  		       init->kernel_managed_size,
@@ -146,7 +146,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-10-dakr
  	/* GPUVM takes care from here on. */
  	drm_gem_object_put(r_obj);
  
-@@ -1849,8 +1861,7 @@ nouveau_uvmm_ioctl_vm_init(struct drm_de
+@@ -1851,8 +1863,7 @@ nouveau_uvmm_ioctl_vm_init(struct drm_de
  	return 0;
  
  out_gpuvm_fini:
@@ -156,7 +156,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-10-dakr
  out_unlock:
  	mutex_unlock(&cli->mutex);
  	return ret;
-@@ -1902,7 +1913,6 @@ nouveau_uvmm_fini(struct nouveau_uvmm *u
+@@ -1904,7 +1915,6 @@ nouveau_uvmm_fini(struct nouveau_uvmm *u
  
  	mutex_lock(&cli->mutex);
  	nouveau_vmm_fini(&uvmm->vmm);
