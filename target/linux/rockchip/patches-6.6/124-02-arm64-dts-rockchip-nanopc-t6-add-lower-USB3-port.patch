@@ -40,7 +40,7 @@
  	};
  };
  
-@@ -914,6 +940,11 @@
+@@ -915,6 +941,11 @@
  	status = "okay";
  };
  
@@ -52,7 +52,7 @@
  &u2phy2_host {
  	phy-supply = <&vdd_4g_3v3>;
  	status = "okay";
-@@ -923,6 +954,10 @@
+@@ -924,6 +955,10 @@
  	status = "okay";
  };
  
@@ -63,7 +63,7 @@
  &u2phy2 {
  	status = "okay";
  };
-@@ -931,6 +966,10 @@
+@@ -932,6 +967,10 @@
  	status = "okay";
  };
  
@@ -74,7 +74,7 @@
  &usb_host0_ehci {
  	status = "okay";
  };
-@@ -946,3 +985,7 @@
+@@ -947,3 +986,7 @@
  &usb_host1_ohci {
  	status = "okay";
  };

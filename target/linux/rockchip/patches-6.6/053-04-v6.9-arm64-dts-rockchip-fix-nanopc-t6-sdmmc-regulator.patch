@@ -33,9 +33,9 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	vdd_4g_3v3: vdd-4g-3v3-regulator {
  		compatible = "regulator-fixed";
  		enable-active-high;
-@@ -559,7 +570,7 @@
- 	no-mmc;
- 	no-sdio;
+@@ -560,7 +571,7 @@
+ 	cap-sd-highspeed;
+ 	disable-wp;
  	sd-uhs-sdr104;
 -	vmmc-supply = <&vcc_3v3_s3>;
 +	vmmc-supply = <&vcc3v3_sd_s0>;

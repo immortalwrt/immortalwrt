@@ -47,7 +47,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  		typec5v_pwren: typec5v-pwren {
  			rockchip,pins = <1 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
  		};
-@@ -884,6 +900,7 @@
+@@ -885,6 +901,7 @@
  };
  
  &u2phy2_host {
