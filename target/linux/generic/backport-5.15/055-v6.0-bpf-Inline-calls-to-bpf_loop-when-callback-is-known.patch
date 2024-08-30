@@ -113,7 +113,7 @@ Signed-off-by: Alexei Starovoitov <ast@kernel.org>
  	for (i = 0; i < nr_loops; i++) {
 --- a/kernel/bpf/verifier.c
 +++ b/kernel/bpf/verifier.c
-@@ -6520,6 +6520,41 @@ static int check_get_func_ip(struct bpf_
+@@ -6525,6 +6525,41 @@ static int check_get_func_ip(struct bpf_
  	return -ENOTSUPP;
  }
  
@@ -155,7 +155,7 @@ Signed-off-by: Alexei Starovoitov <ast@kernel.org>
  static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
  			     int *insn_idx_p)
  {
-@@ -6643,6 +6678,7 @@ static int check_helper_call(struct bpf_
+@@ -6648,6 +6683,7 @@ static int check_helper_call(struct bpf_
  		err = check_bpf_snprintf_call(env, regs);
  		break;
  	case BPF_FUNC_loop:
@@ -163,7 +163,7 @@ Signed-off-by: Alexei Starovoitov <ast@kernel.org>
  		err = __check_func_call(env, insn, insn_idx_p, meta.subprogno,
  					set_loop_callback_state);
  		break;
-@@ -6979,11 +7015,6 @@ static bool check_reg_sane_offset(struct
+@@ -6984,11 +7020,6 @@ static bool check_reg_sane_offset(struct
  	return true;
  }
  
@@ -175,7 +175,7 @@ Signed-off-by: Alexei Starovoitov <ast@kernel.org>
  enum {
  	REASON_BOUNDS	= -1,
  	REASON_TYPE	= -2,
-@@ -13390,6 +13421,142 @@ patch_call_imm:
+@@ -13399,6 +13430,142 @@ patch_call_imm:
  	return 0;
  }
  
@@ -318,7 +318,7 @@ Signed-off-by: Alexei Starovoitov <ast@kernel.org>
  static void free_states(struct bpf_verifier_env *env)
  {
  	struct bpf_verifier_state_list *sl, *sln;
-@@ -14131,6 +14298,9 @@ skip_full_check:
+@@ -14140,6 +14307,9 @@ skip_full_check:
  		ret = check_max_stack_depth(env);
  
  	/* instruction rewrites happen after this point */

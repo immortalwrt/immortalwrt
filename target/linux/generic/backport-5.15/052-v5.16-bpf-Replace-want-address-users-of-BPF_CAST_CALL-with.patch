@@ -92,7 +92,7 @@ Link: https://lore.kernel.org/bpf/20210928230946.4062144-2-keescook@chromium.org
  	err = btf_distill_func_proto(&env->log, btf_vmlinux,
  				     func_proto, func_name,
  				     &desc->func_model);
-@@ -12778,8 +12778,7 @@ static int jit_subprogs(struct bpf_verif
+@@ -12787,8 +12787,7 @@ static int jit_subprogs(struct bpf_verif
  			if (!bpf_pseudo_call(insn))
  				continue;
  			subprog = insn->off;
@@ -102,7 +102,7 @@ Link: https://lore.kernel.org/bpf/20210928230946.4062144-2-keescook@chromium.org
  		}
  
  		/* we use the aux data to keep a list of the start addresses
-@@ -13267,32 +13266,25 @@ static int do_misc_fixups(struct bpf_ver
+@@ -13276,32 +13275,25 @@ static int do_misc_fixups(struct bpf_ver
  patch_map_ops_generic:
  			switch (insn->imm) {
  			case BPF_FUNC_map_lookup_elem:

@@ -150,7 +150,7 @@ Link: https://lore.kernel.org/bpf/20211130030622.4131246-2-joannekoong@fb.com
  	}
 --- a/kernel/bpf/verifier.c
 +++ b/kernel/bpf/verifier.c
-@@ -6217,6 +6217,27 @@ static int set_map_elem_callback_state(s
+@@ -6222,6 +6222,27 @@ static int set_map_elem_callback_state(s
  	return 0;
  }
  
@@ -178,7 +178,7 @@ Link: https://lore.kernel.org/bpf/20211130030622.4131246-2-joannekoong@fb.com
  static int set_timer_callback_state(struct bpf_verifier_env *env,
  				    struct bpf_func_state *caller,
  				    struct bpf_func_state *callee,
-@@ -6582,13 +6603,7 @@ static int check_helper_call(struct bpf_
+@@ -6587,13 +6608,7 @@ static int check_helper_call(struct bpf_
  			return err;
  	}
  
@@ -193,7 +193,7 @@ Link: https://lore.kernel.org/bpf/20211130030622.4131246-2-joannekoong@fb.com
  		err = release_reference(env, meta.ref_obj_id);
  		if (err) {
  			verbose(env, "func %s#%d reference has not been acquired before\n",
-@@ -6599,35 +6614,43 @@ static int check_helper_call(struct bpf_
+@@ -6604,35 +6619,43 @@ static int check_helper_call(struct bpf_
  
  	regs = cur_regs(env);
  
