@@ -1,0 +1,35 @@
+From d5edc0e36bb1657d2c46b7521010d4f0894a5c74 Mon Sep 17 00:00:00 2001
+From: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Date: Thu, 6 Apr 2023 22:41:54 +0300
+Subject: [PATCH] regulator: fan53555: Remove unused *_SLEW_SHIFT definitions
+
+Commit b61ac767db4d ("regulator: fan53555: Convert to use
+regulator_set_ramp_delay_regmap") removed the slew_shift member from
+struct fan53555_device_info, hence the {CTL,TCS}_SLEW_SHIFT definitions
+remained unused.  Drop them.
+
+Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Link: https://lore.kernel.org/r/20230406194158.963352-5-cristian.ciocaltea@collabora.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+---
+ drivers/regulator/fan53555.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+--- a/drivers/regulator/fan53555.c
++++ b/drivers/regulator/fan53555.c
+@@ -49,7 +49,6 @@
+ /* Control bit definitions */
+ #define CTL_OUTPUT_DISCHG	(1 << 7)
+ #define CTL_SLEW_MASK		(0x7 << 4)
+-#define CTL_SLEW_SHIFT		4
+ #define CTL_RESET			(1 << 2)
+ #define CTL_MODE_VSEL0_MODE	BIT(0)
+ #define CTL_MODE_VSEL1_MODE	BIT(1)
+@@ -60,7 +59,6 @@
+ #define TCS_VSEL0_MODE		(1 << 7)
+ #define TCS_VSEL1_MODE		(1 << 6)
+ 
+-#define TCS_SLEW_SHIFT		3
+ #define TCS_SLEW_MASK		GENMASK(4, 3)
+ 
+ enum fan53555_vendor {
