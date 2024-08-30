@@ -266,6 +266,13 @@ define U-Boot/rock-3a-rk3568
     radxa_rock-3a
 endef
 
+define U-Boot/sige3-rk3568
+  $(U-Boot/rk3568/Default)
+  NAME:=Sige3
+  BUILD_DEVICES:= \
+    armsom_sige3
+endef
+
 
 # RK3588 boards
 
@@ -363,6 +370,7 @@ UBOOT_TARGETS := \
   radxa-e25-rk3568 \
   roc-pc-rk3568 \
   rock-3a-rk3568 \
+  sige3-rk3568 \
   nanopc-t6-rk3588 \
   orangepi-5-plus-rk3588 \
   rock5b-rk3588 \
