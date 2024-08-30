@@ -233,6 +233,36 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  
  	chosen: chosen {
+--- a/arch/arm64/boot/dts/rockchip/rk3566-radxa-zero-3.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3566-radxa-zero-3.dtsi
+@@ -6,6 +6,13 @@
+ #include "rk3566.dtsi"
+ 
+ / {
++	aliases {
++		led-boot = &led_green;
++		led-failsafe = &led_green;
++		led-running = &led_green;
++		led-upgrade = &led_green;
++	};
++
+ 	chosen {
+ 		stdout-path = "serial2:1500000n8";
+ 	};
+@@ -26,12 +33,11 @@
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&user_led2>;
+ 
+-		led-green {
++		led_green: led-green {
+ 			color = <LED_COLOR_ID_GREEN>;
+ 			default-state = "on";
+ 			function = LED_FUNCTION_HEARTBEAT;
+ 			gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
+-			linux,default-trigger = "heartbeat";
+ 		};
+ 	};
+ 
 --- a/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi
 @@ -9,6 +9,13 @@
@@ -313,6 +343,34 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  			pinctrl-names = "default";
  			pinctrl-0 = <&led_user_en>;
  		};
+--- a/arch/arm64/boot/dts/rockchip/rk3566-rock-3c.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3566-rock-3c.dts
+@@ -16,6 +16,10 @@
+ 		mmc0 = &sdhci;
+ 		mmc1 = &sdmmc0;
+ 		mmc2 = &sdmmc1;
++		led-boot = &led_blue;
++		led-failsafe = &led_blue;
++		led-running = &led_blue;
++		led-upgrade = &led_blue;
+ 	};
+ 
+ 	chosen: chosen {
+@@ -43,11 +47,10 @@
+ 	leds {
+ 		compatible = "gpio-leds";
+ 
+-		led-0 {
+-			gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
+-			function = LED_FUNCTION_HEARTBEAT;
++		led_blue: led-0 {
+ 			color = <LED_COLOR_ID_BLUE>;
+-			linux,default-trigger = "heartbeat";
++			function = LED_FUNCTION_HEARTBEAT;
++			gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&user_led2>;
+ 		};
 --- a/arch/arm64/boot/dts/rockchip/rk3568-roc-pc.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-roc-pc.dts
 @@ -19,6 +19,11 @@
@@ -386,6 +444,33 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  			pinctrl-names = "default";
  			pinctrl-0 = <&led_user_en>;
  		};
+--- a/arch/arm64/boot/dts/rockchip/rk3568-rock-3b.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-rock-3b.dts
+@@ -18,6 +18,10 @@
+ 		mmc0 = &sdhci;
+ 		mmc1 = &sdmmc0;
+ 		mmc2 = &sdmmc2;
++		led-boot = &led_green;
++		led-failsafe = &led_green;
++		led-running = &led_green;
++		led-upgrade = &led_green;
+ 	};
+ 
+ 	chosen {
+@@ -47,12 +51,11 @@
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&led>;
+ 
+-		led-0 {
++		led_green: led-0 {
+ 			color = <LED_COLOR_ID_GREEN>;
+ 			default-state = "on";
+ 			function = LED_FUNCTION_HEARTBEAT;
+ 			gpios = <&gpio0 RK_PB7 GPIO_ACTIVE_HIGH>;
+-			linux,default-trigger = "heartbeat";
+ 		};
+ 	};
+ 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
 @@ -8,6 +8,7 @@

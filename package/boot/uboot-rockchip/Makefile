@@ -184,6 +184,20 @@ define U-Boot/radxa-cm3-io-rk3566
     radxa_cm3-io
 endef
 
+define U-Boot/radxa-zero-3-rk3566
+  $(U-Boot/rk3566/Default)
+  NAME:=ZERO 3E/3W
+  BUILD_DEVICES:= \
+    radxa_zero-3e \
+    radxa_zero-3w
+endef
+
+define U-Boot/rock-3c-rk3566
+  $(U-Boot/rk3566/Default)
+  NAME:=ROCK 3C
+  BUILD_DEVICES:= \
+    radxa_rock-3c
+endef
 
 # RK3568 boards
 
@@ -264,6 +278,13 @@ define U-Boot/rock-3a-rk3568
   NAME:=ROCK 3A
   BUILD_DEVICES:= \
     radxa_rock-3a
+endef
+
+define U-Boot/rock-3b-rk3568
+  $(U-Boot/rk3568/Default)
+  NAME:=ROCK 3B
+  BUILD_DEVICES:= \
+    radxa_rock-3b
 endef
 
 define U-Boot/sige3-rk3568
@@ -360,6 +381,8 @@ UBOOT_TARGETS := \
   rock-pi-e-v3-rk3328 \
   rock64-rk3328 \
   radxa-cm3-io-rk3566 \
+  radxa-zero-3-rk3566 \
+  rock-3c-rk3566 \
   bpi-r2-pro-rk3568 \
   fastrhino-r66s-rk3568 \
   fastrhino-r68s-rk3568 \
@@ -370,6 +393,7 @@ UBOOT_TARGETS := \
   radxa-e25-rk3568 \
   roc-pc-rk3568 \
   rock-3a-rk3568 \
+  rock-3b-rk3568 \
   sige3-rk3568 \
   nanopc-t6-rk3588 \
   orangepi-5-plus-rk3588 \
