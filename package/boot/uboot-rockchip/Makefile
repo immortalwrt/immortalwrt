@@ -198,6 +198,13 @@ define U-Boot/roc-pc-rk3568
     firefly_roc-rk3568-pc
 endef
 
+define U-Boot/sige3-rk3568
+  $(U-Boot/Default/rk3568)
+  NAME:=Sige3
+  BUILD_DEVICES:= \
+    armsom_sige3
+endef
+
 UBOOT_TARGETS := \
   guangmiao-g4c-rk3399 \
   nanopc-t4-rk3399 \
@@ -219,7 +226,8 @@ UBOOT_TARGETS := \
   nanopi-r5c-rk3568 \
   nanopi-r5s-rk3568 \
   photonicat-rk3568 \
-  roc-pc-rk3568
+  roc-pc-rk3568 \
+  sige3-rk3568
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 

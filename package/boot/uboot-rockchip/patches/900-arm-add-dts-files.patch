@@ -28,9 +28,11 @@
  	rk3399-orangepi.dtb \
  	rk3399-pinebook-pro.dtb \
  	rk3399-pinephone-pro.dtb \
-@@ -169,6 +175,13 @@ dtb-$(CONFIG_ROCKCHIP_RK3568) += \
+@@ -168,7 +174,15 @@ dtb-$(CONFIG_ROCKCHIP_RK3399) += \
+ dtb-$(CONFIG_ROCKCHIP_RK3568) += \
  	rk3566-anbernic-rgxx3.dtb \
  	rk3566-radxa-cm3-io.dtb \
++	rk3568-armsom-sige3.dtb \
  	rk3568-evb.dtb \
 +	rk3568-fastrhino-r66s.dtb \
 +	rk3568-fastrhino-r68s.dtb \
