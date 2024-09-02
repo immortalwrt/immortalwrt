@@ -25,7 +25,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231013122036.1594090-1-and
  	const struct vop2_video_port_data *data;
  
  	struct completion dsp_hold_completion;
-@@ -2275,7 +2274,6 @@ static int vop2_create_crtcs(struct vop2
+@@ -2280,7 +2279,6 @@ static int vop2_create_crtcs(struct vop2
  		vp = &vop2->vps[i];
  		vp->vop2 = vop2;
  		vp->id = vp_data->id;
