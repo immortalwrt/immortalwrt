@@ -25,7 +25,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  		regulator-name = "vbus5v0_typec";
  		regulator-min-microvolt = <5000000>;
  		regulator-max-microvolt = <5000000>;
-@@ -393,11 +395,34 @@
+@@ -381,11 +383,34 @@
  			compatible = "usb-c-connector";
  			data-role = "dual";
  			label = "USB-C";
@@ -64,7 +64,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  		};
  	};
  
-@@ -944,6 +969,14 @@
+@@ -928,6 +953,14 @@
  	status = "okay";
  };
  
@@ -77,9 +77,9 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 +};
 +
  &u2phy2_host {
- 	phy-supply = <&vdd_4g_3v3>;
  	status = "okay";
-@@ -961,6 +994,29 @@
+ };
+@@ -944,6 +977,29 @@
  	status = "okay";
  };
  
@@ -109,7 +109,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  &usb_host0_ehci {
  	status = "okay";
  };
-@@ -969,6 +1025,18 @@
+@@ -952,6 +1008,18 @@
  	status = "okay";
  };
  

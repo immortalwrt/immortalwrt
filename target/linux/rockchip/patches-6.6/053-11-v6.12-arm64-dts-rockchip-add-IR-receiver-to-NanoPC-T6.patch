@@ -29,7 +29,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	leds {
  		compatible = "gpio-leds";
  
-@@ -240,7 +247,7 @@
+@@ -228,7 +235,7 @@
  			  "HEADER_10", "HEADER_08", "HEADER_32", "",
  			  /* GPIO0 D0-D7 */
  			  "", "", "", "",
@@ -38,7 +38,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  };
  
  &gpio1 {
-@@ -504,6 +511,12 @@
+@@ -492,6 +499,12 @@
  		};
  	};
  

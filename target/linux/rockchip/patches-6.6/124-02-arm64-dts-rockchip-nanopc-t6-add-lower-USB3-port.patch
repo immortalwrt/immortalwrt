@@ -29,7 +29,7 @@
  	/* vcc4v0_sys powers the RK806, RK860's */
  	vcc4v0_sys: vcc4v0-sys-regulator {
  		compatible = "regulator-fixed";
-@@ -599,6 +621,10 @@
+@@ -583,6 +605,10 @@
  		usbc0_int: usbc0-int {
  			rockchip,pins = <0 RK_PD3 RK_FUNC_GPIO &pcfg_pull_up>;
  		};
@@ -40,7 +40,7 @@
  	};
  };
  
-@@ -994,6 +1020,11 @@
+@@ -978,6 +1004,11 @@
  	status = "okay";
  };
  
@@ -50,9 +50,9 @@
 +};
 +
  &u2phy2_host {
- 	phy-supply = <&vdd_4g_3v3>;
  	status = "okay";
-@@ -1003,6 +1034,10 @@
+ };
+@@ -986,6 +1017,10 @@
  	status = "okay";
  };
  
@@ -63,7 +63,7 @@
  &u2phy2 {
  	status = "okay";
  };
-@@ -1034,6 +1069,10 @@
+@@ -1017,6 +1052,10 @@
  	};
  };
  
@@ -74,7 +74,7 @@
  &usb_host0_ehci {
  	status = "okay";
  };
-@@ -1061,3 +1100,7 @@
+@@ -1044,3 +1083,7 @@
  &usb_host1_ohci {
  	status = "okay";
  };
