@@ -19,7 +19,8 @@ netgear,wax630)
 	;;
 compex,wpq873|\
 edgecore,eap102|\
-zyxel,nbg7815)
+zyxel,nbg7815|\
+aliyun,ap8220)
 	idx="$(find_mtd_index 0:appsblenv)"
 	[ -n "$idx" ] && \
 		ubootenv_add_uci_config "/dev/mtd$idx" "0x0" "0x10000" "0x10000" "1"

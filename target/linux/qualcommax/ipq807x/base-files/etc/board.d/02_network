@@ -66,6 +66,9 @@ ipq807x_setup_interfaces()
 	zyxel,nbg7815)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 10g" "wan"
 		;;
+	aliyun,ap8220)
+		ucidef_set_interfaces_lan_wan "eth1" "eth0"
+		;;
 	*)
 		echo "Unsupported hardware. Network interfaces not initialized"
 		;;
@@ -97,7 +100,10 @@ ipq807x_setup_macs()
 			[ "$wan_mac" != "00:00:00:00:00:00" ] || wan_mac="$(get_mac_binary "$(find_mtd_chardev mac)" 0x20000)"
 			lan_mac="$(macaddr_add "$wan_mac" 1)"
 			label_mac="$wan_mac"
-
+		;;
+		aliyun,ap8220)
+			wan_mac=$(cat /dev/mtd12 | head -n 4 | grep "product.mac" | awk -F " " '{print $2}')
+			lan_mac=$(macaddr_add "$wan_mac" 1)
 		;;
 	esac
 

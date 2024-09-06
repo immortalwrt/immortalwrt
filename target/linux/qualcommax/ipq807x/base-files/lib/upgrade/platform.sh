@@ -210,6 +210,10 @@ platform_do_upgrade() {
 			mmc_do_upgrade "$1"
 		fi
 		;;
+	aliyun,ap8220)
+		CI_UBIPART="rootfs"
+		nand_do_upgrade "$1"
+		;;
 	*)
 		default_do_upgrade "$1"
 		;;
