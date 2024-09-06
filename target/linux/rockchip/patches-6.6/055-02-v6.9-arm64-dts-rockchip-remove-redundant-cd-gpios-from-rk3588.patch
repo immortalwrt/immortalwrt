@@ -45,7 +45,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	vmmc-supply = <&vcc_3v3_s3>;
 --- a/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
-@@ -365,7 +365,6 @@
+@@ -395,7 +395,6 @@
  	bus-width = <4>;
  	cap-mmc-highspeed;
  	cap-sd-highspeed;

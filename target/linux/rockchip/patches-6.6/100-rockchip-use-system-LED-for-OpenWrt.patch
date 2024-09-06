@@ -471,55 +471,27 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  		};
  	};
  
---- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dts
-@@ -8,6 +8,7 @@
- /dts-v1/;
- 
- #include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/leds/common.h>
- #include <dt-bindings/pinctrl/rockchip.h>
- #include <dt-bindings/usb/pd.h>
- #include "rk3588.dtsi"
-@@ -19,6 +20,11 @@
+--- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
+@@ -20,6 +20,10 @@
  	aliases {
  		mmc0 = &sdhci;
  		mmc1 = &sdmmc;
-+
 +		led-boot = &sys_led;
 +		led-failsafe = &sys_led;
 +		led-running = &sys_led;
 +		led-upgrade = &sys_led;
  	};
  
- 	chosen {
-@@ -27,20 +33,19 @@
- 
- 	leds {
- 		compatible = "gpio-leds";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&sys_led_pin>, <&usr_led_pin>;
- 
+ 	adc-keys-0 {
+@@ -53,7 +57,6 @@
  		sys_led: led-0 {
-+			color = <LED_COLOR_ID_RED>;
-+			function = LED_FUNCTION_STATUS;
  			gpios = <&gpio2 RK_PB7 GPIO_ACTIVE_HIGH>;
--			label = "system-led";
+ 			label = "system-led";
 -			linux,default-trigger = "heartbeat";
--			pinctrl-names = "default";
--			pinctrl-0 = <&sys_led_pin>;
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&sys_led_pin>;
  		};
- 
- 		usr_led: led-1 {
-+			color = <LED_COLOR_ID_GREEN>;
-+			function = LED_FUNCTION_WAN;
- 			gpios = <&gpio2 RK_PC0 GPIO_ACTIVE_HIGH>;
--			label = "user-led";
--			pinctrl-names = "default";
--			pinctrl-0 = <&usr_led_pin>;
- 		};
- 	};
- 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-plus.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-plus.dts
 @@ -20,6 +20,11 @@
