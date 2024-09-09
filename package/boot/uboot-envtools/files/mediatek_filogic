@@ -36,6 +36,7 @@ case "$board" in
 abt,asr3000|\
 h3c,magic-nx30-pro|\
 jcg,q30-pro|\
+konka,komi-a31|\
 netcore,n60|\
 nokia,ea0326gmp|\
 qihoo,360t7|\
