@@ -57,6 +57,7 @@ case "$board" in
 		;;
 	cetron,ct3003-stock|\
 	cetron,ct3003-ubootmod|\
+	konka,komi-a31|\
 	nokia,ea0326gmp)
 		addr=$(cat /sys/class/net/eth0/address)
 		[ "$PHYNBR" = "0" ] && macaddr_add $addr 1 > /sys${DEVPATH}/macaddress

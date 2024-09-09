@@ -66,6 +66,7 @@ platform_do_upgrade() {
 	abt,asr3000|\
 	h3c,magic-nx30-pro|\
 	jcg,q30|\
+	konka,komi-a31|\
 	mediatek,mt7981-rfb|\
 	netcore,n60|\
 	nokia,ea0326gmp|\
