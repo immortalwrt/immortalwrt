@@ -4,7 +4,7 @@
 #include "mt7981b-cetron-ct3003.dtsi"
 
 / {
-	model = "CETRON CT3003 (custom U-Boot layout)";
+	model = "Cetron CT3003 (custom U-Boot layout)";
 	compatible = "cetron,ct3003-ubootmod", "mediatek,mt7981";
 };
 

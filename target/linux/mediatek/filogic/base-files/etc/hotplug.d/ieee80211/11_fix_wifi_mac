@@ -51,7 +51,7 @@ case "$board" in
 		;;
 	bananapi,bpi-r4|\
 	bananapi,bpi-r4-poe|\
-	cetron,ct3003-stock|\
+	cetron,ct3003|\
 	cetron,ct3003-ubootmod|\
 	konka,komi-a31|\
 	nokia,ea0326gmp)

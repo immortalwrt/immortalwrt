@@ -74,7 +74,7 @@ jdcloud,re-cp-03)
 		;;
 	esac
 	;;
-cetron,ct3003-stock|\
+cetron,ct3003|\
 cetron,ct3003-ubootmod|\
 edgecore,eap111|\
 h3c,magic-nx30-pro-nmbm|\

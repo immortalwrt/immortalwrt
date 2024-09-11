@@ -420,13 +420,13 @@ define Device/bananapi_bpi-r4-poe
 endef
 TARGET_DEVICES += bananapi_bpi-r4-poe
 
-define Device/cetron_ct3003-stock
+define Device/cetron_ct3003
   DEVICE_VENDOR := Cetron
   DEVICE_MODEL := CT3003
   DEVICE_VARIANT := (stock layout)
-  DEVICE_DTS := mt7981b-cetron-ct3003-stock
+  DEVICE_DTS := mt7981b-cetron-ct3003
   DEVICE_DTS_DIR := ../dts
-  SUPPORTED_DEVICES += cetron,ct3003 mediatek,mt7981-spim-snand-rfb
+  SUPPORTED_DEVICES += cetron,ct3003-stock mediatek,mt7981-spim-snand-rfb
   DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
@@ -437,7 +437,7 @@ define Device/cetron_ct3003-stock
   IMAGES += factory.bin
   IMAGE/factory.bin := $$(IMAGE/sysupgrade.bin) | cetron-header rd30 CT3003
 endef
-TARGET_DEVICES += cetron_ct3003-stock
+TARGET_DEVICES += cetron_ct3003
 
 define Device/cetron_ct3003-ubootmod
   DEVICE_VENDOR := Cetron

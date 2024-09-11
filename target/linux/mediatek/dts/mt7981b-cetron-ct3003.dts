@@ -4,8 +4,8 @@
 #include "mt7981b-cetron-ct3003.dtsi"
 
 / {
-	model = "CETRON CT3003 (stock layout)";
-	compatible = "cetron,ct3003-stock", "mediatek,mt7981";
+	model = "Cetron CT3003 (stock layout)";
+	compatible = "cetron,ct3003", "mediatek,mt7981";
 };
 
 &partitions {

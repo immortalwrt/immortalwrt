@@ -1,7 +1,4 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/*
- * Copyright (C) 2023 Tianling Shen <cnsztl@immortalwrt.org>
- */
 
 /dts-v1/;
 #include <dt-bindings/gpio/gpio.h>
