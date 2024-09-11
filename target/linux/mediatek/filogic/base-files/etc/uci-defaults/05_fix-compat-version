@@ -2,7 +2,8 @@
 
 case "$(board_name)" in
 	bananapi,bpi-r3|\
-	bananapi,bpi-r3-mini)
+	bananapi,bpi-r3-mini|\
+	cetron,ct3003-ubootmod)
 	uci set system.@system[0].compat_version="1.2"
 	uci commit system
 	;;

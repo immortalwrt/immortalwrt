@@ -34,6 +34,7 @@ ubootenv_add_ubi_default() {
 
 case "$board" in
 abt,asr3000|\
+cetron,ct3003-ubootmod|\
 h3c,magic-nx30-pro|\
 jcg,q30-pro|\
 konka,komi-a31|\
@@ -75,7 +76,6 @@ jdcloud,re-cp-03)
 	esac
 	;;
 cetron,ct3003|\
-cetron,ct3003-ubootmod|\
 edgecore,eap111|\
 h3c,magic-nx30-pro-nmbm|\
 netgear,wax220|\
