@@ -259,4 +259,17 @@
 	nvmem-cells = <&eeprom_factory_0>;
 	nvmem-cell-names = "eeprom";
 	status = "okay";
+
+	band@0 {
+		reg = <0>;
+		nvmem-cells = <&macaddr_factory_2a 1>;
+		nvmem-cell-names = "mac-address";
+	};
+
+
+	band@1 {
+		reg = <1>;
+		nvmem-cells = <&macaddr_factory_2a 2>;
+		nvmem-cell-names = "mac-address";
+	};
 };
