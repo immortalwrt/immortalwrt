@@ -125,7 +125,6 @@
 				reg = <0x180000 0x100000>;
 				read-only;
 
-				compatible = "nvmem-cells";
 				nvmem-layout {
 					compatible = "fixed-layout";
 					#address-cells = <1>;
@@ -237,4 +236,17 @@
 	nvmem-cells = <&eeprom_factory_0>;
 	nvmem-cell-names = "eeprom";
 	status = "okay";
+
+	band@0 {
+		reg = <0>;
+		nvmem-cells = <&macaddr_art_0 1>;
+		nvmem-cell-names = "mac-address";
+	};
+
+
+	band@1 {
+		reg = <1>;
+		nvmem-cells = <&macaddr_art_0 2>;
+		nvmem-cell-names = "mac-address";
+	};
 };
