@@ -243,7 +243,6 @@
 		nvmem-cell-names = "mac-address";
 	};
 
-
 	band@1 {
 		reg = <1>;
 		nvmem-cells = <&macaddr_art_0 2>;
