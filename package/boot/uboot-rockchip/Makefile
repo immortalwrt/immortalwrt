@@ -101,13 +101,6 @@ define U-Boot/rock-pi-e-rk3328
     radxa_rock-pi-e
 endef
 
-define U-Boot/rock-pi-e-v3-rk3328
-  $(U-Boot/rk3328/Default)
-  NAME:=ROCK Pi E v3.0
-  BUILD_DEVICES:= \
-    radxa_rock-pi-e-v3
-endef
-
 define U-Boot/rock64-rk3328
   $(U-Boot/rk3328/Default)
   NAME:=Rock64
@@ -378,7 +371,6 @@ UBOOT_TARGETS := \
   orangepi-r1-plus-lts-rk3328 \
   roc-cc-rk3328 \
   rock-pi-e-rk3328 \
-  rock-pi-e-v3-rk3328 \
   rock64-rk3328 \
   radxa-cm3-io-rk3566 \
   radxa-zero-3-rk3566 \
