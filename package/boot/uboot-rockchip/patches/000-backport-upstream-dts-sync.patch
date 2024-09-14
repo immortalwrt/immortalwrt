@@ -723,6 +723,23 @@
 +	status = "okay";
 +};
 --- /dev/null
++++ b/dts/upstream/src/arm64/rockchip/rk3588s-nanopi-r6c.dts
+@@ -0,0 +1,14 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++
++/dts-v1/;
++
++#include "rk3588s-nanopi-r6s.dts"
++
++/ {
++	model = "FriendlyElec NanoPi R6C";
++	compatible = "friendlyarm,nanopi-r6c", "rockchip,rk3588s";
++};
++
++&lan2_led {
++	label = "user_led";
++};
+--- /dev/null
 +++ b/dts/upstream/src/arm64/rockchip/rk3588s-nanopi-r6s.dts
 @@ -0,0 +1,764 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
