@@ -227,7 +227,7 @@
  /**
   * bond_dev_queue_xmit - Prepare skb for xmit.
   *
-@@ -1186,6 +1201,23 @@ void bond_change_active_slave(struct bon
+@@ -1228,6 +1243,23 @@ void bond_change_active_slave(struct bon
  			if (BOND_MODE(bond) == BOND_MODE_8023AD)
  				bond_3ad_handle_link_change(new_active, BOND_LINK_UP);
  
@@ -251,7 +251,7 @@
  			if (bond_is_lb(bond))
  				bond_alb_handle_link_change(bond, new_active, BOND_LINK_UP);
  		} else {
-@@ -1830,6 +1862,7 @@ int bond_enslave(struct net_device *bond
+@@ -1872,6 +1904,7 @@ int bond_enslave(struct net_device *bond
  	const struct net_device_ops *slave_ops = slave_dev->netdev_ops;
  	struct slave *new_slave = NULL, *prev_slave;
  	struct sockaddr_storage ss;
@@ -259,7 +259,7 @@
  	int link_reporting;
  	int res = 0, i;
  
-@@ -2275,6 +2308,15 @@ int bond_enslave(struct net_device *bond
+@@ -2317,6 +2350,15 @@ int bond_enslave(struct net_device *bond
  		   bond_is_active_slave(new_slave) ? "an active" : "a backup",
  		   new_slave->link != BOND_LINK_DOWN ? "an up" : "a down");
  
@@ -275,7 +275,7 @@
  	/* enslave is successful */
  	bond_queue_slave_event(new_slave);
  	return 0;
-@@ -2340,6 +2382,15 @@ err_undo_flags:
+@@ -2382,6 +2424,15 @@ err_undo_flags:
  		}
  	}
  
@@ -291,7 +291,7 @@
  	return res;
  }
  
-@@ -2361,6 +2412,7 @@ static int __bond_release_one(struct net
+@@ -2403,6 +2454,7 @@ static int __bond_release_one(struct net
  	struct bonding *bond = netdev_priv(bond_dev);
  	struct slave *slave, *oldcurrent;
  	struct sockaddr_storage ss;
@@ -299,7 +299,7 @@
  	int old_flags = bond_dev->flags;
  	netdev_features_t old_features = bond_dev->features;
  
-@@ -2383,6 +2435,15 @@ static int __bond_release_one(struct net
+@@ -2425,6 +2477,15 @@ static int __bond_release_one(struct net
  
  	bond_set_slave_inactive_flags(slave, BOND_SLAVE_NOTIFY_NOW);
  
@@ -315,7 +315,7 @@
  	bond_sysfs_slave_del(slave);
  
  	/* recompute stats just before removing the slave */
-@@ -2705,6 +2766,8 @@ static void bond_miimon_commit(struct bo
+@@ -2747,6 +2808,8 @@ static void bond_miimon_commit(struct bo
  	struct slave *slave, *primary, *active;
  	bool do_failover = false;
  	struct list_head *iter;
@@ -324,7 +324,7 @@
  
  	ASSERT_RTNL();
  
-@@ -2744,6 +2807,12 @@ static void bond_miimon_commit(struct bo
+@@ -2786,6 +2849,12 @@ static void bond_miimon_commit(struct bo
  				bond_set_active_slave(slave);
  			}
  
@@ -337,7 +337,7 @@
  			slave_info(bond->dev, slave->dev, "link status definitely up, %u Mbps %s duplex\n",
  				   slave->speed == SPEED_UNKNOWN ? 0 : slave->speed,
  				   slave->duplex ? "full" : "half");
-@@ -2792,6 +2861,16 @@ static void bond_miimon_commit(struct bo
+@@ -2834,6 +2903,16 @@ static void bond_miimon_commit(struct bo
  		unblock_netpoll_tx();
  	}
  
@@ -354,7 +354,7 @@
  	bond_set_carrier(bond);
  }
  
-@@ -4044,8 +4123,219 @@ static inline u32 bond_eth_hash(struct s
+@@ -4086,8 +4165,219 @@ static inline u32 bond_eth_hash(struct s
  		return 0;
  
  	ep = (struct ethhdr *)(data + mhoff);
@@ -575,7 +575,7 @@
  
  static bool bond_flow_ip(struct sk_buff *skb, struct flow_keys *fk, const void *data,
  			 int hlen, __be16 l2_proto, int *nhoff, int *ip_proto, bool l34)
-@@ -5174,15 +5464,18 @@ static netdev_tx_t bond_3ad_xor_xmit(str
+@@ -5216,15 +5506,18 @@ static netdev_tx_t bond_3ad_xor_xmit(str
  				     struct net_device *dev)
  {
  	struct bonding *bond = netdev_priv(dev);
@@ -601,7 +601,7 @@
  }
  
  /* in broadcast mode, we send everything to all usable interfaces. */
-@@ -5432,8 +5725,9 @@ static netdev_tx_t __bond_start_xmit(str
+@@ -5474,8 +5767,9 @@ static netdev_tx_t __bond_start_xmit(str
  		return bond_xmit_roundrobin(skb, dev);
  	case BOND_MODE_ACTIVEBACKUP:
  		return bond_xmit_activebackup(skb, dev);

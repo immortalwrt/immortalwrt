@@ -94,7 +94,7 @@
  
 --- a/include/net/ip6_route.h
 +++ b/include/net/ip6_route.h
-@@ -207,6 +207,11 @@ void rt6_multipath_rebalance(struct fib6
+@@ -215,6 +215,11 @@ void rt6_multipath_rebalance(struct fib6
  void rt6_uncached_list_add(struct rt6_info *rt);
  void rt6_uncached_list_del(struct rt6_info *rt);
  
@@ -643,7 +643,7 @@
  	struct fib_table *tb;
 --- a/net/ipv6/ndisc.c
 +++ b/net/ipv6/ndisc.c
-@@ -666,6 +666,7 @@ void ndisc_send_ns(struct net_device *de
+@@ -668,6 +668,7 @@ void ndisc_send_ns(struct net_device *de
  	if (skb)
  		ndisc_send_skb(skb, daddr, saddr);
  }

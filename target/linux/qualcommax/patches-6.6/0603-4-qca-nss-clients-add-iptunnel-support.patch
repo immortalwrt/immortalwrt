@@ -22,7 +22,7 @@
  #endif /* __NET_IP_TUNNELS_H */
 --- a/net/ipv6/ip6_tunnel.c
 +++ b/net/ipv6/ip6_tunnel.c
-@@ -2412,6 +2412,26 @@ nla_put_failure:
+@@ -2414,6 +2414,26 @@ nla_put_failure:
  	return -EMSGSIZE;
  }
  
