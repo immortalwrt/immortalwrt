@@ -15,6 +15,7 @@ mediatek_setup_interfaces()
 	cmcc,rax3000m-nand-ubootmod|\
 	h3c,magic-nx30-pro|\
 	h3c,magic-nx30-pro-nmbm|\
+	imou,lc-hx3001|\
 	imou,lc-hx3001-ubootmod|\
 	konka,komi-a31|\
 	nokia,ea0326gmp|\
@@ -181,8 +182,7 @@ mediatek_setup_macs()
 		;;
 	imou,lc-hx3001-ubootmod)
 		lan_mac=$(mtd_get_mac_ascii u-boot-env mac)
-		[ -n "$lan_mac" ] || lan_mac=$(macaddr_add $(mtd_get_mac_binary Factory 0x4) -1)
-		wan_mac=$(macaddr_add $lan_mac 2)
+		[ -z "$lan_mac" ] || wan_mac=$(macaddr_add $lan_mac 2)
 		;;
 	jdcloud,re-cp-03)
 		wan_mac=$(mmc_get_mac_binary factory 0x24)
