@@ -49,7 +49,7 @@ glinet,gl-xe3000)
 	ucidef_set_led_netdev "wlan2g" "WLAN2G" "green:wifi2g" "phy0-ap0"
 	ucidef_set_led_netdev "wlan5g" "WLAN5G" "green:wifi5g" "phy1-ap0"
 	;;
-imou,lc-hx3001-ubootmod|\
+imou,lc-hx3001|\
 nokia,ea0326gmp)
 	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth1" "link"
 	ucidef_set_led_netdev "lan" "LAN" "green:lan" "br-lan" "link"

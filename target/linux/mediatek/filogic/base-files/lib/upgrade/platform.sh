@@ -73,6 +73,7 @@ platform_do_upgrade() {
 	cmcc,a10|\
 	cmcc,rax3000m|\
 	h3c,magic-nx30-pro|\
+	imou,lc-hx3001|\
 	jcg,q30-pro|\
 	jdcloud,re-cp-03|\
 	konka,komi-a31|\

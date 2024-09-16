@@ -11,8 +11,8 @@
 #include "mt7981.dtsi"
 
 / {
-	model = "Imou LC-HX3001 (custom U-Boot layout)";
-	compatible = "imou,lc-hx3001-ubootmod", "mediatek,mt7981";
+	model = "Imou LC-HX3001";
+	compatible = "imou,lc-hx3001", "mediatek,mt7981";
 
 	aliases {
 		led-boot = &power_led;
@@ -23,10 +23,12 @@
 	};
 
 	chosen {
+		bootargs = "root=/dev/fit0 rootwait";
+		rootdisk = <&ubi_rootdisk>;
 		stdout-path = "serial0:115200n8";
 	};
 
-	memory {
+	memory@40000000 {
 		reg = <0 0x40000000 0 0x10000000>;
 	};
 
@@ -85,13 +87,15 @@
 &eth {
 	pinctrl-names = "default";
 	pinctrl-0 = <&mdio_pins>;
-
 	status = "okay";
 
 	gmac0: mac@0 {
 		compatible = "mediatek,eth-mac";
 		reg = <0>;
 		phy-mode = "2500base-x";
+
+		nvmem-cells = <&macaddr_factory_4 (-1)>;
+		nvmem-cell-names = "mac-address";
 
 		fixed-link {
 			speed = <2500>;
@@ -105,6 +109,9 @@
 		reg = <1>;
 		phy-mode = "gmii";
 		phy-handle = <&int_gbe_phy>;
+
+		nvmem-cells = <&macaddr_factory_4 1>;
+		nvmem-cell-names = "mac-address";
 	};
 };
 
@@ -120,6 +127,27 @@
 	};
 };
 
+&pio {
+	spi0_flash_pins: spi0-pins {
+		mux {
+			function = "spi";
+			groups = "spi0", "spi0_wp_hold";
+		};
+
+		conf-pu {
+			pins = "SPI0_CS", "SPI0_HOLD", "SPI0_WP";
+			drive-strength = <8>;
+			mediatek,pull-up-adv = <0>; /* bias-disable */
+		};
+
+		conf-pd {
+			pins = "SPI0_CLK", "SPI0_MOSI", "SPI0_MISO";
+			drive-strength = <8>;
+			mediatek,pull-up-adv = <0>; /* bias-disable */
+		};
+	};
+};
+
 &spi0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi0_flash_pins>;
@@ -130,20 +158,10 @@
 		#size-cells = <1>;
 		compatible = "spi-nand";
 		reg = <0>;
+
 		spi-max-frequency = <52000000>;
-
-		spi-cal-enable;
-		spi-cal-mode = "read-data";
-		spi-cal-datalen = <7>;
-		spi-cal-data = /bits/ 8 <0x53 0x50 0x49 0x4E 0x41 0x4E 0x44>;
-		spi-cal-addrlen = <5>;
-		spi-cal-addr = /bits/ 32 <0x0 0x0 0x0 0x0 0x0>;
-
 		spi-tx-bus-width = <4>;
 		spi-rx-bus-width = <4>;
-		mediatek,nmbm;
-		mediatek,bmt-max-ratio = <1>;
-		mediatek,bmt-max-reserved-blocks = <64>;
 
 		partitions {
 			compatible = "fixed-partitions";
@@ -151,8 +169,9 @@
 			#size-cells = <1>;
 
 			partition@0 {
-				label = "BL2";
-				reg = <0x00000 0x100000>;
+				label = "bl2";
+				reg = <0x0 0x100000>;
+				read-only;
 			};
 
 			partition@100000 {
@@ -160,19 +179,44 @@
 				reg = <0x100000 0x80000>;
 			};
 
-			factory: partition@180000 {
-				label = "Factory";
+			partition@180000 {
+				label = "factory";
 				reg = <0x180000 0x200000>;
+				read-only;
+
+				nvmem-layout {
+					compatible = "fixed-layout";
+					#address-cells = <1>;
+					#size-cells = <1>;
+
+					eeprom_factory_0: eeprom@0 {
+						reg = <0x0 0x1000>;
+					};
+
+					macaddr_factory_4: macaddr@4 {
+						compatible = "mac-base";
+						reg = <0x4 0x6>;
+						#nvmem-cell-cells = <1>;
+					};
+				};
 			};
 
 			partition@380000 {
-				label = "FIP";
+				label = "fip";
 				reg = <0x380000 0x200000>;
+				read-only;
 			};
 
 			partition@580000 {
+				compatible = "linux,ubi";
 				label = "ubi";
-				reg = <0x580000 0x7280000>;
+				reg = <0x580000 0x7a80000>;
+
+				volumes {
+					ubi_rootdisk: ubi-volume-fit {
+						volname = "fit";
+					};
+				};
 			};
 		};
 	};
@@ -212,27 +256,6 @@
 	};
 };
 
-&pio {
-	spi0_flash_pins: spi0-pins {
-		mux {
-			function = "spi";
-			groups = "spi0", "spi0_wp_hold";
-		};
-
-		conf-pu {
-			pins = "SPI0_CS", "SPI0_HOLD", "SPI0_WP";
-			drive-strength = <8>;
-			bias-pull-up = <103>;
-		};
-
-		conf-pd {
-			pins = "SPI0_CLK", "SPI0_MOSI", "SPI0_MISO";
-			drive-strength = <8>;
-			bias-pull-down = <103>;
-		};
-	};
-};
-
 &uart0 {
 	status = "okay";
 };
@@ -242,7 +265,13 @@
 };
 
 &wifi {
+	nvmem-cells = <&eeprom_factory_0>;
+	nvmem-cell-names = "eeprom";
 	status = "okay";
 
-	mediatek,mtd-eeprom = <&factory 0x0>;
+	band@1 {
+		reg = <1>;
+		nvmem-cells = <&macaddr_factory_4 2>;
+		nvmem-cell-names = "mac-address";
+	};
 };
