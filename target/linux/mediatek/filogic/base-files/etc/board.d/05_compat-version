@@ -7,7 +7,8 @@ board_config_update
 case "$(board_name)" in
 	bananapi,bpi-r3|\
 	bananapi,bpi-r3-mini|\
-	cetron,ct3003-ubootmod)
+	cetron,ct3003-ubootmod|\
+	livinet,zr-3020-ubootmod)
 		ucidef_set_compat_version "1.2"
 		;;
 esac
