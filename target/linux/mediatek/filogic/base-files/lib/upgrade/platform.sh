@@ -64,6 +64,7 @@ platform_do_upgrade() {
 
 	case "$board" in
 	abt,asr3000|\
+	cmcc,a10|\
 	h3c,magic-nx30-pro|\
 	jcg,q30|\
 	konka,komi-a31|\
