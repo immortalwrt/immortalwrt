@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/dts/upstream/src/arm64/rockchip/rk3588-armsom-sige7.dts
-@@ -0,0 +1,721 @@
+@@ -0,0 +1,691 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +
 +/dts-v1/;
@@ -160,11 +160,6 @@
 +
 +&cpu_l3 {
 +	cpu-supply = <&vdd_cpu_lit_s0>;
-+};
-+
-+&gpu {
-+	mali-supply = <&vdd_gpu_s0>;
-+	status = "okay";
 +};
 +
 +&i2c0 {
@@ -676,22 +671,6 @@
 +	};
 +};
 +
-+&u2phy0 {
-+	status = "okay";
-+};
-+
-+&u2phy0_otg {
-+	status = "okay";
-+};
-+
-+&u2phy1 {
-+	status = "okay";
-+};
-+
-+&u2phy1_otg {
-+	status = "okay";
-+};
-+
 +&u2phy3 {
 +	status = "okay";
 +};
@@ -706,20 +685,11 @@
 +	status = "okay";
 +};
 +
-+&usbdp_phy1 {
-+	status = "okay";
-+};
-+
 +&usb_host1_ehci {
 +	status = "okay";
 +};
 +
 +&usb_host1_ohci {
-+	status = "okay";
-+};
-+
-+&usb_host1_xhci {
-+	dr_mode = "host";
 +	status = "okay";
 +};
 --- /dev/null
