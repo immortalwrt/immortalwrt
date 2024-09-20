@@ -961,7 +961,7 @@ define Device/livinet_zr-3020-ubootmod
         fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-static-with-rootfs | append-metadata
   ARTIFACTS := preloader.bin bl31-uboot.fip
   ARTIFACT/preloader.bin := mt7981-bl2 spim-nand-ddr3
-  ARTIFACT/bl31-uboot.fip := mt7981-bl31-uboot livinet_zr-3020-ubootmod
+  ARTIFACT/bl31-uboot.fip := mt7981-bl31-uboot livinet_zr-3020
   DEVICE_COMPAT_VERSION := 1.2
   DEVICE_COMPAT_MESSAGE := Flash layout changes require bootloader update
 endef
