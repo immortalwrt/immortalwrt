@@ -43,6 +43,9 @@ rockchip_setup_interfaces()
 	lunzn,fastrhino-r68s)
 		ucidef_set_interfaces_lan_wan 'eth0 eth1 eth2' 'eth3'
 		;;
+	lyt,t68m)
+		ucidef_set_interfaces_lan_wan 'lan2 lan3 lan4' 'lan1'
+		;;
 	sinovoip,rk3568-bpi-r2pro)
 		ucidef_set_interfaces_lan_wan 'lan0 lan1 lan2 lan3' 'eth0'
 		;;

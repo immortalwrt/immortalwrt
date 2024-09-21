@@ -74,4 +74,10 @@ lunzn,fastrhino-r68s)
 	set_interface_core 4 "eth2"
 	set_interface_core 8 "eth3"
 	;;
+lyt,t68m)
+	set_interface_core 1 "lan1"
+	set_interface_core 2 "lan2"
+	set_interface_core 4 "lan3"
+	set_interface_core 8 "lan4"
+	;;
 esac

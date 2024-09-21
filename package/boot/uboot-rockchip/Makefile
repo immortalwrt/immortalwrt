@@ -222,6 +222,13 @@ define U-Boot/fastrhino-r68s-rk3568
     lunzn_fastrhino-r68s
 endef
 
+define U-Boot/lyt-t68m-rk3568
+  $(U-Boot/rk3568/Default)
+  NAME:=LYT T68M
+  BUILD_DEVICES:= \
+    lyt_t68m
+endef
+
 define U-Boot/mrkaio-m68s-rk3568
   $(U-Boot/rk3568/Default)
   NAME:=Mrkaio M68S
@@ -378,6 +385,7 @@ UBOOT_TARGETS := \
   bpi-r2-pro-rk3568 \
   fastrhino-r66s-rk3568 \
   fastrhino-r68s-rk3568 \
+  lyt-t68m-rk3568 \
   mrkaio-m68s-rk3568 \
   nanopi-r5c-rk3568 \
   nanopi-r5s-rk3568 \

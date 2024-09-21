@@ -216,6 +216,18 @@ define Device/lunzn_fastrhino-r68s
 endef
 TARGET_DEVICES += lunzn_fastrhino-r68s
 
+define Device/lyt_t68m
+  DEVICE_VENDOR := LYT
+  DEVICE_MODEL := T68M
+  SOC := rk3568
+  DEVICE_DTS := rockchip/rk3568-lyt-t68m
+  UBOOT_DEVICE_NAME := lyt-t68m-rk3568
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-r8125 kmod-mt7921e kmod-mt7921-firmware \
+	kmod-mt7922-firmware wpad-openssl
+endef
+TARGET_DEVICES += lyt_t68m
+
 define Device/pine64_rock64
   DEVICE_VENDOR := Pine64
   DEVICE_MODEL := Rock64
