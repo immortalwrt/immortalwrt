@@ -223,8 +223,7 @@ define Device/lyt_t68m
   DEVICE_DTS := rockchip/rk3568-lyt-t68m
   UBOOT_DEVICE_NAME := lyt-t68m-rk3568
   BOOT_FLOW := pine64-img
-  DEVICE_PACKAGES := kmod-r8125 kmod-mt7921e kmod-mt7921-firmware \
-	kmod-mt7922-firmware wpad-openssl
+  DEVICE_PACKAGES := kmod-r8125 kmod-mt7921e wpad-openssl
 endef
 TARGET_DEVICES += lyt_t68m
 
