@@ -304,6 +304,13 @@ define U-Boot/rk3588/Default
   TPL:=$(RK3588_TPL)
 endef
 
+define U-Boot/cyber3588-aib-rk3588
+  $(U-Boot/rk3588/Default)
+  NAME:=Cyber3588 AIB
+  BUILD_DEVICES:= \
+    cyber_cyber3588-aib
+endef
+
 define U-Boot/nanopc-t6-rk3588
   $(U-Boot/rk3588/Default)
   NAME:=NanoPC T6
@@ -395,6 +402,7 @@ UBOOT_TARGETS := \
   rock-3a-rk3568 \
   rock-3b-rk3568 \
   sige3-rk3568 \
+  cyber3588-aib-rk3588 \
   nanopc-t6-rk3588 \
   orangepi-5-plus-rk3588 \
   rock5b-rk3588 \

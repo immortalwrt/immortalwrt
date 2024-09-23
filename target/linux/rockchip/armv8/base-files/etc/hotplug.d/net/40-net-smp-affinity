@@ -43,6 +43,10 @@ xunlong,orangepi-5-plus)
 	set_interface_core 2 "eth0"
 	set_interface_core 4 "eth1"
 	;;
+cyber,cyber3588-aib)
+	set_interface_core 4 "lan1"
+	set_interface_core 8 "wan"
+	;;
 friendlyarm,nanopc-t6)
 	set_interface_core 2 "eth1"
 	set_interface_core 4 "eth2"
