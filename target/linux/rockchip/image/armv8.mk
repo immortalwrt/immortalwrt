@@ -49,7 +49,7 @@ define Device/ezpro_mrkaio-m68s
   DEVICE_MODEL := Mrkaio M68S
   SOC := rk3568
   BOOT_FLOW := pine64-img
-  DEVICE_PACKAGES := kmod-ata-ahci kmod-ata-ahci-platform
+  DEVICE_PACKAGES := kmod-ata-ahci-dwc
 endef
 TARGET_DEVICES += ezpro_mrkaio-m68s
 
@@ -73,7 +73,7 @@ define Device/firefly_roc-rk3568-pc
   SUPPORTED_DEVICES := firefly,rk3568-roc-pc
   UBOOT_DEVICE_NAME := roc-pc-rk3568
   BOOT_FLOW := pine64-img
-  DEVICE_PACKAGES := kmod-ata-ahci-platform kmod-brcmfmac wpad-openssl \
+  DEVICE_PACKAGES := kmod-ata-ahci-dwc kmod-brcmfmac wpad-openssl \
 	brcmfmac-firmware-43752-sdio brcmfmac-nvram-43752-sdio
 endef
 TARGET_DEVICES += firefly_roc-rk3568-pc
