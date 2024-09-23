@@ -231,7 +231,7 @@
 	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>, <&cru CLK_MAC1_2TOP>;
 	assigned-clock-rates = <0>, <125000000>;
 	clock_in_out = "output";
-	phy-mode = "rgmii";
+	phy-mode = "rgmii-id";
 	phy-handle = <&rgmii_phy1>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&gmac1m1_miim
@@ -243,8 +243,6 @@
 	snps,reset-active-low;
 	/* Reset time is 20ms, 100ms for rtl8211f */
 	snps,reset-delays-us = <0 20000 100000>;
-	tx_delay = <0x48>;
-	rx_delay = <0x2a>;
 	status = "okay";
 };
 
