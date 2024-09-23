@@ -40,7 +40,7 @@ Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
  
 --- a/arch/arm/mach-rockchip/boot_mode.c
 +++ b/arch/arm/mach-rockchip/boot_mode.c
-@@ -38,6 +38,10 @@ void set_back_to_bootrom_dnl_flag(void)
+@@ -37,6 +37,10 @@ void set_back_to_bootrom_dnl_flag(void)
  #define KEY_DOWN_MIN_VAL	0
  #define KEY_DOWN_MAX_VAL	30
  
@@ -51,7 +51,7 @@ Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
  __weak int rockchip_dnl_key_pressed(void)
  {
  #if CONFIG_IS_ENABLED(ADC)
-@@ -53,7 +57,8 @@ __weak int rockchip_dnl_key_pressed(void
+@@ -52,7 +56,8 @@ __weak int rockchip_dnl_key_pressed(void
  	ret = -ENODEV;
  	uclass_foreach_dev(dev, uc) {
  		if (!strncmp(dev->name, "saradc", 6)) {
@@ -61,7 +61,7 @@ Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
  			break;
  		}
  	}
-@@ -77,11 +82,13 @@ __weak int rockchip_dnl_key_pressed(void
+@@ -76,11 +81,13 @@ __weak int rockchip_dnl_key_pressed(void
  
  void rockchip_dnl_mode_check(void)
  {
@@ -75,7 +75,7 @@ Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
  }
  
  int setup_boot_mode(void)
-@@ -94,6 +101,7 @@ int setup_boot_mode(void)
+@@ -93,6 +100,7 @@ int setup_boot_mode(void)
  	boot_mode = readl(reg);
  	debug("%s: boot mode 0x%08x\n", __func__, boot_mode);
  
@@ -83,7 +83,7 @@ Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
  	/* Clear boot mode */
  	writel(BOOT_NORMAL, reg);
  
-@@ -107,6 +115,7 @@ int setup_boot_mode(void)
+@@ -106,6 +114,7 @@ int setup_boot_mode(void)
  		env_set("preboot", "setenv preboot; ums mmc 0");
  		break;
  	}
@@ -101,7 +101,7 @@ Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
  #include <asm/arch-rockchip/grf_rk3568.h>
  #include <asm/arch-rockchip/hardware.h>
  #include <dt-bindings/clock/rk3568-cru.h>
-@@ -134,3 +134,26 @@ int arch_cpu_init(void)
+@@ -133,3 +134,26 @@ int arch_cpu_init(void)
  #endif
  	return 0;
  }
