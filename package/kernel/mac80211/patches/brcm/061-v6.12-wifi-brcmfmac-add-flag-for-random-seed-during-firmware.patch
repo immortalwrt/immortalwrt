@@ -1,20 +1,8 @@
+From ea11a89c3ac64ada9d8b7f7de279cb6385ed194f Mon Sep 17 00:00:00 2001
 From: Jacobe Zang <jacobe.zang@wesion.com>
-To: robh@kernel.org, krzk+dt@kernel.org, heiko@sntech.de,
-	kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-	kuba@kernel.org, pabeni@redhat.com, conor+dt@kernel.org,
-	arend.vanspriel@broadcom.com
-Cc: efectn@protonmail.com, dsimic@manjaro.org, jagan@edgeble.ai,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	arend@broadcom.com, linux-wireless@vger.kernel.org,
-	netdev@vger.kernel.org, megi@xff.cz, duoming@zju.edu.cn,
-	bhelgaas@google.com, minipli@grsecurity.net,
-	brcm80211@lists.linux.dev, brcm80211-dev-list.pdl@broadcom.com,
-	nick@khadas.com, Jacobe Zang <jacobe.zang@wesion.com>
-Subject: [PATCH v8 5/5] wifi: brcmfmac: add flag for random seed during firmware download
-Date: Mon,  5 Aug 2024 15:34:25 +0800	[thread overview]
-Message-ID: <20240805073425.3492078-6-jacobe.zang@wesion.com> (raw)
-In-Reply-To: <20240805073425.3492078-1-jacobe.zang@wesion.com>
+Date: Tue, 10 Sep 2024 11:04:14 +0800
+Subject: [PATCH] wifi: brcmfmac: add flag for random seed during firmware
+ download
 
 Providing the random seed to firmware was tied to the fact that the
 device has a valid OTP, which worked for some Apple chips. However,
@@ -28,6 +16,11 @@ Signed-off-by: Ondrej Jirman <megi@xff.cz>
 Co-developed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
 Signed-off-by: Arend van Spriel <arend.vanspriel@broadcom.com>
 Signed-off-by: Jacobe Zang <jacobe.zang@wesion.com>
+Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Tested-by: Sebastian Reichel <sebastian.reichel@collabora.com> # On RK3588 EVB1
+Acked-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://patch.msgid.link/20240910-wireless-mainline-v14-4-9d80fea5326d@wesion.com
 ---
  .../broadcom/brcm80211/brcmfmac/pcie.c        | 52 ++++++++++++++++---
  .../broadcom/brcm80211/include/brcm_hw_ids.h  |  2 +
