@@ -58,7 +58,7 @@
  	leds {
  		led_rgb_g: led-rgb-g {
  			rockchip,pins = <0 RK_PB7 RK_FUNC_GPIO &pcfg_pull_none>;
-@@ -712,6 +750,30 @@
+@@ -712,6 +750,26 @@
  	status = "okay";
  };
  
@@ -70,12 +70,8 @@
 +
 +	bluetooth {
 +		compatible = "brcm,bcm43438-bt";
-+		/*
-+		 * conflicts with the wifi node
-+		 *
-+		 * clocks = <&hym8563>;
-+		 * clock-names = "lpo";
-+		 */
++		clocks = <&hym8563>;
++		clock-names = "lpo";
 +		device-wakeup-gpios = <&gpio3 RK_PD5 GPIO_ACTIVE_HIGH>;
 +		host-wakeup-gpios = <&gpio0 RK_PC5 GPIO_ACTIVE_HIGH>;
 +		shutdown-gpios = <&gpio3 RK_PA6 GPIO_ACTIVE_HIGH>;
