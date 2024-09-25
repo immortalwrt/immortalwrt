@@ -30,12 +30,24 @@
 	gpio-leds {
 		compatible = "gpio-leds";
 		pinctrl-names = "default";
-		pinctrl-0 = <&status_led_pin>;
+		pinctrl-0 = <&red_led_pin>, <&green_led_pin>, <&blue_led_pin>;
 
 		status_led: led-0 {
 			color = <LED_COLOR_ID_RED>;
 			function = LED_FUNCTION_STATUS;
 			gpios = <&gpio1 RK_PA2 GPIO_ACTIVE_HIGH>;
+		};
+
+		led-1 {
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_STATUS;
+			gpios = <&gpio1 RK_PA3 GPIO_ACTIVE_HIGH>;
+		};
+
+		led-2 {
+			color = <LED_COLOR_ID_BLUE>;
+			function = LED_FUNCTION_STATUS;
+			gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
 		};
 	};
 
@@ -45,6 +57,13 @@
 		fan-supply = <&vcc5v0_sys>;
 		pwms = <&pwm1 0 10000 0>;
 		#cooling-cells = <2>;
+	};
+
+	rfkill-wlan {
+		compatible = "rfkill-gpio";
+		label = "rfkill-wlan";
+		radio-type = "wlan";
+		shutdown-gpios = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
 	};
 
 	vcc12v_dcin: vcc12v-dcin-regulator {
@@ -489,10 +508,17 @@
 
 &pinctrl {
 	gpio-leds {
-		status_led_pin: status-led-pin {
+		red_led_pin: status-led-pin {
 			rockchip,pins = <1 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 
+		green_led_pin: status-led-pin {
+			rockchip,pins = <1 RK_PA3 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		blue_led_pin: status-led-pin {
+			rockchip,pins = <1 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
 	};
 
 	gmac {
