@@ -508,15 +508,15 @@
 
 &pinctrl {
 	gpio-leds {
-		red_led_pin: status-led-pin {
+		red_led_pin: red-led-pin {
 			rockchip,pins = <1 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 
-		green_led_pin: status-led-pin {
+		green_led_pin: green-led-pin {
 			rockchip,pins = <1 RK_PA3 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 
-		blue_led_pin: status-led-pin {
+		blue_led_pin: blue-led-pin {
 			rockchip,pins = <1 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
