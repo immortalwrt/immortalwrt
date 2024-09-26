@@ -11,6 +11,9 @@ touch /etc/config/ubootenv
 board=$(board_name)
 
 case "$board" in
+lyt,t68m)
+	ubootenv_add_uci_config "/dev/mmcblk0" "0x3f8000" "0x8000"
+	;;
 xunlong,orangepi-r1-plus|\
 xunlong,orangepi-r1-plus-lts)
 	ubootenv_add_uci_config "/dev/mmcblk0" "0x3f8000" "0x8000"

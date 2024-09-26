@@ -471,6 +471,20 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  		};
  	};
  
+--- a/arch/arm64/boot/dts/rockchip/rk3588-armsom-sige7.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588-armsom-sige7.dts
+@@ -13,6 +13,11 @@
+ 	aliases {
+ 		mmc0 = &sdhci;
+ 		mmc1 = &sdmmc;
++
++		led-boot = &led_red;
++		led-failsafe = &led_red;
++		led-running = &led_red;
++		led-upgrade = &led_red;
+ 	};
+ 
+ 	chosen {
 --- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
 @@ -20,6 +20,10 @@

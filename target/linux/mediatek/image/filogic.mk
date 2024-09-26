@@ -209,6 +209,14 @@ $(call Device/adtran_smartrg)
 endef
 TARGET_DEVICES += smartrg_sdg-8733
 
+define Device/smartrg_sdg-8733a
+$(call Device/adtran_smartrg)
+  DEVICE_MODEL := SDG-8733A
+  DEVICE_DTS := mt7988d-smartrg-SDG-8733A
+  DEVICE_PACKAGES += mt7988-2p5g-phy-firmware kmod-mt7996-firmware kmod-phy-aquantia
+endef
+TARGET_DEVICES += smartrg_sdg-8733a
+
 define Device/smartrg_sdg-8734
 $(call Device/adtran_smartrg)
   DEVICE_MODEL := SDG-8734
@@ -743,7 +751,11 @@ define Device/glinet_gl-x3000-xe3000-common
   DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware mkf2fs \
     kmod-fs-f2fs kmod-hwmon-pwmfan kmod-usb3 kmod-usb-serial-option \
     kmod-usb-storage kmod-usb-net-qmi-wwan uqmi automount
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-kernel | pad-to 32M | append-rootfs
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  ARTIFACTS := preloader.bin bl31-uboot.fip
+  ARTIFACT/preloader.bin := mt7981-bl2 emmc-ddr4
 endef
 
 define Device/glinet_gl-x3000
@@ -751,6 +763,7 @@ define Device/glinet_gl-x3000
   DEVICE_DTS := mt7981a-glinet-gl-x3000
   SUPPORTED_DEVICES := glinet,gl-x3000
   $(call Device/glinet_gl-x3000-xe3000-common)
+  ARTIFACT/bl31-uboot.fip := mt7981-bl31-uboot glinet_gl-x3000
 endef
 TARGET_DEVICES += glinet_gl-x3000
 
@@ -759,6 +772,7 @@ define Device/glinet_gl-xe3000
   DEVICE_DTS := mt7981a-glinet-gl-xe3000
   SUPPORTED_DEVICES := glinet,gl-xe3000
   $(call Device/glinet_gl-x3000-xe3000-common)
+  ARTIFACT/bl31-uboot.fip := mt7981-bl31-uboot glinet_gl-xe3000
 endef
 TARGET_DEVICES += glinet_gl-xe3000
 
@@ -961,7 +975,7 @@ define Device/livinet_zr-3020-ubootmod
         fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-static-with-rootfs | append-metadata
   ARTIFACTS := preloader.bin bl31-uboot.fip
   ARTIFACT/preloader.bin := mt7981-bl2 spim-nand-ddr3
-  ARTIFACT/bl31-uboot.fip := mt7981-bl31-uboot livinet_zr-3020-ubootmod
+  ARTIFACT/bl31-uboot.fip := mt7981-bl31-uboot livinet_zr-3020
   DEVICE_COMPAT_VERSION := 1.2
   DEVICE_COMPAT_MESSAGE := Flash layout changes require bootloader update
 endef

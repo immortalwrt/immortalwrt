@@ -284,12 +284,11 @@
 +};
 --- /dev/null
 +++ b/imou_lc-hx3001_env
-@@ -0,0 +1,55 @@
+@@ -0,0 +1,54 @@
 +ipaddr=192.168.1.1
 +serverip=192.168.1.254
 +loadaddr=0x46000000
 +console=earlycon=uart8250,mmio32,0x11002000 console=ttyS0
-+bootargs=root=/dev/fit0 rootwait
 +bootcmd=if pstore check ; then run boot_recovery ; else run boot_ubi ; fi
 +bootconf=config-1
 +bootdelay=0

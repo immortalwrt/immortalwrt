@@ -565,6 +565,7 @@ define Device/atheros_db120
   IMAGE/factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
 	append-rootfs | pad-rootfs | check-size | pad-to 6336k | \
 	append-loader-okli-uimage $(1) | pad-to 64k
+  DEFAULT := n
 endef
 TARGET_DEVICES += atheros_db120
 

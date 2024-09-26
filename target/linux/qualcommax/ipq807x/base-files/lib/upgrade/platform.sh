@@ -184,8 +184,7 @@ platform_do_upgrade() {
 		nand_do_upgrade "$1"
 		;;
 	prpl,haze|\
-	qnap,301w|\
-	spectrum,sax1v1k)
+	qnap,301w)
 		kernelname="0:HLOS"
 		rootfsname="rootfs"
 		mmc_do_upgrade "$1"
@@ -239,6 +238,12 @@ platform_do_upgrade() {
 
 		nand_do_upgrade "$1"
 		;;
+	spectrum,sax1v1k)
+		CI_KERNPART="0:HLOS"
+		CI_ROOTPART="rootfs"
+		CI_DATAPART="rootfs_data"
+		emmc_do_upgrade "$1"
+		;;
 	yuncore,ax880)
 		active="$(fw_printenv -n active)"
 		if [ "$active" -eq "1" ]; then
@@ -288,6 +293,14 @@ platform_do_upgrade() {
 		;;
 	*)
 		default_do_upgrade "$1"
+		;;
+	esac
+}
+
+platform_copy_config() {
+	case "$(board_name)" in
+	spectrum,sax1v1k)
+		emmc_copy_config
 		;;
 	esac
 }

@@ -44,12 +44,22 @@ define Device/armsom_sige7
 endef
 TARGET_DEVICES += armsom_sige7
 
+define Device/cyber_cyber3588-aib
+  DEVICE_VENDOR := Cyber
+  DEVICE_MODEL := 3588 AIB
+  SOC := rk3588
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-ata-ahci-dwc kmod-r8125 kmod-mt7921e wpad-openssl \
+        kmod-usb-net-cdc-mbim kmod-usb-net-qmi-wwan kmod-usb-serial-option uqmi
+endef
+TARGET_DEVICES += cyber_cyber3588-aib
+
 define Device/ezpro_mrkaio-m68s
   DEVICE_VENDOR := EZPRO
   DEVICE_MODEL := Mrkaio M68S
   SOC := rk3568
   BOOT_FLOW := pine64-img
-  DEVICE_PACKAGES := kmod-ata-ahci kmod-ata-ahci-platform
+  DEVICE_PACKAGES := kmod-ata-ahci-dwc
 endef
 TARGET_DEVICES += ezpro_mrkaio-m68s
 
@@ -73,7 +83,7 @@ define Device/firefly_roc-rk3568-pc
   SUPPORTED_DEVICES := firefly,rk3568-roc-pc
   UBOOT_DEVICE_NAME := roc-pc-rk3568
   BOOT_FLOW := pine64-img
-  DEVICE_PACKAGES := kmod-ata-ahci-platform kmod-brcmfmac wpad-openssl \
+  DEVICE_PACKAGES := kmod-ata-ahci-dwc kmod-brcmfmac wpad-openssl \
 	brcmfmac-firmware-43752-sdio brcmfmac-nvram-43752-sdio
 endef
 TARGET_DEVICES += firefly_roc-rk3568-pc
@@ -215,6 +225,17 @@ define Device/lunzn_fastrhino-r68s
   DEVICE_PACKAGES := kmod-r8125
 endef
 TARGET_DEVICES += lunzn_fastrhino-r68s
+
+define Device/lyt_t68m
+  DEVICE_VENDOR := LYT
+  DEVICE_MODEL := T68M
+  SOC := rk3568
+  DEVICE_DTS := rockchip/rk3568-lyt-t68m
+  UBOOT_DEVICE_NAME := lyt-t68m-rk3568
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-r8125 kmod-mt7921e wpad-openssl
+endef
+TARGET_DEVICES += lyt_t68m
 
 define Device/pine64_rock64
   DEVICE_VENDOR := Pine64
