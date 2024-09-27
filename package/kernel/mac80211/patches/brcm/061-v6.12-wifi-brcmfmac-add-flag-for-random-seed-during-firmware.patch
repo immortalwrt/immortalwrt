@@ -44,7 +44,7 @@ Link: https://patch.msgid.link/20240910-wireless-mainline-v14-4-9d80fea5326d@wes
  	BRCMF_FW_ENTRY(BRCM_CC_4377_CHIP_ID, 0xFFFFFFFF, 4377B3), /* revision ID 4 */
  	BRCMF_FW_ENTRY(BRCM_CC_4378_CHIP_ID, 0x0000000F, 4378B1), /* revision ID 3 */
  	BRCMF_FW_ENTRY(BRCM_CC_4378_CHIP_ID, 0xFFFFFFE0, 4378B3), /* revision ID 5 */
-@@ -358,6 +360,7 @@ struct brcmf_pciedev_info {
+@@ -353,6 +355,7 @@ struct brcmf_pciedev_info {
  			  u16 value);
  	struct brcmf_mp_device *settings;
  	struct brcmf_otp_params otp;
@@ -52,7 +52,7 @@ Link: https://patch.msgid.link/20240910-wireless-mainline-v14-4-9d80fea5326d@wes
  #ifdef DEBUG
  	u32 console_interval;
  	bool console_active;
-@@ -1720,14 +1723,14 @@ static int brcmf_pcie_download_fw_nvram(
+@@ -1715,14 +1718,14 @@ static int brcmf_pcie_download_fw_nvram(
  		memcpy_toio(devinfo->tcm + address, nvram, nvram_len);
  		brcmf_fw_nvram_free(nvram);
  
@@ -69,7 +69,7 @@ Link: https://patch.msgid.link/20240910-wireless-mainline-v14-4-9d80fea5326d@wes
  			 * data to be present before NVRAM
  			 */
  			brcmf_dbg(PCIE, "Download random seed\n");
-@@ -2399,6 +2402,37 @@ static void brcmf_pcie_debugfs_create(st
+@@ -2394,6 +2397,37 @@ static void brcmf_pcie_debugfs_create(st
  }
  #endif
  
@@ -107,7 +107,7 @@ Link: https://patch.msgid.link/20240910-wireless-mainline-v14-4-9d80fea5326d@wes
  /* Forward declaration for pci_match_id() call */
  static const struct pci_device_id brcmf_pcie_devid_table[];
  
-@@ -2480,9 +2514,10 @@ brcmf_pcie_probe(struct pci_dev *pdev, c
+@@ -2475,9 +2509,10 @@ brcmf_pcie_probe(struct pci_dev *pdev, c
  	bus->bus_priv.pcie = pcie_bus_dev;
  	bus->ops = &brcmf_pcie_bus_ops;
  	bus->proto_type = BRCMF_PROTO_MSGBUF;
@@ -119,7 +119,7 @@ Link: https://patch.msgid.link/20240910-wireless-mainline-v14-4-9d80fea5326d@wes
  	dev_set_drvdata(&pdev->dev, bus);
  
  	ret = brcmf_alloc(&devinfo->pdev->dev, devinfo->settings);
-@@ -2668,14 +2703,14 @@ static const struct dev_pm_ops brcmf_pci
+@@ -2663,14 +2698,14 @@ static const struct dev_pm_ops brcmf_pci
  		BRCM_PCIE_VENDOR_ID_BROADCOM, (dev_id), \
  		PCI_ANY_ID, PCI_ANY_ID, \
  		PCI_CLASS_NETWORK_OTHER << 8, 0xffff00, \
@@ -136,7 +136,7 @@ Link: https://patch.msgid.link/20240910-wireless-mainline-v14-4-9d80fea5326d@wes
  	}
  
  static const struct pci_device_id brcmf_pcie_devid_table[] = {
-@@ -2703,9 +2738,10 @@ static const struct pci_device_id brcmf_
+@@ -2698,9 +2733,10 @@ static const struct pci_device_id brcmf_
  	BRCMF_PCIE_DEVICE(BRCM_PCIE_4366_5G_DEVICE_ID, BCA),
  	BRCMF_PCIE_DEVICE(BRCM_PCIE_4371_DEVICE_ID, WCC),
  	BRCMF_PCIE_DEVICE(BRCM_PCIE_43596_DEVICE_ID, CYW),
