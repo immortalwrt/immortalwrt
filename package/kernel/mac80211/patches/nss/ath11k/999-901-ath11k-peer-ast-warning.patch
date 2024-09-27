@@ -1,0 +1,27 @@
+--- a/drivers/net/wireless/ath/ath11k/dp_rx.c
++++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
+@@ -3402,7 +3402,7 @@ static void ath11k_dp_rx_process_receive
+ 
+ 	while ((msdu = __skb_dequeue(msdu_list))) {
+ 		rxcb = ATH11K_SKB_RXCB(msdu);
+-		/* Enable fast rx by default, the value will cahnge based on peer cap
++		/* Enable fast rx by default, the value will change based on peer cap
+ 		 * and packet type */
+ 		fast_rx = true;
+ 		rxcb->napi = napi;
+@@ -3755,13 +3755,13 @@ static void ath11k_dp_rx_update_user_sta
+ 
+ 	peer = ath11k_peer_find_by_ast(ar, user_stats->ast_index);
+ 
+-	if (peer == NULL) {
++	if (!peer && !ar->ab->nss.enabled) {
+ 		ath11k_warn(ar->ab, "peer ast idx %d can't be found\n",
+ 			    user_stats->ast_index);
+ 		return;
+ 	}
+ 
+-	arsta = (struct ath11k_sta *)peer->sta->drv_priv;
++	arsta = ath11k_sta_to_arsta(peer->sta);
+ 	rx_stats = arsta->rx_stats;
+ 
+ 	if (ar->ab->nss.enabled)
