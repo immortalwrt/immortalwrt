@@ -72,7 +72,7 @@
 		radio-type = "wwan";
 		pinctrl-names = "default";
 		pinctrl-0 = <&wwan_disable_h>;
-		reset-gpios = <&gpio4 RK_PA5 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&gpio4 RK_PA5 GPIO_ACTIVE_LOW>;
 		shutdown-gpios = <&gpio4 RK_PB0 GPIO_ACTIVE_HIGH>;
 	};
 
