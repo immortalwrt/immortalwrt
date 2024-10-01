@@ -47,16 +47,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	status = "okay";
 --- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
-@@ -615,7 +615,7 @@
- 	disable-wp;
- 	no-mmc;
- 	no-sdio;
--	sd-uhs-sdr104;
-+	sd-uhs-sdr50;
- 	vmmc-supply = <&vcc3v3_sd_s0>;
- 	vqmmc-supply = <&vccio_sd_s0>;
- 	status = "okay";
-@@ -656,8 +656,7 @@
+@@ -602,8 +602,7 @@
  	no-sd;
  	non-removable;
  	max-frequency = <200000000>;
@@ -66,6 +57,15 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	status = "okay";
  };
  
+@@ -615,7 +614,7 @@
+ 	disable-wp;
+ 	no-mmc;
+ 	no-sdio;
+-	sd-uhs-sdr104;
++	sd-uhs-sdr50;
+ 	vmmc-supply = <&vcc3v3_sd_s0>;
+ 	vqmmc-supply = <&vccio_sd_s0>;
+ 	status = "okay";
 --- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
 @@ -418,7 +418,7 @@
