@@ -1,6 +1,6 @@
 --- a/net/mac80211/iface.c
 +++ b/net/mac80211/iface.c
-@@ -832,6 +832,12 @@ static void ieee80211_uninit(struct net_
+@@ -847,6 +847,12 @@ static void ieee80211_uninit(struct net_
  	ieee80211_teardown_sdata(IEEE80211_DEV_TO_SUB_IF(dev));
  }
  
@@ -13,7 +13,7 @@
  static int ieee80211_netdev_setup_tc(struct net_device *dev,
  				     enum tc_setup_type type, void *type_data)
  {
-@@ -848,6 +854,7 @@ static const struct net_device_ops ieee8
+@@ -863,6 +869,7 @@ static const struct net_device_ops ieee8
  	.ndo_start_xmit		= ieee80211_subif_start_xmit,
  	.ndo_set_rx_mode	= ieee80211_set_multicast_list,
  	.ndo_set_mac_address 	= ieee80211_change_mac,
@@ -21,7 +21,7 @@
  	.ndo_setup_tc		= ieee80211_netdev_setup_tc,
  };
  
-@@ -887,6 +894,7 @@ static const struct net_device_ops ieee8
+@@ -902,6 +909,7 @@ static const struct net_device_ops ieee8
  	.ndo_set_rx_mode	= ieee80211_set_multicast_list,
  	.ndo_set_mac_address 	= ieee80211_change_mac,
  	.ndo_select_queue	= ieee80211_monitor_select_queue,
@@ -29,7 +29,7 @@
  };
  
  static int ieee80211_netdev_fill_forward_path(struct net_device_path_ctx *ctx,
-@@ -954,6 +962,7 @@ static const struct net_device_ops ieee8
+@@ -969,6 +977,7 @@ static const struct net_device_ops ieee8
  	.ndo_start_xmit		= ieee80211_subif_start_xmit_8023,
  	.ndo_set_rx_mode	= ieee80211_set_multicast_list,
  	.ndo_set_mac_address	= ieee80211_change_mac,
