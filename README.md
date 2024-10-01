@@ -89,7 +89,7 @@ Supported devices include, but are not limited to:
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/qosmio/openwrt-ipq -b qualcommax-6.x-nss-wifi-6.11
+   git clone https://github.com/qosmio/openwrt-ipq -b qualcommax-6.x-nss-wifi
    cd openwrt-ipq
    ```
 2. Update feeds:
