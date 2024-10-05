@@ -9,13 +9,13 @@
  		 * and packet type */
  		fast_rx = true;
  		rxcb->napi = napi;
-@@ -3755,13 +3755,13 @@ static void ath11k_dp_rx_update_user_sta
- 
+@@ -3756,12 +3756,13 @@ static void ath11k_dp_rx_update_user_sta
  	peer = ath11k_peer_find_by_ast(ar, user_stats->ast_index);
  
--	if (peer == NULL) {
-+	if (!peer && !ar->ab->nss.enabled) {
- 		ath11k_warn(ar->ab, "peer ast idx %d can't be found\n",
+ 	if (peer == NULL) {
+-		ath11k_warn(ar->ab, "peer ast idx %d can't be found\n",
++		if (!ar->ab->nss.enabled)
++		  ath11k_warn(ar->ab, "peer ast idx %d can't be found\n",
  			    user_stats->ast_index);
  		return;
  	}
