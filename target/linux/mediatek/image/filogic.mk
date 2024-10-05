@@ -911,11 +911,12 @@ define Device/konka_komi-a31
   DEVICE_ALT1_VENDOR := E-Life
   DEVICE_ALT1_MODEL := ETR635-U
   DEVICE_DTS := mt7981b-konka-komi-a31
+  DEVICE_DTS_OVERLAY := mt7981b-konka-komi-a31-emmc mt7981b-konka-komi-a31-nor
   DEVICE_DTS_DIR := ../dts
+  DEVICE_DTC_FLAGS := --pad 4096
+  DEVICE_DTS_LOADADDR := 0x43f00000
   DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware
-  UBINIZE_OPTS := -E 5
-  BLOCKSIZE := 128k
-  PAGESIZE := 2048
+  KERNEL_LOADADDR := 0x44000000
   KERNEL_IN_UBI := 1
   UBOOTENV_IN_UBI := 1
   IMAGES := sysupgrade.itb
@@ -925,9 +926,16 @@ define Device/konka_komi-a31
         fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
   IMAGE/sysupgrade.itb := append-kernel | \
         fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-static-with-rootfs | append-metadata
-  ARTIFACTS := preloader.bin bl31-uboot.fip
+  ARTIFACTS := preloader.bin bl31-uboot.fip \
+	emmc-gpt.bin emmc-preloader.bin emmc-bl31-uboot.fip \
+	nor-preloader.bin nor-bl31-uboot.fip
   ARTIFACT/preloader.bin := mt7981-bl2 spim-nand-ddr3
   ARTIFACT/bl31-uboot.fip := mt7981-bl31-uboot konka_komi-a31
+  ARTIFACT/emmc-gpt.bin := mt798x-gpt emmc
+  ARTIFACT/emmc-preloader.bin := mt7981-bl2 emmc-ddr3
+  ARTIFACT/emmc-bl31-uboot.fip := mt7981-bl31-uboot konka_komi-a31-emmc
+  ARTIFACT/nor-preloader.bin := mt7981-bl2 nor-ddr3
+  ARTIFACT/nor-bl31-uboot.fip := mt7981-bl31-uboot konka_komi-a31-nor
 endef
 TARGET_DEVICES += konka_komi-a31
 
