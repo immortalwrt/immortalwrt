@@ -142,7 +142,7 @@
 					nor_rootdisk: partition@180000 {
 						compatible = "denx,fit";
 						label = "fit";
-						reg = <0x180000 0xe00000>;
+						reg = <0x180000 0xe80000>;
 					};
 				};
 			};
