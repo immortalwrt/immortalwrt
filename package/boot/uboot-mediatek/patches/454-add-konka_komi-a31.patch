@@ -573,22 +573,11 @@
 +};
 --- /dev/null
 +++ b/arch/arm/dts/mt7981-konka-komi-a31-nor.dts
-@@ -0,0 +1,91 @@
+@@ -0,0 +1,80 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +
 +/dts-v1/;
 +#include "mt7981-konka-komi-a31.dts"
-+
-+/ {
-+	reg_3p3v: regulator-3p3v {
-+		compatible = "regulator-fixed";
-+		regulator-name = "fixed-3.3V";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		regulator-boot-on;
-+		regulator-always-on;
-+	};
-+};
 +
 +&pinctrl {
 +	spi2_flash_pins: spi2-spi2-pins {
@@ -655,7 +644,7 @@
 +
 +			partition@100000 {
 +				label = "fip";
-+				reg = <0x100000 0x0080000>;
++				reg = <0x100000 0x80000>;
 +			};
 +
 +			partition@180000 {
