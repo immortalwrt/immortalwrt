@@ -28,6 +28,10 @@ mediatek_setup_interfaces()
 	dlink,eagle-pro-ai-m32-a1)
 		ucidef_set_interfaces_lan_wan "lan1 lan2" wan
 		;;
+	tplink,tl-xdr3230-v1)
+		ucidef_add_switch "switch0" \
+			"1:lan" "2:lan" "3:lan" "4:wan" "6u@eth0" "5u@eth1"
+		;;
 	ubnt,unifi-6-lr*)
 		ucidef_set_interface_lan "eth0"
 		;;
