@@ -4,6 +4,16 @@ Following is the README.md of nss fork, for someone who are loooking for immorta
 
 
 # NSS Fork for IPQ807x
+| Branch                                                                                  | mac80211 Version | Notes                                                                 |
+|-----------------------------------------------------------------------------------------|------------------|----------------------------------------------------------------------|
+| [qualcommax-6.x-nss-wifi](https://github.com/qosmio/openwrt-ipq/tree/qualcommax-6.x-nss-wifi)             |6.11|Current with upstream|
+| [qualcommax-6.x-nss-mx4300](https://github.com/qosmio/openwrt-ipq/tree/qualcommax-6.x-nss-mx4300)         |6.11|Current with upstream. [Supports Linksys MX4300](https://github.com/openwrt/openwrt/pull/16070) |
+| [qualcommax-6.x-nss-wifi-6.9](https://github.com/qosmio/openwrt-ipq/tree/qualcommax-6.x-nss-wifi-6.9)     |6.9.9|Current with upstream, except older mac80211|
+| [qualcommax-6.x-nss-mx4300-6.9](https://github.com/qosmio/openwrt-ipq/tree/qualcommax-6.x-nss-mx4300-6.11) |6.9.9|Current with upstream, except older mac80211. [Supports Linksys MX4300](https://github.com/openwrt/openwrt/pull/16070) |
+
+NOTE: The 6.9 branches are meant for folks having issues with the current 6.11.2 version of backports/mac80211. These are mostly just meant as a workaround for the time being. I don't plan on supporting these branches longterm.
+
+The MX4300 branches will soon be merged in once the PR for MX4300 is approved upstream.
 
 ## Table of Contents
 - [Overview](#overview)
@@ -14,6 +24,7 @@ Following is the README.md of nss fork, for someone who are loooking for immorta
 - [OK, I Want NSS. Does My Device Support It?](#ok-i-want-nss-does-my-device-support-it)
 - [Quickstart](#quickstart)
 - [Important Note](#important-note)
+- [Donate](#donate)
 
 ---
 
@@ -89,7 +100,7 @@ Supported devices include, but are not limited to:
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/qosmio/openwrt-ipq -b qualcommax-6.x-nss-wifi
+   git clone https://github.com/qosmio/openwrt-ipq -b qualcommax-6.x-nss-wifi-6.11
    cd openwrt-ipq
    ```
 2. Update feeds:
@@ -149,3 +160,14 @@ If you have questions or issues, please join the discussion on OpenWrt's forums.
       Also not helpful as I'm always pushing changes...
 
    5. Be respectful and mindful. I dedicate my free time to maintain and improve this project, and I do it for the benefit of the community. Remember that I'm not a full-time developer or support team—I'm just an individual sharing my work. Constructive feedback is always welcome, but please refrain from being overly critical or demanding.
+
+## Support the Project
+
+I never really thought about setting up donations before, but with so many people being receptive and appreciative and asking how to contribute, I figured, why not? Of course, this project also builds on the incredible work done by the talented devs upstream who put in countless hours into OpenWrt itself. I’ll definitely continue working on this, but if you’d like to support, every bit helps.
+
+[![Donate with PayPal](./paypal.png)](https://www.paypal.com/donate?business=3V3H2SZFY7DNQ&item_name=Maintaining+NSS+fork+of+OpenWRT+and+NSS+packages.)
+<a href="https://cash.app/$austinzk">
+  <img src="./cashapp.png" alt="Cashapp" width="150px"/>
+</a>
+
+Consider donating to the [OpenWrt Foundation](https://openwrt.org/donate)
