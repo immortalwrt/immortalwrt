@@ -41,7 +41,8 @@ DEFAULT_PACKAGES.router:=\
 	firewall4 \
 	nftables \
 	kmod-nft-offload \
-	ipv6helper \
+	odhcp6c \
+	odhcpd-ipv6only \
 	ppp \
 	ppp-mod-pppoe
 # For easy usage

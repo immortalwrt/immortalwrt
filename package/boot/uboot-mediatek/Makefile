@@ -351,6 +351,31 @@ define U-Boot/mt7981_konka_komi-a31
   DEPENDS:=+trusted-firmware-a-mt7981-spim-nand-ddr3
 endef
 
+define U-Boot/mt7981_konka_komi-a31-emmc
+  NAME:=Konka KOMI A31 eMMC
+  BUILD_SUBTARGET:=filogic
+  BUILD_DEVICES:=konka_komi-a31
+  UBOOT_CONFIG:=mt7981_konka_komi-a31-emmc
+  UBOOT_IMAGE:=u-boot.fip
+  BL2_BOOTDEV:=emmc
+  BL2_SOC:=mt7981
+  BL2_DDRTYPE:=ddr3
+  DEPENDS:=+trusted-firmware-a-mt7981-emmc-ddr3
+endef
+
+define U-Boot/mt7981_konka_komi-a31-nor
+  NAME:=Konka KOMI A31 NOR
+  BUILD_SUBTARGET:=filogic
+  BUILD_DEVICES:=konka_komi-a31
+  UBOOT_CONFIG:=mt7981_konka_komi-a31-nor
+  UBOOT_IMAGE:=u-boot.fip
+  BL2_BOOTDEV:=nor
+  BL2_SOC:=mt7981
+  BL2_DDRTYPE:=ddr3
+  FIP_COMPRESS:=1
+  DEPENDS:=+trusted-firmware-a-mt7981-nor-ddr3
+endef
+
 define U-Boot/mt7981_livinet_zr-3020
   NAME:=Livinet ZR-3020
   BUILD_SUBTARGET:=filogic
@@ -853,6 +878,8 @@ UBOOT_TARGETS := \
 	mt7981_imou_lc-hx3001 \
 	mt7981_jcg_q30-pro \
 	mt7981_konka_komi-a31 \
+	mt7981_konka_komi-a31-emmc \
+	mt7981_konka_komi-a31-nor \
 	mt7981_livinet_zr-3020 \
 	mt7981_nokia_ea0326gmp \
 	mt7981_openwrt_one-snand \

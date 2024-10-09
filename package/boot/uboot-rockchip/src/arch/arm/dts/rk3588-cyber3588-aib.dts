@@ -61,9 +61,19 @@
 
 	rfkill-wlan {
 		compatible = "rfkill-gpio";
-		label = "rfkill-wlan";
+		label = "rfkill-pcie-wlan";
 		radio-type = "wlan";
 		shutdown-gpios = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
+	};
+
+	rfkill-wwan {
+		compatible = "rfkill-gpio";
+		label = "rfkill-wwan";
+		radio-type = "wwan";
+		pinctrl-names = "default";
+		pinctrl-0 = <&wwan_disable_h>;
+		reset-gpios = <&gpio4 RK_PA5 GPIO_ACTIVE_LOW>;
+		shutdown-gpios = <&gpio4 RK_PB0 GPIO_ACTIVE_HIGH>;
 	};
 
 	vcc12v_dcin: vcc12v-dcin-regulator {
@@ -488,8 +498,6 @@
 &pcie3x4 {
 	max-link-speed = <3>;
 	num-lanes = <1>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&pcie_wifi_enable>;
 	reset-gpios = <&gpio4 RK_PB6 GPIO_ACTIVE_HIGH>;
 	vpcie3v3-supply = <&vcc3v3_pcie30>;
 	status = "okay";
@@ -499,8 +507,6 @@
 &pcie3x2 {
 	max-link-speed = <3>;
 	num-lanes = <1>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&wwan_rst_en &wwan_disable_h &wwan_power_off_h>;
 	reset-gpios = <&gpio3 RK_PC6 GPIO_ACTIVE_HIGH>;
 	vpcie3v3-supply = <&vcc3v3_wwan>;
 	status = "okay";
@@ -532,24 +538,12 @@
 			rockchip,pins = <0 RK_PC6 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 
-		pcie_wifi_enable: pcie-wifi-enable {
-			rockchip,pins = <4 RK_PB5 RK_FUNC_GPIO &pcfg_pull_up>;
-		};
-
 		wwan_power_h: wwan-power-h {
 			rockchip,pins = <0 RK_PB0 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 
-		wwan_rst_en: wwan-rst-en {
-			rockchip,pins = <4 RK_PA5 RK_FUNC_GPIO &pcfg_output_high>;
-		};
-
 		wwan_disable_h: wwan-disable-h {
 			rockchip,pins = <2 RK_PC5 RK_FUNC_GPIO &pcfg_pull_down>;
-		};
-
-		wwan_power_off_h: wwan-power-off-h {
-			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_output_high>;
 		};
 	};
 

@@ -3,7 +3,7 @@ import { readfile } from "fs";
 import * as uci from 'uci';
 
 const bands_order = [ "6G", "5G", "2G" ];
-const htmode_order = [ "HE", "VHT", "HT" ];
+const htmode_order = [ "EHT", "HE", "VHT", "HT" ];
 
 let board = json(readfile("/etc/board.json"));
 if (!board.wlan)
@@ -71,20 +71,34 @@ for (let phy_name, phy in board.wlan) {
 	if (match(phy_name, /^phy[0-9]/))
 		id = `path='${phy.path}'`;
 
+	band_name = lc(band_name);
+
+	let country, defaults, num_global_macaddr;
+	if (board.wlan.defaults) {
+		defaults = board.wlan.defaults.ssids?.[band_name]?.ssid ? board.wlan.defaults.ssids?.[band_name] : board.wlan.defaults.ssids?.all;
+		country = board.wlan.defaults.country;
+		if (!country && band_name != '2g')
+			defaults = null;
+		num_global_macaddr = board.wlan.defaults.ssids?.[band_name]?.mac_count;
+	}
+
 	print(`set ${s}=wifi-device
 set ${s}.type='mac80211'
 set ${s}.${id}
-set ${s}.band='${lc(band_name)}'
+set ${s}.band='${band_name}'
 set ${s}.channel='${channel}'
 set ${s}.htmode='${htmode}'
+set ${s}.country='${country || ''}'
+set ${s}.num_global_macaddr='${num_global_macaddr || ''}'
 set ${s}.disabled='0'
 
 set ${si}=wifi-iface
 set ${si}.device='${name}'
 set ${si}.network='lan'
 set ${si}.mode='ap'
-set ${si}.ssid='ImmortalWrt'
-set ${si}.encryption='none'
+set ${si}.ssid='${defaults?.ssid || "ImmortalWrt"}'
+set ${si}.encryption='${defaults?.encryption || "none"}'
+set ${si}.key='${defaults?.key || ""}'
 
 `);
 	commit = true;

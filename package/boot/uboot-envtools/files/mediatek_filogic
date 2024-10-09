@@ -39,7 +39,6 @@ cmcc,a10|\
 h3c,magic-nx30-pro|\
 imou,lc-hx3001|\
 jcg,q30-pro|\
-konka,komi-a31|\
 livinet,zr-3020-ubootmod|\
 netcore,n60|\
 nokia,ea0326gmp|\
@@ -62,7 +61,8 @@ bananapi,bpi-r3-mini|\
 bananapi,bpi-r4|\
 bananapi,bpi-r4-poe|\
 cmcc,rax3000m|\
-jdcloud,re-cp-03)
+jdcloud,re-cp-03|\
+konka,komi-a31)
 	. /lib/upgrade/fit.sh
 	export_fitblk_bootdev
 	case "$CI_METHOD" in
