@@ -284,6 +284,12 @@
 	nvmem-cells = <&eeprom_factory_0>;
 	nvmem-cell-names = "eeprom";
 	status = "okay";
+
+	band@1 {
+		reg = <1>;
+		nvmem-cells = <&macaddr_factory_a 0>;
+		nvmem-cell-names = "mac-address";
+	};
 };
 
 &xhci {
