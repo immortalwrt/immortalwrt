@@ -191,6 +191,13 @@ define U-Boot/nanopi-r5s-rk3568
     friendlyarm_nanopi-r5s
 endef
 
+define U-Boot/opc-h68k-rk3568
+  $(U-Boot/rk3568/Default)
+  NAME:=OPC-H68K
+  BUILD_DEVICES:= \
+    hinlink_opc-h68k
+endef
+
 define U-Boot/photonicat-rk3568
   $(U-Boot/rk3568/Default)
   NAME:=Ariaboard Photonicat
@@ -233,6 +240,7 @@ UBOOT_TARGETS := \
   mrkaio-m68s-rk3568 \
   nanopi-r5c-rk3568 \
   nanopi-r5s-rk3568 \
+  opc-h68k-rk3568 \
   photonicat-rk3568 \
   roc-pc-rk3568 \
   sige3-rk3568
