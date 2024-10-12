@@ -68,7 +68,7 @@
   *  __dev_uc_sync - Synchonize device's unicast list
   *  @dev:  device to sync
   *  @sync: function to call if address should be added
-@@ -5219,6 +5228,11 @@ static inline bool netif_is_failover_sla
+@@ -5237,6 +5246,11 @@ static inline bool netif_is_failover_sla
  	return dev->priv_flags & IFF_FAILOVER_SLAVE;
  }
  
