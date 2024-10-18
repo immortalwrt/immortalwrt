@@ -83,7 +83,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  
 --- a/drivers/clk/rockchip/clk.h
 +++ b/drivers/clk/rockchip/clk.h
-@@ -969,6 +969,18 @@ struct rockchip_clk_branch {
+@@ -970,6 +970,18 @@ struct rockchip_clk_branch {
  #define SGRF_GATE(_id, cname, pname)				\
  		FACTOR(_id, cname, pname, 0, 1, 1)
  
