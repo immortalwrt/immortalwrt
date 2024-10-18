@@ -128,7 +128,7 @@
 		reset-deassert-us = <68000>;
 		realtek,aldps-enable;
 		realtek,led-link-select = <0x0 0xa7 0xa7>;
-		realtek,led-act-select = <0x2612>;
+		realtek,led-act-select = <0x2614>;
 		realtek,led-polarity-select = <0x63>;
 	};
 };
