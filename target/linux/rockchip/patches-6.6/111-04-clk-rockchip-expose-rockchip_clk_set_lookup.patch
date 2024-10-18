@@ -63,7 +63,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	}
  }
  EXPORT_SYMBOL_GPL(rockchip_clk_register_plls);
-@@ -585,7 +579,7 @@ void rockchip_clk_register_branches(stru
+@@ -586,7 +580,7 @@ void rockchip_clk_register_branches(stru
  			continue;
  		}
  
@@ -72,7 +72,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	}
  }
  EXPORT_SYMBOL_GPL(rockchip_clk_register_branches);
-@@ -609,7 +603,7 @@ void rockchip_clk_register_armclk(struct
+@@ -610,7 +604,7 @@ void rockchip_clk_register_armclk(struct
  		return;
  	}
  

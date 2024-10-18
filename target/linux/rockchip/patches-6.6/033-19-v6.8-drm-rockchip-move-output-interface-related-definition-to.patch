@@ -114,7 +114,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115627.1784735-1-and
  struct iommu_domain;
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.h
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.h
-@@ -277,18 +277,6 @@ struct vop_data {
+@@ -278,18 +278,6 @@ struct vop_data {
  /* dst alpha ctrl define */
  #define DST_FACTOR_M0(x)		(((x) & 0x7) << 6)
  

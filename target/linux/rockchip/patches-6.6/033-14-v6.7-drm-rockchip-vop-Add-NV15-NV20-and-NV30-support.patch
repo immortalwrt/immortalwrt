@@ -108,7 +108,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231023173718.188102-3-jona
  		VOP_WIN_SET(vop, win, uv_vir, DIV_ROUND_UP(fb->pitches[1], 4));
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.h
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.h
-@@ -186,6 +186,7 @@ struct vop_win_phy {
+@@ -187,6 +187,7 @@ struct vop_win_phy {
  	struct vop_reg enable;
  	struct vop_reg gate;
  	struct vop_reg format;
@@ -145,7 +145,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231023173718.188102-3-jona
  static const uint64_t format_modifiers_win_full[] = {
  	DRM_FORMAT_MOD_LINEAR,
  	DRM_FORMAT_MOD_INVALID,
-@@ -627,11 +647,12 @@ static const struct vop_scl_regs rk3288_
+@@ -629,11 +649,12 @@ static const struct vop_scl_regs rk3288_
  
  static const struct vop_win_phy rk3288_win01_data = {
  	.scl = &rk3288_win_full_scl,
@@ -160,7 +160,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231023173718.188102-3-jona
  	.rb_swap = VOP_REG(RK3288_WIN0_CTRL0, 0x1, 12),
  	.uv_swap = VOP_REG(RK3288_WIN0_CTRL0, 0x1, 15),
  	.act_info = VOP_REG(RK3288_WIN0_ACT_INFO, 0x1fff1fff, 0),
-@@ -936,13 +957,38 @@ static const struct vop_win_yuv2yuv_data
+@@ -938,13 +959,38 @@ static const struct vop_win_yuv2yuv_data
  
  };
  
@@ -202,7 +202,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231023173718.188102-3-jona
  	.rb_swap = VOP_REG(RK3288_WIN0_CTRL0, 0x1, 12),
  	.uv_swap = VOP_REG(RK3288_WIN0_CTRL0, 0x1, 15),
  	.x_mir_en = VOP_REG(RK3288_WIN0_CTRL0, 0x1, 21),
-@@ -965,9 +1011,9 @@ static const struct vop_win_phy rk3399_w
+@@ -967,9 +1013,9 @@ static const struct vop_win_phy rk3399_w
   * AFBC on the primary plane.
   */
  static const struct vop_win_data rk3399_vop_win_data[] = {
@@ -214,7 +214,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231023173718.188102-3-jona
  	  .type = DRM_PLANE_TYPE_OVERLAY },
  	{ .base = 0x00, .phy = &rk3368_win23_data,
  	  .type = DRM_PLANE_TYPE_OVERLAY },
-@@ -1099,11 +1145,11 @@ static const struct vop_intr rk3328_vop_
+@@ -1101,11 +1147,11 @@ static const struct vop_intr rk3328_vop_
  };
  
  static const struct vop_win_data rk3328_vop_win_data[] = {

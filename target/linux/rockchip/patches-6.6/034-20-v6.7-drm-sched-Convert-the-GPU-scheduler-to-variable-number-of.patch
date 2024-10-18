@@ -156,7 +156,7 @@ Link: https://lore.kernel.org/r/20231023032251.164775-1-luben.tuikov@amd.com
  
  	init_completion(&entity->entity_idle);
  
-@@ -533,7 +545,7 @@ void drm_sched_entity_select_rq(struct d
+@@ -535,7 +547,7 @@ void drm_sched_entity_select_rq(struct d
  
  	spin_lock(&entity->rq_lock);
  	sched = drm_sched_pick_best(entity->sched_list, entity->num_sched_list);

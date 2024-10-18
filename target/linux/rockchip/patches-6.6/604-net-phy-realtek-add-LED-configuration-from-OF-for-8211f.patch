@@ -17,7 +17,7 @@ Subject: [PATCH] net: phy: realtek: add LED configuration from OF for 8211f
  #define RTL8211F_LEDCR				0x10
  #define RTL8211F_LEDCR_MODE			BIT(15)
  #define RTL8211F_LEDCR_ACT_TXRX			BIT(4)
-@@ -376,6 +377,7 @@ static int rtl8211f_config_init(struct p
+@@ -379,6 +380,7 @@ static int rtl8211f_config_init(struct p
  	struct rtl821x_priv *priv = phydev->priv;
  	struct device *dev = &phydev->mdio.dev;
  	u16 val_txdly, val_rxdly;
@@ -25,7 +25,7 @@ Subject: [PATCH] net: phy: realtek: add LED configuration from OF for 8211f
  	int ret;
  
  	ret = phy_modify_paged_changed(phydev, 0xa43, RTL8211F_PHYCR1,
-@@ -442,6 +444,15 @@ static int rtl8211f_config_init(struct p
+@@ -445,6 +447,15 @@ static int rtl8211f_config_init(struct p
  			val_rxdly ? "enabled" : "disabled");
  	}
  
