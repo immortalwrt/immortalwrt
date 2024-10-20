@@ -23,4 +23,4 @@ jobs:
             - name: "Copy config"
               run: cp auto_build/ax3600.config .config
             - name: "Build"
-              run: make -j8
+              run: make -j3
