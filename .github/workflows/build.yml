@@ -23,7 +23,7 @@ jobs:
             - name: "Copy config"
               run: cp auto_build/ax3600.config .config && make defconfig && make oldconfig
             - name: "Build"
-              run: make -j3
+              run: make -j3 || make V=s
             - name: Upload build artifacts
               uses: actions/upload-artifact@v4
               with:
@@ -31,3 +31,5 @@ jobs:
                 path: |
                   bin/targets/qualcommax/ipq807x/*.bin
                   bin/targets/qualcommax/ipq807x/*.ubi
+            - name: Clean
+              run: make clean
