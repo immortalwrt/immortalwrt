@@ -569,6 +569,7 @@
 	disable-wp;
 	pinctrl-names = "default";
 	pinctrl-0 = <&sdmmc_bus4 &sdmmc_clk &sdmmc_cmd &sdmmc0_det_l>;
+	sd-uhs-sdr50;
 	vqmmc-supply = <&vcc_sdio>;
 	status = "okay";
 };

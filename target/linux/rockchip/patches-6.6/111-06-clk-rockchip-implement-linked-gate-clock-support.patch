@@ -178,7 +178,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  				  const char *name, const char *const *parent_names,
 --- a/drivers/clk/rockchip/clk.h
 +++ b/drivers/clk/rockchip/clk.h
-@@ -517,6 +517,7 @@ enum rockchip_clk_branch_type {
+@@ -518,6 +518,7 @@ enum rockchip_clk_branch_type {
  	branch_divider,
  	branch_fraction_divider,
  	branch_gate,
@@ -186,7 +186,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	branch_mmc,
  	branch_inverter,
  	branch_factor,
-@@ -544,6 +545,7 @@ struct rockchip_clk_branch {
+@@ -545,6 +546,7 @@ struct rockchip_clk_branch {
  	int				gate_offset;
  	u8				gate_shift;
  	u8				gate_flags;
@@ -194,7 +194,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	struct rockchip_clk_branch	*child;
  };
  
-@@ -842,6 +844,20 @@ struct rockchip_clk_branch {
+@@ -843,6 +845,20 @@ struct rockchip_clk_branch {
  		.gate_flags	= gf,				\
  	}
  
@@ -215,7 +215,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  #define MMC(_id, cname, pname, offset, shift)			\
  	{							\
  		.id		= _id,				\
-@@ -981,6 +997,11 @@ static inline void rockchip_clk_set_look
+@@ -982,6 +998,11 @@ static inline void rockchip_clk_set_look
  	ctx->clk_data.clks[id] = clk;
  }
  
@@ -227,7 +227,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  struct rockchip_clk_provider *rockchip_clk_init(struct device_node *np,
  			void __iomem *base, unsigned long nr_clks);
  void rockchip_clk_of_add_provider(struct device_node *np,
-@@ -990,6 +1011,10 @@ unsigned long rockchip_clk_find_max_clk_
+@@ -991,6 +1012,10 @@ unsigned long rockchip_clk_find_max_clk_
  void rockchip_clk_register_branches(struct rockchip_clk_provider *ctx,
  				    struct rockchip_clk_branch *list,
  				    unsigned int nr_clk);

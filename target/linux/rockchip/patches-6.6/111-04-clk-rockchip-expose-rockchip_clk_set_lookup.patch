@@ -63,7 +63,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	}
  }
  EXPORT_SYMBOL_GPL(rockchip_clk_register_plls);
-@@ -585,7 +579,7 @@ void rockchip_clk_register_branches(stru
+@@ -586,7 +580,7 @@ void rockchip_clk_register_branches(stru
  			continue;
  		}
  
@@ -72,7 +72,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	}
  }
  EXPORT_SYMBOL_GPL(rockchip_clk_register_branches);
-@@ -609,7 +603,7 @@ void rockchip_clk_register_armclk(struct
+@@ -610,7 +604,7 @@ void rockchip_clk_register_armclk(struct
  		return;
  	}
  
@@ -83,7 +83,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  
 --- a/drivers/clk/rockchip/clk.h
 +++ b/drivers/clk/rockchip/clk.h
-@@ -969,6 +969,18 @@ struct rockchip_clk_branch {
+@@ -970,6 +970,18 @@ struct rockchip_clk_branch {
  #define SGRF_GATE(_id, cname, pname)				\
  		FACTOR(_id, cname, pname, 0, 1, 1)
  

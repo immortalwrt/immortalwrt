@@ -17,7 +17,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20230731110012.2913742-7-jag
 
 --- a/drivers/gpu/drm/rockchip/rockchip_vop_reg.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_vop_reg.c
-@@ -1120,6 +1120,59 @@ static const struct vop_data rk3328_vop
+@@ -1122,6 +1122,59 @@ static const struct vop_data rk3328_vop
  	.max_output = { 4096, 2160 },
  };
  
@@ -77,7 +77,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20230731110012.2913742-7-jag
  static const struct of_device_id vop_driver_dt_match[] = {
  	{ .compatible = "rockchip,rk3036-vop",
  	  .data = &rk3036_vop },
-@@ -1147,6 +1200,8 @@ static const struct of_device_id vop_dri
+@@ -1149,6 +1202,8 @@ static const struct of_device_id vop_dri
  	  .data = &rk3228_vop },
  	{ .compatible = "rockchip,rk3328-vop",
  	  .data = &rk3328_vop },
