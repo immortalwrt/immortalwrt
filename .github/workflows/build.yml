@@ -1,0 +1,35 @@
+name: Build Openwrt
+on:
+    push:
+        branches: ["master"]
+
+jobs:
+    build:
+        runs-on: self-hosted
+        steps:
+            - uses: actions/checkout@v4
+            - uses: MasterworksIO/action-local-cache@2
+              name: "Load Toolchain Cache"
+              with:
+                path: './staging_dir'
+                key: 'staging_toolchain'
+            - uses: MasterworksIO/action-local-cache@2
+              name: "Load Feeds Cache"
+              with:
+                path: './feeds'
+                key: 'feeds'
+            - name: 'Update Feeds'
+              run: ./scripts/feeds update -a && ./scripts/feeds install -a
+            - name: "Copy config"
+              run: cp auto_build/ax3600.config .config && make defconfig && make oldconfig
+            - name: "Build"
+              run: make -j3 || make V=s
+            - name: Upload build artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                name: ax3600
+                path: |
+                  bin/targets/qualcommax/ipq807x/*.bin
+                  bin/targets/qualcommax/ipq807x/*.ubi
+            - name: Clean
+              run: make clean
