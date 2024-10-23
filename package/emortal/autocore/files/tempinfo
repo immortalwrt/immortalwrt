@@ -7,25 +7,25 @@ THERMAL_PATH="/sys/class/thermal"
 
 case "$DISTRIB_TARGET" in
 ipq40xx/*|ipq806x/*)
-	wifi_temp="$(awk '{printf("%.1f°C ", $0 / 1000)}' "$IEEE_PATH"/phy*/device/hwmon/hwmon*/temp1_input 2>"/dev/null" | awk '$1=$1')"
+	wifi_temp="$(cat "$IEEE_PATH"/phy*/device/hwmon/hwmon*/temp1_input 2>"/dev/null" | awk '{printf("%.1f°C ", $0 / 1000)}' | awk '$1=$1')"
 	;;
 mediatek/mt7622)
-	wifi_temp="$(awk '{printf("%.1f°C ", $0 / 1000)}' "$IEEE_PATH"/wl*/hwmon*/temp1_input 2>"/dev/null" | awk '$1=$1')"
+	wifi_temp="$(cat "$IEEE_PATH"/wl*/hwmon*/temp1_input 2>"/dev/null" | awk '{printf("%.1f°C ", $0 / 1000)}' | awk '$1=$1')"
 	;;
 *)
-	wifi_temp="$(awk '{printf("%.1f°C ", $0 / 1000)}' "$IEEE_PATH"/phy*/hwmon*/temp1_input 2>"/dev/null" | awk '$1=$1')"
+	wifi_temp="$(cat "$IEEE_PATH"/phy*/hwmon*/temp1_input 2>"/dev/null" | awk '{printf("%.1f°C ", $0 / 1000)}' | awk '$1=$1')"
 	;;
 esac
 
 case "$DISTRIB_TARGET" in
 ipq40xx/*)
 	if [ -e "$IEEE_PATH/phy0/hwmon0/temp1_input" ]; then
-		mt76_temp="$(awk -F ': ' '{print $2}' "$IEEE_PATH/phy0/hwmon0/temp1_input" 2>"/dev/null")°C"
+		mt76_temp="$(cat "$IEEE_PATH"/phy0/hwmon0/temp1_input 2>"/dev/null" | awk -F ': ' '{print $2}')°C"
 	fi
 	[ -z "$mt76_temp" ] || wifi_temp="${wifi_temp:+$wifi_temp }$mt76_temp"
 	;;
 *)
-	cpu_temp="$(awk '{printf("%.1f°C", $0 / 1000)}' "$THERMAL_PATH/thermal_zone0/temp" 2>"/dev/null")"
+	cpu_temp="$(cat "$THERMAL_PATH"/thermal_zone0/temp 2>"/dev/null" | awk '{printf("%.1f°C", $0 / 1000)}')"
 	;;
 esac
 
