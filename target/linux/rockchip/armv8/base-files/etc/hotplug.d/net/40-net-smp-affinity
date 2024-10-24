@@ -34,7 +34,8 @@ armsom,sige3|\
 ezpro,mrkaio-m68s|\
 firefly,rk3568-roc-pc|\
 friendlyarm,nanopi-r5c|\
-lunzn,fastrhino-r66s)
+lunzn,fastrhino-r66s|\
+mmbox,anas3035)
 	set_interface_core 2 "eth0"
 	set_interface_core 4 "eth1"
 	;;
