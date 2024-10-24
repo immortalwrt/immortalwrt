@@ -246,6 +246,17 @@ define Device/lyt_t68m
 endef
 TARGET_DEVICES += lyt_t68m
 
+define Device/mmbox_anas3035
+  DEVICE_VENDOR := MMBOX
+  DEVICE_MODEL := ANAS3035
+  SOC := rk3568
+  DEVICE_DTS := rockchip/rk3568-mmbox-anas3035
+  UBOOT_DEVICE_NAME := mmbox-anas3035-rk3568
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-r8125 kmod-ata-ahci-dwc kmod-hwmon-pwmfan kmod-hwmon-drivetemp
+endef
+TARGET_DEVICES += mmbox_anas3035
+
 define Device/pine64_rock64
   DEVICE_VENDOR := Pine64
   DEVICE_MODEL := Rock64
