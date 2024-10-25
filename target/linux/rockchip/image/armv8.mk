@@ -69,7 +69,7 @@ define Device/ezpro_mrkaio-m68s-plus
   SOC := rk3568
   UBOOT_DEVICE_NAME := mrkaio-m68s-rk3568
   BOOT_FLOW := pine64-img
-  DEVICE_PACKAGES := kmod-r8125 kmod-ata-ahci kmod-ata-ahci-platform kmod-nvme kmod-scsi-core
+  DEVICE_PACKAGES := kmod-r8125
 endef
 TARGET_DEVICES += ezpro_mrkaio-m68s-plus
 
