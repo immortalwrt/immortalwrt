@@ -208,7 +208,7 @@
 	};
 
 	vdd_gpu: regulator-vdd-gpu {
-		compatible regulator-= "pwm";
+		compatible = "pwm-regulator";
 		pwms = <&pwm2 0 5000 1>;
 		regulator-name = "vdd_gpu";
 		regulator-always-on;
@@ -222,7 +222,7 @@
 	};
 
 	vdd_logic: regulator-vdd-logic {
-		compatible regulator-= "pwm";
+		compatible = "pwm-regulator";
 		pwms = <&pwm1 0 5000 1>;
 		regulator-name = "vdd_logic";
 		regulator-always-on;
