@@ -230,15 +230,17 @@ define U-Boot/lyt-t68m-rk3568
 endef
 
 define U-Boot/mrkaio-m68s-rk3568
-  BUILD_SUBTARGET:=armv8
+  $(U-Boot/rk3568/Default)
   NAME:=Mrkaio M68S
   BUILD_DEVICES:= \
-    ezpro_mrkaio-m68s \
+    ezpro_mrkaio-m68s
+endef
+
+define U-Boot/mrkaio-m68s-plus-rk3568
+  $(U-Boot/rk3568/Default)
+  NAME:=Mrkaio M68S Plus
+  BUILD_DEVICES:= \
     ezpro_mrkaio-m68s-plus
-  DEPENDS:=+PACKAGE_u-boot-mrkaio-m68s-rk3568:arm-trusted-firmware-rk3568
-  PKG_BUILD_DEPENDS:=arm-trusted-firmware-rockchip-vendor
-  ATF:=rk3568_bl31_v1.28.elf
-  DDR:=rk3568_ddr_1560MHz_v1.13.bin
 endef
 
 define U-Boot/nanopi-r5c-rk3568
