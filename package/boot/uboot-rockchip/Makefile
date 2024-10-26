@@ -401,6 +401,7 @@ UBOOT_TARGETS := \
   fastrhino-r68s-rk3568 \
   lyt-t68m-rk3568 \
   mrkaio-m68s-rk3568 \
+  mrkaio-m68s-plus-rk3568 \
   nanopi-r5c-rk3568 \
   nanopi-r5s-rk3568 \
   photonicat-rk3568 \
