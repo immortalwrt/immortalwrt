@@ -12,6 +12,7 @@
 +	rk3568-armsom-sige3.dtb \
 +	rk3568-lyt-t68m.dtb \
 +	rk3568-mrkaio-m68s.dtb \
++	rk3568-mrkaio-m68s-plus.dtb \
 +	rk3568-photonicat.dtb
 +
 +dtb-$(CONFIG_ROCKCHIP_RK3588) += \
