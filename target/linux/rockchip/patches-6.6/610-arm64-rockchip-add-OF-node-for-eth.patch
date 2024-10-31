@@ -102,6 +102,35 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  };
  
  &pinctrl {
+--- a/arch/arm64/boot/dts/rockchip/rk3566-nanopi-r3s.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3566-nanopi-r3s.dts
+@@ -414,6 +414,7 @@
+ 		interrupts = <RK_PC3 IRQ_TYPE_LEVEL_LOW>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&eth_phy_reset_pin>;
++		realtek,led-data = <0xae00>;
+ 		reset-assert-us = <20000>;
+ 		reset-deassert-us = <100000>;
+ 		reset-gpios = <&gpio4 RK_PC2 GPIO_ACTIVE_LOW>;
+@@ -425,6 +426,18 @@
+ 	pinctrl-0 = <&pcie_reset_h>;
+ 	reset-gpios = <&gpio4 RK_PC6 GPIO_ACTIVE_HIGH>;
+ 	status = "okay";
++
++	pcie@0,0 {
++		reg = <0x00000000 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++
++		rtl8168: pcie@1,0 {
++			compatible = "pci10ec,8168";
++			reg = <0x000000 0 0 0 0>;
++			realtek,led-data = <0x870>;
++		};
++	};
+ };
+ 
+ &pinctrl {
 --- a/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi
 @@ -369,6 +369,19 @@
