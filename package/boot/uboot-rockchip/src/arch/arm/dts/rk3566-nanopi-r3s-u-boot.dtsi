@@ -1,0 +1,17 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+
+#include "rk356x-u-boot.dtsi"
+
+&sdhci {
+	cap-mmc-highspeed;
+	mmc-ddr-1_8v;
+	mmc-hs200-1_8v;
+	mmc-hs400-1_8v;
+	mmc-hs400-enhanced-strobe;
+	pinctrl-0 = <&emmc_bus8 &emmc_clk &emmc_cmd &emmc_datastrobe>;
+};
+
+&vcc5v0_usb {
+	/delete-property/ regulator-always-on;
+	/delete-property/ regulator-boot-on;
+};

@@ -48,6 +48,7 @@ ifneq ($(CONFIG_USE_APK),)
 	$(call FeedSourcesAppendAPK,$(PKG_BUILD_DIR)/repositories)
 	$(VERSION_SED_SCRIPT) $(PKG_BUILD_DIR)/repositories
   endif
+	echo "packages/packages.adb" >> $(PKG_BUILD_DIR)/repositories
 
 	$(INSTALL_DATA) ./files/README.apk.md $(PKG_BUILD_DIR)/packages/README.md
 else
@@ -70,7 +71,7 @@ endif
 ifeq ($(CONFIG_BUILDBOT),)
   ifeq ($(CONFIG_IB_STANDALONE),)
 	$(FIND) $(call FeedPackageDir,libc) -type f \
-		\( -name 'libc_*.$(PACKAGE_SUFFIX)' -or -name 'kernel_*.$(PACKAGE_SUFFIX)' -or -name 'kmod-*.$(PACKAGE_SUFFIX)' \) \
+		\( -name 'libc*.$(PACKAGE_SUFFIX)' -or -name 'kernel*.$(PACKAGE_SUFFIX)' -or -name 'kmod-*.$(PACKAGE_SUFFIX)' \) \
 		-exec $(CP) -t $(PKG_BUILD_DIR)/packages {} +
   else
 	$(FIND) $(wildcard $(PACKAGE_SUBDIRS)) -type f -name '*.$(PACKAGE_SUFFIX)' \
@@ -78,17 +79,20 @@ ifeq ($(CONFIG_BUILDBOT),)
   endif
 else
 	$(FIND) $(call FeedPackageDir,libc) -type f \
-		\( -name 'libc_*.$(PACKAGE_SUFFIX)' -or -name 'kernel_*.$(PACKAGE_SUFFIX)' \) \
+		\( -name 'libc*.$(PACKAGE_SUFFIX)' -or -name 'kernel*.$(PACKAGE_SUFFIX)' \) \
 		-exec $(CP) -t $(IB_LDIR)/ {} +
 endif
 
-ifneq ($(CONFIG_USE_APK),y)
 ifneq ($(CONFIG_SIGNATURE_CHECK),)
+ifneq ($(CONFIG_USE_APK),y)
 	echo ''                                                        >> $(PKG_BUILD_DIR)/repositories.conf
 	echo 'option check_signature'                                  >> $(PKG_BUILD_DIR)/repositories.conf
 	$(INSTALL_DIR) $(PKG_BUILD_DIR)/keys
 	$(CP) -L $(STAGING_DIR_ROOT)/etc/opkg/keys/ $(PKG_BUILD_DIR)/
 	$(CP) -L $(STAGING_DIR_ROOT)/usr/sbin/opkg-key $(PKG_BUILD_DIR)/scripts/
+else
+	$(INSTALL_DIR) $(PKG_BUILD_DIR)/keys
+	$(CP) -L $(STAGING_DIR_ROOT)/etc/apk/keys/ $(PKG_BUILD_DIR)/
 endif
 endif
 

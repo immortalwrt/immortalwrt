@@ -209,6 +209,28 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	/delete-node/ display-subsystem;
  
  	gpio-leds {
+--- a/arch/arm64/boot/dts/rockchip/rk3566-nanopi-r3s.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3566-nanopi-r3s.dts
+@@ -24,6 +24,11 @@
+ 		ethernet0 = &gmac1;
+ 		mmc0 = &sdhci;
+ 		mmc1 = &sdmmc0;
++
++		led-boot = &power_led;
++		led-failsafe = &power_led;
++		led-running = &power_led;
++		led-upgrade = &power_led;
+ 	};
+ 
+ 	chosen: chosen {
+@@ -52,7 +57,6 @@
+ 			color = <LED_COLOR_ID_RED>;
+ 			function = LED_FUNCTION_POWER;
+ 			gpios = <&gpio0 RK_PB7 GPIO_ACTIVE_HIGH>;
+-			default-state = "on";
+ 		};
+ 
+ 		lan_led: led-1 {
 --- a/arch/arm64/boot/dts/rockchip/rk3566-radxa-cm3.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3566-radxa-cm3.dtsi
 @@ -17,7 +17,7 @@
