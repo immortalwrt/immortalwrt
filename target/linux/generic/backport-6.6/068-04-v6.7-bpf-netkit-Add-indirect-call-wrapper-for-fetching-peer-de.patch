@@ -1,0 +1,108 @@
+From 2c225425704078282e152ba692649237f78b3d7a Mon Sep 17 00:00:00 2001
+From: Daniel Borkmann <daniel@iogearbox.net>
+Date: Tue, 14 Nov 2023 01:42:18 +0100
+Subject: [PATCH] bpf, netkit: Add indirect call wrapper for fetching peer dev
+
+ndo_get_peer_dev is used in tcx BPF fast path, therefore make use of
+indirect call wrapper and therefore optimize the bpf_redirect_peer()
+internal handling a bit. Add a small skb_get_peer_dev() wrapper which
+utilizes the INDIRECT_CALL_1() macro instead of open coding.
+
+Future work could potentially add a peer pointer directly into struct
+net_device in future and convert veth and netkit over to use it so
+that eventually ndo_get_peer_dev can be removed.
+
+Co-developed-by: Nikolay Aleksandrov <razor@blackwall.org>
+Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Stanislav Fomichev <sdf@google.com>
+Link: https://lore.kernel.org/r/20231114004220.6495-7-daniel@iogearbox.net
+Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
+---
+ drivers/net/netkit.c |  3 ++-
+ include/net/netkit.h |  6 ++++++
+ net/core/filter.c    | 18 +++++++++++++-----
+ 3 files changed, 21 insertions(+), 6 deletions(-)
+
+--- a/drivers/net/netkit.c
++++ b/drivers/net/netkit.c
+@@ -7,6 +7,7 @@
+ #include <linux/filter.h>
+ #include <linux/netfilter_netdev.h>
+ #include <linux/bpf_mprog.h>
++#include <linux/indirect_call_wrapper.h>
+ 
+ #include <net/netkit.h>
+ #include <net/dst.h>
+@@ -177,7 +178,7 @@ out:
+ 	rcu_read_unlock();
+ }
+ 
+-static struct net_device *netkit_peer_dev(struct net_device *dev)
++INDIRECT_CALLABLE_SCOPE struct net_device *netkit_peer_dev(struct net_device *dev)
+ {
+ 	return rcu_dereference(netkit_priv(dev)->peer);
+ }
+--- a/include/net/netkit.h
++++ b/include/net/netkit.h
+@@ -10,6 +10,7 @@ int netkit_prog_attach(const union bpf_a
+ int netkit_link_attach(const union bpf_attr *attr, struct bpf_prog *prog);
+ int netkit_prog_detach(const union bpf_attr *attr, struct bpf_prog *prog);
+ int netkit_prog_query(const union bpf_attr *attr, union bpf_attr __user *uattr);
++INDIRECT_CALLABLE_DECLARE(struct net_device *netkit_peer_dev(struct net_device *dev));
+ #else
+ static inline int netkit_prog_attach(const union bpf_attr *attr,
+ 				     struct bpf_prog *prog)
+@@ -34,5 +35,10 @@ static inline int netkit_prog_query(cons
+ {
+ 	return -EINVAL;
+ }
++
++static inline struct net_device *netkit_peer_dev(struct net_device *dev)
++{
++	return NULL;
++}
+ #endif /* CONFIG_NETKIT */
+ #endif /* __NET_NETKIT_H */
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -81,6 +81,7 @@
+ #include <net/xdp.h>
+ #include <net/mptcp.h>
+ #include <net/netfilter/nf_conntrack_bpf.h>
++#include <net/netkit.h>
+ #include <linux/un.h>
+ #include <net/xdp_sock_drv.h>
+ 
+@@ -2472,6 +2473,16 @@ static const struct bpf_func_proto bpf_c
+ DEFINE_PER_CPU(struct bpf_redirect_info, bpf_redirect_info);
+ EXPORT_PER_CPU_SYMBOL_GPL(bpf_redirect_info);
+ 
++static struct net_device *skb_get_peer_dev(struct net_device *dev)
++{
++	const struct net_device_ops *ops = dev->netdev_ops;
++
++	if (likely(ops->ndo_get_peer_dev))
++		return INDIRECT_CALL_1(ops->ndo_get_peer_dev,
++				       netkit_peer_dev, dev);
++	return NULL;
++}
++
+ int skb_do_redirect(struct sk_buff *skb)
+ {
+ 	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
+@@ -2485,12 +2496,9 @@ int skb_do_redirect(struct sk_buff *skb)
+ 	if (unlikely(!dev))
+ 		goto out_drop;
+ 	if (flags & BPF_F_PEER) {
+-		const struct net_device_ops *ops = dev->netdev_ops;
+-
+-		if (unlikely(!ops->ndo_get_peer_dev ||
+-			     !skb_at_tc_ingress(skb)))
++		if (unlikely(!skb_at_tc_ingress(skb)))
+ 			goto out_drop;
+-		dev = ops->ndo_get_peer_dev(dev);
++		dev = skb_get_peer_dev(dev);
+ 		if (unlikely(!dev ||
+ 			     !(dev->flags & IFF_UP) ||
+ 			     net_eq(net, dev_net(dev))))
