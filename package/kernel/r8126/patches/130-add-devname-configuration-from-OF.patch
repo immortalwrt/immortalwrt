@@ -1,6 +1,6 @@
 --- a/src/r8126_n.c
 +++ b/src/r8126_n.c
-@@ -13058,6 +13058,7 @@ rtl8126_init_board(struct pci_dev *pdev,
+@@ -13740,6 +13740,7 @@ rtl8126_init_board(struct pci_dev *pdev,
          void __iomem *ioaddr;
          struct net_device *dev;
          struct rtl8126_private *tp;
@@ -8,7 +8,7 @@
          int rc = -ENOMEM, i, pm_cap;
  
          assert(ioaddr_out != NULL);
-@@ -13072,6 +13073,9 @@ rtl8126_init_board(struct pci_dev *pdev,
+@@ -13754,6 +13755,9 @@ rtl8126_init_board(struct pci_dev *pdev,
                  goto err_out;
          }
  
