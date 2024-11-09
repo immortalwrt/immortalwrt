@@ -23,7 +23,7 @@ jobs:
             - name: "Copy config"
               run: cp auto_build/ax3600.config .config && make defconfig && make oldconfig
             - name: "Build"
-              run: make -j3 || make V=s
+              run: make -j2 || make V=s
             - name: Upload build artifacts
               uses: actions/upload-artifact@v4
               with:
