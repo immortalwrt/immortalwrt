@@ -8,8 +8,8 @@
  #include <linux/if_vlan.h>
  #include <linux/crc32.h>
  #include <linux/interrupt.h>
-@@ -11652,6 +11653,25 @@ rtl8126_setup_mqs_reg(struct rtl8126_pri
-         }
+@@ -12282,6 +12283,25 @@ rtl8126_setup_mqs_reg(struct rtl8126_pri
+                 tp->imr_reg[i] = (u16)(IMR1_8125 + (i - 1) * 4);
  }
  
 +static int
@@ -34,9 +34,9 @@
  static void
  rtl8126_init_software_variable(struct net_device *dev)
  {
-@@ -12024,6 +12044,8 @@ rtl8126_init_software_variable(struct ne
-         if (tp->InitRxDescType == RX_DESC_RING_TYPE_3)
-                 tp->rtl8126_rx_config |= EnableRxDescV3;
+@@ -12688,6 +12708,8 @@ rtl8126_init_software_variable(struct ne
+         else if (tp->InitRxDescType == RX_DESC_RING_TYPE_4)
+                 tp->rtl8126_rx_config &= ~EnableRxDescV4_1;
  
 +        rtl8126_led_configuration(tp);
 +
