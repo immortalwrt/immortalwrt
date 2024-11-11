@@ -225,7 +225,7 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
 +struct expr_ops expr_ops_fullcone = {
 +	.name		= "fullcone",
 +	.alloc_len	= sizeof(struct nftnl_expr_fullcone),
-+	.nftnl_max_attr	= __NFTNL_EXPR_FULLCONE_MAX,
++	.nftnl_max_attr	= __NFTNL_EXPR_FULLCONE_MAX - 1,
 +	.set		= nftnl_expr_fullcone_set,
 +	.get		= nftnl_expr_fullcone_get,
 +	.parse		= nftnl_expr_fullcone_parse,
