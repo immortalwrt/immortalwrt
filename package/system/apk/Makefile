@@ -43,6 +43,7 @@ define Package/apk-openssl
   $(Package/apk/default)
   TITLE += (openssl)
   DEPENDS +=+libopenssl
+  DEFAULT:=y if USE_APK
   VARIANT:=openssl
   DEFAULT_VARIANT:=1
   CONFLICTS:=apk-mbedtls
