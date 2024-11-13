@@ -7,10 +7,17 @@ ifneq ($(__target_inc),1)
 __target_inc=1
 
 
-# default device type
+##@
+# @brief Default device type ( basic | nas | router ).
+##
 DEVICE_TYPE?=router
 
-# Default packages - the really basic set
+##@
+# @brief Default packages.
+#
+# The really basic set. Additional packages are added based on @DEVICE_TYPE and
+# @CONFIG_* values.
+##
 DEFAULT_PACKAGES:=\
 	base-files \
 	ca-bundle \
@@ -27,15 +34,21 @@ DEFAULT_PACKAGES:=\
 	urandom-seed \
 	urngd
 
-# For the basic set
+##@
+# @brief Default packages for @DEVICE_TYPE basic.
+##
 DEFAULT_PACKAGES.basic:=
-# For nas targets
+##@
+# @brief Default packages for @DEVICE_TYPE nas.
+##
 DEFAULT_PACKAGES.nas:=\
 	block-mount \
 	fdisk \
 	lsblk \
 	mdadm
-# For router targets
+##@
+# @brief Default packages for @DEVICE_TYPE router.
+##
 DEFAULT_PACKAGES.router:=\
 	dnsmasq-full \
 	firewall4 \
@@ -101,7 +114,18 @@ DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.$(DEVICE_TYPE))
 # Add tweaked packages
 # DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.tweak)
 
+##@
+# @brief Filter out packages, prepended with `-`.
+#
+# @param 1: Package list.
+##
 filter_packages = $(filter-out -% $(patsubst -%,%,$(filter -%,$(1))),$(1))
+
+##@
+# @brief Append extra package dependencies.
+#
+# @param 1: Package list.
+##
 extra_packages = $(if $(filter wpad wpad-% nas,$(1)),iwinfo)
 
 define ProfileDefault
