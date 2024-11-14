@@ -3362,6 +3362,7 @@ define Device/zyxel_nwa1123-ac
   ZYXEL_MODEL_STRING := AAOX
   DEVICE_PACKAGES := kmod-ath10k-ct-smallbuffers \
 	ath10k-firmware-qca988x-ct
+  DEFAULT := n
 endef
 TARGET_DEVICES += zyxel_nwa1123-ac
 
