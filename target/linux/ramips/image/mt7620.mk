@@ -1611,6 +1611,7 @@ define Device/zyxel_keenetic-omni
   IMAGE/factory.bin := $$(sysupgrade_bin) | pad-to 64k | check-size | \
 	zyimage -d 4882 -v "ZyXEL Keenetic Omni"
   SUPPORTED_DEVICES += kn_rc
+  DEFAULT := n
 endef
 TARGET_DEVICES += zyxel_keenetic-omni
 
@@ -1624,6 +1625,7 @@ define Device/zyxel_keenetic-omni-ii
   IMAGE/factory.bin := $$(sysupgrade_bin) | pad-to 64k | check-size | \
 	zyimage -d 2102034 -v "ZyXEL Keenetic Omni II"
   SUPPORTED_DEVICES += kn_rf
+  DEFAULT := n
 endef
 TARGET_DEVICES += zyxel_keenetic-omni-ii
 
