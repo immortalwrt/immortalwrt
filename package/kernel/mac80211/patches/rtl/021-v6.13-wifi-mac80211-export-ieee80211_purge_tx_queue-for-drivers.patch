@@ -1,0 +1,59 @@
+From 53bc1b73b67836ac9867f93dee7a443986b4a94f Mon Sep 17 00:00:00 2001
+From: Ping-Ke Shih <pkshih@realtek.com>
+Date: Thu, 22 Aug 2024 09:42:54 +0800
+Subject: [PATCH] wifi: mac80211: export ieee80211_purge_tx_queue() for drivers
+
+Drivers need to purge TX SKB when stopping. Using skb_queue_purge() can't
+report TX status to mac80211, causing ieee80211_free_ack_frame() warns
+"Have pending ack frames!". Export ieee80211_purge_tx_queue() for drivers
+to not have to reimplement it.
+
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Link: https://patch.msgid.link/20240822014255.10211-1-pkshih@realtek.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+---
+ include/net/mac80211.h     | 13 +++++++++++++
+ net/mac80211/ieee80211_i.h |  2 --
+ net/mac80211/status.c      |  1 +
+ 3 files changed, 14 insertions(+), 2 deletions(-)
+
+--- a/include/net/mac80211.h
++++ b/include/net/mac80211.h
+@@ -3184,6 +3184,19 @@ ieee80211_get_alt_retry_rate(const struc
+ void ieee80211_free_txskb(struct ieee80211_hw *hw, struct sk_buff *skb);
+ 
+ /**
++ * ieee80211_purge_tx_queue - purge TX skb queue
++ * @hw: the hardware
++ * @skbs: the skbs
++ *
++ * Free a set of transmit skbs. Use this function when device is going to stop
++ * but some transmit skbs without TX status are still queued.
++ * This function does not take the list lock and the caller must hold the
++ * relevant locks to use it.
++ */
++void ieee80211_purge_tx_queue(struct ieee80211_hw *hw,
++			      struct sk_buff_head *skbs);
++
++/**
+  * DOC: Hardware crypto acceleration
+  *
+  * mac80211 is capable of taking advantage of many hardware
+--- a/net/mac80211/ieee80211_i.h
++++ b/net/mac80211/ieee80211_i.h
+@@ -2077,8 +2077,6 @@ void __ieee80211_subif_start_xmit(struct
+ 				  u32 info_flags,
+ 				  u32 ctrl_flags,
+ 				  u64 *cookie);
+-void ieee80211_purge_tx_queue(struct ieee80211_hw *hw,
+-			      struct sk_buff_head *skbs);
+ struct sk_buff *
+ ieee80211_build_data_template(struct ieee80211_sub_if_data *sdata,
+ 			      struct sk_buff *skb, u32 info_flags);
+--- a/net/mac80211/status.c
++++ b/net/mac80211/status.c
+@@ -1305,3 +1305,4 @@ void ieee80211_purge_tx_queue(struct iee
+ 	while ((skb = __skb_dequeue(skbs)))
+ 		ieee80211_free_txskb(hw, skb);
+ }
++EXPORT_SYMBOL(ieee80211_purge_tx_queue);
