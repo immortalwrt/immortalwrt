@@ -382,7 +382,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  &pcie30phy {
 --- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
-@@ -518,6 +518,20 @@
+@@ -510,6 +510,20 @@
  	pinctrl-names = "default";
  	pinctrl-0 = <&pcie2_0_rst>;
  	status = "okay";
@@ -403,7 +403,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  };
  
  &pcie2x1l1 {
-@@ -534,6 +548,20 @@
+@@ -526,6 +540,20 @@
  	pinctrl-names = "default";
  	pinctrl-0 = <&pcie2_2_rst>;
  	status = "okay";
