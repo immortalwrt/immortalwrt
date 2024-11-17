@@ -12,9 +12,10 @@
 	compatible = "openembed,som7981", "mediatek,mt7981";
 
 	aliases {
-		led-boot = &wlan5g_led;
-		led-failsafe = &wlan5g_led;
-		led-upgrade = &wlan5g_led;
+		led-boot = &act_led;
+		led-failsafe = &act_led;
+		led-running = &act_led;
+		led-upgrade = &act_led;
 		serial0 = &uart0;
 	};
 
@@ -57,13 +58,14 @@
 		};
 
 		led-2 {
-			function = LED_FUNCTION_WLAN_2GHZ;
+			function = LED_FUNCTION_PANIC;
 			color = <LED_COLOR_ID_GREEN>;
 			gpios = <&pio 34 GPIO_ACTIVE_LOW>;
+			panic-indicator;
 		};
 
-		wlan5g_led: led-3 {
-			function = LED_FUNCTION_WLAN_5GHZ;
+		act_led: led-3 {
+			function = LED_FUNCTION_ACTIVITY;
 			color = <LED_COLOR_ID_RED>;
 			gpios = <&pio 35 GPIO_ACTIVE_LOW>;
 		};
