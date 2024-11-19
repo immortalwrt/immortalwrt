@@ -1,3 +1,18 @@
+From 1ee6ff9ae3c1a9eda9081f9db04f85d3a7352d38 Mon Sep 17 00:00:00 2001
+From: Nick Morrow <usbwifi2024@gmail.com>
+Date: Wed, 6 Nov 2024 15:57:10 +0200
+Subject: [PATCH] wifi: rtw88: 8812au: Add more device IDs
+
+From https://github.com/morrownr/8812au-20210820.
+
+Signed-off-by: Nick Morrow <usbwifi2024@gmail.com>
+Signed-off-by: Bitterblue Smith <rtl8821cerfe2@gmail.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Link: https://patch.msgid.link/31b7ee6b-f96d-43e0-a32f-a9eb1174a0c1@gmail.com
+---
+ .../net/wireless/realtek/rtw88/rtw8812au.c    | 68 ++++++++++++++++++-
+ 1 file changed, 67 insertions(+), 1 deletion(-)
+
 --- a/drivers/net/wireless/realtek/rtw88/rtw8812au.c
 +++ b/drivers/net/wireless/realtek/rtw88/rtw8812au.c
 @@ -9,8 +9,74 @@
@@ -15,7 +30,7 @@
 +	  .driver_info = (kernel_ulong_t)&(rtw8812a_hw_spec) },
 +	{ USB_DEVICE_AND_INTERFACE_INFO(0x0409, 0x0408, 0xff, 0xff, 0xff),
 +	  .driver_info = (kernel_ulong_t)&(rtw8812a_hw_spec) }, /* NEC */
-+	{ USB_DEVICE_AND_INTERFACE_INFO(0x0411, 0x025D, 0xff, 0xff, 0xff),
++	{ USB_DEVICE_AND_INTERFACE_INFO(0x0411, 0x025d, 0xff, 0xff, 0xff),
 +	  .driver_info = (kernel_ulong_t)&(rtw8812a_hw_spec) }, /* Buffalo */
 +	{ USB_DEVICE_AND_INTERFACE_INFO(0x04bb, 0x0952, 0xff, 0xff, 0xff),
 +	  .driver_info = (kernel_ulong_t)&(rtw8812a_hw_spec) }, /* I-O DATA */
