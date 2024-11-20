@@ -21,7 +21,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
 
 --- a/include/net/mac80211.h
 +++ b/include/net/mac80211.h
-@@ -5273,6 +5273,17 @@ void ieee80211_sta_pspoll(struct ieee802
+@@ -5276,6 +5276,17 @@ void ieee80211_sta_pspoll(struct ieee802
   */
  void ieee80211_sta_uapsd_trigger(struct ieee80211_sta *sta, u8 tid);
  
@@ -74,7 +74,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  	trace_drv_add_interface(local, sdata);
 --- a/net/mac80211/iface.c
 +++ b/net/mac80211/iface.c
-@@ -702,6 +702,9 @@ static void ieee80211_do_stop(struct iee
+@@ -697,6 +697,9 @@ static void ieee80211_do_stop(struct iee
  
  	switch (sdata->vif.type) {
  	case NL80211_IFTYPE_AP_VLAN:
@@ -84,7 +84,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  		break;
  	case NL80211_IFTYPE_MONITOR:
  		if (local->monitors == 0)
-@@ -982,6 +985,7 @@ static bool ieee80211_iftype_supports_hd
+@@ -977,6 +980,7 @@ static bool ieee80211_iftype_supports_hd
  	switch (iftype) {
  	/* P2P GO and client are mapped to AP/STATION types */
  	case NL80211_IFTYPE_AP:
@@ -92,7 +92,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  	case NL80211_IFTYPE_STATION:
  		return true;
  	default:
-@@ -1036,7 +1040,8 @@ static void ieee80211_set_vif_encap_ops(
+@@ -1031,7 +1035,8 @@ static void ieee80211_set_vif_encap_ops(
  	struct ieee80211_sub_if_data *bss = sdata;
  	bool enabled;
  
@@ -102,8 +102,8 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  		if (!sdata->bss)
  			return;
  
-@@ -1368,10 +1373,17 @@ int ieee80211_do_open(struct wireless_de
- 
+@@ -1365,10 +1370,17 @@ int ieee80211_do_open(struct wireless_de
+ 				(sdata->u.mntr.flags & MONITOR_FLAG_ACTIVE);
  	switch (sdata->vif.type) {
  	case NL80211_IFTYPE_AP_VLAN:
 -		/* no need to tell driver, but set carrier and chanctx */

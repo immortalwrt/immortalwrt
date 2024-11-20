@@ -31,7 +31,7 @@ Signed-off-by: Muna Sinada <msinada@codeaurora.org>
 
 --- a/include/net/cfg80211.h
 +++ b/include/net/cfg80211.h
-@@ -9722,4 +9722,15 @@ ssize_t wiphy_locked_debugfs_write(struc
+@@ -9766,4 +9766,15 @@ ssize_t wiphy_locked_debugfs_write(struc
  				   void *data);
  #endif
  
@@ -49,7 +49,7 @@ Signed-off-by: Muna Sinada <msinada@codeaurora.org>
  #endif /* __NET_CFG80211_H */
 --- a/include/net/mac80211.h
 +++ b/include/net/mac80211.h
-@@ -7563,6 +7563,20 @@ u32 ieee80211_calc_rx_airtime(struct iee
+@@ -7566,6 +7566,20 @@ u32 ieee80211_calc_rx_airtime(struct iee
  			      int len);
  
  /**
@@ -166,7 +166,7 @@ Signed-off-by: Muna Sinada <msinada@codeaurora.org>
  	[NL80211_ATTR_BSS_DUMP_INCLUDE_USE_DATA] = { .type = NLA_FLAG },
  	[NL80211_ATTR_MLO_TTLM_DLINK] = NLA_POLICY_EXACT_LEN(sizeof(u16) * 8),
  	[NL80211_ATTR_MLO_TTLM_ULINK] = NLA_POLICY_EXACT_LEN(sizeof(u16) * 8),
-@@ -20446,6 +20447,42 @@ void cfg80211_schedule_channels_check(st
+@@ -20442,6 +20443,42 @@ void cfg80211_schedule_channels_check(st
  }
  EXPORT_SYMBOL(cfg80211_schedule_channels_check);
  

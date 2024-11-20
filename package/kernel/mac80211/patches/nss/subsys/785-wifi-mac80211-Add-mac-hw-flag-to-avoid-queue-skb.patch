@@ -23,7 +23,7 @@ Signed-off-by: Yuvasree Sivasankaran <quic_ysivasan@quicinc.com>
 
 --- a/include/net/mac80211.h
 +++ b/include/net/mac80211.h
-@@ -2879,6 +2879,9 @@ struct ieee80211_txq {
+@@ -2882,6 +2882,9 @@ struct ieee80211_txq {
   *
   * @IEEE80211_HW_SUPPORTS_TID_CLASS_OFFLOAD: Hardware suports tid calssification offload.
   *
@@ -33,7 +33,7 @@ Signed-off-by: Yuvasree Sivasankaran <quic_ysivasan@quicinc.com>
   * @NUM_IEEE80211_HW_FLAGS: number of hardware flags, used for sizing arrays
   */
  enum ieee80211_hw_flags {
-@@ -2942,6 +2945,7 @@ enum ieee80211_hw_flags {
+@@ -2945,6 +2948,7 @@ enum ieee80211_hw_flags {
  	IEEE80211_HW_SUPPORTS_NSS_OFFLOAD,
  	IEEE80211_HW_SUPPORTS_MESH_NSS_OFFLOAD,
  	IEEE80211_HW_SUPPORTS_TID_CLASS_OFFLOAD,
@@ -135,7 +135,7 @@ Signed-off-by: Yuvasree Sivasankaran <quic_ysivasan@quicinc.com>
  
 --- a/net/mac80211/main.c
 +++ b/net/mac80211/main.c
-@@ -1001,7 +1001,10 @@ struct ieee80211_hw *ieee80211_alloc_hw_
+@@ -1003,7 +1003,10 @@ struct ieee80211_hw *ieee80211_alloc_hw_
  		atomic_set(&local->agg_queue_stop[i], 0);
  	}
  	tasklet_setup(&local->tx_pending_tasklet, ieee80211_tx_pending);

@@ -82,7 +82,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
   *	from the RX info data, so leave those zeroed when building this data)
   * @RX_FLAG_RADIOTAP_HE_MU: HE MU radiotap data is present
   *	(&struct ieee80211_radiotap_he_mu)
-@@ -2124,6 +2140,16 @@ static inline bool lockdep_vif_wiphy_mut
+@@ -2127,6 +2143,16 @@ static inline bool lockdep_vif_wiphy_mut
  			      lockdep_vif_wiphy_mutex_held(vif))
  
  /**
@@ -99,7 +99,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
   * enum ieee80211_key_flags - key flags
   *
   * These flags are used for communication about keys between the driver
-@@ -2827,6 +2853,8 @@ struct ieee80211_txq {
+@@ -2830,6 +2856,8 @@ struct ieee80211_txq {
   *	implements MLO, so operation can continue on other links when one
   *	link is switching.
   *
@@ -108,7 +108,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
   * @NUM_IEEE80211_HW_FLAGS: number of hardware flags, used for sizing arrays
   */
  enum ieee80211_hw_flags {
-@@ -2887,6 +2915,7 @@ enum ieee80211_hw_flags {
+@@ -2890,6 +2918,7 @@ enum ieee80211_hw_flags {
  	IEEE80211_HW_DISALLOW_PUNCTURING,
  	IEEE80211_HW_DISALLOW_PUNCTURING_5GHZ,
  	IEEE80211_HW_HANDLES_QUIET_CSA,
@@ -116,7 +116,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  
  	/* keep last, obviously */
  	NUM_IEEE80211_HW_FLAGS
-@@ -3902,6 +3931,10 @@ struct ieee80211_prep_tx_info {
+@@ -3905,6 +3934,10 @@ struct ieee80211_prep_tx_info {
   *	non-MLO connections.
   *	The callback can sleep.
   *
@@ -127,7 +127,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
   * @prepare_multicast: Prepare for multicast filter configuration.
   *	This callback is optional, and its return value is passed
   *	to configure_filter(). This callback must be atomic.
-@@ -4464,7 +4497,9 @@ struct ieee80211_ops {
+@@ -4467,7 +4500,9 @@ struct ieee80211_ops {
  				  struct ieee80211_vif *vif,
  				  struct ieee80211_bss_conf *info,
  				  u64 changed);
@@ -138,7 +138,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  	int (*start_ap)(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
  			struct ieee80211_bss_conf *link_conf);
  	void (*stop_ap)(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
-@@ -4774,7 +4809,7 @@ struct ieee80211_ops {
+@@ -4777,7 +4812,7 @@ struct ieee80211_ops {
  	int (*reset_tid_config)(struct ieee80211_hw *hw,
  				struct ieee80211_vif *vif,
  				struct ieee80211_sta *sta, u8 tids);
@@ -184,7 +184,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
   * the suspend->resume cycle. Since we can't check each caller
 --- a/net/mac80211/main.c
 +++ b/net/mac80211/main.c
-@@ -414,6 +414,17 @@ void ieee80211_link_info_change_notify(s
+@@ -416,6 +416,17 @@ void ieee80211_link_info_change_notify(s
  	drv_link_info_changed(local, sdata, link->conf, link->link_id, changed);
  }
  
@@ -202,7 +202,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  u64 ieee80211_reset_erp_info(struct ieee80211_sub_if_data *sdata)
  {
  	sdata->vif.bss_conf.use_cts_prot = false;
-@@ -852,12 +863,6 @@ struct ieee80211_hw *ieee80211_alloc_hw_
+@@ -854,12 +865,6 @@ struct ieee80211_hw *ieee80211_alloc_hw_
  			   NL80211_FEATURE_FULL_AP_CLIENT_STATE;
  	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_FILS_STA);
  	wiphy_ext_feature_set(wiphy,
@@ -215,7 +215,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  			      NL80211_EXT_FEATURE_SCAN_FREQ_KHZ);
  	wiphy_ext_feature_set(wiphy,
  			      NL80211_EXT_FEATURE_POWERED_ADDR_CHANGE);
-@@ -1185,6 +1190,18 @@ int ieee80211_register_hw(struct ieee802
+@@ -1187,6 +1192,18 @@ int ieee80211_register_hw(struct ieee802
  			return -EINVAL;
  	}
  
@@ -375,7 +375,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  {
 --- a/net/mac80211/ieee80211_i.h
 +++ b/net/mac80211/ieee80211_i.h
-@@ -1860,6 +1860,8 @@ void ieee80211_vif_cfg_change_notify(str
+@@ -1861,6 +1861,8 @@ void ieee80211_vif_cfg_change_notify(str
  void ieee80211_link_info_change_notify(struct ieee80211_sub_if_data *sdata,
  				       struct ieee80211_link_data *link,
  				       u64 changed);
@@ -427,7 +427,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  	TP_PROTO(struct ieee80211_local *local,
 --- a/net/mac80211/iface.c
 +++ b/net/mac80211/iface.c
-@@ -991,7 +991,8 @@ static bool ieee80211_set_sdata_offload_
+@@ -986,7 +986,8 @@ static bool ieee80211_set_sdata_offload_
  		    local->hw.wiphy->frag_threshold != (u32)-1)
  			flags &= ~IEEE80211_OFFLOAD_ENCAP_ENABLED;
  

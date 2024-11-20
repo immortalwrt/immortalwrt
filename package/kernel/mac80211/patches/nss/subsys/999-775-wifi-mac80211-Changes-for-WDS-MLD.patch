@@ -17,7 +17,7 @@ Signed-off-by: Ramasamy Kaliappan <quic_rkaliapp@quicinc.com>
 
 --- a/include/net/cfg80211.h
 +++ b/include/net/cfg80211.h
-@@ -8827,6 +8827,7 @@ bool cfg80211_rx_spurious_frame(struct n
+@@ -8871,6 +8871,7 @@ bool cfg80211_rx_spurious_frame(struct n
   * @dev: The device the frame matched to
   * @addr: the transmitter address
   * @gfp: context flags
@@ -25,7 +25,7 @@ Signed-off-by: Ramasamy Kaliappan <quic_rkaliapp@quicinc.com>
   *
   * This function is used in AP mode (only!) to inform userspace that
   * an associated station sent a 4addr frame but that wasn't expected.
-@@ -8836,7 +8837,8 @@ bool cfg80211_rx_spurious_frame(struct n
+@@ -8880,7 +8881,8 @@ bool cfg80211_rx_spurious_frame(struct n
   * for a reason other than not having a subscription.)
   */
  bool cfg80211_rx_unexpected_4addr_frame(struct net_device *dev,
@@ -127,7 +127,7 @@ Signed-off-by: Ramasamy Kaliappan <quic_rkaliapp@quicinc.com>
  
 --- a/net/wireless/nl80211.c
 +++ b/net/wireless/nl80211.c
-@@ -18995,7 +18995,8 @@ void cfg80211_conn_failed(struct net_dev
+@@ -18991,7 +18991,8 @@ void cfg80211_conn_failed(struct net_dev
  EXPORT_SYMBOL(cfg80211_conn_failed);
  
  static bool __nl80211_unexpected_frame(struct net_device *dev, u8 cmd,
@@ -137,7 +137,7 @@ Signed-off-by: Ramasamy Kaliappan <quic_rkaliapp@quicinc.com>
  {
  	struct wireless_dev *wdev = dev->ieee80211_ptr;
  	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
-@@ -19021,6 +19022,9 @@ static bool __nl80211_unexpected_frame(s
+@@ -19017,6 +19018,9 @@ static bool __nl80211_unexpected_frame(s
  	    nla_put(msg, NL80211_ATTR_MAC, ETH_ALEN, addr))
  		goto nla_put_failure;
  
@@ -147,7 +147,7 @@ Signed-off-by: Ramasamy Kaliappan <quic_rkaliapp@quicinc.com>
  	genlmsg_end(msg, hdr);
  	genlmsg_unicast(wiphy_net(&rdev->wiphy), msg, nlportid);
  	return true;
-@@ -19044,14 +19048,15 @@ bool cfg80211_rx_spurious_frame(struct n
+@@ -19040,14 +19044,15 @@ bool cfg80211_rx_spurious_frame(struct n
  		return false;
  	}
  	ret = __nl80211_unexpected_frame(dev, NL80211_CMD_UNEXPECTED_FRAME,
@@ -165,7 +165,7 @@ Signed-off-by: Ramasamy Kaliappan <quic_rkaliapp@quicinc.com>
  {
  	struct wireless_dev *wdev = dev->ieee80211_ptr;
  	bool ret;
-@@ -19066,7 +19071,7 @@ bool cfg80211_rx_unexpected_4addr_frame(
+@@ -19062,7 +19067,7 @@ bool cfg80211_rx_unexpected_4addr_frame(
  	}
  	ret = __nl80211_unexpected_frame(dev,
  					 NL80211_CMD_UNEXPECTED_4ADDR_FRAME,
