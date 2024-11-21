@@ -26,6 +26,6 @@ KERNELNAME:=zImage dtbs
 include $(INCLUDE_DIR)/target.mk
 
 DEFAULT_PACKAGES += uboot-envtools
-DEFAULT_PACKAGES += partx-utils mkf2fs automount cpufreq
+DEFAULT_PACKAGES += partx-utils mkf2fs automount autocore luci-app-cpufreq
 
 $(eval $(call BuildTarget))

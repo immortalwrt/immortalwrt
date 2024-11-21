@@ -47,13 +47,11 @@ DEFAULT_PACKAGES.router:=\
 	ppp-mod-pppoe
 # For easy usage
 DEFAULT_PACKAGES.tweak:=\
-	autocore \
 	block-mount \
 	default-settings-chn \
 	kmod-nf-nathelper \
 	kmod-nf-nathelper-extra \
 	luci-light \
-	luci-app-cpufreq \
 	luci-app-package-manager \
 	luci-compat \
 	luci-lib-base \
@@ -135,7 +133,7 @@ endif
 DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.$(DEVICE_TYPE))
 
 # Add tweaked packages
-# DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.tweak)
+DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.tweak)
 
 filter_packages = $(filter-out -% $(patsubst -%,%,$(filter -%,$(1))),$(1))
 extra_packages = $(if $(filter wpad wpad-% nas,$(1)),iwinfo)
