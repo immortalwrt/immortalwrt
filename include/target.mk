@@ -67,7 +67,7 @@ DEFAULT_PACKAGES.tweak:=\
 	kmod-nf-nathelper-extra \
 	luci-light \
 	luci-app-cpufreq \
-	luci-app-opkg \
+	luci-app-package-manager \
 	luci-compat \
 	luci-lib-base \
 	luci-lib-ipkg
