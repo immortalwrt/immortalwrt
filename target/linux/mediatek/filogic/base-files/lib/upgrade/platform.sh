@@ -96,7 +96,13 @@ platform_do_upgrade() {
 		fit_do_upgrade "$1"
 		;;
 	acer,predator-w6|\
+	acer,predator-w6d|\
+	acer,vero-w6m|\
 	arcadyan,mozart|\
+	glinet,gl-mt2500|\
+	glinet,gl-mt6000|\
+	glinet,gl-x3000|\
+	glinet,gl-xe3000|\
 	smartrg,sdg-8612|\
 	smartrg,sdg-8614|\
 	smartrg,sdg-8622|\
@@ -119,14 +125,6 @@ platform_do_upgrade() {
 	cudy,wr3000-v1|\
 	yuncore,ax835)
 		default_do_upgrade "$1"
-		;;
-	glinet,gl-mt2500|\
-	glinet,gl-mt6000|\
-	glinet,gl-x3000|\
-	glinet,gl-xe3000)
-		CI_KERNPART="kernel"
-		CI_ROOTPART="rootfs"
-		emmc_do_upgrade "$1"
 		;;
 	mercusys,mr90x-v1|\
 	tplink,re6000xd)
@@ -200,6 +198,8 @@ platform_check_image() {
 platform_copy_config() {
 	case "$(board_name)" in
 	acer,predator-w6|\
+	acer,predator-w6d|\
+	acer,vero-w6m|\
 	arcadyan,mozart|\
 	glinet,gl-mt2500|\
 	glinet,gl-mt6000|\
