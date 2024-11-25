@@ -61,7 +61,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-5-s.h
  }
  
  static void dw_hdmi_rockchip_encoder_enable(struct drm_encoder *encoder)
-@@ -542,9 +543,9 @@ static int dw_hdmi_rockchip_bind(struct
+@@ -544,9 +545,9 @@ static int dw_hdmi_rockchip_bind(struct
  		return ret;
  	}
  
@@ -73,7 +73,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-5-s.h
  			      ret);
  		return ret;
  	}
-@@ -563,7 +564,7 @@ static int dw_hdmi_rockchip_bind(struct
+@@ -565,7 +566,7 @@ static int dw_hdmi_rockchip_bind(struct
  	if (IS_ERR(hdmi->hdmi)) {
  		ret = PTR_ERR(hdmi->hdmi);
  		drm_encoder_cleanup(encoder);
@@ -82,7 +82,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-5-s.h
  	}
  
  	return ret;
-@@ -575,7 +576,7 @@ static void dw_hdmi_rockchip_unbind(stru
+@@ -577,7 +578,7 @@ static void dw_hdmi_rockchip_unbind(stru
  	struct rockchip_hdmi *hdmi = dev_get_drvdata(dev);
  
  	dw_hdmi_unbind(hdmi->hdmi);

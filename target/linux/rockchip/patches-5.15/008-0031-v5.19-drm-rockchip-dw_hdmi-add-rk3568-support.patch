@@ -27,7 +27,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-8-s.h
  #define HIWORD_UPDATE(val, mask)	(val | (mask) << 16)
  
  /**
-@@ -473,6 +477,19 @@ static const struct dw_hdmi_plat_data rk
+@@ -475,6 +479,19 @@ static const struct dw_hdmi_plat_data rk
  	.use_drm_infoframe = true,
  };
  
@@ -47,7 +47,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-8-s.h
  static const struct of_device_id dw_hdmi_rockchip_dt_ids[] = {
  	{ .compatible = "rockchip,rk3228-dw-hdmi",
  	  .data = &rk3228_hdmi_drv_data
-@@ -486,6 +503,9 @@ static const struct of_device_id dw_hdmi
+@@ -488,6 +505,9 @@ static const struct of_device_id dw_hdmi
  	{ .compatible = "rockchip,rk3399-dw-hdmi",
  	  .data = &rk3399_hdmi_drv_data
  	},
@@ -57,7 +57,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-8-s.h
  	{},
  };
  MODULE_DEVICE_TABLE(of, dw_hdmi_rockchip_dt_ids);
-@@ -520,6 +540,9 @@ static int dw_hdmi_rockchip_bind(struct
+@@ -522,6 +542,9 @@ static int dw_hdmi_rockchip_bind(struct
  	encoder = &hdmi->encoder.encoder;
  
  	encoder->possible_crtcs = drm_of_find_possible_crtcs(drm, dev->of_node);
@@ -67,7 +67,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-8-s.h
  	/*
  	 * If we failed to find the CRTC(s) which this encoder is
  	 * supposed to be connected to, it's because the CRTC has
-@@ -550,6 +573,14 @@ static int dw_hdmi_rockchip_bind(struct
+@@ -552,6 +575,14 @@ static int dw_hdmi_rockchip_bind(struct
  		return ret;
  	}
  

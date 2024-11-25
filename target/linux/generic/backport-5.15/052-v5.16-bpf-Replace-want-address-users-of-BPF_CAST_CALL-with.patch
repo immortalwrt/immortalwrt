@@ -54,7 +54,7 @@ Link: https://lore.kernel.org/bpf/20210928230946.4062144-2-keescook@chromium.org
  
 --- a/kernel/bpf/hashtab.c
 +++ b/kernel/bpf/hashtab.c
-@@ -681,7 +681,7 @@ static int htab_map_gen_lookup(struct bp
+@@ -684,7 +684,7 @@ static int htab_map_gen_lookup(struct bp
  
  	BUILD_BUG_ON(!__same_type(&__htab_map_lookup_elem,
  		     (void *(*)(struct bpf_map *map, void *key))NULL));
@@ -63,7 +63,7 @@ Link: https://lore.kernel.org/bpf/20210928230946.4062144-2-keescook@chromium.org
  	*insn++ = BPF_JMP_IMM(BPF_JEQ, ret, 0, 1);
  	*insn++ = BPF_ALU64_IMM(BPF_ADD, ret,
  				offsetof(struct htab_elem, key) +
-@@ -722,7 +722,7 @@ static int htab_lru_map_gen_lookup(struc
+@@ -725,7 +725,7 @@ static int htab_lru_map_gen_lookup(struc
  
  	BUILD_BUG_ON(!__same_type(&__htab_map_lookup_elem,
  		     (void *(*)(struct bpf_map *map, void *key))NULL));
@@ -72,7 +72,7 @@ Link: https://lore.kernel.org/bpf/20210928230946.4062144-2-keescook@chromium.org
  	*insn++ = BPF_JMP_IMM(BPF_JEQ, ret, 0, 4);
  	*insn++ = BPF_LDX_MEM(BPF_B, ref_reg, ret,
  			      offsetof(struct htab_elem, lru_node) +
-@@ -2417,7 +2417,7 @@ static int htab_of_map_gen_lookup(struct
+@@ -2420,7 +2420,7 @@ static int htab_of_map_gen_lookup(struct
  
  	BUILD_BUG_ON(!__same_type(&__htab_map_lookup_elem,
  		     (void *(*)(struct bpf_map *map, void *key))NULL));

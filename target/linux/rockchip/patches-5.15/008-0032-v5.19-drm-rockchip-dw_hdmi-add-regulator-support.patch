@@ -50,7 +50,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-10-s.
  	return 0;
  }
  
-@@ -566,11 +577,23 @@ static int dw_hdmi_rockchip_bind(struct
+@@ -568,11 +579,23 @@ static int dw_hdmi_rockchip_bind(struct
  		return ret;
  	}
  
@@ -75,7 +75,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-10-s.
  	}
  
  	if (hdmi->chip_data == &rk3568_chip_data) {
-@@ -594,10 +617,19 @@ static int dw_hdmi_rockchip_bind(struct
+@@ -596,10 +619,19 @@ static int dw_hdmi_rockchip_bind(struct
  	 */
  	if (IS_ERR(hdmi->hdmi)) {
  		ret = PTR_ERR(hdmi->hdmi);
@@ -97,7 +97,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-10-s.
  	return ret;
  }
  
-@@ -608,6 +640,9 @@ static void dw_hdmi_rockchip_unbind(stru
+@@ -610,6 +642,9 @@ static void dw_hdmi_rockchip_unbind(stru
  
  	dw_hdmi_unbind(hdmi->hdmi);
  	clk_disable_unprepare(hdmi->ref_clk);

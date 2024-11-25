@@ -281,7 +281,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-3-s.h
  
  static const struct dw_hdmi_mpll_config rockchip_mpll_cfg[] = {
  	{
-@@ -511,7 +516,7 @@ static int dw_hdmi_rockchip_bind(struct
+@@ -513,7 +518,7 @@ static int dw_hdmi_rockchip_bind(struct
  	hdmi->dev = &pdev->dev;
  	hdmi->chip_data = plat_data->phy_data;
  	plat_data->phy_data = hdmi;

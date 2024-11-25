@@ -66,7 +66,7 @@ Link: https://lore.kernel.org/bpf/20210928230946.4062144-3-keescook@chromium.org
  #define BPF_CALL_IMM(x)	((void *)(x) - (void *)__bpf_call_base)
 --- a/kernel/bpf/arraymap.c
 +++ b/kernel/bpf/arraymap.c
-@@ -651,7 +651,7 @@ static const struct bpf_iter_seq_info it
+@@ -654,7 +654,7 @@ static const struct bpf_iter_seq_info it
  	.seq_priv_size		= sizeof(struct bpf_iter_seq_array_map_info),
  };
  
@@ -75,7 +75,7 @@ Link: https://lore.kernel.org/bpf/20210928230946.4062144-3-keescook@chromium.org
  				   void *callback_ctx, u64 flags)
  {
  	u32 i, key, num_elems = 0;
-@@ -674,9 +674,8 @@ static int bpf_for_each_array_elem(struc
+@@ -677,9 +677,8 @@ static int bpf_for_each_array_elem(struc
  			val = array->value + array->elem_size * i;
  		num_elems++;
  		key = i;
@@ -89,7 +89,7 @@ Link: https://lore.kernel.org/bpf/20210928230946.4062144-3-keescook@chromium.org
  			break;
 --- a/kernel/bpf/hashtab.c
 +++ b/kernel/bpf/hashtab.c
-@@ -2069,7 +2069,7 @@ static const struct bpf_iter_seq_info it
+@@ -2072,7 +2072,7 @@ static const struct bpf_iter_seq_info it
  	.seq_priv_size		= sizeof(struct bpf_iter_seq_hash_map_info),
  };
  
@@ -98,7 +98,7 @@ Link: https://lore.kernel.org/bpf/20210928230946.4062144-3-keescook@chromium.org
  				  void *callback_ctx, u64 flags)
  {
  	struct bpf_htab *htab = container_of(map, struct bpf_htab, map);
-@@ -2109,9 +2109,8 @@ static int bpf_for_each_hash_elem(struct
+@@ -2112,9 +2112,8 @@ static int bpf_for_each_hash_elem(struct
  				val = elem->key + roundup_key_size;
  			}
  			num_elems++;
