@@ -1238,7 +1238,7 @@ define Device/dlink_dir-825-b1
 	kmod-owl-loader kmod-switch-rtl8366s
   IMAGE_SIZE := 7808k
   FACTORY_SIZE := 6144k
-  IMAGES += factory.bin
+# IMAGES += factory.bin
   IMAGE/factory.bin = append-kernel | pad-to $$$$(BLOCKSIZE) | append-rootfs | \
 	pad-rootfs | check-size $$$$(FACTORY_SIZE) | pad-to $$$$(FACTORY_SIZE) | \
 	append-string 01AP94-AR7161-RT-080619-00
@@ -3108,7 +3108,7 @@ define Device/trendnet_tew-673gru
 	kmod-owl-loader kmod-switch-rtl8366s
   IMAGE_SIZE := 7808k
   FACTORY_SIZE := 6144k
-  IMAGES += factory.bin
+# IMAGES += factory.bin
   IMAGE/factory.bin = append-kernel | pad-to $$$$(BLOCKSIZE) | append-rootfs | \
 	pad-rootfs | check-size $$$$(FACTORY_SIZE) | pad-to $$$$(FACTORY_SIZE) | \
 	append-string AP94-AR7161-RT-080619-01
@@ -3338,6 +3338,7 @@ define Device/zyxel_nwa11xx
 	append-kernel | pad-to $$$$(BLOCKSIZE) | append-rootfs | \
 	pad-rootfs | pad-to 8192k | check-size | zyxel-tar-bz2 \
 	vmlinux_mi124_f1e mi124_f1e-jffs2 | append-md5sum-bin
+  DEFAULT := n
 endef
 
 define Device/zyxel_nwa1100-nh
