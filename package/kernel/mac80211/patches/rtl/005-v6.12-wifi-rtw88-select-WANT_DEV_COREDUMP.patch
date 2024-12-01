@@ -19,7 +19,7 @@ Link: https://patch.msgid.link/20240718070616.42217-1-pkshih@realtek.com
  config RTW88_CORE
  	tristate
  	depends on m
-+	select WANT_DEV_COREDUMP
++	select BPAUTO_WANT_DEV_COREDUMP
  
  config RTW88_PCI
  	tristate
