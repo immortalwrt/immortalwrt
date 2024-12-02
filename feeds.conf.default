@@ -1,4 +1,4 @@
-src-git packages https://github.com/immortalwrt/packages.git;openwrt-24.10
-src-git luci https://github.com/immortalwrt/luci.git;openwrt-24.10
-src-git routing https://github.com/openwrt/routing.git;openwrt-24.10
-src-git telephony https://github.com/openwrt/telephony.git;openwrt-24.10
+src-git packages https://github.com/immortalwrt/packages.git^89eb37ff8e254c4c199aaafb286ebfa31fdd295f
+src-git luci https://github.com/immortalwrt/luci.git^7897e78c7a48d1bee2a0dd597334d3f7fc8e925a
+src-git routing https://github.com/openwrt/routing.git^3f15699240c076d5ee9ed697fa5ef45355423f6f
+src-git telephony https://github.com/openwrt/telephony.git^fd605af7143165a2490681ec1752f259873b9147
