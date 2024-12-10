@@ -104,6 +104,7 @@ APK:=$(call apk,$(TARGET_DIR)) \
 
 
 include $(INCLUDE_DIR)/target.mk
+include $(INCLUDE_DIR)/default-packages.mk
 -include .profiles.mk
 
 USER_PROFILE ?= $(firstword $(PROFILE_NAMES))
@@ -138,11 +139,6 @@ _call_info: FORCE
 	echo 'Available Profiles:'
 	echo; $(PROFILE_LIST)
 
-ifneq ($(CONFIG_USE_APK),)
-  DEFAULT_PACKAGES += apk-openssl
-else
-  DEFAULT_PACKAGES += opkg
-endif
 BUILD_PACKAGES:=$(sort $(DEFAULT_PACKAGES) $($(USER_PROFILE)_PACKAGES) kernel)
 # "-pkgname" in the package list means remove "pkgname" from the package list
 BUILD_PACKAGES:=$(filter-out $(filter -%,$(BUILD_PACKAGES)) $(patsubst -%,%,$(filter -%,$(BUILD_PACKAGES))),$(BUILD_PACKAGES))
@@ -204,7 +200,7 @@ ifeq ($(CONFIG_USE_APK),)
 		$(OPKG) update >&2 || true; \
 	fi
 else
-	$(APK) add --initdb
+	$(APK) add --arch $(ARCH_PACKAGES) --initdb
 	if [ -d "$(PACKAGE_DIR)" ] && ( \
 			[ ! -f "$(PACKAGE_DIR)/packages.adb" ] || \
 			[ "`find $(PACKAGE_DIR) -cnewer $(PACKAGE_DIR)/packages.adb`" ] ); then \
@@ -231,7 +227,7 @@ ifeq ($(CONFIG_USE_APK),)
 	$(OPKG) install $(wildcard $(PACKAGE_DIR)/kernel_*.ipk)
 	$(OPKG) install $(BUILD_PACKAGES)
 else
-	$(APK) add --no-scripts $(BUILD_PACKAGES)
+	$(APK) add --arch $(ARCH_PACKAGES) --no-scripts $(BUILD_PACKAGES)
 endif
 
 prepare_rootfs: FORCE
@@ -353,7 +349,7 @@ ifeq ($(PACKAGE),)
 endif
 	@$(MAKE) -s package_reload
 ifeq ($(CONFIG_USE_APK),)
-	@$(OPKG) list --depends $(PACKAGE)
+	@$(OPKG) whatdepends -A $(PACKAGE)
 else
 	@$(APK) list --depends $(PACKAGE)
 endif
@@ -367,7 +363,7 @@ endif
 ifeq ($(CONFIG_USE_APK),)
 	@$(OPKG) depends -A $(PACKAGE)
 else
-	@$(OPKG) whatdepends -A $(PACKAGE)
+	@$(APK) info --depends $(PACKAGE)
 endif
 
 .SILENT: help info image manifest package_whatdepends package_depends

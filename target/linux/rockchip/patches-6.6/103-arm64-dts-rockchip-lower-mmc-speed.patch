@@ -47,7 +47,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	status = "okay";
 --- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
-@@ -602,8 +602,7 @@
+@@ -620,8 +620,7 @@
  	no-sd;
  	non-removable;
  	max-frequency = <200000000>;
@@ -57,7 +57,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	status = "okay";
  };
  
-@@ -615,7 +614,7 @@
+@@ -633,7 +632,7 @@
  	disable-wp;
  	no-mmc;
  	no-sdio;

@@ -67,7 +67,7 @@ DEFAULT_PACKAGES.tweak:=\
 	kmod-nf-nathelper-extra \
 	luci-light \
 	luci-app-cpufreq \
-	luci-app-opkg \
+	luci-app-package-manager \
 	luci-compat \
 	luci-lib-base \
 	luci-lib-ipkg
@@ -391,6 +391,7 @@ define BuildTargets/DumpCurrent
 	 echo 'Target-Description:'; \
 	 echo "$$$$DESCRIPTION"; \
 	 echo '@@'; \
+	 $(if $(DEFAULT_PROFILE),echo 'Target-Default-Profile: $(DEFAULT_PROFILE)';) \
 	 echo 'Default-Packages: $(DEFAULT_PACKAGES) $(call extra_packages,$(DEFAULT_PACKAGES))'; \
 	 $(DUMPINFO)
 	$(if $(CUR_SUBTARGET),$(SUBMAKE) -r --no-print-directory -C image -s DUMP=1 SUBTARGET=$(CUR_SUBTARGET))

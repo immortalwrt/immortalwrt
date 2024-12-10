@@ -74,7 +74,7 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
  #include <linux/un.h>
  #include <net/xdp_sock_drv.h>
  
-@@ -2472,6 +2473,16 @@ static const struct bpf_func_proto bpf_c
+@@ -2474,6 +2475,16 @@ static const struct bpf_func_proto bpf_c
  DEFINE_PER_CPU(struct bpf_redirect_info, bpf_redirect_info);
  EXPORT_PER_CPU_SYMBOL_GPL(bpf_redirect_info);
  
@@ -91,7 +91,7 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
  int skb_do_redirect(struct sk_buff *skb)
  {
  	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
-@@ -2485,12 +2496,9 @@ int skb_do_redirect(struct sk_buff *skb)
+@@ -2487,12 +2498,9 @@ int skb_do_redirect(struct sk_buff *skb)
  	if (unlikely(!dev))
  		goto out_drop;
  	if (flags & BPF_F_PEER) {

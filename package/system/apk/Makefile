@@ -5,16 +5,16 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_URL=https://gitlab.alpinelinux.org/alpine/apk-tools.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2024-11-08
-PKG_SOURCE_VERSION:=d9c24813d983df9524fa7a2b78fc3132c159a20f
-PKG_MIRROR_HASH:=3d1a79c08ef8c8b9404f9287d9acda6468b8b1c2a99dd384287f522ed3b1a047
+PKG_SOURCE_DATE:=2024-11-30
+PKG_SOURCE_VERSION:=8d93a79fb8958607f097be2c4ac97f4596faf91d
+PKG_MIRROR_HASH:=565c87fac26e696c362c2fe85159cc3ed2fd27153f244c2e9dc0fd7fa67a4173
 
 PKG_VERSION=3.0.0_pre$(subst -,,$(PKG_SOURCE_DATE))
 
 PKG_MAINTAINER:=Paul Spooren <mail@aparcar.org>
 PKG_LICENSE:=GPL-2.0-only
 PKG_LICENSE_FILES:=LICENSE
-PKG_INSTALL:=1
+PKG_INSTALL:=2
 
 HOST_BUILD_PREFIX:=$(STAGING_DIR_HOST)
 HOST_BUILD_DEPENDS:=lua/host
@@ -27,7 +27,7 @@ define Package/apk/default
   SECTION:=base
   CATEGORY:=Base system
   TITLE:=apk package manager
-  DEPENDS:=+zlib
+  DEPENDS:=+zlib +wget
   URL:=$(PKG_SOURCE_URL)
   PROVIDES:=apk
 endef
@@ -53,10 +53,12 @@ MESON_HOST_VARS+=VERSION=$(PKG_VERSION)
 MESON_VARS+=VERSION=$(PKG_VERSION)
 
 MESON_COMMON_ARGS = \
+	-Db_lto=true \
 	-Dcompressed-help=false \
 	-Ddocs=disabled \
 	-Dhelp=enabled \
 	-Dlua_version=5.1 \
+	-Ddefault_library=static \
 	-Durl_backend=wget \
 	-Dzstd=false
 
@@ -68,8 +70,12 @@ MESON_ARGS += \
 	$(MESON_COMMON_ARGS) \
 	-Dcrypto_backend=$(BUILD_VARIANT)
 
-HOST_LDFLAGS += \
-	-Wl,-rpath $(STAGING_DIR_HOST)/lib
+define Package/apk/conffiles
+/etc/apk/repositories.d/customfeeds.list
+endef
+
+Package/apk-mbedtls/conffiles = $(Package/apk/conffiles)
+Package/apk-openssl/conffiles = $(Package/apk/conffiles)
 
 define Package/apk/default/install
 	$(INSTALL_DIR) $(1)/lib/apk/db
@@ -77,8 +83,8 @@ define Package/apk/default/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/apk $(1)/usr/bin/apk
 
-	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libapk.so.* $(1)/usr/lib/
+	$(INSTALL_DIR) $(1)/etc/apk/repositories.d
+	$(INSTALL_DATA) ./files/customfeeds.list $(1)/etc/apk/repositories.d/customfeeds.list
 endef
 
 Package/apk-mbedtls/install = $(Package/apk/default/install)

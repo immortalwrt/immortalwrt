@@ -310,7 +310,7 @@ endef
 define Image/Manifest
 	$(if $(CONFIG_USE_APK), \
 		$(call apk,$(TARGET_DIR_ORIG)) list --quiet --manifest --no-network \
-			--repositories-file /dev/zero | sort | sed 's/ / - /'  > \
+			--repositories-file /dev/null | sort | sed 's/ / - /'  > \
 			$(BIN_DIR)/$(IMG_PREFIX)$(if $(PROFILE_SANITIZED),-$(PROFILE_SANITIZED)).manifest, \
 		$(call opkg,$(TARGET_DIR_ORIG)) list-installed > \
 			$(BIN_DIR)/$(IMG_PREFIX)$(if $(PROFILE_SANITIZED),-$(PROFILE_SANITIZED)).manifest \
@@ -365,19 +365,17 @@ opkg_target = \
 
 apk_target = \
 	$(call apk,$(mkfs_cur_target_dir)) --no-scripts \
-		--repositories-file /dev/zero --repository file://$(PACKAGE_DIR_ALL)/packages.adb
+		--repositories-file /dev/null --repository file://$(PACKAGE_DIR_ALL)/packages.adb
 
 
 target-dir-%: FORCE
 ifneq ($(CONFIG_USE_APK),)
 	rm -rf $(mkfs_cur_target_dir)
 	$(CP) $(TARGET_DIR_ORIG) $(mkfs_cur_target_dir)
-	mv $(mkfs_cur_target_dir)/etc/apk/repositories $(mkfs_cur_target_dir).repositories
 	$(if $(mkfs_packages_remove), \
-		$(apk_target) del $(mkfs_packages_remove))
+		-$(apk_target) del $(mkfs_packages_remove))
 	$(if $(mkfs_packages_add), \
 		$(apk_target) add $(mkfs_packages_add))
-	mv $(mkfs_cur_target_dir).repositories $(mkfs_cur_target_dir)/etc/apk/repositories
 else
 	rm -rf $(mkfs_cur_target_dir) $(mkfs_cur_target_dir).opkg
 	$(CP) $(TARGET_DIR_ORIG) $(mkfs_cur_target_dir)
