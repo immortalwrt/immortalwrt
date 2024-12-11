@@ -37,10 +37,42 @@ Signed-off-by: Bitterblue Smith <rtl8821cerfe2@gmail.com>
 Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
 Link: https://patch.msgid.link/0b8e8093-8103-4999-86bf-0055ec52ea64@gmail.com
 ---
- drivers/net/wireless/realtek/rtw88/Kconfig  | 33 +++++++++++++++++++++
- drivers/net/wireless/realtek/rtw88/Makefile | 15 ++++++++++
- 2 files changed, 48 insertions(+)
+Kconfig.local                               | 15 ++++++++
+ drivers/net/wireless/realtek/rtw88/Kconfig  | 40 ++++++++++++++++++++-
+ drivers/net/wireless/realtek/rtw88/Makefile | 15 ++++++++
+ 3 files changed, 69 insertions(+), 1 deletion(-)
 
+--- a/Kconfig.local
++++ b/Kconfig.local
+@@ -1144,6 +1144,15 @@ config BACKPORTED_RTW88_8723D
+ config BACKPORTED_RTW88_8821C
+ 	tristate
+ 	default RTW88_8821C
++config BACKPORTED_RTW88_88XXA
++	tristate
++	default RTW88_88XXA
++config BACKPORTED_RTW88_8821A
++	tristate
++	default RTW88_8821A
++config BACKPORTED_RTW88_8812A
++	tristate
++	default RTW88_8812A
+ config BACKPORTED_RTW88_8822BE
+ 	tristate
+ 	default RTW88_8822BE
+@@ -1183,6 +1192,12 @@ config BACKPORTED_RTW88_8821CS
+ config BACKPORTED_RTW88_8821CU
+ 	tristate
+ 	default RTW88_8821CU
++config BACKPORTED_RTW88_8821AU
++	tristate
++	default RTW88_8821AU
++config BACKPORTED_RTW88_8812AU
++	tristate
++	default RTW88_8812AU
+ config BACKPORTED_RTW88_DEBUG
+ 	tristate
+ 	default RTW88_DEBUG
 --- a/drivers/net/wireless/realtek/rtw88/Kconfig
 +++ b/drivers/net/wireless/realtek/rtw88/Kconfig
 @@ -54,6 +54,20 @@ config RTW88_8821C
