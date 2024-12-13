@@ -17,8 +17,8 @@ let phy_capabilities = {};
 /* make sure old style UCI and hwmode and newer band properties are correctly resolved */
 function set_device_defaults(config) {
 	/* validate the hw mode */
-	if (config.hwmode in [ '11a', '11b', '11g', '11ad' ])
-		config.hw_mode = substr(config.hwmode, 2);
+	if (config.hw_mode in [ '11a', '11b', '11g', '11ad' ])
+		config.hw_mode = substr(config.hw_mode, 2);
 	else if (config.channel > 14)
 		config.hw_mode = 'a';
 	else
@@ -478,7 +478,7 @@ function generate(config) {
 	device_rates(config);
 
 	/* beacon */
-	append_vars(config, [ 'beacon_int', 'beacon_rate', 'rnr_beacon', 'mbssid'  ]);
+	append_vars(config, [ 'beacon_int', 'beacon_rate', 'rnr_beacon' ]);
 
 	/* wpa_supplicant co-exist */
 	append_vars(config, [ 'noscan' ]);
@@ -509,6 +509,9 @@ function generate(config) {
 		append(require_mode[config.require_mode], 1);
 	}
 	device_htmode_append(config);
+
+	if (config.ieee80211ax || config.ieee80211be)
+		append_vars(config, [ 'mbssid' ]);
 
 	/* 6G power mode */
 	if (config.band != '6g')
@@ -541,6 +544,8 @@ export function setup(data) {
 
 	if (data.config.num_global_macaddr)
 		append('\n#num_global_macaddr', data.config.num_global_macaddr);
+	if (data.config.macaddr_base)
+		append('\n#macaddr_base', data.config.macaddr_base);
 
 	for (let k, interface in data.interfaces) {
 		if (interface.config.mode != 'ap')
