@@ -42,7 +42,7 @@ case "$board" in
 		CI_UBIPART="UBI_DEV"
 		addr=$(mtd_get_mac_binary_ubi "Factory" 0x4)
 		# Originally, phy0 is phy1 mac with LA bit set. However, this would conflict
-		# addresses on mutiple VIFs with the other radio. Set LA bit and increment
+		# addresses on multiple VIFs with the other radio. Set LA bit and increment
 		# mac-address instead.
 		[ "$PHYNBR" = "0" ] && macaddr_setbit_la $(macaddr_add $addr 1) > /sys${DEVPATH}/macaddress
 		[ "$PHYNBR" = "1" ] && echo "$addr" > /sys${DEVPATH}/macaddress
@@ -54,11 +54,11 @@ case "$board" in
 		[ "$PHYNBR" = "1" ] && macaddr_add $addr 3 > /sys${DEVPATH}/macaddress
 		;;
 	bananapi,bpi-r4|\
-	bananapi,bpi-r4-poe|\
-	nokia,ea0326gmp)
+	bananapi,bpi-r4-poe)
 		addr=$(cat /sys/class/net/eth0/address)
-		[ "$PHYNBR" = "0" ] && macaddr_add $addr 1 > /sys${DEVPATH}/macaddress
-		[ "$PHYNBR" = "1" ] && macaddr_add $addr 2 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "0" ] && macaddr_add $addr 2 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && macaddr_add $addr 3 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "2" ] && macaddr_add $addr 4 > /sys${DEVPATH}/macaddress
 		;;
 	cmcc,rax3000m)
 		addr=$(cat /sys/class/net/eth0/address)
@@ -126,6 +126,16 @@ case "$board" in
 		hw_mac_addr=$(mtd_get_mac_ascii u-boot-env mac)
 		[ "$PHYNBR" = "0" ] && macaddr_add $hw_mac_addr 2 > /sys${DEVPATH}/macaddress
 		[ "$PHYNBR" = "1" ] && macaddr_add $hw_mac_addr 3 > /sys${DEVPATH}/macaddress
+		;;
+	nokia,ea0326gmp)
+		addr=$(cat /sys/class/net/eth0/address)
+		[ "$PHYNBR" = "0" ] && macaddr_add $addr 1 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && macaddr_add $addr 2 > /sys${DEVPATH}/macaddress
+		;;
+	nradio,c8-668gl)
+		hw_mac_addr=$(mmc_get_mac_ascii bdinfo "fac_mac ")
+		[ "$PHYNBR" = "0" ] && echo "$hw_mac_addr" > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && macaddr_setbit_la $hw_mac_addr > /sys${DEVPATH}/macaddress
 		;;
 	qihoo,360t7)
 		addr=$(mtd_get_mac_ascii factory lanMac)
