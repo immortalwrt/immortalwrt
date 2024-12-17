@@ -41,14 +41,9 @@ mediatek_setup_interfaces()
 	livinet,zr-3020|\
 	livinet,zr-3020-ubootmod|\
 	qihoo,360t7|\
-<<<<<<< HEAD
-	routerich,ax3000)
-		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" "wan"
-=======
 	routerich,ax3000|\
 	routerich,ax3000-ubootmod)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" wan
->>>>>>> op-of/openwrt-24.10
 		;;
 	asus,tuf-ax4200|\
 	jdcloud,re-cp-03|\
