@@ -92,7 +92,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  
 --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
 +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-@@ -4615,7 +4615,7 @@ bool amdgpu_device_has_job_running(struc
+@@ -4652,7 +4652,7 @@ bool amdgpu_device_has_job_running(struc
  	for (i = 0; i < AMDGPU_MAX_RINGS; ++i) {
  		struct amdgpu_ring *ring = adev->rings[i];
  
@@ -101,7 +101,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  			continue;
  
  		spin_lock(&ring->sched.job_list_lock);
-@@ -4757,7 +4757,7 @@ int amdgpu_device_pre_asic_reset(struct
+@@ -4794,7 +4794,7 @@ int amdgpu_device_pre_asic_reset(struct
  	for (i = 0; i < AMDGPU_MAX_RINGS; ++i) {
  		struct amdgpu_ring *ring = adev->rings[i];
  
@@ -110,7 +110,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  			continue;
  
  		/* Clear job fence from fence drv to avoid force_completion
-@@ -5297,7 +5297,7 @@ int amdgpu_device_gpu_recover(struct amd
+@@ -5338,7 +5338,7 @@ int amdgpu_device_gpu_recover(struct amd
  		for (i = 0; i < AMDGPU_MAX_RINGS; ++i) {
  			struct amdgpu_ring *ring = tmp_adev->rings[i];
  
@@ -119,7 +119,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  				continue;
  
  			drm_sched_stop(&ring->sched, job ? &job->base : NULL);
-@@ -5372,7 +5372,7 @@ skip_hw_reset:
+@@ -5413,7 +5413,7 @@ skip_hw_reset:
  		for (i = 0; i < AMDGPU_MAX_RINGS; ++i) {
  			struct amdgpu_ring *ring = tmp_adev->rings[i];
  
@@ -128,7 +128,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  				continue;
  
  			drm_sched_start(&ring->sched, true);
-@@ -5698,7 +5698,7 @@ pci_ers_result_t amdgpu_pci_error_detect
+@@ -5739,7 +5739,7 @@ pci_ers_result_t amdgpu_pci_error_detect
  		for (i = 0; i < AMDGPU_MAX_RINGS; ++i) {
  			struct amdgpu_ring *ring = adev->rings[i];
  
@@ -137,7 +137,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  				continue;
  
  			drm_sched_stop(&ring->sched, NULL);
-@@ -5826,7 +5826,7 @@ void amdgpu_pci_resume(struct pci_dev *p
+@@ -5867,7 +5867,7 @@ void amdgpu_pci_resume(struct pci_dev *p
  	for (i = 0; i < AMDGPU_MAX_RINGS; ++i) {
  		struct amdgpu_ring *ring = adev->rings[i];
  
@@ -188,7 +188,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  }
  EXPORT_SYMBOL(drm_sched_start);
  
-@@ -1252,3 +1252,38 @@ void drm_sched_increase_karma(struct drm
+@@ -1260,3 +1260,38 @@ void drm_sched_increase_karma(struct drm
  	}
  }
  EXPORT_SYMBOL(drm_sched_increase_karma);

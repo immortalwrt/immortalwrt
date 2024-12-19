@@ -77,7 +77,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  }
  
  /**
-@@ -943,8 +969,10 @@ drm_sched_get_cleanup_job(struct drm_gpu
+@@ -951,8 +977,10 @@ drm_sched_get_cleanup_job(struct drm_gpu
  						typeof(*next), list);
  
  		if (next) {
@@ -90,7 +90,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  			/* start TO timer for next job */
  			drm_sched_start_timeout(sched);
  		}
-@@ -994,7 +1022,40 @@ drm_sched_pick_best(struct drm_gpu_sched
+@@ -1002,7 +1030,40 @@ drm_sched_pick_best(struct drm_gpu_sched
  EXPORT_SYMBOL(drm_sched_pick_best);
  
  /**
@@ -132,7 +132,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
   *
   * @w: run job work
   */
-@@ -1003,65 +1064,51 @@ static void drm_sched_run_job_work(struc
+@@ -1011,65 +1072,51 @@ static void drm_sched_run_job_work(struc
  	struct drm_gpu_scheduler *sched =
  		container_of(w, struct drm_gpu_scheduler, work_run_job);
  	struct drm_sched_entity *entity;
@@ -228,7 +228,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  }
  
  /**
-@@ -1145,6 +1192,7 @@ int drm_sched_init(struct drm_gpu_schedu
+@@ -1153,6 +1200,7 @@ int drm_sched_init(struct drm_gpu_schedu
  	atomic_set(&sched->hw_rq_count, 0);
  	INIT_DELAYED_WORK(&sched->work_tdr, drm_sched_job_timedout);
  	INIT_WORK(&sched->work_run_job, drm_sched_run_job_work);
@@ -236,7 +236,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  	atomic_set(&sched->_score, 0);
  	atomic64_set(&sched->job_id_count, 0);
  	sched->pause_submit = false;
-@@ -1274,6 +1322,7 @@ void drm_sched_wqueue_stop(struct drm_gp
+@@ -1282,6 +1330,7 @@ void drm_sched_wqueue_stop(struct drm_gp
  {
  	WRITE_ONCE(sched->pause_submit, true);
  	cancel_work_sync(&sched->work_run_job);
@@ -244,7 +244,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  }
  EXPORT_SYMBOL(drm_sched_wqueue_stop);
  
-@@ -1286,5 +1335,6 @@ void drm_sched_wqueue_start(struct drm_g
+@@ -1294,5 +1343,6 @@ void drm_sched_wqueue_start(struct drm_g
  {
  	WRITE_ONCE(sched->pause_submit, false);
  	queue_work(sched->submit_wq, &sched->work_run_job);
