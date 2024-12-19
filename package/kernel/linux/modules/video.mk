@@ -618,7 +618,7 @@ $(eval $(call KernelPackage,drm-imx-ldb))
 define KernelPackage/drm-lima
   SUBMENU:=$(VIDEO_MENU)
   TITLE:=Mali-4xx GPU support
-  DEPENDS:=@(TARGET_rockchip||TARGET_sunxi) +kmod-drm +!LINUX_5_15:kmod-drm-gem-shmem-helper
+  DEPENDS:=@(TARGET_rockchip||TARGET_sunxi) +kmod-drm +kmod-drm-gem-shmem-helper
   KCONFIG:= \
 	CONFIG_DRM_VGEM \
 	CONFIG_DRM_GEM_CMA_HELPER=y \
@@ -639,7 +639,7 @@ $(eval $(call KernelPackage,drm-lima))
 define KernelPackage/drm-panfrost
   SUBMENU:=$(VIDEO_MENU)
   TITLE:=DRM support for ARM Mali Midgard/Bifrost GPUs
-  DEPENDS:=@(TARGET_rockchip||TARGET_sunxi) +kmod-drm +!LINUX_5_15:kmod-drm-gem-shmem-helper
+  DEPENDS:=@(TARGET_rockchip||TARGET_sunxi) +kmod-drm +kmod-drm-gem-shmem-helper
   KCONFIG:=CONFIG_DRM_PANFROST
   FILES:= \
 	$(LINUX_DIR)/drivers/gpu/drm/panfrost/panfrost.ko \
@@ -657,7 +657,8 @@ $(eval $(call KernelPackage,drm-panfrost))
 define KernelPackage/drm-panthor
   SUBMENU:=$(VIDEO_MENU)
   TITLE:=DRM support for ARM Mali CSF-based GPUs
-  DEPENDS:=@TARGET_rockchip +kmod-drm +kmod-drm-exec +kmod-drm-gem-shmem-helper
+  DEPENDS:=@TARGET_rockchip +kmod-drm +kmod-drm-exec +kmod-drm-gem-shmem-helper \
+	panthor-firmware
   KCONFIG:= \
 	CONFIG_DRM_GPUVM \
 	CONFIG_DRM_PANTHOR
