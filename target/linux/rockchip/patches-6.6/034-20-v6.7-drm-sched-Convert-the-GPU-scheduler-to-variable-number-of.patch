@@ -181,9 +181,9 @@ Link: https://lore.kernel.org/r/20231023032251.164775-1-luben.tuikov@amd.com
  		return -ENOENT;
 +	}
  
- 	job->entity = entity;
- 	job->s_fence = drm_sched_fence_alloc(entity, owner);
-@@ -671,7 +677,7 @@ void drm_sched_job_arm(struct drm_sched_
+ 	/*
+ 	 * We don't know for sure how the user has allocated. Thus, zero the
+@@ -679,7 +685,7 @@ void drm_sched_job_arm(struct drm_sched_
  	sched = entity->rq->sched;
  
  	job->sched = sched;
@@ -192,7 +192,7 @@ Link: https://lore.kernel.org/r/20231023032251.164775-1-luben.tuikov@amd.com
  	job->id = atomic64_inc_return(&sched->job_id_count);
  
  	drm_sched_fence_init(job->s_fence, job->entity);
-@@ -888,10 +894,10 @@ drm_sched_select_entity(struct drm_gpu_s
+@@ -896,10 +902,10 @@ drm_sched_select_entity(struct drm_gpu_s
  		return NULL;
  
  	/* Kernel run queue has higher priority than normal run queue*/
@@ -206,7 +206,7 @@ Link: https://lore.kernel.org/r/20231023032251.164775-1-luben.tuikov@amd.com
  		if (entity)
  			break;
  	}
-@@ -1071,6 +1077,7 @@ static int drm_sched_main(void *param)
+@@ -1079,6 +1085,7 @@ static int drm_sched_main(void *param)
   *
   * @sched: scheduler instance
   * @ops: backend operations for this scheduler
@@ -214,7 +214,7 @@ Link: https://lore.kernel.org/r/20231023032251.164775-1-luben.tuikov@amd.com
   * @hw_submission: number of hw submissions that can be in flight
   * @hang_limit: number of times to allow a job to hang before dropping it
   * @timeout: timeout value in jiffies for the scheduler
-@@ -1084,11 +1091,12 @@ static int drm_sched_main(void *param)
+@@ -1092,11 +1099,12 @@ static int drm_sched_main(void *param)
   */
  int drm_sched_init(struct drm_gpu_scheduler *sched,
  		   const struct drm_sched_backend_ops *ops,
@@ -228,7 +228,7 @@ Link: https://lore.kernel.org/r/20231023032251.164775-1-luben.tuikov@amd.com
  	sched->ops = ops;
  	sched->hw_submission_limit = hw_submission;
  	sched->name = name;
-@@ -1097,8 +1105,36 @@ int drm_sched_init(struct drm_gpu_schedu
+@@ -1105,8 +1113,36 @@ int drm_sched_init(struct drm_gpu_schedu
  	sched->hang_limit = hang_limit;
  	sched->score = score ? score : &sched->_score;
  	sched->dev = dev;
@@ -267,7 +267,7 @@ Link: https://lore.kernel.org/r/20231023032251.164775-1-luben.tuikov@amd.com
  
  	init_waitqueue_head(&sched->wake_up_worker);
  	init_waitqueue_head(&sched->job_scheduled);
-@@ -1115,11 +1151,18 @@ int drm_sched_init(struct drm_gpu_schedu
+@@ -1123,11 +1159,18 @@ int drm_sched_init(struct drm_gpu_schedu
  		ret = PTR_ERR(sched->thread);
  		sched->thread = NULL;
  		DRM_DEV_ERROR(sched->dev, "Failed to create scheduler for %s.\n", name);
@@ -287,7 +287,7 @@ Link: https://lore.kernel.org/r/20231023032251.164775-1-luben.tuikov@amd.com
  }
  EXPORT_SYMBOL(drm_sched_init);
  
-@@ -1138,8 +1181,8 @@ void drm_sched_fini(struct drm_gpu_sched
+@@ -1146,8 +1189,8 @@ void drm_sched_fini(struct drm_gpu_sched
  	if (sched->thread)
  		kthread_stop(sched->thread);
  
@@ -298,7 +298,7 @@ Link: https://lore.kernel.org/r/20231023032251.164775-1-luben.tuikov@amd.com
  
  		spin_lock(&rq->lock);
  		list_for_each_entry(s_entity, &rq->entities, list)
-@@ -1150,7 +1193,7 @@ void drm_sched_fini(struct drm_gpu_sched
+@@ -1158,7 +1201,7 @@ void drm_sched_fini(struct drm_gpu_sched
  			 */
  			s_entity->stopped = true;
  		spin_unlock(&rq->lock);
@@ -307,7 +307,7 @@ Link: https://lore.kernel.org/r/20231023032251.164775-1-luben.tuikov@amd.com
  	}
  
  	/* Wakeup everyone stuck in drm_sched_entity_flush for this scheduler */
-@@ -1160,6 +1203,8 @@ void drm_sched_fini(struct drm_gpu_sched
+@@ -1168,6 +1211,8 @@ void drm_sched_fini(struct drm_gpu_sched
  	cancel_delayed_work_sync(&sched->work_tdr);
  
  	sched->ready = false;
@@ -316,7 +316,7 @@ Link: https://lore.kernel.org/r/20231023032251.164775-1-luben.tuikov@amd.com
  }
  EXPORT_SYMBOL(drm_sched_fini);
  
-@@ -1186,9 +1231,10 @@ void drm_sched_increase_karma(struct drm
+@@ -1194,9 +1239,10 @@ void drm_sched_increase_karma(struct drm
  	if (bad->s_priority != DRM_SCHED_PRIORITY_KERNEL) {
  		atomic_inc(&bad->karma);
  
