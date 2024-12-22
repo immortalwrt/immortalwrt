@@ -5,13 +5,19 @@
 board_config_update
 
 case "$(board_name)" in
-	bananapi,bpi-r3|\
 	bananapi,bpi-r3-mini|\
 	cetron,ct3003-ubootmod|\
 	livinet,zr-3020-ubootmod)
 		ucidef_set_compat_version "1.2"
 		;;
+	bananapi,bpi-r3)
+		ucidef_set_compat_version "1.3"
+		;;
 	routerich,ax3000)
+		ucidef_set_compat_version "1.1"
+		;;
+	bananapi,bpi-r4|\
+	bananapi,bpi-r4-poe)
 		ucidef_set_compat_version "1.1"
 		;;
 esac
