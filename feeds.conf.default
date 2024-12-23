@@ -8,3 +8,6 @@ src-git sqm_scripts_nss https://github.com/qosmio/sqm-scripts-nss.git
 #src-git targets https://github.com/openwrt/targets.git
 #src-git oldpackages http://git.openwrt.org/packages.git
 #src-link custom /usr/src/openwrt/custom-feed
+src-git luci2 https://github.com/kenzok8/small-package.git
+src-git modem https://github.com/FUjr/modem_feeds.git;main
+src-git modem2 https://github.com/qwer155168/wwan-packages.git
