@@ -94,7 +94,6 @@
 		};
 
 		partition@80000 {
-			compatible = "nvmem-cells";
 			label = "config";
 			reg = <0x220000 0x140000>;
 			read-only;
@@ -113,7 +112,6 @@
 		};
 
 		partition@360000 {
-			compatible = "nvmem-cells";
 			label = "factory";
 			reg = <0x360000 0x140000>;
 			read-only;
