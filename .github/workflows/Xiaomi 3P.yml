@@ -2,7 +2,7 @@
 # Copyright (c) 2023
 #
 
-name: G-DOCK
+name: Xiaomi 3P
 on:
   schedule:
     - cron: '0 16 * * 2'
