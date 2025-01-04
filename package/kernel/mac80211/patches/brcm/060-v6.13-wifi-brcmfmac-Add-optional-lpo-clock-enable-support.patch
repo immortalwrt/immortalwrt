@@ -1,0 +1,272 @@
+From 0ff0843310b74e565901d85f849fb308c3b1f220 Mon Sep 17 00:00:00 2001
+From: Jacobe Zang <jacobe.zang@wesion.com>
+Date: Tue, 10 Sep 2024 11:04:13 +0800
+Subject: [PATCH] wifi: brcmfmac: Add optional lpo clock enable support
+
+WiFi modules often require 32kHz clock to function. Add support to
+enable the clock to PCIe driver and move "brcm,bcm4329-fmac" check
+to the top of brcmf_of_probe. Change function prototypes from void
+to int and add appropriate errno's for return values that will be
+send to bus when error occurred.
+
+Co-developed-by: Ondrej Jirman <megi@xff.cz>
+Signed-off-by: Ondrej Jirman <megi@xff.cz>
+Co-developed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+Signed-off-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+Reviewed-by: Sai Krishna <saikrishnag@marvell.com>
+Signed-off-by: Jacobe Zang <jacobe.zang@wesion.com>
+Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Tested-by: Sebastian Reichel <sebastian.reichel@collabora.com> # On RK3588 EVB1
+Acked-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://patch.msgid.link/20240910-wireless-mainline-v14-3-9d80fea5326d@wesion.com
+---
+ .../broadcom/brcm80211/brcmfmac/bcmsdh.c      |  4 +--
+ .../broadcom/brcm80211/brcmfmac/common.c      |  3 ++-
+ .../wireless/broadcom/brcm80211/brcmfmac/of.c | 25 +++++++++++++------
+ .../wireless/broadcom/brcm80211/brcmfmac/of.h |  9 ++++---
+ .../broadcom/brcm80211/brcmfmac/pcie.c        |  3 +++
+ .../broadcom/brcm80211/brcmfmac/sdio.c        | 22 ++++++++++------
+ .../broadcom/brcm80211/brcmfmac/usb.c         |  3 +++
+ 7 files changed, 47 insertions(+), 22 deletions(-)
+
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+@@ -947,8 +947,8 @@ int brcmf_sdiod_probe(struct brcmf_sdio_
+ 
+ 	/* try to attach to the target device */
+ 	sdiodev->bus = brcmf_sdio_probe(sdiodev);
+-	if (!sdiodev->bus) {
+-		ret = -ENODEV;
++	if (IS_ERR(sdiodev->bus)) {
++		ret = PTR_ERR(sdiodev->bus);
+ 		goto out;
+ 	}
+ 	brcmf_sdiod_host_fixup(sdiodev->func2->card->host);
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
+@@ -561,7 +561,8 @@ struct brcmf_mp_device *brcmf_get_module
+ 	if (!found) {
+ 		/* No platform data for this device, try OF and DMI data */
+ 		brcmf_dmi_probe(settings, chip, chiprev);
+-		brcmf_of_probe(dev, bus_type, settings);
++		if (brcmf_of_probe(dev, bus_type, settings) == -EPROBE_DEFER)
++			return ERR_PTR(-EPROBE_DEFER);
+ 		brcmf_acpi_probe(dev, bus_type, settings);
+ 	}
+ 	return settings;
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+@@ -6,6 +6,7 @@
+ #include <linux/of.h>
+ #include <linux/of_irq.h>
+ #include <linux/of_net.h>
++#include <linux/clk.h>
+ 
+ #include <defs.h>
+ #include "debug.h"
+@@ -65,12 +66,13 @@ static int brcmf_of_get_country_codes(st
+ 	return 0;
+ }
+ 
+-void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
+-		    struct brcmf_mp_device *settings)
++int brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
++		   struct brcmf_mp_device *settings)
+ {
+ 	struct brcmfmac_sdio_pd *sdio = &settings->bus.sdio;
+ 	struct device_node *root, *np = dev->of_node;
+ 	struct of_phandle_args oirq;
++	struct clk *clk;
+ 	const char *prop;
+ 	int irq;
+ 	int err;
+@@ -106,15 +108,22 @@ void brcmf_of_probe(struct device *dev,
+ 		board_type = devm_kstrdup(dev, tmp, GFP_KERNEL);
+ 		if (!board_type) {
+ 			of_node_put(root);
+-			return;
++			return 0;
+ 		}
+ 		strreplace(board_type, '/', '-');
+ 		settings->board_type = board_type;
+ 	}
+ 	of_node_put(root);
+ 
++	clk = devm_clk_get_optional_enabled(dev, "lpo");
++	if (IS_ERR(clk))
++		return PTR_ERR(clk);
++
++	brcmf_dbg(INFO, "%s LPO clock\n", clk ? "enable" : "no");
++	clk_set_rate(clk, 32768);
++
+ 	if (!np || !of_device_is_compatible(np, "brcm,bcm4329-fmac"))
+-		return;
++		return 0;
+ 
+ 	err = brcmf_of_get_country_codes(dev, settings);
+ 	if (err)
+@@ -123,23 +132,25 @@ void brcmf_of_probe(struct device *dev,
+ 	of_get_mac_address(np, settings->mac);
+ 
+ 	if (bus_type != BRCMF_BUSTYPE_SDIO)
+-		return;
++		return 0;
+ 
+ 	if (of_property_read_u32(np, "brcm,drive-strength", &val) == 0)
+ 		sdio->drive_strength = val;
+ 
+ 	/* make sure there are interrupts defined in the node */
+ 	if (of_irq_parse_one(np, 0, &oirq))
+-		return;
++		return 0;
+ 
+ 	irq = irq_create_of_mapping(&oirq);
+ 	if (!irq) {
+ 		brcmf_err("interrupt could not be mapped\n");
+-		return;
++		return 0;
+ 	}
+ 	irqf = irqd_get_trigger_type(irq_get_irq_data(irq));
+ 
+ 	sdio->oob_irq_supported = true;
+ 	sdio->oob_irq_nr = irq;
+ 	sdio->oob_irq_flags = irqf;
++
++	return 0;
+ }
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.h
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.h
+@@ -3,11 +3,12 @@
+  * Copyright (c) 2014 Broadcom Corporation
+  */
+ #ifdef CONFIG_OF
+-void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
+-		    struct brcmf_mp_device *settings);
++int brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
++		   struct brcmf_mp_device *settings);
+ #else
+-static void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
+-			   struct brcmf_mp_device *settings)
++static int brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
++			  struct brcmf_mp_device *settings)
+ {
++	return 0;
+ }
+ #endif /* CONFIG_OF */
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+@@ -2452,6 +2452,9 @@ brcmf_pcie_probe(struct pci_dev *pdev, c
+ 		ret = -ENOMEM;
+ 		goto fail;
+ 	}
++	ret = PTR_ERR_OR_ZERO(devinfo->settings);
++	if (ret < 0)
++		goto fail;
+ 
+ 	bus = kzalloc(sizeof(*bus), GFP_KERNEL);
+ 	if (!bus) {
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+@@ -3943,7 +3943,7 @@ static const struct brcmf_buscore_ops br
+ 	.write32 = brcmf_sdio_buscore_write32,
+ };
+ 
+-static bool
++static int
+ brcmf_sdio_probe_attach(struct brcmf_sdio *bus)
+ {
+ 	struct brcmf_sdio_dev *sdiodev;
+@@ -3953,6 +3953,7 @@ brcmf_sdio_probe_attach(struct brcmf_sdi
+ 	u32 reg_val;
+ 	u32 drivestrength;
+ 	u32 enum_base;
++	int ret = -EBADE;
+ 
+ 	sdiodev = bus->sdiodev;
+ 	sdio_claim_host(sdiodev->func1);
+@@ -4001,8 +4002,9 @@ brcmf_sdio_probe_attach(struct brcmf_sdi
+ 						   BRCMF_BUSTYPE_SDIO,
+ 						   bus->ci->chip,
+ 						   bus->ci->chiprev);
+-	if (!sdiodev->settings) {
++	if (IS_ERR_OR_NULL(sdiodev->settings)) {
+ 		brcmf_err("Failed to get device parameters\n");
++		ret = PTR_ERR_OR_ZERO(sdiodev->settings);
+ 		goto fail;
+ 	}
+ 	/* platform specific configuration:
+@@ -4071,7 +4073,7 @@ brcmf_sdio_probe_attach(struct brcmf_sdi
+ 	/* allocate header buffer */
+ 	bus->hdrbuf = kzalloc(MAX_HDR_READ + bus->head_align, GFP_KERNEL);
+ 	if (!bus->hdrbuf)
+-		return false;
++		return -ENOMEM;
+ 	/* Locate an appropriately-aligned portion of hdrbuf */
+ 	bus->rxhdr = (u8 *) roundup((unsigned long)&bus->hdrbuf[0],
+ 				    bus->head_align);
+@@ -4082,11 +4084,11 @@ brcmf_sdio_probe_attach(struct brcmf_sdi
+ 	if (bus->poll)
+ 		bus->pollrate = 1;
+ 
+-	return true;
++	return 0;
+ 
+ fail:
+ 	sdio_release_host(sdiodev->func1);
+-	return false;
++	return ret;
+ }
+ 
+ static int
+@@ -4451,8 +4453,10 @@ struct brcmf_sdio *brcmf_sdio_probe(stru
+ 
+ 	/* Allocate private bus interface state */
+ 	bus = kzalloc(sizeof(*bus), GFP_ATOMIC);
+-	if (!bus)
++	if (!bus) {
++		ret = -ENOMEM;
+ 		goto fail;
++	}
+ 
+ 	bus->sdiodev = sdiodev;
+ 	sdiodev->bus = bus;
+@@ -4467,6 +4471,7 @@ struct brcmf_sdio *brcmf_sdio_probe(stru
+ 				     dev_name(&sdiodev->func1->dev));
+ 	if (!wq) {
+ 		brcmf_err("insufficient memory to create txworkqueue\n");
++		ret = -ENOMEM;
+ 		goto fail;
+ 	}
+ 	brcmf_sdiod_freezer_count(sdiodev);
+@@ -4474,7 +4479,8 @@ struct brcmf_sdio *brcmf_sdio_probe(stru
+ 	bus->brcmf_wq = wq;
+ 
+ 	/* attempt to attach to the dongle */
+-	if (!(brcmf_sdio_probe_attach(bus))) {
++	ret = brcmf_sdio_probe_attach(bus);
++	if (ret < 0) {
+ 		brcmf_err("brcmf_sdio_probe_attach failed\n");
+ 		goto fail;
+ 	}
+@@ -4546,7 +4552,7 @@ struct brcmf_sdio *brcmf_sdio_probe(stru
+ 
+ fail:
+ 	brcmf_sdio_remove(bus);
+-	return NULL;
++	return ERR_PTR(ret);
+ }
+ 
+ /* Detach and free everything */
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
+@@ -1272,6 +1272,9 @@ static int brcmf_usb_probe_cb(struct brc
+ 		ret = -ENOMEM;
+ 		goto fail;
+ 	}
++	ret = PTR_ERR_OR_ZERO(devinfo->settings);
++	if (ret < 0)
++		goto fail;
+ 
+ 	if (!brcmf_usb_dlneeded(devinfo)) {
+ 		ret = brcmf_alloc(devinfo->dev, devinfo->settings);

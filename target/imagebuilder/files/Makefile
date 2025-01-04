@@ -26,6 +26,7 @@ include $(INCLUDE_DIR)/debug.mk
 include $(INCLUDE_DIR)/depends.mk
 include $(INCLUDE_DIR)/rootfs.mk
 
+include $(INCLUDE_DIR)/default-packages.mk
 include $(INCLUDE_DIR)/version.mk
 export REVISION
 export SOURCE_DATE_EPOCH
@@ -138,6 +139,11 @@ _call_info: FORCE
 	echo 'Available Profiles:'
 	echo; $(PROFILE_LIST)
 
+ifneq ($(CONFIG_USE_APK),)
+  DEFAULT_PACKAGES += apk-mbedtls
+else
+  DEFAULT_PACKAGES += opkg
+endif
 BUILD_PACKAGES:=$(sort $(DEFAULT_PACKAGES) $($(USER_PROFILE)_PACKAGES) kernel)
 # "-pkgname" in the package list means remove "pkgname" from the package list
 BUILD_PACKAGES:=$(filter-out $(filter -%,$(BUILD_PACKAGES)) $(patsubst -%,%,$(filter -%,$(BUILD_PACKAGES))),$(BUILD_PACKAGES))
