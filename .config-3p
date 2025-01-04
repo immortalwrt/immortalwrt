@@ -3286,7 +3286,7 @@ CONFIG_PACKAGE_kmod-usbmon=y
 #
 # WWAN Support
 #
-CONFIG_PACKAGE_kmod-pcie_mhi=y
+# CONFIG_PACKAGE_kmod-pcie_mhi is not set
 # CONFIG_PACKAGE_kmod-qmi_wwan_f is not set
 # CONFIG_PACKAGE_kmod-qmi_wwan_q is not set
 # end of WWAN Support
@@ -5448,7 +5448,7 @@ CONFIG_PACKAGE_luci-app-internet-detector=y
 # CONFIG_PACKAGE_luci-app-mmconfig is not set
 # CONFIG_PACKAGE_luci-app-mmdvm is not set
 # CONFIG_PACKAGE_luci-app-mnh is not set
-CONFIG_PACKAGE_luci-app-modem=y
+# CONFIG_PACKAGE_luci-app-modem is not set
 CONFIG_PACKAGE_luci-app-modemband=y
 CONFIG_PACKAGE_luci-app-modeminfo=y
 # CONFIG_PACKAGE_luci-app-mosdns is not set
@@ -5882,7 +5882,6 @@ CONFIG_PACKAGE_luci-i18n-firewall-vi=y
 # CONFIG_PACKAGE_luci-i18n-firewall-zh-cn is not set
 # CONFIG_PACKAGE_luci-i18n-firewall-zh-tw is not set
 # CONFIG_PACKAGE_luci-i18n-internet-detector-ru is not set
-# CONFIG_PACKAGE_luci-i18n-modem-zh-cn is not set
 # CONFIG_PACKAGE_luci-i18n-modemband-pl is not set
 # CONFIG_PACKAGE_luci-i18n-modemband-zh-cn is not set
 # CONFIG_PACKAGE_luci-i18n-modeminfo-ru is not set
