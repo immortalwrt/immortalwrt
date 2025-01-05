@@ -5,7 +5,7 @@
 name: Xiaomi 3P
 on:
   schedule:
-    - cron: '0 16 * * 2'
+    - cron: '0 22 * * *'
   release:
     types: [published]
   push:
