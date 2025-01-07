@@ -849,6 +849,11 @@ mac80211_setup_mesh() {
 	[ -n "$mcast_rate" ] && wpa_supplicant_add_rate mcval "$mcast_rate"
 	[ -n "$mesh_id" ] && ssid="$mesh_id"
 
+	brstr=
+	for br in $basic_rate_list; do
+		wpa_supplicant_add_rate brstr "$br"
+	done
+
 	local prev
 	json_set_namespace wdev_uc prev
 
@@ -859,6 +864,7 @@ mac80211_setup_mesh() {
 	json_add_string freq "$freq"
 	json_add_string htmode "$iw_htmode"
 	[ -n "$mcval" ] && json_add_string mcast-rate "$mcval"
+	[ -n "$brstr" ] && json_add_string basic-rates "$brstr"
 	json_add_int beacon-interval "$beacon_int"
 	mac80211_add_mesh_params
 
@@ -1209,6 +1215,14 @@ drv_mac80211_setup() {
 	json_set_namespace wdev_uc prev
 	wdev_tool "$phy$phy_suffix" set_config "$(json_dump)" $active_ifnames
 	json_set_namespace "$prev"
+
+	[ -z "$phy_suffix" ] && {
+		if [ -n "$txpower" ]; then
+			iw phy "$phy" set txpower fixed "${txpower%%.*}00"
+		else
+			iw phy "$phy" set txpower auto
+		fi
+	}
 
 	for_each_interface "ap sta adhoc mesh monitor" mac80211_set_vif_txpower
 	wireless_set_up
