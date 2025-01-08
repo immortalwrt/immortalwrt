@@ -8,6 +8,7 @@ touch /etc/config/ubootenv
 board=$(board_name)
 
 case "$board" in
+wf,hr6001|\
 8devices,mango-dvk|\
 8devices,mango-dvk-sfp|\
 cambiumnetworks,xe3-4)

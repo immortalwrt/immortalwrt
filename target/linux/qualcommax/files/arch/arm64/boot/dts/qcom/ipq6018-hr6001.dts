@@ -1,0 +1,479 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
+/*
+ * IPQ6018 CP01 board device tree source
+ *
+ * Copyright (c) 2019-2021 The Linux Foundation. All rights reserved.
+ */
+
+/dts-v1/;
+
+#include "ipq6018.dtsi"
+#include "ipq6018-cp-cpu.dtsi"
+#include "ipq6018-ess.dtsi"
+//#include "ipq6018-nss.dtsi"
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/leds/common.h>
+
+/ {
+	model = "WF HR6001";
+	compatible = "wf,hr6001", "qcom,ipq6018";
+
+	aliases {
+		led-boot = &led_power;
+		led-failsafe = &led_power;
+		led-running = &led_power;
+		led-upgrade = &led_power;
+		serial0 = &blsp1_uart3;
+		ethernet0 = &dp1;
+		ethernet1 = &dp2;
+		ethernet2 = &dp3;
+		ethernet3 = &dp4;
+		ethernet4 = &dp5;
+	};
+	
+	chosen {
+		stdout-path = "serial0:115200n8";
+		bootargs-append = " root=/dev/ubiblock0_1 swiotlb=1 coherent_pool=2M";
+	};
+	
+	keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			gpios = <&tlmm 19 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
+		};
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		pinctrl-0 = <&leds_pins>;
+		pinctrl-names = "default";
+
+		wlan5g {
+			label = "blue:wlan5g";
+			gpio = <&tlmm 35 GPIO_ACTIVE_HIGH>;
+		};
+
+		led_power: wlan2g {
+			label = "blue:wlan2g";
+			gpio = <&tlmm 37 GPIO_ACTIVE_HIGH>;
+		};
+
+
+		lan1 {
+			label = "blue:lan1";
+			gpio = <&tlmm 51 GPIO_ACTIVE_HIGH>;
+		};
+
+		lan2 {
+			label = "blue:lan2";
+			gpio = <&tlmm 24 GPIO_ACTIVE_HIGH>;
+		};
+
+		lan3 {
+			label = "blue:lan3";
+			gpio = <&tlmm 53 GPIO_ACTIVE_HIGH>;
+		};
+
+		lan4 {
+			label = "blue:lan4";
+			gpio = <&tlmm 25 GPIO_ACTIVE_HIGH>;
+		};
+
+		wan {
+			label = "blue:wan";
+			gpio = <&tlmm 31 GPIO_ACTIVE_HIGH>;
+		};
+	};
+};
+
+&blsp1_uart3 {
+	pinctrl-0 = <&serial_3_pins>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+&tlmm {
+	spi_1_pins: spi_1_pins {
+		pins = "gpio38", "gpio39", "gpio40", "gpio41";
+		function = "blsp0_spi";
+		drive-strength = <8>;
+		bias-pull-down;
+	};
+
+	sd_pins: sd-pinmux {
+		pins = "gpio62";
+		function = "sd_card";
+		drive-strength = <8>;
+		bias-pull-up;
+	};
+
+	i2c_1_pins: i2c_1_pins {
+		mux {
+			pins = "gpio42", "gpio43";
+			function = "blsp2_i2c";
+			drive-strength = <8>;
+			bias-pull-down;
+		};
+	};
+
+	mdio_pins: mdio-pins {
+		mdc {
+			pins = "gpio64";
+			function = "mdc";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
+
+		mdio {
+			pins = "gpio65";
+			function = "mdio";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
+	};
+
+	button_pins: button_pins {
+		reset_button {
+			pins = "gpio19";
+			function = "gpio";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
+	};
+	
+	sd_pwrseq: sd-pwrseq {
+		compatible = "mmc-pwrseq-ipq";
+		reset-gpios = <&tlmm 66 GPIO_ACTIVE_HIGH>;
+	};
+	
+	leds_pins: leds_pins {
+		mux {
+			pins = "gpio24", "gpio25", "gpio31",
+				"gpio33", "gpio34", "gpio35",
+				"gpio37", "gpio51", "gpio53";
+			function = "gpio";
+			drive-strength = <8>;
+			bias-pull-down;
+		};
+	};
+
+	pcie0_pins: pcie_pins {
+		pcie0_rst {
+			pins = "gpio60";
+			function = "pcie0_rst";
+			drive-strength = <8>;
+			bias-pull-down;
+		};
+	};
+};
+
+&dp1 {
+	status = "okay";
+
+	phy-handle = <&qca8075_0>;
+	qcom,id = <1>;
+	label = "lan1";
+};
+
+&dp2 {
+	status = "okay";
+
+	phy-handle = <&qca8075_1>;
+	qcom,id = <2>;
+	label = "lan2";
+};
+
+&dp3 {
+	status = "okay";
+
+	phy-handle = <&qca8075_2>;
+	qcom,id = <3>;
+	label = "lan3";
+};
+
+&dp4 {
+	status = "okay";
+
+	phy-handle = <&qca8075_3>;
+	qcom,id = <4>;
+	label = "lan4";
+};
+
+&dp5 {
+	status = "okay";
+
+	phy-handle = <&qca8081>;
+	qcom,id = <5>;
+	label = "wan";
+};
+
+&mdio {
+	status = "okay";
+
+	pinctrl-0 = <&mdio_pins>;
+	pinctrl-names = "default";
+	reset-gpios = <&tlmm 75 GPIO_ACTIVE_LOW>;
+
+	ethernet-phy-package@0 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "qcom,qca8075-package";
+		reg = <0>;
+
+		qcom,package-mode = "psgmii";
+
+		qca8075_0: ethernet-phy@0 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <0>;
+		};
+
+		qca8075_1: ethernet-phy@1 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <1>;
+		};
+
+		qca8075_2: ethernet-phy@2 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <2>;
+		};
+
+		qca8075_3: ethernet-phy@3 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <3>;
+		};
+	};
+
+	qca8081: ethernet-phy@24 {
+		compatible = "ethernet-phy-id004d.d101";
+		reg = <24>;
+		reset-gpios = <&tlmm 77 GPIO_ACTIVE_LOW>;
+	};
+
+};
+
+&switch {
+	status = "okay";
+
+	switch_lan_bmp = <(ESS_PORT1|ESS_PORT2|ESS_PORT3|ESS_PORT4)>; /* lan port bitmap */
+	switch_wan_bmp = <ESS_PORT5>; /* wan port bitmap */
+	switch_mac_mode = <MAC_MODE_PSGMII>; /* mac mode for uniphy instance0*/
+	switch_mac_mode1 = <MAC_MODE_SGMII_CHANNEL0>; /* mac mode for uniphy instance1*/
+	switch_mac_mode2 = <MAC_MODE_DISABLED>; /* mac mode for uniphy instance2*/
+	
+	qcom,port_phyinfo {
+		port@0 {
+			port_id = <1>;
+			phy_address = <0>;
+		};
+		port@1 {
+			port_id = <2>;
+			phy_address = <1>;
+		};
+		port@2 {
+			port_id = <3>;
+			phy_address = <2>;
+		};
+		port@3 {
+			port_id = <4>;
+			phy_address = <3>;
+		};
+		port@4 {
+			port_id = <5>;
+			phy_address = <24>;
+			port_mac_sel = "QGMAC_PORT";
+		};
+	};
+};
+
+&edma {
+	status = "okay";
+};
+
+&qpic_bam {
+	status = "okay";
+};
+
+&blsp1_spi1 {
+	pinctrl-0 = <&spi_1_pins>;
+	pinctrl-names = "default";
+	cs-select = <0>;
+	status = "okay";
+
+	m25p80@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		reg = <0>;
+		compatible = "n25q128a11";
+		linux,modalias = "m25p80", "n25q128a11";
+		spi-max-frequency = <50000000>;
+
+		partitions {
+			compatible = "fixed-partitions";
+
+			partition@0 {
+				label = "0:SBL1";
+				reg = <0x0 0xc0000>;
+			};
+
+			partition@c0000 {
+				label = "0:MIBIB";
+				reg = <0xc0000 0x10000>;
+			};
+
+			partition@d0000 {
+				label = "0:BOOTCONFIG";
+				reg = <0xd0000 0x20000>;
+			};
+
+			partition@f0000 {
+				label = "0:BOOTCONFIG1";
+				reg = <0xf0000 0x20000>;
+			};
+
+			partition@110000 {
+				label = "0:QSEE";
+				reg = <0x110000 0x1a0000>;
+			};
+
+			partition@2b0000 {
+				label = "0:QSEE_1";
+				reg = <0x2b0000 0x1a0000>;
+			};
+
+			partition@450000 {
+				label = "0:DEVCFG";
+				reg = <0x450000 0x10000>;
+			};
+
+			partition@460000 {
+				label = "0:DEVCFG_1";
+				reg = <0x460000 0x10000>;
+			};
+
+			partition@470000 {
+				label = "0:RPM";
+				reg = <0x470000 0x40000>;
+			};
+
+			partition@4b0000 {
+				label = "0:RPM_1";
+				reg = <0x4b0000 0x40000>;
+			};
+
+			partition@4f0000 {
+				label = "0:CDT";
+				reg = <0x4f0000 0x10000>;
+			};
+
+			partition@500000 {
+				label = "0:CDT_1";
+				reg = <0x500000 0x10000>;
+			};
+
+			partition@510000 {
+				label = "0:APPSBLENV";
+				reg = <0x510000 0x10000>;
+			};
+
+			partition@520000 {
+				label = "0:APPSBL";
+				reg = <0x520000 0xa0000>;
+			};
+
+			partition@5c0000 {
+				label = "0:APPSBL_1";
+				reg = <0x5c0000 0xa0000>;
+			};
+
+			partition@660000 {
+				label = "0:ART";
+				reg = <0x660000 0x40000>;
+			};
+
+		};
+	};
+};
+
+&qpic_nand {
+	status = "okay";
+
+	nand@0 {
+		reg = <0>;
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		nand-ecc-strength = <8>;
+		nand-ecc-step-size = <512>;
+		nand-bus-width = <8>;
+
+		partition@0 {
+			label = "rootfs";
+			reg = <0x00000000 0x0f000000>;
+		};
+
+	};
+};
+
+&blsp1_i2c3 {
+	status = "okay";
+	pinctrl-0 = <&i2c_1_pins>;
+	pinctrl-names = "default";
+};
+
+&wifi {
+	status = "okay";
+	qcom,ath11k-fw-memory-mode = <1>;
+	qcom,ath11k-calibration-variant = "WF-HR6001";
+};
+
+&cryptobam {
+	status = "okay";
+};
+
+&crypto {
+	status = "okay";
+};
+
+&pcie_phy {
+	status = "okay";
+};
+
+&pcie0 {
+	status = "okay";
+};
+
+&qusb_phy_1 {
+	status = "okay";
+};
+
+&usb2 {
+	status = "okay";
+};
+
+&qusb_phy_0 {
+	status = "okay";
+};
+
+&ssphy_0 {
+	status = "okay";
+};
+
+&usb3 {
+	status = "okay";
+};
+
+&sdhc_1 {
+	status = "okay";
+	
+	pinctrl-0 = <&sd_pins>;
+	pinctrl-names = "default";
+	mmc-pwrseq = <&sd_pwrseq>;
+	sd-ldo-gpios = <&tlmm 66 GPIO_ACTIVE_HIGH>;
+	vqmmc-supply = <&ipq6018_l2>;
+	cd-gpios = <&tlmm 62 GPIO_ACTIVE_LOW>;
+};

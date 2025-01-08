@@ -68,6 +68,19 @@ define Device/qihoo_360v6
 endef
 TARGET_DEVICES += qihoo_360v6
 
+define Device/wf_hr6001
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := WF
+	DEVICE_MODEL := HR6001
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	DEVICE_DTS_CONFIG := config@cp01-c1
+	SOC := ipq6018
+	DEVICE_PACKAGES := ipq-wifi-wf_hr6001
+endef
+TARGET_DEVICES += wf_hr6001
+
 define Device/yuncore_fap650
 	$(call Device/FitImage)
 	$(call Device/UbiFit)

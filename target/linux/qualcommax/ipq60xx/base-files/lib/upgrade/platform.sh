@@ -52,6 +52,7 @@ platform_do_upgrade() {
 		nand_do_upgrade "$1"
 		;;
 	netgear,wax214|\
+	wf,hr6001|\
 	qihoo,360v6)
 		nand_do_upgrade "$1"
 		;;
