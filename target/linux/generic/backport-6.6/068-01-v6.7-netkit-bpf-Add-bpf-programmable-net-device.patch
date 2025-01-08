@@ -1196,7 +1196,7 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
  #include <net/tcx.h>
  
  #define IS_FD_ARRAY(map) ((map)->map_type == BPF_MAP_TYPE_PERF_EVENT_ARRAY || \
-@@ -3811,6 +3812,8 @@ attach_type_to_prog_type(enum bpf_attach
+@@ -3827,6 +3828,8 @@ attach_type_to_prog_type(enum bpf_attach
  		return BPF_PROG_TYPE_LSM;
  	case BPF_TCX_INGRESS:
  	case BPF_TCX_EGRESS:
@@ -1205,7 +1205,7 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
  		return BPF_PROG_TYPE_SCHED_CLS;
  	default:
  		return BPF_PROG_TYPE_UNSPEC;
-@@ -3867,7 +3870,9 @@ static int bpf_prog_attach_check_attach_
+@@ -3883,7 +3886,9 @@ static int bpf_prog_attach_check_attach_
  		return 0;
  	case BPF_PROG_TYPE_SCHED_CLS:
  		if (attach_type != BPF_TCX_INGRESS &&
@@ -1216,7 +1216,7 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
  			return -EINVAL;
  		return 0;
  	default:
-@@ -3950,7 +3955,11 @@ static int bpf_prog_attach(const union b
+@@ -3966,7 +3971,11 @@ static int bpf_prog_attach(const union b
  			ret = cgroup_bpf_prog_attach(attr, ptype, prog);
  		break;
  	case BPF_PROG_TYPE_SCHED_CLS:
@@ -1229,7 +1229,7 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
  		break;
  	default:
  		ret = -EINVAL;
-@@ -4011,7 +4020,11 @@ static int bpf_prog_detach(const union b
+@@ -4027,7 +4036,11 @@ static int bpf_prog_detach(const union b
  		ret = cgroup_bpf_prog_detach(attr, ptype);
  		break;
  	case BPF_PROG_TYPE_SCHED_CLS:
@@ -1242,7 +1242,7 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
  		break;
  	default:
  		ret = -EINVAL;
-@@ -4073,6 +4086,9 @@ static int bpf_prog_query(const union bp
+@@ -4089,6 +4102,9 @@ static int bpf_prog_query(const union bp
  	case BPF_TCX_INGRESS:
  	case BPF_TCX_EGRESS:
  		return tcx_prog_query(attr, uattr);
@@ -1252,7 +1252,7 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
  	default:
  		return -EINVAL;
  	}
-@@ -5054,7 +5070,11 @@ static int link_create(union bpf_attr *a
+@@ -5070,7 +5086,11 @@ static int link_create(union bpf_attr *a
  		ret = bpf_xdp_link_attach(attr, prog);
  		break;
  	case BPF_PROG_TYPE_SCHED_CLS:

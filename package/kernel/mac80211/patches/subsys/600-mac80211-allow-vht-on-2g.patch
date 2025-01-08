@@ -12,7 +12,7 @@
  		have_80mhz = true;
 --- a/net/mac80211/util.c
 +++ b/net/mac80211/util.c
-@@ -1313,7 +1313,8 @@ static int ieee80211_put_preq_ies_band(s
+@@ -1312,7 +1312,8 @@ static int ieee80211_put_preq_ies_band(s
  	/* Check if any channel in this sband supports at least 80 MHz */
  	for (i = 0; i < sband->n_channels; i++) {
  		if (sband->channels[i].flags & (IEEE80211_CHAN_DISABLED |
@@ -24,7 +24,7 @@
  		have_80mhz = true;
 --- a/net/mac80211/mlme.c
 +++ b/net/mac80211/mlme.c
-@@ -5250,7 +5250,8 @@ ieee80211_determine_our_sta_mode(struct
+@@ -5248,7 +5248,8 @@ ieee80211_determine_our_sta_mode(struct
  		/* Allow VHT if at least one channel on the sband supports 80 MHz */
  		for (i = 0; i < sband->n_channels; i++) {
  			if (sband->channels[i].flags & (IEEE80211_CHAN_DISABLED |

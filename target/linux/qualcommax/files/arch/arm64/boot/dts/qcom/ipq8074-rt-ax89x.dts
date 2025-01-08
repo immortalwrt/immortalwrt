@@ -161,16 +161,6 @@
 		enable-active-high;
 		regulator-boot-on;
 	};
-
-	output-usb0-power {
-		compatible = "regulator-output";
-		vout-supply = <&usb0_vbus>;
-	};
-
-	output-usb1-power {
-		compatible = "regulator-output";
-		vout-supply = <&usb1_vbus>;
-	};
 };
 
 &cpu0_thermal {
@@ -375,6 +365,8 @@
 
 &qusb_phy_0 {
 	status = "okay";
+
+	vdd-supply = <&usb0_vbus>;
 };
 
 &ssphy_1 {
@@ -383,6 +375,8 @@
 
 &qusb_phy_1 {
 	status = "okay";
+
+	vdd-supply = <&usb1_vbus>;
 };
 
 &usb_0 {

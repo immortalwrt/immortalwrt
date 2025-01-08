@@ -30,6 +30,7 @@ drv_mac80211_init_device_config() {
 	config_add_string tx_burst
 	config_add_string distance
 	config_add_string ifname_prefix
+	config_add_string macaddr_base
 	config_add_int radio beacon_int chanbw frag rts
 	config_add_int rxantenna txantenna txpower min_tx_power
 	config_add_int num_global_macaddr multiple_bssid
@@ -530,6 +531,7 @@ ${hostapd_noscan:+noscan=1}
 ${tx_burst:+tx_queue_data2_burst=$tx_burst}
 ${multiple_bssid:+mbssid=$multiple_bssid}
 #num_global_macaddr=$num_global_macaddr
+#macaddr_base=$macaddr_base
 $base_cfg
 
 EOF
@@ -577,7 +579,7 @@ mac80211_generate_mac() {
 	local phy="$1"
 	local id="${macidx:-0}"
 
-	wdev_tool "$phy$phy_suffix" get_macaddr id=$id num_global=$num_global_macaddr mbssid=${multiple_bssid:-0}
+	wdev_tool "$phy$phy_suffix" get_macaddr id=$id num_global=$num_global_macaddr mbssid=${multiple_bssid:-0} macaddr_base=${macaddr_base}
 }
 
 get_board_phy_name() (
@@ -669,7 +671,7 @@ mac80211_set_ifname() {
 mac80211_prepare_vif() {
 	json_select config
 
-	json_get_vars ifname mode ssid wds powersave macaddr enable wpa_psk_file vlan_file
+	json_get_vars ifname mode ssid wds powersave macaddr enable wpa_psk_file sae_password_file vlan_file
 
 	[ -n "$ifname" ] || {
 		local prefix;
@@ -702,7 +704,12 @@ mac80211_prepare_vif() {
 
 
 	[ "$mode" == "ap" ] && {
+		json_select config
+		wireless_vif_parse_encryption
+		json_select ..
+
 		[ -z "$wpa_psk_file" ] && hostapd_set_psk "$ifname"
+		[ -z "$sae_password_file" ] && hostapd_set_sae "$ifname"
 		[ -z "$vlan_file" ] && hostapd_set_vlan "$ifname"
 	}
 
@@ -842,6 +849,11 @@ mac80211_setup_mesh() {
 	[ -n "$mcast_rate" ] && wpa_supplicant_add_rate mcval "$mcast_rate"
 	[ -n "$mesh_id" ] && ssid="$mesh_id"
 
+	brstr=
+	for br in $basic_rate_list; do
+		wpa_supplicant_add_rate brstr "$br"
+	done
+
 	local prev
 	json_set_namespace wdev_uc prev
 
@@ -852,6 +864,7 @@ mac80211_setup_mesh() {
 	json_add_string freq "$freq"
 	json_add_string htmode "$iw_htmode"
 	[ -n "$mcval" ] && json_add_string mcast-rate "$mcval"
+	[ -n "$brstr" ] && json_add_string basic-rates "$brstr"
 	json_add_int beacon-interval "$beacon_int"
 	mac80211_add_mesh_params
 
@@ -934,6 +947,7 @@ wpa_supplicant_set_config() {
 	json_add_string phy "$phy"
 	json_add_int radio "$radio"
 	json_add_int num_global_macaddr "$num_global_macaddr"
+	json_add_string macaddr_base "$macaddr_base"
 	json_add_boolean defer 1
 	local data="$(json_dump)"
 
@@ -980,7 +994,7 @@ wpa_supplicant_start() {
 
 	[ -n "$wpa_supp_init" ] || return 0
 
-	ubus_call wpa_supplicant config_set '{ "phy": "'"$phy"'", "radio": '"$radio"', "num_global_macaddr": '"$num_global_macaddr"' }' > /dev/null
+	ubus_call wpa_supplicant config_set '{ "phy": "'"$phy"'", "radio": '"$radio"', "num_global_macaddr": '"$num_global_macaddr"', "macaddr_base": "'"$macaddr_base"'" }' > /dev/null
 }
 
 mac80211_setup_supplicant() {
@@ -1018,7 +1032,7 @@ mac80211_setup_vif() {
 			json_get_vars $MP_CONFIG_INT $MP_CONFIG_BOOL $MP_CONFIG_STRING
 			wireless_vif_parse_encryption
 			[ -z "$htmode" ] && htmode="NOHT";
-			if wpa_supplicant -vmesh; then
+			if [ -x /usr/sbin/wpa_supplicant ] && wpa_supplicant -vmesh; then
 				mac80211_setup_supplicant || failed=1
 			else
 				mac80211_setup_mesh
@@ -1107,7 +1121,7 @@ drv_mac80211_setup() {
 		rxantenna txantenna \
 		frag rts beacon_int:100 htmode \
 		num_global_macaddr:1 multiple_bssid \
-		ifname_prefix
+		ifname_prefix macaddr_base
 	json_get_values basic_rate_list basic_rate
 	json_get_values scan_list scan_list
 	json_select ..
@@ -1201,6 +1215,14 @@ drv_mac80211_setup() {
 	json_set_namespace wdev_uc prev
 	wdev_tool "$phy$phy_suffix" set_config "$(json_dump)" $active_ifnames
 	json_set_namespace "$prev"
+
+	[ -z "$phy_suffix" ] && {
+		if [ -n "$txpower" ]; then
+			iw phy "$phy" set txpower fixed "${txpower%%.*}00"
+		else
+			iw phy "$phy" set txpower auto
+		fi
+	}
 
 	for_each_interface "ap sta adhoc mesh monitor" mac80211_set_vif_txpower
 	wireless_set_up

@@ -38,17 +38,20 @@ mediatek_setup_interfaces()
 	confiabits,mt7981|\
 	cudy,wr3000-v1|\
 	jcg,q30-pro|\
+	keenetic,kn-3811|\
 	livinet,zr-3020|\
 	livinet,zr-3020-ubootmod|\
 	qihoo,360t7|\
 	routerich,ax3000|\
-	routerich,ax3000-ubootmod)
+	routerich,ax3000-ubootmod|\
+	tenbay,wr3000k)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" wan
 		;;
 	asus,tuf-ax4200|\
 	jdcloud,re-cp-03|\
 	mediatek,mt7981-rfb|\
 	netcore,n60|\
+	nradio,c8-668gl|\
 	ruijie,rg-x60-pro|\
 	unielec,u7981-01*|\
 	zbtlink,zbt-z8102ax|\
@@ -64,20 +67,23 @@ mediatek_setup_interfaces()
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 lan5" eth1
 		;;
 	bananapi,bpi-r3)
-		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 sfp2" "eth1 wan"
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 sfp2" "sfp1 wan"
 		;;
 	bananapi,bpi-r3-mini|\
 	edgecore,eap111)
 		ucidef_set_interfaces_lan_wan eth0 eth1
 		;;
-	bananapi,bpi-r4|\
+	bananapi,bpi-r4)
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 sfp-lan" "wan sfp-wan"
+		;;
 	bananapi,bpi-r4-poe)
-		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 eth1" "wan eth2"
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" "wan sfp-wan"
 		;;
 	comfast,cf-e393ax)
 		ucidef_set_interfaces_lan_wan "lan1" eth1
 		;;
 	cudy,ap3000outdoor-v1|\
+	cudy,ap3000-v1|\
 	cudy,re3000-v1|\
 	netgear,wax220|\
 	ubnt,unifi-6-plus|\
@@ -94,7 +100,8 @@ mediatek_setup_interfaces()
 	openwrt,one)
 		ucidef_set_interfaces_lan_wan eth1 eth0
 		;;
-	dlink,aquila-pro-ai-m30-a1)
+	dlink,aquila-pro-ai-m30-a1|\
+	dlink,aquila-pro-ai-m60-a1)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" internet
 		;;
 	keenetic,kn-3911|\
@@ -170,6 +177,11 @@ mediatek_setup_macs()
 		;;
 	netgear,wax220)
 		lan_mac=$(mtd_get_mac_ascii u-boot-env mac)
+		label_mac=$lan_mac
+		;;
+	nradio,c8-668gl)
+		lan_mac=$(mmc_get_mac_ascii bdinfo "fac_mac ")
+		wan_mac=$(macaddr_add "$lan_mac" 2)
 		label_mac=$lan_mac
 		;;
 	qihoo,360t7)

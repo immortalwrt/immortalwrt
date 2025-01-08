@@ -575,6 +575,23 @@ endef
 
 $(eval $(call KernelPackage,dsa-b53-mdio))
 
+define KernelPackage/dsa-mv88e6060
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Marvell MV88E6060 DSA Switch
+  DEPENDS:=+kmod-dsa +kmod-phy-marvell
+  KCONFIG:=CONFIG_NET_DSA_TAG_TRAILER \
+  CONFIG_NET_DSA_MV88E6060
+  FILES:= \
+  $(LINUX_DIR)/drivers/net/dsa/mv88e6060.ko \
+  $(LINUX_DIR)/net/dsa/tag_trailer.ko
+  AUTOLOAD:=$(call AutoLoad,41,mv88e6060,1)
+endef
+
+define KernelPackage/dsa-mv88e6060/description
+  Kernel modules for MV88E6060 DSA switches
+endef
+
+$(eval $(call KernelPackage,dsa-mv88e6060))
 
 define KernelPackage/dsa-tag-dsa
   SUBMENU:=$(NETWORK_DEVICES_MENU)
@@ -953,7 +970,7 @@ $(eval $(call KernelPackage,8139cp))
 define KernelPackage/r8169
   SUBMENU:=$(NETWORK_DEVICES_MENU)
   TITLE:=RealTek RTL-8169 PCI Gigabit Ethernet Adapter kernel support
-  DEPENDS:=@PCI_SUPPORT +kmod-mii +r8169-firmware +kmod-phy-realtek +kmod-mdio-devres
+  DEPENDS:=@PCI_SUPPORT +kmod-mii +r8169-firmware +kmod-phy-realtek +kmod-mdio-devres +kmod-hwmon-core
   KCONFIG:= \
     CONFIG_R8169 \
     CONFIG_R8169_LEDS=y
@@ -1546,8 +1563,8 @@ $(eval $(call KernelPackage,bnx2x))
 
 define KernelPackage/bnxt-en
   SUBMENU:=$(NETWORK_DEVICES_MENU)
-  TITLE:=BCM 574xx/575xx 10/25/50-Gigabit ethernet adapter driver
-  DEPENDS:=@PCI_SUPPORT +kmod-lib-crc32c +kmod-mdio +kmod-ptp +kmod-lib-zlib-inflate +kmod-hwmon-core
+  TITLE:=Broadcom NetXtreme-C/E network driver
+  DEPENDS:=@PCI_SUPPORT +kmod-hwmon-core +kmod-lib-crc32c +kmod-mdio +kmod-ptp
   FILES:=$(LINUX_DIR)/drivers/net/ethernet/broadcom/bnxt/bnxt_en.ko
   KCONFIG:= \
 	CONFIG_BNXT \
@@ -1559,7 +1576,9 @@ define KernelPackage/bnxt-en
 endef
 
 define KernelPackage/bnxt-en/description
-  Broadcom 573xx/574xx/575xx 10/25/40/50-Gigabit ethernet adapter Driver
+  Supports Broadcom NetXtreme-C/E based Ethernet NICs including:
+  * BCM573xx
+  * BCM574xx
 endef
 
 $(eval $(call KernelPackage,bnxt-en))

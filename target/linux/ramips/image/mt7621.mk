@@ -294,11 +294,11 @@ TARGET_DEVICES += alfa-network_quad-e4g
 
 define Device/ampedwireless_ally_common
   $(Device/nand)
+  $(Device/uimage-lzma-loader)
   DEVICE_VENDOR := Amped Wireless
   DEVICE_PACKAGES := kmod-mt7615-firmware
   IMAGE_SIZE := 32768k
-  KERNEL_INITRAMFS := $(KERNEL_DTB) | uImage lzma -n 'flashable-initramfs' |\
-	edimax-header -s CSYS -m RN68 -f 0x001c0000 -S 0x01100000
+  KERNEL_INITRAMFS := $$(KERNEL) | edimax-header -s CSYS -m RN68 -f 0x001c0000 -S 0x01100000
 endef
 
 define Device/ampedwireless_ally-r1900k
@@ -470,6 +470,20 @@ define Device/asus_rt-ax54
   DEVICE_PACKAGES := kmod-mt7915-firmware
 endef
 TARGET_DEVICES += asus_rt-ax54
+
+define Device/asus_4g-ax56
+  $(Device/nand)
+  $(Device/uimage-lzma-loader)
+  DEVICE_VENDOR := ASUS
+  DEVICE_MODEL := 4G-AX56
+  IMAGE_SIZE := 51200k
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
+	check-size
+  DEVICE_PACKAGES := kmod-mt7915-firmware kmod-usb3 kmod-usb-serial-option \
+	kmod-usb-net-cdc-ncm
+endef
+TARGET_DEVICES += asus_4g-ax56
 
 define Device/beeline_smartbox-flash
   $(Device/nand)

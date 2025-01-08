@@ -1,3 +1,5 @@
+DEVICE_VARS += NETGEAR_BOARD_ID NETGEAR_HW_ID
+
 define Build/asus-fake-ramdisk
 	rm -rf $(KDIR)/tmp/fakerd
 	dd if=/dev/zero bs=32 count=1 > $(KDIR)/tmp/fakerd
@@ -168,12 +170,17 @@ define Device/linksys_mx
 	DEVICE_PACKAGES := kmod-leds-pca963x
 endef
 
-define Device/linksys_mx4200v1
+define Device/linksys_mx4x00
 	$(call Device/linksys_mx)
+	SOC := ipq8174
+	DEVICE_PACKAGES += ipq-wifi-linksys_mx4200
+endef
+
+define Device/linksys_mx4200v1
+	$(call Device/linksys_mx4x00)
 	DEVICE_MODEL := MX4200
 	DEVICE_VARIANT := v1
-	SOC := ipq8174
-	DEVICE_PACKAGES += ipq-wifi-linksys_mx4200 kmod-bluetooth
+	DEVICE_PACKAGES += kmod-bluetooth
 endef
 TARGET_DEVICES += linksys_mx4200v1
 
@@ -182,6 +189,17 @@ define Device/linksys_mx4200v2
 	DEVICE_VARIANT := v2
 endef
 TARGET_DEVICES += linksys_mx4200v2
+
+define Device/linksys_mx4300
+	$(call Device/linksys_mx4x00)
+	DEVICE_MODEL := MX4300
+	BLOCKSIZE := 256k
+	PAGESIZE := 4096
+	KERNEL_SIZE := 8192k
+	IMAGE_SIZE := 171264k
+	NAND_SIZE := 1024m
+endef
+TARGET_DEVICES += linksys_mx4300
 
 define Device/linksys_mx5300
 	$(call Device/linksys_mx)
@@ -354,6 +372,20 @@ define Device/spectrum_sax1v1k
 	DEVICE_PACKAGES := kmod-fs-f2fs f2fs-tools ipq-wifi-spectrum_sax1v1k
 endef
 TARGET_DEVICES += spectrum_sax1v1k
+
+define Device/tplink_eap620hd-v1
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := TP-Link
+	DEVICE_MODEL := EAP620 HD
+	DEVICE_VARIANT := v1
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	SOC := ipq8072
+	DEVICE_PACKAGES := ipq-wifi-tplink_eap620hd-v1
+	TPLINK_SUPPORT_STRING := SupportList:\r\nEAP620 HD(TP-Link|UN|AX1800-D):1.0\r\n
+endef
+TARGET_DEVICES += tplink_eap620hd-v1
 
 define Device/tplink_eap660hd-v1
 	$(call Device/FitImage)

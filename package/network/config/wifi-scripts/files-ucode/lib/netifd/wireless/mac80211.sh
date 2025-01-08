@@ -8,6 +8,7 @@ import * as supplicant from 'wifi.supplicant';
 import * as hostapd from 'wifi.hostapd';
 import * as netifd from 'wifi.netifd';
 import * as iface from 'wifi.iface';
+import * as nl80211 from 'nl80211';
 import * as fs from 'fs';
 
 global.radio = ARGV[2];
@@ -57,7 +58,7 @@ function phy_path_match(phy, path) {
 	return substr(phy_path, -length(path)) == path;
 }
 
-function find_phy_by_path(phys, path) {
+function __find_phy_by_path(phys, path) {
 	if (!path)
 		return null;
 
@@ -73,7 +74,57 @@ function find_phy_by_macaddr(phys, macaddr) {
 	return filter(phys, (phy) => phy_file(phy, "macaddr") == macaddr)[0];
 }
 
+function rename_phy_by_name(phys, name) {
+	let data = json(fs.readfile("/etc/board.json")).wlan;
+	if (!data)
+		return;
+
+	data = data[name];
+	if (!data)
+		return;
+
+	let prev_name = __find_phy_by_path(phys, data.path);
+	if (!prev_name)
+		return;
+
+	let idx = phy_index(prev_name);
+	nl80211.request(nl80211.const.NL80211_CMD_SET_WIPHY, 0, {
+		wiphy: idx,
+		wiphy_name: name
+	});
+	return true;
+}
+
+function find_phy_by_path(phys, path) {
+	let name = __find_phy_by_path(phys, path);
+	if (!name)
+		return;
+
+	let data = json(fs.readfile("/etc/board.json")).wlan;
+	if (!data || data[name])
+		return name;
+
+	for (let cur_name, cur_data in data) {
+		if (!phy_path_match(name, cur_data.path))
+			continue;
+
+		let idx = phy_index(name);
+		nl80211.request(nl80211.const.NL80211_CMD_SET_WIPHY, 0, {
+			wiphy: idx,
+			wiphy_name: cur_name
+		});
+
+		return cur_name;
+	}
+
+	return name;
+}
+
 function find_phy_by_name(phys, name) {
+	if (index(phys, name) >= 0)
+		return name;
+
+	rename_phy_by_name(phys, name);
 	return index(phys, name) < 0 ? null : name;
 }
 
@@ -144,6 +195,7 @@ function setup_phy(phy, config, data) {
 	log(`Configuring '${phy}' txantenna: ${config.txantenna}, rxantenna: ${config.rxantenna} distance: ${config.distance}`);
 	system(`iw phy ${phy} set antenna ${config.txantenna} ${config.rxantenna}`);
 	system(`iw phy ${phy} set distance ${config.distance}`);
+	system(`iw phy ${phy} set txpower ${config.txpower}`);
 
 	if (config.frag)
 		system(`iw phy ${phy} set frag ${frag}`);
@@ -251,7 +303,7 @@ function setup() {
 			if (mode != "ap")
 				data.config.noscan = true;
 			validate('iface', v.config);
-			iface.prepare(v.config, data.phy + data.phy_suffix, data.config.num_global_macaddr);
+			iface.prepare(v.config, data.phy + data.phy_suffix, data.config.num_global_macaddr, data.config.macaddr_base);
 			netifd.set_vif(k, v.config.ifname);
 			break;
 		}

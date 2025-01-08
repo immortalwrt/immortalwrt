@@ -236,6 +236,13 @@ define U-Boot/lyt-t68m-rk3568
     lyt_t68m
 endef
 
+define U-Boot/mmbox-anas3035-rk3568
+  $(U-Boot/rk3568/Default)
+  NAME:=MMBOX ANAS3035
+  BUILD_DEVICES:= \
+    mmbox_anas3035
+endef
+
 define U-Boot/mrkaio-m68s-rk3568
   $(U-Boot/rk3568/Default)
   NAME:=Mrkaio M68S
@@ -401,6 +408,7 @@ UBOOT_TARGETS := \
   fastrhino-r66s-rk3568 \
   fastrhino-r68s-rk3568 \
   lyt-t68m-rk3568 \
+  mmbox-anas3035-rk3568 \
   mrkaio-m68s-rk3568 \
   nanopi-r5c-rk3568 \
   nanopi-r5s-rk3568 \

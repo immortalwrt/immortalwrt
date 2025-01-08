@@ -16,7 +16,7 @@
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopi-r4s-enterprise.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-orangepi.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-pinebook-pro.dtb
-@@ -91,19 +93,24 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-so
+@@ -91,19 +93,25 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-so
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-box-demo.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-lubancat-1.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-nanopi-r3s.dtb
@@ -25,6 +25,7 @@
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-evb1-v10.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-fastrhino-r66s.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-fastrhino-r68s.dtb
++dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-mmbox-anas3035.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-lubancat-2.dtb
 +dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-lyt-t68m.dtb
 +dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-mrkaio-m68s.dtb
@@ -41,7 +42,7 @@
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-edgeble-neu6a-io.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-edgeble-neu6b-io.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-evb1-v10.dtb
-@@ -112,5 +119,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-or
+@@ -112,5 +120,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-or
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-rock-5b.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-indiedroid-nova.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-khadas-edge2.dtb

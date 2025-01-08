@@ -27,6 +27,7 @@ rockchip_setup_interfaces()
 	armsom,sige3|\
 	friendlyarm,nanopi-r5c|\
 	lunzn,fastrhino-r66s|\
+	mmbox,anas3035|\
 	radxa,e25|\
 	radxa,rock-3b|\
 	xunlong,orangepi-5-plus)
@@ -75,7 +76,8 @@ rockchip_setup_macs()
 	friendlyarm,nanopi-r2c|\
 	friendlyarm,nanopi-r2s|\
 	lunzn,fastrhino-r66s|\
-	lunzn,fastrhino-r68s)
+	lunzn,fastrhino-r68s|\
+	mmbox,anas3035)
 		wan_mac=$(macaddr_generate_from_mmc_cid mmcblk0)
 		lan_mac=$(macaddr_add "$wan_mac" 1)
 		;;

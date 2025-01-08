@@ -164,7 +164,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  }
  
  /**
-@@ -874,7 +883,7 @@ static bool drm_sched_can_queue(struct d
+@@ -882,7 +891,7 @@ static bool drm_sched_can_queue(struct d
  void drm_sched_wakeup_if_can_queue(struct drm_gpu_scheduler *sched)
  {
  	if (drm_sched_can_queue(sched))
@@ -173,7 +173,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  }
  
  /**
-@@ -985,60 +994,41 @@ drm_sched_pick_best(struct drm_gpu_sched
+@@ -993,60 +1002,41 @@ drm_sched_pick_best(struct drm_gpu_sched
  EXPORT_SYMBOL(drm_sched_pick_best);
  
  /**
@@ -256,7 +256,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  		}
  
  		s_fence = sched_job->s_fence;
-@@ -1069,7 +1059,9 @@ static int drm_sched_main(void *param)
+@@ -1077,7 +1067,9 @@ static int drm_sched_main(void *param)
  
  		wake_up(&sched->job_scheduled);
  	}
@@ -267,7 +267,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  }
  
  /**
-@@ -1077,6 +1069,8 @@ static int drm_sched_main(void *param)
+@@ -1085,6 +1077,8 @@ static int drm_sched_main(void *param)
   *
   * @sched: scheduler instance
   * @ops: backend operations for this scheduler
@@ -276,7 +276,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
   * @num_rqs: number of runqueues, one for each priority, up to DRM_SCHED_PRIORITY_COUNT
   * @hw_submission: number of hw submissions that can be in flight
   * @hang_limit: number of times to allow a job to hang before dropping it
-@@ -1091,6 +1085,7 @@ static int drm_sched_main(void *param)
+@@ -1099,6 +1093,7 @@ static int drm_sched_main(void *param)
   */
  int drm_sched_init(struct drm_gpu_scheduler *sched,
  		   const struct drm_sched_backend_ops *ops,
@@ -284,7 +284,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  		   u32 num_rqs, uint32_t hw_submission, unsigned int hang_limit,
  		   long timeout, struct workqueue_struct *timeout_wq,
  		   atomic_t *score, const char *name, struct device *dev)
-@@ -1121,14 +1116,22 @@ int drm_sched_init(struct drm_gpu_schedu
+@@ -1129,14 +1124,22 @@ int drm_sched_init(struct drm_gpu_schedu
  		return 0;
  	}
  
@@ -312,7 +312,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  	for (i = DRM_SCHED_PRIORITY_MIN; i < sched->num_rqs; i++) {
  		sched->sched_rq[i] = kzalloc(sizeof(*sched->sched_rq[i]), GFP_KERNEL);
  		if (!sched->sched_rq[i])
-@@ -1136,31 +1139,26 @@ int drm_sched_init(struct drm_gpu_schedu
+@@ -1144,31 +1147,26 @@ int drm_sched_init(struct drm_gpu_schedu
  		drm_sched_rq_init(sched, sched->sched_rq[i]);
  	}
  
@@ -349,7 +349,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  	drm_err(sched, "%s: Failed to setup GPU scheduler--out of memory\n", __func__);
  	return ret;
  }
-@@ -1178,8 +1176,7 @@ void drm_sched_fini(struct drm_gpu_sched
+@@ -1186,8 +1184,7 @@ void drm_sched_fini(struct drm_gpu_sched
  	struct drm_sched_entity *s_entity;
  	int i;
  
@@ -359,7 +359,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  
  	for (i = sched->num_rqs - 1; i >= DRM_SCHED_PRIORITY_MIN; i--) {
  		struct drm_sched_rq *rq = sched->sched_rq[i];
-@@ -1202,6 +1199,8 @@ void drm_sched_fini(struct drm_gpu_sched
+@@ -1210,6 +1207,8 @@ void drm_sched_fini(struct drm_gpu_sched
  	/* Confirm no work left behind accessing device structures */
  	cancel_delayed_work_sync(&sched->work_tdr);
  
@@ -368,7 +368,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  	sched->ready = false;
  	kfree(sched->sched_rq);
  	sched->sched_rq = NULL;
-@@ -1262,7 +1261,7 @@ EXPORT_SYMBOL(drm_sched_increase_karma);
+@@ -1270,7 +1269,7 @@ EXPORT_SYMBOL(drm_sched_increase_karma);
   */
  bool drm_sched_wqueue_ready(struct drm_gpu_scheduler *sched)
  {
@@ -377,7 +377,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  }
  EXPORT_SYMBOL(drm_sched_wqueue_ready);
  
-@@ -1273,7 +1272,8 @@ EXPORT_SYMBOL(drm_sched_wqueue_ready);
+@@ -1281,7 +1280,8 @@ EXPORT_SYMBOL(drm_sched_wqueue_ready);
   */
  void drm_sched_wqueue_stop(struct drm_gpu_scheduler *sched)
  {
@@ -387,7 +387,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  }
  EXPORT_SYMBOL(drm_sched_wqueue_stop);
  
-@@ -1284,6 +1284,7 @@ EXPORT_SYMBOL(drm_sched_wqueue_stop);
+@@ -1292,6 +1292,7 @@ EXPORT_SYMBOL(drm_sched_wqueue_stop);
   */
  void drm_sched_wqueue_start(struct drm_gpu_scheduler *sched)
  {

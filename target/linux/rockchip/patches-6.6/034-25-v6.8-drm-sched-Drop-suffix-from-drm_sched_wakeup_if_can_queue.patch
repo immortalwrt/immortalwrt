@@ -42,7 +42,7 @@ Signed-off-by: Luben Tuikov <ltuikov89@gmail.com>
  EXPORT_SYMBOL(drm_sched_entity_push_job);
 --- a/drivers/gpu/drm/scheduler/sched_main.c
 +++ b/drivers/gpu/drm/scheduler/sched_main.c
-@@ -917,12 +917,12 @@ static bool drm_sched_can_queue(struct d
+@@ -925,12 +925,12 @@ static bool drm_sched_can_queue(struct d
  }
  
  /**
