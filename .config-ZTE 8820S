@@ -7000,14 +7000,14 @@ CONFIG_PACKAGE_wireguard-tools=y
 #
 # WWAN
 #
-# CONFIG_PACKAGE_adb-enablemodem is not set
+CONFIG_PACKAGE_adb-enablemodem=y
 CONFIG_PACKAGE_comgt=y
-# CONFIG_PACKAGE_comgt-directip is not set
-# CONFIG_PACKAGE_comgt-ncm is not set
+CONFIG_PACKAGE_comgt-directip=y
+CONFIG_PACKAGE_comgt-ncm=y
 CONFIG_PACKAGE_modemband=y
-# CONFIG_PACKAGE_sendat is not set
+CONFIG_PACKAGE_sendat=y
 CONFIG_PACKAGE_umbim=y
-# CONFIG_PACKAGE_uqmi is not set
+CONFIG_PACKAGE_uqmi=y
 # end of WWAN
 
 #
@@ -7997,7 +7997,7 @@ CONFIG_PACKAGE_bash=y
 
 # CONFIG_PACKAGE_ack is not set
 # CONFIG_PACKAGE_acpid is not set
-# CONFIG_PACKAGE_adb is not set
+CONFIG_PACKAGE_adb=y
 # CONFIG_PACKAGE_airos-dfs-reset is not set
 # CONFIG_PACKAGE_ap51-flash is not set
 # CONFIG_PACKAGE_arp-whisper is not set
