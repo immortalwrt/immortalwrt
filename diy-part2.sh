@@ -27,9 +27,6 @@ rm -rf feeds/packages/kernel/fibocom-qmi-wwan/
 rm -rf feeds/packages/kernel/quectel-qmi-wwan/
 rm -rf feeds/packages/lang/golang
 git clone https://github.com/kenzok8/golang feeds/packages/lang/golang
-./scripts/feeds update -a && ./scripts/feeds install -a
-rm -rf feeds/packages/lang/golang
-git clone https://github.com/kenzok8/golang feeds/packages/lang/golang
 ./scripts/feeds update -a; ./scripts/feeds install -a
 
 
