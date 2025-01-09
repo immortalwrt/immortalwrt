@@ -442,6 +442,7 @@ UBOOT_CUSTOMIZE_CONFIG := \
 		--disable EFI_CAPSULE_FIRMWARE_RAW \
 		--disable SPL_FIT_SIGNATURE \
 		--disable USB_FUNCTION_FASTBOOT \
+		--disable VIDEO \
 	)
 
 UBOOT_MAKE_FLAGS += \
