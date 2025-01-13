@@ -250,6 +250,17 @@ define U-Boot/mt7981_cmcc_rax3000m-nand
   DEPENDS:=+trusted-firmware-a-mt7981-spim-nand-ddr4
 endef
 
+define U-Boot/mt7981_cudy_tr3000-v1
+  NAME:=Cudy TR3000 v1
+  BUILD_SUBTARGET:=filogic
+  BUILD_DEVICES:=cudy_tr3000-v1-ubootmod
+  UBOOT_CONFIG:=mt7981_cudy_tr3000-v1
+  UBOOT_IMAGE:=u-boot.fip
+  BL2_BOOTDEV:=cudy-tr3000-v1
+  BL2_SOC:=mt7981
+  DEPENDS:=+trusted-firmware-a-mt7981-cudy-tr3000-v1
+endef
+
 define U-Boot/mt7981_h3c_magic-nx30-pro
   NAME:=H3C Magic NX30 Pro
   BUILD_SUBTARGET:=filogic
@@ -682,6 +693,7 @@ UBOOT_TARGETS := \
 	mt7981_cmcc_a10 \
 	mt7981_cmcc_rax3000m-emmc \
 	mt7981_cmcc_rax3000m-nand \
+	mt7981_cudy_tr3000-v1 \
 	mt7981_h3c_magic-nx30-pro \
 	mt7981_imou_lc-hx3001 \
 	mt7981_jcg_q30 \
