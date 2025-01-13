@@ -81,6 +81,9 @@ mediatek_setup_interfaces()
 	tplink,tl-xtr8488)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 lan5" eth1
 		;;
+	huasifei,wh3000-emmc)
+		ucidef_set_interfaces_lan_wan eth0 eth1
+		;;
 	mediatek,mt7986a-rfb)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 lan6" "eth1 wan"
 		;;
@@ -179,6 +182,10 @@ mediatek_setup_macs()
 		wan_mac=$(mtd_get_mac_ascii pdt_data_1 ethaddr)
 		lan_mac=$(macaddr_add "$wan_mac" 1)
 		label_mac=$wan_mac
+		;;
+	huasifei,wh3000-emmc)
+		lan_mac="$(macaddr_add "$(mmc_get_mac_binary factory 0x4)" 2)"
+		wan_mac="$(macaddr_add "$lan_mac" 1)"
 		;;
 	imou,lc-hx3001-ubootmod)
 		lan_mac=$(mtd_get_mac_ascii u-boot-env mac)

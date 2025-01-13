@@ -91,7 +91,8 @@ cmcc,rax3000m)
 		;;
 	esac
 	;;
-cmcc,rax3000m-emmc-ubootmod)
+cmcc,rax3000m-emmc-ubootmod|\
+huasifei,wh3000-emmc)
 	ubootenv_add_uci_config "/dev/mmcblk0p1" "0x0" "0x80000" "0x80000"
 	;;
 comfast,cf-e393ax)

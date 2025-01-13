@@ -28,6 +28,10 @@ cudy,re3000-v1)
 cudy,wr3000-v1)
 	ucidef_set_led_netdev "wan" "wan" "blue:wan" "wan"
 	;;
+huasifei,wh3000-emmc)
+	ucidef_set_led_netdev "wan" "WAN" "red:wan" "eth1"
+	ucidef_set_led_netdev "wlan" "WLAN" "white:wlan" "phy1-ap0"
+	;;
 imou,lc-hx3001|\
 imou,lc-hx3001-ubootmod|\
 nokia,ea0326gmp)

@@ -84,6 +84,7 @@ platform_do_upgrade() {
 		nand_do_upgrade "$1"
 		;;
 	acer,predator-w6|\
+	huasifei,wh3000-emmc|\
 	smartrg,sdg-8612|\
 	smartrg,sdg-8614|\
 	smartrg,sdg-8622|\
@@ -225,6 +226,7 @@ platform_copy_config() {
 	cmcc,rax3000m-emmc-ubootmod|\
 	glinet,gl-mt2500|\
 	glinet,gl-mt6000|\
+	huasifei,wh3000-emmc|\
 	jdcloud,re-cp-03|\
 	ubnt,unifi-6-plus)
 		emmc_copy_config
