@@ -62,6 +62,7 @@ glinet,gl-mt2500|\
 glinet,gl-mt6000|\
 glinet,gl-x3000|\
 glinet,gl-xe3000|\
+huasifei,wh3000-emmc|\
 nradio,c8-668gl)
 	local envdev=$(find_mmc_part "u-boot-env")
 	ubootenv_add_uci_config "$envdev" "0x0" "0x80000"
@@ -94,6 +95,7 @@ konka,komi-a31)
 cetron,ct3003|\
 edgecore,eap111|\
 h3c,magic-nx30-pro-nmbm|\
+livinet,zr-3020|\
 netgear,wax220|\
 zbtlink,zbt-z8102ax|\
 zbtlink,zbt-z8103ax)
@@ -111,9 +113,6 @@ gatonetworks,gdsp)
 	;;
 glinet,gl-mt3000)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x80000" "0x20000"
-	;;
-livinet,zr-3020)
-	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x20000" "0x20000" "1"
 	;;
 mercusys,mr90x-v1|\
 routerich,ax3000|\
