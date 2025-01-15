@@ -46,7 +46,7 @@ Signed-off-by: jensen <jensenhuang@friendlyarm.com>
  	}
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-@@ -570,6 +570,9 @@ stmmac_probe_config_dt(struct platform_d
+@@ -589,6 +589,9 @@ stmmac_probe_config_dt(struct platform_d
  			 "force_sf_dma_mode is ignored if force_thresh_dma_mode is set.\n");
  	}
  

@@ -1,23 +1,7 @@
+From c62fa612cfa66ab58ab215e5afc95c43c613b513 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-To: Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>,
-	linux-clk@vger.kernel.org
-Cc: Elaine Zhang <zhangqing@rock-chips.com>,
-	Kever Yang <kever.yang@rock-chips.com>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	huangtao@rock-chips.com, andy.yan@rock-chips.com,
-	Michal Tomek <mtdev79b@gmail.com>, Ilya K <me@0upti.me>,
-	Chad LeClair <leclair@gmail.com>,
-	devicetree@vger.kernel.org, linux-rockchip@lists.infradead.org,
-	Sebastian Reichel <sebastian.reichel@collabora.com>,
-	kernel@collabora.com
-Subject: [PATCH v9 6/7] clk: rockchip: implement linked gate clock support
-Date: Mon, 25 Mar 2024 20:33:37 +0100	[thread overview]
-Message-ID: <20240325193609.237182-7-sebastian.reichel@collabora.com> (raw)
-In-Reply-To: <20240325193609.237182-1-sebastian.reichel@collabora.com>
+Date: Wed, 11 Dec 2024 17:58:53 +0100
+Subject: [PATCH] clk: rockchip: implement linked gate clock support
 
 Recent Rockchip SoCs have a new hardware block called Native Interface
 Unit (NIU), which gates clocks to devices behind them. These clock
@@ -36,13 +20,15 @@ to use the correct runtime PM operations. Thus the complete handling
 of these clocks has been moved into its own driver.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20241211165957.94922-5-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
  drivers/clk/rockchip/Makefile     |  1 +
- drivers/clk/rockchip/clk-rk3588.c | 23 +------
- drivers/clk/rockchip/clk.c        | 52 ++++++++++++++++
- drivers/clk/rockchip/clk.h        | 25 ++++++++
- drivers/clk/rockchip/gate-link.c  | 99 +++++++++++++++++++++++++++++++
- 5 files changed, 179 insertions(+), 21 deletions(-)
+ drivers/clk/rockchip/clk-rk3588.c | 23 +--------
+ drivers/clk/rockchip/clk.c        | 52 +++++++++++++++++++
+ drivers/clk/rockchip/clk.h        | 25 +++++++++
+ drivers/clk/rockchip/gate-link.c  | 85 +++++++++++++++++++++++++++++++
+ 5 files changed, 165 insertions(+), 21 deletions(-)
  create mode 100644 drivers/clk/rockchip/gate-link.c
 
 --- a/drivers/clk/rockchip/Makefile
@@ -92,8 +78,8 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	rockchip_clk_register_late_branches(dev, ctx, rk3588_clk_branches,
 +					    ARRAY_SIZE(rk3588_clk_branches));
  
- 	rk3588_rst_init(np, ctx->reg_base);
- 	rockchip_register_restart_notifier(ctx, RK3588_GLB_SRST_FST, NULL);
+ 	rockchip_clk_finalize(ctx);
+ 
 --- a/drivers/clk/rockchip/clk.c
 +++ b/drivers/clk/rockchip/clk.c
 @@ -19,6 +19,7 @@
@@ -104,7 +90,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  #include <linux/regmap.h>
  #include <linux/reboot.h>
  
-@@ -440,6 +441,29 @@ unsigned long rockchip_clk_find_max_clk_
+@@ -468,6 +469,29 @@ unsigned long rockchip_clk_find_max_clk_
  }
  EXPORT_SYMBOL_GPL(rockchip_clk_find_max_clk_id);
  
@@ -134,7 +120,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  void rockchip_clk_register_branches(struct rockchip_clk_provider *ctx,
  				    struct rockchip_clk_branch *list,
  				    unsigned int nr_clk)
-@@ -565,6 +589,9 @@ void rockchip_clk_register_branches(stru
+@@ -593,6 +617,9 @@ void rockchip_clk_register_branches(stru
  				list->div_width, list->div_flags,
  				ctx->reg_base, &ctx->lock);
  			break;
@@ -144,7 +130,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  		}
  
  		/* none of the cases above matched */
-@@ -585,6 +612,31 @@ void rockchip_clk_register_branches(stru
+@@ -613,6 +640,31 @@ void rockchip_clk_register_branches(stru
  }
  EXPORT_SYMBOL_GPL(rockchip_clk_register_branches);
  
@@ -226,8 +212,8 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +
  struct rockchip_clk_provider *rockchip_clk_init(struct device_node *np,
  			void __iomem *base, unsigned long nr_clks);
- void rockchip_clk_of_add_provider(struct device_node *np,
-@@ -991,6 +1012,10 @@ unsigned long rockchip_clk_find_max_clk_
+ struct rockchip_clk_provider *rockchip_clk_init_early(struct device_node *np,
+@@ -994,6 +1015,10 @@ unsigned long rockchip_clk_find_max_clk_
  void rockchip_clk_register_branches(struct rockchip_clk_provider *ctx,
  				    struct rockchip_clk_branch *list,
  				    unsigned int nr_clk);
@@ -240,7 +226,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  				unsigned int nr_pll, int grf_lock_offset);
 --- /dev/null
 +++ b/drivers/clk/rockchip/gate-link.c
-@@ -0,0 +1,99 @@
+@@ -0,0 +1,85 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +/*
 + * Copyright (c) 2024 Collabora Ltd.
@@ -308,30 +294,16 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	return ret;
 +}
 +
-+static void rk_clk_gate_link_remove(struct platform_device *pdev)
-+{
-+	struct rockchip_gate_link_platdata *pdata;
-+	struct device *dev = &pdev->dev;
-+	struct clk *clk, *linked_clk;
-+
-+	pdata = dev_get_platdata(dev);
-+	clk = rockchip_clk_get_lookup(pdata->ctx, pdata->clkbr->id);
-+	linked_clk = rockchip_clk_get_lookup(pdata->ctx, pdata->clkbr->linked_clk_id);
-+	rockchip_clk_set_lookup(pdata->ctx, ERR_PTR(-ENODEV), pdata->clkbr->id);
-+	clk_unregister_gate(clk);
-+	pm_clk_remove_clk(dev, linked_clk);
-+}
-+
 +static const struct dev_pm_ops rk_clk_gate_link_pm_ops = {
 +	SET_RUNTIME_PM_OPS(pm_clk_suspend, pm_clk_resume, NULL)
 +};
 +
-+struct platform_driver rk_clk_gate_link_driver = {
++static struct platform_driver rk_clk_gate_link_driver = {
 +	.probe		= rk_clk_gate_link_probe,
-+	.remove_new	= rk_clk_gate_link_remove,
 +	.driver		= {
 +		.name	= "rockchip-gate-link-clk",
 +		.pm = &rk_clk_gate_link_pm_ops,
++		.suppress_bind_attrs = true,
 +	},
 +};
 +
