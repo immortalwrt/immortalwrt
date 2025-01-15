@@ -1,23 +1,7 @@
+From 33af96244a66f855baa43d424844bb437c79c30c Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-To: Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>,
-	linux-clk@vger.kernel.org
-Cc: Elaine Zhang <zhangqing@rock-chips.com>,
-	Kever Yang <kever.yang@rock-chips.com>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	huangtao@rock-chips.com, andy.yan@rock-chips.com,
-	Michal Tomek <mtdev79b@gmail.com>, Ilya K <me@0upti.me>,
-	Chad LeClair <leclair@gmail.com>,
-	devicetree@vger.kernel.org, linux-rockchip@lists.infradead.org,
-	Sebastian Reichel <sebastian.reichel@collabora.com>,
-	kernel@collabora.com
-Subject: [PATCH v9 3/7] clk: rockchip: rk3588: register GATE_LINK later
-Date: Mon, 25 Mar 2024 20:33:34 +0100	[thread overview]
-Message-ID: <20240325193609.237182-4-sebastian.reichel@collabora.com> (raw)
-In-Reply-To: <20240325193609.237182-1-sebastian.reichel@collabora.com>
+Date: Wed, 11 Dec 2024 17:58:51 +0100
+Subject: [PATCH] clk: rockchip: rk3588: register GATE_LINK later
 
 The proper GATE_LINK implementation will use runtime PM to handle the
 linked gate clocks, which requires device context. Currently all clocks
@@ -33,9 +17,11 @@ are not needed early either, they have also been moved to the probe
 routine.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20241211165957.94922-3-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
- drivers/clk/rockchip/clk-rk3588.c | 64 +++++++++++++++++++++++++++----
- 1 file changed, 56 insertions(+), 8 deletions(-)
+ drivers/clk/rockchip/clk-rk3588.c | 66 +++++++++++++++++++++++++++----
+ 1 file changed, 58 insertions(+), 8 deletions(-)
 
 --- a/drivers/clk/rockchip/clk-rk3588.c
 +++ b/drivers/clk/rockchip/clk-rk3588.c
@@ -67,7 +53,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	GATE_LINK(ACLK_ISP1_PRE, "aclk_isp1_pre", "aclk_isp1_root", ACLK_VI_ROOT, 0, RK3588_CLKGATE_CON(26), 6, GFLAGS),
  	GATE_LINK(HCLK_ISP1_PRE, "hclk_isp1_pre", "hclk_isp1_root", HCLK_VI_ROOT, 0, RK3588_CLKGATE_CON(26), 8, GFLAGS),
  	GATE_LINK(HCLK_NVM, "hclk_nvm", "hclk_nvm_root", ACLK_NVM_ROOT, RK3588_LINKED_CLK, RK3588_CLKGATE_CON(31), 2, GFLAGS),
-@@ -2453,14 +2457,18 @@ static struct rockchip_clk_branch rk3588
+@@ -2453,26 +2457,31 @@ static struct rockchip_clk_branch rk3588
  	GATE_LINK(PCLK_VO1GRF, "pclk_vo1grf", "pclk_vo1_root", HCLK_VO1, CLK_IGNORE_UNUSED, RK3588_CLKGATE_CON(59), 12, GFLAGS),
  };
  
@@ -90,7 +76,13 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	reg_base = of_iomap(np, 0);
  	if (!reg_base) {
  		pr_err("%s: could not map cru region\n", __func__);
-@@ -2473,6 +2481,7 @@ static void __init rk3588_clk_init(struc
+ 		return;
+ 	}
+ 
+-	ctx = rockchip_clk_init(np, reg_base, clk_nr_clks);
++	ctx = rockchip_clk_init_early(np, reg_base, clk_nr_clks);
+ 	if (IS_ERR(ctx)) {
+ 		pr_err("%s: rockchip clk init failed\n", __func__);
  		iounmap(reg_base);
  		return;
  	}
@@ -98,7 +90,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  
  	rockchip_clk_register_plls(ctx, rk3588_pll_clks,
  				   ARRAY_SIZE(rk3588_pll_clks),
-@@ -2491,14 +2500,53 @@ static void __init rk3588_clk_init(struc
+@@ -2491,14 +2500,55 @@ static void __init rk3588_clk_init(struc
  			&rk3588_cpub1clk_data, rk3588_cpub1clk_rates,
  			ARRAY_SIZE(rk3588_cpub1clk_rates));
  
@@ -119,7 +111,8 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  				       ARRAY_SIZE(rk3588_clk_branches));
  
 -	rk3588_rst_init(np, reg_base);
--
++	rockchip_clk_finalize(ctx);
+ 
 +	rk3588_rst_init(np, ctx->reg_base);
  	rockchip_register_restart_notifier(ctx, RK3588_GLB_SRST_FST, NULL);
  
