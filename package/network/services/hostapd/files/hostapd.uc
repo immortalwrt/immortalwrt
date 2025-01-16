@@ -279,6 +279,7 @@ function iface_macaddr_init(phydev, config, macaddr_list)
 {
 	let macaddr_data = {
 		num_global: config.num_global_macaddr ?? 1,
+		macaddr_base: config.macaddr_base,
 		mbssid: config.mbssid ?? 0,
 	};
 
@@ -747,9 +748,12 @@ function iface_load_config(phy, radio, filename)
 			continue;
 		}
 
-		if (val[0] == "#num_global_macaddr" ||
-		    val[0] == "mbssid")
+		if (val[0] == "#num_global_macaddr")
 			config[substr(val[0], 1)] = int(val[1]);
+		else if (val[0] == "#macaddr_base")
+			config[substr(val[0], 1)] = val[1];
+		else if (val[0] == "mbssid")
+			config[val[0]] = int(val[1]);
 
 		push(config.radio.data, line);
 	}
