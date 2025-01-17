@@ -64,6 +64,7 @@ yuncore,a782|\
 yuncore,a930|\
 yuncore,xd3200|\
 yuncore,xd4200|\
+zte,e8820|\
 zyxel,nbg6616)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x10000" "0x10000"
 	;;
