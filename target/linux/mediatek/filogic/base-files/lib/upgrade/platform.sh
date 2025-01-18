@@ -105,6 +105,7 @@ platform_do_upgrade() {
 	glinet,gl-mt6000|\
 	glinet,gl-x3000|\
 	glinet,gl-xe3000|\
+	huasifei,wh3000-emmc|\
 	smartrg,sdg-8612|\
 	smartrg,sdg-8614|\
 	smartrg,sdg-8622|\
@@ -121,6 +122,10 @@ platform_do_upgrade() {
 	asus,tuf-ax6000)
 		CI_UBIPART="UBI_DEV"
 		CI_KERNPART="linux"
+		nand_do_upgrade "$1"
+		;;
+	cudy,wr3000h-v1)
+		CI_UBIPART="ubi"
 		nand_do_upgrade "$1"
 		;;
 	cudy,re3000-v1|\
@@ -229,6 +234,7 @@ platform_copy_config() {
 	glinet,gl-mt6000|\
 	glinet,gl-x3000|\
 	glinet,gl-xe3000|\
+	huasifei,wh3000-emmc|\
 	jdcloud,re-cp-03|\
 	nradio,c8-668gl|\
 	smartrg,sdg-8612|\
