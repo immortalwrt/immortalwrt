@@ -2,12 +2,6 @@
 
 #include "rk356x-u-boot.dtsi"
 
-/ {
-	chosen {
-		stdout-path = &uart2;
-	};
-};
-
 &sdhci {
 	cap-mmc-highspeed;
 	mmc-ddr-1_8v;
@@ -15,12 +9,6 @@
 	mmc-hs400-1_8v;
 	mmc-hs400-enhanced-strobe;
 	pinctrl-0 = <&emmc_bus8 &emmc_clk &emmc_cmd &emmc_datastrobe>;
-};
-
-&uart2 {
-	clock-frequency = <24000000>;
-	bootph-all;
-	status = "okay";
 };
 
 &vcc5v0_host {

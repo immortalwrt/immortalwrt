@@ -4,7 +4,6 @@
 
 / {
 	chosen {
-		stdout-path = &uart2;
 		u-boot,spl-boot-order = "same-as-spl", &sdmmc0;
 	};
 };
@@ -15,20 +14,4 @@
 
 &pcie3x2 {
 	/delete-property/ vpcie3v3-supply;
-};
-
-&uart2 {
-	clock-frequency = <24000000>;
-	bootph-all;
-	status = "okay";
-};
-
-&vcc5v0_usb_host {
-	/delete-property/ regulator-always-on;
-	/delete-property/ regulator-boot-on;
-};
-
-&vcc5v0_usb_otg {
-	/delete-property/ regulator-always-on;
-	/delete-property/ regulator-boot-on;
 };

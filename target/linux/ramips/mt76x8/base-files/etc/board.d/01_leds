@@ -59,8 +59,9 @@ hiwifi,hc5761a)
 	ucidef_set_led_switch "internet" "internet" "blue:internet" "switch0" "0x10"
 	;;
 keenetic,kn-1613|\
+keenetic,kn-1711|\
 keenetic,kn-1713)
-	ucidef_set_led_switch "internet" "internet" "green:internet" "switch0" "0x01"
+	ucidef_set_led_switch "wan" "WAN" "green:wan" "switch0" "0x01"
 	;;
 mediatek,linkit-smart-7688)
 	ucidef_set_led_wlan "wifi" "wifi" "orange:wifi" "phy0tpt"
@@ -89,7 +90,8 @@ tplink,archer-c50-v6)
 	ucidef_set_led_wlan "wlan2g" "wlan2g" "green:wlan2g" "phy0tpt"
 	ucidef_set_led_wlan "wlan5g" "wlan5g" "green:wlan5g" "phy1tpt"
 	;;
-tplink,archer-mr200-v5)
+tplink,archer-mr200-v5|\
+tplink,archer-mr200-v6)
 	ucidef_set_led_netdev "lan" "lan" "white:lan" "eth0"
 	ucidef_set_led_netdev "wan" "wan" "white:wan" "wwan0"
 	;;

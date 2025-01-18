@@ -1,29 +1,15 @@
+From e9cdd7d6cf2a5031a968dc21f4f566101b602150 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-To: Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>,
-	linux-clk@vger.kernel.org
-Cc: Elaine Zhang <zhangqing@rock-chips.com>,
-	Kever Yang <kever.yang@rock-chips.com>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	huangtao@rock-chips.com, andy.yan@rock-chips.com,
-	Michal Tomek <mtdev79b@gmail.com>, Ilya K <me@0upti.me>,
-	Chad LeClair <leclair@gmail.com>,
-	devicetree@vger.kernel.org, linux-rockchip@lists.infradead.org,
-	Sebastian Reichel <sebastian.reichel@collabora.com>,
-	kernel@collabora.com
-Subject: [PATCH v9 7/7] clk: rockchip: rk3588: drop RK3588_LINKED_CLK
-Date: Mon, 25 Mar 2024 20:33:38 +0100	[thread overview]
-Message-ID: <20240325193609.237182-8-sebastian.reichel@collabora.com> (raw)
-In-Reply-To: <20240325193609.237182-1-sebastian.reichel@collabora.com>
+Date: Wed, 11 Dec 2024 17:58:54 +0100
+Subject: [PATCH] clk: rockchip: rk3588: drop RK3588_LINKED_CLK
 
 With the proper GATE_LINK support, we no longer need to keep the
 linked clocks always on. Thus it's time to drop the CLK_IS_CRITICAL
 flag for them.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20241211165957.94922-6-sebastian.reichel@collabora.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
  drivers/clk/rockchip/clk-rk3588.c | 27 ++++++++++++---------------
  1 file changed, 12 insertions(+), 15 deletions(-)

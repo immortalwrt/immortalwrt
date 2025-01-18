@@ -367,6 +367,18 @@ define Device/keenetic_kn-1613
 endef
 TARGET_DEVICES += keenetic_kn-1613
 
+define Device/keenetic_kn-1711
+  BLOCKSIZE := 64k
+  IMAGE_SIZE := 13434880
+  DEVICE_VENDOR := Keenetic
+  DEVICE_MODEL := KN-1711
+  DEVICE_PACKAGES := kmod-mt7615e kmod-mt7663-firmware-ap kmod-usb2
+  IMAGES += factory.bin
+  IMAGE/factory.bin := $$(sysupgrade_bin) | pad-to $$$$(BLOCKSIZE) | \
+	check-size | zyimage -d 0x801711 -v "KN-1711"
+endef
+TARGET_DEVICES += keenetic_kn-1711
+
 define Device/keenetic_kn-1713
   BLOCKSIZE := 64k
   IMAGE_SIZE := 13434880
@@ -678,6 +690,22 @@ define Device/tplink_archer-mr200-v5
   IMAGE/tftp-recovery.bin := pad-extra 128k | $$(IMAGE/factory.bin)
 endef
 TARGET_DEVICES += tplink_archer-mr200-v5
+
+define Device/tplink_archer-mr200-v6
+  $(Device/tplink-v2)
+  IMAGE_SIZE := 15936k
+  DEVICE_MODEL := Archer MR200
+  DEVICE_VARIANT := v6
+  TPLINK_FLASHLAYOUT := 16Mmtk
+  TPLINK_HWID := 0x20000006
+  TPLINK_HWREV := 0x6
+  TPLINK_HWREVADD := 0x6
+  DEVICE_PACKAGES := kmod-mt76x0e uqmi kmod-usb2 kmod-usb-serial-option
+  KERNEL := kernel-bin | append-dtb | lzma -d22
+  KERNEL_INITRAMFS := kernel-bin | append-dtb
+  IMAGES := sysupgrade.bin
+endef
+TARGET_DEVICES += tplink_archer-mr200-v6
 
 define Device/tplink_re200-v2
   $(Device/tplink-safeloader)
