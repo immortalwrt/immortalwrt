@@ -5,7 +5,7 @@
 name: Huasifei wh3000
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 22 * * *'
   release:
     types: [published]
   push:
@@ -61,31 +61,28 @@ jobs:
         working-directory: /workdir
         run: |
           df -hT $PWD
-          git clone $REPO_URL -b $REPO_BRANCH immortalwrt
-          ln -sf /workdir/immortalwrt $GITHUB_WORKSPACE/immortalwrt
+          git clone $REPO_URL -b $REPO_BRANCH openwrt
+          ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
       - name: Load custom feeds
         run: |
-          [ -e $FEEDS_CONF ] && mv $FEEDS_CONF immortalwrt/feeds.conf.default
+          [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
           chmod +x $DIY_P1_SH && sed -i -e 's/\r$//' $GITHUB_WORKSPACE/$DIY_P1_SH
-          cd immortalwrt
+          cd openwrt
           $GITHUB_WORKSPACE/$DIY_P1_SH
            git fetch origin --tags
            git describe --tags $(git rev-list --tags --max-count=1) > immortalwrt_version
-           git checkout -f $(git describe --tags $(git rev-list --tags --max-count=1))
-          
+           git checkout -f $(git describe --tags $(git rev-list --tags --max-count=1))        
       - name: Update feeds
-        run: cd immortalwrt && ./scripts/feeds update -a
+        run: cd openwrt && ./scripts/feeds update -a
       - name: Install feeds
-        run: cd immortalwrt && ./scripts/feeds install -a
+        run: cd openwrt && ./scripts/feeds install -a
       - name: Load custom configuration
         run: |
-          [ -e files ] && mv files immortalwrt/files
-          [ -e $CONFIG_FILE ] && mv $CONFIG_FILE immortalwrt/.config-Huasifei wh3000
-          #sed -i 's/CONFIG_VERSION_NUMBER\s*=.*/CONFIG_VERSION_NUMBER=$immortalwrt_version/g' immortalwrt/.config-Huasifei wh3000
+          [ -e files ] && mv files openwrt/files
+          [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+          #sed -i 's/CONFIG_VERSION_NUMBER\s*=.*/CONFIG_VERSION_NUMBER=$immortalwrt_version/g' openwrt/.config
           chmod +x $DIY_P2_SH && sed -i -e 's/\r$//' $GITHUB_WORKSPACE/$DIY_P2_SH
-          mkdir -p immortalwrt/files/etc/uci-defaults
-          mv $custom_99 immortalwrt/files/etc/uci-defaults/99-custom
-          cd immortalwrt
+          cd openwrt
           $GITHUB_WORKSPACE/$DIY_P2_SH
       - name: SSH connection to Actions
         uses: P3TERX/ssh2actions@v1.0.0
@@ -93,7 +90,7 @@ jobs:
       - name: Download package
         id: package
         run: |
-          cd immortalwrt
+          cd openwrt
           make defconfig
           make download -j $(($(nproc)+1))
           find dl -size -1024c -exec ls -l {} \;
@@ -101,20 +98,20 @@ jobs:
       - name: Compile the firmware
         id: compile
         run: |
-          cd immortalwrt
+          cd openwrt
           echo -e "$(nproc) thread compile"
           make -j $(($(nproc)+1)) || make -j4 || make -j4 V=s
           #echo "::set-output name=status::success"
           echo "status=success"  >> $GITHUB_OUTPUT
-          grep '^CONFIG_TARGET.*DEVICE.*=y' .config-Huasifei wh3000 | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
+          grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
           [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
           echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
       - name: If Error
         if: steps.compile.outcome == 'failure'
         run: |
-          cat immortalwrt/.config-Huasifei wh3000
+          cat openwrt/.config
           echo '================================================================'
-          cd immortalwrt && make -j $(($(nproc)+1)) V=s
+          cd openwrt && make -j $(($(nproc)+1)) V=s
       - name: Check space usage
         if: (!cancelled())
         run: df -hT
@@ -122,13 +119,13 @@ jobs:
         uses: actions/upload-artifact@main
         if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
         with:
-          name: immortalwrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-          path: immortalwrt/bin
+          name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          path: openwrt/bin
       - name: Organize files
         id: organize
         if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
         run: |
-          cd immortalwrt/bin/targets/*/*
+          cd openwrt/bin/targets/*/*
           rm -rf packages
           echo "FIRMWARE=$PWD" >> $GITHUB_ENV
           #echo "::set-output name=status::success"
