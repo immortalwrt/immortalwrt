@@ -97,7 +97,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
 +
  &gmac2io {
  	phy-handle = <&yt8531c>;
- 	tx_delay = <0x19>;
+ 	phy-mode = "rgmii-id";
 --- a/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
 @@ -134,6 +134,64 @@
