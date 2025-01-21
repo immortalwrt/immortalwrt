@@ -146,14 +146,6 @@
 	};
 };
 
-&hnat {
-	mtketh-wan = "eth1";
-	mtketh-lan = "lan";
-	mtketh-ppd = "eth1";
-	mtketh-max-gmac = <2>;
-	status = "okay";
-};
-
 &xhci {
 	mediatek,u3p-dis-msk = <0x0>;
 	phys = <&u2port0 PHY_TYPE_USB2>,
