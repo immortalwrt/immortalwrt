@@ -313,10 +313,9 @@ define Device/meraki_mr18
   BLOCKSIZE := 128k
   PAGESIZE := 2048
   LOADER_TYPE := bin
+  LZMA_TEXT_START := 0x82800000
   KERNEL := kernel-bin | append-dtb | lzma | loader-kernel | meraki-header MR18
-# Initramfs-build fails due to size issues
-# KERNEL_INITRAMFS := $$(KERNEL)
-  KERNEL_INITRAMFS :=
+  KERNEL_INITRAMFS := $$(KERNEL)
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   SUPPORTED_DEVICES += mr18
 endef
@@ -442,6 +441,10 @@ define Device/zte_mf28x_common
   DEVICE_PACKAGES := kmod-usb2 kmod-ath10k-ct
   BLOCKSIZE := 128k
   PAGESIZE := 2048
+  LOADER_TYPE := bin
+  LZMA_TEXT_START := 0x82800000
+  KERNEL := kernel-bin | append-dtb | lzma | loader-kernel | uImage none
+  KERNEL_INITRAMFS := $$(KERNEL)
   KERNEL_SIZE := 4096k
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
