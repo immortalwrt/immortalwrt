@@ -1,16 +1,18 @@
 // SPDX-License-Identifier: (GPL-2.0 OR MIT)
 
 /dts-v1/;
+
 #include <dt-bindings/leds/common.h>
+
 #include "mt7981.dtsi"
 
 / {
 	aliases {
 		label-mac-device = &gmac1;
-		led-boot = &led_status;
-		led-failsafe = &led_status;
-		led-running = &led_status;
-		led-upgrade = &led_status;
+		led-boot = &led_sys_red;
+		led-failsafe = &led_sys_red;
+		led-running = &led_sys_white;
+		led-upgrade = &led_sys_white;
 		serial0 = &uart0;
 	};
 
@@ -29,8 +31,8 @@
 
 		mode {
 			label = "mode";
-			linux,input-type = <EV_SW>;
 			linux,code = <BTN_0>;
+			linux,input-type = <EV_SW>;
 			gpios = <&pio 0 GPIO_ACTIVE_LOW>;
 			debounce-interval = <60>;
 		};
@@ -39,36 +41,40 @@
 	leds {
 		compatible = "gpio-leds";
 
-		led_status: led_0 {
+		led_sys_red: led-0 {
 			function = LED_FUNCTION_POWER;
 			color = <LED_COLOR_ID_RED>;
 			gpios = <&pio 11 GPIO_ACTIVE_LOW>;
 		};
 
-		led_1 {
+		led_sys_white: led-1 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_WHITE>;
 			gpios = <&pio 10 GPIO_ACTIVE_LOW>;
 		};
-
 	};
 
 	usb_vbus: regulator-usb {
 		compatible = "regulator-fixed";
-
 		regulator-name = "usb-vbus";
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
-
 		gpios = <&pio 9 GPIO_ACTIVE_LOW>;
 		regulator-boot-on;
 	};
 };
 
+&uart0 {
+	status = "okay";
+};
+
+&watchdog {
+	status = "okay";
+};
+
 &eth {
 	pinctrl-names = "default";
 	pinctrl-0 = <&mdio_pins>;
-
 	status = "okay";
 
 	gmac0: mac@0 {
@@ -92,23 +98,14 @@
 
 &mdio_bus {
 	phy1: phy@1 {
-		reg = <1>;
 		compatible = "ethernet-phy-ieee802.3-c45";
-		phy-mode = "2500base-x";
-		reset-gpios = <&pio 39 GPIO_ACTIVE_LOW>;
-		interrupts = <38 IRQ_TYPE_LEVEL_LOW>;
+		reg = <1>;
 		reset-assert-us = <100000>;
 		reset-deassert-us = <100000>;
+		reset-gpios = <&pio 39 GPIO_ACTIVE_LOW>;
+		interrupts = <38 IRQ_TYPE_LEVEL_LOW>;
+		interrupt-parent = <&pio>;
 		realtek,aldps-enable;
-	};
-};
-
-&pio {
-	spi0_flash_pins: spi0-pins {
-		mux {
-			function = "spi";
-			groups = "spi0", "spi0_wp_hold";
-		};
 	};
 };
 
@@ -122,6 +119,7 @@
 		#size-cells = <1>;
 		compatible = "spi-nand";
 		reg = <0>;
+
 		spi-max-frequency = <52000000>;
 		spi-tx-bus-width = <4>;
 		spi-rx-bus-width = <4>;
@@ -147,6 +145,7 @@
 				label = "Factory";
 				reg = <0x180000 0x0200000>;
 				read-only;
+
 				nvmem-layout {
 					compatible = "fixed-layout";
 					#address-cells = <1>;
@@ -162,6 +161,7 @@
 				label = "bdinfo";
 				reg = <0x380000 0x0040000>;
 				read-only;
+
 				nvmem-layout {
 					compatible = "fixed-layout";
 					#address-cells = <1>;
@@ -173,7 +173,6 @@
 						#nvmem-cell-cells = <1>;
 					};
 				};
-
 			};
 
 			partition@3c0000 {
@@ -190,25 +189,26 @@
 	};
 };
 
-&uart0 {
-	status = "okay";
+&pio {
+	spi0_flash_pins: spi0-pins {
+		mux {
+			function = "spi";
+			groups = "spi0", "spi0_wp_hold";
+		};
+	};
 };
 
 &usb_phy {
 	status = "okay";
 };
 
-&watchdog {
+&xhci {
 	status = "okay";
+	vbus-supply = <&usb_vbus>;
 };
 
 &wifi {
 	status = "okay";
 	nvmem-cells = <&eeprom_factory_0>;
 	nvmem-cell-names = "eeprom";
-};
-
-&xhci {
-	status = "okay";
-	vbus-supply = <&usb_vbus>;
 };
