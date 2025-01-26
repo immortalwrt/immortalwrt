@@ -132,9 +132,6 @@ CSR generation (gen_key, cert_req)
 endef
 
 TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS))
-ifneq ($(CONFIG_MBEDTLS_AESCE_C),)
-  TARGET_CFLAGS := $(filter-out -march=%,$(TARGET_CFLAGS)) -march=armv8-a+crypto
-endif
 
 CMAKE_OPTIONS += \
 	-DCMAKE_POSITION_INDEPENDENT_CODE=ON \
