@@ -143,7 +143,7 @@ comment "Build Options - unselect features to reduce binary size"
 config MBEDTLS_AESCE_C
 	bool "MBEDTLS_AESCE_C"
 	default y
-	depends on aarch64 && !TARGET_bcm27xx
+	depends on aarch64 && !TARGET_bcm27xx_bcm2710 && !TARGET_bcm27xx_bcm2711
 
 config MBEDTLS_CIPHER_MODE_OFB
 	bool "MBEDTLS_CIPHER_MODE_OFB"
