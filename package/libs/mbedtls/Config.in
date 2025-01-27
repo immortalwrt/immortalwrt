@@ -143,7 +143,7 @@ comment "Build Options - unselect features to reduce binary size"
 config MBEDTLS_AESCE_C
 	bool "MBEDTLS_AESCE_C"
 	default y
-	depends on aarch64 && !TARGET_bcm27xx
+	depends on aarch64 && !TARGET_bcm27xx_bcm2710 && !TARGET_bcm27xx_bcm2711
 
 config MBEDTLS_CIPHER_MODE_OFB
 	bool "MBEDTLS_CIPHER_MODE_OFB"
@@ -195,6 +195,16 @@ config MBEDTLS_PSA_CRYPTO_CLIENT
 config MBEDTLS_DEPRECATED_WARNING
 	bool "MBEDTLS_DEPRECATED_WARNING"
 	default n
+
+config MBEDTLS_SHA256_USE_ARMV8_A_CRYPTO_IF_PRESENT
+	bool "MBEDTLS_SHA256_USE_ARMV8_A_CRYPTO_IF_PRESENT"
+	default y
+	depends on aarch64 && !TARGET_bcm27xx_bcm2710 && !TARGET_bcm27xx_bcm2711
+
+config MBEDTLS_SHA512_USE_A64_CRYPTO_IF_PRESENT
+	bool "MBEDTLS_SHA512_USE_A64_CRYPTO_IF_PRESENT"
+	default y
+	depends on aarch64 && !TARGET_bcm27xx_bcm2710 && !TARGET_bcm27xx_bcm2711
 
 config MBEDTLS_SSL_PROTO_TLS1_2
 	bool "MBEDTLS_SSL_PROTO_TLS1_2"

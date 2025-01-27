@@ -64,7 +64,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  
 --- a/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus-lts.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus-lts.dts
-@@ -31,6 +31,7 @@
+@@ -30,6 +30,7 @@
  			motorcomm,keep-pll-enabled;
  			motorcomm,rx-clk-drv-microamp = <5020>;
  			motorcomm,rx-data-drv-microamp = <5020>;
@@ -72,7 +72,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  
  			pinctrl-0 = <&eth_phy_reset_pin>;
  			pinctrl-names = "default";
-@@ -40,3 +41,7 @@
+@@ -39,3 +40,7 @@
  		};
  	};
  };

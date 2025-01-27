@@ -1,6 +1,6 @@
 --- a/drivers/net/ethernet/realtek/r8169_main.c
 +++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -22,6 +22,7 @@
+@@ -21,6 +21,7 @@
  #include <linux/in.h>
  #include <linux/io.h>
  #include <linux/ip.h>
@@ -8,7 +8,7 @@
  #include <linux/tcp.h>
  #include <linux/interrupt.h>
  #include <linux/dma-mapping.h>
-@@ -5393,6 +5394,7 @@ static int rtl_init_one(struct pci_dev *
+@@ -5355,6 +5356,7 @@ static int rtl_init_one(struct pci_dev *
  	int jumbo_max, region, rc;
  	enum mac_version chipset;
  	struct net_device *dev;
@@ -16,7 +16,7 @@
  	u32 txconfig;
  	u16 xid;
  
-@@ -5400,6 +5402,9 @@ static int rtl_init_one(struct pci_dev *
+@@ -5362,6 +5364,9 @@ static int rtl_init_one(struct pci_dev *
  	if (!dev)
  		return -ENOMEM;
  
