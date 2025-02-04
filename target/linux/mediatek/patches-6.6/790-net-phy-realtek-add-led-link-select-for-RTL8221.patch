@@ -77,7 +77,7 @@ Signed-off-by: Yangyu Chen <cyy@cyyself.name>
  static int rtl822xb_config_init(struct phy_device *phydev)
  {
  	bool has_2500, has_sgmii;
-@@ -911,7 +956,7 @@ static int rtl822xb_config_init(struct p
+@@ -925,7 +970,7 @@ static int rtl822xb_config_init(struct p
  	if (ret < 0)
  		return ret;
  
@@ -85,4 +85,4 @@ Signed-off-by: Yangyu Chen <cyy@cyyself.name>
 +	return rtl8221b_config_led(phydev);
  }
  
- static int rtl822xb_get_rate_matching(struct phy_device *phydev,
+ static int rtl822xb_config_init_war(struct phy_device *phydev)
