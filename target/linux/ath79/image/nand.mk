@@ -318,6 +318,7 @@ define Device/meraki_mr18
   KERNEL_INITRAMFS := $$(KERNEL)
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   SUPPORTED_DEVICES += mr18
+  DEFAULT := n
 endef
 TARGET_DEVICES += meraki_mr18
 
