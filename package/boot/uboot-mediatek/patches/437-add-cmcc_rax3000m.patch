@@ -538,13 +538,12 @@
 +_bootmenu_update_title=setenv _bootmenu_update_title ; setenv bootmenu_title "$bootmenu_title       [33m$ver[0m"
 --- /dev/null
 +++ b/cmcc_rax3000m-nand_env
-@@ -0,0 +1,57 @@
+@@ -0,0 +1,56 @@
 +ipaddr=192.168.1.1
 +serverip=192.168.1.254
 +loadaddr=0x46000000
 +console=earlycon=uart8250,mmio32,0x11002000 console=ttyS0
 +bootconf=config-1#mt7981b-cmcc-rax3000m-nand
-+bootargs=root=/dev/fit0 rootwait
 +bootcmd=if pstore check ; then run boot_recovery ; else run boot_ubi ; fi
 +bootdelay=0
 +bootfile=immortalwrt-mediatek-filogic-cmcc_rax3000m-initramfs-recovery.itb
