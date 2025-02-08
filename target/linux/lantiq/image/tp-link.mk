@@ -26,7 +26,7 @@ define Device/tplink_vr200
   TPLINK_HWID := 0x63e64801
   TPLINK_HWREV := 0x53
   IMAGE_SIZE := 15808k
-  DEVICE_PACKAGES:= kmod-mt76x0e wpad-basic-openssl kmod-usb-dwc2 kmod-usb-ledtrig-usbport
+  DEVICE_PACKAGES:= kmod-mt76x0e wpad-openssl kmod-usb-dwc2 kmod-usb-ledtrig-usbport
   SUPPORTED_DEVICES += VR200
 endef
 TARGET_DEVICES += tplink_vr200
@@ -40,7 +40,7 @@ define Device/tplink_vr200v
   TPLINK_HWID := 0x73b70801
   TPLINK_HWREV := 0x2f
   IMAGE_SIZE := 15808k
-  DEVICE_PACKAGES:= kmod-mt76x0e wpad-basic-openssl kmod-usb-dwc2 kmod-usb-ledtrig-usbport kmod-ltq-tapi kmod-ltq-vmmc
+  DEVICE_PACKAGES:= kmod-mt76x0e wpad-openssl kmod-usb-dwc2 kmod-usb-ledtrig-usbport kmod-ltq-tapi kmod-ltq-vmmc
   SUPPORTED_DEVICES += VR200v
 endef
 TARGET_DEVICES += tplink_vr200v
