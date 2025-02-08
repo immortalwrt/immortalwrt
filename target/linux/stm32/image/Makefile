@@ -44,7 +44,7 @@ define Device/Default
   DEVICE_PACKAGES := kmod-brcmfmac \
 		     murata-firmware-43430-sdio \
 		     murata-nvram-43430-sdio \
-		     wpad-basic-mbedtls \
+		     wpad-basic-openssl \
 		     kmod-phy-stm32-usbphyc \
 		     kmod-usb2 \
 		     kmod-usb-storage \

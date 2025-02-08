@@ -169,7 +169,7 @@ define Device/fortinet_fwf-50e-2r
   KERNEL_INITRAMFS := kernel-bin | append-dtb | fortigate-header | \
     gzip-filename FW502R
   DEVICE_PACKAGES += kmod-ath10k-ct ath10k-firmware-qca988x-ct \
-    wpad-basic-mbedtls
+    wpad-basic-openssl
 endef
 TARGET_DEVICES += fortinet_fwf-50e-2r
 
@@ -179,7 +179,7 @@ define Device/fortinet_fwf-51e
   DEVICE_DTS := armada-385-fortinet-fwf-51e
   KERNEL_INITRAMFS := kernel-bin | append-dtb | fortigate-header | \
     gzip-filename FWF51E
-  DEVICE_PACKAGES += kmod-ath9k wpad-basic-mbedtls
+  DEVICE_PACKAGES += kmod-ath9k wpad-basic-openssl
 endef
 TARGET_DEVICES += fortinet_fwf-51e
 
@@ -202,7 +202,7 @@ define Device/iij_sa-w2
   IMAGE/sysupgrade.bin := append-kernel | pad-to 64k | \
     append-rootfs | pad-rootfs | check-size | append-metadata
   DEVICE_PACKAGES := kmod-ath9k kmod-ath10k-ct ath10k-firmware-qca988x-ct \
-    wpad-basic-mbedtls
+    wpad-basic-openssl
 endef
 TARGET_DEVICES += iij_sa-w2
 
