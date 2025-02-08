@@ -200,7 +200,7 @@ define Device/sinovoip_bananapi-p2-zero
   DEVICE_VENDOR := Sinovoip
   DEVICE_MODEL := Banana Pi P2 Zero
   DEVICE_PACKAGES:=kmod-leds-gpio kmod-brcmfmac \
-	cypress-firmware-43430-sdio wpad-basic-mbedtls
+	cypress-firmware-43430-sdio wpad-basic-openssl
   SOC := sun8i-h2-plus
 endef
 TARGET_DEVICES += sinovoip_bananapi-p2-zero

@@ -94,7 +94,7 @@ define Device/arcadyan_vrv9510kwac23
   DEVICE_ALT0_VENDOR := Livebox
   DEVICE_ALT0_MODEL := Next
   BOARD_NAME := VRV9510KWAC23
-  DEVICE_PACKAGES :=  kmod-b43 wpad-basic-mbedtls broadcom-43222-sprom \
+  DEVICE_PACKAGES :=  kmod-b43 wpad-basic-openssl broadcom-43222-sprom \
     broadcom-4360-sprom kmod-usb-dwc2 kmod-ltq-tapi kmod-ltq-vmmc
   KERNEL_SIZE := 4096k
   SUPPORTED_DEVICES += arcadyan_vrv9510kwac23
