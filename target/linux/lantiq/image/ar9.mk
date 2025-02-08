@@ -4,7 +4,7 @@ define Device/avm_fritz7312
   SOC := ar9
   IMAGE_SIZE := 15744k
   LOADER_FLASH_OFFS := 0x31000
-  DEVICE_PACKAGES := kmod-ath9k kmod-owl-loader wpad-basic-openssl \
+  DEVICE_PACKAGES := kmod-ath9k kmod-owl-loader wpad-openssl \
 	kmod-ltq-adsl-ar9-mei kmod-ltq-adsl-ar9 \
 	kmod-ltq-adsl-ar9-fw-b kmod-ltq-atm-ar9 \
 	ltq-adsl-app ppp-mod-pppoa \
@@ -22,7 +22,7 @@ define Device/avm_fritz7320
   SOC := ar9
   IMAGE_SIZE := 15744k
   LOADER_FLASH_OFFS := 0x31000
-  DEVICE_PACKAGES := kmod-ath9k kmod-owl-loader wpad-basic-openssl \
+  DEVICE_PACKAGES := kmod-ath9k kmod-owl-loader wpad-openssl \
 	kmod-ltq-adsl-ar9-mei kmod-ltq-adsl-ar9 \
 	kmod-ltq-adsl-ar9-fw-b kmod-ltq-atm-ar9 \
 	ltq-adsl-app ppp-mod-pppoa \
@@ -62,7 +62,7 @@ define Device/buffalo_wbmr-hp-g300h-a
 	kmod-ltq-adsl-ar9-mei kmod-ltq-adsl-ar9 \
 	kmod-ltq-adsl-ar9-fw-a kmod-ltq-atm-ar9 \
 	ltq-adsl-app ppp-mod-pppoa \
-	kmod-ath9k kmod-owl-loader wpad-basic-openssl
+	kmod-ath9k kmod-owl-loader wpad-openssl
   SUPPORTED_DEVICES := WBMR buffalo,wbmr-hp-g300h
 endef
 TARGET_DEVICES += buffalo_wbmr-hp-g300h-a
@@ -78,7 +78,7 @@ define Device/buffalo_wbmr-hp-g300h-b
 	kmod-ltq-adsl-ar9-mei kmod-ltq-adsl-ar9 \
 	kmod-ltq-adsl-ar9-fw-b kmod-ltq-atm-ar9 \
 	ltq-adsl-app ppp-mod-pppoa \
-	kmod-ath9k kmod-owl-loader wpad-basic-openssl
+	kmod-ath9k kmod-owl-loader wpad-openssl
   SUPPORTED_DEVICES := WBMR buffalo,wbmr-hp-g300h
 endef
 TARGET_DEVICES += buffalo_wbmr-hp-g300h-b
@@ -110,7 +110,7 @@ define Device/netgear_dgn3500
 	dgn3500-sercom-footer $(DGN3500_KERNEL_OFFSET_HEX) "WW" | pad-rootfs | \
 	check-size 16320k | pad-to 16384k
   DEVICE_PACKAGES := kmod-usb-dwc2 kmod-usb-ledtrig-usbport \
-	kmod-ath9k kmod-owl-loader wpad-basic-openssl \
+	kmod-ath9k kmod-owl-loader wpad-openssl \
 	kmod-ltq-adsl-ar9-mei kmod-ltq-adsl-ar9 \
 	kmod-ltq-adsl-ar9-fw-a kmod-ltq-atm-ar9 \
 	kmod-ltq-deu-ar9 ltq-adsl-app ppp-mod-pppoa
@@ -134,7 +134,7 @@ define Device/netgear_dgn3500b
 	dgn3500-sercom-footer $(DGN3500_KERNEL_OFFSET_HEX) "DE" | pad-rootfs | \
 	check-size 16320k | pad-to 16384k
   DEVICE_PACKAGES := kmod-usb-dwc2 kmod-usb-ledtrig-usbport \
-	kmod-ath9k kmod-owl-loader wpad-basic-openssl \
+	kmod-ath9k kmod-owl-loader wpad-openssl \
 	kmod-ltq-adsl-ar9-mei kmod-ltq-adsl-ar9 \
 	kmod-ltq-adsl-ar9-fw-b kmod-ltq-atm-ar9 \
 	kmod-ltq-deu-ar9 ltq-adsl-app ppp-mod-pppoa
@@ -164,7 +164,7 @@ define Device/zyxel_p-2601hn
   DEVICE_VARIANT := F1/F3
   IMAGE_SIZE := 15616k
   SOC := ar9
-  DEVICE_PACKAGES := kmod-rt2800-usb wpad-basic-openssl \
+  DEVICE_PACKAGES := kmod-rt2800-usb wpad-openssl \
 	kmod-ltq-adsl-ar9-mei kmod-ltq-adsl-ar9 \
 	kmod-ltq-adsl-ar9-fw-b kmod-ltq-atm-ar9 \
 	kmod-ltq-deu-ar9 ltq-adsl-app ppp-mod-pppoe \

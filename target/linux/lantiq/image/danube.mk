@@ -10,7 +10,7 @@ define Device/arcadyan_arv4510pw
 	kmod-ltq-adsl-danube-fw-a kmod-ltq-atm-danube \
 	ltq-adsl-app ppp-mod-pppoa \
 	kmod-ltq-tapi kmod-ltq-vmmc \
-	kmod-rt2800-pci kmod-ath5k wpad-basic-openssl
+	kmod-rt2800-pci kmod-ath5k wpad-openssl
   SUPPORTED_DEVICES += ARV4510PW
   DEFAULT := n
 endef
@@ -61,7 +61,7 @@ define Device/arcadyan_arv7510pw22
 	kmod-ltq-adsl-danube-fw-a kmod-ltq-atm-danube \
 	ltq-adsl-app ppp-mod-pppoa \
 	kmod-ltq-tapi kmod-ltq-vmmc \
-	kmod-rt2800-pci wpad-basic-openssl \
+	kmod-rt2800-pci wpad-openssl \
 	kmod-usb-uhci kmod-usb2 kmod-usb2-pci
   SUPPORTED_DEVICES += ARV7510PW22
 endef
@@ -94,7 +94,7 @@ define Device/arcadyan_arv7519pw
 	kmod-ltq-adsl-danube-mei kmod-ltq-adsl-danube \
 	kmod-ltq-adsl-danube-fw-a kmod-ltq-atm-danube \
 	ltq-adsl-app ppp-mod-pppoa \
-	kmod-rt2800-pci wpad-basic-openssl
+	kmod-rt2800-pci wpad-openssl
   SUPPORTED_DEVICES += ARV7519PW
 endef
 TARGET_DEVICES += arcadyan_arv7519pw
@@ -177,7 +177,7 @@ define Device/audiocodes_mp-252
 	kmod-usb-ledtrig-usbport kmod-usb-dwc2 \
 	kmod-rt2800-pci \
 	ltq-adsl-app ppp-mod-pppoa \
-	wpad-basic-openssl
+	wpad-openssl
   SUPPORTED_DEVICES += ACMP252
 endef
 TARGET_DEVICES += audiocodes_mp-252

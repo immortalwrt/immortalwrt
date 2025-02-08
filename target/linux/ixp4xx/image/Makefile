@@ -49,7 +49,7 @@ endef
 define Device/dlink_dsm_g600_a
 	DEVICE_VENDOR := D-Link
 	DEVICE_MODEL := DSM G600 A
-	DEVICE_PACKAGES := ixp4xx-microcode-ethernet kmod-rtc-pcf8563 kmod-via-velocity kmod-ata-artop kmod-ath5k wpad-basic-openssl
+	DEVICE_PACKAGES := ixp4xx-microcode-ethernet kmod-rtc-pcf8563 kmod-via-velocity kmod-ata-artop kmod-ath5k wpad-openssl
 	DEVICE_DTS := intel-ixp42x-dlink-dsm-g600
 	KERNEL := kernel-bin | append-dtb
 	IMAGES := kernel.bin rootfs.bin
