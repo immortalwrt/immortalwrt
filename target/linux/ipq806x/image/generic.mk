@@ -607,7 +607,7 @@ define Device/xiaomi_mi-router-hd
 	UBINIZE_OPTS := -E 5
 	IMAGES := factory.bin sysupgrade.bin
 	IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | pad-to $$$$(BLOCKSIZE) | check-size
-	DEVICE_PACKAGES := kmod-i2c-gpio kmod-hwmon-lm75 kmod-hwmon-drivetemp \
+	DEVICE_PACKAGES := kmod-i2c-gpio kmod-hwmon-emc2305 kmod-hwmon-lm75 kmod-hwmon-drivetemp \
 		ath10k-firmware-qca9984-ct ath10k-firmware-qca99x0-ct
 endef
 TARGET_DEVICES += xiaomi_mi-router-hd
