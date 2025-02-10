@@ -67,21 +67,18 @@
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_RED>;
 			gpios = <&qcom_pinmux 7 GPIO_ACTIVE_HIGH>;
-			default-state = "keep";
 		};
 
 		led_status_blue: led_status_blue {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_BLUE>;
 			gpios = <&qcom_pinmux 8 GPIO_ACTIVE_HIGH>;
-			default-state = "keep";
 		};
 
 		led_status_yellow: led_status_yellow {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_YELLOW>;
 			gpios = <&qcom_pinmux 9 GPIO_ACTIVE_HIGH>;
-			default-state = "keep";
 		};
 	};
 
@@ -95,16 +92,12 @@
 		scl-gpios = <&qcom_pinmux 54 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 		i2c-gpio,delay-us = <5>;
 
-		emc2301@2f {
-			compatible = "smsc,emc2301";
+		fan@2f {
+			compatible = "microchip,emc2305";
 			reg = <0x2f>;
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			fan@0 {
-				reg = <0>;
-				pwm-output-mode = <1>;
-			};
+			emc2305,pwm-channel = <0>;
+			emc2305,pwm-min = <0>;
+			emc2305,pwm-max = <255>;
 		};
 	};
 
@@ -198,7 +191,23 @@
 	status = "okay";
 };
 
+&hs_phy_0 {
+	status = "okay";
+};
+
+&ss_phy_0 {
+	status = "okay";
+};
+
 &usb3_0 {
+	status = "okay";
+};
+
+&hs_phy_1 {
+	status = "okay";
+};
+
+&ss_phy_1 {
 	status = "okay";
 };
 
@@ -210,7 +219,7 @@
 
 &pcie0 {
 	status = "okay";
-	reset-gpio = <&qcom_pinmux 3 GPIO_ACTIVE_LOW>;
+	reset-gpios = <&qcom_pinmux 3 GPIO_ACTIVE_LOW>;
 	pinctrl-0 = <&pcie0_pins>;
 	pinctrl-names = "default";
 
@@ -232,7 +241,7 @@
 
 &pcie1 {
 	status = "okay";
-	reset-gpio = <&qcom_pinmux 48 GPIO_ACTIVE_LOW>;
+	reset-gpios = <&qcom_pinmux 48 GPIO_ACTIVE_LOW>;
 	pinctrl-0 = <&pcie1_pins>;
 	pinctrl-names = "default";
 	max-link-speed = <1>;
@@ -265,7 +274,7 @@
 		nand-ecc-step-size = <512>;
 
 		nand-is-boot-medium;
-		qcom,boot_pages_size = <0xf0000000>;
+		qcom,boot-partitions = <0x0 0xf0000000>;
 
 		partitions {
 			compatible = "fixed-partitions";
