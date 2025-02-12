@@ -189,6 +189,7 @@
 		partition@180000 {
 			label = "Factory";
 			reg = <0x180000 0x0200000>;
+			phandle = <0x11>;
 		};
 		partition@380000 {
 			label = "FIP";
@@ -199,24 +200,12 @@
 			reg = <0x580000 0x1900000>;
 		};
 		partition@1E80000 {
-			label = "kernel";
-			reg = <0x1E80000 0x2e0000>;
-		};
-		partition@2160000 {
-			label = "rootfs";
-			reg = <0x2160000 0x1620000>;
-		};
-		partition@3780000 {
-			label = "rootfs_data";
-			reg = <0x3780000 0x590000>;
-		};
-		partition@3D10000 {
 			label = "Product";
-			reg = <0x3D10000 0x20000>;
+			reg = <0x1E80000 0x20000>;
 		};
-		partition@3D30000 {
+		partition@1EA0000 {
 			label = "Custom";
-			reg = <0x3D30000 0x160000>;
+			reg = <0x1EA0000 0x160000>;
 		};
 	};
 };
