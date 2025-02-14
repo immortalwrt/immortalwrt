@@ -20,7 +20,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115931.1785495-1-and
 
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
-@@ -1997,7 +1997,7 @@ static void vop2_crtc_atomic_enable(stru
+@@ -2006,7 +2006,7 @@ static void vop2_crtc_atomic_enable(stru
  		return;
  
  	if (vcstate->output_mode == ROCKCHIP_OUT_MODE_AAAA &&
@@ -31,8 +31,8 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115931.1785495-1-and
  		out_mode = vcstate->output_mode;
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.h
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.h
-@@ -11,7 +11,7 @@
- #include <drm/drm_modes.h>
+@@ -12,7 +12,7 @@
+ #include "rockchip_drm_drv.h"
  #include "rockchip_drm_vop.h"
  
 -#define VOP_FEATURE_OUTPUT_10BIT        BIT(0)

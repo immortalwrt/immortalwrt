@@ -16,7 +16,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231018094210.2475771-1-and
 
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
-@@ -282,6 +282,20 @@ static void vop2_win_disable(struct vop2
+@@ -281,6 +281,20 @@ static void vop2_win_disable(struct vop2
  		vop2_win_write(win, VOP2_WIN_CLUSTER_ENABLE, 0);
  }
  
@@ -37,7 +37,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231018094210.2475771-1-and
  static enum vop2_data_format vop2_convert_format(u32 format)
  {
  	switch (format) {
-@@ -482,7 +496,7 @@ static u32 vop2_afbc_transform_offset(st
+@@ -491,7 +505,7 @@ static u32 vop2_afbc_transform_offset(st
  {
  	struct drm_rect *src = &pstate->src;
  	struct drm_framebuffer *fb = pstate->fb;
@@ -46,7 +46,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231018094210.2475771-1-and
  	u32 vir_width = (fb->pitches[0] << 3) / bpp;
  	u32 width = drm_rect_width(src) >> 16;
  	u32 height = drm_rect_height(src) >> 16;
-@@ -1082,7 +1096,7 @@ static void vop2_plane_atomic_update(str
+@@ -1091,7 +1105,7 @@ static void vop2_plane_atomic_update(str
  	struct drm_display_mode *adjusted_mode = &crtc->state->adjusted_mode;
  	struct vop2 *vop2 = win->vop2;
  	struct drm_framebuffer *fb = pstate->fb;

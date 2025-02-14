@@ -17,7 +17,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/034c3446-d619-f4c3-3aaa-ab51
 
 --- a/drivers/gpu/drm/rockchip/rk3066_hdmi.c
 +++ b/drivers/gpu/drm/rockchip/rk3066_hdmi.c
-@@ -55,7 +55,6 @@ struct rk3066_hdmi {
+@@ -54,7 +54,6 @@ struct rk3066_hdmi {
  	unsigned int tmdsclk;
  
  	struct hdmi_data_info hdmi_data;
@@ -25,7 +25,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/034c3446-d619-f4c3-3aaa-ab51
  };
  
  static struct rk3066_hdmi *encoder_to_rk3066_hdmi(struct drm_encoder *encoder)
-@@ -387,21 +386,21 @@ static int rk3066_hdmi_setup(struct rk30
+@@ -386,21 +385,21 @@ static int rk3066_hdmi_setup(struct rk30
  	return 0;
  }
  
@@ -58,7 +58,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/034c3446-d619-f4c3-3aaa-ab51
  
  	mux = drm_of_encoder_active_endpoint_id(hdmi->dev->of_node, encoder);
  	if (mux)
-@@ -414,10 +413,11 @@ static void rk3066_hdmi_encoder_enable(s
+@@ -413,10 +412,11 @@ static void rk3066_hdmi_encoder_enable(s
  	DRM_DEV_DEBUG(hdmi->dev, "hdmi encoder enable select: vop%s\n",
  		      (mux) ? "1" : "0");
  
@@ -72,7 +72,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/034c3446-d619-f4c3-3aaa-ab51
  {
  	struct rk3066_hdmi *hdmi = encoder_to_rk3066_hdmi(encoder);
  
-@@ -449,10 +449,9 @@ rk3066_hdmi_encoder_atomic_check(struct
+@@ -448,10 +448,9 @@ rk3066_hdmi_encoder_atomic_check(struct
  
  static const
  struct drm_encoder_helper_funcs rk3066_hdmi_encoder_helper_funcs = {

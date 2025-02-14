@@ -22,7 +22,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115752.1785013-1-and
 
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
-@@ -268,12 +268,23 @@ static bool vop2_cluster_window(const st
+@@ -267,12 +267,23 @@ static bool vop2_cluster_window(const st
  	return win->data->feature & WIN_FEATURE_CLUSTER;
  }
  

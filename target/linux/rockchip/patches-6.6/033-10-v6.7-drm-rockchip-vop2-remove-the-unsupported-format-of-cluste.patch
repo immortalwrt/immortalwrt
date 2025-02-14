@@ -21,7 +21,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231018094239.2475851-1-and
 
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
-@@ -342,10 +342,6 @@ static enum vop2_afbc_format vop2_conver
+@@ -341,10 +341,6 @@ static enum vop2_afbc_format vop2_conver
  	case DRM_FORMAT_RGB565:
  	case DRM_FORMAT_BGR565:
  		return VOP2_AFBC_FMT_RGB565;
@@ -32,7 +32,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231018094239.2475851-1-and
  	default:
  		return VOP2_AFBC_FMT_INVALID;
  	}
-@@ -366,25 +362,9 @@ static bool vop2_win_rb_swap(u32 format)
+@@ -365,25 +361,9 @@ static bool vop2_win_rb_swap(u32 format)
  	}
  }
  
@@ -59,7 +59,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231018094239.2475851-1-and
  }
  
  static bool vop2_win_uv_swap(u32 format)
-@@ -1234,7 +1214,6 @@ static void vop2_plane_atomic_update(str
+@@ -1243,7 +1223,6 @@ static void vop2_plane_atomic_update(str
  			drm_err(vop2->drm, "vp%d %s stride[%d] not 64 pixel aligned\n",
  				vp->id, win->data->name, stride);
  
@@ -67,7 +67,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231018094239.2475851-1-and
  		uv_swap = vop2_afbc_uv_swap(fb->format->format);
  		/*
  		 * This is a workaround for crazy IC design, Cluster
-@@ -1251,7 +1230,6 @@ static void vop2_plane_atomic_update(str
+@@ -1260,7 +1239,6 @@ static void vop2_plane_atomic_update(str
  		if (vop2_cluster_window(win))
  			vop2_win_write(win, VOP2_WIN_AFBC_ENABLE, 1);
  		vop2_win_write(win, VOP2_WIN_AFBC_FORMAT, afbc_format);

@@ -28,7 +28,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231025213248.2641962-1-jon
 
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
-@@ -325,11 +325,14 @@ static enum vop2_data_format vop2_conver
+@@ -324,11 +324,14 @@ static enum vop2_data_format vop2_conver
  	case DRM_FORMAT_NV16:
  	case DRM_FORMAT_NV61:
  		return VOP2_FMT_YUV422SP;
@@ -43,7 +43,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231025213248.2641962-1-jon
  	case DRM_FORMAT_YUYV:
  	case DRM_FORMAT_YVYU:
  		return VOP2_FMT_VYUY422;
-@@ -414,6 +417,8 @@ static bool vop2_win_uv_swap(u32 format)
+@@ -413,6 +416,8 @@ static bool vop2_win_uv_swap(u32 format)
  	case DRM_FORMAT_NV16:
  	case DRM_FORMAT_NV24:
  	case DRM_FORMAT_NV15:

@@ -17,7 +17,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20230421081303.122452-1-yang
 
 --- a/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
 +++ b/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
-@@ -1358,8 +1358,7 @@ static int dw_mipi_dsi_rockchip_probe(st
+@@ -1357,8 +1357,7 @@ static int dw_mipi_dsi_rockchip_probe(st
  	if (!dsi)
  		return -ENOMEM;
  

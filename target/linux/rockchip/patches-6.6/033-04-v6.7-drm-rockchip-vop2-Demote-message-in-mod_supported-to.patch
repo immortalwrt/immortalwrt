@@ -22,7 +22,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231009103753.830458-1-m.tr
 
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
-@@ -469,8 +469,8 @@ static bool rockchip_vop2_mod_supported(
+@@ -478,8 +478,8 @@ static bool rockchip_vop2_mod_supported(
  		return true;
  
  	if (!rockchip_afbc(plane, modifier)) {

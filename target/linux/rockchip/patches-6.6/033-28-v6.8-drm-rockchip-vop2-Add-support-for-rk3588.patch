@@ -26,7 +26,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
 
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
-@@ -191,6 +191,9 @@ struct vop2 {
+@@ -190,6 +190,9 @@ struct vop2 {
  	struct regmap *map;
  
  	struct regmap *sys_grf;
@@ -36,7 +36,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  
  	/* physical map length of vop2 register */
  	u32 len;
-@@ -209,6 +212,7 @@ struct vop2 {
+@@ -208,6 +211,7 @@ struct vop2 {
  	unsigned int enable_count;
  	struct clk *hclk;
  	struct clk *aclk;
@@ -44,7 +44,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  
  	/* optional internal rgb encoder */
  	struct rockchip_rgb *rgb;
-@@ -217,6 +221,23 @@ struct vop2 {
+@@ -216,6 +220,23 @@ struct vop2 {
  	struct vop2_win win[];
  };
  
@@ -68,7 +68,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  static const struct regmap_config vop2_regmap_config;
  
  static struct vop2_video_port *to_vop2_video_port(struct drm_crtc *crtc)
-@@ -475,6 +496,17 @@ static bool vop2_output_uv_swap(u32 bus_
+@@ -474,6 +495,17 @@ static bool vop2_output_uv_swap(u32 bus_
  		return false;
  }
  
@@ -86,7 +86,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  static bool is_yuv_output(u32 bus_format)
  {
  	switch (bus_format) {
-@@ -881,13 +913,32 @@ static int vop2_core_clks_prepare_enable
+@@ -890,13 +922,32 @@ static int vop2_core_clks_prepare_enable
  		goto err;
  	}
  
@@ -119,7 +119,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  static void vop2_enable(struct vop2 *vop2)
  {
  	int ret;
-@@ -919,6 +970,9 @@ static void vop2_enable(struct vop2 *vop
+@@ -928,6 +979,9 @@ static void vop2_enable(struct vop2 *vop
  	if (vop2->data->soc_id == 3566)
  		vop2_writel(vop2, RK3568_OTP_WIN_EN, 1);
  
@@ -129,7 +129,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  	vop2_writel(vop2, RK3568_REG_CFG_DONE, RK3568_REG_CFG_DONE__GLB_CFG_DONE_EN);
  
  	/*
-@@ -944,6 +998,7 @@ static void vop2_disable(struct vop2 *vo
+@@ -953,6 +1007,7 @@ static void vop2_disable(struct vop2 *vo
  
  	pm_runtime_put_sync(vop2->dev);
  
@@ -137,7 +137,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  	clk_disable_unprepare(vop2->aclk);
  	clk_disable_unprepare(vop2->hclk);
  }
-@@ -1311,7 +1366,19 @@ static void vop2_plane_atomic_update(str
+@@ -1320,7 +1375,19 @@ static void vop2_plane_atomic_update(str
  			vop2_win_write(win, VOP2_WIN_AFBC_ENABLE, 1);
  		vop2_win_write(win, VOP2_WIN_AFBC_FORMAT, afbc_format);
  		vop2_win_write(win, VOP2_WIN_AFBC_UV_SWAP, uv_swap);
@@ -158,7 +158,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  		vop2_win_write(win, VOP2_WIN_AFBC_BLOCK_SPLIT_EN, 0);
  		transform_offset = vop2_afbc_transform_offset(pstate, half_block_en);
  		vop2_win_write(win, VOP2_WIN_AFBC_HDR_PTR, yrgb_mst);
-@@ -1509,10 +1576,10 @@ static void vop2_post_config(struct drm_
+@@ -1518,10 +1585,10 @@ static void vop2_post_config(struct drm_
  	vop2_vp_write(vp, RK3568_VP_DSP_BG, 0);
  }
  
@@ -171,18 +171,18 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  	u32 die, dip;
  
  	die = vop2_readl(vop2, RK3568_DSP_IF_EN);
-@@ -1574,13 +1641,281 @@ static void rk3568_set_intf_mux(struct v
+@@ -1583,13 +1650,281 @@ static void rk3568_set_intf_mux(struct v
  		break;
  	default:
  		drm_err(vop2->drm, "Invalid interface id %d on vp%d\n", id, vp->id);
 -		return;
 +		return 0;
-+	}
-+
-+	dip |= RK3568_DSP_IF_POL__CFG_DONE_IMD;
-+
-+	vop2_writel(vop2, RK3568_DSP_IF_EN, die);
-+	vop2_writel(vop2, RK3568_DSP_IF_POL, dip);
+ 	}
+ 
+ 	dip |= RK3568_DSP_IF_POL__CFG_DONE_IMD;
+ 
+ 	vop2_writel(vop2, RK3568_DSP_IF_EN, die);
+ 	vop2_writel(vop2, RK3568_DSP_IF_POL, dip);
 +
 +	return crtc->state->adjusted_mode.crtc_clock  * 1000LL;
 +}
@@ -429,14 +429,14 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
 +	default:
 +		drm_err(vop2->drm, "Invalid interface id %d on vp%d\n", id, vp->id);
 +		return 0;
- 	}
- 
- 	dip |= RK3568_DSP_IF_POL__CFG_DONE_IMD;
- 
++	}
++
++	dip |= RK3568_DSP_IF_POL__CFG_DONE_IMD;
++
 +	vop2_vp_write(vp, RK3588_VP_CLK_CTRL, vp_clk_div);
- 	vop2_writel(vop2, RK3568_DSP_IF_EN, die);
++	vop2_writel(vop2, RK3568_DSP_IF_EN, die);
 +	vop2_writel(vop2, RK3568_DSP_IF_CTRL, div);
- 	vop2_writel(vop2, RK3568_DSP_IF_POL, dip);
++	vop2_writel(vop2, RK3568_DSP_IF_POL, dip);
 +
 +	return clock;
 +}
@@ -454,7 +454,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  }
  
  static int us_to_vertical_line(struct drm_display_mode *mode, int us)
-@@ -1650,9 +1985,17 @@ static void vop2_crtc_atomic_enable(stru
+@@ -1659,9 +1994,17 @@ static void vop2_crtc_atomic_enable(stru
  	drm_for_each_encoder_mask(encoder, crtc->dev, crtc_state->encoder_mask) {
  		struct rockchip_encoder *rkencoder = to_rockchip_encoder(encoder);
  
@@ -473,7 +473,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  	if (vcstate->output_mode == ROCKCHIP_OUT_MODE_AAAA &&
  	    !(vp_data->feature & VOP_FEATURE_OUTPUT_10BIT))
  		out_mode = ROCKCHIP_OUT_MODE_P888;
-@@ -1663,6 +2006,8 @@ static void vop2_crtc_atomic_enable(stru
+@@ -1672,6 +2015,8 @@ static void vop2_crtc_atomic_enable(stru
  
  	if (vop2_output_uv_swap(vcstate->bus_format, vcstate->output_mode))
  		dsp_ctrl |= RK3568_VP_DSP_CTRL__DSP_RB_SWAP;
@@ -482,7 +482,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  
  	if (vcstate->yuv_overlay)
  		dsp_ctrl |= RK3568_VP_DSP_CTRL__POST_DSP_OUT_R2Y;
-@@ -2024,6 +2369,14 @@ static void vop2_setup_layer_mixer(struc
+@@ -2079,6 +2424,14 @@ static void vop2_setup_layer_mixer(struc
  			port_sel &= ~RK3568_OVL_PORT_SEL__CLUSTER1;
  			port_sel |= FIELD_PREP(RK3568_OVL_PORT_SEL__CLUSTER1, vp->id);
  			break;
@@ -497,7 +497,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  		case ROCKCHIP_VOP2_ESMART0:
  			port_sel &= ~RK3568_OVL_PORT_SEL__ESMART0;
  			port_sel |= FIELD_PREP(RK3568_OVL_PORT_SEL__ESMART0, vp->id);
-@@ -2032,6 +2385,14 @@ static void vop2_setup_layer_mixer(struc
+@@ -2087,6 +2440,14 @@ static void vop2_setup_layer_mixer(struc
  			port_sel &= ~RK3568_OVL_PORT_SEL__ESMART1;
  			port_sel |= FIELD_PREP(RK3568_OVL_PORT_SEL__ESMART1, vp->id);
  			break;
@@ -512,7 +512,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  		case ROCKCHIP_VOP2_SMART0:
  			port_sel &= ~RK3568_OVL_PORT_SEL__SMART0;
  			port_sel |= FIELD_PREP(RK3568_OVL_PORT_SEL__SMART0, vp->id);
-@@ -2768,8 +3129,29 @@ static int vop2_bind(struct device *dev,
+@@ -2820,8 +3181,29 @@ static int vop2_bind(struct device *dev,
  		if (IS_ERR(vop2->lut_regs))
  			return PTR_ERR(vop2->lut_regs);
  	}
@@ -543,7 +543,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  
  	vop2->hclk = devm_clk_get(vop2->dev, "hclk");
  	if (IS_ERR(vop2->hclk)) {
-@@ -2783,6 +3165,12 @@ static int vop2_bind(struct device *dev,
+@@ -2835,6 +3217,12 @@ static int vop2_bind(struct device *dev,
  		return PTR_ERR(vop2->aclk);
  	}
  
@@ -558,7 +558,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  		drm_err(vop2->drm, "cannot find irq for vop2\n");
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.h
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.h
-@@ -13,9 +13,16 @@
+@@ -14,9 +14,16 @@
  
  #define VOP_FEATURE_OUTPUT_10BIT        BIT(0)
  
@@ -575,7 +575,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  /*
   *  the delay number of a window in different mode.
   */
-@@ -38,6 +45,18 @@ enum vop2_scale_down_mode {
+@@ -39,6 +46,18 @@ enum vop2_scale_down_mode {
  	VOP2_SCALE_DOWN_AVG,
  };
  
@@ -594,7 +594,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  enum vop2_win_regs {
  	VOP2_WIN_ENABLE,
  	VOP2_WIN_FORMAT,
-@@ -138,6 +157,7 @@ struct vop2_video_port_data {
+@@ -139,6 +158,7 @@ struct vop2_video_port_data {
  
  struct vop2_data {
  	u8 nr_vps;
@@ -602,7 +602,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  	const struct vop2_win_data *win;
  	const struct vop2_video_port_data *vp;
  	struct vop_rect max_input;
-@@ -192,6 +212,11 @@ enum dst_factor_mode {
+@@ -193,6 +213,11 @@ enum dst_factor_mode {
  };
  
  #define RK3568_GRF_VO_CON1			0x0364
@@ -614,7 +614,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  /* System registers definition */
  #define RK3568_REG_CFG_DONE			0x000
  #define RK3568_VERSION_INFO			0x004
-@@ -200,6 +225,7 @@ enum dst_factor_mode {
+@@ -201,6 +226,7 @@ enum dst_factor_mode {
  #define RK3568_DSP_IF_EN			0x028
  #define RK3568_DSP_IF_CTRL			0x02c
  #define RK3568_DSP_IF_POL			0x030
@@ -622,7 +622,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  #define RK3568_WB_CTRL				0x40
  #define RK3568_WB_XSCAL_FACTOR			0x44
  #define RK3568_WB_YRGB_MST			0x48
-@@ -220,9 +246,14 @@ enum dst_factor_mode {
+@@ -221,9 +247,14 @@ enum dst_factor_mode {
  #define RK3568_VP_INT_RAW_STATUS(vp)		(0xAC + (vp) * 0x10)
  
  /* Video Port registers definition */
@@ -637,7 +637,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  #define RK3568_VP_3D_LUT_CTRL			0x10
  #define RK3568_VP_3D_LUT_MST			0x20
  #define RK3568_VP_DSP_BG			0x2C
-@@ -264,6 +295,17 @@ enum dst_factor_mode {
+@@ -265,6 +296,17 @@ enum dst_factor_mode {
  #define RK3568_SMART_DLY_NUM			0x6F8
  
  /* Cluster register definition, offset relative to window base */
@@ -655,7 +655,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  #define RK3568_CLUSTER_WIN_CTRL0		0x00
  #define RK3568_CLUSTER_WIN_CTRL1		0x04
  #define RK3568_CLUSTER_WIN_YRGB_MST		0x10
-@@ -357,13 +399,18 @@ enum dst_factor_mode {
+@@ -358,13 +400,18 @@ enum dst_factor_mode {
  #define RK3568_VP_DSP_CTRL__DITHER_DOWN_EN		BIT(17)
  #define RK3568_VP_DSP_CTRL__PRE_DITHER_DOWN_EN		BIT(16)
  #define RK3568_VP_DSP_CTRL__POST_DSP_OUT_R2Y		BIT(15)
@@ -674,7 +674,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  #define RK3568_VP_POST_SCL_CTRL__VSCALEDOWN		BIT(1)
  #define RK3568_VP_POST_SCL_CTRL__HSCALEDOWN		BIT(0)
  
-@@ -382,11 +429,37 @@ enum dst_factor_mode {
+@@ -383,11 +430,37 @@ enum dst_factor_mode {
  #define RK3568_SYS_DSP_INFACE_EN_HDMI			BIT(1)
  #define RK3568_SYS_DSP_INFACE_EN_RGB			BIT(0)
  
@@ -712,7 +712,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  #define RK3568_VP0_MIPI_CTRL__DCLK_DIV2_PHASE_LOCK	BIT(5)
  #define RK3568_VP0_MIPI_CTRL__DCLK_DIV2			BIT(4)
  
-@@ -408,8 +481,12 @@ enum dst_factor_mode {
+@@ -409,8 +482,12 @@ enum dst_factor_mode {
  #define RK3568_OVL_PORT_SEL__SEL_PORT			GENMASK(31, 16)
  #define RK3568_OVL_PORT_SEL__SMART1			GENMASK(31, 30)
  #define RK3568_OVL_PORT_SEL__SMART0			GENMASK(29, 28)
@@ -725,7 +725,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231211115919.1785435-1-and
  #define RK3568_OVL_PORT_SEL__CLUSTER1			GENMASK(19, 18)
  #define RK3568_OVL_PORT_SEL__CLUSTER0			GENMASK(17, 16)
  #define RK3568_OVL_PORT_SET__PORT2_MUX			GENMASK(11, 8)
-@@ -422,6 +499,10 @@ enum dst_factor_mode {
+@@ -423,6 +500,10 @@ enum dst_factor_mode {
  #define RK3568_CLUSTER_DLY_NUM__CLUSTER0_1		GENMASK(15, 8)
  #define RK3568_CLUSTER_DLY_NUM__CLUSTER0_0		GENMASK(7, 0)
  

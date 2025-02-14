@@ -17,7 +17,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20230731110012.2913742-9-jag
 
 --- a/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
 +++ b/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
-@@ -198,6 +198,11 @@
+@@ -197,6 +197,11 @@
  #define RK3568_DSI1_TURNDISABLE		BIT(2)
  #define RK3568_DSI1_FORCERXMODE		BIT(0)
  
@@ -29,7 +29,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20230731110012.2913742-9-jag
  #define HIWORD_UPDATE(val, mask)	(val | (mask) << 16)
  
  enum {
-@@ -1651,6 +1656,18 @@ static const struct rockchip_dw_dsi_chip
+@@ -1650,6 +1655,18 @@ static const struct rockchip_dw_dsi_chip
  	{ /* sentinel */ }
  };
  
@@ -48,7 +48,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20230731110012.2913742-9-jag
  static const struct of_device_id dw_mipi_dsi_rockchip_dt_ids[] = {
  	{
  	 .compatible = "rockchip,px30-mipi-dsi",
-@@ -1664,6 +1681,9 @@ static const struct of_device_id dw_mipi
+@@ -1663,6 +1680,9 @@ static const struct of_device_id dw_mipi
  	}, {
  	 .compatible = "rockchip,rk3568-mipi-dsi",
  	 .data = &rk3568_chip_data,

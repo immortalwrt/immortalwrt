@@ -22,7 +22,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20230731125304.87059-1-wangz
 
 --- a/drivers/gpu/drm/rockchip/cdn-dp-core.c
 +++ b/drivers/gpu/drm/rockchip/cdn-dp-core.c
-@@ -1261,7 +1261,7 @@ struct platform_driver cdn_dp_driver = {
+@@ -1260,7 +1260,7 @@ struct platform_driver cdn_dp_driver = {
  	.driver = {
  		   .name = "cdn-dp",
  		   .owner = THIS_MODULE,
@@ -33,7 +33,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20230731125304.87059-1-wangz
  };
 --- a/drivers/gpu/drm/rockchip/rockchip_lvds.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_lvds.c
-@@ -751,6 +751,6 @@ struct platform_driver rockchip_lvds_dri
+@@ -750,6 +750,6 @@ struct platform_driver rockchip_lvds_dri
  	.remove_new = rockchip_lvds_remove,
  	.driver = {
  		   .name = "rockchip-lvds",

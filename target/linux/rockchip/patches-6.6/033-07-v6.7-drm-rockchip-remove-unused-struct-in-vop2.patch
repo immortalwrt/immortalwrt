@@ -17,7 +17,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231013122036.1594090-1-and
 
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
-@@ -160,7 +160,6 @@ struct vop2_video_port {
+@@ -159,7 +159,6 @@ struct vop2_video_port {
  	struct vop2 *vop2;
  	struct clk *dclk;
  	unsigned int id;
@@ -25,7 +25,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20231013122036.1594090-1-and
  	const struct vop2_video_port_data *data;
  
  	struct completion dsp_hold_completion;
-@@ -2280,7 +2279,6 @@ static int vop2_create_crtcs(struct vop2
+@@ -2337,7 +2336,6 @@ static int vop2_create_crtcs(struct vop2
  		vp = &vop2->vps[i];
  		vp->vop2 = vop2;
  		vp->id = vp_data->id;

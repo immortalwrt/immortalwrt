@@ -15,7 +15,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/5649ac03-db92-42a9-d86a-76df
 
 --- a/drivers/gpu/drm/rockchip/rk3066_hdmi.c
 +++ b/drivers/gpu/drm/rockchip/rk3066_hdmi.c
-@@ -434,14 +434,6 @@ static void rk3066_hdmi_encoder_disable(
+@@ -433,14 +433,6 @@ static void rk3066_hdmi_encoder_disable(
  	rk3066_hdmi_set_power_mode(hdmi, HDMI_SYS_POWER_MODE_A);
  }
  
@@ -30,7 +30,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/5649ac03-db92-42a9-d86a-76df
  static int
  rk3066_hdmi_encoder_atomic_check(struct drm_encoder *encoder,
  				 struct drm_crtc_state *crtc_state,
-@@ -459,7 +451,6 @@ static const
+@@ -458,7 +450,6 @@ static const
  struct drm_encoder_helper_funcs rk3066_hdmi_encoder_helper_funcs = {
  	.enable       = rk3066_hdmi_encoder_enable,
  	.disable      = rk3066_hdmi_encoder_disable,
