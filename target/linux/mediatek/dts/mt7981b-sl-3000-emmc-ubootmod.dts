@@ -152,60 +152,67 @@
 		   <&u3port0 PHY_TYPE_USB3>;
 	status = "okay";
 };
-&spi1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&spic_pins>;
-	status = "disabled";
-};
 
 &spi2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi2_flash_pins>;
+	compatible = "mediatek,ipm-spi-quad";
 	status = "okay";
+
 	spi_nor@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "jedec,spi-nor";
-		spi-cal-enable;
-		spi-cal-mode = "read-data";
-		spi-cal-datalen = <7>;
-		spi-cal-data = /bits/ 8 <
-			0x53 0x46 0x5F 0x42 0x4F 0x4F 0x54>; /* SF_BOOT */
-		spi-cal-addrlen = <1>;
-		spi-cal-addr = /bits/ 32 <0x0>;
 		reg = <0>;
 		spi-max-frequency = <52000000>;
 		spi-tx-bus-width = <4>;
 		spi-rx-bus-width = <4>;
 
-		partition@00000 {
-			label = "BL2";
-			reg = <0x00000 0x0100000>;
-		};
-		partition@100000 {
-			label = "Config";
-			reg = <0x100000 0x080000>;
-		};
-		partition@180000 {
-			label = "Factory";
-			reg = <0x180000 0x0200000>;
-			phandle = <0x11>;
-		};
-		partition@380000 {
-			label = "FIP";
-			reg = <0x380000 0x0200000>;
-		};
-		partition@580000 {
-			label = "firmware";
-			reg = <0x580000 0x1900000>;
-		};
-		partition@1E80000 {
-			label = "Product";
-			reg = <0x1E80000 0x20000>;
-		};
-		partition@1EA0000 {
-			label = "Custom";
-			reg = <0x1EA0000 0x160000>;
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@00000 {
+				label = "BL2";
+				reg = <0x00000 0x0100000>;
+			};
+			partition@100000 {
+				label = "u-boot-env";
+				reg = <0x0100000 0x0080000>;
+			};
+			factory: partition@180000 {
+				label = "Factory";
+				reg = <0x180000 0x0200000>;
+
+				nvmem-layout {
+					compatible = "fixed-layout";
+					#address-cells = <1>;
+					#size-cells = <1>;
+
+					macaddr_factory_4: macaddr@4 {
+						compatible = "mac-base";
+						reg = <0x4 0x6>;
+						#nvmem-cell-cells = <1>;
+					};
+				};
+			};
+			partition@380000 {
+				label = "FIP";
+				reg = <0x380000 0x0200000>;
+			};
+			partition@580000 {
+				label = "firmware";
+				reg = <0x580000 0x1900000>;
+			};
+			partition@1e80000 {
+				label = "Product";
+				reg = <0x1e80000 0x20000>;
+			};
+			partition@1ea0000 {
+				label = "Custom";
+				reg = <0x1ea0000 0x160000>;
+			};
 		};
 	};
 };
@@ -226,13 +233,6 @@
 };
 
 &pio {
-	spic_pins: spi1-pins {
-		mux {
-			function = "spi";
-			groups = "spi1_1";
-		};
-	};
-
 	spi2_flash_pins: spi2-pins {
 		mux {
 			function = "spi";
@@ -268,5 +268,6 @@
 };
 
 &wifi {
+	mediatek,mtd-eeprom = <&factory 0x0>;
 	status = "okay";
 };
