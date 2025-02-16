@@ -77,7 +77,7 @@ define Device/visionfive-v1
   DEVICE_VENDOR := StarFive
   DEVICE_MODEL := VisionFive v1
   DEVICE_DTS := starfive/jh7100-starfive-visionfive-v1
-  DEVICE_PACKAGES := kmod-eeprom-at24 kmod-brcmfmac cypress-firmware-43430-sdio wpad-basic-mbedtls \
+  DEVICE_PACKAGES := kmod-eeprom-at24 kmod-brcmfmac cypress-firmware-43430-sdio wpad-openssl \
   			kmod-usb3 kmod-usb-cdns3-starfive
 endef
 TARGET_DEVICES += visionfive-v1

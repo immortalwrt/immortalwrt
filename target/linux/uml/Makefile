@@ -18,7 +18,7 @@ KERNEL_PATCHVER:=6.6
 
 include $(INCLUDE_DIR)/target.mk
 
-DEFAULT_PACKAGES += wpad-basic-openssl kmod-mac80211-hwsim mkf2fs e2fsprogs
+DEFAULT_PACKAGES += wpad-openssl kmod-mac80211-hwsim mkf2fs e2fsprogs
 
   endif
 endif

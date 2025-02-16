@@ -49,7 +49,7 @@ endef
 define Device/dlink_dsm_g600_a
 	DEVICE_VENDOR := D-Link
 	DEVICE_MODEL := DSM G600 A
-	DEVICE_PACKAGES := ixp4xx-microcode-ethernet kmod-rtc-pcf8563 kmod-via-velocity kmod-ata-artop kmod-ath5k wpad-basic-mbedtls
+	DEVICE_PACKAGES := ixp4xx-microcode-ethernet kmod-rtc-pcf8563 kmod-via-velocity kmod-ata-artop kmod-ath5k wpad-openssl
 	DEVICE_DTS := intel-ixp42x-dlink-dsm-g600
 	KERNEL := kernel-bin | append-dtb
 	IMAGES := kernel.bin rootfs.bin
@@ -61,7 +61,7 @@ TARGET_DEVICES += dlink_dsm_g600_a
 define Device/freecom_fsg_3
 	DEVICE_VENDOR := Freecom
 	DEVICE_MODEL := FSG-3
-	DEVICE_PACKAGES := ixp4xx-microcode-ethernet kmod-rtc-isl1208 kmod-ath5k wpad-basic-mbedtls
+	DEVICE_PACKAGES := ixp4xx-microcode-ethernet kmod-rtc-isl1208 kmod-ath5k wpad-basic-openssl
 	# Only 4 MB of Flash so not building by default
 	DEFAULT := n
 	DEVICE_DTS := intel-ixp42x-freecom-fsg-3
@@ -128,7 +128,7 @@ define Device/netgear_wg302v1
 	DEVICE_VENDOR := Netgear
 	DEVICE_MODEL := WG302 v1
 	DEVICE_PACKAGES := ixp4xx-microcode-ethernet kmod-phy-amd kmod-ath5k \
-		wpad-basic-mbedtls kmod-input-gpio-keys-polled
+		wpad-basic-openssl kmod-input-gpio-keys-polled
 	# Only 32 MB of RAM and small flash so not building by default
 	DEFAULT := n
 	DEVICE_DTS := intel-ixp42x-netgear-wg302v1

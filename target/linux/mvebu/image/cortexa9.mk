@@ -105,7 +105,7 @@ define Device/cznic_turris-omnia
   KERNEL_INITRAMFS := kernel-bin | gzip | fit gzip $$(KDIR)/image-$$(DEVICE_DTS).dtb
   DEVICE_PACKAGES :=  \
     mkf2fs e2fsprogs kmod-fs-vfat kmod-nls-cp437 kmod-nls-iso8859-1 \
-    wpad-basic-openssl kmod-ath9k kmod-ath10k-ct ath10k-firmware-qca988x-ct \
+    wpad-openssl kmod-ath9k kmod-ath10k-ct ath10k-firmware-qca988x-ct \
     kmod-mt7915-firmware partx-utils kmod-i2c-mux-pca954x kmod-leds-turris-omnia \
     kmod-turris-omnia-mcu kmod-gpio-button-hotplug omnia-eeprom omnia-mcu-firmware \
     omnia-mcutool kmod-dsa-mv88e6xxx
@@ -169,7 +169,7 @@ define Device/fortinet_fwf-50e-2r
   KERNEL_INITRAMFS := kernel-bin | append-dtb | fortigate-header | \
     gzip-filename FW502R
   DEVICE_PACKAGES += kmod-ath10k-ct ath10k-firmware-qca988x-ct \
-    wpad-basic-mbedtls
+    wpad-openssl
 endef
 TARGET_DEVICES += fortinet_fwf-50e-2r
 
@@ -179,7 +179,7 @@ define Device/fortinet_fwf-51e
   DEVICE_DTS := armada-385-fortinet-fwf-51e
   KERNEL_INITRAMFS := kernel-bin | append-dtb | fortigate-header | \
     gzip-filename FWF51E
-  DEVICE_PACKAGES += kmod-ath9k wpad-basic-mbedtls
+  DEVICE_PACKAGES += kmod-ath9k wpad-openssl
 endef
 TARGET_DEVICES += fortinet_fwf-51e
 
@@ -202,7 +202,7 @@ define Device/iij_sa-w2
   IMAGE/sysupgrade.bin := append-kernel | pad-to 64k | \
     append-rootfs | pad-rootfs | check-size | append-metadata
   DEVICE_PACKAGES := kmod-ath9k kmod-ath10k-ct ath10k-firmware-qca988x-ct \
-    wpad-basic-mbedtls kmod-dsa-mv88e6xxx
+    wpad-openssl kmod-dsa-mv88e6xxx
 endef
 TARGET_DEVICES += iij_sa-w2
 
@@ -237,7 +237,7 @@ TARGET_DEVICES += kobol_helios4
 define Device/linksys
   $(Device/NAND-128K)
   DEVICE_VENDOR := Linksys
-  DEVICE_PACKAGES := kmod-mwlwifi wpad-basic-openssl
+  DEVICE_PACKAGES := kmod-mwlwifi wpad-openssl
   IMAGES += factory.img
   IMAGE/factory.img := append-kernel | pad-to $$$$(KERNEL_SIZE) | \
 	append-ubi | pad-to $$$$(PAGESIZE)
