@@ -916,7 +916,7 @@ define Device/dlink_dir-2150-r1
   KERNEL := $$(KERNEL)
   IMAGES += factory.bin
   IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
-	check-size | sign-dlink-ru e6587b35a6b34e07bedeca23e140322f 
+	check-size | sign-dlink-ru e6587b35a6b34e07bedeca23e140322f
 endef
 TARGET_DEVICES += dlink_dir-2150-r1
 
@@ -1816,7 +1816,7 @@ define Device/keenetic_kn-1910
   $(Device/uimage-lzma-loader)
   BLOCKSIZE := 128k
   PAGESIZE := 2048
-  IMAGE_SIZE := 20368588
+  IMAGE_SIZE := 29097984
   DEVICE_VENDOR := Keenetic
   DEVICE_MODEL := KN-1910
   DEVICE_PACKAGES := kmod-mt7615-firmware kmod-usb3 automount
@@ -2776,6 +2776,9 @@ define Device/tplink_er605-v2
   DEVICE_VENDOR := TP-Link
   DEVICE_MODEL := ER605
   DEVICE_VARIANT := v2
+  DEVICE_ALT0_VENDOR := TP-Link
+  DEVICE_ALT0_MODEL := FR205
+  DEVICE_ALT0_VARIANT := v1
   DEVICE_PACKAGES := -wpad-basic-openssl kmod-usb3 -uboot-envtools
   KERNEL_IN_UBI := 1
   KERNEL_LOADADDR := 0x82000000
