@@ -65,6 +65,7 @@ platform_do_upgrade() {
 	case "$board" in
 	abt,asr3000|\
 	cmcc,a10|\
+	cudy,tr3000-v1-ubootmod|\
 	h3c,magic-nx30-pro|\
 	imou,lc-hx3001|\
 	jcg,q30|\
