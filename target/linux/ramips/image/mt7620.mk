@@ -254,6 +254,7 @@ define Device/dlink_dir-806a-b1
   IMAGES += factory.bin
   IMAGE/factory.bin := append-kernel | append-rootfs | pad-rootfs | check-size | \
 	sign-dlink-ru cef285a2e29e40b2baab31277d44298b
+  DEFAULT := n
 endef
 TARGET_DEVICES += dlink_dir-806a-b1
 
