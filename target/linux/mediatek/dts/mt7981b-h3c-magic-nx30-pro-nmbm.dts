@@ -8,6 +8,11 @@
 	compatible = "h3c,magic-nx30-pro-nmbm", "mediatek,mt7981";
 };
 
+&chosen {
+	/delete-property/ bootargs-append;
+	/delete-property/ rootdisk;
+};
+
 &spi_nand {
 	mediatek,nmbm;
 	mediatek,bmt-max-ratio = <1>;
@@ -31,4 +36,8 @@
 		/delete-property/ mediatek,pull-up-adv;
 		bias-pull-down = <MTK_PUPD_SET_R1R0_11>;
 	};
+};
+
+&ubi {
+	/delete-node/ volumes;
 };
