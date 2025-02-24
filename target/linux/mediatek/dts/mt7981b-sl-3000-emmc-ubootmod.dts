@@ -160,7 +160,6 @@
 &spi2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi2_flash_pins>;
-	compatible = "mediatek,ipm-spi-quad";
 	status = "okay";
 
 	spi_nor@0 {
