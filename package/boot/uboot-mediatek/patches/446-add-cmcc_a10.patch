@@ -277,10 +277,10 @@
 +bootcmd=if pstore check ; then run boot_recovery ; else run boot_ubi ; fi
 +bootconf=config-1
 +bootdelay=0
-+bootfile=immortalwrt-mediatek-filogic-cmcc_a10-initramfs-recovery.itb
-+bootfile_bl2=immortalwrt-mediatek-filogic-cmcc_a10-preloader.bin
-+bootfile_fip=immortalwrt-mediatek-filogic-cmcc_a10-bl31-uboot.fip
-+bootfile_upg=immortalwrt-mediatek-filogic-cmcc_a10-squashfs-sysupgrade.itb
++bootfile=immortalwrt-mediatek-filogic-cmcc_a10-ubootmod-initramfs-recovery.itb
++bootfile_bl2=immortalwrt-mediatek-filogic-cmcc_a10-ubootmod-preloader.bin
++bootfile_fip=immortalwrt-mediatek-filogic-cmcc_a10-ubootmod-bl31-uboot.fip
++bootfile_upg=immortalwrt-mediatek-filogic-cmcc_a10-ubootmod-squashfs-sysupgrade.itb
 +bootled_pwr=red:status
 +bootled_rec=blue:status
 +bootmenu_confirm_return=askenv - Press ENTER to return to menu ; bootmenu 60
