@@ -592,6 +592,8 @@ define Device/cmcc_a10-ubootmod
   ARTIFACTS := preloader.bin bl31-uboot.fip
   ARTIFACT/preloader.bin := mt7981-bl2 spim-nand-ddr3
   ARTIFACT/bl31-uboot.fip := mt7981-bl31-uboot cmcc_a10
+  DEVICE_COMPAT_VERSION := 1.2
+  DEVICE_COMPAT_MESSAGE := Flash layout changes require bootloader update (for ImmortalWrt 23.05 users)
 endef
 TARGET_DEVICES += cmcc_a10-ubootmod
 
