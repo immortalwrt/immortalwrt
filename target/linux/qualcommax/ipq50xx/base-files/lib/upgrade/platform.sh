@@ -72,6 +72,11 @@ platform_check_image() {
 
 platform_do_upgrade() {
 	case "$(board_name)" in
+	jdcloud,re-cs-03)
+		CI_KERNPART="0:HLOS"
+		CI_ROOTPART="rootfs"
+		emmc_do_upgrade "$1"
+		;;
 	linksys,mx2000|\
 	linksys,mx5500|\
 	linksys,spnmx56)
@@ -80,6 +85,14 @@ platform_do_upgrade() {
 		;;
 	*)
 		default_do_upgrade "$1"
+		;;
+	esac
+}
+
+platform_copy_config() {
+	case "$(board_name)" in
+	jdcloud,re-cs-03)
+		emmc_copy_config
 		;;
 	esac
 }

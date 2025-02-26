@@ -1,6 +1,6 @@
 --- a/pppd/chap.c
 +++ b/pppd/chap.c
-@@ -42,6 +42,9 @@
+@@ -36,6 +36,9 @@
  #include "chap.h"
  #include "chap-md5.h"
  
@@ -10,7 +10,7 @@
  #ifdef PPP_WITH_CHAPMS
  #include "chap_ms.h"
  #define MDTYPE_ALL (MDTYPE_MICROSOFT_V2 | MDTYPE_MICROSOFT | MDTYPE_MD5)
-@@ -520,6 +523,18 @@ chap_respond(struct chap_client_state *c
+@@ -514,6 +517,18 @@ chap_respond(struct chap_client_state *c
  	p[2] = len >> 8;
  	p[3] = len;
  
@@ -31,7 +31,7 @@
  
 --- a/pppd/Makefile.am
 +++ b/pppd/Makefile.am
-@@ -67,6 +67,7 @@ noinst_HEADERS = \
+@@ -66,6 +66,7 @@ noinst_HEADERS = \
      peap.h \
      pppd-private.h \
      spinlock.h \
@@ -39,7 +39,7 @@
      tls.h \
      tdb.h
  
-@@ -85,6 +86,7 @@ pppd_SOURCES = \
+@@ -84,6 +85,7 @@ pppd_SOURCES = \
      main.c \
      options.c \
      session.c \
@@ -47,7 +47,7 @@
      tty.c \
      upap.c \
      utils.c
-@@ -95,7 +97,7 @@ BUILT_SOURCE = \
+@@ -94,7 +96,7 @@ BUILT_SOURCE = \
  
  pppd_CPPFLAGS = -DSYSCONFDIR=\"${sysconfdir}\" -DPPPD_RUNTIME_DIR='"@PPPD_RUNTIME_DIR@"' -DPPPD_LOGFILE_DIR='"@PPPD_LOGFILE_DIR@"'
  pppd_LDFLAGS =
@@ -78,7 +78,7 @@
        OPT_PRIV|OPT_LLIMIT|OPT_INITONLY, NULL, 0, -1 },
 --- a/pppd/pppd-private.h
 +++ b/pppd/pppd-private.h
-@@ -207,6 +207,7 @@ extern bool	dump_options;	/* print out o
+@@ -209,6 +209,7 @@ extern bool	dump_options;	/* print out o
  extern bool	show_options;	/* show all option names and descriptions */
  extern bool	dryrun;		/* check everything, print options, exit */
  extern int	child_wait;	/* # seconds to wait for children at end */

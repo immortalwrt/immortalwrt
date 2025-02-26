@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/* Copyright (c) 2021, Robert Marko <robimarko@gmail.com> */
 
 /dts-v1/;
 
 #include "ipq8074.dtsi"
 #include "ipq8074-hk-cpu.dtsi"
+#include "ipq8074-common.dtsi"
 #include "ipq8074-ess.dtsi"
+#include "ipq8074-nss.dtsi"
+
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
@@ -16,10 +18,12 @@
 
 	aliases {
 		serial0 = &blsp1_uart5;
+
 		led-boot = &led_system_yellow;
 		led-failsafe = &led_system_yellow;
 		led-running = &led_system_blue;
 		led-upgrade = &led_system_yellow;
+
 		label-mac-device = &dp5;
 	};
 
@@ -38,7 +42,7 @@
 		};
 
 		wps {
-			label = "wps"; /* Labeled Mesh on the device */
+			label = "wps";
 			gpios = <&tlmm 46 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_WPS_BUTTON>;
 		};
@@ -105,15 +109,13 @@
 	};
 
 	i2c_pins: i2c-pins {
-		pins = "gpio0", "gpio2";
-		function = "blsp5_i2c";
-		drive-strength = <8>;
-		bias-disable;
+		mux {
+			pins = "gpio0", "gpio2";
+			function = "blsp5_i2c";
+			drive-strength = <8>;
+			bias-disable;
+		};
 	};
-};
-
-&blsp1_uart5 {
-	status = "okay";
 };
 
 &blsp1_i2c6 {
@@ -121,22 +123,6 @@
 
 	pinctrl-0 = <&i2c_pins>;
 	pinctrl-names = "default";
-};
-
-&prng {
-	status = "okay";
-};
-
-&cryptobam {
-	status = "okay";
-};
-
-&crypto {
-	status = "okay";
-};
-
-&qpic_bam {
-	status = "okay";
 };
 
 &qpic_nand {
@@ -328,18 +314,6 @@
 	};
 };
 
-&qusb_phy_0 {
-	status = "okay";
-};
-
-&ssphy_0 {
-	status = "okay";
-};
-
-&usb_0 {
-	status = "okay";
-};
-
 &mdio {
 	status = "okay";
 
@@ -348,9 +322,9 @@
 	reset-gpios = <&tlmm 37 GPIO_ACTIVE_LOW>;
 
 	ethernet-phy-package@0 {
+		compatible = "qcom,qca8075-package";
 		#address-cells = <1>;
 		#size-cells = <0>;
-		compatible = "qcom,qca8075-package";
 		reg = <0>;
 
 		qcom,package-mode = "qsgmii";
@@ -358,69 +332,21 @@
 		qca8075_0: ethernet-phy@0 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <0>;
-
-			leds {
-				#address-cells = <1>;
-				#size-cells = <0>;
-
-				led@0 {
-					reg = <0>;
-					color = <LED_COLOR_ID_GREEN>;
-					function = LED_FUNCTION_LAN;
-					default-state = "keep";
-				};
-			};
 		};
 
 		qca8075_1: ethernet-phy@1 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <1>;
-
-			leds {
-				#address-cells = <1>;
-				#size-cells = <0>;
-
-				led@0 {
-					reg = <0>;
-					color = <LED_COLOR_ID_GREEN>;
-					function = LED_FUNCTION_LAN;
-					default-state = "keep";
-				};
-			};
 		};
 
 		qca8075_2: ethernet-phy@2 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <2>;
-
-			leds {
-				#address-cells = <1>;
-				#size-cells = <0>;
-
-				led@0 {
-					reg = <0>;
-					color = <LED_COLOR_ID_GREEN>;
-					function = LED_FUNCTION_LAN;
-					default-state = "keep";
-				};
-			};
 		};
 
 		qca8075_3: ethernet-phy@3 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <3>;
-
-			leds {
-				#address-cells = <1>;
-				#size-cells = <0>;
-
-				led@0 {
-					reg = <0>;
-					color = <LED_COLOR_ID_GREEN>;
-					function = LED_FUNCTION_LAN;
-					default-state = "keep";
-				};
-			};
 		};
 	};
 
@@ -429,56 +355,44 @@
 		reg = <24>;
 		reset-deassert-us = <10000>;
 		reset-gpios = <&tlmm 44 GPIO_ACTIVE_LOW>;
-
-		leds {
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			led@0 {
-				reg = <0>;
-				color = <LED_COLOR_ID_GREEN>;
-				function = LED_FUNCTION_WAN;
-				default-state = "keep";
-			};
-		};
 	};
 };
 
 &switch {
 	status = "okay";
 
-	switch_lan_bmp = <(ESS_PORT1 | ESS_PORT2 | ESS_PORT3 | ESS_PORT4)>; /* lan port bitmap */
-	switch_wan_bmp = <ESS_PORT5>; /* wan port bitmap */
-	switch_mac_mode = <MAC_MODE_QSGMII>; /* mac mode for uniphy instance0*/
-	switch_mac_mode1 = <MAC_MODE_SGMII_PLUS>; /* mac mode for uniphy instance1*/
+	switch_lan_bmp = <(ESS_PORT1 | ESS_PORT2 | ESS_PORT3 | ESS_PORT4)>;
+	switch_wan_bmp = <ESS_PORT5>;
+	switch_mac_mode = <MAC_MODE_QSGMII>;
+	switch_mac_mode1 = <MAC_MODE_SGMII_PLUS>;
 
 	qcom,port_phyinfo {
 		port@1 {
 			port_id = <1>;
 			phy_address = <0>;
 		};
+
 		port@2 {
 			port_id = <2>;
 			phy_address = <1>;
 		};
+
 		port@3 {
 			port_id = <3>;
 			phy_address = <2>;
 		};
+
 		port@4 {
 			port_id = <4>;
 			phy_address = <3>;
 		};
+
 		port@5 {
 			port_id = <5>;
 			phy_address = <24>;
 			port_mac_sel = "QGMAC_PORT";
 		};
 	};
-};
-
-&edma {
-	status = "okay";
 };
 
 &dp1 {
@@ -526,14 +440,10 @@
 	nvmem-cell-names = "mac-address";
 };
 
-&pcie_qmp0 {
-	status = "okay";
-};
-
 &pcie0 {
 	status = "okay";
 
-	perst-gpio = <&tlmm 58 GPIO_ACTIVE_LOW>;
+	perst-gpios = <&tlmm 58 GPIO_ACTIVE_LOW>;
 
 	bridge@0,0 {
 		reg = <0x00000000 0 0 0 0>;
@@ -548,19 +458,16 @@
 			compatible = "pci17cb,1104";
 			reg = <0x00010000 0 0 0 0>;
 
+			qcom,ath11k-fw-memory-mode = <1>;
 			qcom,ath11k-calibration-variant = "Xiaomi-AX9000";
 		};
 	};
 };
 
-&pcie_qmp1 {
-	status = "okay";
-};
-
 &pcie1 {
 	status = "okay";
 
-	perst-gpio = <&tlmm 62 GPIO_ACTIVE_HIGH>;
+	perst-gpios = <&tlmm 62 GPIO_ACTIVE_HIGH>;
 
 	bridge@1,0 {
 		reg = <0x00010000 0 0 0 0>;
@@ -583,6 +490,10 @@
 
 &wifi {
 	status = "okay";
-
+	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "Xiaomi-AX9000";
+};
+
+&edma {
+	status = "okay";
 };

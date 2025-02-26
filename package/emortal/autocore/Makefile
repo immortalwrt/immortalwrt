@@ -30,8 +30,6 @@ define Build/Compile
 endef
 
 define Package/autocore/install
-	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/60-autocore-reload-rpcd $(1)/etc/uci-defaults/
 
 ifneq ($(filter i386 i686 x86_64, $(ARCH)),)
 	$(INSTALL_DIR) $(1)/etc/init.d

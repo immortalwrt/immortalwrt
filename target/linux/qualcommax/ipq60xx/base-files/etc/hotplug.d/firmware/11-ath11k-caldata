@@ -15,32 +15,29 @@ case "$FIRMWARE" in
 	cambiumnetworks,xe3-4)
 		caldata_extract "0:ART" 0x1000 0x10000
 		;;
-	linksys,mr7350)
+	cmiot,ax18|\
+	glinet,gl-ax1800|\
+	glinet,gl-axt1800|\
+	linksys,mr7350|\
+	netgear,wax214|\
+	qihoo,360v6|\
+	redmi,ax5|\
+	xiaomi,ax1800|\
+	zn,m2)
 		caldata_extract "0:art" 0x1000 0x10000
-		addr=$(mtd_get_mac_ascii devinfo hw_mac_addr)
-		ath11k_patch_mac $(macaddr_add $addr 2) 0
-		ath11k_patch_mac $(macaddr_add $addr 1) 1
-		ath11k_set_macflag
-		;;
-	netgear,wax214)
-		caldata_extract "0:art" 0x1000 0x10000
-		;;
-	qihoo,360v6)
-		caldata_extract "0:art" 0x1000 0x10000
-		label_mac=$(mtd_get_mac_ascii factory lanMac)
-		ath11k_patch_mac $(macaddr_add $label_mac 3) 0
-		ath11k_patch_mac $(macaddr_add $label_mac 2) 1
-		ath11k_set_macflag
 		;;
 	tplink,eap610-outdoor)
 		caldata_from_file "/tmp/factory_data/radio" 0 0x10000
-		label_mac=$(get_mac_binary /tmp/factory_data/default-mac 0)
-		ath11k_patch_mac $label_mac 1
-		ath11k_patch_mac $(macaddr_add $label_mac 1) 0
-		ath11k_set_macflag
 		;;
 	yuncore,fap650)
 		caldata_extract "0:art" 0x1000 0x20000
+		;;
+	jdcloud,re-ss-01|\
+	jdcloud,re-cs-02|\
+	link,nn6000-v1|\
+	link,nn6000-v2|\
+	redmi,ax5-jdcloud)
+		caldata_extract_mmc "0:ART" 0x1000 0x10000
 		;;
 	esac
 	;;
@@ -48,6 +45,9 @@ case "$FIRMWARE" in
 	case "$board" in
 	cambiumnetworks,xe3-4)
 		caldata_extract "0:ART" 0x26800 0x20000
+		;;
+	jdcloud,re-cs-02)
+		caldata_extract_mmc "0:ART" 0x26800 0x20000
 		;;
 	esac
 	;;

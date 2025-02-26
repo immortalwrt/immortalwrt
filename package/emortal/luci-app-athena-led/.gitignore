@@ -1,0 +1,36 @@
+# 忽略编译生成的文件
+*.o
+*.so
+*.a
+
+# LuCI 的生成文件和缓存
+build/
+bin/
+.tmp/
+
+# 忽略 OpenWrt 编译生成的安装包
+*.ipk
+*.tar.gz
+*.deb
+
+# 忽略临时文件和编辑器缓存
+*.swp
+*.swo
+*.bak
+*.tmp
+*.log
+.DS_Store
+
+# 忽略 Git 操作时产生的临时文件
+.git/
+
+# IDE 配置文件
+.vscode/
+.idea/
+
+# 忽略 Makefile 生成的中间文件
+/feeds
+/staging_dir
+/tmp/
+config.log
+config.status

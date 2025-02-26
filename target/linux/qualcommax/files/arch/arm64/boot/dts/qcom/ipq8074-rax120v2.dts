@@ -3,10 +3,13 @@
 /dts-v1/;
 
 #include "ipq8074.dtsi"
-#include "ipq8074-ess.dtsi"
 #include "ipq8074-hk-cpu.dtsi"
-#include <dt-bindings/input/input.h>
+#include "ipq8074-common.dtsi"
+#include "ipq8074-ess.dtsi"
+#include "ipq8074-nss.dtsi"
+
 #include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
 
 / {
@@ -16,9 +19,11 @@
 	aliases {
 		serial0 = &blsp1_uart5;
 
+		led-boot = &led_system_white;
+		led-failsafe = &led_system_white;
 		led-running = &led_system_white;
 		led-upgrade = &led_system_white;
-		led-internet = &led_wan_white;
+
 		label-mac-device = &dp5;
 	};
 
@@ -151,11 +156,12 @@
 	reset-gpios = <&tlmm 37 GPIO_ACTIVE_LOW>;
 
 	ethernet-phy-package@0 {
+		compatible = "qcom,qca8075-package";
 		#address-cells = <1>;
 		#size-cells = <0>;
 		reg = <0>;
 
-		compatible = "qcom,qca8075-package";
+		qcom,package-mode = "qsgmii";
 
 		qca8075_0: ethernet-phy@0 {
 			compatible = "ethernet-phy-ieee802.3-c22";
@@ -193,32 +199,37 @@
 &switch {
 	status = "okay";
 
-	switch_lan_bmp = <(ESS_PORT1 | ESS_PORT2 | ESS_PORT3 | ESS_PORT4 | ESS_PORT6)>; /* lan port bitmap */
-	switch_wan_bmp = <ESS_PORT5>; /* wan port bitmap */
-	switch_mac_mode = <MAC_MODE_PSGMII>; /* mac mode for uniphy instance0*/
-	switch_mac_mode2 = <MAC_MODE_USXGMII>; /* mac mode for uniphy instance2*/
+	switch_lan_bmp = <(ESS_PORT1 | ESS_PORT2 | ESS_PORT3 | ESS_PORT4 | ESS_PORT6)>;
+	switch_wan_bmp = <ESS_PORT5>;
+	switch_mac_mode = <MAC_MODE_QSGMII>;
+	switch_mac_mode2 = <MAC_MODE_USXGMII>;
 
 	qcom,port_phyinfo {
 		port@1 {
 			port_id = <1>;
 			phy_address = <0>;
 		};
+
 		port@2 {
 			port_id = <2>;
 			phy_address = <1>;
 		};
+
 		port@3 {
 			port_id = <3>;
 			phy_address = <2>;
 		};
+
 		port@4 {
 			port_id = <4>;
 			phy_address = <3>;
 		};
+
 		port@5 {
 			port_id = <5>;
 			phy_address = <4>;
 		};
+
 		port@6 {
 			port_id = <6>;
 			phy_address = <7>;
@@ -226,10 +237,6 @@
 			ethernet-phy-ieee802.3-c45;
 		};
 	};
-};
-
-&edma {
-	status = "okay";
 };
 
 &dp1 {
@@ -281,10 +288,6 @@
 	nvmem-cell-names = "mac-address";
 };
 
-&blsp1_uart5 {
-	status = "okay";
-};
-
 &blsp1_i2c2 {
 	status = "okay";
 
@@ -295,10 +298,6 @@
 		fan_start = <1>;
 		pwm_polarity = <0>;
 	};
-};
-
-&qpic_bam {
-	status = "okay";
 };
 
 &qpic_nand {
@@ -494,44 +493,12 @@
 	};
 };
 
-&qusb_phy_0 {
+&wifi {
 	status = "okay";
-};
-
-&qusb_phy_1 {
-	status = "okay";
-};
-
-&ssphy_0 {
-	status = "okay";
-};
-
-&ssphy_1 {
-	status = "okay";
-};
-
-&usb_0 {
-	status = "okay";
-};
-
-&usb_1 {
-	status = "okay";
-};
-
-&wifi{
-	status = "okay";
-
+	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "Netgear-RAX120v2";
 };
 
-&cryptobam {
-	status = "okay";
-};
-
-&crypto {
-	status = "okay";
-};
-
-&prng {
+&edma {
 	status = "okay";
 };

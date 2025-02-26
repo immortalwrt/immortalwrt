@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/* Copyright 2023 Nokia */
 
 /dts-v1/;
 
 #include "ipq8074.dtsi"
 #include "ipq8074-hk-cpu.dtsi"
+#include "ipq8074-common.dtsi"
 #include "ipq8074-ess.dtsi"
+#include "ipq8074-nss.dtsi"
+
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
@@ -16,15 +18,17 @@
 
 	aliases {
 		serial0 = &blsp1_uart5;
+
 		led-boot = &led_power_blue;
 		led-failsafe = &led_power_red;
 		led-running = &led_system_green;
 		led-upgrade = &led_system_blue;
-		/* Aliases as required by u-boot to patch MAC addresses */
+
 		ethernet0 = &dp6;
 		ethernet1 = &dp2;
 		ethernet2 = &dp3;
 		ethernet3 = &dp4;
+
 		label-mac-device = &dp6;
 	};
 
@@ -91,15 +95,13 @@
 	};
 
 	i2c_pins: i2c-pins {
-		pins = "gpio0", "gpio2";
-		function = "blsp5_i2c";
-		drive-strength = <8>;
-		bias-disable;
+		mux {
+			pins = "gpio0", "gpio2";
+			function = "blsp5_i2c";
+			drive-strength = <8>;
+			bias-disable;
+		};
 	};
-};
-
-&blsp1_uart5 {
-	status = "okay";
 };
 
 &blsp1_i2c6 {
@@ -107,53 +109,6 @@
 
 	pinctrl-0 = <&i2c_pins>;
 	pinctrl-names = "default";
-};
-
-&prng {
-	status = "okay";
-};
-
-&cryptobam {
-	status = "okay";
-};
-
-&crypto {
-	status = "okay";
-};
-
-&qpic_bam {
-	status = "okay";
-};
-
-&blsp1_spi1 {
-	status = "okay";
-};
-
-&tlmm {
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio68";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio69";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
-	button_pins: button_pins {
-		reset_button {
-			pins = "gpio66";
-			function = "gpio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
 };
 
 &blsp1_spi1 {
@@ -326,40 +281,17 @@
 	};
 };
 
-&qusb_phy_0 {
-	status = "okay";
-};
-
-&qusb_phy_1 {
-	status = "okay";
-};
-
-&ssphy_0 {
-	status = "okay";
-};
-
-&ssphy_1 {
-	status = "okay";
-};
-
-&usb_0 {
-	status = "okay";
-};
-
-&usb_1 {
-	status = "okay";
-};
-
 &mdio {
 	status = "okay";
+
 	pinctrl-0 = <&mdio_pins>;
 	pinctrl-names = "default";
 	reset-gpios = <&tlmm 37 GPIO_ACTIVE_LOW>;
 
 	ethernet-phy-package@0 {
+		compatible = "qcom,qca8075-package";
 		#address-cells = <1>;
 		#size-cells = <0>;
-		compatible = "qcom,qca8075-package";
 		reg = <0>;
 
 		qca8075_1: ethernet-phy@1 {
@@ -381,6 +313,7 @@
 	qca8081: ethernet-phy@28 {
 		compatible = "ethernet-phy-ieee802.3-c22";
 		reg = <28>;
+		reset-deassert-us = <10000>;
 		reset-gpios = <&tlmm 44 GPIO_ACTIVE_LOW>;
 	};
 };
@@ -388,35 +321,34 @@
 &switch {
 	status = "okay";
 
-	switch_lan_bmp = <(ESS_PORT2 | ESS_PORT3 | ESS_PORT4)>; /* lan port bitmap */
-	switch_wan_bmp = <ESS_PORT6>; /* wan port bitmap */
-	switch_mac_mode = <MAC_MODE_PSGMII>; /* mac mode for uniphy instance0*/
-	switch_mac_mode1 = <MAC_MODE_SGMII_CHANNEL0>; /* mac mode for uniphy instance1*/
-	switch_mac_mode2 = <MAC_MODE_SGMII_CHANNEL0>; /* mac mode for uniphy instance2*/
+	switch_lan_bmp = <(ESS_PORT2 | ESS_PORT3 | ESS_PORT4)>;
+	switch_wan_bmp = <ESS_PORT6>;
+	switch_mac_mode = <MAC_MODE_PSGMII>;
+	switch_mac_mode1 = <MAC_MODE_SGMII_PLUS>;
+	switch_mac_mode2 = <MAC_MODE_SGMII_PLUS>;
 
 	qcom,port_phyinfo {
 		port@2 {
 			port_id = <2>;
 			phy_address = <1>;
 		};
+
 		port@3 {
 			port_id = <3>;
 			phy_address = <2>;
 		};
+
 		port@4 {
 			port_id = <4>;
 			phy_address = <3>;
 		};
+
 		port@6 {
 			port_id = <6>;
 			phy_address = <28>;
 			port_mac_sel = "QGMAC_PORT";
 		};
 	};
-};
-
-&edma {
-	status = "okay";
 };
 
 &dp2 {
@@ -443,14 +375,10 @@
 	label = "wan";
 };
 
-&pcie_qmp0 {
-	status = "okay";
-};
-
 &pcie0 {
 	status = "okay";
 
-	perst-gpio = <&tlmm 58 GPIO_ACTIVE_LOW>;
+	perst-gpios = <&tlmm 58 GPIO_ACTIVE_LOW>;
 
 	bridge@0,0 {
 		reg = <0x00020000 0 0 0 0>;
@@ -460,14 +388,10 @@
 	};
 };
 
-&pcie_qmp1 {
-	status = "okay";
-};
-
 &pcie1 {
 	status = "okay";
 
-	perst-gpio = <&tlmm 62 GPIO_ACTIVE_HIGH>;
+	perst-gpios = <&tlmm 62 GPIO_ACTIVE_HIGH>;
 
 	bridge@1,0 {
 		reg = <0x00010000 0 0 0 0>;
@@ -479,6 +403,10 @@
 
 &wifi {
 	status = "okay";
-
+	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "Compex-WPQ873";
+};
+
+&edma {
+	status = "okay";
 };

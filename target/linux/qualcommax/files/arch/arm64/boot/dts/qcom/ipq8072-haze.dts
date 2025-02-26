@@ -4,7 +4,10 @@
 
 #include "ipq8074.dtsi"
 #include "ipq8074-hk-cpu.dtsi"
+#include "ipq8074-common.dtsi"
 #include "ipq8074-ess.dtsi"
+#include "ipq8074-nss.dtsi"
+
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
@@ -15,16 +18,18 @@
 
 	aliases {
 		serial0 = &blsp1_uart5;
-		/* Aliases are required by U-Boot to patch MAC addresses */
-		ethernet0 = &dp6_syn;
-		ethernet1 = &dp4;
-		ethernet2 = &dp3;
-		ethernet3 = &dp2;
-		label-mac-device = &dp6_syn;
+
 		led-boot = &led_system_blue;
 		led-failsafe = &led_system_red;
 		led-running = &led_system_green;
 		led-upgrade = &led_system_blue;
+
+		ethernet0 = &dp6_syn;
+		ethernet1 = &dp4;
+		ethernet2 = &dp3;
+		ethernet3 = &dp2;
+
+		label-mac-device = &dp6_syn;
 	};
 
 	chosen {
@@ -33,8 +38,6 @@
 
 	keys {
 		compatible = "gpio-keys";
-		pinctrl-0 = <&button_pins>;
-		pinctrl-names = "default";
 
 		wps-button {
 			label = "wps";
@@ -67,79 +70,22 @@
 		};
 	};
 
-	button_pins: button-state {
-		wps-pins {
-			pins = "gpio42";
-			function = "gpio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		rst-pins {
-			pins = "gpio44";
-			function = "gpio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
 	i2c_3_pins: i2c-3-state {
-		pins = "gpio46", "gpio47";
-		function = "blsp2_i2c";
-		drive-strength = <8>;
-		bias-disable;
+		mux {
+			pins = "gpio46", "gpio47";
+			function = "blsp2_i2c";
+			drive-strength = <8>;
+			bias-disable;
+		};
 	};
 };
 
-&blsp1_uart5 {
+&blsp1_spi1 {
 	status = "okay";
-};
 
-&prng {
-	status = "okay";
-};
-
-&ssphy_0 {
-	status = "okay";
-};
-
-&qusb_phy_0 {
-	status = "okay";
-};
-
-&ssphy_1 {
-	status = "okay";
-};
-
-&qusb_phy_1 {
-	status = "okay";
-};
-
-&usb_0 {
-	status = "okay";
-};
-
-&usb_1 {
-	status = "okay";
-};
-
-&cryptobam {
-	status = "okay";
-};
-
-&crypto {
-	status = "okay";
-};
-
-&qpic_bam {
-	status = "okay";
-};
-
-&blsp1_spi1 { /* BLSP1 QUP1 */
 	pinctrl-0 = <&spi_0_pins>;
 	pinctrl-names = "default";
 	cs-gpios = <0>;
-	status = "okay";
 
 	flash@0 {
 		#address-cells = <1>;
@@ -162,10 +108,12 @@
 	reset-gpios = <&tlmm 22 GPIO_ACTIVE_LOW>;
 
 	ethernet-phy-package@0 {
+		compatible = "qcom,qca8075-package";
 		#address-cells = <1>;
 		#size-cells = <0>;
-		compatible = "qcom,qca8075-package";
 		reg = <0>;
+
+		qcom,package-mode = "qsgmii";
 
 		qca8075_0: ethernet-phy@0 {
 			compatible = "ethernet-phy-ieee802.3-c22";
@@ -204,29 +152,33 @@
 &switch {
 	status = "okay";
 
-	switch_lan_bmp = <(ESS_PORT1 | ESS_PORT2 | ESS_PORT3 | ESS_PORT4)>; /* lan port bitmap */
-	switch_wan_bmp = <ESS_PORT6>; /* wan port bitmap */
-	switch_mac_mode = <MAC_MODE_PSGMII>; /* mac mode for uniphy instance0*/
-	switch_mac_mode1 = <MAC_MODE_10GBASE_R>; /* mac mode for uniphy instance1*/
-	switch_mac_mode2 = <MAC_MODE_USXGMII>; /* mac mode for uniphy instance2*/
+	switch_lan_bmp = <(ESS_PORT1 | ESS_PORT2 | ESS_PORT3 | ESS_PORT4)>;
+	switch_wan_bmp = <ESS_PORT6>;
+	switch_mac_mode = <MAC_MODE_QSGMII>;
+	switch_mac_mode1 = <MAC_MODE_10GBASE_R>;
+	switch_mac_mode2 = <MAC_MODE_USXGMII>;
 
 	qcom,port_phyinfo {
 		port@1 {
 			port_id = <1>;
 			phy_address = <0>;
 		};
+
 		port@2 {
 			port_id = <2>;
 			phy_address = <1>;
 		};
+
 		port@3 {
 			port_id = <3>;
 			phy_address = <2>;
 		};
+
 		port@4 {
 			port_id = <4>;
 			phy_address = <3>;
 		};
+
 		port@6 {
 			port_id = <6>;
 			phy_address = <8>;
@@ -234,10 +186,6 @@
 			ethernet-phy-ieee802.3-c45;
 		};
 	};
-};
-
-&edma {
-	status = "okay";
 };
 
 /* Dummy LAN port */
@@ -273,14 +221,10 @@
 	label = "wan";
 };
 
-&pcie_qmp0 {
-	status = "okay";
-};
-
 &pcie0 {
 	status = "okay";
 
-	perst-gpio = <&tlmm 58 GPIO_ACTIVE_LOW>;
+	perst-gpios = <&tlmm 58 GPIO_ACTIVE_LOW>;
 
 	bridge@0,0 {
 		reg = <0x00020000 0 0 0 0>;
@@ -290,14 +234,10 @@
 	};
 };
 
-&pcie_qmp1 {
-	status = "okay";
-};
-
 &pcie1 {
 	status = "okay";
 
-	perst-gpio = <&tlmm 61 GPIO_ACTIVE_LOW>;
+	perst-gpios = <&tlmm 61 GPIO_ACTIVE_LOW>;
 
 	bridge@1,0 {
 		reg = <0x00010000 0 0 0 0>;
@@ -312,6 +252,7 @@
 			compatible = "pci17cb,1104";
 			reg = <0x00010000 0 0 0 0>;
 
+			qcom,ath11k-fw-memory-mode = <1>;
 			qcom,ath11k-calibration-variant = "prpl-Haze";
 		};
 	};
@@ -319,11 +260,11 @@
 
 &wifi {
 	status = "okay";
-
+	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "prpl-Haze";
 };
 
-&blsp1_i2c3{
+&blsp1_i2c3 {
 	pinctrl-0 = <&i2c_3_pins>;
 	pinctrl-names = "default";
 	status = "okay";
@@ -335,7 +276,7 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 
-		led_system_red: chan@0 {
+		led_system_red: system-red {
 			chan-name = "red";
 			led-cur = /bits/ 8 <0x20>;
 			max-cur = /bits/ 8 <0x60>;
@@ -343,7 +284,7 @@
 			reg = <0>;
 		};
 
-		led_system_green: chan@1 {
+		led_system_green: system-green {
 			chan-name = "green";
 			led-cur = /bits/ 8 <0x20>;
 			max-cur = /bits/ 8 <0x60>;
@@ -351,7 +292,7 @@
 			reg = <1>;
 		};
 
-		led_system_blue: chan@2 {
+		led_system_blue: system-blue {
 			chan-name = "blue";
 			led-cur = /bits/ 8 <0x20>;
 			max-cur = /bits/ 8 <0x60>;
@@ -359,4 +300,8 @@
 			reg = <2>;
 		};
 	};
+};
+
+&edma {
+	status = "okay";
 };

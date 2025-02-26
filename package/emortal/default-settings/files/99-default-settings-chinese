@@ -9,7 +9,7 @@ if ! uci -q get system.@imm_init[0].system_chn > "/dev/null"; then
 
 		delete system.ntp.server
 		add_list system.ntp.server="ntp.tencent.com"
-		add_list system.ntp.server="ntp1.aliyun.com"
+		add_list system.ntp.server="ntp.aliyun.com"
 		add_list system.ntp.server="ntp.ntsc.ac.cn"
 		add_list system.ntp.server="cn.ntp.org.cn"
 

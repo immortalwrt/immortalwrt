@@ -1,0 +1,42 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+STOP=99
+USE_PROCD=1
+PROG=/usr/sbin/athena-led
+
+start_service() {
+  config_load 'athena_led'
+  local cfg='config'
+
+  config_get_bool enabled "$cfg" 'enable' '0'
+  if [ "$enabled" -eq 0 ]; then
+    logger "athena-led Service is disabled, not starting"
+    return 1
+  fi
+
+  local status seconds lightLevel option value
+  config_get status $cfg 'status' ' '
+  config_get seconds $cfg 'seconds' '5'
+  config_get lightLevel $cfg 'lightLevel' '5'
+  config_get option $cfg 'option' 'date timeBlink'
+  config_get value $cfg 'value' 'abcdefghijklmnopqrstuvwxyz0123456789+-*/=.:：℃'
+  config_get url $cfg 'url' 'https://www.baidu.com'
+  config_get tempFlag $cfg 'tempFlag' '4'
+
+  procd_open_instance
+  procd_set_param command $PROG -status "${status}" -seconds "${seconds}" -lightLevel "${lightLevel}" -option "${option}" -value "${value}" -url "${url}" -tempFlag "${tempFlag}"
+  procd_set_param respawn
+  procd_close_instance
+
+}
+
+service_triggers(){
+	procd_add_reload_trigger "athena_led"
+}
+
+reload_service()
+{
+	stop
+	start
+}

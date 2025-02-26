@@ -9,8 +9,17 @@ board=$(board_name)
 
 ubootenv_add_mtd() {
 	local idx="$(find_mtd_index "${1}")"
-	[ -n "$idx" ] && \
-		ubootenv_add_uci_config "/dev/mtd$idx" "${2}" "${3}" "${4}"
+	[ -n "$idx" ] && ubootenv_add_uci_config "/dev/mtd$idx" "${2}" "${3}" "${4}"
+}
+
+ubootenv_add_sys_mtd() {
+	local idx="$(find_mtd_index "${1}")"
+	[ -n "$idx" ] && ubootenv_add_uci_sys_config "/dev/mtd$idx" "${2}" "${3}" "${4}"
+}
+
+ubootenv_add_mmc() {
+	local mmcpart="$(find_mmc_part "${1}")"
+	[ -n "$mmcpart" ] && ubootenv_add_uci_config "$mmcpart" "${2}" "${3}" "${4}" "${5}"
 }
 
 case "$board" in
@@ -22,12 +31,27 @@ cambiumnetworks,xe3-4)
 linksys,mr7350)
 	ubootenv_add_mtd "u_env" "0x0" "0x40000" "0x20000"
 	;;
+cmiot,ax18|\
+glinet,gl-ax1800|\
+glinet,gl-axt1800|\
+qihoo,360v6|\
+redmi,ax5|\
+xiaomi,ax1800|\
+zn,m2|\
 netgear,wax214|\
 tplink,eap610-outdoor)
 	ubootenv_add_mtd "0:appsblenv" "0x0" "0x40000" "0x20000"
 	;;
 yuncore,fap650)
 	ubootenv_add_mtd "0:appsblenv" "0x0" "0x10000" "0x10000"
+	;;
+jdcloud,re-ss-01|\
+jdcloud,re-cs-02|\
+jdcloud,re-cs-07|\
+link,nn6000-v1|\
+link,nn6000-v2|\
+redmi,ax5-jdcloud)
+	ubootenv_add_mmc "0:APPSBLENV" "0x0" "0x40000" "0x20000"
 	;;
 esac
 

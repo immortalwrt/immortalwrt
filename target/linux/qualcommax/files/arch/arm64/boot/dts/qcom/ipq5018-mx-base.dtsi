@@ -41,7 +41,7 @@
 	leds {
 		compatible = "pwm-leds";
 
-		led_system_red: red {
+		led_system_red: system-red {
 			color = <LED_COLOR_ID_RED>;
 			function = LED_FUNCTION_POWER;
 			pwms = <&pwm 3 1250000>;
@@ -55,7 +55,7 @@
 			max-brightness = <255>;
 		};
 
-		led_system_blue: blue {
+		led_system_blue: system-blue {
 			color = <LED_COLOR_ID_BLUE>;
 			function = LED_FUNCTION_POWER;
 			pwms = <&pwm 1 1250000>;

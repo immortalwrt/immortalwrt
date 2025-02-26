@@ -1,12 +1,16 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
 /dts-v1/;
 
 #include "ipq8074.dtsi"
 #include "ipq8074-hk-cpu.dtsi"
+#include "ipq8074-common.dtsi"
 #include "ipq8074-ess.dtsi"
+#include "ipq8074-nss.dtsi"
 
+#include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
-#include <dt-bindings/gpio/gpio.h>
 
 / {
 	model = "Netgear WAX218";
@@ -14,6 +18,7 @@
 
 	aliases {
 		serial0 = &blsp1_uart5;
+
 		led-boot = &led_power_amber;
 		led-failsafe = &led_power_amber;
 		led-running = &led_power_amber;
@@ -61,7 +66,7 @@
 	leds {
 		compatible = "gpio-leds";
 
-		led_power_amber: led_power {
+		led_power_amber: power-amber {
 			function = LED_FUNCTION_POWER;
 			color = <LED_COLOR_ID_AMBER>;
 			gpios = <&led_gpio 1 GPIO_ACTIVE_HIGH>;
@@ -85,16 +90,12 @@
 	};
 };
 
-&edma {
-	status = "okay";
-};
-
 &switch {
 	status = "okay";
 
 	switch_lan_bmp = <ESS_PORT6>;
 	switch_mac_mode = <MAC_MODE_PSGMII>;
-	switch_mac_mode2 = <MAC_MODE_SGMII_CHANNEL0>;
+	switch_mac_mode2 = <MAC_MODE_SGMII_PLUS>;
 
 	qcom,port_phyinfo {
 		port@6 {
@@ -128,10 +129,12 @@
 
 	pinctrl-0 = <&mdio_pins>;
 	pinctrl-names = "default";
-	reset-gpios = <&tlmm 44 GPIO_ACTIVE_LOW>;
+	reset-gpios = <&tlmm 37 GPIO_ACTIVE_LOW>;
 
 	qca8081_28: ethernet-phy@28 {
 		reg = <28>;
+		reset-deassert-us = <10000>;
+		reset-gpios = <&tlmm 44 GPIO_ACTIVE_LOW>;
 	};
 };
 
@@ -141,10 +144,6 @@
 	label = "lan";
 	nvmem-cells = <&macaddr_ubootenv_ethaddr>;
 	nvmem-cell-names = "mac-address";
-};
-
-&qpic_bam {
-	status = "okay";
 };
 
 &qpic_nand {
@@ -182,12 +181,12 @@
 	};
 };
 
-&blsp1_uart5 {
-	status = "okay";
-};
-
 &wifi {
 	status = "okay";
-
+	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "Netgear-WAX218";
+};
+
+&edma {
+	status = "okay";
 };

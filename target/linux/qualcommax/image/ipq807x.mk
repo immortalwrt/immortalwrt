@@ -42,7 +42,7 @@ define Device/aliyun_ap8220
 	PAGESIZE := 2048
 	DEVICE_DTS_CONFIG := config@ac02
 	SOC := ipq8071
-	DEVICE_PACKAGES := ipq-wifi-aliyun_ap8220
+	DEVICE_PACKAGES := ipq-wifi-aliyun_ap8220 kmod-hci-uart kmod-bluetooth kmod-bluetooth-6lowpan
 endef
 TARGET_DEVICES += aliyun_ap8220
 
@@ -55,8 +55,7 @@ define Device/arcadyan_aw1000
 	PAGESIZE := 4096
 	DEVICE_DTS_CONFIG := config@hk09
 	SOC := ipq8072
-	DEVICE_PACKAGES := ipq-wifi-arcadyan_aw1000 kmod-spi-gpio \
-		kmod-gpio-nxp-74hc164 kmod-usb-serial-option uqmi
+	DEVICE_PACKAGES := ipq-wifi-arcadyan_aw1000 kmod-spi-gpio kmod-gpio-nxp-74hc164 kmod-usb-serial-option uqmi
 endef
 TARGET_DEVICES += arcadyan_aw1000
 
@@ -109,8 +108,6 @@ define Device/cmcc_rm2-6
 	PAGESIZE := 2048
 	DEVICE_DTS_CONFIG := config@ac02
 	SOC := ipq8070
-	IMAGES += factory.bin
-	IMAGE/factory.bin := append-ubi | qsdk-ipq-factory-nand
 	DEVICE_PACKAGES := ipq-wifi-cmcc_rm2-6 kmod-hwmon-gpiofan
 endef
 TARGET_DEVICES += cmcc_rm2-6
@@ -125,7 +122,6 @@ define Device/compex_wpq873
 	DEVICE_DTS_CONFIG := config@hk09.wpq873
 	SOC := ipq8072
 	DEVICE_PACKAGES := ipq-wifi-compex_wpq873
-	IMAGE/factory.ubi := append-ubi | qsdk-ipq-factory-nand
 endef
 TARGET_DEVICES += compex_wpq873
 
@@ -152,7 +148,6 @@ define Device/edgecore_eap102
 	DEVICE_DTS_CONFIG := config@ac02
 	SOC := ipq8071
 	DEVICE_PACKAGES := ipq-wifi-edgecore_eap102
-	IMAGE/factory.ubi := append-ubi | qsdk-ipq-factory-nand
 endef
 TARGET_DEVICES += edgecore_eap102
 
@@ -193,7 +188,6 @@ define Device/linksys_mx
 	IMAGE_SIZE := 147456k
 	NAND_SIZE := 512m
 	SOC := ipq8072
-	IMAGES += factory.bin
 	IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | linksys-image type=$$$$(DEVICE_MODEL)
 	DEVICE_PACKAGES := kmod-leds-pca963x
 endef
@@ -232,16 +226,14 @@ TARGET_DEVICES += linksys_mx4300
 define Device/linksys_mx5300
 	$(call Device/linksys_mx)
 	DEVICE_MODEL := MX5300
-	DEVICE_PACKAGES += kmod-rtc-ds1307 ipq-wifi-linksys_mx5300 \
-		kmod-ath10k-ct ath10k-firmware-qca9984-ct
+	DEVICE_PACKAGES += kmod-rtc-ds1307 ipq-wifi-linksys_mx5300 kmod-ath10k ath10k-firmware-qca9984
 endef
 TARGET_DEVICES += linksys_mx5300
 
 define Device/linksys_mx8500
 	$(call Device/linksys_mx)
 	DEVICE_MODEL := MX8500
-	DEVICE_PACKAGES += ipq-wifi-linksys_mx8500 kmod-ath11k-pci \
-		ath11k-firmware-qcn9074 kmod-hci-uart
+	DEVICE_PACKAGES += ipq-wifi-linksys_mx8500 kmod-ath11k-pci ath11k-firmware-qcn9074 kmod-hci-uart
 endef
 TARGET_DEVICES += linksys_mx8500
 
@@ -257,17 +249,11 @@ define Device/netgear_rax120v2
 	KERNEL_SIZE := 29696k
 	NETGEAR_BOARD_ID := RAX120
 	NETGEAR_HW_ID := 29765589+0+512+1024+4x4+8x8
-	DEVICE_PACKAGES := ipq-wifi-netgear_rax120v2 kmod-spi-gpio \
-		kmod-spi-bitbang kmod-gpio-nxp-74hc164 kmod-hwmon-g762
+	DEVICE_PACKAGES := ipq-wifi-netgear_rax120v2 kmod-spi-gpio kmod-spi-bitbang kmod-gpio-nxp-74hc164 kmod-hwmon-g762
 ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
-	IMAGES += web-ui-factory.img
-	IMAGE/web-ui-factory.img := append-image initramfs-uImage.itb | \
-		pad-offset $$$$(BLOCKSIZE) 64 | append-uImage-fakehdr filesystem | \
-		netgear-dni
+	IMAGE/web-ui-factory.img := append-image initramfs-uImage.itb | pad-offset $$$$(BLOCKSIZE) 64 | append-uImage-fakehdr filesystem | netgear-dni
 endif
-	IMAGE/sysupgrade.bin := append-kernel | pad-offset $$$$(BLOCKSIZE) 64 | \
-		append-uImage-fakehdr filesystem | sysupgrade-tar kernel=$$$$@ | \
-		append-metadata
+	IMAGE/sysupgrade.bin := append-kernel | pad-offset $$$$(BLOCKSIZE) 64 | append-uImage-fakehdr filesystem | sysupgrade-tar kernel=$$$$@ | append-metadata
 endef
 TARGET_DEVICES += netgear_rax120v2
 
@@ -309,11 +295,9 @@ define Device/netgear_wax218
 	SOC := ipq8072
 ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
 	ARTIFACTS := web-ui-factory.fit
-	ARTIFACT/web-ui-factory.fit := append-image initramfs-uImage.itb | \
-		ubinize-kernel | qsdk-ipq-factory-nand
+	ARTIFACT/web-ui-factory.fit := append-image initramfs-uImage.itb | ubinize-kernel | qsdk-ipq-factory-nand
 endif
-	DEVICE_PACKAGES := kmod-spi-gpio kmod-spi-bitbang kmod-gpio-nxp-74hc164 \
-		ipq-wifi-netgear_wax218
+	DEVICE_PACKAGES := kmod-spi-gpio kmod-spi-bitbang kmod-gpio-nxp-74hc164 ipq-wifi-netgear_wax218
 endef
 TARGET_DEVICES += netgear_wax218
 
@@ -326,8 +310,7 @@ define Device/netgear_wax620
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
 	SOC := ipq8072
-	DEVICE_PACKAGES := kmod-spi-gpio kmod-gpio-nxp-74hc164 \
-		ipq-wifi-netgear_wax620
+	DEVICE_PACKAGES := kmod-spi-gpio kmod-gpio-nxp-74hc164 ipq-wifi-netgear_wax620
 endef
 TARGET_DEVICES += netgear_wax620
 
@@ -340,7 +323,6 @@ define Device/netgear_wax630
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
 	SOC := ipq8074
-	IMAGES += ui-factory.tar
 	IMAGE/ui-factory.tar := append-ubi | wax6xx-netgear-tar
 	DEVICE_PACKAGES := kmod-spi-gpio ipq-wifi-netgear_wax630
 endef
@@ -353,8 +335,7 @@ define Device/prpl_haze
 	DEVICE_MODEL := Haze
 	DEVICE_DTS_CONFIG := config@hk09
 	SOC := ipq8072
-	DEVICE_PACKAGES := ath11k-firmware-qcn9074 ipq-wifi-prpl_haze kmod-ath11k-pci \
-		kmod-fs-f2fs f2fs-tools kmod-leds-lp5562
+	DEVICE_PACKAGES := ath11k-firmware-qcn9074 ipq-wifi-prpl_haze kmod-ath11k-pci kmod-leds-lp5562
 endef
 TARGET_DEVICES += prpl_haze
 
@@ -366,7 +347,7 @@ define Device/qnap_301w
 	DEVICE_DTS_CONFIG := config@hk01
 	KERNEL_SIZE := 16384k
 	SOC := ipq8072
-	DEVICE_PACKAGES := kmod-fs-f2fs f2fs-tools ipq-wifi-qnap_301w
+	DEVICE_PACKAGES := ipq-wifi-qnap_301w
 endef
 TARGET_DEVICES += qnap_301w
 
@@ -374,7 +355,7 @@ define Device/redmi_ax6
 	$(call Device/xiaomi_ax3600)
 	DEVICE_VENDOR := Redmi
 	DEVICE_MODEL := AX6
-	DEVICE_PACKAGES := ipq-wifi-redmi_ax6 -kmod-usb3 -kmod-usb-dwc3 -kmod-usb-dwc3-qcom -automount
+	DEVICE_PACKAGES := ipq-wifi-redmi_ax6
 endef
 TARGET_DEVICES += redmi_ax6
 
@@ -396,8 +377,7 @@ define Device/spectrum_sax1v1k
 	DEVICE_MODEL := SAX1V1K
 	DEVICE_DTS_CONFIG := config@rt5010w-d187-rev6
 	SOC := ipq8072
-	IMAGES := sysupgrade.bin
-	DEVICE_PACKAGES := kmod-fs-f2fs f2fs-tools ipq-wifi-spectrum_sax1v1k
+	DEVICE_PACKAGES := ipq-wifi-spectrum_sax1v1k
 endef
 TARGET_DEVICES += spectrum_sax1v1k
 
@@ -440,8 +420,7 @@ define Device/xiaomi_ax3600
 	DEVICE_DTS_CONFIG := config@ac04
 	SOC := ipq8071
 	KERNEL_SIZE := 36608k
-	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax3600 kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9887-ct \
-		-kmod-usb3 -kmod-usb-dwc3 -kmod-usb-dwc3-qcom -automount
+	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax3600 kmod-ath10k-smallbuffers ath10k-firmware-qca9887
 ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
 	ARTIFACTS := initramfs-factory.ubi
 	ARTIFACT/initramfs-factory.ubi := append-image-stage initramfs-uImage.itb | ubinize-kernel
@@ -471,8 +450,7 @@ define Device/xiaomi_ax9000
 	DEVICE_DTS_CONFIG := config@hk14
 	SOC := ipq8072
 	KERNEL_SIZE := 57344k
-	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax9000 kmod-ath11k-pci ath11k-firmware-qcn9074 \
-		kmod-ath10k-ct ath10k-firmware-qca9887-ct
+	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax9000 kmod-ath11k-pci ath11k-firmware-qcn9074 kmod-ath10k ath10k-firmware-qca9887
 ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
 	ARTIFACTS := initramfs-factory.ubi
 	ARTIFACT/initramfs-factory.ubi := append-image-stage initramfs-uImage.itb | ubinize-kernel
@@ -490,8 +468,6 @@ define Device/yuncore_ax880
 	DEVICE_DTS_CONFIG := config@hk09
 	SOC := ipq8072
 	DEVICE_PACKAGES := ipq-wifi-yuncore_ax880
-	IMAGES += factory.bin
-	IMAGE/factory.bin := append-ubi | qsdk-ipq-factory-nand
 endef
 TARGET_DEVICES += yuncore_ax880
 
@@ -505,8 +481,6 @@ define Device/zbtlink_zbt-z800ax
 	DEVICE_DTS_CONFIG := config@hk09
 	SOC := ipq8072
 	DEVICE_PACKAGES := ipq-wifi-zbtlink_zbt-z800ax
-	IMAGES += factory.bin
-	IMAGE/factory.bin := append-ubi | qsdk-ipq-factory-nand
 endef
 TARGET_DEVICES += zbtlink_zbt-z800ax
 
@@ -544,7 +518,19 @@ define Device/zyxel_nbg7815
 	DEVICE_MODEL := NBG7815
 	DEVICE_DTS_CONFIG := config@nbg7815
 	SOC := ipq8074
-	DEVICE_PACKAGES := kmod-fs-f2fs f2fs-tools ipq-wifi-zyxel_nbg7815 kmod-ath11k-pci \
-		kmod-hci-uart kmod-hwmon-tmp103
+	DEVICE_PACKAGES := ipq-wifi-zyxel_nbg7815 kmod-ath11k-pci kmod-hci-uart kmod-hwmon-tmp103
 endef
 TARGET_DEVICES += zyxel_nbg7815
+
+define Device/verizon_cr1000a
+	$(call Device/FitImage)
+	$(call Device/EmmcImage)
+	DEVICE_VENDOR := Verizon
+	DEVICE_MODEL := CR1000A
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	DEVICE_DTS_CONFIG := config@verizon_cr1000a
+	SOC := ipq8072
+	DEVICE_PACKAGES := ipq-wifi-verizon_cr1000a kmod-ath11k-pci ath11k-firmware-qcn9074 kmod-phy-aquantia kmod-phy-realtek
+endef
+TARGET_DEVICES += verizon_cr1000a

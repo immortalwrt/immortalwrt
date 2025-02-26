@@ -1,9 +1,0 @@
----
-blank_issues_enabled: true
-contact_links:
-  - name: ImmortalWrt community
-    url: https://t.me/ctcgfw_openwrt_discuss
-    about: Consider reaching out to our community to get help. ImmortalWrt is a complex software project with many pitfalls; there is a good chance someone can help you solve your issue in no time.
-  - name: OpenWrt documentation
-    url: https://openwrt.org/docs/start
-    about: The OpenWrt documentation contains a lot of valuable information.

@@ -124,6 +124,12 @@ platform_do_upgrade() {
 		fw_setenv auto_recovery yes
 		nand_do_upgrade "$1"
 		;;
+	cmiot,ax18|\
+	glinet,gl-ax1800|\
+	glinet,gl-axt1800|\
+	redmi,ax5|\
+	xiaomi,ax1800|\
+	zn,m2|\
 	netgear,wax214|\
 	qihoo,360v6)
 		nand_do_upgrade "$1"
@@ -143,8 +149,31 @@ platform_do_upgrade() {
 		fw_setenv owrt_slotactive $((1 - active))
 		nand_do_upgrade "$1"
 		;;
+	jdcloud,re-ss-01|\
+	jdcloud,re-cs-02|\
+	jdcloud,re-cs-07|\
+	link,nn6000-v1|\
+	link,nn6000-v2|\
+	redmi,ax5-jdcloud)
+		CI_KERNPART="0:HLOS"
+		CI_ROOTPART="rootfs"
+		emmc_do_upgrade "$1"
+		;;
 	*)
 		default_do_upgrade "$1"
+		;;
+	esac
+}
+
+platform_copy_config() {
+	case "$(board_name)" in
+	jdcloud,re-ss-01|\
+	jdcloud,re-cs-02|\
+	jdcloud,re-cs-07|\
+	link,nn6000-v1|\
+	link,nn6000-v2|\
+	redmi,ax5-jdcloud)
+		emmc_copy_config
 		;;
 	esac
 }

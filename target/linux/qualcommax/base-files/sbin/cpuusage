@@ -1,0 +1,25 @@
+#!/bin/sh
+# Copyright (C) 2024 YumesomeZakura <1552037053@qq.com>
+
+cpu_usage=$(top -bn1 | head -n2 | awk -F'[ %]+' 'NR==2{print $2}')
+combined_output=""
+connection_count=""
+
+if [ -e "/sys/kernel/debug/qca-nss-drv/stats/cpu_load_ubi" ]; then
+	nss_avg_utilization=$(awk 'NR==6 {print $2}' /sys/kernel/debug/qca-nss-drv/stats/cpu_load_ubi)
+	combined_output="${combined_output}${nss_avg_utilization}"
+fi
+
+if [ -r "/sys/kernel/debug/ecm/ecm_db/connection_count_simple" ]; then
+	connection_count=$(cat /sys/kernel/debug/ecm/ecm_db/connection_count_simple)
+fi
+
+if [ -n "$combined_output" ] && [ -n "$connection_count" ]; then
+	echo -n "CPU: ${cpu_usage}% HWE: ${combined_output} ECM: ${connection_count}"
+elif [ -n "$combined_output" ]; then
+	echo -n "CPU: ${cpu_usage}% HWE: ${combined_output}"
+elif [ -n "$connection_count" ]; then
+	echo -n "CPU: ${cpu_usage}% ECM: ${connection_count}"
+else
+	echo -n "CPU: ${cpu_usage}%"
+fi

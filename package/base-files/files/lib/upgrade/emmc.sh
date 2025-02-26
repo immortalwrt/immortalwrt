@@ -1,5 +1,4 @@
 # Copyright (C) 2021 OpenWrt.org
-#
 
 . /lib/functions.sh
 
@@ -29,8 +28,7 @@ emmc_upgrade_tar() {
 		sync
 	}
 
-	[ "$has_kernel" = 1 -a "$EMMC_KERN_DEV" ] &&
-		export EMMC_KERNEL_BLOCKS=$(($(tar xf "$tar_file" ${board_dir}/kernel -O | dd of="$EMMC_KERN_DEV" bs=512 2>&1 | grep "records out" | cut -d' ' -f1)))
+	[ "$has_kernel" = 1 -a "$EMMC_KERN_DEV" ] && export EMMC_KERNEL_BLOCKS=$(($(tar xf "$tar_file" ${board_dir}/kernel -O | dd of="$EMMC_KERN_DEV" bs=512 2>&1 | grep "records out" | cut -d' ' -f1)))
 
 	if [ -z "$UPGRADE_BACKUP" ]; then
 		if [ "$EMMC_DATA_DEV" ]; then

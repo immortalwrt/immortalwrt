@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/*
- * Copyright (c) 2022, Karol Przybylski <itor@o2.pl>
- * Copyright (c) 2023, Andre Valentin <avalentin@marcant.net>
- */
 
 /dts-v1/;
 
 #include "ipq8074.dtsi"
 #include "ipq8074-hk-cpu.dtsi"
+#include "ipq8074-common.dtsi"
 #include "ipq8074-ess.dtsi"
+#include "ipq8074-nss.dtsi"
+
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/leds/common.h>
 #include <dt-bindings/input/input.h>
@@ -20,8 +19,9 @@
 	aliases {
 		serial0 = &blsp1_uart5;
 		serial1 = &blsp1_uart3;
-		/* Alias as required by u-boot to patch MAC addresses */
+
 		ethernet0 = &dp1;
+
 		label-mac-device = &dp1;
 	};
 
@@ -58,36 +58,12 @@
 	};
 };
 
-&blsp1_uart3 {
-	status = "okay";
-};
-
-&blsp1_uart5 {
-	status = "okay";
-};
-
-&prng {
-	status = "okay";
-};
-
-&cryptobam {
-	status = "okay";
-};
-
-&crypto {
-	status = "okay";
-};
-
-&qpic_bam {
-	status = "okay";
-};
-
-
 &blsp1_spi1 {
+	status = "okay";
+
 	pinctrl-0 = <&spi_0_pins>;
 	pinctrl-names = "default";
 	cs-gpios = <0>;
-	status = "okay";
 
 	/*
 	 * Bootloader will find the NAND DT node by the compatible and
@@ -267,15 +243,18 @@
 
 &mdio {
 	status = "okay";
+
 	pinctrl-0 = <&mdio_pins>;
 	pinctrl-names = "default";
 	reset-gpios = <&tlmm 37 GPIO_ACTIVE_LOW>;
 
 	ethernet-phy-package@0 {
+		compatible = "qcom,qca8075-package";
 		#address-cells = <1>;
 		#size-cells = <0>;
-		compatible = "qcom,qca8075-package";
 		reg = <0>;
+
+		qcom,package-mode = "qsgmii";
 
 		qca8075_0: ethernet-phy@0 {
 			compatible = "ethernet-phy-ieee802.3-c22";
@@ -309,7 +288,6 @@
 		compatible = "ethernet-phy-ieee802.3-c45";
 		reg = <8>;
 		reset-gpios = <&tlmm 63 GPIO_ACTIVE_LOW>;
-
 		nvmem-cells = <&aqr_fw>;
 		nvmem-cell-names = "firmware";
 	};
@@ -320,8 +298,8 @@
 
 	switch_lan_bmp = <(ESS_PORT1 | ESS_PORT2 | ESS_PORT3 | ESS_PORT4 | ESS_PORT6)>;
 	switch_wan_bmp = <ESS_PORT5>;
-	switch_mac_mode = <MAC_MODE_PSGMII>;
-	switch_mac_mode1 = <MAC_MODE_SGMII_CHANNEL0>;
+	switch_mac_mode = <MAC_MODE_QSGMII>;
+	switch_mac_mode1 = <MAC_MODE_SGMII_PLUS>;
 	switch_mac_mode2 = <MAC_MODE_USXGMII>;
 
 	qcom,port_phyinfo {
@@ -357,10 +335,6 @@
 			phy_address = <8>;
 		};
 	};
-};
-
-&edma {
-	status = "okay";
 };
 
 &dp1 {
@@ -414,9 +388,9 @@
 };
 
 &blsp1_i2c2 {
+	status = "okay";
 	pinctrl-0 = <&i2c_0_pins>;
 	pinctrl-names = "default";
-	status = "okay";
 
 	tmp103@70 {
 		compatible = "ti,tmp103";
@@ -433,32 +407,12 @@
 	vqmmc-supply = <&l11>;
 };
 
-&ssphy_0 {
-	status = "okay";
-};
-
-&qusb_phy_0 {
-	status = "okay";
-};
-
-&ssphy_1 {
-	status = "okay";
-};
-
-&qusb_phy_1 {
-	status = "okay";
-};
-
-&usb_0 {
-	status = "okay";
-};
-
-&usb_1 {
-	status = "okay";
-};
-
 &wifi {
 	status = "okay";
-
+	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "Zyxel-NBG7815";
+};
+
+&edma {
+	status = "okay";
 };

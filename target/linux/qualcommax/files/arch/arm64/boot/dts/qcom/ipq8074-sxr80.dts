@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/* Copyright (c) 2021, Flole <flole@flole.de> */
 
 /dts-v1/;
 
-#include "ipq8074-sxk80.dtsi"
+#include "ipq8074-netgear.dtsi"
 
 / {
 	model = "Netgear SXR80";

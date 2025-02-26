@@ -4,7 +4,10 @@
 
 #include "ipq8074.dtsi"
 #include "ipq8074-hk-cpu.dtsi"
+#include "ipq8074-common.dtsi"
 #include "ipq8074-ess.dtsi"
+#include "ipq8074-nss.dtsi"
+
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
@@ -14,19 +17,19 @@
 	compatible = "zbtlink,zbt-z800ax", "qcom,ipq8074";
 
 	aliases {
+		serial0 = &blsp1_uart5;
+
 		led-boot = &led_net;
 		led-failsafe = &led_net;
+		led-running = &led_net;
 		led-upgrade = &led_net;
-		serial0 = &blsp1_uart5;
-		/*
-		 * Aliases as required by u-boot
-		 * to patch MAC addresses
-		 */
+
 		ethernet0 = &dp1;
 		ethernet1 = &dp2;
 		ethernet2 = &dp3;
 		ethernet3 = &dp4;
 		ethernet4 = &dp5;
+
 		label-mac-device = &dp1;
 	};
 
@@ -47,8 +50,6 @@
 
 	keys {
 		compatible = "gpio-keys";
-		pinctrl-0 = <&button_pins>;
-		pinctrl-names = "default";
 
 		reset {
 			label = "reset";
@@ -87,7 +88,7 @@
 
 		wlan5g {
 			color = <LED_COLOR_ID_GREEN>;
-			function =  LED_FUNCTION_WLAN_5GHZ;
+			function = LED_FUNCTION_WLAN_5GHZ;
 			gpios = <&tlmm 43 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "phy0radio";
 		};
@@ -95,15 +96,6 @@
 };
 
 &tlmm {
-	button_pins: button-pins {
-		mux {
-			pins = "gpio34", "gpio46";
-			function = "gpio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
 	mdio_pins: mdio-pins {
 		mdc {
 			pins = "gpio68";
@@ -122,10 +114,11 @@
 };
 
 &blsp1_spi1 {
+	status = "okay";
+
 	pinctrl-0 = <&spi_0_pins>;
 	pinctrl-names = "default";
 	cs-select = <0>;
-	status = "okay";
 
 	flash@0 {
 		compatible = "jedec,spi-nor";
@@ -253,26 +246,6 @@
 	};
 };
 
-&blsp1_uart5 {
-	status = "okay";
-};
-
-&cryptobam {
-	status = "okay";
-};
-
-&crypto {
-	status = "okay";
-};
-
-&prng {
-	status = "okay";
-};
-
-&qpic_bam {
-	status = "okay";
-};
-
 &qpic_nand {
 	status = "okay";
 
@@ -314,30 +287,6 @@
 			};
 		};
 	};
-};
-
-&qusb_phy_0 {
-	status = "okay";
-};
-
-&qusb_phy_1 {
-	status = "okay";
-};
-
-&ssphy_0 {
-	status = "okay";
-};
-
-&ssphy_1 {
-	status = "okay";
-};
-
-&usb_0 {
-	status = "okay";
-};
-
-&usb_1 {
-	status = "okay";
 };
 
 &mdio {
@@ -392,27 +341,27 @@
 			port_id = <1>;
 			phy_address = <0>;
 		};
+
 		port@2 {
 			port_id = <2>;
 			phy_address = <1>;
 		};
+
 		port@3 {
 			port_id = <3>;
 			phy_address = <2>;
 		};
+
 		port@4 {
 			port_id = <4>;
 			phy_address = <3>;
 		};
+
 		port@5 {
 			port_id = <5>;
 			phy_address = <4>;
 		};
 	};
-};
-
-&edma {
-	status = "okay";
 };
 
 &dp1 {
@@ -447,6 +396,10 @@
 
 &wifi {
 	status = "okay";
-
+	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "ZBT-Z800AX";
+};
+
+&edma {
+	status = "okay";
 };

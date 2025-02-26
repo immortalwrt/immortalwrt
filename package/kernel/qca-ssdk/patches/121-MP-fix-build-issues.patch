@@ -15,11 +15,9 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
  src/adpt/mp/adpt_mp_portctrl.c |  3 ++-
  2 files changed, 3 insertions(+), 30 deletions(-)
 
-diff --git a/config b/config
-index 1f74e4f8..58d67648 100644
 --- a/config
 +++ b/config
-@@ -374,6 +374,7 @@ ifneq (, $(filter MPPE APPE HPPE CPPE ALL_CHIP, $(CHIP_TYPE)))
+@@ -374,6 +374,7 @@ ifneq (, $(filter MPPE APPE HPPE CPPE AL
  endif
  
  ifneq (, $(filter MP, $(CHIP_TYPE)))
@@ -63,11 +61,9 @@ index 1f74e4f8..58d67648 100644
  	IN_CTRLPKT=TRUE
  endif
  
-diff --git a/src/adpt/mp/adpt_mp_portctrl.c b/src/adpt/mp/adpt_mp_portctrl.c
-index db60fc72..c230e214 100644
 --- a/src/adpt/mp/adpt_mp_portctrl.c
 +++ b/src/adpt/mp/adpt_mp_portctrl.c
-@@ -45,7 +45,8 @@ _adpt_mp_gcc_mac_clock_set(a_uint32_t dev_id,
+@@ -45,7 +45,8 @@ _adpt_mp_gcc_mac_clock_set(a_uint32_t de
  static a_bool_t
  _adpt_mp_port_phy_connected (a_uint32_t dev_id, fal_port_t port_id)
  {
@@ -77,6 +73,3 @@ index db60fc72..c230e214 100644
  
  	/* force port which connect s17c or other device chip*/
  	if (hsl_port_feature_get(dev_id, port_id, PHY_F_FORCE | PHY_F_SFP)) {
--- 
-2.40.1
-

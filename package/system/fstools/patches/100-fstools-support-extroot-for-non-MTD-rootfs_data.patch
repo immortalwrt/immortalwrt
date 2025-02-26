@@ -12,7 +12,7 @@ Signed-off-by: Qi Liu <liuqi_colin@msn.com>
 
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -79,9 +79,9 @@ INSTALL(TARGETS blockd RUNTIME DESTINATI
+@@ -80,9 +80,9 @@ INSTALL(TARGETS blockd RUNTIME DESTINATI
  ADD_EXECUTABLE(block block.c probe.c probe-libblkid.c)
  IF(DEFINED CMAKE_UBIFS_EXTROOT)
  	ADD_DEFINITIONS(-DUBIFS_EXTROOT)
@@ -36,7 +36,7 @@ Signed-off-by: Qi Liu <liuqi_colin@msn.com>
  #include "probe.h"
  
  #define AUTOFS_MOUNT_PATH       "/tmp/run/blockd/"
-@@ -1696,6 +1699,44 @@ static int main_extroot(int argc, char *
+@@ -1714,6 +1717,44 @@ static int main_extroot(int argc, char *
         }
  #endif
  

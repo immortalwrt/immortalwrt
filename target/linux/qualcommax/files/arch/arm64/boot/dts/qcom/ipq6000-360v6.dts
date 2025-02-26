@@ -3,8 +3,10 @@
 /dts-v1/;
 
 #include "ipq6018-512m.dtsi"
+#include "ipq6018-common.dtsi"
 #include "ipq6018-ess.dtsi"
-#include "ipq6018-cp-cpu.dtsi"
+#include "ipq6018-nss.dtsi"
+#include "ipq6000-cp-cpu.dtsi"
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
@@ -16,10 +18,16 @@
 
 	aliases {
 		serial0 = &blsp1_uart3;
-		led-boot = &led_status_red;
+
+		led-boot = &led_status_orange;
 		led-failsafe = &led_status_red;
 		led-running = &led_status_green;
 		led-upgrade = &led_status_orange;
+
+		ethernet0 = &dp1;
+		ethernet1 = &dp2;
+		ethernet2 = &dp3;
+		ethernet3 = &dp4;
 	};
 
 	chosen {
@@ -46,21 +54,18 @@
 	leds {
 		compatible = "gpio-leds";
 
-		led_status_red: red {
-			color = <LED_COLOR_ID_RED>;
-			function = LED_FUNCTION_STATUS;
+		led_status_red: status-red {
+			label = "red:status";
 			gpios = <&tlmm 71 GPIO_ACTIVE_HIGH>;
 		};
 
-		led_status_orange: orange {
-			color = <LED_COLOR_ID_ORANGE>;
-			function = LED_FUNCTION_STATUS;
+		led_status_orange: status-orange {
+			label = "orange:status";
 			gpios = <&tlmm 72 GPIO_ACTIVE_HIGH>;
 		};
 
-		led_status_green: green {
-			color = <LED_COLOR_ID_GREEN>;
-			function = LED_FUNCTION_STATUS;
+		led_status_green: status-green {
+			label = "green:status";
 			gpios = <&tlmm 73 GPIO_ACTIVE_HIGH>;
 		};
 	};
@@ -84,16 +89,6 @@
 	};
 };
 
-&blsp1_uart3 {
-	pinctrl-0 = <&serial_3_pins>;
-	pinctrl-names = "default";
-	status = "okay";
-};
-
-&qpic_bam {
-	status = "okay";
-};
-
 &qpic_nand {
 	status = "okay";
 
@@ -107,18 +102,6 @@
 			compatible = "qcom,smem-part";
 		};
 	};
-};
-
-&qusb_phy_0 {
-	status = "okay";
-};
-
-&ssphy_0 {
-	status = "okay";
-};
-
-&usb3 {
-	status = "okay";
 };
 
 &mdio {
@@ -168,14 +151,17 @@
 			port_id = <1>;
 			phy_address = <0>;
 		};
+
 		port@2 {
 			port_id = <2>;
 			phy_address = <1>;
 		};
+
 		port@3 {
 			port_id = <3>;
 			phy_address = <2>;
 		};
+
 		port@4 {
 			port_id = <4>;
 			phy_address = <3>;
@@ -183,8 +169,10 @@
 	};
 };
 
-&edma {
+&wifi {
 	status = "okay";
+	qcom,ath11k-fw-memory-mode = <1>;
+	qcom,ath11k-calibration-variant = "Qihoo-360V6";
 };
 
 &dp1 {
@@ -211,9 +199,6 @@
 	label = "wan";
 };
 
-&wifi {
+&edma {
 	status = "okay";
-
-	qcom,ath11k-fw-memory-mode = <1>;
-	qcom,ath11k-calibration-variant = "Qihoo-360V6";
 };

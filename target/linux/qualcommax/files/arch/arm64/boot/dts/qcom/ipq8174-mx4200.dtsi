@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/* Copyright (c) 2023, Mohammad Sayful Islam <Sayf.mohammad01@gmail.com> */
 
 #include "ipq8174-mx4x00.dtsi"
 
