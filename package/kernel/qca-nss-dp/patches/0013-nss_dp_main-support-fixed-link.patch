@@ -18,7 +18,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
 
 --- a/nss_dp_main.c
 +++ b/nss_dp_main.c
-@@ -634,11 +634,20 @@ static int32_t nss_dp_of_get_pdata(struc
+@@ -662,11 +662,20 @@ static int32_t nss_dp_of_get_pdata(struc
  	}
  
  	dp_priv->phy_node = of_parse_phandle(np, "phy-handle", 0);

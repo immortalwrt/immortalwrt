@@ -35,7 +35,7 @@ ubootenv_add_ubi_default() {
 case "$board" in
 abt,asr3000|\
 cetron,ct3003-ubootmod|\
-cmcc,a10|\
+cmcc,a10-ubootmod|\
 cudy,tr3000-v1-ubootmod|\
 h3c,magic-nx30-pro|\
 imou,lc-hx3001|\

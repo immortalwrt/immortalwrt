@@ -246,7 +246,7 @@ endef
 define U-Boot/mt7981_cmcc_a10
   NAME:=CMCC A10
   BUILD_SUBTARGET:=filogic
-  BUILD_DEVICES:=cmcc_a10
+  BUILD_DEVICES:=cmcc_a10-ubootmod
   UBOOT_CONFIG:=mt7981_cmcc_a10
   UBOOT_IMAGE:=u-boot.fip
   BL2_BOOTDEV:=spim-nand
