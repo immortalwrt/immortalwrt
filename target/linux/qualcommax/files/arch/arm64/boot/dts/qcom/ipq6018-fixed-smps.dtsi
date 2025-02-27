@@ -1,9 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
-
-/*
- * Board does not use companion MP5496 PMIC,
- * but rather uses fixed external SMPS.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
 &rpm {
 	status = "disabled";

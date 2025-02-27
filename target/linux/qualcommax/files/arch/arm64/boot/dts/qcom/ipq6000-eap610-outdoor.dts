@@ -6,7 +6,7 @@
 #include "ipq6018-common.dtsi"
 #include "ipq6018-ess.dtsi"
 #include "ipq6018-nss.dtsi"
-#include "ipq6000-cp-cpu.dtsi"
+#include "ipq6018-cp-cpu.dtsi"
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
@@ -149,4 +149,9 @@
 	status = "okay";
 	ieee80211-freq-limit = <2402000 5835000>;
 	qcom,ath11k-calibration-variant = "TP-Link-EAP610-Outdoor";
+};
+
+&cpu_opp_table {
+	/delete-node/ opp-1608000000;
+	/delete-node/ opp-1800000000;
 };

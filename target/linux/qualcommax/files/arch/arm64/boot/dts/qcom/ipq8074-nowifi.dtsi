@@ -1,0 +1,7 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+#include "ipq8074.dtsi"
+
+&q6_region {
+	reg = <0x0 0x4b000000 0x0 0x1000000>;
+};
