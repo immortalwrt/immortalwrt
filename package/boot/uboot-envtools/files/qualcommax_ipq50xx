@@ -23,6 +23,7 @@ ubootenv_add_mmc() {
 }
 
 case "$board" in
+linksys,mr5500|\
 linksys,mx2000|\
 linksys,mx5500|\
 linksys,spnmx56)
