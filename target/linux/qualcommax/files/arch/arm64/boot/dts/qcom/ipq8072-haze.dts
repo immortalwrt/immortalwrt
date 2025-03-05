@@ -239,7 +239,7 @@
 
 	perst-gpios = <&tlmm 61 GPIO_ACTIVE_LOW>;
 
-	bridge@1,0 {
+	bridge@0,0 {
 		reg = <0x00010000 0 0 0 0>;
 		#address-cells = <3>;
 		#size-cells = <2>;
