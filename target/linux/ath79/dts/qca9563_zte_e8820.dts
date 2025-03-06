@@ -194,10 +194,9 @@
 };
 
 &wmac {
-	status = "okay";
-
 	nvmem-cells = <&cal_art_1000>, <&macaddr_art_0 0>;
 	nvmem-cell-names = "calibration", "mac-address";
+	status = "okay";
 };
 
 &usb_phy0 {
