@@ -67,21 +67,21 @@
 	keys {
 		compatible = "gpio-keys";
 
-		wifi {
-			label = "wifi";
-			gpios = <&gpio 1 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_RFKILL>;
-			debounce-interval = <60>;
-		};
-
-		reset {
+		button-reset {
 			label = "reset";
 			gpios = <&gpio 2 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
 			debounce-interval = <60>;
 		};
 
-		wps {
+		button-wifi {
+			label = "wifi";
+			gpios = <&gpio 1 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RFKILL>;
+			debounce-interval = <60>;
+		};
+
+		button-wps {
 			label = "wps";
 			gpios = <&gpio 21 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_WPS_BUTTON>;
