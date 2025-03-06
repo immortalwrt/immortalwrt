@@ -24,36 +24,43 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&jtag_disable_pins>;
 
-		usb1 {
-			label = "zte:green:usb1";
-			gpios = <&gpio 8 GPIO_ACTIVE_LOW>;
-			trigger-sources = <&hub_port1>;
-			linux,default-trigger = "usbport";
+		led-0 {
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_WLAN_5GHZ;
+			gpios = <&gpio 5 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy0tpt";
 		};
 
-		usb2 {
-			label = "zte:green:usb2";
+		led-1 {
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_USB;
+			function-enumerator = <2>;
 			gpios = <&gpio 7 GPIO_ACTIVE_LOW>;
 			trigger-sources = <&hub_port0>;
 			linux,default-trigger = "usbport";
 		};
 
-		power_green: power_green {
-			label = "zte:green:power";
-			gpios = <&gpio 20 GPIO_ACTIVE_LOW>;
-			default-state = "on";
+		led-2 {
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_USB;
+			function-enumerator = <1>;
+			gpios = <&gpio 8 GPIO_ACTIVE_LOW>;
+			trigger-sources = <&hub_port1>;
+			linux,default-trigger = "usbport";
 		};
 
-		wlan5g_green {
-			label = "zte:green:wlan5g";
-			gpios = <&gpio 5 GPIO_ACTIVE_LOW>;
-			linux,default-trigger = "phy0tpt";
-		};
-
-		wlan2g_green {
-			label = "zte:green:wlan2g";
+		led-3 {
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_WLAN_2GHZ;
 			gpios = <&gpio 19 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "phy1tpt";
+		};
+
+		power_green: led-4 {
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_POWER;
+			gpios = <&gpio 20 GPIO_ACTIVE_LOW>;
+			default-state = "on";
 		};
 	};
 
