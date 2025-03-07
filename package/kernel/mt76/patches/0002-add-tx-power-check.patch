@@ -1,3 +1,10 @@
+From Yukari <mistelinn@gmail.com>
+Subject: Add tx_power check during eeprom loading
+Date: Tue, 5 Feb 2025 16:38:46 +0800
+
+Create tx_power_fix.patch
+---
+
 diff --git a/mt7996/eeprom.c b/mt7996/eeprom.c
 index 53dfac02f..a699668ca 100644
 --- a/mt7996/eeprom.c
