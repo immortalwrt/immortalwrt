@@ -1,0 +1,189 @@
+From 1e5200d59e21c8a8fa63badf415becb2301e78a4 Mon Sep 17 00:00:00 2001
+From: Jon Lin <jon.lin@rock-chips.com>
+Date: Thu, 27 Apr 2023 22:00:04 +0800
+Subject: [PATCH] mtd: spinand: gsto: Add code
+
+GSS01GSAK1, GSS02GSAK1
+
+Change-Id: I7ee9048d934694803d6d081cb7d0cdc56f114e79
+Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
+---
+ drivers/mtd/nand/spi/Makefile |  2 +-
+ drivers/mtd/nand/spi/core.c   |  1 +
+ drivers/mtd/nand/spi/gsto.c   | 90 +++++++++++++++++++++++++++++++++++
+ include/linux/mtd/spinand.h   |  1 +
+ 4 files changed, 93 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/mtd/nand/spi/gsto.c
+
+--- a/drivers/mtd/nand/spi/Makefile
++++ b/drivers/mtd/nand/spi/Makefile
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+ 
+ spinand-objs := core.o esmt.o foresee.o etron.o gigadevice.o macronix.o micron.o paragon.o
+-spinand-objs += dosilicon.o fmsh.o
++spinand-objs += dosilicon.o fmsh.o gsto.o
+ spinand-objs += toshiba.o winbond.o xtx.o
+ obj-$(CONFIG_MTD_SPI_NAND) += spinand.o
+--- a/drivers/mtd/nand/spi/core.c
++++ b/drivers/mtd/nand/spi/core.c
+@@ -830,6 +830,7 @@ static const struct spinand_manufacturer
+ 	&etron_spinand_manufacturer,
+ 	&fmsh_spinand_manufacturer,
+ 	&gigadevice_spinand_manufacturer,
++	&gsto_spinand_manufacturer,
+ 	&macronix_spinand_manufacturer,
+ 	&micron_spinand_manufacturer,
+ 	&paragon_spinand_manufacturer,
+--- /dev/null
++++ b/drivers/mtd/nand/spi/gsto.c
+@@ -0,0 +1,139 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2023 Rockchip Electronics Co., Ltd.
++ *
++ * Authors:
++ *	Dingqiang Lin <jon.lin@rock-chips.com>
++ */
++
++#ifndef __UBOOT__
++#include <linux/device.h>
++#include <linux/kernel.h>
++#endif
++#include <linux/mtd/spinand.h>
++
++#define SPINAND_MFR_GSTO		0x52
++
++static SPINAND_OP_VARIANTS(read_cache_variants,
++		SPINAND_PAGE_READ_FROM_CACHE_QUADIO_OP(0, 2, NULL, 0),
++		SPINAND_PAGE_READ_FROM_CACHE_X4_OP(0, 1, NULL, 0),
++		SPINAND_PAGE_READ_FROM_CACHE_DUALIO_OP(0, 1, NULL, 0),
++		SPINAND_PAGE_READ_FROM_CACHE_X2_OP(0, 1, NULL, 0),
++		SPINAND_PAGE_READ_FROM_CACHE_OP(true, 0, 1, NULL, 0),
++		SPINAND_PAGE_READ_FROM_CACHE_OP(false, 0, 1, NULL, 0));
++
++static SPINAND_OP_VARIANTS(write_cache_variants,
++		SPINAND_PROG_LOAD_X4(true, 0, NULL, 0),
++		SPINAND_PROG_LOAD(true, 0, NULL, 0));
++
++static SPINAND_OP_VARIANTS(update_cache_variants,
++		SPINAND_PROG_LOAD_X4(false, 0, NULL, 0),
++		SPINAND_PROG_LOAD(false, 0, NULL, 0));
++
++static int gss0xgsak1_ooblayout_ecc(struct mtd_info *mtd, int section,
++				 struct mtd_oob_region *region)
++{
++	if (section)
++		return -ERANGE;
++
++	region->offset = 32;
++	region->length = 32;
++
++	return 0;
++}
++
++static int gss0xgsak1_ooblayout_free(struct mtd_info *mtd, int section,
++				  struct mtd_oob_region *region)
++{
++	if (section)
++		return -ERANGE;
++
++	region->offset = 2;
++	region->length = 30;
++
++	return 0;
++}
++
++static const struct mtd_ooblayout_ops gss0xgsak1_ooblayout = {
++	.ecc = gss0xgsak1_ooblayout_ecc,
++	.rfree = gss0xgsak1_ooblayout_free,
++};
++
++static int gss0xgsax1_ooblayout_ecc(struct mtd_info *mtd, int section,
++				 struct mtd_oob_region *region)
++{
++	if (section)
++		return -ERANGE;
++
++	region->offset = 64;
++	region->length = 64;
++
++	return 0;
++}
++
++static int gss0xgsax1_ooblayout_free(struct mtd_info *mtd, int section,
++				  struct mtd_oob_region *region)
++{
++	if (section)
++		return -ERANGE;
++
++	region->offset = 2;
++	region->length = 62;
++
++	return 0;
++}
++
++static const struct mtd_ooblayout_ops gss0xgsax1_ooblayout = {
++	.ecc = gss0xgsax1_ooblayout_ecc,
++	.rfree = gss0xgsax1_ooblayout_free,
++};
++
++static const struct spinand_info gsto_spinand_table[] = {
++	SPINAND_INFO("GSS01GSAK1",
++		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0xBA, 0x13),
++		     NAND_MEMORG(1, 2048, 64, 64, 1024, 10, 1, 1, 1),
++		     NAND_ECCREQ(4, 512),
++		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
++					      &write_cache_variants,
++					      &update_cache_variants),
++		     0,
++		     SPINAND_ECCINFO(&gss0xgsak1_ooblayout, NULL)),
++	SPINAND_INFO("GSS02GSAK1",
++		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0xBA, 0x23),
++		     NAND_MEMORG(1, 2048, 64, 64, 2048, 20, 1, 1, 1),
++		     NAND_ECCREQ(4, 512),
++		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
++					      &write_cache_variants,
++					      &update_cache_variants),
++		     0,
++		     SPINAND_ECCINFO(&gss0xgsax1_ooblayout, NULL)),
++	SPINAND_INFO("GSS02GSAX1",
++		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0xCA, 0x23),
++		     NAND_MEMORG(1, 2048, 128, 64, 2048, 40, 1, 1, 1),
++		     NAND_ECCREQ(8, 512),
++		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
++					      &write_cache_variants,
++					      &update_cache_variants),
++		     0,
++		     SPINAND_ECCINFO(&gss0xgsax1_ooblayout, NULL)),
++	SPINAND_INFO("GSS01GSAX1",
++		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0xCA, 0x13),
++		     NAND_MEMORG(1, 2048, 128, 64, 1024, 20, 1, 1, 1),
++		     NAND_ECCREQ(8, 512),
++		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
++					      &write_cache_variants,
++					      &update_cache_variants),
++		     0,
++		     SPINAND_ECCINFO(&gss0xgsax1_ooblayout, NULL)),
++};
++
++static const struct spinand_manufacturer_ops gsto_spinand_manuf_ops = {
++};
++
++const struct spinand_manufacturer gsto_spinand_manufacturer = {
++	.id = SPINAND_MFR_GSTO,
++	.name = "GSTO",
++	.chips = gsto_spinand_table,
++	.nchips = ARRAY_SIZE(gsto_spinand_table),
++	.ops = &gsto_spinand_manuf_ops,
++};
+--- a/include/linux/mtd/spinand.h
++++ b/include/linux/mtd/spinand.h
+@@ -248,6 +248,7 @@ extern const struct spinand_manufacturer
+ extern const struct spinand_manufacturer etron_spinand_manufacturer;
+ extern const struct spinand_manufacturer fmsh_spinand_manufacturer;
+ extern const struct spinand_manufacturer gigadevice_spinand_manufacturer;
++extern const struct spinand_manufacturer gsto_spinand_manufacturer;
+ extern const struct spinand_manufacturer macronix_spinand_manufacturer;
+ extern const struct spinand_manufacturer micron_spinand_manufacturer;
+ extern const struct spinand_manufacturer paragon_spinand_manufacturer;

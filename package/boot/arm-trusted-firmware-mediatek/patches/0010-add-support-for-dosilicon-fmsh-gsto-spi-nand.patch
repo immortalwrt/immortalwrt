@@ -1,0 +1,36 @@
+--- a/plat/mediatek/apsoc_common/drivers/spi_nand/mtk_spi_nand.c
++++ b/plat/mediatek/apsoc_common/drivers/spi_nand/mtk_spi_nand.c
+@@ -20,8 +20,11 @@
+ 
+ #define SPI_NAND_MAX_ID_LEN		4U
+ #define DELAY_US_400MS			400000U
++#define DOSILICON_ID			0xE5U
+ #define ETRON_ID			0xD5U
++#define FMSH_ID				0xA1U
+ #define GIGADEVICE_ID			0xC8U
++#define GSTO_ID				0x52U
+ #define MACRONIX_ID			0xC2U
+ #define MICRON_ID			0x2CU
+ #define TOSHIBA_ID			0x98U
+@@ -145,7 +148,10 @@ static int spi_nand_quad_enable(uint8_t
+ 
+ 	if (manufacturer_id != MACRONIX_ID &&
+ 	    manufacturer_id != GIGADEVICE_ID &&
++	    manufacturer_id != GSTO_ID &&
++	    manufacturer_id != DOSILICON_ID &&
+ 	    manufacturer_id != ETRON_ID &&
++	    manufacturer_id != FMSH_ID &&
+ 	    manufacturer_id != FORESEE_ID) {
+ 		return 0;
+ 	}
+@@ -542,6 +548,10 @@ static int spi_nand_check_pp(struct para
+ 		INFO("PP COPY %d CRC read: 0x%x, compute: 0x%x\n",
+ 		     i, crc, crc_compute);
+ 
++		// HACK: for FMSH
++		if (crc != crc_compute)
++			crc = htobe16(pp->integrity_crc);
++
+ 		if (crc != crc_compute) {
+ 			ret = -EBADMSG;
+ 			continue;
