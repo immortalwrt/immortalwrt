@@ -122,7 +122,8 @@ platform_do_upgrade() {
 			;;
 		esac
 		;;
-	cmcc,rax3000m)
+	cmcc,rax3000m|\
+	cmcc,rax3000me)
 		case "$(cmdline_get_var root)" in
 		/dev/mmc*)
 			CI_KERNPART="production"
@@ -205,7 +206,8 @@ platform_check_image() {
 	case "$board" in
 	bananapi,bpi-r3|\
 	bananapi,bpi-r3-mini|\
-	cmcc,rax3000m)
+	cmcc,rax3000m|\
+	cmcc,rax3000me)
 		[ "$magic" != "d00dfeed" ] && {
 			echo "Invalid image type."
 			return 1
@@ -234,7 +236,8 @@ platform_copy_config() {
 		;;
 	bananapi,bpi-r3|\
 	bananapi,bpi-r3-mini|\
-	cmcc,rax3000m)
+	cmcc,rax3000m|\
+	cmcc,rax3000me)
 		case "$(cmdline_get_var root)" in
 		/dev/mmc*)
 			emmc_copy_config

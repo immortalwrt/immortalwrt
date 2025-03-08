@@ -68,7 +68,8 @@ case "$board" in
 	cmcc,rax3000m-nand-ubootmod)
 		[ "$PHYNBR" = "1" ] && mtd_get_mac_binary Factory 0xa > /sys${DEVPATH}/macaddress
 		;;
-	cmcc,rax3000m)
+	cmcc,rax3000m|\
+	cmcc,rax3000me)
 		case "$(cmdline_get_var root)" in
 		/dev/mmc*)
 			addr=$(mmc_get_mac_binary factory 0xa)
