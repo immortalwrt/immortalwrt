@@ -15,7 +15,7 @@ DEFAULT_PACKAGES += \
 	autocore automount cpufreq e2fsprogs f2fsck mkf2fs losetup luci uboot-envtools wpad-openssl \
 	kmod-dsa kmod-dsa-qca8k kmod-fs-ext4 kmod-fs-f2fs kmod-gpio-button-hotplug kmod-leds-gpio \
 	kmod-ath11k kmod-ath11k-ahb kmod-ath11k-pci kmod-phy-aquantia kmod-phy-marvell kmod-phy-qca83xx \
-	kmod-usb2 kmod-usb3 kmod-usb-dwc2 kmod-usb-dwc3 kmod-usb-dwc3-qcom kmod-qca-nss-dp \
+	kmod-usb3 kmod-usb-dwc3 kmod-usb-dwc3-qcom kmod-qca-nss-dp \
 	kmod-qca-nss-crypto kmod-qca-nss-ecm kmod-qca-nss-drv \
 	kmod-qca-nss-drv-bridge-mgr \
 	kmod-qca-nss-drv-eogremgr \

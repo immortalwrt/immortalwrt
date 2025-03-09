@@ -204,9 +204,9 @@
 		spi-max-frequency = <50000000>;
 
 		partitions {
+			compatible = "fixed-partitions";
 			#address-cells = <1>;
 			#size-cells = <1>;
-			compatible = "fixed-partitions";
 
 			partition@0 {
 				reg = <0x00000000 0x000c0000>;
