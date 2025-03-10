@@ -4,7 +4,7 @@
 /plugin/;
 
 / {
-	compatible = "cmcc,rax3000m", "cmcc,rax3000me","mediatek,mt7981";
+	compatible = "cmcc,rax3000m", "cmcc,rax3000me", "mediatek,mt7981";
 
 	fragment@0 {
 		target = <&chosen>;
@@ -63,6 +63,12 @@
 									reg = <0x0 0x1000>;
 								};
 
+								macaddr_factory_a: macaddr@a {
+									compatible = "mac-base";
+									reg = <0xa 0x6>;
+									#nvmem-cell-cells = <1>;
+								};
+
 								macaddr_factory_24: macaddr@24 {
 									compatible = "mac-base";
 									reg = <0x24 0x6>;
@@ -110,6 +116,12 @@
 		__overlay__ {
 			nvmem-cells = <&eeprom_factory_0>;
 			nvmem-cell-names = "eeprom";
+
+			band@1 {
+				reg = <1>;
+				nvmem-cells = <&macaddr_factory_a 0>;
+				nvmem-cell-names = "mac-address";
+			};
 		};
 	};
 };
