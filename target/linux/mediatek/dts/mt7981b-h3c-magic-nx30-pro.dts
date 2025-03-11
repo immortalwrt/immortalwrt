@@ -19,7 +19,7 @@
 		led-upgrade = &led_status_red;
 	};
 
-	chosen {
+	chosen: chosen {
 		bootargs-append = " root=/dev/fit0 rootwait";
 		rootdisk = <&ubi_rootdisk>;
 		stdout-path = "serial0:115200n8";
@@ -140,7 +140,7 @@
 				read-only;
 			};
 
-			partition@580000 {
+			ubi: partition@580000 {
 				label = "ubi";
 				reg = <0x0580000 0x4000000>;
 				compatible = "linux,ubi";

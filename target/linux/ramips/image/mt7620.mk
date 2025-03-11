@@ -254,6 +254,7 @@ define Device/dlink_dir-806a-b1
   IMAGES += factory.bin
   IMAGE/factory.bin := append-kernel | append-rootfs | pad-rootfs | check-size | \
 	sign-dlink-ru cef285a2e29e40b2baab31277d44298b
+  DEFAULT := n
 endef
 TARGET_DEVICES += dlink_dir-806a-b1
 
@@ -613,6 +614,18 @@ define Device/hnet_c108
   SUPPORTED_DEVICES += c108
 endef
 TARGET_DEVICES += hnet_c108
+
+define Device/hongdian_h8922-v30
+  SOC := mt7620a
+  IMAGE_SIZE := 15808k
+  DEVICE_VENDOR := Hongdian
+  DEVICE_MODEL := H8922
+  DEVICE_VARIANT := v30
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-net-qmi-wwan kmod-usb-serial-option uqmi uboot-envtools
+  IMAGES += rootfs.bin
+  IMAGE/rootfs.bin := append-rootfs | check-size 10560k
+endef
+TARGET_DEVICES += hongdian_h8922-v30
 
 define Device/humax_e2
   SOC := mt7620a

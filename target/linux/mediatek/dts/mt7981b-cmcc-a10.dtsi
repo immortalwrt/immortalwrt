@@ -10,9 +10,6 @@
 #include "mt7981.dtsi"
 
 / {
-	model = "CMCC A10";
-	compatible = "cmcc,a10", "mediatek,mt7981";
-
 	aliases {
 		led-boot = &boot_led;
 		led-failsafe = &boot_led;
@@ -21,9 +18,7 @@
 		serial0 = &uart0;
 	};
 
-	chosen {
-		bootargs = "root=/dev/fit0 rootwait";
-		rootdisk = <&ubi_rootdisk>;
+	chosen: chosen {
 		stdout-path = "serial0:115200n8";
 	};
 
@@ -137,13 +132,13 @@
 		spi-tx-bus-width = <4>;
 		spi-rx-bus-width = <4>;
 
-		partitions {
+		partitions: partitions {
 			compatible = "fixed-partitions";
 			#address-cells = <1>;
 			#size-cells = <1>;
 
 			partition@0 {
-				label = "bl2";
+				label = "BL2";
 				reg = <0x0 0x100000>;
 				read-only;
 			};
@@ -154,7 +149,7 @@
 			};
 
 			partition@180000 {
-				label = "factory";
+				label = "Factory";
 				reg = <0x180000 0x200000>;
 				read-only;
 
@@ -188,21 +183,9 @@
 			};
 
 			partition@380000 {
-				label = "fip";
+				label = "FIP";
 				reg = <0x380000 0x200000>;
 				read-only;
-			};
-
-			partition@580000 {
-				compatible = "linux,ubi";
-				label = "ubi";
-				reg = <0x580000 0x7a80000>;
-
-				volumes {
-					ubi_rootdisk: ubi-volume-fit {
-						volname = "fit";
-					};
-				};
 			};
 		};
 	};

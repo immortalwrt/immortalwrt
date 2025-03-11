@@ -50,6 +50,7 @@ ath79_setup_interfaces()
 	extreme-networks,ws-ap3805i|\
 	fortinet,fap-220-b|\
 	fortinet,fap-221-b|\
+	fortinet,fap-221-c|\
 	glinet,gl-ar300m-lite|\
 	glinet,gl-usb150|\
 	hak5,wifi-pineapple-nano|\
@@ -341,7 +342,8 @@ ath79_setup_interfaces()
 	sitecom,wlr-7100|\
 	tplink,archer-c2-v3|\
 	tplink,tl-wr1043nd-v4|\
-	tplink,tl-wr1043n-v5)
+	tplink,tl-wr1043n-v5|\
+	zte,e8820)
 		ucidef_add_switch "switch0" \
 			"0@eth0" "1:lan:4" "2:lan:3" "3:lan:2" "4:lan:1" "5:wan"
 		;;
@@ -870,6 +872,11 @@ ath79_setup_macs()
 	xiaomi,aiot-ac2350)
 		lan_mac=$(mtd_get_mac_binary art 0x1002)
 		;;
+	zte,e8820)
+		wan_mac=$(mtd_get_mac_binary art 0)
+		lan_mac=$(macaddr_add "$wan_mac" 1)
+		label_mac=$wan_mac
+                ;;
 	esac
 
 	[ -n "$lan_mac" ] && ucidef_set_interface_macaddr "lan" $lan_mac
