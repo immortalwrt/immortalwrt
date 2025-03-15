@@ -36,7 +36,6 @@ ezpro,mrkaio-m68s|\
 firefly,rk3568-roc-pc|\
 friendlyarm,nanopi-r3s|\
 friendlyarm,nanopi-r5c|\
-friendlyarm,nanopi-r6c|\
 lunzn,fastrhino-r66s|\
 mmbox,anas3035|\
 radxa,e25|\
@@ -50,8 +49,8 @@ cyber,cyber3588-aib)
 	set_interface_core 8 "wan"
 	;;
 friendlyarm,nanopc-t6)
-	set_interface_core 2 "eth1"
-	set_interface_core 4 "eth2"
+	set_interface_core 10 "eth1"
+	set_interface_core 20 "eth2"
 	;;
 friendlyarm,nanopi-r2c|\
 friendlyarm,nanopi-r2c-plus|\
@@ -68,11 +67,15 @@ friendlyarm,nanopi-r4s-enterprise)
 	set_interface_core 10 "eth0"
 	set_interface_core 20 "eth1"
 	;;
-friendlyarm,nanopi-r5s|\
-friendlyarm,nanopi-r6s)
+friendlyarm,nanopi-r5s)
 	set_interface_core 2 "eth0"
 	set_interface_core 4 "eth1"
 	set_interface_core 8 "eth2"
+	;;
+friendlyarm,nanopi-r6s)
+	set_interface_core 10 "eth0"
+	set_interface_core 20 "eth1"
+	set_interface_core 40 "eth2"
 	;;
 lunzn,fastrhino-r68s)
 	set_interface_core 1 "eth0"
