@@ -2,7 +2,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "xiaomi,miwifi-nano", "mediatek,mt7628an-soc";
@@ -24,20 +23,17 @@
 		compatible = "gpio-leds";
 
 		led_status_blue: status_blue {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:status";
 			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
 		};
 
 		led_status_red: status_red {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_RED>;
+			label = "red:status";
 			gpios = <&gpio 37 GPIO_ACTIVE_LOW>;
 		};
 
 		led_status_amber: status_amber {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_AMBER>;
+			label = "amber:status";
 			gpios = <&gpio 44 GPIO_ACTIVE_LOW>;
 		};
 	};
@@ -75,14 +71,10 @@
 
 &wmac {
 	status = "okay";
-
-	nvmem-cells = <&eeprom_factory_0>;
-	nvmem-cell-names = "eeprom";
 };
 
 &ethernet {
-	nvmem-cells = <&macaddr_factory_28>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0x28>;
 };
 
 &spi0 {
@@ -109,24 +101,10 @@
 				reg = <0x30000 0x10000>;
 			};
 
-			partition@40000 {
+			factory: partition@40000 {
 				label = "factory";
 				reg = <0x40000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_factory_0: eeprom@0 {
-						reg = <0x0 0x400>;
-					};
-
-					macaddr_factory_28: macaddr@28 {
-						reg = <0x28 0x6>;
-					};
-				};
 			};
 
 			partition@50000 {

@@ -1,0 +1,198 @@
+From 0c1e4af01506c913cc54e63f66bb5470f50790c7 Mon Sep 17 00:00:00 2001
+From: Leilk Liu <leilk.liu@mediatek.com>
+Date: Tue, 13 Jul 2021 21:45:59 +0800
+Subject: [PATCH] [Add spi runtime PM support]
+
+[Description]
+Add ahb clk and enable runtime pm
+
+[Release-log]
+N/A
+
+Change-Id: I0529f6e829f5fc4c5880508971c97b9434820340
+Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
+---
+ drivers/spi/spi-mt65xx.c | 77 ++++++++++++++++++++++++++++++++++------
+ 1 file changed, 67 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/spi/spi-mt65xx.c b/drivers/spi/spi-mt65xx.c
+index 7e54984..ff2d825 100644
+--- a/drivers/spi/spi-mt65xx.c
++++ b/drivers/spi/spi-mt65xx.c
+@@ -119,6 +119,8 @@ struct mtk_spi_compatible {
+ 	/* the IPM IP design improve some feature, and support dual/quad mode */
+ 	bool ipm_design;
+ 	bool support_quad;
++	/* some IC ahb & apb clk is different and also need to be enabled */
++	bool need_ahb_clk;
+ };
+ 
+ struct mtk_spi {
+@@ -126,7 +128,7 @@ struct mtk_spi {
+ 	u32 state;
+ 	int pad_num;
+ 	u32 *pad_sel;
+-	struct clk *parent_clk, *sel_clk, *spi_clk;
++	struct clk *parent_clk, *sel_clk, *spi_clk, *spi_hclk;
+ 	struct spi_transfer *cur_transfer;
+ 	u32 xfer_len;
+ 	u32 num_xfered;
+@@ -147,12 +149,21 @@ static const struct mtk_spi_compatible mt2712_compat = {
+ 	.must_tx = true,
+ };
+ 
+-static const struct mtk_spi_compatible ipm_compat = {
++static const struct mtk_spi_compatible ipm_compat_single = {
++	.must_tx = true,
++	.enhance_timing = true,
++	.dma_ext = true,
++	.ipm_design = true,
++	.need_ahb_clk = true,
++};
++
++static const struct mtk_spi_compatible ipm_compat_quad = {
+ 	.must_tx = true,
+ 	.enhance_timing = true,
+ 	.dma_ext = true,
+ 	.ipm_design = true,
+ 	.support_quad = true,
++	.need_ahb_clk = true,
+ };
+ 
+ static const struct mtk_spi_compatible mt6765_compat = {
+@@ -188,8 +199,11 @@ static const struct mtk_chip_config mtk_default_chip_info = {
+ };
+ 
+ static const struct of_device_id mtk_spi_of_match[] = {
+-	{ .compatible = "mediatek,ipm-spi",
+-		.data = (void *)&ipm_compat,
++	{ .compatible = "mediatek,ipm-spi-single",
++		.data = (void *)&ipm_compat_single,
++	},
++	{ .compatible = "mediatek,ipm-spi-quad",
++		.data = (void *)&ipm_compat_quad,
+ 	},
+ 	{ .compatible = "mediatek,mt2701-spi",
+ 		.data = (void *)&mtk_common_compat,
+@@ -992,7 +1006,7 @@ static int mtk_spi_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 	}
+ 
+-//	master->auto_runtime_pm = true;
++	master->auto_runtime_pm = true;
+ 	master->dev.of_node = pdev->dev.of_node;
+ 	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_LSB_FIRST;
+ 
+@@ -1106,22 +1120,40 @@ static int mtk_spi_probe(struct platform_device *pdev)
+ 		goto err_put_master;
+ 	}
+ 
++	if (mdata->dev_comp->need_ahb_clk) {
++		mdata->spi_hclk = devm_clk_get(&pdev->dev, "spi-hclk");
++		if (IS_ERR(mdata->spi_hclk)) {
++			ret = PTR_ERR(mdata->spi_hclk);
++			dev_err(&pdev->dev, "failed to get spi-hclk: %d\n", ret);
++			goto err_put_master;
++		}
++
++		ret = clk_prepare_enable(mdata->spi_hclk);
++		if (ret < 0) {
++			dev_err(&pdev->dev, "failed to enable spi_hclk (%d)\n", ret);
++			goto err_put_master;
++		}
++	}
++
+ 	ret = clk_prepare_enable(mdata->spi_clk);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to enable spi_clk (%d)\n", ret);
+ 		goto err_put_master;
+ 	}
+ 
+-	/*ret = clk_set_parent(mdata->sel_clk, mdata->parent_clk);
++	ret = clk_set_parent(mdata->sel_clk, mdata->parent_clk);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to clk_set_parent (%d)\n", ret);
+ 		clk_disable_unprepare(mdata->spi_clk);
+ 		goto err_put_master;
+ 	}
+ 
+-	clk_disable_unprepare(mdata->sel_clk);*/
++	clk_disable_unprepare(mdata->spi_clk);
++
++	if (mdata->dev_comp->need_ahb_clk)
++		clk_disable_unprepare(mdata->spi_hclk);
+ 
+-	//pm_runtime_enable(&pdev->dev);
++	pm_runtime_enable(&pdev->dev);
+ 
+ 	ret = devm_spi_register_master(&pdev->dev, master);
+ 	if (ret) {
+@@ -1201,8 +1233,11 @@ static int mtk_spi_suspend(struct device *dev)
+ 	if (ret)
+ 		return ret;
+ 
+-	if (!pm_runtime_suspended(dev))
++	if (!pm_runtime_suspended(dev)) {
+ 		clk_disable_unprepare(mdata->spi_clk);
++		if (mdata->dev_comp->need_ahb_clk)
++			clk_disable_unprepare(mdata->spi_hclk);
++	}
+ 
+ 	return ret;
+ }
+@@ -1214,6 +1249,14 @@ static int mtk_spi_resume(struct device *dev)
+ 	struct mtk_spi *mdata = spi_master_get_devdata(master);
+ 
+ 	if (!pm_runtime_suspended(dev)) {
++		if (mdata->dev_comp->need_ahb_clk) {
++			ret = clk_prepare_enable(mdata->spi_hclk);
++			if (ret < 0) {
++				dev_err(dev, "failed to enable spi_hclk (%d)\n", ret);
++				return ret;
++			}
++		}
++
+ 		ret = clk_prepare_enable(mdata->spi_clk);
+ 		if (ret < 0) {
+ 			dev_err(dev, "failed to enable spi_clk (%d)\n", ret);
+@@ -1222,8 +1265,11 @@ static int mtk_spi_resume(struct device *dev)
+ 	}
+ 
+ 	ret = spi_master_resume(master);
+-	if (ret < 0)
++	if (ret < 0) {
+ 		clk_disable_unprepare(mdata->spi_clk);
++		if (mdata->dev_comp->need_ahb_clk)
++			clk_disable_unprepare(mdata->spi_hclk);
++	}
+ 
+ 	return ret;
+ }
+@@ -1237,6 +1283,9 @@ static int mtk_spi_runtime_suspend(struct device *dev)
+ 
+ 	clk_disable_unprepare(mdata->spi_clk);
+ 
++	if (mdata->dev_comp->need_ahb_clk)
++		clk_disable_unprepare(mdata->spi_hclk);
++
+ 	return 0;
+ }
+ 
+@@ -1246,6 +1295,14 @@ static int mtk_spi_runtime_resume(struct device *dev)
+ 	struct mtk_spi *mdata = spi_master_get_devdata(master);
+ 	int ret;
+ 
++	if (mdata->dev_comp->need_ahb_clk) {
++		ret = clk_prepare_enable(mdata->spi_hclk);
++		if (ret < 0) {
++			dev_err(dev, "failed to enable spi_hclk (%d)\n", ret);
++			return ret;
++		}
++	}
++
+ 	ret = clk_prepare_enable(mdata->spi_clk);
+ 	if (ret < 0) {
+ 		dev_err(dev, "failed to enable spi_clk (%d)\n", ret);
+-- 
+2.18.0
+

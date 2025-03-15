@@ -1,0 +1,141 @@
+&pio {
+	wifi_led_pins: wifi_led-pins-1-2 {
+		mux {
+			function = "led";
+			groups = "wifi_led";
+		};
+	};
+
+	i2c_pins: i2c-pins-3-4 {
+		mux {
+			function = "i2c";
+			groups = "i2c";
+		};
+	};
+
+	uart1_pins_g0: uart1-pins-7-to-10 {
+		mux {
+			function = "uart";
+			groups = "uart1_0";
+		};
+	};
+
+	pcie0_pins: pcie0-pins-9-10-41 {
+		mux {
+			function = "pcie";
+			groups = "pcie_clk", "pcie_wake", "pcie_pereset";
+		};
+	};
+
+	jtag_pins: jtag-pins-11-to-14 {
+		mux {
+			function = "jtag";
+			groups = "jtag";
+		};
+	};
+
+	spic_pins_g0: spic-pins-11-to-14 {
+		mux {
+			function = "spi";
+			groups = "spi1_0";
+		};
+	};
+
+	pwm1_pin_g0: pwm1-pin-20 {
+		mux {
+			function = "pwm";
+			groups = "pwm1_1";
+		};
+	};
+
+	pwm0_pin: pwm0-pin-21 {
+		mux {
+			function = "pwm";
+			groups = "pwm0";
+		};
+	};
+
+	pwm1_pin_g1: pwm1-pin-22 {
+		mux {
+			function = "pwm";
+			groups = "pwm1_0";
+		};
+	};
+
+	spic_pins_g1: spic-pins-23-to-26 {
+		mux {
+			function = "spi";
+			groups = "spi1_1";
+		};
+	};
+
+	uart1_pins_g1: uart1-pins-23-to-26 {
+		mux {
+			function = "uart";
+			groups = "uart1_1";
+		};
+	};
+
+	spic_pins_g2: spic-pins-29-to-32 {
+		mux {
+			function = "spi";
+			groups = "spi1_2";
+		};
+	};
+
+	uart1_pins_g2: uart1-pins-29-to-32 {
+		mux {
+			function = "uart";
+			groups = "uart1_2";
+		};
+	};
+
+	uart2_pins_g0: uart1-pins-29-to-32 {
+		mux {
+			function = "uart";
+			groups = "uart1_2";
+		};
+	};
+
+	uart2_pins_g1: uart1-pins-23-to-36 {
+		mux {
+			function = "uart";
+			groups = "uart2_1";
+		};
+	};
+
+	spic_pins_g3: spic-pins-33-to-36 {
+		mux {
+			function = "spi";
+			groups = "spi1_3";
+		};
+	};
+
+	uart1_pins_g3: uart1-pins-35-to-38 {
+		mux {
+			function = "uart";
+			groups = "uart1_3_rx_tx", "uart1_3_cts_rts";
+		};
+	};
+
+	uart1_pins: uart1-pins-42-to-45 {
+		mux {
+			function = "uart";
+			groups = "uart1";
+		};
+	};
+
+	uart2_pins: uart1-pins-46-to-49 {
+		mux {
+			function = "uart";
+			groups = "uart2";
+		};
+	};
+
+	pcm_pins: pcm-pins-62-to-65 {
+		mux {
+			function = "pcm";
+			groups = "pcm";
+		};
+	};
+};

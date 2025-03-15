@@ -1,0 +1,43 @@
+/dts-v1/;
+#include "mt7981-cmcc-rax3000m.dtsi"
+
+/ {
+	model = "CMCC RAX3000M eMMC version";
+	compatible = "cmcc,rax3000m-emmc", "mediatek,mt7981";
+
+	chosen {
+		bootargs = "console=ttyS0,115200n1 loglevel=8 \
+			    earlycon=uart8250,mmio32,0x11002000 \
+			    root=PARTLABEL=rootfs rootwait rootfstype=squashfs,f2fs";
+	};
+};
+
+&mmc0 {
+	bus-width = <8>;
+	max-frequency = <26000000>;
+	no-sd;
+	no-sdio;
+	non-removable;
+	pinctrl-names = "default", "state_uhs";
+	pinctrl-0 = <&mmc0_pins_default>;
+	pinctrl-1 = <&mmc0_pins_uhs>;
+	vmmc-supply = <&reg_3p3v>;
+	non-removable;
+	status = "okay";
+};
+
+&pio {
+	mmc0_pins_default: mmc0-pins-default {
+		mux {
+			function = "flash";
+			groups = "emmc_45";
+		};
+	};
+
+	mmc0_pins_uhs: mmc0-pins-uhs {
+		mux {
+			function = "flash";
+			groups = "emmc_45";
+		};
+	};
+};

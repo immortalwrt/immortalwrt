@@ -1,0 +1,1353 @@
+
+<%+header%>
+<!--
+    This module is a demo to configure MTK' proprietary WiFi driver.
+    Basic idea is to bypass uci and edit wireless profile (mt76xx.dat) directly.
+    LuCI's WiFi configuration is more logical and elegent, but it's quite tricky to 
+    translate uci into MTK's WiFi profile (like we did in "uci2dat").
+
+    Hua Shao <nossiac@163.com>
+-->
+<%
+local disp = require "luci.dispatcher"
+local path  = disp.context.path
+local request = disp.context.request
+local mtkwifi = require("mtkwifi")
+local devs = mtkwifi.get_all_devs()
+local devname
+local vifname, vifidx
+local dev = {}
+local vif = {}
+if request[4] == "vif_add_view" then
+    devname, vifname = request[5], request[6]
+    dev = devs and devs[devname]
+    vifname = vifname..#dev.vifs
+    vifidx = #dev.vifs + 1
+
+elseif request[4] == "vif_cfg_view" then
+    devname, vifname = request[5], request[6]
+    dev = devs and devs[devname] or nil
+    vif = dev and dev.vifs[vifname] or nil
+    vifidx = vif and vif.vifidx or nil
+end
+
+local cfgs = mtkwifi.load_profile(dev.profile)
+local diff = mtkwifi.diff_profile(dev.profile)
+
+local AuthModes = {}
+local EncryptionTypeLists = {}
+if string.split(cfgs.WirelessMode,";")[1] == "18" then
+    AuthModes = dev.AuthModeList_6G
+    EncryptionTypeLists = dev.EncryptionTypeList_6G
+else
+    AuthModes = dev.AuthModeList
+    EncryptionTypeLists = dev.EncryptionTypeList
+end
+%>
+
+<script type="text/javascript" src="<%=resource%>/cbi.js?v=git-17.250.41546-90ac861"></script>
+<script type="text/javascript">
+
+function hi(to, devname, vifname)
+{
+    var a;
+    var x;
+    var tables = new Array();
+    tables.push("vif-cfg-basic");
+    tables.push("vif-cfg-ac");
+    <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
+        tables.push("vif-cfg-he_mu");
+    <% end %>
+
+    var tabs = new Array();
+    tabs.push("vif-cfg-tab-basic");
+    tabs.push("vif-cfg-tab-ac");
+    <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
+        tabs.push("vif-cfg-tab-he_mu");
+    <% end %>
+
+    document.getElementById("__activeTab").value = to;
+
+    for (x in tables)
+    {
+        a = document.getElementById(tables[x]);
+        if (tables[x].indexOf(to) == -1)
+        {
+            a.style.display = "none";
+        }
+        else
+        {
+            a.style.display = "";
+        }
+    }
+    for (y in tabs)
+    {
+        a = document.getElementById(tabs[y]);
+        if(tabs[y].indexOf(to) == -1)
+        {
+            a.className = "cbi-tab-disabled";
+        }
+        else
+        {
+            a.className = "cbi-tab";
+        }
+    }
+}
+
+</script>
+
+<form method="post" name="cbi" action="<%=luci.dispatcher.build_url("admin", "network", "wifi", "vif_cfg", devname, vifname)%>" enctype="multipart/form-data" onsubmit="return validate_all('<%=vifidx%>','<%=cfgs["HT_DisallowTKIP"]%>')" autocomplete="off">
+<% if not dev or not vif then%>
+    <fieldset class="cbi-section">
+        <h2>Interface Not Exist - <%=vifname and devname.."@"..vifname or devname%></h2>
+    </fieldset>
+<% else %>
+    <input type="hidden" id="CountryCode" name="CountryCode" value="<%=cfgs.CountryCode%>">
+    <% if mtkwifi.band(vif.__wirelessmode or string.split(cfgs.WirelessMode,";")[1]) == "5G" or mtkwifi.band(vif.__wirelessmode or string.split(cfgs.WirelessMode,";")[1]) == "6G" then %>
+        <input type="hidden" name="__cr" id="__cr" value="<%=cfgs.CountryRegionABand%>">
+    <% else %>
+        <input type="hidden" name="__cr" id="__cr" value="<%=cfgs.CountryRegion%>">
+    <% end %>
+    <input type="hidden" id="Channel" name="Channel" value="<%=cfgs.Channel%>">
+    <fieldset class="cbi-section">
+        <h2><%:Interface Configurations%> - <%=vifname and devname.."@"..vifname or devname%>
+            <%if next(diff) ~= nil then%>
+                <span style="color:red;">( <a href="javascript:location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", dev.devname)%>'"><%:Click here%></a> <%:to apply changes%>)</span>
+            <%end%>
+        </h2>
+        <div class="alert-message" id="BusyText_VIF" style="display:none;">
+            <img src="<%=resource%>/icons/loading.gif" alt="" style="vertical-align:middle" />
+            <big><strong><%:Please wait while the request is being processed.%></strong></big>
+        </div>
+        <ul class="cbi-tabmenu">
+            <li class="cbi-tab" id="vif-cfg-tab-basic">
+                <a href="javascript:hi('basic', <%="'"..devname.."', '"..vifname.."'"%>);this.blur(); "><%:Basic Settings%></a>
+            </li>
+            <li class="cbi-tab-disabled" id="vif-cfg-tab-ac">
+                <a href="javascript:hi('ac', <%="'"..devname.."', '"..vifname.."'"%>);this.blur(); "><%:Access Control%></a>
+            </li>
+            <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
+                <li class="cbi-tab-disabled" id="vif-cfg-tab-he_mu">
+                    <a href="javascript:hi('he_mu', <%="'"..devname.."', '"..vifname.."'"%>);this.blur(); "><%:HE Settings%></a>
+                </li>
+            <% end %>
+        </ul>
+        <input type="hidden" name="__activeTab" id="__activeTab" value="basic">
+        <table class="cbi-section-table" id="vif-cfg-basic">
+            <thead style="display:none;">
+                <tr>
+                    <td>
+                        <input value="<%=request[4]%>" name="__action" type="hidden"></input>
+                    </td>
+                </tr>
+            </thead>
+            <tbody id="VIF_CFG_BASIC_SETTINGS">
+                <tr>
+                    <td>SSID</td>
+                    <td>
+                        <input id="vif-cfg-basic-ssid" value="<%=vif.__ssid and vif.__ssid:gsub("\"","&quot;") or nil%>" name="<%="SSID"..vifidx%>"></input>
+                    </td>
+                </tr>
+                <% if dev.DBDC_MODE == "0" then %>
+                <tr>
+                    <td><%:Channel%></td>
+                    <td>
+                        <select style="width:auto" name="__channel">
+                            <% for i=0,14 do %>
+                            <option value="<%=i%>" <% if i==vif.__channel then %> selected="selected"<% end %>>
+                            <% if i==0 then %>Auto<% else %><%=i%><% end %>
+                            </option>
+                            <% end %>
+                        </select>
+                    </td>
+                </tr>
+                <% end %>
+                <tr>
+                    <td><%:Auth Mode%></td>
+                    <td>
+                        <select name="__authmode" cfg="AuthMode" id="AuthMode" onchange="AuthMode_onchange(this.options[this.options.selectedIndex].value)">
+                            <% for _, v in ipairs(AuthModes) do %>
+                                <% if v ~= "WPA3-192-bit" or dev.isWPA3_192bitSupported then %>
+                                    <% if vif.__ieee8021x == "1" then %>
+                                        <% if v == "IEEE8021X" then %>
+                                            <option value="<%=v%>" selected="selected" ><%=v%></option>
+                                        <% else %>
+                                            <option value="<%=v%>" ><%=v%></option>
+                                        <% end %>
+                                    <% elseif vif.__authmode == "OPEN" then %>
+                                        <% if (vif.__encrypttype== "NONE" and v == "Disable") or
+                                            (vif.__encrypttype== "WEP" and v == "OPEN") then %>
+                                            <option value="<%=v%>" selected="selected" ><%=v%></option>
+                                        <% else %>
+                                            <option value="<%=v%>" ><%=v%></option>
+                                        <% end %>
+                                    <% elseif vif.__authmode == "OWE" then %>
+                                        <% if vif.__encrypttype== "AES" and v == "Enhanced Open" then %>
+                                            <option value="<%=v%>" selected="selected" ><%=v%></option>
+                                        <% else %>
+                                            <option value="<%=v%>" ><%=v%></option>
+                                        <% end %>
+                                    <% elseif vif.__authmode == "WPA3-192" then %>
+                                        <% if vif.__encrypttype== "GCMP256" and v == "WPA3-192-bit" then %>
+                                            <option value="<%=v%>" selected="selected" ><%=v%></option>
+                                        <% else %>
+                                            <option value="<%=v%>" ><%=v%></option>
+                                        <% end %>
+                                    <% else %>
+                                        <option value="<%=v%>" <% if vif.__authmode == v then %> selected="selected" <% end %> ><%=v%></option>
+                                    <% end %>
+                                <% end %>
+                            <% end %>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody id="ENCRYPTION" style="display:none;">
+                <tr>
+                    <td><%:Encryption%></td>
+                    <td>
+                        <select name="__encrypttype" id="__encrypttype" cfg="EncrypType">
+                        <% for _,v in ipairs(EncryptionTypeLists) do %>
+                            <option value="<%=v%>" <% if vif.__encrypttype==v then %>selected="selected" <% end %>><%=v%>
+                            </option>
+                        <% end %>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody id="REKEY_INTERVAL" style="display:none;">
+                <tr>
+                    <td><%:Key Renewal Interval%></td>
+                    <td>
+                        <input value="<%=vif.__rekeyinterval%>" type="text" name="__rekeyinterval" id="__rekeyinterval" cfg="RekeyInterval">
+                    </td>
+                </tr>
+            </tbody>
+            <tbody id="WPAXPSK" style="display:none;">
+                <tr>
+                    <td><%:Key%></td>
+                    <td>
+                        <input value="<%=vif.__wpapsk and vif.__wpapsk:gsub("\"","&quot;") or nil%>" type="text" name="<%="WPAPSK"..vifidx%>" id="<%="WPAPSK"..vifidx%>"></input>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody id="WEP" style="display:none;">
+                <tr>
+                    <td><%:WEP Default Key%></td>
+                    <td>
+                        <select name="__DefaultKeyID" id="__DefaultKeyID">
+                            <option value="1" <%if tonumber(vif.__wepkey_id) == 1 then%>selected="selected"<%end%>>1</option>
+                            <option value="2" <%if tonumber(vif.__wepkey_id) == 2 then%>selected="selected"<%end%>>2</option>
+                            <option value="3" <%if tonumber(vif.__wepkey_id) == 3 then%>selected="selected"<%end%>>3</option>
+                            <option value="4" <%if tonumber(vif.__wepkey_id) == 4 then%>selected="selected"<%end%>>4</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:WEP Key%> 1</td>
+                    <td>
+                        <input value="<%=cfgs["Key1Str"..vifidx] and cfgs["Key1Str"..vifidx]:gsub("\"","&quot;") or nil%>" type="text" name="<%="Key1Str"..vifidx%>" id="<%="Key1Str"..vifidx%>"></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:WEP Key Type%> 1</td>
+                    <td>
+                        <select id="<%="WEP1Type"..vifidx%>" name="<%="WEP1Type"..vifidx%>">
+                        <option value="1" <%if(mtkwifi.token_get(cfgs["Key1Type"], vifidx, 0)) == "1" then %> selected="selected"<%end%>>ASCII</option>
+                        <option value="0" <%if(mtkwifi.token_get(cfgs["Key1Type"], vifidx, 0)) == "0" then %> selected="selected"<%end%>>Hex</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:WEP Key%> 2</td>
+                    <td>
+                        <input value="<%=cfgs["Key2Str"..vifidx] and cfgs["Key2Str"..vifidx]:gsub("\"","&quot;") or nil%>" type="text" name="<%="Key2Str"..vifidx%>" id="<%="Key2Str"..vifidx%>"></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:WEP Key Type%> 2</td>
+                    <td>
+                        <select id="<%="WEP2Type"..vifidx%>" name="<%="WEP2Type"..vifidx%>">
+                        <option value="1" <%if(mtkwifi.token_get(cfgs["Key2Type"], vifidx, 0)) == "1" then %> selected="selected"<%end%>>ASCII</option>
+                        <option value="0" <%if(mtkwifi.token_get(cfgs["Key2Type"], vifidx, 0)) == "0" then %> selected="selected"<%end%>>Hex</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:WEP Key%> 3</td>
+                    <td>
+                        <input value="<%=cfgs["Key3Str"..vifidx] and cfgs["Key3Str"..vifidx]:gsub("\"","&quot;") or nil%>" type="text" name="<%="Key3Str"..vifidx%>" id="<%="Key3Str"..vifidx%>"></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:WEP Key Type%> 3</td>
+                    <td>
+                        <select id="<%="WEP3Type"..vifidx%>" name="<%="WEP3Type"..vifidx%>">
+                        <option value="1" <%if(mtkwifi.token_get(cfgs["Key3Type"], vifidx, 0)) == "1" then %> selected="selected"<%end%>>ASCII</option>
+                        <option value="0" <%if(mtkwifi.token_get(cfgs["Key3Type"], vifidx, 0)) == "0" then %> selected="selected"<%end%>>Hex</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:WEP Key%> 4</td>
+                    <td>
+                        <input value="<%=cfgs["Key4Str"..vifidx] and cfgs["Key4Str"..vifidx]:gsub("\"","&quot;") or nil%>" type="text" name="<%="Key4Str"..vifidx%>" id="<%="Key4Str"..vifidx%>"></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:WEP Key Type%> 4</td>
+                    <td>
+                        <select id="<%="WEP4Type"..vifidx%>" name="<%="WEP4Type"..vifidx%>">
+                        <option value="1" <%if(mtkwifi.token_get(cfgs["Key4Type"], vifidx, 0)) == "1" then %> selected="selected"<%end%>>ASCII</option>
+                        <option value="0" <%if(mtkwifi.token_get(cfgs["Key4Type"], vifidx, 0)) == "0" then %> selected="selected"<%end%>>Hex</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody id="WPAX" style="display:none;">
+                <tr>
+                    <td><%:PMK Cache Period%> (min)</td>
+                    <td>
+                        <input value="<%=vif.__pmkcacheperiod%>" type="text" name="__pmkcacheperiod" id="__pmkcacheperiod" cfg="PMKCachePeriod">
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:Pre-Authentication%></td>
+                    <td>
+                        <input name="__preauth" id="__preauth" value="1"
+                        <% if mtkwifi.token_get(cfgs["PreAuth"], vifidx, 0) == "1" then %>
+                        checked="checked"
+                        <% end %> type="checkbox">
+                    </td>
+                </tr>
+            </tbody>
+            <tbody id="PMF" style="display:none;">
+                <tr>
+                    <td><%:MFPC%></td>
+                    <td> <input name="__pmfmfpc" id="__pmfmfpc" value="1"
+                        <% if mtkwifi.token_get(cfgs["PMFMFPC"], vifidx, 0) == "1" then %>
+                        checked="checked"
+                        <% end %> type="checkbox"> </td>
+                </tr>
+                <tr>
+                    <td><%:MFPR%></td>
+                    <td> <input name="__pmfmfpr" id="__pmfmfpr" value="1"
+                        <% if mtkwifi.token_get(cfgs["PMFMFPR"], vifidx, 0) == "1" then %>
+                        checked="checked"
+                        <% end %> type="checkbox"></td>
+                </tr>
+                <tr>
+                    <td><%:MFPSHA256%></td>
+                    <td> <input name="__pmfsha256" id="__pmfsha256" value="1"
+                        <% if mtkwifi.token_get(cfgs["PMFSHA256"], vifidx, 0) == "1" then %>
+                        checked="checked"
+                        <% end %> type="checkbox"> </td>
+                </tr>
+            </tbody>
+            <tbody id="IEEE8021X" style="display:none;">
+                <tr>
+                    <td><%:WEP for 8021X%></td>
+                    <td>
+                        <input value="1" type="checkbox" name="__8021x_wep" <% if vif.__encrypttype=="WEP" then %>checked="checked" <% end %>></input>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody id="RADIUS" style="display:none">
+                <tr>
+                    <td><%:Radius Server IP%></td>
+                    <td>
+                        <input value="<%=vif.__radius_server%>" type="text" name="__radius_server" id="__radius_server" cfg="RADIUS_Server">
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:Radius Server Port%></td>
+                    <td>
+                        <input value="<%=vif.__radius_port%>" type="text" name="__radius_port" id="__radius_port" cfg="RADIUS_Port">
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:Radius Key%></td>
+                    <td>
+                        <input value="<%=cfgs["RADIUS_Key"..vifidx] and cfgs["RADIUS_Key"..vifidx]:gsub("\"","&quot;") or nil%>" type="text" name="<%="RADIUS_Key"..vifidx%>" id="<%="RADIUS_Key"..vifidx%>"></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:Radius Session Timeout%> (s)</td>
+                    <td>
+                        <input value="<%=mtkwifi.token_get(cfgs.session_timeout_interval, vifidx, 0)%>" type="text" name="__session_timeout_interval" id="__session_timeout_interval">
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:Radius Idle Timeout%> (s)</td>
+                    <td>
+                        <input value="<%=cfgs.idle_timeout_interval%>" type="text" name="idle_timeout_interval" id="idle_timeout_interval">
+                    </td>
+                </tr>
+            </tbody>
+            <tbody>
+                <tr id="VIF_HIDDEN_SSID_ROW">
+                    <td><%:Hidden SSID%></td>
+                    <td>
+                        <input id="__hidessid" name="__hidessid" cfg="HideSSID" value="1"
+                        <% if vif.__hidessid == "1" then %>
+                        checked="checked"
+                        <% end %> type="checkbox">
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:AP Isolation%></td>
+                    <td>
+                        <input name="__noforwarding" cfg="NoForwarding" value="1"
+                        <% if vif.__noforwarding == "1" then %>
+                        checked="checked"
+                        <% end %> type="checkbox">
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:WMM Capable%></td>
+                    <td>
+                        <input name="__wmmcapable" cfg="WmmCapable" value="1"
+                        <% if vif.__wmmcapable ~= "0" then %>
+                        checked="checked"
+                        <% end %> type="checkbox">
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:Fixed TX Rate%></td>
+                    <td>
+                        <input value="<%=vif.__txrate or 0%>" name="__txrate" id="__txrate"></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:HT STBC%></td>
+                    <td>
+                        <input type="radio" name="__ht_stbc" value="1" <% if vif.__ht_stbc == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__ht_stbc" value="0" <% if vif.__ht_stbc == "0" then %> checked="checked"<% end %>/><%:Disable%>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:HT LDPC%></td>
+                    <td>
+                        <input type="radio" name="__ht_ldpc" value="1" <% if vif.__ht_ldpc == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__ht_ldpc" value="0" <% if vif.__ht_ldpc == "0" then %> checked="checked"<% end %>/><%:Disable%>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:VHT STBC%></td>
+                    <td>
+                        <input type="radio" name="__vht_stbc" value="1" <% if vif.__vht_stbc == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__vht_stbc" value="0" <% if vif.__vht_stbc == "0" then %> checked="checked"<% end %>/><%:Disable%>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:VHT LDPC%></td>
+                    <td>
+                        <input type="radio" name="__vht_ldpc" value="1" <% if vif.__vht_ldpc == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__vht_ldpc" value="0" <% if vif.__vht_ldpc == "0" then %> checked="checked"<% end %>/><%:Disable%>
+                    </td>
+                </tr>
+                <tbody id="DEV_CFG_BASIC_SETTINGS">
+                    <tr>
+                        <td><%:Wireless Mode%></td>
+                        <td>
+                            <select style="width:auto" name="__wirelessmode" id="WirelessMode">
+                                <!--
+                                    1. For non-DBDC card, display all the Wireless modes set in
+                                       band key of mtkwifi.DevicePropertyMap table.
+                                    2. For DBDC card, display all 2.4G Wireless modes if dbdcBandName is 2.4G and
+                                       display all 5G Wireless modes if dbdcBandName is 5G.
+                                -->
+                                <% for k,v in pairs(dev.WirelessModeList) do %>
+                                    <% if mtkwifi.band(vif.__wirelessmode or string.split(cfgs.WirelessMode,";")[1]) == mtkwifi.band(k) then %>
+                                            <option value="<%=k%>" <% if tonumber(vif.__wirelessmode or string.split(cfgs.WirelessMode,";")[1]) == tonumber(k) then%> selected="selected"<% end %>><%=k%> - <%=v%></option>
+                                    <% end %>
+                                <% end %>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+                <tr>
+                    <td><%:DLS Capable%></td>
+                    <td>
+                        <input type="radio" name="__dls_capable" value="1" <% if vif.__dls_capable == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__dls_capable" value="0" <% if vif.__dls_capable == "0" then %> checked="checked"<% end %>/><%:Disable%>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:802.11k RRM%></td>
+                    <td>
+                        <input type="radio" name="__rrmenable" value="1" <% if vif.__rrmenable == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__rrmenable" value="0" <% if vif.__rrmenable == "0" then %> checked="checked"<% end %>/><%:Disable%>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:APSD Capable%></td>
+                    <td>
+                        <input type="radio" name="__apsd_capable" value="1" <% if vif.__apsd_capable == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__apsd_capable" value="0" <% if vif.__apsd_capable == "0" then %> checked="checked"<% end %>/><%:Disable%>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:Fragment Threshold%> (256-2346)</td>
+                    <td>
+                        <input name="__frag_threshold" id="FragThreshold" value="<%=vif.__frag_threshold or 2346%>" />
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:RTS Threshold%> (1-2347)</td>
+                    <td>
+                        <input name="__rts_threshold" id="RTSThreshold" value="<%=vif.__rts_threshold or 2347%>" />
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:Kick STA Threshold%> (-100-0)</td>
+                    <td>
+                        <input name="__kickrssi" id="KickStaRssiLow" value="<%=vif.__kickrssi or 0%>" />
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:STA Assoc Threshold%> (-100-0)</td>
+                    <td>
+                        <input name="__assocthres" id="AssocReqRssiThres" value="<%=vif.__assocthres or 0%>" />
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:VHT Short GI%></td>
+                    <td>
+                        <select style="width:auto" name="__vht_sgi">
+                            <option value="0" <% if vif.__vht_sgi == "0" then %> selected="selected"<% end%>><%:long%></option>
+                            <option value="1" <% if vif.__vht_sgi == "1" then %> selected="selected"<% end%>><%:Short%></option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:VHT BW Signaling%></td>
+                    <td>
+                        <input type="radio" name="__vht_bw_signal" value="1" <% if vif.__vht_bw_signal == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__vht_bw_signal" value="0" <% if vif.__vht_bw_signal == "0" then %> checked="checked"<% end %>/><%:Disable%>
+                        <input type="radio" name="__vht_bw_signal" value="2" <% if vif.__vht_bw_signal == "2" then %> checked="checked"<% end %>/><%:Dynamic%>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:HT Protection%></td>
+                    <td>
+                        <input type="radio" name="__ht_protect" value="1" <% if vif.__ht_protect == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__ht_protect" value="0" <% if vif.__ht_protect == "0" then %> checked="checked"<% end %>/><%:Disable%>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:HT Guard Interval%></td>
+                    <td>
+                        <select style="width:auto" name="__ht_gi">
+                            <option value="0" <% if vif.__ht_gi == "0" then %> selected="selected"<% end%>><%:long%></option>
+                            <option value="1" <% if vif.__ht_gi == "1" then %> selected="selected"<% end%>><%:Short%></option>
+                            <option value="2" <% if vif.__ht_gi == "2" then %> selected="selected"<% end%>><%:Auto%></option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:HT Operating Mode%></td>
+                    <td>
+                        <select style="width:auto" name="__ht_opmode">
+                            <option value="0" <% if vif.__ht_opmode == "0" then %> selected="selected"<% end%>><%:HT Mixed Mode%></option>
+                            <option value="1" <% if vif.__ht_opmode == "1" then %> selected="selected"<% end%>><%:HT Green Field%></option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>A-MSDU</td>
+                    <td>
+                        <input type="radio" name="__ht_amsdu" value="1" <% if vif.__ht_amsdu == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__ht_amsdu" value="0" <% if vif.__ht_amsdu == "0" then %> checked="checked"<% end %>/><%:Disable%>
+                   </td>
+                </tr>
+                <tr>
+                    <td><%:Auto Block ACK%></td>
+                    <td>
+                        <input type="radio" name="__ht_autoba" value="1" <% if vif.__ht_autoba == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__ht_autoba" value="0" <% if vif.__ht_autoba == "0" then %> checked="checked"<% end %>/><%:Disable%>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:IGMP Snooping%></td>
+                    <td>
+                        <input type="radio" name="__igmp_snenable" value="1" <% if vif.__igmp_snenable == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__igmp_snenable" value="0" <% if vif.__igmp_snenable == "0" then %> checked="checked"<% end %>/><%:Disable%>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <fieldset id="vif-cfg-ac" name="vif-cfg-ac" style="display:none">
+        <table class="cbi-section-table">
+            <tr>
+                <td><%:Access Policy%></td>
+                <td>
+                    <input type="radio" name="__accesspolicy" value="0" id="disable_AP" <% if cfgs["AccessPolicy"..(vifidx-1)] == "0" then %> checked="checked"<% end %>/> <%:Disable%>
+                    <br>
+                    <input type="radio" name="__accesspolicy" value="1" id="white_AP" <% if cfgs["AccessPolicy"..(vifidx-1)] == "1" then %> checked="checked"<% end %>/> <%:White List%>
+                    <br>
+                    <input type="radio" name="__accesspolicy" value="2" id="black_AP" <% if cfgs["AccessPolicy"..(vifidx-1)] == "2" then %> checked="checked"<% end %>/> <%:Black List%>
+                </td>
+            </tr>
+        </table>
+        <h3><%:Access control MAC address list%></h3>
+        <textarea name="__maclist" id="__maclist" style="width:98%; height: 100px;"><%
+        local list = cfgs["AccessControlList"..(vifidx-1)] or ""
+        print(table.concat(list:split(";"), "\n"))
+        %></textarea>
+        </fieldset>
+
+        <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
+            <table id="vif-cfg-he_mu" class="cbi-section-table" name="vif-cfg-he_mu" style="display:none">
+                <tr>
+                    <td><%:DL OFDMA%></td>
+                    <td>
+                        <input type="radio" name="__muofdma_dlenable" value="1" <% if vif.__muofdma_dlenable == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__muofdma_dlenable" value="0" <% if vif.__muofdma_dlenable == "0" then %> checked="checked"<% end %>/><%:Disable%>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:UL OFDMA%></td>
+                    <td>
+                        <input type="radio" name="__muofdma_ulenable" value="1" <% if vif.__muofdma_ulenable == "1" then%> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__muofdma_ulenable" value="0" <% if vif.__muofdma_ulenable == "0" then%> checked="checked"<% end %>/><%:Disable%>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:DL MU-MIMO%></td>
+                    <td>
+                        <input type="radio" name="__mumimo_dlenable" value="1" <% if vif.__mumimo_dlenable == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__mumimo_dlenable" value="0" <% if vif.__mumimo_dlenable == "0" then %> checked="checked"<% end %>/><%:Disable%>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:UL MU-MIMO%></td>
+                    <td>
+                        <input type="radio" name="__mumimo_ulenable" value="1" <% if vif.__mumimo_ulenable == "1" then%> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="__mumimo_ulenable" value="0" <% if vif.__mumimo_ulenable == "0" then%> checked="checked"<% end %>/><%:Disable%>
+                    </td>
+                </tr>
+            </table>
+        <% end %>
+
+        <div class="cbi-page-actions" id="vif_form_action_btns">
+            <input class="cbi-button cbi-button-apply" name="__apply" value="<%:Save & Apply%>" type="submit">
+            <input class="cbi-button cbi-button-apply" value="<%:Save%>" type="submit">
+            <input class="cbi-button cbi-button-reset" value="<%:Reset%>" type="reset">
+        </div>
+<% end %> <!-- if not dev -->
+</form>
+
+<script type="text/javascript">
+
+    function disable_all_link_btns()
+    {
+        document.getElementById("vif_form_action_btns").style.display = "none";
+        var inp = document.getElementsByTagName("INPUT");
+        for(var idx=0; idx < inp.length; idx++){
+            if(inp[idx].type == "button"){
+                inp[idx].disabled = true;
+            }
+        }
+        document.getElementById("BusyText_VIF").style.display = "";
+        window.scrollTo(0, 0);
+    }
+
+    function enable_all_link_btns()
+    {
+        document.getElementById("vif_form_action_btns").style.display = "";
+        var inp = document.getElementsByTagName("INPUT");
+        for(var idx=0; idx < inp.length; idx++){
+            if(inp[idx].type == "button"){
+                inp[idx].disabled = false;
+            }
+        }
+        document.getElementById("BusyText_VIF").style.display = "none";
+    }
+
+    function is_mode_legacy_only(mode) {
+        var imode = mode*1;
+
+        return ((imode >= 0) && (imode <= 4));
+    }
+
+    function checkInjection(str)
+    {
+        var len = str.length;
+        for (var i=0; i<str.length; i++) {
+            if ( str.charAt(i) == '\r' || str.charAt(i) == '\n'){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function checkHex(str)
+    {
+        var len = str.length;
+        for (var i=0; i<str.length; i++) {
+            if ((str.charAt(i) >= '0' && str.charAt(i) <= '9') ||
+                (str.charAt(i) >= 'a' && str.charAt(i) <= 'f') ||
+                (str.charAt(i) >= 'A' && str.charAt(i) <= 'F') ){
+                    continue;
+            }else
+                return false;
+        }
+        return true;
+    }
+
+    function atoi(str, num)
+    {
+        i = 1;
+        if (num != 1) {
+            while (i != num && str.length != 0) {
+                if (str.charAt(0) == '.') {
+                    i++;
+                }
+                str = str.substring(1);
+            }
+            if (i != num)
+                return -1;
+        }
+        for (i=0; i<str.length; i++) {
+            if (str.charAt(i) == '.') {
+                str = str.substring(0, i);
+                break;
+            }
+        }
+        if (str.length == 0)
+            return -1;
+        return parseInt(str, 10);
+    }
+
+    function checkRange(str, num, min, max)
+    {
+        d = atoi(str, num);
+        if (d > max || d < min)
+            return false;
+        return true;
+    }
+
+    function checkStrictInjection(str)
+    {
+        var len = str.length;
+        for (var i=0; i<str.length; i++) {
+            if ( str.charAt(i) == ';' || str.charAt(i) == ',' ||
+                 str.charAt(i) == '\r' || str.charAt(i) == '\n'){
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    function checkIpAddr(field, ismask)
+    {
+        var ip_addr = field.value.split(".");
+        var i;
+        if (field.value == "")
+        {
+            alert("Error. IP address is empty.");
+            field.value = field.defaultValue;
+            field.focus();
+            return false;
+        }
+        if (ip_addr.length != 4)
+        {
+                alert('IP adress format error, please enter key like 10.10.10.254.');
+                field.value = field.defaultValue;
+                field.focus();
+                return false;
+        }
+        for (i=0; i<4 ; i++)
+        {
+            if (isNaN(ip_addr[i]) == true)
+            {
+                alert('It should be a [0-9] number.');
+                field.value = field.defaultValue;
+                field.focus();
+                return false;
+            }
+        }
+        if (ismask) {
+            for (i=0; i<4; i++)
+            {
+                if ((ip_addr[i] > 255) || (ip_addr[i] < 0))
+                {
+                    alert('Mask IP address format error, please keyin like 255.255.255.0.');
+                    field.value = field.defaultValue;
+                    field.focus();
+                    return false;
+                }
+            }
+        }
+        else {
+            for (i=0; i<3; i++)
+            {
+                if ((ip_addr[i] > 255) || (ip_addr[i] < 0))
+                {
+                    alert('IP address format error, please keyin like 10.10.10.254.');
+                    field.value = field.defaultValue;
+                    field.focus();
+                    return false;
+                }
+            }
+            if ((ip_addr[i] > 254) || (ip_addr[i] < 0))
+            {
+                    alert('IP adress format error.');
+                    field.value = field.defaultValue;
+                    field.focus();
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    function check_radius(vifidx)
+    {
+        if(!document.getElementById("__radius_server").value.length){
+            alert('Please input the radius server ip address.');
+            return false;
+        }
+        if(!document.getElementById("__radius_port").value.length){
+            alert('Please input the radius server port number.');
+            return false;
+        }
+        if(!document.getElementById("RADIUS_Key"+vifidx).value.length){
+            alert('Please input the radius server shared secret.');
+            return false;
+        }
+        if(checkIpAddr(document.getElementById("__radius_server"), false) == false){
+            document.getElementById("__radius_server").select();
+            document.getElementById("__radius_server").focus();
+            return false;
+        }
+        if( (checkRange(document.getElementById("__radius_port").value, 1, 1, 65535)==false) ||
+            (isNaN(document.getElementById("__radius_port").value) == true)){
+            alert('<%:Please input a valid radius server port number.%>');
+            return false;
+        }
+        if(checkStrictInjection(document.getElementById("RADIUS_Key"+vifidx).value)==false){
+            alert('<%:The radius shared secret contains invalid characters.%>');
+            return false;
+        }
+        if(document.getElementById("__session_timeout_interval").value != ""){
+            if(isNaN(document.getElementById("__session_timeout_interval").value) == true){
+                alert('<%:Please input a valid session timeout number or u may have left it empty.%>');
+                return false;
+            }
+        }
+        else
+        {
+            alert("<%:Radius session time out is empty.%>");
+            return false;
+        }
+        if(document.getElementById("idle_timeout_interval").value !=""){
+            if(isNaN(document.getElementById("idle_timeout_interval").value) == true){
+                alert('<%:Please input a valid idle timeout number or u may have left it empty.%>');
+                return false;
+            }
+        }
+        else
+        {
+            alert("<%:Radius idle time out is empty.%>");
+            return false;
+        }
+        return true;
+    }
+
+    function update_pmf_settings(authMode)
+    {
+        var pr = document.getElementById("__pmfmfpr");
+        var pc = document.getElementById("__pmfmfpc");
+        var sha = document.getElementById("__pmfsha256");
+
+        switch(authMode){
+            case "Enhanced Open":
+            case "WPA3PSK":
+            case "WPA3":
+            <% if dev.isWPA3_192bitSupported then %>
+                case "WPA3-192-bit":
+            <% end %>
+                pr.checked = true;
+                pc.checked = true;
+                sha.checked = false;
+                /* Make all PMF settings as readonly by disabling them.
+                 * Server hardcodes all PMF values for these authModes.
+                 */
+                pr.disabled = true;
+                pc.disabled = true;
+                sha.disabled = true;
+                /* Hide MFPSHA256 setting row as it is not valid for these securities. */
+                sha.parentNode.parentNode.style.display = "none";
+                break;
+            case "WPA2PSKWPA3PSK":
+                pr.checked = false;
+                pc.checked = true;
+                sha.checked = false;
+                /* Make all PMF settings as readonly by disabling them.
+                 * Server hardcodes all PMF values for these authModes.
+                 */
+                pr.disabled = true;
+                pc.disabled = true;
+                sha.disabled = true;
+                /* Hide MFPSHA256 setting row as it is not valid for these securities. */
+                sha.parentNode.parentNode.style.display = "none";
+                break;
+            case "IEEE8021X":
+                pr.checked = false;
+                pc.checked = false;
+                pr.disabled = false;
+                pc.disabled = false;
+                break;
+            default:
+                pr.disabled = false;
+                pc.disabled = false;
+                sha.disabled = false;
+                /* Unhide MFPSHA256 setting row for other securities. */
+                sha.parentNode.parentNode.style.display = "";
+                break;
+        }
+    }
+
+    function update_encryption_type(authMode)
+    {
+        var auth_enc_map = {
+            "OPEN" : ["WEP"],
+            "WEPAUTO" : ["WEP"],
+            "SHARED" : ["WEP"],
+            "Enhanced Open" : ["AES"],
+            "WPA2PSK" : ["AES","TKIP","TKIPAES"],
+            "WPA3PSK" : ["AES"],
+            "WPAPSKWPA2PSK" : ["AES","TKIP","TKIPAES"],
+            "WPA2PSKWPA3PSK" : ["AES"],
+            "WPA1WPA2" : ["AES","TKIP","TKIPAES"],
+            "WPA2" : ["AES","TKIP","TKIPAES"],
+            "WPA3" : ["AES"],
+            <% if dev.isWPA3_192bitSupported then %>
+                "WPA3-192-bit" : ["GCMP256"],
+            <% end %>
+        };
+        if (!((typeof authMode == "string") && auth_enc_map.hasOwnProperty(authMode))){
+            return;
+        }
+        var enc_type_sel = document.getElementById("__encrypttype");
+        var enc_cur_sel_idx = enc_type_sel.selectedIndex;
+        var enc_provisional_sel_idx = -1;
+
+        for (var e_idx=0; e_idx < enc_type_sel.length; e_idx++){
+            if(auth_enc_map[authMode].indexOf(enc_type_sel.options[e_idx].value) != -1){
+                enc_type_sel.options[e_idx].disabled = false;
+                if(enc_provisional_sel_idx == -1){
+                    enc_provisional_sel_idx = e_idx;
+                }
+            }
+            else{
+                enc_type_sel.options[e_idx].disabled = true;
+            }
+        }
+        if(enc_cur_sel_idx == -1 || enc_type_sel.options[enc_cur_sel_idx].disabled == true){
+            enc_type_sel.selectedIndex = enc_provisional_sel_idx;
+        }
+    }
+
+    function AuthMode_onchange (authMode)
+    {
+        var tbody_to_display = [];
+        var security_table_id_list = ["WEP","ENCRYPTION","REKEY_INTERVAL","WPAXPSK","PMF","WPAX","IEEE8021X","RADIUS"];
+
+        switch(authMode){
+            case "OPEN":
+            case "WEPAUTO":
+            case "SHARED":
+                tbody_to_display.push("ENCRYPTION");
+                tbody_to_display.push("WEP");
+                break;
+            case "Enhanced Open":
+                tbody_to_display.push("ENCRYPTION");
+                tbody_to_display.push("PMF");
+                break;
+            case "WPA2PSK":
+            case "WPA3PSK":
+            case "WPA2PSKWPA3PSK":
+                tbody_to_display.push("WPAXPSK");
+                tbody_to_display.push("ENCRYPTION");
+                tbody_to_display.push("REKEY_INTERVAL");
+                tbody_to_display.push("PMF");
+                break;
+            case "WPAPSKWPA2PSK":
+                tbody_to_display.push("WPAXPSK");
+                tbody_to_display.push("ENCRYPTION");
+                tbody_to_display.push("REKEY_INTERVAL");
+                break;
+            case "WPA2":
+            case "WPA3":
+            <% if dev.isWPA3_192bitSupported then %>
+                case "WPA3-192-bit":
+            <% end %>
+                tbody_to_display.push("WPAX");
+                tbody_to_display.push("ENCRYPTION");
+                tbody_to_display.push("REKEY_INTERVAL");
+                tbody_to_display.push("RADIUS");
+                tbody_to_display.push("PMF");
+                break;
+            case "WPA1WPA2":
+                tbody_to_display.push("ENCRYPTION");
+                tbody_to_display.push("REKEY_INTERVAL");
+                tbody_to_display.push("RADIUS");
+                tbody_to_display.push("PMF");
+                break;
+            case "IEEE8021X":
+                tbody_to_display.push("IEEE8021X");
+                tbody_to_display.push("RADIUS");
+                tbody_to_display.push("PMF");
+                break;
+            default:
+                break;
+        }
+
+        for (tid in security_table_id_list) {
+            var tmp_tbody = document.getElementById(security_table_id_list[tid])
+            if (tbody_to_display.indexOf(security_table_id_list[tid]) != -1) {
+                if (tmp_tbody) tmp_tbody.style.display="";
+            } else {
+                if (tmp_tbody) tmp_tbody.style.display="none";
+            }
+        }
+        update_encryption_type(authMode);
+        update_pmf_settings(authMode);
+    }
+
+    function check_WpaEnterprise(AuthMode,vifidx)
+    {
+        if(isNaN(document.getElementById("__rekeyinterval").value) == true){
+            alert('Please input a valid key renewal interval');
+            return false;
+        }
+        if(!document.getElementById("__pmkcacheperiod").value.length){
+            alert('Please input the PMK Cache Period.');
+            return false;
+        } else if (isNaN(document.getElementById("__pmkcacheperiod").value)) {
+            alert('Please input a number for PMK Cache Period.');
+            return false;
+        }
+        if(check_radius(vifidx) == false)
+            return false;
+    }
+
+    function check_WpaKey(AuthMode, vifidx, ht_disallow_tkip)
+    {
+        var wpaPskId = document.getElementById("WPAPSK"+vifidx);
+        var keyvalue = wpaPskId.value;
+        if (keyvalue.length == 0){
+            alert('Please input security key for " + AuthMode + " Authentication Mode!');
+            wpaPskId.select();
+            wpaPskId.focus();
+            return false;
+        }
+
+        if (keyvalue.length < 8){
+            alert('Please input at least 8 characters as security key for " + AuthMode + " Authentication Mode!');
+            wpaPskId.select();
+            wpaPskId.focus();
+            return false;
+        }
+        if(checkHex(keyvalue) == true){
+            if (keyvalue.length > 64) {
+                alert('Please input 8~63 ASCII or 64 Hexadecimal characters as security key for " + AuthMode + " Authentication Mode!');
+                wpaPskId.select();
+                wpaPskId.focus();
+                return false;
+            }
+        }
+        else{
+            if (keyvalue.length > 63 ){
+                alert('Please input 8~63 ASCII or 64 Hexadecimal characters as security key for " + AuthMode + " Authentication Mode!');
+                wpaPskId.select();
+                wpaPskId.focus();
+                return false;
+            }
+        }
+        if(checkInjection(keyvalue) == false){
+            alert('Invalid characters in security key for " + AuthMode + " Authentication Mode!');
+            wpaPskId.select();
+            wpaPskId.focus();
+            return false;
+        }
+        return check_Wpa(AuthMode, vifidx, ht_disallow_tkip);
+    }
+
+    function check_Wpa(AuthMode, vifidx, ht_disallow_tkip)
+    {
+        var e = document.getElementById("__encrypttype");
+        var EncrypType= e.options[e.selectedIndex].value;
+        // there is no tkip-aes mixed mode in WPA-PSK.
+        if ((AuthMode == "WPA" || AuthMode == "WPAPSK") && (EncrypType == "TKIPAES"))
+        {
+            alert("There is no TKIP-AES mode in WPA-PSK");
+            return false;
+        }
+
+        if (ht_disallow_tkip == "1" && EncrypType == "TKIP")
+            alert("Disallow TKIP/WEP encryption is enabled, so 11N rate will turn off!");
+
+        if(isNaN(document.getElementById("__rekeyinterval").value) == true){
+            alert('Please input a valid key renewal interval');
+            return false;
+        }
+        return true;
+    }
+
+    function check_Wep(AuthMode,vifidx,ht_disallow_tkip)
+    {
+        var e = document.getElementById("__DefaultKeyID");
+        var defaultid = e.options[e.selectedIndex].value;
+        var keyvalue = document.getElementById("Key"+defaultid+"Str"+vifidx).value;
+        if (keyvalue.length == 0){
+            alert('Please input wep key'+defaultid+' !');
+            return false;
+        }
+        var keylength = keyvalue.length;
+        if (keylength != 0){
+            if (document.getElementById("WEP"+defaultid+"Type"+vifidx).selectedIndex == 0){
+                if(keylength != 5 && keylength != 13) {
+                    alert('Please input 5 or 13 characters of wep key'+ defaultid+ ' !');
+                    return false;
+                }
+                if(checkInjection(keyvalue)== false){
+                    alert('Wep key'+ defaultid +" contains invalid characters.");
+                    return false;
+                }
+            }
+            if (document.getElementById("WEP"+defaultid+"Type"+vifidx).selectedIndex == 1){
+                if(keylength != 10 && keylength != 26) {
+                    alert('Please input 10 or 26 characters of wep key'+ defaultid +' !');
+                    return false;
+                }
+                if(checkHex(keyvalue) == false){
+                    alert('Invalid Wep key1 format!');
+                    return false;
+                }
+            }
+        }
+
+        if (ht_disallow_tkip == "1")
+            alert("Disallow TKIP/WEP encryption is enabled, so 11N rate will turn off!");
+
+        return true;
+    }
+
+    function validate_ssid()
+    {
+        var ssid = document.getElementById("vif-cfg-basic-ssid").value;
+        var encodedSSID = encodeURIComponent(ssid);
+        if(encodedSSID.length == 0 || encodedSSID.replace(/%[0-9A-F]{2}/g, 'U').length > 32){
+            alert("Invalid SSID!\nPlease enter SSID with characters ranging from 1 character to 32 characters.");
+            return false;
+        }
+        return true;
+    }
+
+    function validate_security(vifidx,ht_disallow_tkip)
+    {
+        var AuthMode= document.getElementById("AuthMode").value;
+        var EncType = document.getElementById("__encrypttype").value;
+        if(AuthMode=="Disable" || AuthMode=="Enhanced Open")
+        {
+            return true;
+        }
+        else if(AuthMode == "OPEN" || AuthMode == "WEPAUTO" || AuthMode == "SHARED")
+        {
+            if(check_Wep(AuthMode,vifidx,ht_disallow_tkip) == false)
+                return false;
+        }
+        else if(AuthMode == "WPAPSK" ||
+                AuthMode == "WPA2PSK" ||
+                AuthMode == "WPAPSKWPA2PSK" ||
+                AuthMode == "WPA3PSK" ||
+                AuthMode == "WPA2PSKWPA3PSK")
+        {
+            if(check_WpaKey(AuthMode, vifidx, ht_disallow_tkip) == false)
+                return false;
+        }
+        else if(AuthMode=="WPA2" ||
+                AuthMode=="WPA3" ||
+                <% if dev.isWPA3_192bitSupported then %>
+                    AuthMode=="WPA3-192-bit" ||
+                <% end %>
+                false)
+        {
+            if(check_WpaEnterprise(AuthMode,vifidx) == false)
+                return false;
+        }
+        else if(AuthMode=="8021X")
+        {
+            if(check_radius(vifidx) == false)
+                return false;
+        }
+        else if (AuthMode == "WPA" || AuthMode == "WPA1WPA2") //     WPA or WPA1WP2 mixed mode
+        {
+            if(check_Wpa(AuthMode, vifidx, ht_disallow_tkip) == false)
+                return false;
+            if(check_radius(vifidx) == false)
+                return false;
+        }
+        else if (AuthMode == "IEEE8021X") // 802.1x
+        {
+            if(check_radius(vifidx) == false)
+                return false;
+        }
+        else
+        {
+            alert("Unknown value " + AuthMode +"for Auth Mode");
+            return false;
+        }
+        return true;
+    }
+
+
+    function validate_basic(vifidx,ht_disallow_tkip)
+    {
+        if (!validate_ssid() || !validate_security(vifidx,ht_disallow_tkip)){
+            return false;
+        }
+
+        if ((document.getElementById("AuthMode").value == "Disable") &&
+            (isNaN(document.getElementById("__txrate").value) ||
+            document.getElementById("__txrate").value == "")){
+                alert('Please input a valid TX Rate value');
+                document.getElementById("__txrate").select();
+                document.getElementById("__txrate").focus();
+                return false;
+        }
+
+        var tmpVal = document.getElementById("FragThreshold").value;
+        if(isNaN(tmpVal) || !/^\d{3,4}$/.test(tmpVal) || parseInt(tmpVal) < 256 || parseInt(tmpVal) > 2346){
+            alert("Fragmentation Threshold is incorrect!\nPlease enter an integer number between 256 to 2346 inclusive.");
+            document.getElementById("FragThreshold").focus();
+            document.getElementById("FragThreshold").select();
+            return false;
+        }
+        tmpVal = document.getElementById("RTSThreshold").value;
+        if(isNaN(tmpVal) || !/^\d{1,4}$/.test(tmpVal) || parseInt(tmpVal) < 1 || parseInt(tmpVal) > 2347){
+            alert("RTS Threshold is incorrect!\nPlease enter an integer number between 1 to 2347 inclusive.");
+            document.getElementById("RTSThreshold").focus();
+            document.getElementById("RTSThreshold").select();
+            return false;
+        }
+        tmpVal = document.getElementById("KickStaRssiLow").value;
+        if(isNaN(tmpVal) || parseInt(tmpVal) < -100 || parseInt(tmpVal) > 0){
+            alert("Kick STA Threshold is incorrect!\nPlease enter an integer number between -100 to 0 inclusive.");
+            document.getElementById("KickStaRssiLow").focus();
+            document.getElementById("KickStaRssiLow").select();
+            return false;
+        }
+        tmpVal = document.getElementById("AssocReqRssiThres").value;
+        if(isNaN(tmpVal) || parseInt(tmpVal) < -100 || parseInt(tmpVal) > 0){
+            alert("STA Assoc Threshold is incorrect!\nPlease enter an integer number between -100 to 0 inclusive.");
+            document.getElementById("AssocReqRssiThres").focus();
+            document.getElementById("AssocReqRssiThres").select();
+            return false;
+        }
+
+        return true;
+    }
+
+    function validate_all(vifidx,ht_disallow_tkip)
+    {
+
+        if(!validate_basic(vifidx,ht_disallow_tkip))
+            return false;
+
+        disable_all_link_btns();
+
+        return true;
+    }
+
+    function get_auth_mode_str(authModeCode)
+    {
+        switch(authModeCode){
+            case "0001":
+                return "Open";
+            case "0002":
+                return "WPA - Personal";
+            case "0004":
+                return "Shared";
+            case "0008":
+                return "WPA - Enterprise";
+            case "0010":
+                return "WPA2 - Enterprise";
+            case "0020":
+                return "WPA2 - Personal";
+            case "0022":
+                return "WPA - Personal/WPA2 - Personal";
+            case "0040":
+                return "WPA3 SAE only";
+            case "0060":
+                return "WPA3 - Transition Mode";
+            case "00a0":
+                return "DPP + WPA2 - Personal";
+            case "00c0":
+                return "DPP + WPA3 - SAE";
+            case "00e0":
+                return "DPP + WPA3 - Transition Mode";
+            default:
+                return "Unknown Authentication Code: " + authModeCode;
+        }
+    }
+
+    function get_encryption_str(encryptionCode)
+    {
+        switch(encryptionCode){
+            case "0001":
+                return "NONE";
+            case "0002":
+                return "WEP";
+            case "0004":
+                return "TKIP";
+            case "0008":
+                return "AES";
+            case "000c":
+                return "TKIP/AES";
+            default:
+                return "Unknown Encryption Code: " + encryptionCode;
+        }
+    }
+
+    function get_apply_status_cb(rsp)
+    {
+        try{
+            var r = JSON.parse(rsp);
+        }
+        catch(e){
+            return;
+        }
+        if(r.status == "ON_PROGRESS"){
+            var u = confirm("Device is applying the saved settings now!\n" +
+                "It is recommended to wait until all the saved settings are applied.\n" +
+                "Please click on 'OK' button to wait for the device.\n" +
+                "or click on 'Cancel' button to configure the settings available in current web-page.");
+            if (u == true) {
+                location = '<%=luci.dispatcher.build_url("admin", "network", "wifi", "loading")%>' + window.location.pathname;
+            }
+        }
+    }
+
+    function get_apply_status()
+    {
+        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_apply_status")%>', null,
+            function(x)
+            {
+                console.log(x);
+                get_apply_status_cb(x.response);
+            }
+        );
+    }
+
+    window.onload = function(){
+        get_apply_status();
+        AuthMode_onchange(document.getElementById("AuthMode").options[document.getElementById("AuthMode").selectedIndex].value);
+    }
+
+</script>
+<%+footer%>

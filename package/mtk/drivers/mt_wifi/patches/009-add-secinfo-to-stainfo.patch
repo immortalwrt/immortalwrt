@@ -1,0 +1,27 @@
+--- a/mt_wifi/embedded/common/cmm_info.c
++++ b/mt_wifi/embedded/common/cmm_info.c
+@@ -7028,13 +7028,10 @@ typedef struct _RT_802_11_MAC_ENTRY_FIX
+ 	UINT32 ConnectedTime;
+ 	HTTRANSMIT_SETTING_FIX TxRate;
+ 	HTTRANSMIT_SETTING_FIX LastRxRate;
+-	/*
+-		sync with WEB UI's structure for ioctl usage.
+-	*/
+ 	SHORT StreamSnr[3];				/* BF SNR from RXWI. Units=0.25 dB. 22 dB offset removed */
+ 	SHORT SoundingRespSnr[3];			/* SNR from Sounding Response. Units=0.25 dB. 22 dB offset removed */
+-	/*	SHORT TxPER;	*/					/* TX PER over the last second. Percent */
+-	/*	SHORT reserved;*/
++	UINT32					EncryMode;
++	UINT32					AuthMode;
+ } RT_802_11_MAC_ENTRY_FIX, *PRT_802_11_MAC_ENTRY_FIX;
+ 
+ typedef struct _RT_802_11_MAC_TABLE_FIX {
+@@ -7152,6 +7149,8 @@ VOID RTMPIoctlGetMacTableStaInfo(
+ 			pDst->ConnectedTime = pEntry->StaConnectTime;
+ 			pDst->TxRate.word = RTMPGetLastTxRate_fix(pAd, pEntry);
+ 			pDst->LastRxRate.word = RTMPGetLastRxRate(pAd, pEntry);
++			pDst->EncryMode = pEntry->SecConfig.PairwiseCipher;
++			pDst->AuthMode = pEntry->SecConfig.AKMMap;
+ 			pMacTab->Num += 1;
+ 			/* Add to avoid Array cross board */
+ 			if (pMacTab->Num >= MAX_LEN_OF_MAC_TABLE)

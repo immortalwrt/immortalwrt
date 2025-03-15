@@ -1,0 +1,265 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8\n"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:177
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:611
+msgid "10 seconds"
+msgstr "10秒"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:177
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:609
+msgid "3 seconds"
+msgstr "3秒"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:177
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:612
+msgid "30 seconds"
+msgstr "30秒"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:177
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:610
+msgid "5 seconds"
+msgstr "5秒"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:603
+msgid "Auto update every:"
+msgstr "自动刷新："
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:201
+msgid "Cancel"
+msgstr "取消"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:14
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:503
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:556
+msgid "Clients"
+msgstr "客户端"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:132
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:567
+msgid "Collecting data..."
+msgstr "收集数据中..."
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:75
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:167
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:210
+#: root/usr/share/luci/menu.d/luci-app-wrtbwmon.json:25
+msgid "Configuration"
+msgstr "配置"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:597
+msgid "Configure Options"
+msgstr "配置选项"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:195
+msgid "Configure the default values for luci-app-wrtbwmon."
+msgstr "配置luci-app-wrtbwmon的默认值。"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/config.js:24
+msgid "Database path"
+msgstr "数据路径"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:178
+msgid "Default Columns"
+msgstr "默认显示的列"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:176
+msgid "Default Protocol"
+msgstr "默认协议"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:177
+msgid "Default Refresh Interval"
+msgstr "默认刷新间隔"
+
+#: root/usr/share/luci/menu.d/luci-app-wrtbwmon.json:16
+msgid "Details"
+msgstr "流量信息"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:177
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:608
+msgid "Disabled"
+msgstr "禁用"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:16
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:558
+msgid "Download"
+msgstr "下载"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:184
+msgid "Downstream Bandwidth"
+msgstr "下行带宽"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:618
+msgid "Downstream:"
+msgstr "下行："
+
+#: htdocs/luci-static/resources/view/wrtbwmon/custom.js:18
+msgid "Each line must have the following format:"
+msgstr "每行需要满足以下格式："
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:21
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:563
+msgid "First Seen"
+msgstr "初次记录"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/config.js:18
+msgid "General settings"
+msgstr "通用设置"
+
+#: root/usr/share/rpcd/acl.d/luci-app-wrtbwmon.json:3
+msgid "Grant access to LuCI app wrtbwmon"
+msgstr "授予访问LuCI应用程序wrtbwmon的权限"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:185
+msgid "Hide MAC Addresses"
+msgstr "隐藏MAC地址"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:181
+msgid "IEC - 1024"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/config.js:21
+msgid "Keep running in the background"
+msgstr "保持后台运行"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:22
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:564
+msgid "Last Seen"
+msgstr "最后记录"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:425
+msgid "Last updated at %s."
+msgstr "最后更新于%s。"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:168
+msgid "Loading configuration data..."
+msgstr "载入配置数据..."
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:15
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:557
+msgid "MAC"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:181
+msgid "Multiple of Unit"
+msgstr "单位之间倍数"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:578
+msgid "Protocol:"
+msgstr "协议："
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:592
+msgid "Reset Database"
+msgstr "重置"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:181
+msgid "SI - 1000"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:207
+msgid "Save"
+msgstr "保存"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:76
+msgid "Saving configuration data..."
+msgstr "保存配置数据..."
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:179
+msgid "Show Zeros"
+msgstr "显示0流量"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:502
+msgid "TOTAL"
+msgstr "总共"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/config.js:24
+msgid ""
+"This box is used to select the Database path, which is /tmp/usage.db by "
+"default."
+msgstr "该选项用于选择数据存储路径，默认路径为/tmp/usage.db。"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:60
+msgid "This will delete the database file. Are you sure?"
+msgstr "该操作将删除数据统计文件，确定执行该操作？"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:20
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:562
+msgid "Total"
+msgstr "总计"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:18
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:560
+msgid "Total Down"
+msgstr "总下载"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:19
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:561
+msgid "Total Up"
+msgstr "总上传"
+
+#: root/usr/share/luci/menu.d/luci-app-wrtbwmon.json:3
+msgid "Traffic Status"
+msgstr "流量监控"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:180
+msgid "Transfer Speed in Bits"
+msgstr "以bits显示传输速度"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/custom.js:9
+msgid "Unable to load the customized hostname file:"
+msgstr "不能载入自定义用户名文件："
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:81
+msgid "Unable to save %s: %s"
+msgstr "不能保存%s: %s"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:376
+msgid "Updating again in %s second(s)."
+msgstr "下次更新将于%s秒之后。"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:17
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:559
+msgid "Upload"
+msgstr "上传"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:183
+msgid "Upstream Bandwidth"
+msgstr "上传带宽"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:627
+msgid "Upstream:"
+msgstr "上行："
+
+#: htdocs/luci-static/resources/view/wrtbwmon/config.js:16
+msgid "Usage - Configuration"
+msgstr "文件设置"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/custom.js:16
+msgid "Usage - Custom User File"
+msgstr "用户文件配置"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:574
+msgid "Usage - Details"
+msgstr "流量详情"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:182
+msgid "Use DSL Bandwidth"
+msgstr "使用DSL带宽"
+
+#: root/usr/share/luci/menu.d/luci-app-wrtbwmon.json:34
+msgid "User file"
+msgstr "用户文件"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:176
+msgid "ipv4"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:176
+msgid "ipv6"
+msgstr ""
+
+#~ msgid "Show More Columns:"
+#~ msgstr "显示更多列："
+
+#~ msgid "This will revert the changes. Are you sure?"
+#~ msgstr "更改将会重置，确定吗？"

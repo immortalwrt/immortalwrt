@@ -1,0 +1,45 @@
+From 51d201efe15a985a566b7ead6a9b2609ac6e60de Mon Sep 17 00:00:00 2001
+From: "neal.yen" <neal.yen@mediatek.com>
+Date: Thu, 17 Feb 2022 17:01:18 +0800
+Subject: [PATCH] modify fq_codel queue size to 512K
+
+---
+ include/net/sch_generic.h | 5 +++++
+ net/sched/sch_fq_codel.c  | 5 ++++-
+ 2 files changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index 50b0009..1ce3c38 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -602,6 +602,11 @@ static inline struct net_device *qdisc_dev(const struct Qdisc *qdisc)
+ 	return qdisc->dev_queue->dev;
+ }
+ 
++static inline char *qdisc_dev_name(const struct Qdisc *qdisc)
++{
++	return qdisc->dev_queue->dev->name;
++}
++
+ static inline void sch_tree_lock(const struct Qdisc *q)
+ {
+ 	spin_lock_bh(qdisc_root_sleeping_lock(q));
+diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
+index 35d2531..162714c 100644
+--- a/net/sched/sch_fq_codel.c
++++ b/net/sched/sch_fq_codel.c
+@@ -473,7 +473,10 @@ static int fq_codel_init(struct Qdisc *sch, struct nlattr *opt,
+ #ifdef CONFIG_X86_64
+ 	q->memory_limit = 32 << 20; /* 32 MBytes */
+ #else
+-	q->memory_limit = 4 << 20; /* 4 MBytes */
++	if (!strncmp(qdisc_dev_name(sch), "eth", 3))
++		q->memory_limit = 4 << 20; /* 4 MBytes */
++	else
++		q->memory_limit = 1 << 19; /* 512 KiB */
+ #endif
+ 	q->drop_batch_size = 64;
+ 	q->quantum = psched_mtu(qdisc_dev(sch));
+-- 
+2.18.0
+

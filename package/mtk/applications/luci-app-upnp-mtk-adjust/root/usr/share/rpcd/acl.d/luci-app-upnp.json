@@ -1,0 +1,18 @@
+{
+	"luci-app-upnp": {
+		"description": "Grant access to upnp procedures",
+		"read": {
+			"ubus": {
+				"luci.upnp": [ "get_status" ],
+				"luci": [ "setInitAction" ]
+			},
+			"uci": [ "upnpd" ]
+		},
+		"write": {
+			"ubus": {
+				"luci.upnp": [ "delete_rule" ]
+			},
+			"uci": [ "upnpd" ]
+		}
+	}
+}

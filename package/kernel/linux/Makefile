@@ -12,12 +12,10 @@ PKG_NAME:=kernel
 PKG_FLAGS:=hold
 
 PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/packages
-SUBTARGETS = $(sort $(filter-out feeds,$(notdir $(wildcard $(TOPDIR)/target/linux/* $(TOPDIR)/target/linux/feeds/*))))
-SUBTARGET_MODULES = $(foreach t,$(SUBTARGETS),$(firstword $(wildcard $(TOPDIR)/target/linux/feeds/$(t)/modules.mk $(TOPDIR)/target/linux/$(t)/modules.mk)))
-SCAN_DEPS=modules/*.mk $(SUBTARGET_MODULES) $(TOPDIR)/include/netfilter.mk
+SCAN_DEPS=modules/*.mk $(TOPDIR)/target/linux/*/modules.mk $(TOPDIR)/include/netfilter.mk
 
-PKG_LICENSE:=GPL-2.0-only
-PKG_LICENSE_FILES:=COPYING
+PKG_LICENSE:=GPL-2.0
+PKG_LICENSE_FILES:=
 
 export SHELL:=/bin/sh
 .ONESHELL:
@@ -26,7 +24,7 @@ export SHELL:=/bin/sh
 include $(INCLUDE_DIR)/package.mk
 
 ifeq ($(DUMP),)
-  STAMP_BUILT:=$(STAMP_BUILT)_$(shell $(SCRIPT_DIR)/kconfig.pl $(LINUX_DIR)/.config | $(MKHASH) md5)
+  STAMP_BUILT:=$(STAMP_BUILT)_$(shell $(SCRIPT_DIR)/kconfig.pl $(LINUX_DIR)/.config | mkhash md5)
   -include $(LINUX_DIR)/.config
 endif
 
@@ -35,9 +33,6 @@ define Build/Prepare
 endef
 
 define Build/Configure
-endef
-
-define Build/Quilt
 endef
 
 define Build/Compile
@@ -52,18 +47,13 @@ define Package/kernel
   CATEGORY:=Kernel
   DEFAULT:=y
   TITLE:=Virtual kernel package
-  VERSION:=$(LINUX_VERSION)~$(LINUX_VERMAGIC)-r$(LINUX_RELEASE)
+  VERSION:=$(LINUX_VERSION)-$(LINUX_RELEASE)-$(LINUX_VERMAGIC)
   URL:=http://www.kernel.org/
   PKG_FLAGS:=nonshared
 endef
 
 define Package/kernel/install
-	$(INSTALL_DIR) $(1)/$(MODULES_SUBDIR)
-	$(INSTALL_DATA) $(LINUX_DIR)/modules.builtin $(1)/$(MODULES_SUBDIR)
-	$(SED) 's,.*/,,' $(1)/$(MODULES_SUBDIR)/modules.builtin
-	strings $(LINUX_DIR)/modules.builtin.modinfo | \
-		grep -E -v "\.(file$(if CONFIG_MODULE_STRIPPED,|parmtype))=" | \
-		tr '\n' '\0' > $(1)/$(MODULES_SUBDIR)/modules.builtin.modinfo
+  # nothing to do
 endef
 
 define Package/kernel/extra_provides
@@ -73,4 +63,4 @@ endef
 $(eval $(if $(DUMP),,$(call BuildPackage,kernel)))
 
 include $(sort $(wildcard ./modules/*.mk))
--include $(SUBTARGET_MODULES)
+-include $(TOPDIR)/target/linux/*/modules.mk

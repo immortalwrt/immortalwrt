@@ -1,0 +1,72 @@
+#!/bin/sh
+# miniupnpd integration for firewall3
+
+IPTABLES="/usr/sbin/iptables"
+IP6TABLES="/usr/sbin/ip6tables"
+IPTARGS="-w 1"
+
+$IPTABLES -t filter -N MINIUPNPD 2>/dev/null
+$IPTABLES -t nat -N MINIUPNPD 2>/dev/null
+$IPTABLES -t nat -N MINIUPNPD-POSTROUTING 2>/dev/null
+
+[ -x $IP6TABLES ] && $IP6TABLES -t filter -N MINIUPNPD 2>/dev/null
+
+. /lib/functions/network.sh
+
+# helper to insert in chain as penultimate
+iptables_prepend_rule() {
+	local iptables="$1"
+	local table="$2"
+	local chain="$3"
+	local target="$4"
+
+	$iptables "$IPTARGS" -t "$table" -I "$chain" $($iptables "$IPTARGS" -t "$table" --line-numbers -nL "$chain" | \
+		sed -ne '$s/[^0-9].*//p') -j "$target"
+}
+
+ADDED=0
+
+add_extzone_rules() {
+    local ext_zone="$1"
+
+    [ -z "$ext_zone" ] && return
+
+    # IPv4 - due to NAT, need to add both to nat and filter table
+    # need to insert as penultimate rule for input & forward & postrouting since final rule might be a fw3 REJECT
+    iptables_prepend_rule "$IPTABLES" filter "zone_${ext_zone}_input" MINIUPNPD
+    iptables_prepend_rule "$IPTABLES" filter "zone_${ext_zone}_forward" MINIUPNPD
+    $IPTABLES -t nat -A "zone_${ext_zone}_prerouting"  -j MINIUPNPD
+    iptables_prepend_rule "$IPTABLES" nat "zone_${ext_zone}_postrouting" MINIUPNPD-POSTROUTING
+
+    # IPv6 if available - filter only
+    [ -x $IP6TABLES ] && {
+	iptables_prepend_rule "$IP6TABLES" filter "zone_${ext_zone}_input" MINIUPNPD
+	iptables_prepend_rule "$IP6TABLES" filter "zone_${ext_zone}_forward" MINIUPNPD
+    }
+    ADDED=$(($ADDED + 1))
+}
+
+# By default, user configuration is king.
+
+for ext_iface in $(uci -q get upnpd.config.external_iface); do
+    add_extzone_rules $(fw3 -q network "$ext_iface")
+done
+
+add_extzone_rules $(uci -q get upnpd.config.external_zone)
+
+[ "$ADDED" -ne 0 ] && exit 0
+
+# If really nothing is available, resort to network_find_wan{,6} and
+# assume external interfaces all have same firewall zone.
+
+# (This heuristic may fail horribly, in case of e.g. multihoming, so
+# please set external_zone in that case!)
+
+network_find_wan wan_iface
+network_find_wan6 wan6_iface
+
+for ext_iface in $wan_iface $wan6_iface; do
+    # fw3 -q network fails on sub-interfaces => map to device first
+    network_get_device ext_device $ext_iface
+    add_extzone_rules $(fw3 -q device "$ext_device")
+done

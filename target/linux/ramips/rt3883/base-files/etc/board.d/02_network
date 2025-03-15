@@ -1,3 +1,4 @@
+#!/bin/sh
 
 . /lib/functions.sh
 . /lib/functions/uci-defaults.sh

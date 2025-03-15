@@ -1,0 +1,10 @@
+--- a/drivers/base/property.c
++++ b/drivers/base/property.c
+@@ -566,6 +566,7 @@ const char *fwnode_get_name(const struct
+ {
+ 	return fwnode_call_ptr_op(fwnode, get_name);
+ }
++EXPORT_SYMBOL_GPL(fwnode_get_name);
+ 
+ /**
+  * fwnode_get_next_parent - Iterate to the node's parent

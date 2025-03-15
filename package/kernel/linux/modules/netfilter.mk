@@ -818,6 +818,27 @@ endef
 
 $(eval $(call KernelPackage,ipt-cluster))
 
+define KernelPackage/ipt-clusterip
+  TITLE:=Module for CLUSTERIP
+  KCONFIG:=$(KCONFIG_IPT_CLUSTERIP)
+  FILES:=$(foreach mod,$(IPT_CLUSTERIP-m),$(LINUX_DIR)/net/$(mod).ko)
+  AUTOLOAD:=$(call AutoProbe,$(notdir $(IPT_CLUSTERIP-m)))
+  $(call AddDepends/ipt,+kmod-nf-conntrack)
+endef
+
+define KernelPackage/ipt-clusterip/description
+ Netfilter (IPv4-only) module for CLUSTERIP
+ The CLUSTERIP target allows you to build load-balancing clusters of
+ network servers without having a dedicated load-balancing
+ router/server/switch.
+
+ To use it also enable iptables-mod-clusterip
+
+ see `iptables -j CLUSTERIP --help` for more information.
+endef
+
+$(eval $(call KernelPackage,ipt-clusterip))
+
 
 define KernelPackage/ipt-extra
   TITLE:=Extra modules
@@ -1048,40 +1069,6 @@ endef
 $(eval $(call KernelPackage,nfnetlink-queue))
 
 
-define KernelPackage/nfnetlink-cthelper
-  TITLE:=Netfilter User space conntrack helpers
-  FILES:=$(LINUX_DIR)/net/netfilter/nfnetlink_cthelper.ko
-  KCONFIG:=CONFIG_NF_CT_NETLINK_HELPER
-  AUTOLOAD:=$(call AutoProbe,nfnetlink_cthelper)
-  $(call AddDepends/nfnetlink,+kmod-nfnetlink-queue +kmod-nf-conntrack-netlink)
-endef
-
-define KernelPackage/nfnetlink-cthelper/description
- Kernel modules support for a netlink-based connection tracking
- userspace helpers interface
-endef
-
-$(eval $(call KernelPackage,nfnetlink-cthelper))
-
-
-define KernelPackage/nfnetlink-cttimeout
-  TITLE:=Netfilter conntrack expectation timeout
-  FILES:=$(LINUX_DIR)/net/netfilter/nfnetlink_cttimeout.ko
-  KCONFIG:=CONFIG_NF_CT_NETLINK_TIMEOUT
-  AUTOLOAD:=$(call AutoProbe,nfnetlink_cttimeout)
-  $(call AddDepends/nfnetlink,+kmod-nf-conntrack @KERNEL_NF_CONNTRACK_TIMEOUT)
-endef
-
-define KernelPackage/nfnetlink-cttimeout/description
- Kernel modules support for a netlink-based connection tracking
- userspace timeout interface
-
- Requires CONFIG_NF_CONNTRACK_TIMEOUT (only enabled for non-small flash devices)
-endef
-
-$(eval $(call KernelPackage,nfnetlink-cttimeout))
-
-
 define KernelPackage/nf-conntrack-netlink
   TITLE:=Connection tracking netlink interface
   FILES:=$(LINUX_DIR)/net/netfilter/nf_conntrack_netlink.ko
@@ -1210,11 +1197,15 @@ define KernelPackage/nft-offload
   DEPENDS:=@IPV6 +kmod-nf-flow +kmod-nft-nat
   KCONFIG:= \
 	CONFIG_NF_FLOW_TABLE_INET \
+	CONFIG_NF_FLOW_TABLE_IPV4 \
+	CONFIG_NF_FLOW_TABLE_IPV6 \
 	CONFIG_NFT_FLOW_OFFLOAD
   FILES:= \
 	$(LINUX_DIR)/net/netfilter/nf_flow_table_inet.ko \
+	$(LINUX_DIR)/net/ipv4/netfilter/nf_flow_table_ipv4.ko \
+	$(LINUX_DIR)/net/ipv6/netfilter/nf_flow_table_ipv6.ko \
 	$(LINUX_DIR)/net/netfilter/nft_flow_offload.ko
-  AUTOLOAD:=$(call AutoProbe,nf_flow_table_inet nft_flow_offload)
+  AUTOLOAD:=$(call AutoProbe,nf_flow_table_inet nf_flow_table_ipv4 nf_flow_table_ipv6 nft_flow_offload)
 endef
 
 $(eval $(call KernelPackage,nft-offload))
@@ -1226,7 +1217,6 @@ define KernelPackage/nft-netdev
   DEPENDS:=+kmod-nft-core
   KCONFIG:= \
 	CONFIG_NETFILTER_INGRESS=y \
-	CONFIG_NETFILTER_EGRESS=y \
 	CONFIG_NF_TABLES_NETDEV \
 	CONFIG_NF_DUP_NETDEV \
 	CONFIG_NFT_DUP_NETDEV \

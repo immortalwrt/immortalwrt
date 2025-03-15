@@ -1,0 +1,124 @@
+#!/bin/sh
+
+. "$IPKG_INSTROOT/usr/share/libubox/jshn.sh"
+
+renamefile() {
+	local base=$(basename -- "$1")
+	local ext=$([ -z "${base/*.*/}"  ] && echo ".${base##*.}" || echo '')
+	local base="${base%.*}"
+	echo "$(dirname $1)/${base}$2$ext" && return
+}
+
+_get_db_path() {
+	local db db_4 db_6 db_46
+	db="$(uci -q get wrtbwmon.general.path)"
+	db_4=$(renamefile "${db:-/tmp/usage.db}" "")
+	db_6=$(renamefile "${db:-/tmp/usage.db}" ".6")
+	db_46=$(renamefile "${db:-/tmp/usage.db}" ".46")
+	json_init
+	json_add_string file_4 "$db_4"
+	json_add_string file_6 "$db_6"
+	json_add_string file_46 "$db_46"
+	json_dump
+	json_cleanup
+}
+
+_get_db_raw() {
+	json_init
+	json_add_string file "$1"
+	json_add_string data "$(cat "$1")"
+	json_dump
+	json_cleanup
+}
+
+_remove_db() {
+	local result
+	rm "$1" && result=1 || result=0
+	json_init
+	json_add_boolean result "$result"
+	json_dump
+	json_cleanup
+}
+
+_change_db_path() {
+	json_init
+	json_load "$(_get_db_path)"
+	json_get_var db_4 'file_4'
+	json_get_var db_6 'file_6'
+	json_get_var db_46 'file_46'
+	json_cleanup
+	if [ "$1" = "before" ]; then
+		mv "$db_4" /tmp/usage.db.tmp
+		mv "$db_6" /tmp/usage.6.db.tmp
+		mv "$db_46" /tmp/usage.46.db.tmp
+	elif [ "$1" = "after" ]; then
+		mv -f /tmp/usage.db.tmp "$db_4"
+		mv -f /tmp/usage.6.db.tmp "$db_6"
+		mv -f /tmp/usage.46.db.tmp "$db_46"
+	fi
+	json_init
+	json_add_boolean result $([ "$?" = 0 ] && echo 1 || echo 0 )
+	json_dump
+	json_cleanup
+}
+
+case "$1" in
+	list)
+		json_init
+		json_add_object remove_db
+		json_add_string protocol "protocol"
+		json_close_object
+		json_add_object get_db_raw
+		json_add_string protocol "protocol"
+		json_close_object
+		json_add_object get_db_path
+		json_close_object
+		json_add_object change_db_path
+		json_add_string state "state"
+		json_close_object
+		json_dump
+		json_cleanup
+	;;
+	call)
+		case "$2" in
+			remove_db)
+				read -r input
+				json_init
+				json_load "$input"
+				json_get_var protocol 'protocol'
+				json_cleanup
+				json_load "$(_get_db_path)"
+				json_get_var db_s $([ "$protocol" = "ipv4" ] && echo file_4 || echo file_6)
+				json_cleanup
+				_remove_db "$db_s"
+			;;
+			get_db_raw)
+				read -r input
+				json_init
+				json_load "$input"
+				json_get_var protocol 'protocol'
+				json_cleanup
+				json_load "$(_get_db_path)"
+				json_get_var db_s $([ "$protocol" = "ipv4" ] && echo file_4 || echo file_6)
+				json_cleanup
+				_get_db_raw "$db_s"
+			;;
+			get_db_path)
+				read -r input
+				json_init
+				json_load "$input"
+				json_get_var protocol 'protocol'
+				json_cleanup
+				_get_db_path
+			;;
+			change_db_path)
+				read -r input
+				json_init
+				json_load "$input"
+				json_get_var state 'state'
+				json_cleanup
+				_change_db_path "$state"
+			;;
+		esac
+	;;
+esac

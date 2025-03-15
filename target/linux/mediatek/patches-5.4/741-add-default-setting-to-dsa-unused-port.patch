@@ -1,0 +1,124 @@
+Index: linux-5.4.124/drivers/net/dsa/mt7530.c
+===================================================================
+--- linux-5.4.124.orig/drivers/net/dsa/mt7530.c
++++ linux-5.4.124/drivers/net/dsa/mt7530.c
+@@ -1021,6 +1021,9 @@ mt7530_stp_state_set(struct dsa_switch *
+ 	struct mt7530_priv *priv = ds->priv;
+ 	u32 stp_state;
+ 
++	if (dsa_is_unused_port(ds, port))
++		return;
++
+ 	switch (state) {
+ 	case BR_STATE_DISABLED:
+ 		stp_state = MT7530_STP_DISABLED;
+@@ -1676,10 +1679,58 @@ mt7530_setup(struct dsa_switch *ds)
+ }
+ 
+ static int
++setup_unused_ports(struct dsa_switch *ds, u32 pm)
++{
++	struct mt7530_priv *priv = ds->priv;
++	u32 egtag_mask = 0;
++	u32 egtag_val = 0;
++	int i;
++
++	if (!pm)
++		return 0;
++
++	for (i = 0; i < MT7530_NUM_PORTS; i++) {
++		if (!dsa_is_unused_port(ds, i))
++			continue;
++
++		/* Setup MAC port with maximum capability. */
++		if ((i == 5) || (i == 6))
++			if (priv->info->cpu_port_config)
++				priv->info->cpu_port_config(ds, i);
++
++		mt7530_rmw(priv, MT7530_PCR_P(i), PCR_MATRIX_MASK | PCR_PORT_VLAN_MASK,
++			   PCR_MATRIX(pm) | MT7530_PORT_SECURITY_MODE);
++		egtag_mask |= ETAG_CTRL_P_MASK(i);
++		egtag_val |=  ETAG_CTRL_P(i, MT7530_VLAN_EGRESS_UNTAG);
++	}
++
++	/* Add unused ports to VLAN2 group for using IVL fdb. */
++	mt7530_write(priv, MT7530_VAWD1,
++		     IVL_MAC | VTAG_EN | PORT_MEM(pm) | VLAN_VALID);
++	mt7530_rmw(priv, MT7530_VAWD2, egtag_mask, egtag_val);
++	mt7530_vlan_cmd(priv, MT7530_VTCR_WR_VID, MT753X_RESERVED_VLAN);
++
++	for (i = 0; i < MT7530_NUM_PORTS; i++) {
++		if (!dsa_is_unused_port(ds, i))
++			continue;
++
++		mt7530_rmw(priv, MT7530_PPBV1_P(i), G0_PORT_VID_MASK,
++			   G0_PORT_VID(MT753X_RESERVED_VLAN));
++		mt7530_rmw(priv, MT7530_SSP_P(i), FID_PST_MASK, MT7530_STP_FORWARDING);
++
++		dev_dbg(ds->dev, "Add unused port%d to reserved VLAN%d group\n",
++			i, MT753X_RESERVED_VLAN);
++	}
++
++	return 0;
++}
++
++static int
+ mt7531_setup(struct dsa_switch *ds)
+ {
+ 	struct mt7530_priv *priv = ds->priv;
+ 	struct mt7530_dummy_poll p;
++	u32 unused_pm = 0;
+ 	u32 val, id;
+ 	int ret, i;
+ 
+@@ -1767,7 +1818,9 @@ mt7531_setup(struct dsa_switch *ds)
+ 
+ 		mt7530_set(priv, MT7531_DBG_CNT(i), MT7531_DIS_CLR);
+ 
+-		if (dsa_is_cpu_port(ds, i))
++		if (dsa_is_unused_port(ds, i))
++			unused_pm |= BIT(i);
++		else if (dsa_is_cpu_port(ds, i))
+ 			mt753x_cpu_port_enable(ds, i);
+ 		else
+ 			mt7530_port_disable(ds, i);
+@@ -1777,6 +1830,9 @@ mt7531_setup(struct dsa_switch *ds)
+ 			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
+ 	}
+ 
++	/* Group and enable unused ports as a standalone dumb switch. */
++	setup_unused_ports(ds, unused_pm);
++
+ 	ds->configure_vlan_while_not_filtering = true;
+ 
+ 	/* Flush the FDB table */
+@@ -2101,7 +2157,7 @@ mt7531_mac_config(struct dsa_switch *ds,
+ 	case PHY_INTERFACE_MODE_RGMII_RXID:
+ 	case PHY_INTERFACE_MODE_RGMII_TXID:
+ 		dp = dsa_to_port(ds, port);
+-		phydev = dp->slave->phydev;
++		phydev = (dp->slave) ? dp->slave->phydev : NULL;
+ 		return mt7531_rgmii_setup(priv, port, interface, phydev);
+ 	case PHY_INTERFACE_MODE_SGMII:
+ 		return mt7531_sgmii_setup_mode_an(priv, port, interface);
+@@ -2641,7 +2697,7 @@ mt7530_probe(struct mdio_device *mdiodev
+ 	if (!priv)
+ 		return -ENOMEM;
+ 
+-	priv->ds = dsa_switch_alloc(&mdiodev->dev, DSA_MAX_PORTS);
++	priv->ds = dsa_switch_alloc(&mdiodev->dev, MT7530_NUM_PORTS);
+ 	if (!priv->ds)
+ 		return -ENOMEM;
+ 
+Index: linux-5.4.124/drivers/net/dsa/mt7530.h
+===================================================================
+--- linux-5.4.124.orig/drivers/net/dsa/mt7530.h
++++ linux-5.4.124/drivers/net/dsa/mt7530.h
+@@ -10,6 +10,7 @@
+ #define MT7530_CPU_PORT			6
+ #define MT7530_NUM_FDB_RECORDS		2048
+ #define MT7530_ALL_MEMBERS		0xff
++#define MT753X_RESERVED_VLAN		2
+ 
+ enum mt753x_id {
+ 	ID_MT7530 = 0,

@@ -4,7 +4,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	aliases {
@@ -35,26 +34,22 @@
 		compatible = "gpio-leds";
 
 		led_power_green: power_green {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio0 9 GPIO_ACTIVE_HIGH>;
 		};
 
 		wan_orange {
-			function = LED_FUNCTION_WAN;
-			color = <LED_COLOR_ID_ORANGE>;
+			label = "orange:wan";
 			gpios = <&gpio0 12 GPIO_ACTIVE_HIGH>;
 		};
 
 		wan_green {
-			function = LED_FUNCTION_WAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:wan";
 			gpios = <&gpio2 0 GPIO_ACTIVE_LOW>;
 		};
 
 		power_orange {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_ORANGE>;
+			label = "orange:power";
 			gpios = <&gpio0 13 GPIO_ACTIVE_HIGH>;
 		};
 	};
@@ -85,33 +80,13 @@
 				read-only;
 			};
 
-			partition@40000 {
+			factory: partition@40000 {
 				label = "factory";
 				reg = <0x40000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_factory_0: eeprom@0 {
-						reg = <0x0 0x200>;
-					};
-
-					eeprom_factory_8000: eeprom@8000 {
-						reg = <0x8000 0x200>;
-					};
-
-					macaddr_factory_28: macaddr@28 {
-						compatible = "mac-base";
-						reg = <0x28 0x6>;
-						#nvmem-cell-cells = <1>;
-					};
-				};
 			};
 
-			partition@50000 {
+			factory5g: partition@50000 {
 				label = "factory5g";
 				reg = <0x50000 0x10000>;
 				read-only;
@@ -152,8 +127,7 @@
 };
 
 &ethernet {
-	nvmem-cells = <&macaddr_factory_28 0>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0x28>;
 
 	mediatek,portmap = "llllw";
 };
@@ -166,8 +140,9 @@
 	pinctrl-names = "default", "pa_gpio";
 	pinctrl-0 = <&pa_pins>;
 	pinctrl-1 = <&pa_gpio_pins>;
-	nvmem-cells = <&eeprom_factory_0>, <&macaddr_factory_28 0>;
-	nvmem-cell-names = "eeprom", "mac-address";
+
+	ralink,mtd-eeprom = <&factory 0x0>;
+	mtd-mac-address = <&factory 0x28>;
 };
 
 &pcie {
@@ -177,8 +152,9 @@
 &pcie0 {
 	wifi@0,0 {
 		reg = <0x0000 0 0 0 0>;
+		mediatek,mtd-eeprom = <&factory 0x8000>;
 		ieee80211-freq-limit = <5000000 6000000>;
-		nvmem-cells = <&eeprom_factory_8000>, <&macaddr_factory_28 2>;
-		nvmem-cell-names = "eeprom", "mac-address";
+		mtd-mac-address = <&factory 0x28>;
+		mtd-mac-address-increment = <2>;
 	};
 };

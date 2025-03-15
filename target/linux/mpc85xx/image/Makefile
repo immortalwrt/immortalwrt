@@ -3,10 +3,8 @@
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/image.mk
 
-DEVICE_VARS += DTB_SIZE
-
-define Build/pad-dtb
-	$(call Image/BuildDTB,$(DTS_DIR)/$(DEVICE_DTS).dts,$(dir $@)/image-$(DEVICE_DTS).dtb,,--space $(DTB_SIZE))
+define Build/copy-file
+	cat "$(1)" > "$@"
 endef
 
 define Device/Default

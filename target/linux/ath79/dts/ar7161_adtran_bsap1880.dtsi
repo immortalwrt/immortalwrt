@@ -4,7 +4,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	chosen {
@@ -34,14 +33,12 @@
 		};
 
 		led_status_green: status_green {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:status";
 			gpios = <&gpio 5 GPIO_ACTIVE_LOW>;
 		};
 
 		led_status_yellow: status_yellow {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_YELLOW>;
+			label = "yellow:status";
 			gpios = <&gpio 4 GPIO_ACTIVE_LOW>;
 		};
 	};
@@ -60,6 +57,8 @@
 
 &mdio0 {
 	status = "okay";
+
+	phy-mask = <0x1>;
 
 	phy0: ethernet-phy@0 {
 		reg = <0>;
@@ -88,8 +87,7 @@
 		partitions {
 			#address-cells = <1>;
 			#size-cells = <1>;
-			compatible = "redboot-fis";
-			fis-index-block = <0xfd>;
+			compatible = "ecoscentric,redboot-fis-partitions";
 		};
 	};
 };

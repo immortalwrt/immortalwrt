@@ -1,0 +1,42 @@
+diff --git a/arch/arm64/kernel/kgdb.c b/arch/arm64/kernel/kgdb.c
+index 1a157ca..258fe4b 100644
+--- a/arch/arm64/kernel/kgdb.c
++++ b/arch/arm64/kernel/kgdb.c
+@@ -18,6 +18,10 @@
+ #include <asm/debug-monitors.h>
+ #include <asm/insn.h>
+ #include <asm/traps.h>
++#include <asm/ptrace.h>
++
++
++static DEFINE_PER_CPU(unsigned int, kgdb_pstate);
+ 
+ struct dbg_reg_def_t dbg_reg_def[DBG_MAX_REG_NUM] = {
+ 	{ "x0", 8, offsetof(struct pt_regs, regs[0])},
+@@ -206,6 +210,8 @@ int kgdb_arch_handle_exception(int exception_vector, int signo,
+ 		err = 0;
+ 		break;
+ 	case 's':
++		__this_cpu_write(kgdb_pstate, linux_regs->pstate);
++		linux_regs->pstate |= PSR_I_BIT;
+ 		/*
+ 		 * Update step address value with address passed
+ 		 * with step packet.
+@@ -249,9 +255,17 @@ NOKPROBE_SYMBOL(kgdb_compiled_brk_fn);
+ 
+ static int kgdb_step_brk_fn(struct pt_regs *regs, unsigned int esr)
+ {
++	unsigned int pstate;
++
+ 	if (!kgdb_single_step)
+ 		return DBG_HOOK_ERROR;
++	kernel_disable_single_step();
+ 
++	pstate = __this_cpu_read(kgdb_pstate);
++	if (pstate & PSR_I_BIT)
++		regs->pstate |= PSR_I_BIT;
++	else
++		regs->pstate &= ~PSR_I_BIT;
+ 	kgdb_handle_exception(0, SIGTRAP, 0, regs);
+ 	return DBG_HOOK_HANDLED;
+ }

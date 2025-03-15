@@ -1,0 +1,102 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=50
+USE_PROCD=1
+
+parse_device() {
+	local cfg="$1"
+
+	local enabled
+	config_get_bool enabled "$cfg" "enabled" "1"
+	[ "$enabled" -eq "1" ] || return 1
+	
+
+	local ip download upload comment mac interfacename
+	config_get ip "$cfg" ip
+	config_get download "$cfg" "download"
+	config_get upload "$cfg" "upload"
+	config_get comment "$cfg" "comment"
+	config_get mac "$cfg" "mac"
+	config_get interfacename "$cfg" "interfacename"
+	eqos add "$ip" "$download" "$upload" "$comment" "$mac" "$interfacename"
+}
+
+start_service() {
+	config_load "eqos"
+
+	local enabled
+	config_get_bool enabled "config" "enabled" "0"
+	[ "$enabled" -eq "1" ] || return 1
+	
+	local download upload comment
+	config_get download "config" "download"
+	config_get upload "config" "upload"
+	config_get comment "config" "comment"
+	config_get smarthqos "config" "smarthqos"
+	config_get interface "config" "interface"
+	eqos start "$download" "$upload" "$comment" 
+	
+	local ipv6enabled                              
+        config_get_bool ipv6enabled "config" "ipv6enabled" "0"    
+        ip6tables -t mangle -N eqos
+        ip6tables -t mangle -F eqos
+        ebtables -t nat  -N eqos
+        ebtables -t nat  -F eqos
+        if [ "$ipv6enabled" -eq "1" ]; then                                
+        ebtables -t nat -D POSTROUTING  -j eqos -p ipv6              
+        ebtables -t nat -A POSTROUTING  -j eqos -p ipv6
+        ip6tables -t mangle -D FORWARD  -j eqos
+        ip6tables -t mangle -A FORWARD  -j eqos             
+        fi  
+        
+        if [ "$smarthqos" -eq "1" ]; then  
+        for i in $(seq 1 31); do
+        	if [ "$upload" -ne "0" ]; then
+		echo 2 1 $(($upload*225)) 1 $(($upload*1000)) 4 1 > /sys/kernel/debug/hnat/qdma_txq$i
+		fi
+		done
+		for i in $(seq 33 63); do
+		if [ "$download" -ne "0" ]; then
+		echo 3 1 $(($download*200)) 1 $(($download*1000)) 4 1 > /sys/kernel/debug/hnat/qdma_txq$i
+		fi
+	done 
+	fi 
+        iptables -t mangle -F PREROUTING
+        if [ $interface ]; then
+	bash /usr/sbin/loadbalance "$interface"
+        fi
+        config_foreach parse_device "device"
+        if [ "$smarthqos" -eq "1" ]; then
+        rm /etc/hotplug.d/dhcp/99-eqos
+	cat << 'EOF' > /etc/hotplug.d/dhcp/99-eqos
+#!/bin/sh
+
+# 只有在新增 DHCP 租约时才执行操作
+if [ "$ACTION" = "add" ]; then
+
+    # 执行指定的命令
+    /etc/init.d/dhcp_mark.sh eqos init
+fi
+EOF
+
+        chmod +x /etc/hotplug.d/dhcp/99-eqos
+        /etc/init.d/dnsmasq restart
+        /etc/init.d/dhcp_mark.sh eqos init
+        fi   
+}
+
+stop_service() {
+	eqos stop
+	iptables -t mangle -F PREROUTING
+	rm /etc/hotplug.d/dhcp/99-eqos
+}
+
+reload_service() {
+	stop
+	start
+}
+
+service_triggers() {
+	procd_add_reload_trigger "eqos"
+}

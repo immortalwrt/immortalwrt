@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
-#include <dt-bindings/leds/common.h>
-
 #include "qca9533_mikrotik_routerboard-16m.dtsi"
 
 / {
@@ -19,8 +17,7 @@
 		compatible = "gpio-leds";
 
 		power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio 4 GPIO_ACTIVE_LOW>;
 			default-state = "on";
 		};
@@ -46,8 +43,7 @@
 		};
 
 		wlan {
-			function = LED_FUNCTION_WLAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:wlan";
 			gpios = <&gpio_ext 4 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "phy0tpt";
 		};
@@ -95,12 +91,6 @@
 	pin_spi_cs1: pinmux_spi_cs1 {
 		pinctrl-single,bits = <0x8 0x0a000000 0xff000000>;
 	};
-};
-
-&wmac {
-	status = "okay";
-
-	qca,no-eeprom;
 };
 
 &eth0 {

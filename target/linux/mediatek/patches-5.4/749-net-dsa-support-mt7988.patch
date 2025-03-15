@@ -1,0 +1,360 @@
+Index: linux-5.4.203/drivers/net/dsa/mt7530.c
+===================================================================
+--- linux-5.4.203.orig/drivers/net/dsa/mt7530.c
++++ linux-5.4.203/drivers/net/dsa/mt7530.c
+@@ -19,6 +19,7 @@
+ #include <linux/reset.h>
+ #include <linux/gpio/consumer.h>
+ #include <net/dsa.h>
++#include <linux/of_address.h>
+
+ #include "mt7530.h"
+ #include "mt7530_nl.h"
+@@ -170,28 +171,44 @@ core_clear(struct mt7530_priv *priv, u32
+ 	core_rmw(priv, reg, val, 0);
+ }
+
++static void
++mtk_w32(struct mt7530_priv *priv, u32 val, unsigned reg)
++{
++	__raw_writel(val, priv->base + reg);
++}
++
++static u32
++mtk_r32(struct mt7530_priv *priv, unsigned reg)
++{
++	return __raw_readl(priv->base + reg);
++}
++
+ static int
+ mt7530_mii_write(struct mt7530_priv *priv, u32 reg, u32 val)
+ {
+ 	struct mii_bus *bus = priv->bus;
+ 	u16 page, r, lo, hi;
+-	int ret;
+-
+-	page = (reg >> 6) & 0x3ff;
+-	r  = (reg >> 2) & 0xf;
+-	lo = val & 0xffff;
+-	hi = val >> 16;
+-
+-	/* MT7530 uses 31 as the pseudo port */
+-	ret = bus->write(bus, 0x1f, 0x1f, page);
+-	if (ret < 0)
+-		goto err;
++	int ret = 0;
+
+-	ret = bus->write(bus, 0x1f, r,  lo);
+-	if (ret < 0)
+-		goto err;
++	if (priv->direct_access){
++		mtk_w32(priv, val, reg);
++	} else {
++		page = (reg >> 6) & 0x3ff;
++		r  = (reg >> 2) & 0xf;
++		lo = val & 0xffff;
++		hi = val >> 16;
++
++		/* MT7530 uses 31 as the pseudo port */
++		ret = bus->write(bus, 0x1f, 0x1f, page);
++		if (ret < 0)
++			goto err;
++
++		ret = bus->write(bus, 0x1f, r,  lo);
++		if (ret < 0)
++			goto err;
+
+-	ret = bus->write(bus, 0x1f, 0x10, hi);
++		ret = bus->write(bus, 0x1f, 0x10, hi);
++	}
+ err:
+ 	if (ret < 0)
+ 		dev_err(&bus->dev,
+@@ -206,21 +223,25 @@ mt7530_mii_read(struct mt7530_priv *priv
+ 	u16 page, r, lo, hi;
+ 	int ret;
+
+-	page = (reg >> 6) & 0x3ff;
+-	r = (reg >> 2) & 0xf;
++	if (priv->direct_access){
++		return mtk_r32(priv, reg);
++	} else {
++		page = (reg >> 6) & 0x3ff;
++		r = (reg >> 2) & 0xf;
+
+-	/* MT7530 uses 31 as the pseudo port */
+-	ret = bus->write(bus, 0x1f, 0x1f, page);
+-	if (ret < 0) {
+-		dev_err(&bus->dev,
+-			"failed to read mt7530 register\n");
+-		return ret;
+-	}
++		/* MT7530 uses 31 as the pseudo port */
++		ret = bus->write(bus, 0x1f, 0x1f, page);
++		if (ret < 0) {
++			dev_err(&bus->dev,
++				"failed to read mt7530 register\n");
++			return ret;
++		}
+
+-	lo = bus->read(bus, 0x1f, r);
+-	hi = bus->read(bus, 0x1f, 0x10);
++		lo = bus->read(bus, 0x1f, r);
++		hi = bus->read(bus, 0x1f, 0x10);
+
+-	return (hi << 16) | (lo & 0xffff);
++		return (hi << 16) | (lo & 0xffff);
++	}
+ }
+
+ void
+@@ -1906,9 +1927,9 @@ mt7531_phy_supported(struct dsa_switch *
+ 		if (mt7531_is_rgmii_port(priv, port))
+ 			return phy_interface_mode_is_rgmii(state->interface);
+ 		fallthrough;
+-	case 6: /* 1st cpu port supports sgmii/8023z only */
+-		if (state->interface != PHY_INTERFACE_MODE_SGMII &&
+-		    !phy_interface_mode_is_8023z(state->interface))
++	case 6: /* 1st cpu port supports sgmii/8023z/usxgmii/10gkr */
++		if (state->interface != PHY_INTERFACE_MODE_SGMII && state->interface != PHY_INTERFACE_MODE_USXGMII &&
++		    state->interface != PHY_INTERFACE_MODE_10GKR && !phy_interface_mode_is_8023z(state->interface))
+ 			goto unsupported;
+ 		break;
+ 	default:
+@@ -2017,6 +2038,13 @@ static void mt7531_sgmii_validate(struct
+ 		phylink_set(supported, 1000baseX_Full);
+ 		phylink_set(supported, 2500baseX_Full);
+ 		phylink_set(supported, 2500baseT_Full);
++		phylink_set(supported, 10000baseKR_Full);
++		phylink_set(supported, 10000baseT_Full);
++		phylink_set(supported, 10000baseCR_Full);
++		phylink_set(supported, 10000baseSR_Full);
++		phylink_set(supported, 10000baseLR_Full);
++		phylink_set(supported, 10000baseLRM_Full);
++		phylink_set(supported, 10000baseER_Full);
+ 	}
+ }
+
+@@ -2165,6 +2193,8 @@ mt7531_mac_config(struct dsa_switch *ds,
+ 	case PHY_INTERFACE_MODE_NA:
+ 	case PHY_INTERFACE_MODE_1000BASEX:
+ 	case PHY_INTERFACE_MODE_2500BASEX:
++	case PHY_INTERFACE_MODE_USXGMII:
++	case PHY_INTERFACE_MODE_10GKR:
+ 		if (phylink_autoneg_inband(mode))
+ 			return -EINVAL;
+
+@@ -2302,8 +2332,8 @@ static void mt753x_phylink_mac_link_up(s
+ 	/* MT753x MAC works in 1G full duplex mode for all up-clocked
+ 	 * variants.
+ 	 */
+-	if (interface == PHY_INTERFACE_MODE_TRGMII ||
+-	    (phy_interface_mode_is_8023z(interface))) {
++	if (interface == PHY_INTERFACE_MODE_TRGMII || interface == PHY_INTERFACE_MODE_USXGMII ||
++	    interface == PHY_INTERFACE_MODE_10GKR || (phy_interface_mode_is_8023z(interface))) {
+ 		speed = SPEED_1000;
+ 		duplex = DUPLEX_FULL;
+ 	}
+@@ -2402,8 +2432,8 @@ mt753x_phylink_validate(struct dsa_switc
+
+ 	phylink_set_port_modes(mask);
+
+-	if (state->interface != PHY_INTERFACE_MODE_TRGMII ||
+-	    !phy_interface_mode_is_8023z(state->interface)) {
++	if (state->interface != PHY_INTERFACE_MODE_TRGMII || state->interface != PHY_INTERFACE_MODE_USXGMII ||
++	    state->interface != PHY_INTERFACE_MODE_10GKR || !phy_interface_mode_is_8023z(state->interface)) {
+ 		phylink_set(mask, 10baseT_Half);
+ 		phylink_set(mask, 10baseT_Full);
+ 		phylink_set(mask, 100baseT_Half);
+@@ -2607,6 +2637,66 @@ mt753x_phy_write(struct dsa_switch *ds,
+ 	return priv->info->phy_write(ds, port, regnum, val);
+ }
+
++static int
++mt7988_pad_setup(struct dsa_switch *ds, phy_interface_t interface)
++{
++	return 0;
++}
++
++static int
++mt7988_setup(struct dsa_switch *ds)
++{
++	struct mt7530_priv *priv = ds->priv;
++	u32 unused_pm = 0;
++	int ret, i;
++
++	/* Reset the switch through internal reset */
++	mt7530_write(priv, MT7530_SYS_CTRL,
++		     SYS_CTRL_PHY_RST | SYS_CTRL_SW_RST);
++
++	/* BPDU to CPU port */
++	mt7530_rmw(priv, MT7531_CFC, MT7531_CPU_PMAP_MASK,
++		   BIT(MT7530_CPU_PORT));
++	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
++		   MT753X_BPDU_CPU_ONLY);
++
++	/* Enable and reset MIB counters */
++	mt7530_mib_reset(ds);
++
++	for (i = 0; i < MT7530_NUM_PORTS; i++) {
++		/* Disable forwarding by default on all ports */
++		mt7530_rmw(priv, MT7530_PCR_P(i), PCR_MATRIX_MASK,
++			   PCR_MATRIX_CLR);
++
++		mt7530_set(priv, MT7531_DBG_CNT(i), MT7531_DIS_CLR);
++
++		if (dsa_is_unused_port(ds, i))
++			unused_pm |= BIT(i);
++		else if (dsa_is_cpu_port(ds, i))
++			mt753x_cpu_port_enable(ds, i);
++		else
++			mt7530_port_disable(ds, i);
++
++		/* Enable consistent egress tag */
++		mt7530_rmw(priv, MT7530_PVC_P(i), PVC_EG_TAG_MASK,
++			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
++	}
++
++	mt7531_phy_setup(ds);
++
++	/* Group and enable unused ports as a standalone dumb switch. */
++	setup_unused_ports(ds, unused_pm);
++
++	ds->configure_vlan_while_not_filtering = true;
++
++	/* Flush the FDB table */
++	ret = mt7530_fdb_cmd(priv, MT7530_FDB_FLUSH, NULL);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
+ static const struct dsa_switch_ops mt7530_switch_ops = {
+ 	.get_tag_protocol	= mtk_get_tag_protocol,
+ 	.setup			= mt753x_setup,
+@@ -2676,12 +2766,28 @@ static const struct mt753x_info mt753x_t
+ 		.mac_pcs_an_restart = mt7531_sgmii_restart_an,
+ 		.mac_pcs_link_up = mt7531_sgmii_link_up_force,
+ 	},
++	[ID_MT7988] = {
++		.id = ID_MT7988,
++		.sw_setup = mt7988_setup,
++		.phy_read = mt7531_ind_phy_read,
++		.phy_write = mt7531_ind_phy_write,
++		.pad_setup = mt7988_pad_setup,
++		.cpu_port_config = mt7531_cpu_port_config,
++		.phy_mode_supported = mt7531_phy_supported,
++		.mac_port_validate = mt7531_mac_port_validate,
++		.mac_port_get_state = mt7531_phylink_mac_link_state,
++		.mac_port_config = mt7531_mac_config,
++		.mac_pcs_an_restart = mt7531_sgmii_restart_an,
++		.mac_pcs_link_up = mt7531_sgmii_link_up_force,
++	},
++
+ };
+
+ static const struct of_device_id mt7530_of_match[] = {
+ 	{ .compatible = "mediatek,mt7621", .data = &mt753x_table[ID_MT7621], },
+ 	{ .compatible = "mediatek,mt7530", .data = &mt753x_table[ID_MT7530], },
+ 	{ .compatible = "mediatek,mt7531", .data = &mt753x_table[ID_MT7531], },
++	{ .compatible = "mediatek,mt7988", .data = &mt753x_table[ID_MT7988], },
+ 	{ /* sentinel */ },
+ };
+ MODULE_DEVICE_TABLE(of, mt7530_of_match);
+@@ -2691,6 +2797,7 @@ mt7530_probe(struct mdio_device *mdiodev
+ {
+ 	struct mt7530_priv *priv;
+ 	struct device_node *dn;
++	struct device_node *switch_node = NULL;
+ 	int ret;
+
+ 	dn = mdiodev->dev.of_node;
+@@ -2760,6 +2867,16 @@ mt7530_probe(struct mdio_device *mdiodev
+ 		}
+ 	}
+
++	switch_node = of_find_node_by_name(NULL, "switch0");
++	if(switch_node) {
++		priv->base = of_iomap(switch_node, 0);
++		if(priv->base == NULL){
++			dev_err(&mdiodev->dev, "of_iomap failed\n");
++			return -ENOMEM;
++		}
++		priv->direct_access = 1;
++	}
++
+ 	priv->bus = mdiodev->bus;
+ 	priv->dev = &mdiodev->dev;
+ 	priv->ds->priv = priv;
+@@ -2768,9 +2885,12 @@ mt7530_probe(struct mdio_device *mdiodev
+ 	dev_set_drvdata(&mdiodev->dev, priv);
+
+ 	ret = dsa_register_switch(priv->ds);
+-	if (ret)
+-		return ret;
+-
++	if (ret) {
++		if(priv->base)
++			iounmap(priv->base);
++
++		return ret;
++	}
+ 	mt7530_nl_init(&priv);
+
+ 	return 0;
+@@ -2795,6 +2915,9 @@ mt7530_remove(struct mdio_device *mdiode
+ 	dsa_unregister_switch(priv->ds);
+ 	mutex_destroy(&priv->reg_mutex);
+
++	if(priv->base)
++		iounmap(priv->base);
++
+ 	mt7530_nl_exit();
+ }
+
+Index: linux-5.4.203/drivers/net/dsa/mt7530.h
+===================================================================
+--- linux-5.4.203.orig/drivers/net/dsa/mt7530.h
++++ linux-5.4.203/drivers/net/dsa/mt7530.h
+@@ -16,6 +16,7 @@ enum mt753x_id {
+ 	ID_MT7530 = 0,
+ 	ID_MT7621 = 1,
+ 	ID_MT7531 = 2,
++	ID_MT7988 = 3,
+ };
+
+ #define	NUM_TRGMII_CTRL			5
+@@ -51,11 +52,11 @@ enum mt753x_id {
+ #define  MT7531_MIRROR_PORT_SET(x)	(((x) & MIRROR_MASK) << 16)
+ #define  MT7531_CPU_PMAP_MASK		GENMASK(7, 0)
+
+-#define MT753X_MIRROR_REG(id)		(((id) == ID_MT7531) ? \
++#define MT753X_MIRROR_REG(id)		((((id) == ID_MT7531) || ((id) == ID_MT7988)) ? \
+ 					 MT7531_CFC : MT7530_MFC)
+-#define MT753X_MIRROR_EN(id)		(((id) == ID_MT7531) ? \
++#define MT753X_MIRROR_EN(id)		((((id) == ID_MT7531) || ((id) == ID_MT7988)) ? \
+ 					 MT7531_MIRROR_EN : MIRROR_EN)
+-#define MT753X_MIRROR_MASK(id)		(((id) == ID_MT7531) ? \
++#define MT753X_MIRROR_MASK(id)		((((id) == ID_MT7531) || ((id) == ID_MT7988)) ? \
+ 					 MT7531_MIRROR_MASK : MIRROR_MASK)
+
+ /* Registers for BPDU and PAE frame control*/
+@@ -261,7 +262,7 @@ enum mt7530_vlan_port_attr {
+ 					 MT7531_FORCE_DPX | \
+ 					 MT7531_FORCE_RX_FC | \
+ 					 MT7531_FORCE_TX_FC)
+-#define  PMCR_FORCE_MODE_ID(id)		(((id) == ID_MT7531) ? \
++#define  PMCR_FORCE_MODE_ID(id)		((((id) == ID_MT7531) || ((id) == ID_MT7988)) ? \
+ 					 MT7531_FORCE_MODE : \
+ 					 PMCR_FORCE_MODE)
+ #define  PMCR_LINK_SETTINGS_MASK	(PMCR_TX_EN | PMCR_FORCE_SPEED_1000 | \
+@@ -733,6 +734,8 @@ struct mt7530_priv {
+ 	struct regulator	*core_pwr;
+ 	struct regulator	*io_pwr;
+ 	struct gpio_desc	*reset;
++	void  __iomem *base;
++	int   direct_access;
+ 	const struct mt753x_info *info;
+ 	unsigned int		id;
+ 	bool			mcm;

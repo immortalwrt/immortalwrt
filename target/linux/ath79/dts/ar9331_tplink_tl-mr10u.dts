@@ -8,5 +8,5 @@
 };
 
 &reg_usb_vbus {
-	gpios = <&gpio 18 GPIO_ACTIVE_HIGH>;
+	gpio = <&gpio 18 GPIO_ACTIVE_HIGH>;
 };

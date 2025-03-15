@@ -36,17 +36,6 @@
 			linux,default-trigger = "phy0tpt";
 		};
 	};
-
-	gpio_export {
-		compatible = "gpio-export";
-		#size-cells = <0>;
-
-		usbpower {
-			gpio-export,name = "usbpower";
-			gpio-export,output = <1>;
-			gpios = <&gpio0 13 GPIO_ACTIVE_HIGH>;
-		};
-	};
 };
 
 &ehci {
@@ -64,8 +53,7 @@
 &pcie0 {
 	mt76@0,0 {
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&eeprom_factory_8000>;
-		nvmem-cell-names = "eeprom";
+		mediatek,mtd-eeprom = <&factory 0x8000>;
 		ieee80211-freq-limit = <5000000 6000000>;
 	};
 };

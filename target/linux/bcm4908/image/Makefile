@@ -68,14 +68,14 @@ define Device/Default
   KERNEL_INITRAMFS := kernel-bin | bcm4908lzma | bcm4908kernel
   FILESYSTEMS := squashfs
   KERNEL_NAME := Image
-  DEVICE_IMG_NAME = $$(DEVICE_IMG_PREFIX)-$$(1).$$(2)
+  IMAGE_NAME = $$(IMAGE_PREFIX)-$$(1).$$(2)
   BLOCKSIZE := 128k
   PAGESIZE := 2048
   IMAGE/bin := append-ubi | bcm4908img
 endef
 
 define Device/asus_gt-ac5300
-  DEVICE_VENDOR := ASUS
+  DEVICE_VENDOR := Asus
   DEVICE_MODEL := GT-AC5300
   DEVICE_DTS := broadcom/bcmbca/bcm4908-asus-gt-ac5300
   IMAGES := bin
@@ -88,9 +88,9 @@ endef
 TARGET_DEVICES += asus_gt-ac5300
 
 define Device/asus_gt-ax6000
-  DEVICE_VENDOR := ASUS
+  DEVICE_VENDOR := Asus
   DEVICE_MODEL := GT-AX6000
-  DEVICE_DTS := broadcom/bcmbca/bcm4912-asus-gt-ax6000
+  KERNEL := kernel-bin | bootfs
   IMAGES := pkgtb
   IMAGE/pkgtb := append-rootfs | pkgtb
   SOC := bcm4912

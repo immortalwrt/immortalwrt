@@ -2,15 +2,14 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "xiaomi,miwifi-mini", "ralink,mt7620a-soc";
 	model = "Xiaomi MiWiFi Mini";
 
 	aliases {
-		led-boot = &led_yellow;
-		led-failsafe = &led_red;
+		led-boot = &led_blue;
+		led-failsafe = &led_blue;
 		led-running = &led_blue;
 		led-upgrade = &led_blue;
 		label-mac-device = &ethernet;
@@ -24,37 +23,19 @@
 		compatible = "gpio-leds";
 
 		led_blue: blue {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:status";
 			gpios = <&gpio1 0 GPIO_ACTIVE_LOW>;
+			default-state = "on";
 		};
 
-		led_yellow: yellow {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_YELLOW>;
+		yellow {
+			label = "yellow:status";
 			gpios = <&gpio1 2 GPIO_ACTIVE_LOW>;
 		};
 
-		led_red: red {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_RED>;
+		red {
+			label = "red:status";
 			gpios = <&gpio1 5 GPIO_ACTIVE_LOW>;
-		};
-
-		wan {
-			function = LED_FUNCTION_WAN;
-			color = <LED_COLOR_ID_GREEN>;
-			gpios = <&gpio2 4 GPIO_ACTIVE_LOW>;
-		};
-
-		lan1 {
-			label = "green:lan1";
-			gpios = <&gpio2 1 GPIO_ACTIVE_LOW>;
-		};
-
-		lan2 {
-			label = "green:lan2";
-			gpios = <&gpio2 0 GPIO_ACTIVE_LOW>;
 		};
 	};
 
@@ -73,18 +54,13 @@
 	status = "okay";
 };
 
-&gpio2 {
-	status = "okay";
-};
-
 &spi0 {
 	status = "okay";
 
 	flash@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
-		spi-max-frequency = <50000000>;
-		m25p,fast-read;
+		spi-max-frequency = <10000000>;
 
 		partitions {
 			compatible = "fixed-partitions";
@@ -94,36 +70,18 @@
 			partition@0 {
 				label = "u-boot";
 				reg = <0x0 0x30000>;
-				read-only;
 			};
 
 			partition@30000 {
 				label = "u-boot-env";
 				reg = <0x30000 0x10000>;
+				read-only;
 			};
 
-			partition@40000 {
+			factory: partition@40000 {
 				label = "factory";
 				reg = <0x40000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_factory_0: eeprom@0 {
-						reg = <0x0 0x200>;
-					};
-
-					eeprom_factory_8000: eeprom@8000 {
-						reg = <0x8000 0x200>;
-					};
-
-					macaddr_factory_28: macaddr@28 {
-						reg = <0x28 0x6>;
-					};
-				};
 			};
 
 			partition@50000 {
@@ -160,18 +118,20 @@
 };
 
 &ethernet {
-	nvmem-cells = <&macaddr_factory_28>;
-	nvmem-cell-names = "mac-address";
+	pinctrl-names = "default";
+	pinctrl-0 = <&ephy_pins>;
+
+	mtd-mac-address = <&factory 0x28>;
 
 	mediatek,portmap = "llllw";
 };
 
 &wmac {
+	ralink,mtd-eeprom = <&factory 0x0>;
+
 	pinctrl-names = "default", "pa_gpio";
 	pinctrl-0 = <&pa_pins>;
 	pinctrl-1 = <&pa_gpio_pins>;
-	nvmem-cells = <&eeprom_factory_0>;
-	nvmem-cell-names = "eeprom";
 };
 
 &pcie {
@@ -181,15 +141,14 @@
 &pcie0 {
 	mt76@0,0 {
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&eeprom_factory_8000>;
-		nvmem-cell-names = "eeprom";
+		mediatek,mtd-eeprom = <&factory 0x8000>;
 		ieee80211-freq-limit = <5000000 6000000>;
 	};
 };
 
 &state_default {
 	gpio {
-		groups = "ephy", "i2c", "rgmii1";
+		groups = "i2c", "rgmii1";
 		function = "gpio";
 	};
 };

@@ -89,28 +89,10 @@
 				read-only;
 			};
 
-			partition@40000 {
+			factory: partition@40000 {
 				label = "factory";
 				reg = <0x40000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_factory_0: eeprom@0 {
-						reg = <0x0 0x200>;
-					};
-
-					eeprom_factory_8000: eeprom@8000 {
-						reg = <0x8000 0x200>;
-					};
-
-					macaddr_factory_4000: macaddr@4000 {
-						reg = <0x4000 0x6>;
-					};
-				};
 			};
 
 			partition@50000 {
@@ -140,15 +122,13 @@
 };
 
 &ethernet {
-	nvmem-cells = <&macaddr_factory_4000>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0x4000>;
 
 	mediatek,portmap = "wllll";
 };
 
 &wmac {
-	nvmem-cells = <&eeprom_factory_0>;
-	nvmem-cell-names = "eeprom";
+	ralink,mtd-eeprom = <&factory 0x0>;
 };
 
 &pcie {
@@ -158,8 +138,7 @@
 &pcie0 {
 	mt76@0,0 {
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&eeprom_factory_8000>;
-		nvmem-cell-names = "eeprom";
+		mediatek,mtd-eeprom = <&factory 0x8000>;
 	};
 };
 

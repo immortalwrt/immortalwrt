@@ -1,0 +1,6 @@
+
+config turboacc 'global'
+	option set '0'
+
+config turboacc 'config'
+

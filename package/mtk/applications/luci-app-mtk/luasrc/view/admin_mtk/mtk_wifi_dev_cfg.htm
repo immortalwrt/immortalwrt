@@ -1,0 +1,769 @@
+
+<%+header%>
+<!--
+    This module is a demo to configure MTK' proprietary WiFi driver.
+    Basic idea is to bypass uci and edit wireless profile (mt76xx.dat) directly.
+    LuCI's WiFi configuration is more logical and elegent, but it's quite tricky to 
+    translate uci into MTK's WiFi profile (like we did in "uci2dat").
+
+    Hua Shao <nossiac@163.com>
+-->
+
+<%
+local disp = require "luci.dispatcher"
+-- local request  = disp.context.path
+local request = disp.context.request
+local mtkwifi = require("mtkwifi")
+local devname = request[5]
+local devs = mtkwifi.get_all_devs()
+local dev = {}
+for _,v in ipairs(devs) do
+    if v.devname == devname then
+        dev = v
+    end
+end
+local cfgs = mtkwifi.load_profile(dev.profile)
+local bands = mtkwifi.detect_triband()
+%>
+
+<script type="text/javascript" src="<%=resource%>/cbi.js?v=git-17.250.41546-90ac861"></script>
+<script type="text/javascript">
+</script>
+
+<form method="post" name="cbi" action="<%=luci.dispatcher.build_url("admin", "network", "wifi", "dev_cfg", devname)%>" enctype="multipart/form-data" onreset="return cbi_validate_reset(this)" onsubmit="return cbi_validate_form(this, '<%:Some fields are invalid, cannot save values!%>') && ValidateAllSettings()" autocomplete="off">
+    <fieldset class="cbi-section">
+        <h2><%:Device Configuration%> - <%=devname%> 
+            <%local diff = mtkwifi.diff_profile(dev.profile)%>
+            <%if next(diff) ~= nil then%>
+                <span style="color:red;"> (<a href="javascript:location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", dev.devname)%>'"><%:Click here%></a> <%:to apply changes%>)</span>
+            <%end%>
+        </h2>
+
+        <table id="dev-cfg-basic" class="cbi-section-table">
+           <tr>
+                <td><%:Enable wireless device%></td>
+                <td>
+                    <input type="radio" name="DevEnable" value="1" <% if cfgs.DevEnable == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                    <input type="radio" name="DevEnable" value="0" <% if cfgs.DevEnable == "0" then %> checked="checked"<% end %>/><%:Disable%>
+                </td>
+            </tr>
+            <tr>
+                <td><%:Channel%></td>
+                <td>
+                    <select style="width:auto; min-width:180px;" name="Channel" id="Channel" onchange="Channel_onchange(this.value)" <% if cfgs.ApCliEnable == "1" then %> disabled="disabled" <% end %>>
+                    </select>
+                </td>
+                <td><% if cfgs.ApCliEnable == "1" then %><%:APClient/Repeater Mode.%><% end %></td>
+            </tr>
+            <tr id="HT_EXTCHA_TR" style="display:none">
+                <td><%:40MHz HT Ext Channel%></td>
+                <td>
+                    <select style="width:auto; min-width:180px;" name="HT_EXTCHA" id="HT_EXTCHA" <% if cfgs.ApCliEnable == "1" or dev.__bw ~= "40" or dev.__bw ~= "60" then %> disabled="disabled" <% end %>>
+                    </select>
+                </td>
+                <td><% if cfgs.ApCliEnable == "1" then %><%:APClient/Repeater Mode.%><% end %></td>
+            </tr>
+            <tr id="VHT_Sec80_Channel_TR" style="display:none">
+                <td><%:80MHz Second VHT Channel%></td>
+                <td>
+                    <select style="width:auto; min-width:180px; " name="VHT_Sec80_Channel" id="VHT_Sec80_Channel" <% if cfgs.ApCliEnable == "1" or dev.__bw ~= "161" then %> disabled="disabled" <% end %>>
+                    </select>
+                </td>
+                <td><% if cfgs.ApCliEnable == "1" then %><%:APClient/Repeater Mode.%><% end %></td>
+            </tr>
+           <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
+                <tr>
+                    <td><%:BSS color%></td>
+                    <td>
+                        <input name="BssColor" id="BssColor" value="<%=cfgs.BSSColorValue%>"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:TWT Support%></td>
+                    <td>
+                        <select name="TWTSupport" style="width:auto">
+                            <option value="0" <% if cfgs.TWTSupport == "0" then %> selected="selected" <% end %>><%:Disable%></option>
+                            <option value="1" <% if cfgs.TWTSupport == "1" then %> selected="selected" <% end %>><%:Enable%></option>
+                            <option value="2" <% if cfgs.TWTSupport == "2" then %> selected="selected" <% end %>><%:Mandatory%></option>
+                        </select>
+                    </td>
+                </tr>
+            <% end %>
+
+            <input type="hidden" id="WirelessMode" value="<%=string.split(cfgs.WirelessMode,";")[1]%>">
+            <tr>
+                <td><%:Country Code%></td>
+                <td>
+                    <select name="CountryCode" style="width:auto" id="CountryCode" onchange="CountryCode_onchange()">
+                        <option value="US" id="advCountryCodeUS" <% if cfgs.CountryCode == "US" then %> selected="selected"<% end %>><%:US%></option>
+                        <option value="JP" id="advCountryCodeJP" <% if cfgs.CountryCode == "JP" then %> selected="selected"<% end %>><%:JP%></option>
+                        <option value="FR" id="advCountryCodeFR" <% if cfgs.CountryCode == "FR" then %> selected="selected"<% end %>><%:FR%></option>
+                        <option value="IE" id="advCountryCodeIE" <% if cfgs.CountryCode == "IE" then %> selected="selected"<% end %>><%:IE%></option>
+                        <option value="CN" id="advCountryCodeCN" <% if cfgs.CountryCode == "CN" then %> selected="selected"<% end %>><%:CN%></option>
+                        <option value="NONE" id="advCountryCodeNONE"<% if cfgs.CountryCode == "NONE" then %> selected="selected"<% end %>><%:NONE%></option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><%:Country Region%></td>
+                <td>
+                    <select style="width:auto; min-width:180px;" name="__cr" id="__cr" onchange="CountryRegion_onchange(this.value)">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><%:Channel BandWidth%></td>
+                <td>
+                    <select style="width:auto" name="__bw" id="__bw" onchange="Bw_onchange(this.options[this.options.selectedIndex].value)">
+                        <option value="20" <% if dev.__bw == "20" then %> selected="selected"<% end%>>20 MHz</option>
+                        <option value="40" <% if dev.__bw == "40" then %> selected="selected"<% end%>>40 MHz</option>
+                        <option value="60" <% if dev.__bw == "60" then %> selected="selected"<% end%>>20/40 MHz</option>
+                        <option value="80" <% if dev.__bw == "80" then %> selected="selected"<% end%>>80 MHz</option>
+                        <option value="160" <% if dev.__bw == "160" then %> selected="selected"<% end%>>160 MHz</option>
+                        <option value="161" <% if dev.__bw == "161" then %> selected="selected"<% end%>>80+80 MHz</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><%:TX Stream%></td>
+                <td>
+                    <select name="HT_TxStream" style="width:auto">
+                        <% if dev.maxTxStream then %>
+                            <% for txStreamVal=1,dev.maxTxStream do%>
+                                <option value="<%=txStreamVal%>" <% if tonumber(cfgs.HT_TxStream) == txStreamVal then %>selected="selected"<% end %>><%=txStreamVal%></option>
+                            <% end %>
+                        <% else %>
+                            <option value="1" <% if cfgs.HT_TxStream == "1" then %>selected="selected"<% end %>>1</option>
+                            <option value="2" <% if cfgs.HT_TxStream == "2" then %>selected="selected"<% end %>>2</option>
+                            <option value="3" <% if cfgs.HT_TxStream == "3" then %>selected="selected"<% end %>>3</option>
+                            <option value="4" <% if cfgs.HT_TxStream == "4" then %>selected="selected"<% end %>>4</option>
+                        <% end %>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><%:RX Stream%></td>
+                <td>
+                    <select name="HT_RxStream" style="width:auto">
+                        <% if dev.maxRxStream then %>
+                            <% for rxStreamVal=1,dev.maxRxStream do%>
+                                <option value="<%=rxStreamVal%>" <% if tonumber(cfgs.HT_RxStream) == rxStreamVal then %>selected="selected"<% end %>><%=rxStreamVal%></option>
+                            <% end %>
+                        <% else %>
+                            <option value="1" <% if cfgs.HT_RxStream == "1" then %>selected="selected"<% end %>>1</option>
+                            <option value="2" <% if cfgs.HT_RxStream == "2" then %>selected="selected"<% end %>>2</option>
+                            <option value="3" <% if cfgs.HT_RxStream == "3" then %>selected="selected"<% end %>>3</option>
+                            <option value="4" <% if cfgs.HT_RxStream == "4" then %>selected="selected"<% end %>>4</option>
+                        <% end %>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><%:TX Power%> (1-100)</td>
+                <td>
+                    <input name="TxPower" id="TxPower" value="<%=cfgs.TxPower%>" />
+                </td>
+            </tr>
+            <% if mtkwifi.band(string.split(cfgs.WirelessMode,";")[1]) == "5G" then %>
+                <tr>
+                    <td>802.11H</td>
+                    <td>
+                        <input type="radio" name="IEEE80211H" value="1" <% if cfgs.IEEE80211H == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="IEEE80211H" value="0" <% if cfgs.IEEE80211H == "0" then %> checked="checked"<% end %>/><%:Disable%>
+                    </td>
+                </tr>
+                <tr>
+                    <td><%:DFS%></td>
+                    <td>
+                        <input type="radio" name="DfsEnable" value="1" <% if cfgs.DfsEnable == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                        <input type="radio" name="DfsEnable" value="0" <% if cfgs.DfsEnable == "0" then %> checked="checked"<% end %>/><%:Disable%>
+                    </td>
+                </tr>
+            <% end %>
+            <% if cfgs.MUTxRxEnable then %>
+            <tr>
+                <td><%:Beam Forming and MIMO Setting%></td>
+                <td>
+                    <select name="__mimo" autocomplete="off" >
+                        <option value="0"<% if tonumber(dev.__mimo) == 0 then %> selected="selected"<% end %>> ETxBF + SU-MIMO </option>
+                        <option value="1"<% if tonumber(dev.__mimo) == 1 then %> selected="selected"<% end %>> ITxBF + SU-MIMO </option>
+                        <option value="2"<% if tonumber(dev.__mimo) == 2 then %> selected="selected"<% end %>> ITxBF + ETxBF + SU-MIMO  </option>
+                        <% if not dev.mimoBand or dev.mimoBand == dev.dbdcBandName then %>
+                            <option value="3"<% if tonumber(dev.__mimo) == 3 then %> selected="selected"<% end %>> ETxBF + MU-MIMO </option>
+                            <option value="4"<% if tonumber(dev.__mimo) == 4 then %> selected="selected"<% end %>> ITxBF + ETxBF + MU-MIMO </option>
+                        <% end %>
+                            <option value="5"<% if tonumber(dev.__mimo) == 5 then %> selected="selected"<% end %>> <%:Disable%> TxBF </option>
+                    </select>
+                </td>
+            </tr>
+            <% end %>
+            <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
+            <tr>
+                <td><%:Spatial Reuse%></td>
+                <td>
+                    <input type="radio" name="SREnable" value="1" <% if cfgs.SREnable == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                    <input type="radio" name="SREnable" value="0" <% if cfgs.SREnable == "0" then %> checked="checked"<% end %>/><%:Disable%>
+                </td>
+            </tr>
+            <% end %>
+        </table>
+    </fieldset>
+    <div class="cbi-page-actions">
+
+        <input class="cbi-button cbi-button-apply" name="__apply" value="<%:Save & Apply%>" type="submit">
+        <input class="cbi-button cbi-button-apply" value="<%:Save%>" type="submit">
+        <input class="cbi-button cbi-button-reset" value="<%:Reset%>" type="reset">
+
+    </div>
+</form>
+
+<script type="text/javascript">
+
+    function CountryCode_onchange(){
+        var wMode = document.getElementById('WirelessMode').value;
+        getCountryRegionList(wMode);
+    }
+
+    function CountryRegion_onchange(country_region) {
+        var wmode_o = document.getElementById('WirelessMode');
+        var wmode;
+
+        if (wmode_o)
+            wmode = wmode_o.value;
+
+        if (wmode == "")
+            wmode = "<%=cfgs.WirelessMode%>";
+
+        getChannelList(wmode, country_region);
+    }
+
+    function Channel_onchange (ch) {
+        getBw(null, ch);
+    }
+
+    function Bw_onchange(bw, ch) {
+        var ch_val;
+
+        if (!ch){
+            var ch_o = document.getElementById('Channel');
+
+            if (ch_o)
+                ch_val = ch_o.value;
+            if (ch_val == "")
+                ch_val = "<%=cfgs.Channel%>";
+        } else {
+            ch_val = ch
+        }
+
+        get5G2nd80MhzChannelList(bw, ch_val);
+        getHTExtChannel(bw, ch_val);
+    }
+
+    function disableCountryRegionAsPerCountryCode(){
+        var wModeSelect = document.getElementById('WirelessMode');
+        var wMode = wModeSelect.value;
+        var cCode = document.getElementById('CountryCode').value;
+        var cRegionSelect = document.getElementById('__cr');
+        var invalidCR_2G = {
+            US:[1,3,4,5,7,31,32,33],
+            JP:[],
+            FR:[4,5,31,33],
+            IE:[4,5,31,33],
+            CN:[4,5,31,33],
+            NONE:[]
+        };
+        var invalidCR_5G = {
+            US:[1,7,11,15,19,20,21,22,30,31,32,33,36,37],
+            JP:[0,3,4,5,7,9,10,11,13,14,15,16,17,19,20,21,30,31,32,34,36,37],
+            FR:[0,3,4,5,7,9,10,11,12,13,14,15,16,17,19,20,21,30,31,32,34,36,37],
+            IE:[0,3,4,5,7,9,10,11,12,13,14,15,16,17,19,20,21,30,31,32,34,36,37],
+            CN:[1,7,9,11,12,13,14,15,18,19,20,21,22,30,31,32,33,36,37],
+            NONE:[]
+        };
+        if (is_mode_gband(wMode)){
+            // Channel 14 should be disabled for all the Countries except JAPAN(JP) and NONE Country Code.
+            // If WireleeMode is not in 'B only' mode, then Channel 14 should be disabled for Japan and NONE Country Code too.
+            if(wMode != "1"){
+                if(cCode == "JP"){
+                    invalidCR_2G["JP"]=[4,5,31,33];
+                }
+                else if(cCode == "NONE"){
+                    invalidCR_2G["NONE"]=[4,5,31,33];
+                }
+            }
+            if((cCode == "JP" && invalidCR_2G["JP"].length > 0) ||
+            (cCode == "NONE" && invalidCR_2G["NONE"].length > 0) ||
+            ((cCode != "JP") && (cCode != "NONE"))){
+                for(var idx=0; idx < cRegionSelect.length; idx++){
+                    if(invalidCR_2G[cCode] && invalidCR_2G[cCode].indexOf(cRegionSelect.options[idx].value * 1) != -1){
+                        cRegionSelect.options[idx].disabled = true;
+                        cRegionSelect.options[idx].selected = false;
+                    }
+                }
+            }
+        }
+        else if (is_mode_aband(wMode) && cCode != "NONE"){
+            for(var idx=0; idx < cRegionSelect.length; idx++){
+                if(invalidCR_5G[cCode] && invalidCR_5G[cCode].indexOf(cRegionSelect.options[idx].value * 1) != -1){
+                    cRegionSelect.options[idx].disabled = true;
+                    cRegionSelect.options[idx].selected = false;
+                }
+            }
+        }
+        return cRegionSelect.value;
+    }
+
+    function initCountryRegionList(list, mode){
+        var select = document.getElementById('__cr');
+        var cr = {};
+
+        if (is_mode_gband(mode))
+            cr = "<%=cfgs.CountryRegion%>";
+        else if (is_mode_aband(mode))
+            cr = "<%=cfgs.CountryRegionABand%>";
+
+        var new_cr = initList(select, list, cr, "region");
+        new_cr = disableCountryRegionAsPerCountryCode();
+
+        CountryRegion_onchange(new_cr);
+    }
+
+    function getCountryRegionList(mode) {
+        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_country_region_list")%>', {mode:mode},
+            function(x)
+            {
+                //console.log(x);
+                //console.log(x.response);
+                var json = eval(x.response);
+                initCountryRegionList(json, mode);
+            }
+        );
+    }
+
+    function initChannelList(list) {
+        /* choose auto select when no matching item in the lis */
+        var select = document.getElementById('Channel');
+        var ch = {};
+        var new_ch = null;
+
+        ch.cval = select.value;
+        ch.oval = "<%=cfgs.Channel%>";
+
+        var new_ch = initList(select, list, ch, "channel");
+        Channel_onchange(new_ch);
+    }
+
+    function getChannelList(mode, country_region) {
+        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_channel_list")%>', {mode:mode, country_region:country_region},
+            function(x)
+            {
+                //console.log(x);
+                //console.log(x.response);
+                var json = eval(x.response);
+                initChannelList(json);
+            }
+        );
+    }
+
+    function GetCountryRegion(mode) {
+        var cr_o = document.getElementById('__cr');
+        var cr = "";
+
+        if (cr_o) {
+            cr = cr_o.value;
+        }
+
+        if (cr == "") {
+            if (is_mode_gband(mode)) {
+                cr = "<%=cfgs.CountryRegion%>";
+            } else if (is_mode_aband(mode)) {
+                cr = "<%=cfgs.CountryRegionABand%>";
+            } else {
+                alert("Cannot get valid CountryRegion from invalid WireleeMode");
+            }
+        }
+
+        return cr;
+    }
+
+    function getBw(mode, ch) {
+        /* choose bw as wide as possible if modification is needed */
+        var bw_sel = document.getElementById('__bw');
+        var wModeSelect,wmode;
+
+        wModeSelect = document.getElementById('WirelessMode');
+        if (!mode) {
+            wmode = wModeSelect.value*1;
+        } else {
+            wmode = mode*1;
+        }
+        if( <%=string.split(cfgs.WirelessMode,";")[1]%> != 18 ){
+            if (is_mode_legacy_only(wmode) || parseInt(ch) >= 165) {
+                for (var idx=0; idx < bw_sel.length; idx++) {
+                    bw_sel.options[idx].disabled = false;
+
+                    if (bw_sel.options[idx].value == 20)
+                        bw_sel.options[idx].selected = true;
+
+                    if (bw_sel.options[idx].value > 20)
+                        bw_sel.options[idx].disabled = true;
+                }
+            } else if (is_ch_gband(ch)) {
+                for (var idx=0; idx < bw_sel.length; idx++) {
+                    bw_sel.options[idx].disabled = false;
+
+                    if ((bw_sel.options[idx].value == 60) && (bw_sel.selectedIndex > idx))
+                        bw_sel.options[idx].selected = true;
+
+                    if (bw_sel.options[idx].value > 60)
+                        bw_sel.options[idx].disabled = true;
+                }
+            } else if (is_ch_aband(ch)) {
+                var chosen60 = false;
+                var bw160 = "<%=cfgs.VHT_BW%>"*1;
+
+                if (bw_sel.value == 60)
+                    chosen60 = 1;
+
+                for (var idx=0; idx < bw_sel.length; idx++) {
+                    bw_sel.options[idx].disabled = false;
+                    if (bw_sel.options[idx].value == 40 && chosen60 && bw160 == 0) {
+                        bw_sel.options[idx].selected = true;
+                    } else if (bw_sel.options[idx].value == 60) {
+                        bw_sel.options[idx].disabled = true;
+                        bw_sel.options[idx].selected = false;
+                    } else if (wmode == 8 && bw_sel.options[idx].value == 80) {
+                        bw_sel.options[idx].disabled = true;
+                        bw_sel.options[idx].selected = false;
+                    } else if (bw_sel.options[idx].value == 160 && chosen60 && bw160 == 1) {
+                        bw_sel.options[idx].selected = true;
+                    }
+                }
+            }
+        }
+
+        var invalidChBwList = '<%=(dev.invalidChBwList and table.concat(dev.invalidChBwList,";"))%>'.split(";");
+        if(invalidChBwList.length > 0){
+            for (var idx=0; idx < bw_sel.length; idx++) {
+                if(invalidChBwList.indexOf(bw_sel.options[idx].value) != -1){
+                    bw_sel.options[idx].disabled = true;
+                    bw_sel.options[idx].selected = false;
+                }
+            }
+        }
+        if(wmode == 18 ) {
+            for (var idx=0; idx < bw_sel.length; idx++) {
+                bw_sel.options[idx].disabled = false;
+                if(bw_sel.options[idx].value == 40 && ch>229){
+                    bw_sel.options[idx].disabled = true;
+                    bw_sel.options[idx].selected = false;
+                }
+                if(bw_sel.options[idx].value == 80 && ch>221){
+                    bw_sel.options[idx].disabled = true;
+                    bw_sel.options[idx].selected = false;
+                }
+                if(bw_sel.options[idx].value == 160 && ch>221){
+                    bw_sel.options[idx].disabled = true;
+                    bw_sel.options[idx].selected = false;
+                }
+                if(bw_sel.options[idx].value == 161 || bw_sel.options[idx].value == 60){
+                    bw_sel.options[idx].disabled = true;
+                    bw_sel.options[idx].selected = false;
+                }
+            }
+        }
+        Bw_onchange(bw_sel.value, ch);
+    }
+
+    function init5G2nd80MhzChannelList(list,ch,cr) {
+        var select = document.getElementById('VHT_Sec80_Channel');
+        var ch2 = {};
+        var new_ch2 = null;
+
+        ch2.cval = select.value;
+        ch2.oval = "<%=cfgs.VHT_Sec80_Channel%>";
+
+        initList(select, list, ch2, "channel");
+
+        if (select.length > 0) {
+            document.getElementById("VHT_Sec80_Channel_TR").style.display = "";
+            select.disabled = false;
+        }
+    }
+
+    function get5G2nd80MhzChannelList(bw, ch) {
+        document.getElementById("VHT_Sec80_Channel_TR").style.display = "none";
+        var ch_5g_2nd = document.getElementById('VHT_Sec80_Channel');
+
+        ch_5g_2nd.disabled = true;
+        
+
+        if (ch == "0")
+            return;
+
+        if (bw != "161" || ch == "0")
+            return;
+
+        var mode = document.getElementById('WirelessMode');
+        mode = mode.value*1;
+
+        var cr = GetCountryRegion(mode);
+        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_5G_2nd_80Mhz_channel_list")%>', {ch_cur:ch, country_region:cr},
+            function(x)
+            {
+                //console.log(x);
+                //console.log(x.response);
+                var json = eval(x.response);
+                init5G2nd80MhzChannelList(json,ch,cr);
+            }
+        );
+        }
+
+    function initHTExtChannelList(list,ch,cr) {
+        var select = document.getElementById('HT_EXTCHA');
+        var ch2 = {};
+        var new_ch2 = null;
+
+        ch2.cval = select.value;
+        ch2.oval = "<%=cfgs.HT_EXTCHA%>";
+
+        initList(select, list, ch2, "val");
+
+        if (select.length > 0) {
+            document.getElementById("HT_EXTCHA_TR").style.display = "";
+            select.disabled = false;
+        }
+    }
+
+    function getHTExtChannel(bw, ch) {
+        document.getElementById("HT_EXTCHA_TR").style.display = "none";
+
+        var ch_2g_ext = document.getElementById('HT_EXTCHA');
+
+        ch_2g_ext.disabled = true;
+
+        if (bw != "40" && bw != "60")
+            return;
+
+        var mode = document.getElementById('WirelessMode');
+        mode = mode.value*1;
+
+        // skip auto channel
+        if(mode==18){
+            if (ch == "0" || parseInt(ch) > 229)
+                return;
+        }
+        else{
+            if (ch == "0" || parseInt(ch) >= 165)
+                return;
+        }
+
+        var cr = GetCountryRegion(mode);
+        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_HT_ext_channel_list")%>', {mode:mode, ch_cur:ch, country_region:cr},
+            function(x)
+            {
+                //console.log(x);
+                //console.log(x.response);
+                var json = eval(x.response);
+                initHTExtChannelList(json,ch,cr);
+            }
+        );
+    }
+
+    function is_mode_legacy_only(mode) {
+        var imode = mode*1;
+
+        return ((imode >= 0) && (imode <= 4));
+    }
+
+    function is_mode_gband(mode) {
+        var imode = mode*1;
+        var gband_mode_list = [0,1,4,6,7,9,16];
+        var i;
+
+        for (i = 0; i < gband_mode_list.length; i++){
+            if( gband_mode_list[i] == imode )
+                return true;
+        }
+
+        return false;
+    }
+
+    function is_mode_aband(mode) {
+        var imode = mode*1;
+        var aband_mode_list = [2,8,11,14,15,17,18];
+        var i;
+
+        for (i = 0; i < aband_mode_list.length; i++){
+            if( aband_mode_list[i] == imode )
+                return true;
+        }
+
+        return false;
+    }
+
+    function is_ch_gband(ch) {
+        ch = ch*1;
+
+        if (ch == 0) {
+            var wmode = document.getElementById('WirelessMode');
+
+            return is_mode_gband(wmode.value);
+        }
+
+        return ((ch > 0) && (ch <= 14));
+    }
+
+    function is_ch_aband(ch) {
+        ch = ch*1;
+
+        if (ch == 0) {
+            var wmode = document.getElementById('WirelessMode');
+
+            return is_mode_aband(wmode.value);
+        }
+
+        return ((ch >= 36 ) && (ch <= 165));
+    }
+
+    function initList(selobj, list, selvals, value, text){
+        var sel = {};
+        var id = selobj.id;
+        var noChannelGrp = false;
+        var only2G = false;
+
+        if (typeof(selvals) != "object")
+            sel[0] = selvals;
+        else
+            sel = selvals;
+
+        selobj.innerHTML = "";
+        for (var i in list) {
+            if (value != "region") {
+                <% if bands == 3 and mtkwifi.band(string.split(cfgs.WirelessMode,";")[1]) == "5G" then %>
+                    <% if cfgs.ChannelGrp == "0:0:1:1" then %>
+                        if (list[i].channel == 0 || list[i].channel >= 100){
+                    <% elseif cfgs.ChannelGrp == "1:1:0:0" then %>
+                        if (list[i].channel <= 64){
+                    <% else %>
+                        noChannelGrp = true;
+                        if (noChannelGrp){
+                    <% end %>
+                            var opt = document.createElement('option');
+
+                            if(value)
+                                opt.value = list[i][value];
+                            else
+                                opt.value = list[i].value;
+
+                            if(text)
+                                opt.text = list[i][text];
+                            else
+                                opt.text = list[i].text;
+
+                            selobj.appendChild(opt);
+                        }
+                <% else %>
+                    only2G = true;
+                <% end %>
+            }
+
+            if (only2G || value == "region"){
+                var opt = document.createElement('option');
+
+                if(value)
+                    opt.value = list[i][value];
+                else
+                    opt.value = list[i].value;
+
+                if(text)
+                     opt.text = list[i][text];
+                else
+                     opt.text = list[i].text;
+
+                selobj.appendChild(opt);
+            }
+        }
+
+        var selv = null;
+        for (var k in sel) {
+            //console.log("[initList][" + id + "] sel[" + k + "]=" + sel[k]);
+            for (var i=0; i < selobj.length; i++){
+                if (selobj.options[i].value == sel[k]){
+                    selobj.options[i].selected = true;
+                    selv = sel[k];
+                    //console.log("[initList][" + id + "] found selv=" + selv);
+                    break;
+                }
+            }
+
+            if (selv) break;
+        }
+
+        if (!selv) {
+            selv = selobj.value;
+            //console.log("[initList][" + id + "] !selv, selv=" + selv);
+        }
+
+        return selv;
+    }
+
+    function ValidateAdvancedSettings()
+    {
+        var tmpVal = document.getElementById("TxPower").value;
+        if(isNaN(tmpVal) || !/^\d{1,3}$/.test(tmpVal) || parseInt(tmpVal) < 1 || parseInt(tmpVal) > 100){
+            alert("TX Power is incorrect!\nPlease enter an integer number between 1 to 100 inclusive.");
+            document.getElementById("TxPower").focus();
+            document.getElementById("TxPower").select();
+            return false;
+        }
+        return true;
+    }
+
+    function ValidateAllSettings(){
+        if( !ValidateAdvancedSettings() ){
+            return false;
+        }
+        return true;
+    }
+
+    function get_apply_status_cb(rsp)
+    {
+        try{
+            var r = JSON.parse(rsp);
+        }
+        catch(e){
+            return;
+        }
+        if(r.status == "ON_PROGRESS"){
+            var u = confirm("Device is applying the saved settings now!\n" +
+                "It is recommended to wait until all the saved settings are applied.\n" +
+                "Please click on 'OK' button to wait for the device.\n" +
+                "or click on 'Cancel' button to configure the settings available in current web-page.");
+            if (u == true) {
+                location = '<%=luci.dispatcher.build_url("admin", "network", "wifi", "loading")%>' + window.location.pathname;
+            }
+        }
+    }
+
+    function get_apply_status()
+    {
+        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_apply_status")%>', null,
+            function(x)
+            {
+                console.log(x);
+                get_apply_status_cb(x.response);
+            }
+        );
+    }
+
+    window.onload = function() {
+        var mode = '<%=string.split(cfgs.WirelessMode,";")[1]%>'
+        var cr = GetCountryRegion(mode);
+        getCountryRegionList(mode, cr);
+        get_apply_status();
+    }
+
+</script>
+
+<%+footer%>

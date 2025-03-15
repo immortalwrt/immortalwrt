@@ -2,12 +2,13 @@
 #
 # Copyright (C) 2013 OpenWrt.org
 
-define Profile/Generic
-  NAME:=Octeon SoC
+define Profile/Default
+  NAME:=Default Profile
+  PRIORITY:=1
 endef
 
-define Profile/Generic/Description
+define Profile/Default/Description
    Base packages for Octeon boards.
 endef
 
-$(eval $(call Profile,Generic))
+$(eval $(call Profile,Default))

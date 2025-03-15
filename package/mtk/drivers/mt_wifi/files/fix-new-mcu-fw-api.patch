@@ -1,0 +1,106 @@
+--- a/mt_wifi/embedded/common/bgnd_scan.c
++++ b/mt_wifi/embedded/common/bgnd_scan.c
+@@ -1243,6 +1243,12 @@ NDIS_STATUS set_ipi_scan_hist_proc(IN PR
+ 
+ 		/* clear histogram CR */
+ 		cmd_rdd_ipi_scan.u1mode = 1;
++		cmd_rdd_ipi_scan.u1Band = band_idx;
++#ifdef IPI_SCAN_WITH_PD_OFF
++		cmd_rdd_ipi_scan.u1pdSetting = 0;
++#else
++		cmd_rdd_ipi_scan.u1pdSetting = 1;
++#endif
+ 		status = mt_cmd_set_rdd_ipi_scan(pAd, &cmd_rdd_ipi_scan);
+ 
+ 		if (status == NDIS_STATUS_SUCCESS) {
+@@ -1299,9 +1305,14 @@ VOID dedicated_rx_hist_scan_timeout_acti
+ 	if (IS_MT7986(pAd) || IS_MT7981(pAd)) {
+ 		UINT8 start_idx = 0;
+ 		UINT8 i, antena_count = 1;
++		EXT_CMD_RDD_IPI_SCAN_T cmd_rdd_ipi_scan;
+ 		EXT_EVENT_RDD_IPI_SCAN rdd_ipi_scan_hist;
++		os_zero_mem(&cmd_rdd_ipi_scan, sizeof(EXT_CMD_RDD_IPI_SCAN_T));
+ 		os_zero_mem(&rdd_ipi_scan_hist, sizeof(EXT_EVENT_RDD_IPI_SCAN));
+-		mt_cmd_get_rdd_ipi_scan(pAd, &rdd_ipi_scan_hist);
++		cmd_rdd_ipi_scan.u1mode = 0;
++		cmd_rdd_ipi_scan.u1Band = pAd->BgndScanCtrl.band_idx;
++		cmd_rdd_ipi_scan.u1pdSetting = 1;
++		mt_cmd_get_rdd_ipi_scan(pAd, &cmd_rdd_ipi_scan, &rdd_ipi_scan_hist);
+ 		if (pAd->BgndScanCtrl.band_idx == 1)
+ 			start_idx = 4;
+ 
+--- a/mt_wifi/include/mcu/mt_cmd.h
++++ b/mt_wifi/include/mcu/mt_cmd.h
+@@ -938,6 +938,8 @@ enum WO_CMD_ID {
+ 	WO_CMD_RXCNT_CTRL = 0x0015,
+ 	WO_CMD_RXCNT_INFO = 0x0016,
+ 	WO_CMD_SET_CAP = 0x0017,
++	WO_CMD_CCIF_RING_DUMP = 0x0018,
++	WO_CMD_WTBL_SEC_UPDATE = 0x0019,
+ 	WO_CMD_WED_END
+ };
+ 
+@@ -2730,12 +2732,8 @@ typedef struct _MURU_STA_UL_OFDMA {
+ 	UINT8 u1UoRa;				/* MAC B26 : OFDMA RA Support */
+ 	UINT8 u12x996Tone;			/* MAC B43 : UL 2x996- tone RU Support */
+ 	UINT8 u1RxTrgFrmBy11ac;	/* MAC B47 : HT And VHT Trigger Frame RX Support  */
+-#ifdef WIFI_UNIFIED_COMMAND
+-	UINT_8 u1RxCtrlFrmToMBss;   /* MAC B31 : Rx Control Frame To MultiBSS Support  */
+-    UINT_8 u1Reserved[2];
+-#else  /*WIFI_UNIFIED_COMMAND*/
+-	UINT8 u1Reserved[3];
+-#endif /*WIFI_UNIFIED_COMMAND*/
++	UINT8 u1RxCtrlFrmToMBss;	/* MAC B31 : Rx Control Frame To MultiBSS Support  */
++	UINT8 u1Reserved[2];
+ } MURU_STA_UL_OFDMA, *P_MURU_STA_UL_OFDMA;
+ 
+ typedef struct _MURU_STA_DL_MIMO {
+@@ -6845,7 +6843,9 @@ typedef struct _EXT_EVENT_RDD_IPI_HIST {
+ 
+ typedef struct _EXT_CMD_RDD_IPI_SCAN_T {
+     UINT_8 u1mode;
+-    UINT_8 aucReserve[2];
++    UINT_8 u1pdSetting;
++    UINT_8 u1Band;
++    UINT_8 aucReserve;
+ } EXT_CMD_RDD_IPI_SCAN_T, *P_EXT_CMD_RDD_IPI_SCAN_T;
+ 
+ typedef struct _EXT_EVENT_RDD_IPI_SCAN {
+@@ -10663,7 +10663,7 @@ INT32 mt_cmd_get_rdd_ipi_hist(struct _RT
+ 
+ #ifdef IPI_SCAN_SUPPORT
+ INT32 mt_cmd_set_rdd_ipi_scan(struct _RTMP_ADAPTER *pAd, P_EXT_CMD_RDD_IPI_SCAN_T p_cmd_rdd_ipi_scan);
+-INT32 mt_cmd_get_rdd_ipi_scan(struct _RTMP_ADAPTER *pAd, P_EXT_EVENT_RDD_IPI_SCAN p_rdd_ipi_hist_rlt);
++INT32 mt_cmd_get_rdd_ipi_scan(struct _RTMP_ADAPTER *pAd, P_EXT_CMD_RDD_IPI_SCAN_T p_cmd_rdd_ipi_scan, P_EXT_EVENT_RDD_IPI_SCAN p_rdd_ipi_hist_rlt);
+ #endif
+ INT32 MtCmdPhyShapingFilterDisable(struct _RTMP_ADAPTER *pAd);
+ INT32 mt_cmd_get_rx_stat(struct _RTMP_ADAPTER *pAd, UCHAR band_idx, P_TESTMODE_STATISTIC_INFO p_rx_stat_rlt);
+--- a/mt_wifi/mcu/mt_cmd.c
++++ b/mt_wifi/mcu/mt_cmd.c
+@@ -16978,14 +16978,13 @@ static VOID mt_cmd_get_rdd_ipi_scan_rsp(
+ 
+ INT32 mt_cmd_get_rdd_ipi_scan(
+ 	PRTMP_ADAPTER pAd,
++	P_EXT_CMD_RDD_IPI_SCAN_T p_cmd_rdd_ipi_scan,
+ 	P_EXT_EVENT_RDD_IPI_SCAN p_rdd_ipi_hist_rlt)
+ {
+ 	struct cmd_msg *msg;
+-	EXT_CMD_RDD_IPI_SCAN_T rdd_ipi_scan_cmd;
+ 
+ 	struct _CMD_ATTRIBUTE attr = {0};
+ 	INT32 ret = 0;
+-	os_zero_mem(&rdd_ipi_scan_cmd, sizeof(EXT_CMD_RDD_IPI_SCAN_T));
+ 	msg = MtAndesAllocCmdMsg(pAd, sizeof(EXT_CMD_RDD_IPI_SCAN_T));
+ 
+ 	if (!msg) {
+@@ -17003,9 +17002,7 @@ INT32 mt_cmd_get_rdd_ipi_scan(
+ 	SET_CMD_ATTR_RSP_HANDLER(attr, mt_cmd_get_rdd_ipi_scan_rsp);
+ 	MtAndesInitCmdMsg(msg, attr);
+ 
+-	rdd_ipi_scan_cmd.u1mode = 0;
+-
+-	MtAndesAppendCmdMsg(msg, (char *)&rdd_ipi_scan_cmd, sizeof(EXT_CMD_RDD_IPI_SCAN_T));
++	MtAndesAppendCmdMsg(msg, (char *)p_cmd_rdd_ipi_scan, sizeof(EXT_CMD_RDD_IPI_SCAN_T));
+ 	ret = chip_cmd_tx(pAd, msg);
+ error:
+ 	MTWF_DBG(pAd, DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_INFO,

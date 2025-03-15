@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
-#include <dt-bindings/leds/common.h>
-
 #include "mt7621_xiaomi_router-ac2100.dtsi"
 
 / {
@@ -20,26 +18,22 @@
 		compatible = "gpio-leds";
 
 		led_status_amber: status_amber {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_AMBER>;
+			label = "amber:status";
 			gpios = <&gpio 6 GPIO_ACTIVE_LOW>;
 		};
 
 		led_status_white: status_white {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_WHITE>;
+			label = "white:status";
 			gpios = <&gpio 8 GPIO_ACTIVE_LOW>;
 		};
 
 		wan_amber {
-			function = LED_FUNCTION_WAN;
-			color = <LED_COLOR_ID_AMBER>;
+			label = "amber:wan";
 			gpios = <&gpio 10 GPIO_ACTIVE_LOW>;
 		};
 
 		wan_white {
-			function = LED_FUNCTION_WAN;
-			color = <LED_COLOR_ID_WHITE>;
+			label = "white:wan";
 			gpios = <&gpio 12 GPIO_ACTIVE_LOW>;
 		};
 	};

@@ -8,11 +8,6 @@
 	#address-cells = <1>;
 	#size-cells = <1>;
 
-	aliases {
-		serial0 = &uart0;
-		serial1 = &uart1;
-	};
-
 	chosen {
 		bootargs = "console=ttyS0,115200n8";
 	};
@@ -46,7 +41,7 @@
 				#qca,ddr-wb-channel-cells = <1>;
 			};
 
-			uart0: uart@18020000 {
+			uart: uart@18020000 {
 				compatible = "ns16550a";
 				reg = <0x18020000 0x20>;
 
@@ -64,8 +59,8 @@
 				compatible ="qca,qca9550-usb-phy", "qca,ar7200-usb-phy";
 				reg = <0x18030000 4>, <0x18030004 4>;
 
-				reset-names = "usb-phy-analog", "usb-phy", "usb-suspend-override";
-				resets = <&rst 11>, <&rst 4>, <&rst 3>;
+				reset-names = "usb-phy", "usb-suspend-override";
+				resets = <&rst 4>, <&rst 3>;
 
 				#phy-cells = <0>;
 
@@ -76,8 +71,8 @@
 				compatible = "qca,qca9550-usb-phy", "qca,ar7200-usb-phy";
 				reg = <0x18030010 4>, <0x18030014 4>;
 
-				reset-names = "usb-phy-analog", "usb-phy", "usb-suspend-override";
-				resets = <&rst2 11>, <&rst2 4>, <&rst2 3>;
+				reset-names = "usb-phy", "usb-suspend-override";
+				resets = <&rst2 4>, <&rst2 3>;
 
 				#phy-cells = <0>;
 
@@ -117,14 +112,14 @@
 			};
 
 			pll: pll-controller@18050000 {
-				compatible = "qca,qca9550-pll", "syscon";
+				compatible = "qca,qca9550-pll",
+						"qca,qca9550-pll", "syscon";
 				reg = <0x18050000 0x50>;
 
 				#clock-cells = <1>;
 				clock-output-names = "cpu", "ddr", "ahb";
 
 				clocks = <&extosc>;
-				clock-names = "ref";
 			};
 
 			wdt: wdt@18060008 {
@@ -183,18 +178,6 @@
 
 				#reset-cells = <1>;
 			};
-
-			uart1: uart@18500000 {
-				compatible = "qca,ar9330-uart";
-				reg = <0x18500000 0x14>;
-
-				interrupts = <6>;
-
-				clocks = <&pll ATH79_CLK_REF>;
-				clock-names = "uart";
-
-				status = "disabled";
-			};
 		};
 
 		gmac: gmac@18070000 {
@@ -202,7 +185,7 @@
 			reg = <0x18070000 0x58>;
 		};
 
-		pcie0: pcie@180c0000 {
+		pcie0: pcie-controller@180c0000 {
 			compatible = "qcom,qca9550-pci", "qcom,ar7240-pci";
 			#address-cells = <3>;
 			#size-cells = <2>;
@@ -215,8 +198,6 @@
 				  0x1000000 0 0x00000000 0x0000000 0 0x000001>;		/* io space */
 			interrupt-parent = <&intc2>;
 			interrupts = <1>;
-
-			device_type = "pci";
 
 			resets = <&rst 6>, <&rst 7>;
 			reset-names = "hc", "phy";
@@ -239,7 +220,7 @@
 			status = "disabled";
 		};
 
-		pcie1: pcie@18250000 {
+		pcie1: pcie-controller@18250000 {
 			compatible = "qcom,qca9550-pci", "qcom,ar7240-pci";
 			#address-cells = <3>;
 			#size-cells = <2>;
@@ -252,8 +233,6 @@
 				  0x1000000 0 0x00000000 0x0000001 0 0x000001>;		/* io space */
 			interrupt-parent = <&intc3>;
 			interrupts = <0>;
-
-			device_type = "pci";
 
 			resets = <&rst2 6>, <&rst2 7>;
 			reset-names = "hc", "phy";
@@ -282,14 +261,6 @@
 			phys = <&usb_phy0>;
 
 			status = "disabled";
-
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			hub_port0: port@1 {
-				reg = <1>;
-				#trigger-source-cells = <0>;
-			};
 		};
 
 		usb1: usb@1b400000 {
@@ -308,14 +279,6 @@
 			phys = <&usb_phy1>;
 
 			status = "disabled";
-
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			hub_port1: port@1 {
-				reg = <1>;
-				#trigger-source-cells = <0>;
-			};
 		};
 
 		nand: nand@1b800200 {
@@ -329,6 +292,9 @@
 			reset-names = "nand";
 
 			nand-ecc-mode = "hw";
+
+			#address-cells = <1>;
+			#size-cells = <0>;
 
 			status = "disabled";
 		};
@@ -362,8 +328,6 @@
 
 	resets = <&rst 9>, <&rst 22>;
 	reset-names = "mac", "mdio";
-	clocks = <&pll ATH79_CLK_AHB>, <&pll ATH79_CLK_REF>;
-	clock-names = "eth", "mdio";
 };
 
 &mdio1 {
@@ -381,6 +345,4 @@
 
 	resets = <&rst 13>, <&rst 23>;
 	reset-names = "mac", "mdio";
-	clocks = <&pll ATH79_CLK_AHB>, <&pll ATH79_CLK_REF>;
-	clock-names = "eth", "mdio";
 };

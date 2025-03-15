@@ -4,7 +4,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	aliases {
@@ -51,8 +50,7 @@
 		compatible = "gpio-leds";
 
 		led_power: power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:power";
 			gpios = <&gpio 22 GPIO_ACTIVE_LOW>;
 		};
 
@@ -69,14 +67,12 @@
 		};
 
 		wps_red {
-			function = LED_FUNCTION_WPS;
-			color = <LED_COLOR_ID_RED>;
+			label = "red:wps";
 			gpios = <&gpio 26 GPIO_ACTIVE_HIGH>;
 		};
 
 		wps_blue {
-			function = LED_FUNCTION_WPS;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:wps";
 			gpios = <&gpio 27 GPIO_ACTIVE_HIGH>;
 		};
 
@@ -117,46 +113,20 @@
 				reg = <0x20000 0xde0000>;
 			};
 
-			partition@e00000 {
+			config: partition@e00000 {
 				label = "config";
 				reg = <0xe00000 0x50000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_config_10008: macaddr@10008 {
-						compatible = "mac-base";
-						reg = <0x10008 0x6>;
-						#nvmem-cell-cells = <1>;
-					};
-				};
 			};
 
 			/* range 0xe50000 to 0xff0000 is empty in vendor
 			 * firmware, so we do not use it either
 			 */
 
-			partition@ff0000 {
+			radio: partition@ff0000 {
 				label = "radio";
 				reg = <0xff0000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_radio_0: eeprom@0 {
-						reg = <0x0 0x4da8>;
-					};
-
-					eeprom_radio_8000: eeprom@8000 {
-						reg = <0x8000 0x4da8>;
-					};
-				};
 			};
 		};
 	};
@@ -177,8 +147,9 @@
 	wifi@0,0 {
 		compatible = "mediatek,mt76";
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&eeprom_radio_0>, <&macaddr_config_10008 1>;
-		nvmem-cell-names = "eeprom", "mac-address";
+		mediatek,mtd-eeprom = <&radio 0x0>;
+		mtd-mac-address = <&config 0x10008>;
+		mtd-mac-address-increment = <1>;
 		ieee80211-freq-limit = <2400000 2500000>;
 	};
 };
@@ -187,19 +158,15 @@
 	wifi@0,0 {
 		compatible = "mediatek,mt76";
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&eeprom_radio_8000>, <&macaddr_config_10008 2>;
-		nvmem-cell-names = "eeprom", "mac-address";
+		mediatek,mtd-eeprom = <&radio 0x8000>;
+		mtd-mac-address = <&config 0x10008>;
+		mtd-mac-address-increment = <2>;
 		ieee80211-freq-limit = <5000000 6000000>;
 	};
 };
 
-&ethernet {
-	pinctrl-0 = <&mdio_pins>, <&rgmii1_pins>;
-};
-
 &gmac0 {
-	nvmem-cells = <&macaddr_config_10008 0>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&config 0x10008>;
 };
 
 &switch0 {

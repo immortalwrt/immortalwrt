@@ -1,0 +1,51 @@
+if PACKAGE_kmod-warp
+
+config WARP_VERSION
+	int "WARP Driver HW Version Support"
+	range 1 3
+	default 1 if TARGET_mediatek_mt7622
+	default 2 if TARGET_mediatek_mt7986
+	default 3 if TARGET_mediatek_mt7988
+
+config WARP_ATC_SUPPORT
+	bool "WARP Driver Address Translate Support for CR mirror"
+	default n
+
+config WARP_DBG_SUPPORT
+	bool "WARP Driver Debug Info Support"
+	default y
+
+config WARP_WDMA_RECYCLE_SUPPORT
+	bool "WARP WDMA Recycle Support"
+	default n
+
+config WED_HW_RRO_SUPPORT
+	bool "WED HW RRO Support"
+	default y
+
+config MTK_MEMORY_SHRINK
+	bool "Memory Shrink"
+	default n
+
+config WARP_MEMORY_LEAK_DBG
+	bool "Memory leak debug"
+	depends on !MTK_MEMORY_SHRINK && WARP_DBG_SUPPORT
+	default y
+
+config WARP_CHIPSET
+	string "WARP target chipset"
+	default mt7988
+	help
+	For colgin: colgin, for panther: mt7986, for jaguar: mt7988
+
+config WARP_WO_EMBEDDED_LOAD
+	bool "Emebedded MCU firmware support"
+	default n
+	help
+	Once enabled, firmware download flow try embedded version once externel version being invalid.
+
+config WARP_NEW_FW
+	bool "Use new warp firmware"
+	default n
+endif
+

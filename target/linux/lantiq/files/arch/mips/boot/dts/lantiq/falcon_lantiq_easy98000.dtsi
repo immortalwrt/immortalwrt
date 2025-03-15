@@ -1,5 +1,3 @@
-#include <dt-bindings/leds/common.h>
-
 #include "falcon.dtsi"
 
 #include <dt-bindings/interrupt-controller/irq.h>
@@ -44,8 +42,7 @@
 			default-state = "keep";
 		};
 		LED_5 {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:status";
 			gpios = <&gpio0 14 GPIO_ACTIVE_HIGH>;
 			default-state = "keep";
 		};

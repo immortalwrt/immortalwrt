@@ -1,0 +1,264 @@
+# $Id: Makefile.bsd,v 1.109 2024/07/27 13:36:50 nanard Exp $
+# MiniUPnP project
+# http://miniupnp.free.fr/ or https://miniupnp.tuxfamily.org/
+# Author: Thomas Bernard
+#
+# Makefile for miniupnpd (MiniUPnP daemon)
+#
+# This Makefile should work for *BSD and SunOS/Solaris.
+# On Mac OS X, use "bsdmake" to build.
+# This Makefile is NOT compatible with GNU Make.
+# Linux users, please use Makefile.linux
+#
+# options can be passed to configure through CONFIG_OPTIONS :
+# $ CONFIG_OPTIONS="--ipv6 --igd2" make
+#
+
+CFLAGS ?= -pipe -Os
+#CFLAGS = -pipe -O -g -DDEBUG
+#CFLAGS += -ansi
+CFLAGS += -Wall
+CFLAGS += -W
+CFLAGS += -Wstrict-prototypes
+#CFLAGS += -Wdeclaration-after-statement
+#CFLAGS += -Wno-missing-field-initializers
+CFLAGS += -fno-common
+CC ?= gcc
+RM = rm -f
+MV = mv
+INSTALL = install
+STRIP = strip
+DOXYGEN ?= doxygen
+
+.ifndef CONFIG_OPTIONS
+CONFIG_OPTIONS != cat .configure.cache
+.endif
+
+# OSNAME and FWNAME are used for building OS or FW dependent code.
+OSNAME != uname -s
+ARCH != uname -m
+
+.ifndef FWNAME
+.include "bsdmake.inc"
+.endif
+
+# Solaris specific CFLAGS
+.if $(OSNAME) == "SunOS"
+CPPFLAGS += -DSOLARIS2=`uname -r | cut -d. -f2`
+.if $(ARCH) == "amd64"
+CFLAGS += -m64 -mcmodel=kernel -mno-red-zone -ffreestanding
+.elif $(ARCH) == "sparc64"
+CFLAGS += -m64 -mcmodel=medlow
+.endif
+.endif
+
+ISGITREPO != git rev-parse --is-inside-work-tree 2> /dev/null || echo "false"
+.if $(ISGITREPO) == "true"
+GITREF != git describe --exact-match --tags 2> /dev/null || echo "`git rev-parse --abbrev-ref HEAD`-`git rev-parse --short HEAD`"
+CPPFLAGS += -DMINIUPNPD_GIT_REF=\"$(GITREF)\"
+.endif
+
+STDOBJS = miniupnpd.o upnphttp.o upnpdescgen.o upnpsoap.o \
+          upnpredirect.o getifaddr.o daemonize.o upnpglobalvars.o \
+          options.o upnppermissions.o minissdp.o natpmp.o pcpserver.o \
+		  pcplearndscp.o \
+          upnpevents.o upnputils.o getconnstatus.o \
+          upnpstun.o \
+          upnppinhole.o asyncsendto.o portinuse.o
+OS_OBJS = getifstats.o ifacewatcher.o getroute.o
+PFOBJS = obsdrdr.o pfpinhole.o
+IPFOBJS = ipfrdr.o
+IPFWOBJS = ipfwrdr.o ipfwaux.o
+MISCOBJS = upnpreplyparse.o minixml.o
+
+ALLOBJS = $(STDOBJS) $(MISCOBJS)
+ALLSRCS := $(ALLOBJS:S/^/$(SRCDIR)\//:S/.o$/.c/)
+
+TESTGETIFSTATSOBJS = testgetifstats.o getifstats.o
+TESTGETROUTEOBJS = testgetroute.o upnputils.o getroute.o
+
+ALLOBJS += $(OS_OBJS)
+
+.if $(OSNAME) == "SunOS"
+ALLSRCS += $(SRCDIR)/solaris/getifstats.c
+.elif $(OSNAME) == "Darwin"
+ALLSRCS += $(SRCDIR)/mac/getifstats.c
+.else
+ALLSRCS += $(SRCDIR)/bsd/getifstats.c
+.endif
+ALLSRCS += $(SRCDIR)/bsd/ifacewatcher.c $(SRCDIR)/bsd/getroute.c
+
+.if $(FWNAME) == "pf"
+ALLOBJS += $(PFOBJS)
+ALLSRCS += $(PFOBJS:S/^/$(SRCDIR)\/pf\//:S/.o$/.c/)
+.elif $(FWNAME) == "ipfw"
+ALLOBJS += $(IPFWOBJS)
+ALLSRCS += $(IPFWOBJS:S/^/$(SRCDIR)\/ipfw\//:S/.o$/.c/)
+.else
+ALLOBJS += $(IPFOBJS)
+ALLSRCS += $(IPFOBJS:S/^/$(SRCDIR)\/ipf\//:S/.o$/.c/)
+.endif
+
+TESTUPNPDESCGENOBJS = testupnpdescgen.o upnpdescgen.o
+TESTUPNPPERMISSIONSOBJS = testupnppermissions.o upnppermissions.o
+TESTGETIFADDROBJS = testgetifaddr.o getifaddr.o
+MINIUPNPDCTLOBJS = miniupnpdctl.o
+TESTASYNCSENDTOOBJS = testasyncsendto.o asyncsendto.o upnputils.o getroute.o
+TESTPORTINUSEOBJS = testportinuse.o portinuse.o getifaddr.o
+TESTMINISSDPOBJS = testminissdp.o minissdp.o upnputils.o upnpglobalvars.o \
+                   asyncsendto.o getroute.o
+
+EXECUTABLES = miniupnpd testupnpdescgen testgetifstats \
+              testupnppermissions miniupnpdctl \
+              testgetifaddr testgetroute testasyncsendto \
+              testportinuse testssdppktgen testminissdp
+
+.if $(OSNAME) != "Darwin"
+LIBS += -lkvm
+.endif
+.if $(OSNAME) == "SunOS"
+LIBS += -lsocket -lnsl -lkstat -lresolv
+.endif
+
+LIBS += -lssl -lcrypto
+
+# set PREFIX variable to install in the wanted place
+
+INSTALLBINDIR = $(PREFIX)/sbin
+INSTALLETCDIR = $(PREFIX)/etc
+MANPREFIX ?= $(PREFIX)
+.if $(MANPREFIX) == ""
+MANPREFIX = /usr/share
+.endif
+INSTALLMANDIR = $(MANPREFIX)/man
+
+all:	$(EXECUTABLES)
+
+clean:
+	$(RM) $(ALLOBJS)
+	$(RM) $(EXECUTABLES)
+	$(RM) $(TESTUPNPDESCGENOBJS)
+	$(RM) $(TESTUPNPPERMISSIONSOBJS)
+	$(RM) $(TESTGETIFADDROBJS)
+	$(RM) $(MINIUPNPDCTLOBJS)
+	$(RM) $(TESTASYNCSENDTOOBJS)
+	$(RM) $(TESTPORTINUSEOBJS)
+	$(RM) $(TESTMINISSDPOBJS)
+	$(RM) validateupnppermissions validategetifaddr validatessdppktgen
+
+install:	miniupnpd genuuid
+	$(STRIP) miniupnpd
+	$(INSTALL) -d $(DESTDIR)$(INSTALLBINDIR)
+	$(INSTALL) -m 755 miniupnpd $(DESTDIR)$(INSTALLBINDIR)
+	$(INSTALL) -d $(DESTDIR)$(INSTALLETCDIR)
+	$(INSTALL) -b miniupnpd.conf $(DESTDIR)$(INSTALLETCDIR)
+	$(INSTALL) -d $(DESTDIR)$(INSTALLMANDIR)
+	$(INSTALL) -m 644 $(SRCDIR)/miniupnpd.8 $(DESTDIR)$(INSTALLMANDIR)/man8/miniupnpd.8
+
+# genuuid is using the uuid cli tool available under OpenBSD 4.0 in
+# the uuid-1.5.0 package
+# any other cli tool returning a uuid on stdout should work.
+UUID != if which uuidgen 2>&1 > /dev/null; then \
+        echo `uuidgen` ; \
+        elif which uuid 2>&1 > /dev/null; then \
+        echo `uuid` ; \
+        else echo "00000000-0000-0000-0000-000000000000"; \
+        fi
+
+genuuid:
+	$(CP) $(SRCDIR)/miniupnpd.conf miniupnpd.conf.before
+	sed -e "s/^uuid=[-0-9a-fA-F]*/uuid=$(UUID)/" miniupnpd.conf.before > miniupnpd.conf
+	$(RM) miniupnpd.conf.before
+
+check:  validateupnppermissions validategetifaddr validatessdppktgen
+
+validateupnppermissions: $(SRCDIR)/testupnppermissions.sh testupnppermissions
+	$(SRCDIR)/testupnppermissions.sh
+	touch $@
+
+validategetifaddr:	$(SRCDIR)/testgetifaddr.sh testgetifaddr
+	$(SRCDIR)/testgetifaddr.sh
+	touch $@
+
+validatessdppktgen:	testssdppktgen
+	./testssdppktgen
+	touch $@
+
+depend:	$(ALLSRCS)
+	mkdep $(CPPFLAGS) $(.ALLSRC)
+
+dox:	miniupnpd.doxyconf
+	$(DOXYGEN) $>
+
+miniupnpd: $(ALLOBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(ALLOBJS) $(LIBS)
+
+# BSDmake :
+#	$(CC) $(LDFLAGS) -o $@ $> $(LIBS)
+
+miniupnpdctl:	config.h $(MINIUPNPDCTLOBJS)
+	$(CC) $(LDFLAGS) -o $@ $(MINIUPNPDCTLOBJS)
+
+testupnpdescgen:	config.h $(TESTUPNPDESCGENOBJS)
+	$(CC) $(LDFLAGS) -o $@ $(TESTUPNPDESCGENOBJS) $(LIBS)
+
+testgetifstats:	config.h $(TESTGETIFSTATSOBJS)
+	$(CC) $(LDFLAGS) -o $@ $(TESTGETIFSTATSOBJS) $(LIBS)
+
+testgetifaddr:	config.h $(TESTGETIFADDROBJS)
+	$(CC) $(LDFLAGS) -o $@ $(TESTGETIFADDROBJS) $(LIBS)
+
+testupnppermissions:	config.h $(TESTUPNPPERMISSIONSOBJS)
+	$(CC) $(LDFLAGS) -o $@ $(TESTUPNPPERMISSIONSOBJS) $(LIBS)
+
+testgetroute:	config.h $(TESTGETROUTEOBJS)
+	$(CC) $(LDFLAGS) -o $@ $(TESTGETROUTEOBJS) $(LIBS)
+
+testasyncsendto:	config.h $(TESTASYNCSENDTOOBJS)
+	$(CC) $(LDFLAGS) -o $@ $(TESTASYNCSENDTOOBJS)
+
+testportinuse:	config.h $(TESTPORTINUSEOBJS)
+	$(CC) $(LDFLAGS) -o $@ $(TESTPORTINUSEOBJS) $(LIBS)
+
+testminissdp:	config.h $(TESTMINISSDPOBJS)
+	$(CC) $(LDFLAGS) -o $@ $(TESTMINISSDPOBJS) $(LIBS)
+
+testssdppktgen:	testssdppktgen.o
+	$(CC) $(LDFLAGS) -o $@ $(.ALLSRC) $(LIBS)
+
+# gmake :
+#	$(CC) $(CFLAGS) -o $@ $^
+# BSDmake :
+#	$(CC) $(CFLAGS) -o $@ $>
+
+config.h:	$(SRCDIR)/configure $(SRCDIR)/VERSION $(SRCDIR)/Makefile.bsd
+	$(SRCDIR)/configure $(CONFIG_OPTIONS)
+
+$(STDOBJS) $(MISCOBJS):	$(SRCDIR)/$(@:.o=.c)
+$(PFOBJS):	$(SRCDIR)/pf/$(@:.o=.c)
+$(IPFOBJS):	$(SRCDIR)/ipf/$(@:.o=.c)
+$(IPFWOBJS):	$(SRCDIR)/ipfw/$(@:.o=.c)
+
+.if $(OSNAME) == "SunOS"
+getifstats.o:	$(SRCDIR)/solaris/getifstats.c
+.elif $(OSNAME) == "Darwin"
+getifstats.o:	$(SRCDIR)/mac/getifstats.c
+.else
+getifstats.o:	$(SRCDIR)/bsd/getifstats.c
+.endif
+ifacewatcher.o getroute.o:	$(SRCDIR)/bsd/$(@:.o=.c)
+
+# make(1) specifies that $ is escaped with a backslash,
+# not a preceding $ as usual, but FreeBSD 12.1 make does otherwise
+.if $(OSNAME) == "FreeBSD"
+$(EXECUTABLES:S/$$/.o/):	$(SRCDIR)/$(@:.o=.c)
+.else
+$(EXECUTABLES:S/\$/.o/):	$(SRCDIR)/$(@:.o=.c)
+.endif
+
+.SUFFIXES:	.o .c
+.c.o:
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+
+#	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $(.TARGET) $(.IMPSRC)
+

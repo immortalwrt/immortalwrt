@@ -2,7 +2,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "buffalo,whr-300hp2", "ralink,mt7620a-soc";
@@ -19,8 +18,7 @@
 		compatible = "gpio-leds";
 
 		power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_RED>;
+			label = "red:power";
 			gpios = <&gpio0 7 GPIO_ACTIVE_LOW>;
 		};
 
@@ -30,8 +28,7 @@
 		};
 
 		led_power_green: power2 {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio0 9 GPIO_ACTIVE_LOW>;
 		};
 
@@ -116,24 +113,10 @@
 				read-only;
 			};
 
-			partition@40000 {
+			factory: partition@40000 {
 				label = "factory";
 				reg = <0x40000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_factory_0: eeprom@0 {
-						reg = <0x0 0x200>;
-					};
-
-					macaddr_factory_4: macaddr@4 {
-						reg = <0x4 0x6>;
-					};
-				};
 			};
 
 			partition@50000 {
@@ -156,16 +139,14 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&ephy_pins>;
 
-	nvmem-cells = <&macaddr_factory_4>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0x4>;
 
 	mediatek,portmap = "llllw";
 };
 
 &wmac {
+	ralink,mtd-eeprom = <&factory 0x0>;
 	pinctrl-names = "default", "pa_gpio";
 	pinctrl-0 = <&pa_pins>;
 	pinctrl-1 = <&pa_gpio_pins>;
-	nvmem-cells = <&eeprom_factory_0>;
-	nvmem-cell-names = "eeprom";
 };

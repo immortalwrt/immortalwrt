@@ -10,7 +10,6 @@ define Device/linksys_wrt300n-v1.1
   $(Device/linksys)
   DEVICE_ID := EWC2
   VERSION := 1.51.2
-  DEFAULT := n
 endef
 TARGET_DEVICES += linksys_wrt300n-v1.1
 
@@ -21,7 +20,6 @@ define Device/linksys_wrt310n-v1
   $(Device/linksys)
   DEVICE_ID := 310N
   VERSION := 1.0.10
-  DEFAULT := n
 endef
 TARGET_DEVICES += linksys_wrt310n-v1
 
@@ -32,7 +30,6 @@ define Device/linksys_wrt350n-v1
   $(Device/linksys)
   DEVICE_ID := EWCG
   VERSION := 1.04.1
-  DEFAULT := n
 endef
 TARGET_DEVICES += linksys_wrt350n-v1
 
@@ -69,8 +66,7 @@ TARGET_DEVICES += linksys_e3000-v1
 
 # generic has Ethernet drivers as modules so overwrite standard image
 define Device/standard
-  DEVICE_VENDOR := Generic
-  DEVICE_MODEL := Image with LZMA loader and LZMA compressed kernel
+  DEVICE_TITLE := Image with LZMA loader and LZMA compressed kernel
   DEVICE_PACKAGES := kmod-b44 kmod-bgmac kmod-tg3
 endef
 TARGET_DEVICES += standard

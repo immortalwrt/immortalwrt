@@ -1,0 +1,233 @@
+<%+header%>
+<!--
+    This module is a demo to configure MTK' proprietary WiFi driver.
+    Basic idea is to bypass uci and edit wireless profile (mt76xx.dat) directly.
+    LuCI's WiFi configuration is more logical and elegent, but it's quite tricky to
+    translate uci into MTK's WiFi profile (like we did in "uci2dat").
+
+    Hua Shao <nossiac@163.com>
+-->
+
+<%
+local disp = require "luci.dispatcher"
+-- local request  = disp.context.path
+local request = disp.context.request
+local mtkwifi = require("mtkwifi")
+local devname = request[5]
+local devs = mtkwifi.get_all_devs()
+local dev = {}
+for _,v in ipairs(devs) do
+    if v.devname == devname then
+        dev = v
+    end
+end
+local cfgs = mtkwifi.load_profile(dev.profile)
+%>
+
+<script type="text/javascript" src="<%=resource%>/cbi.js?v=git-17.250.41546-90ac861"></script>
+<script type="text/javascript">
+</script>
+
+<form method="post" name="cbi" action="<%=luci.dispatcher.build_url("admin", "network", "wifi", "chip_cfg", devname)%>" enctype="multipart/form-data" onreset="return cbi_validate_reset(this)" onsubmit="return cbi_validate_form(this, '<%:Some fields are invalid, cannot save values!%>') && ValidateAllSettings()" autocomplete="off">
+    <fieldset class="cbi-section">
+        <h2><%:Chip Configurations%> - <%=string.split(devname,".")[1]%>
+            <%local diff = mtkwifi.diff_profile(dev.profile)%>
+            <%if next(diff) ~= nil then%>
+                <span style="color:red;">( <a href="javascript:location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", dev.devname)%>'"><%:Click here%></a> <%:to apply changes%>)</span>
+            <%end%>
+        </h2>
+
+        <table id="dev-cfg-basic" class="cbi-section-table">
+            <tr>
+                <td><%:Decline BA Request%></td>
+                <td>
+                    <select style="width:auto" name="HT_BADecline">
+                        <option value="1" <% if cfgs.HT_BADecline == "1" then %> selected="selected"<% end%>><%:Enable%></option>
+                        <option value="0" <% if cfgs.HT_BADecline == "0" then %> selected="selected"<% end%>><%:Disable%></option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><%:Reverse Direction Grant (RDG)%></td>
+                <td>
+                    <select style="width:auto" name="HT_RDG">
+                        <option value="1" <% if cfgs.HT_RDG == "1" then %> selected="selected"<% end%>><%:Enable%></option>
+                        <option value="0" <% if cfgs.HT_RDG == "0" then %> selected="selected"<% end%>><%:Disable%></option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><%:BA Win size%> <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>(1-256)<% else %>(1-64)<% end %></td>
+                <td>
+                    <input name="HT_BAWinSize" id="HT_BAWinSize" value="<%=cfgs.HT_BAWinSize%>"/>
+                </td>
+            </tr>
+            <tr>
+                <td><%:HT Disallow TKIP%></td>
+                <td>
+                    <select style="width:auto" name="HT_DisallowTKIP">
+                        <option value="1" <% if cfgs.HT_DisallowTKIP == "1" then %> selected="selected"<% end%>><%:Enable%></option>
+                        <option value="0" <% if cfgs.HT_DisallowTKIP == "0" then %> selected="selected"<% end%>><%:Disable%></option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><%:Wi-Fi HWNAT%></td>
+                <td>
+                    <select style="width:auto" name="WHNAT">
+                        <option value="1" <% if cfgs.WHNAT == "1" then %> selected="selected"<% end%>><%:Enable%></option>
+                        <option value="0" <% if cfgs.WHNAT ~= "1" then %> selected="selected"<% end%>><%:Disable%></option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><%:E2pAccessMode%></td>
+                <td>
+                    <select style="width:auto" name="E2pAccessMode">
+                        <option value="1" <% if cfgs.E2pAccessMode == "1" then %> selected="selected"<% end%>>EFUSE</option>
+                        <option value="2" <% if cfgs.E2pAccessMode == "2" then %> selected="selected"<% end%>>FLASH</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><%:Beacon Interval%> (20-999)</td>
+                <td>
+                    <input name="BeaconPeriod" id="BeaconPeriod" value="<%=cfgs.BeaconPeriod%>" />
+                </td>
+            </tr>
+            <tr>
+                <td><%:Data Beacon Rate (DTIM)%> (1-255)</td>
+                <td>
+                    <input name="DtimPeriod" id="DtimPeriod" value="<%=cfgs.DtimPeriod%>" />
+                </td>
+            </tr>
+            <tr>
+                <td><%:BG Protection Mode%></td>
+                <td>
+                    <select name="BGProtection" style="width:auto">
+                        <option value="0" <% if cfgs.BGProtection == "0" then %>selected="selected"<% end %>><%:Auto%></option>
+                        <option value="1" <% if cfgs.BGProtection == "1" then %>selected="selected"<% end %>><%:Always On%></option>
+                        <option value="2" <% if cfgs.BGProtection == "2" then %>selected="selected"<% end %>><%:Always Off%></option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><%:Short Preamble%></td>
+                <td>
+                    <select style="width:auto" name="TxPreamble">
+                        <option value="1" <% if cfgs.TxPreamble == "1" then %> selected="selected"<% end%>><%:Enable%></option>
+                        <option value="0" <% if cfgs.TxPreamble == "0" then %> selected="selected"<% end%>><%:Disable%></option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><%:TX Burst%></td>
+                <td>
+                    <select style="width:auto" name="TxBurst">
+                        <option value="1" <% if cfgs.TxBurst == "1" then %> selected="selected"<% end%>><%:Enable%></option>
+                        <option value="0" <% if cfgs.TxBurst == "0" then %> selected="selected"<% end%>><%:Disable%></option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><%:Short Slot%></td>
+                <td>
+                    <select style="width:auto" name="ShortSlot">
+                        <option value="1" <% if cfgs.ShortSlot == "1" then %> selected="selected"<% end%>><%:Enable%></option>
+                        <option value="0" <% if cfgs.ShortSlot == "0" then %> selected="selected"<% end%>><%:Disable%></option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+    <div class="cbi-page-actions">
+
+        <input class="cbi-button cbi-button-apply" name="__apply" value="<%:Save & Apply%>" type="submit">
+        <input class="cbi-button cbi-button-apply" value="<%:Save%>" type="submit">
+        <input class="cbi-button cbi-button-reset" value="<%:Reset%>" type="reset">
+
+    </div>
+</form>
+
+<script type="text/javascript">
+
+    function ValidateAdvancedSettings()
+    {
+        var tmpVal = document.getElementById("HT_BAWinSize").value;
+        <% if string.split(cfgs.WirelessMode,";")[1] == "16" or string.split(cfgs.WirelessMode,";")[1] == "17" or string.split(cfgs.WirelessMode,";")[1] == "18" then %>
+            if(isNaN(tmpVal) || !/^\d{1,3}$/.test(tmpVal) || parseInt(tmpVal) < 1 || parseInt(tmpVal) > 256){
+                alert("BA Win SIze is incorrect!\nPlease enter an integer number between 1 to 256 inclusive.");
+                document.getElementById("HT_BAWinSize").focus();
+                document.getElementById("HT_BAWinSize").select();
+                return false;
+            }
+        <% else %>
+            if(isNaN(tmpVal) || !/^\d{1,2}$/.test(tmpVal) || parseInt(tmpVal) < 1 || parseInt(tmpVal) > 64){
+                alert("BA Win Size is incorrect!\nPlease enter an integer number between 1 to 64 inclusive.");
+                document.getElementById("HT_BAWinSize").focus();
+                document.getElementById("HT_BAWinSize").select();
+                return false;
+            }
+        <% end %>
+        tmpVal = document.getElementById("BeaconPeriod").value;
+        if(isNaN(tmpVal) || !/^\d{2,3}$/.test(tmpVal) || parseInt(tmpVal) < 20 || parseInt(tmpVal) > 999){
+            alert("Beacon Interval is incorrect!\nPlease enter an integer number between 20 to 999 inclusive.");
+            document.getElementById("BeaconPeriod").focus();
+            document.getElementById("BeaconPeriod").select();
+            return false;
+        }
+        tmpVal = document.getElementById("DtimPeriod").value;
+        if(isNaN(tmpVal) || !/^\d{1,3}$/.test(tmpVal) || parseInt(tmpVal) < 1 || parseInt(tmpVal) > 255){
+            alert("Data Beacon Rate (DTIM) is incorrect!\nPlease enter an integer number between 1 to 255 inclusive.");
+            document.getElementById("DtimPeriod").focus();
+            document.getElementById("DtimPeriod").select();
+            return false;
+        }
+
+        return true;
+    }
+
+    function ValidateAllSettings(){
+        if( !ValidateAdvancedSettings() ){
+            return false;
+        }
+        return true;
+    }
+
+    function get_apply_status_cb(rsp)
+    {
+        try{
+            var r = JSON.parse(rsp);
+        }
+        catch(e){
+            return;
+        }
+        if(r.status == "ON_PROGRESS"){
+            var u = confirm("Device is applying the saved settings now!\n" +
+                "It is recommended to wait until all the saved settings are applied.\n" +
+                "Please click on 'OK' button to wait for the device.\n" +
+                "or click on 'Cancel' button to configure the settings available in current web-page.");
+            if (u == true) {
+                location = '<%=luci.dispatcher.build_url("admin", "network", "wifi", "loading")%>' + window.location.pathname;
+            }
+        }
+    }
+
+    function get_apply_status()
+    {
+        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_apply_status")%>', null,
+            function(x)
+            {
+                console.log(x);
+                get_apply_status_cb(x.response);
+            }
+        );
+    }
+
+    window.onload = function() {
+        get_apply_status();
+    }
+
+</script>
+
+<%+footer%>

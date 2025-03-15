@@ -3,9 +3,7 @@
 #include "mt7620a.dtsi"
 
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 #include <dt-bindings/gpio/gpio.h>
-#include <dt-bindings/mtd/partitions/uimage.h>
 
 / {
 	compatible = "dlink,dir-510l", "ralink,mt7620a-soc";
@@ -42,14 +40,12 @@
 		compatible = "gpio-leds";
 
 		led_status: status {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:status";
 			gpios = <&gpio0 14 GPIO_ACTIVE_HIGH>;
 		};
 
 		status-red {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_RED>;
+			label = "red:status";
 			gpios = <&gpio0 11 GPIO_ACTIVE_HIGH>;
 		};
 	};
@@ -89,33 +85,15 @@
 			};
 
 			partition@210000 {
-				compatible = "openwrt,uimage", "denx,uimage";
-				openwrt,ih-magic = <IH_MAGIC_OKLI>;
-				openwrt,offset = <0x10000>;
+				compatible = "amit,jimage";
 				label = "firmware";
 				reg = <0x210000 0xde0000>;
 			};
 
-			partition@ff0000 {
+			config: partition@ff0000 {
 				label = "config";
 				reg = <0xff0000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_config_e05d: eeprom@e05d {
-						reg = <0xe05d 0x200>;
-					};
-
-					macaddr_config_e490: macaddr@e490 {
-						compatible = "mac-base";
-						reg = <0xe490 0x6>;
-						#nvmem-cell-cells = <1>;
-					};
-				};
 			};
 		};
 	};
@@ -136,8 +114,9 @@
 &pcie0 {
 	mt76x0e@0,0 {
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&eeprom_config_e05d>, <&macaddr_config_e490 2>;
-		nvmem-cell-names = "eeprom", "mac-address";
+		mtd-mac-address = <&config 0xe490>;
+		mtd-mac-address-increment = <(2)>;
+		mediatek,mtd-eeprom = <&config 0xe05d>;
 	};
 };
 

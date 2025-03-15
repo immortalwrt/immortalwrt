@@ -1,0 +1,30 @@
+diff --git a/drivers/pinctrl/mediatek/Kconfig b/drivers/pinctrl/mediatek/Kconfig
+index e7ec276..b6341dd 100644
+--- a/drivers/pinctrl/mediatek/Kconfig
++++ b/drivers/pinctrl/mediatek/Kconfig
+@@ -112,6 +112,13 @@ config PINCTRL_MT7986
+ 	default ARM64 && ARCH_MEDIATEK
+ 	select PINCTRL_MTK_MOORE
+ 
++config PINCTRL_MT7988
++        bool "Mediatek MT7988 pin control"
++        depends on OF
++        depends on ARM64 || COMPILE_TEST
++        default ARM64 && ARCH_MEDIATEK
++        select PINCTRL_MTK_MOORE
++
+ config PINCTRL_MT8173
+ 	bool "Mediatek MT8173 pin control"
+ 	depends on OF
+diff --git a/drivers/pinctrl/mediatek/Makefile b/drivers/pinctrl/mediatek/Makefile
+index e6813cf..6e28df9 100644
+--- a/drivers/pinctrl/mediatek/Makefile
++++ b/drivers/pinctrl/mediatek/Makefile
+@@ -17,6 +17,7 @@ obj-$(CONFIG_PINCTRL_MT7623)	+= pinctrl-mt7623.o
+ obj-$(CONFIG_PINCTRL_MT7629)	+= pinctrl-mt7629.o
+ obj-$(CONFIG_PINCTRL_MT7981)	+= pinctrl-mt7981.o
+ obj-$(CONFIG_PINCTRL_MT7986)	+= pinctrl-mt7986.o
++obj-$(CONFIG_PINCTRL_MT7988)    += pinctrl-mt7988.o
+ obj-$(CONFIG_PINCTRL_MT8173)	+= pinctrl-mt8173.o
+ obj-$(CONFIG_PINCTRL_MT8183)	+= pinctrl-mt8183.o
+ obj-$(CONFIG_PINCTRL_MT8516)	+= pinctrl-mt8516.o

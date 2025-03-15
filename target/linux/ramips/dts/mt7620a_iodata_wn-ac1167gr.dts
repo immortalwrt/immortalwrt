@@ -4,7 +4,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "iodata,wn-ac1167gr", "ralink,mt7620a-soc";
@@ -21,8 +20,7 @@
 		compatible = "gpio-leds";
 
 		led_power: power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio0 7 GPIO_ACTIVE_LOW>;
 			default-state = "on";
 		};
@@ -92,40 +90,16 @@
 				read-only;
 			};
 
-			partition@40000 {
+			factory: partition@40000 {
 				label = "factory";
 				reg = <0x40000 0x8000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_factory_0: eeprom@0 {
-						reg = <0x0 0x200>;
-					};
-
-					macaddr_factory_4: macaddr@4 {
-						reg = <0x4 0x6>;
-					};
-				};
 			};
 
-			partition@48000 {
+			iNIC_rf: partition@48000 {
 				label = "iNIC_rf";
 				reg = <0x48000 0x8000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_iNIC_rf_0: eeprom@0 {
-						reg = <0x0 0x200>;
-					};
-				};
 			};
 
 			partition@50000 {
@@ -165,8 +139,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&rgmii1_pins &mdio_pins>;
 
-	nvmem-cells = <&macaddr_factory_4>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0x4>;
 
 	port@5 {
 		status = "okay";
@@ -229,13 +202,11 @@
 &pcie0 {
 	wifi@0,0 {
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&eeprom_iNIC_rf_0>;
-		nvmem-cell-names = "eeprom";
+		mediatek,mtd-eeprom = <&iNIC_rf 0x0>;
 		ieee80211-freq-limit = <5000000 6000000>;
 	};
 };
 
 &wmac {
-	nvmem-cells = <&eeprom_factory_0>;
-	nvmem-cell-names = "eeprom";
+	ralink,mtd-eeprom = <&factory 0x0>;
 };

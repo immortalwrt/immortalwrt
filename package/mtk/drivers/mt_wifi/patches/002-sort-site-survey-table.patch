@@ -1,0 +1,12 @@
+--- a/mt_wifi/embedded/common/cmm_info.c	2022-04-25 18:12:15.000000000 +0800
++++ b/mt_wifi/embedded/common/cmm_info.c	2022-11-10 23:22:13.914830802 +0800
+@@ -6705,6 +6705,7 @@ VOID RTMPIoctlGetSiteSurvey(
+ 		OS_WAIT(3000);
+ 	}
+ 
++	BssTableSortByRssi(ScanTab,FALSE);
+ 
+ 	for (i = bss_start_idx; i < ScanTab->BssNr; i++) {
+ 		pBss = &ScanTab->BssEntry[i];
+ 		
+ 		

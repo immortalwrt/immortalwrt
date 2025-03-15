@@ -4,7 +4,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	keys {
@@ -22,8 +21,7 @@
 		compatible = "gpio-leds";
 
 		wps {
-			function = LED_FUNCTION_WPS;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:wps";
 			gpios = <&gpio 20 GPIO_ACTIVE_LOW>;
 		};
 
@@ -86,7 +84,7 @@
 	status = "okay";
 
 	pll-data = <0xa6000000 0x00000101 0x00001616>;
-
+	mtd-mac-address = <&art 0x0>;
 	fixed-link {
 		speed = <1000>;
 		full-duplex;
@@ -97,7 +95,7 @@
 	status = "okay";
 
 	pll-data = <0x03000101 0x00000101 0x00001616>;
-
+	mtd-mac-address = <&art 0x6>;
 	fixed-link {
 		speed = <1000>;
 		full-duplex;
@@ -106,6 +104,9 @@
 
 &wmac {
 	status = "okay";
+
+	mtd-cal-data = <&art 0x1000>;
+	mtd-mac-address = <&art 0x18>;
 };
 
 // This node is required for the Ethernet ports to work correctly.

@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
-#include <dt-bindings/leds/common.h>
-
 #include "qca953x_dlink_dap-2xxx.dtsi"
 
 / {
@@ -29,8 +27,7 @@
 		compatible = "gpio-leds";
 
 		led_power_green: power_green {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
 			default-state = "on";
 		};
@@ -47,6 +44,12 @@
 	partition@f60000 {
 		label = "dlink";
 		reg = <0xf60000 0x90000>;
+		read-only;
+	};
+
+	art: partition@ff0000 {
+		label = "art";
+		reg = <0xff0000 0x10000>;
 		read-only;
 	};
 };

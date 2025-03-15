@@ -197,7 +197,7 @@
 			compatible = "lantiq,mei-xway";
 			reg = <0xe116000 0x400>;
 			interrupt-parent = <&icu0>;
-			interrupts = <81 83 92>;
+			interrupts = <81>;
 		};
 
 		usb: usb@e101000 {
@@ -236,8 +236,6 @@
 			interrupts = <105 109>;
 			pinctrl-0 = <&mdio_pins>;
 			pinctrl-names = "default";
-			lantiq,tx-burst-length = <4>;
-			lantiq,rx-burst-length = <4>;
 		};
 	};
 

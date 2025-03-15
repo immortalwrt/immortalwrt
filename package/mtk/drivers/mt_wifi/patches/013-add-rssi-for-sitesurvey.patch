@@ -1,0 +1,44 @@
+--- a/mt_wifi/embedded/common/cmm_info.c	2023-11-23 21:25:14.125168685 +0800
++++ b/mt_wifi/embedded/common/cmm_info.c	2023-11-24 01:50:15.459446886 +0800
+@@ -6317,7 +6317,7 @@ RTMP_STRING *GetAuthMode(CHAR auth)
+ 			3.) UI needs to prepare at least 4096bytes to get the results
+     ==========================================================================
+ */
+-#define	LINE_LEN	(4+4+33+20+23+9+11+7+3+8+10+8)	/* No+Channel+SSID+Bssid+Security+Signal+WiressMode+ExtCh+NetworkType+LEN+BcnRept+MWDSCap*/
++#define	LINE_LEN	(4+4+33+20+23+8+9+11+7+3+8+10+8)	/* No+Channel+SSID+Bssid+Security+RSSI+Signal+WiressMode+ExtCh+NetworkType+LEN+BcnRept+MWDSCap*/
+ #ifdef CUSTOMER_VENDOR_IE_SUPPORT
+ #ifdef CUSTOMER_MAXBITRATE_SUPPORT
+ #define	LINE_LEN	(4+4+33+20+33+9+11+7+3+10+8+8)
+@@ -6420,14 +6420,13 @@ VOID RTMPCommSiteSurveyData(
+ 		Rssi_Quality = (UINT)(((Rssi + 90) * 26) / 10);
+ 	else    /* < -84 dbm*/
+ 		Rssi_Quality = 0;
+-#ifdef CCAPI_API_SUPPORT
++
+ 	LeftBufSize = MsgLen - strlen(msg);
+-	ret = snprintf(msg + strlen(msg), MsgLen - strlen(msg), "%-8d", Rssi);
++	ret = snprintf(msg + strlen(msg), MsgLen - strlen(msg), "%-8d", Rssi + 0x100);
+ 	if (os_snprintf_error(LeftBufSize, ret)) {
+ 		MTWF_DBG(NULL, DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_ERROR, "Snprintf failed!\n");
+ 		return;
+ 	}
+-#endif
+ 
+ 	LeftBufSize = MsgLen - strlen(msg);
+ 	ret = snprintf(msg + strlen(msg), LeftBufSize, "%-9d", Rssi_Quality);
+@@ -6729,13 +6728,10 @@ VOID RTMPIoctlGetSiteSurvey(
+ 	}
+ #else
+ 	LeftBufSize = TotalLen - strlen(msg);
+-#ifdef CCAPI_API_SUPPORT
++
+ 	Status = snprintf(msg + strlen(msg), LeftBufSize, "%-4s%-4s%-33s%-20s%-23s%-8s%-9s%-11s%-7s%-3s%-8s\n",
+ 				"No", "Ch", "SSID", "BSSID", "Security", "Rssi", "Siganl(%)", "W-Mode", " ExtCH", " NT", " SSID_Len");
+-#else
+-	Status = snprintf(msg + strlen(msg), LeftBufSize, "%-4s%-4s%-33s%-20s%-23s%-9s%-11s%-7s%-3s%-8s\n",
+-				"No", "Ch", "SSID", "BSSID", "Security", "Siganl(%)", "W-Mode", " ExtCH", " NT", " SSID_Len");
+-#endif
++
+ 	if (os_snprintf_error(LeftBufSize, Status)) {
+ 		MTWF_DBG(pAdapter, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR, "Snprintf failed!\n");
+ 		goto ERROR;

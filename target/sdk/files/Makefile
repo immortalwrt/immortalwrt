@@ -14,9 +14,7 @@ export TOPDIR LC_ALL LANG SDK
 
 world:
 
-DISTRO_PKG_CONFIG:=$(shell $(TOPDIR)/scripts/command_all.sh pkg-config | grep '/usr' -m 1)
-
-export ORIG_PATH:=$(if $(ORIG_PATH),$(ORIG_PATH),$(PATH))
+DISTRO_PKG_CONFIG:=$(shell which -a pkg-config | grep '/usr' | head -n 1)
 export PATH:=$(TOPDIR)/staging_dir/host/bin:$(PATH)
 
 ifneq ($(OPENWRT_BUILD),1)

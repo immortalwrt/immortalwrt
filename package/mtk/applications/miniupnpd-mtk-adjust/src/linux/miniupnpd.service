@@ -1,0 +1,11 @@
+[Unit]
+Description=MiniUPnPD
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/sbin/miniupnpd
+ExecStop=kill `cat /var/run/miniupnpd.pid`
+
+[Install]
+WantedBy=multi-user.target

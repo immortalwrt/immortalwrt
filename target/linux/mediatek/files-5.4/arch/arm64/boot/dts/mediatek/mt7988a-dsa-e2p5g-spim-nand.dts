@@ -1,0 +1,365 @@
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+/*
+ * Copyright (C) 2021 MediaTek Inc.
+ * Author: Sam.Shih <sam.shih@mediatek.com>
+ */
+
+/dts-v1/;
+#include "mt7988.dtsi"
+
+/ {
+	model = "MediaTek MT7988 DSA external-2.5G SPIM-NAND RFB";
+	compatible = "mediatek,mt7988a-dsa-e2p5g-spim-snand",
+		     /* Reserve this for DVFS if creating new dts */
+		     "mediatek,mt7988";
+
+	chosen {
+		bootargs = "console=ttyS0,115200n1 loglevel=8  \
+			    earlycon=uart8250,mmio32,0x11000000 \
+			    pci=pcie_bus_perf";
+	};
+
+	memory {
+		reg = <0 0x40000000 0 0x10000000>;
+	};
+
+	nmbm_spim_nand {
+		compatible = "generic,nmbm";
+
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		lower-mtd-device = <&spi_nand>;
+		forced-create;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "BL2";
+				reg = <0x00000 0x0100000>;
+				read-only;
+			};
+
+			partition@100000 {
+				label = "u-boot-env";
+				reg = <0x0100000 0x0080000>;
+			};
+
+			factory: partition@180000 {
+				label = "Factory";
+				reg = <0x180000 0x0400000>;
+			};
+
+			partition@580000 {
+				label = "FIP";
+				reg = <0x580000 0x0200000>;
+			};
+
+			partition@780000 {
+				label = "ubi";
+				reg = <0x780000 0x4000000>;
+			};
+		};
+	};
+
+	wsys_adie: wsys_adie@0 {
+	// fpga cases need to manual change adie_id / sku_type for dvt only
+		compatible = "mediatek,rebb-mt7988-adie";
+		adie_id = <7976>;
+		sku_type = <3000>;
+	};
+};
+
+&fan {
+	pwms = <&pwm 0 50000 0>;
+	status = "okay";
+};
+
+&i2c0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c0_pins>;
+	status = "okay";
+
+	rt5190a_64: rt5190a@64 {
+		compatible = "richtek,rt5190a";
+		reg = <0x64>;
+		/*interrupts-extended = <&gpio26 0 IRQ_TYPE_LEVEL_LOW>;*/
+		vin2-supply = <&rt5190_buck1>;
+		vin3-supply = <&rt5190_buck1>;
+		vin4-supply = <&rt5190_buck1>;
+
+		regulators {
+			rt5190_buck1: buck1 {
+				regulator-name = "rt5190a-buck1";
+				regulator-min-microvolt = <5090000>;
+				regulator-max-microvolt = <5090000>;
+				regulator-allowed-modes =
+				<RT5190A_OPMODE_AUTO RT5190A_OPMODE_FPWM>;
+				regulator-boot-on;
+			};
+			buck2 {
+				regulator-name = "vcore";
+				regulator-min-microvolt = <600000>;
+				regulator-max-microvolt = <1400000>;
+				regulator-boot-on;
+			};
+			buck3 {
+				regulator-name = "proc";
+				regulator-min-microvolt = <600000>;
+				regulator-max-microvolt = <1400000>;
+				regulator-boot-on;
+			};
+			buck4 {
+				regulator-name = "rt5190a-buck4";
+				regulator-min-microvolt = <850000>;
+				regulator-max-microvolt = <850000>;
+				regulator-allowed-modes =
+				<RT5190A_OPMODE_AUTO RT5190A_OPMODE_FPWM>;
+				regulator-boot-on;
+			};
+			ldo {
+				regulator-name = "rt5190a-ldo";
+				regulator-min-microvolt = <1200000>;
+				regulator-max-microvolt = <1200000>;
+				regulator-boot-on;
+			};
+		};
+	};
+};
+
+&i2c1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c1_pins>;
+	status = "okay";
+};
+
+&pwm {
+	status = "okay";
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&spi0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi0_flash_pins>;
+	status = "okay";
+
+	spi_nand: spi_nand@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "spi-nand";
+		spi-cal-enable;
+		spi-cal-mode = "read-data";
+		spi-cal-datalen = <7>;
+		spi-cal-data = /bits/ 8 <0x53 0x50 0x49 0x4E 0x41 0x4E 0x44>;
+		spi-cal-addrlen = <5>;
+		spi-cal-addr = /bits/ 32 <0x0 0x0 0x0 0x0 0x0>;
+		reg = <0>;
+		spi-max-frequency = <52000000>;
+		spi-tx-bus-width = <4>;
+		spi-rx-bus-width = <4>;
+	};
+};
+
+&spi1 {
+	pinctrl-names = "default";
+	/* pin shared with snfi */
+	pinctrl-0 = <&spic_pins>;
+	status = "disabled";
+};
+
+&pcie0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie0_pins>;
+	status = "okay";
+};
+
+&pcie1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie1_pins>;
+	status = "okay";
+};
+
+&pcie2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie2_pins>;
+	status = "disabled";
+};
+
+&pcie3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie3_pins>;
+	status = "okay";
+};
+
+&pio {
+	i2c0_pins: i2c0-pins-g0 {
+		mux {
+			function = "i2c";
+			groups = "i2c0_1";
+		};
+	};
+
+	i2c1_pins: i2c1-pins-g0 {
+		mux {
+			function = "i2c";
+			groups = "i2c1_0";
+		};
+	};
+
+	pcie0_pins: pcie0-pins {
+		mux {
+			function = "pcie";
+			groups = "pcie_2l_0_pereset", "pcie_clk_req_n0_0",
+				 "pcie_wake_n0_0";
+		};
+	};
+
+	pcie1_pins: pcie1-pins {
+		mux {
+			function = "pcie";
+			groups = "pcie_2l_1_pereset", "pcie_clk_req_n1",
+				 "pcie_wake_n1_0";
+		};
+	};
+
+	pcie2_pins: pcie2-pins {
+		mux {
+			function = "pcie";
+			groups = "pcie_1l_0_pereset", "pcie_clk_req_n2_0",
+				 "pcie_wake_n2_0";
+		};
+	};
+
+	pcie3_pins: pcie3-pins {
+		mux {
+			function = "pcie";
+			groups = "pcie_1l_1_pereset", "pcie_clk_req_n3",
+				 "pcie_wake_n3_0";
+		};
+	};
+
+	spi0_flash_pins: spi0-pins {
+		mux {
+			function = "spi";
+			groups = "spi0", "spi0_wp_hold";
+		};
+	};
+
+	spic_pins: spi1-pins {
+		mux {
+			function = "spi";
+			groups = "spi1_1";
+		};
+	};
+};
+
+&watchdog {
+	status = "disabled";
+};
+
+&eth {
+	status = "okay";
+
+	gmac0: mac@0 {
+		compatible = "mediatek,eth-mac";
+		reg = <0>;
+		phy-mode = "10gbase-kr";
+
+		fixed-link {
+			speed = <2500>;
+			full-duplex;
+			pause;
+		};
+	};
+
+	gmac1: mac@1 {
+		compatible = "mediatek,eth-mac";
+		reg = <1>;
+		phy-mode = "2500base-x";
+		phy-handle = <&phy13>;
+	};
+
+	gmac2: mac@2 {
+		compatible = "mediatek,eth-mac";
+		reg = <2>;
+		phy-mode = "2500base-x";
+		phy-handle = <&phy5>;
+	};
+
+	mdio: mdio-bus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		phy5: phy@5 {
+			compatible = "ethernet-phy-ieee802.3-c45";
+			reg = <5>;
+			reset-gpios = <&pio 0 1>;
+			reset-assert-us = <600>;
+			reset-deassert-us = <20000>;
+		};
+
+		phy13: phy@13 {
+			compatible = "ethernet-phy-ieee802.3-c45";
+			reg = <13>;
+			reset-gpios = <&pio 1 1>;
+			reset-assert-us = <600>;
+			reset-deassert-us = <20000>;
+		};
+
+		switch@0 {
+			compatible = "mediatek,mt7988";
+			reg = <31>;
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				port@0 {
+					reg = <0>;
+					label = "lan0";
+				};
+
+				port@1 {
+					reg = <1>;
+					label = "lan1";
+				};
+
+				port@2 {
+					reg = <2>;
+					label = "lan2";
+				};
+
+				port@3 {
+					reg = <3>;
+					label = "lan3";
+				};
+
+				port@6 {
+					reg = <6>;
+					label = "cpu";
+					ethernet = <&gmac0>;
+					phy-mode = "10gbase-kr";
+
+					fixed-link {
+						speed = <10000>;
+						full-duplex;
+						pause;
+					};
+				};
+			};
+		};
+	};
+};
+
+&hnat {
+	mtketh-wan = "eth1";
+	mtketh-lan = "lan";
+	mtketh-lan2 = "eth2";
+	mtketh-max-gmac = <3>;
+	status = "okay";
+};

@@ -1,0 +1,90 @@
+.TH MINIUPNPD 8
+.SH NAME
+miniupnpd \- UPnP Internet Gateway Device Daemon
+.SH SYNOPSIS
+.B miniupnpd
+.RB [--version]
+.RB [ "\-f \fIconfig_file" "] [" "\-i \fIext_ifname" "] [" "\-I \fIext_ifname6" "] [" "\-o \fIext_ip" ]
+.RB [ "\-a \fIlistening_ip" "] [" "\-p \fIport" "] [" \-d "] [" \-U "] [" \-S "] [" \-N ]
+.RB [ "\-u \fIuuid" "] [" "\-s \fIserial" "] [" "\-m \fImodel_number" ]
+.RB [ "\-t \fInotify_interval" "] [" "\-P \fIpid_filename" ]
+.RB [ "\-B \fIdown up" "] [" "\-w \fIurl" "] [" "\-r \fIclean_ruleset_interval" ]
+.RB [ "\-A \fIpermission rule" "] [" "\-b \fIBOOTID" "] [" \-1 ]
+.SH DESCRIPTION
+miniupnpd act as a UPnP Internet Gateway Device. It is designed
+to run on the gateway between the internet and a NAT'ed LAN. It provides
+an interface, as defined in the UPnP standard, for enabling
+clients on the LAN to ask for port redirections.
+.SH OPTIONS
+.TP
+.BI \-f " config_file"
+load the config from file.
+.TP
+.BI \-i " ext_ifname"
+interface used to connect to the internet.
+.TP
+.BI \-o " ext_ip"
+address used to connect to the internet.
+default address of the interface will be used if not specified.
+.TP
+.BI \-a " listening_ip"
+address on the LAN. \-a option can by used multiple time if LAN is
+subdivised in several subnetworks.
+.TP
+.BI \-p " port"
+port used for HTTP.
+.TP
+.B \-d
+debug mode : do not go to background, output messages on console
+and do not filter out low priority messages.
+.TP
+.B \-U
+report system uptime instead of daemon uptime to clients.
+.TP
+.B \-S
+sets "secure" mode : clients can only add mappings to their own ip
+.TP
+.B \-N
+enables NAT-PMP functionality.
+.TP
+.BI \-u " uuid"
+set the uuid of the UPnP Internet Gateway Device.
+.TP
+.BI \-s " serial"
+serial number for the UPnP Internet Gateway Device.
+.TP
+.BI \-m " model_number"
+model number for the UPnP Internet Gateway Device.
+.TP
+.BI \-t " notify_interval"
+SSDP notify interval in seconds :
+SSDP announce messages will be broadcasted at this interval.
+.TP
+.BI \-P " pid_filename"
+pid file. default is /var/run/miniupnpd.pid
+.TP
+.BI \-B " down up"
+download and upload bitrates reported to clients.
+.TP
+.BI \-w " url"
+presentation url. default is first address on LAN, port 80.
+.TP
+.BI \-r " clean_ruleset_interval"
+(minimum) interval between unused rules cleaning checks.
+.TP
+.BI \-A " permission rule"
+use following syntax for permission rules :
+  (allow|deny) (external port range) ip/mask (internal port range)
+.br
+examples :
+  "allow 1024-65535 192.168.1.0/24 1024-65535"
+  "deny 0-65535 0.0.0.0/0 0-65535"
+.TP
+.BI \-b " BOOTID"
+sets the value of BOOTID.UPNP.ORG SSDP header
+.TP
+.B \-1
+force reporting IGDv1 in rootDesc when compiled as IGDv2 *use with care*
+.SH "SEE ALSO"
+minissdpd(1) miniupnpc(3)
+.SH BUGS

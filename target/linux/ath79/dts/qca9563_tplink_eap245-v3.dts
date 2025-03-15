@@ -4,11 +4,10 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "tplink,eap245-v3", "qca,qca9563";
-	model = "TP-Link EAP245 v3 / EAP265 HD v1";
+	model = "TP-Link EAP245 v3";
 
 	aliases {
 		led-boot = &led_status_green;
@@ -22,15 +21,13 @@
 		compatible = "gpio-leds";
 
 		led_status_green: status_green {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:status";
 			gpios = <&gpio 7 GPIO_ACTIVE_HIGH>;
 			default-state = "on";
 		};
 
 		led_status_amber: status_amber {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_AMBER>;
+			label = "amber:status";
 			gpios = <&gpio 9 GPIO_ACTIVE_HIGH>;
 		};
 	};
@@ -49,14 +46,6 @@
 
 &pcie {
 	status = "okay";
-
-	wifi@0,0 {
-		compatible = "qcom,ath10k";
-		reg = <0 0 0 0 0>;
-
-		nvmem-cells = <&macaddr_info_8 1>, <&calibration_ath10k>;
-		nvmem-cell-names = "mac-address", "pre-calibration";
-	};
 };
 
 &spi {
@@ -94,38 +83,12 @@
 				label = "info";
 				reg = <0x090000 0x010000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_info_8: macaddr@8 {
-						compatible = "mac-base";
-						reg = <0x8 0x6>;
-						#nvmem-cell-cells = <1>;
-					};
-				};
 			};
 
-			partition@a0000 {
+			art: partition@a0000 {
 				label = "art";
 				reg = <0x0a0000 0x010000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					calibration_ath9k: calibration@1000 {
-						reg = <0x1000 0x440>;
-					};
-
-					calibration_ath10k: calibration@5000 {
-						reg = <0x5000 0x2f20>;
-					};
-				};
 			};
 
 			partition@b0000 {
@@ -164,6 +127,8 @@
 &mdio0 {
 	status = "okay";
 
+	phy-mask = <0x1>;
+
 	phy0: ethernet-phy@0 {
 		reg = <0>;
 		phy-mode = "sgmii";
@@ -181,13 +146,12 @@
 	phy-handle = <&phy0>;
 	phy-mode = "sgmii";
 
-	nvmem-cells = <&macaddr_info_8 0>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&info 0x8>;
 };
 
 &wmac {
 	status = "okay";
 
-	nvmem-cells = <&macaddr_info_8 0>, <&calibration_ath9k>;
-	nvmem-cell-names = "mac-address", "calibration";
+	mtd-cal-data = <&art 0x1000>;
+	mtd-mac-address = <&info 0x8>;
 };

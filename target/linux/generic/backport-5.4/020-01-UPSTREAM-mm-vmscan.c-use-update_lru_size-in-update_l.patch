@@ -1,0 +1,47 @@
+From 6bf249661e5e9b053469c352c25d7a72ad9ac5e1 Mon Sep 17 00:00:00 2001
+From: Wei Yang <richard.weiyang@gmail.com>
+Date: Wed, 3 Jun 2020 16:01:12 -0700
+Subject: [PATCH] UPSTREAM: mm/vmscan.c: use update_lru_size() in
+ update_lru_sizes()
+
+We already defined the helper update_lru_size().
+
+Let's use this to reduce code duplication.
+
+Signed-off-by: Wei Yang <richard.weiyang@gmail.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Reviewed-by: Baoquan He <bhe@redhat.com>
+Reviewed-by: Andrew Morton <akpm@linux-foundation.org>
+Acked-by: Michal Hocko <mhocko@suse.com>
+Link: http://lkml.kernel.org/r/20200331221550.1011-1-richard.weiyang@gmail.com
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+(cherry picked from commit a892cb6b977ffe209683809e5e9d627656d20aa8)
+Signed-off-by: Yu Zhao <yuzhao@google.org>
+
+BUG=b:123039911
+TEST=Built
+
+Change-Id: I2997bda67966cb097475644a65275b2f221b93bf
+Reviewed-on: https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/2940108
+Reviewed-by: Sean Paul <seanpaul@chromium.org>
+Reviewed-by: Sonny Rao <sonnyrao@chromium.org>
+Tested-by: Yu Zhao <yuzhao@chromium.org>
+Commit-Queue: Yu Zhao <yuzhao@chromium.org>
+---
+ mm/vmscan.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -1655,10 +1655,7 @@ static __always_inline void update_lru_s
+ 		if (!nr_zone_taken[zid])
+ 			continue;
+ 
+-		__update_lru_size(lruvec, lru, zid, -nr_zone_taken[zid]);
+-#ifdef CONFIG_MEMCG
+-		mem_cgroup_update_lru_size(lruvec, lru, zid, -nr_zone_taken[zid]);
+-#endif
++		update_lru_size(lruvec, lru, zid, -nr_zone_taken[zid]);
+ 	}
+ 
+ }

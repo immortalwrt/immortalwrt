@@ -254,8 +254,6 @@
 		};
 
 		usb: usb@e101000 {
-			#address-cells = <1>;
-			#size-cells = <0>;
 			compatible = "lantiq,danube-usb";
 			reg = <0xe101000 0x1000
 				0xe120000 0x3f000>;
@@ -265,11 +263,6 @@
 			phys = <&usb_phy>;
 			phy-names = "usb2-phy";
 			status = "disabled";
-
-			ehci_port1: port@1 {
-				reg = <1>;
-				#trigger-source-cells = <0>;
-			};
 		};
 
 		deu@e103100 {
@@ -291,7 +284,7 @@
 			compatible = "lantiq,mei-xway";
 			reg = <0xe116000 0x400>;
 			interrupt-parent = <&icu0>;
-			interrupts = <63 61 159>;
+			interrupts = <63>;
 		};
 
 		gsw: etop@e180000 {
@@ -299,8 +292,7 @@
 			reg = <0xe180000 0x40000>;
 			interrupt-parent = <&icu0>;
 			interrupts = <73 78>;
-			lantiq,tx-burst-length = <4>;
-			lantiq,rx-burst-length = <4>;
+			mac-address = [ 00 11 22 33 44 55 ];
 		};
 
 		ppe@e234000 {
@@ -326,10 +318,6 @@
 			interrupt-map-mask = <0xf800 0x0 0x0 0x7>;
 			interrupt-map = <0x7000 0 0 1 &icu0 30 1>; /* slot 14, irq 30 */
 			req-mask = <0x1>; /* GNT1 */
-
-			device_type = "pci";
-
-			resets = <&reset 13 13>;
 		};
 	};
 

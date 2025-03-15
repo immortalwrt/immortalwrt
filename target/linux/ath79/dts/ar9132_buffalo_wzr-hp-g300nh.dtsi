@@ -3,7 +3,6 @@
 #include "ar9132.dtsi"
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	aliases {
@@ -12,37 +11,22 @@
 		led-upgrade = &led_diag;
 	};
 
-	/* There is a GPIO driven NXP 74HC153 dual 4-way multiplexer on board
-	 * used for buttons that are on top of the the device.
-         */
-	mux: mux-controller {
-		compatible = "gpio-mux";
-		#mux-control-cells = <0>;
-
-		mux-gpios = <&gpio 9 GPIO_ACTIVE_HIGH>,		/* s0 */
-			    <&gpio 11 GPIO_ACTIVE_HIGH>;	/* s1 */
+	clock40mhz: ref {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <40000000>;
 	};
 
-	gpio2: key-mux1 {
-		compatible = "gpio-cascade";
-		mux-controls = <&mux>;
-
+	gpio2: gpio-extender {
+		compatible = "nxp,74hc153-gpio";
 		gpio-controller;
 		#gpio-cells = <2>;
 
-		// GPIOs used by this node, the mux pin
-		upstream-gpios = <&gpio 12 GPIO_ACTIVE_HIGH>; /* 1y */
-	};
-
-	gpio3: key-mux2 {
-		compatible = "gpio-cascade";
-		mux-controls = <&mux>;
-
-		gpio-controller;
-		#gpio-cells = <2>;
-
-		// GPIOs used by this node, the mux pin
-		upstream-gpios = <&gpio 14 GPIO_ACTIVE_HIGH>; /* 2y */
+		// GPIOs used by this node
+		gpio-s0 = <&gpio 9 GPIO_ACTIVE_HIGH>;
+		gpio-s1 = <&gpio 11 GPIO_ACTIVE_HIGH>;
+		gpio-1y = <&gpio 12 GPIO_ACTIVE_HIGH>;
+		gpio-2y = <&gpio 14 GPIO_ACTIVE_HIGH>;
 	};
 
 	keys {
@@ -80,21 +64,21 @@
 		usb {
 			label = "usb";
 			linux,code = <BTN_2>;
-			gpios = <&gpio3 1 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio2 5 GPIO_ACTIVE_LOW>;
 			debounce-interval = <60>;
 		};
 
 		router_auto {
 			label = "router_auto";
 			linux,code = <BTN_6>;
-			gpios = <&gpio3 2 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpio2 6 GPIO_ACTIVE_HIGH>;
 			debounce-interval = <60>;
 		};
 
 		movie_on {
 			label = "movie_on";
 			linux,code = <BTN_4>;
-			gpios = <&gpio3 3 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpio2 7 GPIO_ACTIVE_HIGH>;
 			debounce-interval = <60>;
 		};
 	};
@@ -134,24 +118,10 @@
 				read-only;
 			};
 
-			partition@1fe0000 {
+			art: partition@1fe0000 {
 				label = "art";
 				reg = <0x1fe0000 0x020000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					cal_art_11000: calibration@11000 {
-						reg = <0x11000 0xeb8>;
-					};
-
-					macaddr_art_1120c: macaddr@1120c {
-						reg = <0x1120c 0x6>;
-					};
-				};
 			};
 		};
 	};
@@ -160,8 +130,7 @@
 		compatible = "gpio-leds";
 
 		usb {
-			function = LED_FUNCTION_USB;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:usb";
 			gpios = <&gpio 0 GPIO_ACTIVE_LOW>;
 			trigger-sources = <&hub_port>;
 			linux,default-trigger = "usbport";
@@ -194,12 +163,14 @@
 
 		gpio-sda = <&gpio 19 GPIO_ACTIVE_HIGH>;
 		gpio-sck = <&gpio 20 GPIO_ACTIVE_HIGH>;
+		mii-bus = <&mdio0>;
 
 		mdio-bus {
 			status = "okay";
 
 			#address-cells = <1>;
 			#size-cells = <0>;
+			phy-mask = <0x10>;
 
 			phy4: ethernet-phy@4 {
 				reg = <4>;
@@ -217,8 +188,7 @@
 	status = "disabled";
 
 	phy-mode = "rgmii";
-	nvmem-cells = <&macaddr_art_1120c>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&art 0x1120c>;
 
 	fixed-link {
 		speed = <1000>;
@@ -245,23 +215,33 @@
 	resets = <&rst 13>;
 	reset-names = "mac";
 	qca,mac-idx = <1>;
-	nvmem-cells = <&macaddr_art_1120c>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&art 0x1120c>;
 };
 
 &wmac {
 	status = "okay";
 
-	nvmem-cells = <&cal_art_11000>;
-	nvmem-cell-names = "calibration";
+	mtd-cal-data = <&art 0x11000>;
 };
 
 &uart {
 	status = "okay";
 };
 
+&pll {
+	clocks = <&clock40mhz>;
+};
+
 &usb {
 	status = "okay";
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	hub_port: port@1 {
+		reg = <1>;
+		#trigger-source-cells = <0>;
+	};
 };
 
 &usb_phy {

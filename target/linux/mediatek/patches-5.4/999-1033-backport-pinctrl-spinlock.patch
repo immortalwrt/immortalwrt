@@ -1,0 +1,40 @@
+--- a/drivers/pinctrl/mediatek/pinctrl-moore.c
++++ b/drivers/pinctrl/mediatek/pinctrl-moore.c
+@@ -625,6 +625,7 @@ int mtk_moore_pinctrl_probe(struct platf
+ 	}
+ 
+ 	hw->nbase = hw->soc->nbase_names;
++	spin_lock_init(&hw->lock);
+ 
+ 	/* Copy from internal struct mtk_pin_desc to register to the core */
+ 	pins = devm_kmalloc_array(&pdev->dev, hw->soc->npins, sizeof(*pins),
+--- a/drivers/pinctrl/mediatek/pinctrl-mtk-common-v2.c
++++ b/drivers/pinctrl/mediatek/pinctrl-mtk-common-v2.c
+@@ -55,11 +55,16 @@ static u32 mtk_r32(struct mtk_pinctrl *p
+ void mtk_rmw(struct mtk_pinctrl *pctl, u8 i, u32 reg, u32 mask, u32 set)
+ {
+ 	u32 val;
++	unsigned long flags;
++
++	spin_lock_irqsave(&pctl->lock, flags);
+ 
+ 	val = mtk_r32(pctl, i, reg);
+ 	val &= ~mask;
+ 	val |= set;
+ 	mtk_w32(pctl, i, reg, val);
++
++	spin_unlock_irqrestore(&pctl->lock, flags);
+ }
+ 
+ static int mtk_hw_pin_field_lookup(struct mtk_pinctrl *hw,
+--- a/drivers/pinctrl/mediatek/pinctrl-mtk-common-v2.h
++++ b/drivers/pinctrl/mediatek/pinctrl-mtk-common-v2.h
+@@ -246,6 +246,8 @@ struct mtk_pinctrl {
+ 	struct mtk_eint			*eint;
+ 	struct mtk_pinctrl_group	*groups;
+ 	const char          **grp_names;
++	/* lock pin's register resource to avoid multiple threads issue*/
++	spinlock_t lock;
+ };
+ 
+ void mtk_rmw(struct mtk_pinctrl *pctl, u8 i, u32 reg, u32 mask, u32 set);

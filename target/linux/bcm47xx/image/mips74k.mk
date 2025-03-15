@@ -24,7 +24,6 @@ define Device/asus_rt-n10
   DEVICE_PACKAGES := kmod-b43
   $(Device/asus)
   PRODUCTID := "RT-N10      "
-  DEFAULT := n
 endef
 TARGET_DEVICES += asus_rt-n10
 
@@ -34,7 +33,6 @@ define Device/asus_rt-n10p
   DEVICE_PACKAGES := kmod-b43
   $(Device/asus)
   PRODUCTID := RT-N10P
-  DEFAULT := n
 endef
 TARGET_DEVICES += asus_rt-n10p
 
@@ -43,7 +41,6 @@ define Device/asus_rt-n10p-v2
   DEVICE_VARIANT := v2
   $(Device/asus)
   PRODUCTID := RT-N10PV2
-  DEFAULT := n
 endef
 TARGET_DEVICES += asus_rt-n10p-v2
 
@@ -53,7 +50,6 @@ define Device/asus_rt-n10u
   DEVICE_PACKAGES := kmod-b43 $(USB2_PACKAGES)
   $(Device/asus)
   PRODUCTID := RT-N10U
-  DEFAULT := n
 endef
 TARGET_DEVICES += asus_rt-n10u
 
@@ -63,7 +59,6 @@ define Device/asus_rt-n10u-b
   DEVICE_PACKAGES := kmod-b43 $(USB2_PACKAGES)
   $(Device/asus)
   PRODUCTID := RT-N10U
-  DEFAULT := n
 endef
 TARGET_DEVICES += asus_rt-n10u-b
 
@@ -73,7 +68,6 @@ define Device/asus_rt-n12
   DEVICE_PACKAGES := kmod-b43
   $(Device/asus)
   PRODUCTID := "RT-N12      "
-  DEFAULT := n
 endef
 TARGET_DEVICES += asus_rt-n12
 
@@ -82,7 +76,6 @@ define Device/asus_rt-n12-b1
   DEVICE_VARIANT := B1
   $(Device/asus)
   PRODUCTID := RT-N12B1
-  DEFAULT := n
 endef
 TARGET_DEVICES += asus_rt-n12-b1
 
@@ -91,7 +84,6 @@ define Device/asus_rt-n12-c1
   DEVICE_VARIANT := C1
   $(Device/asus)
   PRODUCTID := RT-N12C1
-  DEFAULT := n
 endef
 TARGET_DEVICES += asus_rt-n12-c1
 
@@ -100,7 +92,6 @@ define Device/asus_rt-n12-d1
   DEVICE_VARIANT := D1
   $(Device/asus)
   PRODUCTID := RT-N12D1
-  DEFAULT := n
 endef
 TARGET_DEVICES += asus_rt-n12-d1
 
@@ -108,7 +99,6 @@ define Device/asus_rt-n12hp
   DEVICE_MODEL := RT-N12HP
   $(Device/asus)
   PRODUCTID := RT-N12HP
-  DEFAULT := n
 endef
 TARGET_DEVICES += asus_rt-n12hp
 
@@ -141,7 +131,6 @@ define Device/asus_rt-n53
   DEVICE_PACKAGES := kmod-b43
   $(Device/asus)
   PRODUCTID := RT-N53
-  DEFAULT := n
 endef
 TARGET_DEVICES += asus_rt-n53
 
@@ -179,7 +168,6 @@ define Device/linksys_wrt310n-v2
   $(Device/linksys)
   DEVICE_ID := 310N
   VERSION := 2.0.1
-  DEFAULT := n
 endef
 TARGET_DEVICES += linksys_wrt310n-v2
 
@@ -190,7 +178,6 @@ define Device/linksys_wrt320n-v1
   $(Device/linksys)
   DEVICE_ID := 320N
   VERSION := 1.0.5
-  DEFAULT := n
 endef
 TARGET_DEVICES += linksys_wrt320n-v1
 
@@ -200,7 +187,6 @@ define Device/linksys_e900-v1
   $(Device/linksys)
   DEVICE_ID := E900
   VERSION := 1.0.4
-  DEFAULT := n
 endef
 TARGET_DEVICES += linksys_e900-v1
 
@@ -211,7 +197,6 @@ define Device/linksys_e1000
   $(Device/linksys)
   DEVICE_ID := E100
   VERSION := 1.1.3
-  DEFAULT := n
 endef
 TARGET_DEVICES += linksys_e1000
 
@@ -221,7 +206,6 @@ define Device/linksys_e1200-v1
   $(Device/linksys)
   DEVICE_ID := E120
   VERSION := 1.0.3
-  DEFAULT := n
 endef
 TARGET_DEVICES += linksys_e1200-v1
 
@@ -231,7 +215,6 @@ define Device/linksys_e1200-v2
   $(Device/linksys)
   DEVICE_ID := E122
   VERSION := 1.0.4
-  DEFAULT := n
 endef
 TARGET_DEVICES += linksys_e1200-v2
 
@@ -241,7 +224,6 @@ define Device/linksys_e1500-v1
   $(Device/linksys)
   DEVICE_ID := E150
   VERSION := 1.0.5
-  DEFAULT := n
 endef
 TARGET_DEVICES += linksys_e1500-v1
 
@@ -262,7 +244,6 @@ define Device/linksys_e2000-v1
   $(Device/linksys)
   DEVICE_ID := 32XN
   VERSION := 1.0.4
-  DEFAULT := n
 endef
 TARGET_DEVICES += linksys_e2000-v1
 
@@ -342,7 +323,6 @@ define Device/netgear_wgr614-v10-na
   $(Device/netgear)
   NETGEAR_BOARD_ID := U12H139T01_NETGEAR
   NETGEAR_REGION := 2
-  DEFAULT := n
 endef
 TARGET_DEVICES += netgear_wgr614-v10-na
 
@@ -352,7 +332,6 @@ define Device/netgear_wgr614-v10
   $(Device/netgear)
   NETGEAR_BOARD_ID := U12H139T01_NETGEAR
   NETGEAR_REGION := 1
-  DEFAULT := n
 endef
 TARGET_DEVICES += netgear_wgr614-v10
 
@@ -371,7 +350,6 @@ define Device/netgear_wn3000rp
   $(Device/netgear)
   NETGEAR_BOARD_ID := U12H163T01_NETGEAR
   NETGEAR_REGION := 1
-  DEFAULT := n
 endef
 TARGET_DEVICES += netgear_wn3000rp
 
@@ -442,7 +420,6 @@ define Device/netgear_wnr1000-v3
   $(Device/netgear)
   NETGEAR_BOARD_ID := U12H139T00_NETGEAR
   NETGEAR_REGION := 2
-  DEFAULT := n
 endef
 TARGET_DEVICES += netgear_wnr1000-v3
 
@@ -453,7 +430,6 @@ define Device/netgear_wnr2000v2
   $(Device/netgear)
   NETGEAR_BOARD_ID := U12H114T00_NETGEAR
   NETGEAR_REGION := 2
-  DEFAULT := n
 endef
 TARGET_DEVICES += netgear_wnr2000v2
 
@@ -484,8 +460,6 @@ define Device/netgear_wnr3500l-v2
   $(Device/netgear)
   NETGEAR_BOARD_ID := U12H172T00_NETGEAR
   NETGEAR_REGION := 1
-  KERNEL_NAME = vmlinux-nodictionary.lzma
-  IMAGE/chk := append-rootfs | trx-without-loader | netgear-chk
 endef
 TARGET_DEVICES += netgear_wnr3500l-v2
 
@@ -506,7 +480,6 @@ define Device/netgear_wnr3500-v2
   $(Device/netgear)
   NETGEAR_BOARD_ID := U12H127T00_NETGEAR
   NETGEAR_REGION := 2
-  DEFAULT := n
 endef
 TARGET_DEVICES += netgear_wnr3500-v2
 

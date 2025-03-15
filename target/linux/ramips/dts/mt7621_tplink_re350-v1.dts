@@ -2,7 +2,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "tplink,re350-v1", "mediatek,mt7621-soc";
@@ -19,8 +18,7 @@
 		compatible = "gpio-leds";
 
 		led_power: power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:power";
 			gpios = <&gpio 22 GPIO_ACTIVE_LOW>;
 		};
 
@@ -35,14 +33,12 @@
 		};
 
 		wps_r {
-			function = LED_FUNCTION_WPS;
-			color = <LED_COLOR_ID_RED>;
+			label = "red:wps";
 			gpios = <&gpio 25 GPIO_ACTIVE_HIGH>;
 		};
 
 		wps_b {
-			function = LED_FUNCTION_WPS;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:wps";
 			gpios = <&gpio 26 GPIO_ACTIVE_HIGH>;
 		};
 
@@ -111,42 +107,16 @@
 				reg = <0x20000 0x5e0000>;
 			};
 
-			partition@600000 {
+			config: partition@600000 {
 				label = "config";
 				reg = <0x600000 0x50000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_config_10008: macaddr@10008 {
-						compatible = "mac-base";
-						reg = <0x10008 0x6>;
-						#nvmem-cell-cells = <1>;
-					};
-				};
 			};
 
-			partition@7f0000 {
+			radio: partition@7f0000 {
 				label = "radio";
 				reg = <0x7f0000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_radio_0: eeprom@0 {
-						reg = <0x0 0x400>;
-					};
-
-					eeprom_radio_8000: eeprom@8000 {
-						reg = <0x8000 0x200>;
-					};
-				};
 			};
 		};
 	};
@@ -159,27 +129,24 @@
 &pcie0 {
 	mt76@0,0 {
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&eeprom_radio_0>, <&macaddr_config_10008 1>;
-		nvmem-cell-names = "eeprom", "mac-address";
+		mediatek,mtd-eeprom = <&radio 0x0>;
+		mtd-mac-address = <&config 0x10008>;
+		mtd-mac-address-increment = <1>;
 	};
 };
 
 &pcie1 {
 	mt76@0,0 {
 		reg = <0x0000 0 0 0 0>;
+		mediatek,mtd-eeprom = <&radio 0x8000>;
 		ieee80211-freq-limit = <5000000 6000000>;
-		nvmem-cells = <&eeprom_radio_8000>, <&macaddr_config_10008 2>;
-		nvmem-cell-names = "eeprom", "mac-address";
+		mtd-mac-address = <&config 0x10008>;
+		mtd-mac-address-increment = <2>;
 	};
 };
 
-&ethernet {
-	pinctrl-0 = <&mdio_pins>, <&rgmii1_pins>;
-};
-
 &gmac0 {
-	nvmem-cells = <&macaddr_config_10008 0>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&config 0x10008>;
 };
 
 &switch0 {

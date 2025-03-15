@@ -1,0 +1,57 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Target Wake Time"
+msgstr "目标唤醒时间（TWT）"
+
+msgid "MU-MIMO DL"
+msgstr "下行 MU-MIMO"
+
+msgid "MU-MIMO UL"
+msgstr "上行 MU-MIMO"
+
+msgid "OFDMA DL"
+msgstr "下行 OFDMA"
+
+msgid "OFDMA UL"
+msgstr "上行 OFDMA"
+
+msgid "A-MSDU"
+msgstr "MSDU聚合（A-MSDU）"
+
+msgid "Auto Block ACK"
+msgstr "自动块确认"
+
+msgid "U-APSD"
+msgstr "U-APSD 省电模式"
+
+msgid "Kick low RSSI station threshold"
+msgstr "弱信号剔除阈值"
+
+
+msgid "Station associate threshold"
+msgstr "弱信号接入阈值"
+
+msgid "802.11V roam steering threshold"
+msgstr "802.11V漫游引导阈值"
+
+
+msgid "802.11V roam target bssid"
+msgstr "802.11V漫游引导目标BSSID"
+
+
+msgid "only supports mt_wifi driver"
+msgstr "仅支持MTK闭源驱动，漫游域相关参数自动生成无需设置.确认路由器自身lan ip均在同一网段"
+
+msgid "Wireless HWNAT"
+msgstr "无线硬件加速"
+
+msgid "Band Steering"
+msgstr "引导已连接的强信号双频2.4G设备至5G频段"
+
+msgid "Wireless configuration error"
+msgstr "无线网络设置错误"
+
+msgid "At least one MBSSID needs to be reserved"
+msgstr "至少需要保留1个MBSSID"
+

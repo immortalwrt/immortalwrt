@@ -1,0 +1,10 @@
+--- a/drivers/spi/Kconfig
++++ b/drivers/spi/Kconfig
+@@ -429,6 +429,7 @@ config SPI_MT65XX
+ 
+ config SPI_MTK_SNFI
+ 	tristate "MediaTek SPI NAND interface"
++	depends on MTD
+ 	select MTD_SPI_NAND
+ 	help
+ 	  This selects the SPI NAND FLASH interface(SNFI),

@@ -2,7 +2,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "fon,fonera-20n", "ralink,rt3052-soc";
@@ -38,24 +37,10 @@
 				read-only;
 			};
 
-			partition@40000 {
+			factory: partition@40000 {
 				label = "factory";
 				reg = <0x40000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_factory_0: eeprom@0 {
-						reg = <0x0 0x200>;
-					};
-
-					macaddr_factory_28: macaddr@28 {
-						reg = <0x28 0x6>;
-					};
-				};
 			};
 
 			partition@50000 {
@@ -75,14 +60,12 @@
 		};
 
 		led_power: power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio0 9 GPIO_ACTIVE_LOW>;
 		};
 
 		usb {
-			function = LED_FUNCTION_USB;
-			color = <LED_COLOR_ID_ORANGE>;
+			label = "orange:usb";
 			gpios = <&gpio0 14 GPIO_ACTIVE_LOW>;
 			trigger-sources = <&otg_port1>;
 			linux,default-trigger = "usbport";
@@ -90,7 +73,8 @@
 	};
 
 	keys {
-		compatible = "gpio-keys";
+		compatible = "gpio-keys-polled";
+		poll-interval = <20>;
 
 		reset {
 			label = "reset";
@@ -115,8 +99,7 @@
 };
 
 &ethernet {
-	nvmem-cells = <&macaddr_factory_28>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0x28>;
 };
 
 &esw {
@@ -162,8 +145,7 @@
 };
 
 &wmac {
-	nvmem-cells = <&eeprom_factory_0>;
-	nvmem-cell-names = "eeprom";
+	ralink,mtd-eeprom = <&factory 0x0>;
 };
 
 &otg {

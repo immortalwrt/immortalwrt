@@ -1,0 +1,188 @@
+# MiniUPnP project
+# (c) 2018-2022 Thomas Bernard
+# (c) 2015 Tomofumi Hayashi
+# http://miniupnp.free.fr/ or https://miniupnp.tuxfamily.org/
+# Author : Tomofumi Hayashi
+# for use with GNU Make
+#
+# options can be passed to configure through CONFIG_OPTIONS :
+# $ CONFIG_OPTIONS="--ipv6 --igd2" make
+#
+# To install use :
+# $ DESTDIR=/dummyinstalldir make install
+# or :
+# $ INSTALLPREFIX=/usr/local make install
+# or :
+# $ make install
+# (default INSTALLPREFIX is /usr)
+#
+#
+CONFIG_OPTIONS ?= $(cat .configure.cache)
+CONFIG_OPTIONS += --firewall=nftables
+#CFLAGS = -O -g #-DDEBUG
+CFLAGS ?= -Os
+CFLAGS += -fno-strict-aliasing
+CFLAGS += -fno-common
+CFLAGS += -fstack-protector -fPIE
+CFLAGS += -D_FORTIFY_SOURCE=2
+CPPFLAGS += -D_GNU_SOURCE
+CFLAGS += -Wall
+CFLAGS += -Wextra -Wstrict-prototypes -Wdeclaration-after-statement
+#CFLAGS += -Wno-missing-field-initializers
+LDFLAGS += -Wl,-z,now -Wl,-z,relro -pie
+CC ?= gcc
+RM = rm -f
+INSTALL = install
+STRIP ?= strip
+PKG_CONFIG ?= pkg-config
+CP = cp
+DOXYGEN ?= doxygen
+
+DEPFLAGS = -MM -MG -MT $(patsubst %.d,%.o,$@) -MT $@
+# -M : with system headers, -MM : without
+
+INSTALLPREFIX ?= $(PREFIX)/usr
+SBININSTALLDIR ?= $(INSTALLPREFIX)/sbin
+ETCINSTALLDIR = $(PREFIX)/etc/miniupnpd
+MANINSTALLDIR = $(INSTALLPREFIX)/share/man/man8
+
+include config.mk
+include $(SRCDIR)/gitrev.mk
+include $(SRCDIR)/objects.mk
+
+# sources in the netfilter_nft/ directory
+NETFILTEROBJS = nftnlrdr.o nftpinhole.o nfct_get.o nftnlrdr_misc.o
+
+ALLOBJS = $(BASEOBJS) $(LNXOBJS) $(NETFILTEROBJS)
+
+DEP = $(ALLOBJS:.o=.d)
+
+NFT_SCRIPTS = $(addprefix $(SRCDIR)/netfilter_nft/scripts/, \
+	nft_init.sh nft_removeall.sh nft_flush.sh nft_delete_chain.sh)
+
+PCFILE_FOUND := $(shell $(PKG_CONFIG) --exists libnftnl; echo $$?)
+
+ifeq (${PCFILE_FOUND},0)
+
+PKG_CONFIG_LIBS = libnftnl libmnl
+CFLAGS  += $(shell $(PKG_CONFIG) --cflags $(PKG_CONFIG_LIBS))
+LDLIBS  += $(shell $(PKG_CONFIG) --static --libs-only-l $(PKG_CONFIG_LIBS))
+LDFLAGS += $(shell $(PKG_CONFIG) --libs-only-L $(PKG_CONFIG_LIBS))
+LDFLAGS += $(shell $(PKG_CONFIG) --libs-only-other $(PKG_CONFIG_LIBS))
+else
+
+endif # ifdef PCFILE_FOUND
+
+#LDLIBS += -lnfnetlink
+
+LDLIBS += $(shell $(PKG_CONFIG) --static --libs-only-l libssl)
+
+TEST := $(shell $(PKG_CONFIG) --exists uuid && echo 1)
+ifeq ($(TEST),1)
+LDLIBS += $(shell $(PKG_CONFIG) --static --libs-only-l uuid)
+else
+$(info please install uuid-dev package / libuuid)
+endif # ($(TEST),1)
+
+# genuuid uses the uuidgen CLI tool which is part of libuuid
+# from the e2fsprogs
+# 'cat /proc/sys/kernel/random/uuid' could be also used
+#
+ifeq ($(TARGET_OPENWRT),)
+    UUIDEXECDIR=''
+else
+    UUIDEXECDIR="$(STAGING_DIR_HOST)/bin/"
+endif
+UUID=$(shell ($(UUIDEXECDIR)genuuid || $(UUIDEXECDIR)uuidgen || $(UUIDEXECDIR)uuid) 2> /dev/null )
+
+
+TESTUPNPDESCGENOBJS = testupnpdescgen.o upnpdescgen.o
+
+EXECUTABLES = miniupnpd miniupnpdctl \
+              testupnpdescgen testgetifstats \
+              testupnppermissions testgetifaddr \
+              testgetroute testasyncsendto testportinuse
+
+.PHONY:	all clean install depend dox
+
+all:	$(EXECUTABLES)
+
+clean:
+	$(RM) config.h
+	$(RM) $(ALLOBJS)
+	$(RM) $(EXECUTABLES)
+	$(RM) testupnpdescgen.o testgetifstats.o
+	$(RM) testupnppermissions.o testgetifaddr.o
+	$(RM) testgetroute.o testasyncsendto.o
+	$(RM) testportinuse.o
+	$(RM) miniupnpdctl.o
+	$(RM) -r dox/
+
+install:	miniupnpd $(SRCDIR)/miniupnpd.8 $(SRCDIR)/miniupnpd.conf \
+	$(NFT_SCRIPTS) \
+	$(SRCDIR)/linux/miniupnpd.init.d.script
+	$(STRIP) miniupnpd
+	$(INSTALL) -d $(DESTDIR)$(SBININSTALLDIR)
+	$(INSTALL) miniupnpd $(DESTDIR)$(SBININSTALLDIR)
+	$(INSTALL) -d $(DESTDIR)$(ETCINSTALLDIR)
+	$(INSTALL) $(SRCDIR)/netfilter_nft/scripts/nft_init.sh $(DESTDIR)$(ETCINSTALLDIR)
+	$(INSTALL) $(SRCDIR)/netfilter_nft/scripts/nft_removeall.sh $(DESTDIR)$(ETCINSTALLDIR)
+	$(INSTALL) $(SRCDIR)/netfilter_nft/scripts/nft_flush.sh $(DESTDIR)$(ETCINSTALLDIR)
+	$(INSTALL) $(SRCDIR)/netfilter_nft/scripts/nft_delete_chain.sh $(DESTDIR)$(ETCINSTALLDIR)
+	$(INSTALL) $(SRCDIR)/netfilter_nft/scripts/miniupnpd_functions.sh $(DESTDIR)$(ETCINSTALLDIR)
+	$(INSTALL) -m 0644 -b $(SRCDIR)/miniupnpd.conf $(DESTDIR)$(ETCINSTALLDIR)
+	sed -i'' -e "s/^uuid=[-0-9a-f]*/uuid=$(UUID)/" $(DESTDIR)$(ETCINSTALLDIR)/miniupnpd.conf
+	$(INSTALL) -d $(DESTDIR)$(PREFIX)/etc/init.d
+	$(INSTALL) $(SRCDIR)/linux/miniupnpd.init.d.script $(DESTDIR)$(PREFIX)/etc/init.d/miniupnpd
+	$(INSTALL) -d $(DESTDIR)$(MANINSTALLDIR)
+	$(INSTALL) -m 0644 $(SRCDIR)/miniupnpd.8 $(DESTDIR)$(MANINSTALLDIR)
+	gzip -f $(DESTDIR)$(MANINSTALLDIR)/miniupnpd.8
+
+include $(SRCDIR)/check.mk
+
+miniupnpd:	$(BASEOBJS) $(LNXOBJS) $(NETFILTEROBJS)
+
+testupnpdescgen:	$(TESTUPNPDESCGENOBJS)
+
+testgetifstats:	testgetifstats.o getifstats.o
+
+testupnppermissions:	testupnppermissions.o upnppermissions.o
+
+testgetifaddr:	testgetifaddr.o getifaddr.o
+
+testgetroute:	testgetroute.o getroute.o upnputils.o
+
+testasyncsendto:	testasyncsendto.o asyncsendto.o upnputils.o \
+	getroute.o
+
+testportinuse:	testportinuse.o portinuse.o getifaddr.o \
+	nftnlrdr.o nftnlrdr_misc.o
+
+miniupnpdctl:	miniupnpdctl.o
+
+config.mk config.h:	$(SRCDIR)/configure $(SRCDIR)/VERSION
+	$(SHELL) $< $(CONFIG_OPTIONS)
+
+depend:	$(DEP)
+
+%.d:	$(SRCDIR)/%.c
+	$(CC) $(CPPFLAGS) $(DEPFLAGS) -o $@ $<
+
+dox:	$(SRCDIR)/miniupnpd.doxyconf
+	(cat $< ; echo "INPUT=$(SRCDIR)" ) | $(DOXYGEN) -
+
+%.o:	$(SRCDIR)/%.c
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
+
+%.o:	$(SRCDIR)/linux/%.c
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
+
+%.o:	$(SRCDIR)/netfilter_nft/%.c
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
+
+print-%:
+	@echo "$* = $($*)"
+
+ifneq ($(MAKECMDGOALS),clean)
+-include $(DEP)
+endif

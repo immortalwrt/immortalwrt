@@ -1,0 +1,29 @@
+From 8511a3a9937e30949b34bea46c3dc3f65d11034b Mon Sep 17 00:00:00 2001
+From: Shivamurthy Shastri <sshivamurthy@micron.com>
+Date: Wed, 11 Mar 2020 18:57:31 +0100
+Subject: [PATCH] mtd: spinand: micron: Describe the SPI NAND device
+ MT29F2G01ABAGD
+
+Add the SPI NAND device MT29F2G01ABAGD series number, size and voltage
+details as a comment.
+
+Signed-off-by: Shivamurthy Shastri <sshivamurthy@micron.com>
+Reviewed-by: Boris Brezillon <boris.brezillon@collabora.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20200311175735.2007-3-sshivamurthy@micron.com
+---
+ drivers/mtd/nand/spi/micron.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/mtd/nand/spi/micron.c b/drivers/mtd/nand/spi/micron.c
+index cc1ee68421c8e1..4727933c894bc8 100644
+--- a/drivers/mtd/nand/spi/micron.c
++++ b/drivers/mtd/nand/spi/micron.c
+@@ -91,6 +91,7 @@ static int micron_8_ecc_get_status(struct spinand_device *spinand,
+ }
+ 
+ static const struct spinand_info micron_spinand_table[] = {
++	/* M79A 2Gb 3.3V */
+ 	SPINAND_INFO("MT29F2G01ABAGD",
+ 		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0x24),
+ 		     NAND_MEMORG(1, 2048, 128, 64, 2048, 40, 2, 1, 1),

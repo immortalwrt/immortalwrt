@@ -4,7 +4,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	model = "Winchannel WB2000";
@@ -45,10 +44,9 @@
 		};
 
 		usb {
-			function = LED_FUNCTION_USB;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:usb";
 			gpios = <&gpio 21 GPIO_ACTIVE_HIGH>;
-			trigger-sources = <&hub_port>;
+			trigger-sources = <&hub_port1>, <&hub_port2>;
 			linux,default-trigger = "usbport";
 		};
 
@@ -121,42 +119,16 @@
 				read-only;
 			};
 
-			partition@fe0000 {
+			art: partition@fe0000 {
 				label = "art";
 				reg = <0xfe0000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					calibration_art_1000: calibration@1000 {
-						reg = <0x1000 0x440>;
-					};
-
-					calibration_art_5000: calibration@5000 {
-						reg = <0x5000 0x440>;
-					};
-				};
 			};
 
-			partition@ff0000 {
+			addr: partition@ff0000 {
 				label = "addr";
 				reg = <0xff0000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_addr_0: macaddr@0 {
-						compatible = "mac-base";
-						reg = <0x0 0x6>;
-						#nvmem-cell-cells = <1>;
-					};
-				};
 			};
 		};
 	};
@@ -168,15 +140,35 @@
 	ath9k: wifi@0,0 {
 		compatible = "pci168c,0030";
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&macaddr_addr_0 0x10>, <&calibration_art_5000>;
-		nvmem-cell-names = "mac-address", "calibration";
+		qca,no-eeprom;
+		mtd-mac-address = <&addr 0x0>;
+		mtd-mac-address-increment = <0x10>;
 		#gpio-cells = <2>;
 		gpio-controller;
 	};
 };
 
 &usb {
+	#address-cells = <1>;
+	#size-cells = <0>;
 	status = "okay";
+
+	port@1 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <1>;
+		#trigger-source-cells = <0>;
+
+		hub_port1: port@1 {
+			reg = <1>;
+			#trigger-source-cells = <0>;
+		};
+
+		hub_port2: port@2 {
+			reg = <2>;
+			#trigger-source-cells = <0>;
+		};
+	};
 };
 
 &usb_phy {
@@ -186,12 +178,14 @@
 &wmac {
 	status = "okay";
 
-	nvmem-cells = <&macaddr_addr_0 0>, <&calibration_art_1000>;
-	nvmem-cell-names = "mac-address", "calibration";
+	mtd-cal-data = <&art 0x1000>;
+	mtd-mac-address = <&addr 0x0>;
 };
 
 &mdio0 {
 	status = "okay";
+
+	phy-mask = <0x10>;
 
 	phy4: ethernet-phy@4 {
 		reg = <4>;
@@ -203,8 +197,8 @@
 
 	pll-data = <0xe000000 0x04000101 0x04001313>;
 
-	nvmem-cells = <&macaddr_addr_0 0x21>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&addr 0x0>;
+	mtd-mac-address-increment = <0x21>;
 
 	phy-mode = "rgmii-rxid";
 	phy-handle = <&phy4>;
@@ -216,4 +210,3 @@
 		rxdv-delay = <1>;
 	};
 };
-

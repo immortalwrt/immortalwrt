@@ -2,7 +2,7 @@
 
 . /lib/functions/bcm4908.sh
 
-RAMFS_COPY_BIN="bcm4908img expr grep ln fdtget fw_printenv fw_setenv readlink tr"
+RAMFS_COPY_BIN="bcm4908img expr egrep ln fdtget fw_printenv fw_setenv readlink tr"
 
 PART_NAME=firmware
 
@@ -114,19 +114,19 @@ platform_pkgtb_get_image() {
 
 	local image_name=$(platform_pkgtb_get_image_name "$1" "$cmd" "$3")
 
-	$cmd < $1 | fdtget -p - /images/$image_name | grep -Eq "^data$" && {
+	$cmd < $1 | fdtget -p - /images/$image_name | egrep -q "^data$" && {
 		$cmd < $1 | fdtget -t r - /images/$image_name data
 		return
 	}
 
-	$cmd < $1 | fdtget -p - /images/$image_name | grep -Eq "^data-position$" && {
+	$cmd < $1 | fdtget -p - /images/$image_name | egrep -q "^data-position$" && {
 		local data_position=$($cmd < $1 | fdtget - /images/$image_name data-position)
 		local data_size=$($cmd < $1 | fdtget - /images/$image_name data-size)
 		$cmd < $1 2>/dev/null | dd skip=$data_position count=$data_size iflag=skip_bytes,count_bytes
 		return
 	}
 
-	$cmd < $1 | fdtget -p - /images/$image_name | grep -Eq "^data-offset" && {
+	$cmd < $1 | fdtget -p - /images/$image_name | egrep -q "^data-offset" && {
 		local data_offset=$($cmd < $1 | fdtget - /images/$image_name data-offset)
 		local totalsize=$(get_hex_u32_be "$1" 4)
 		local data_position=$(((0x$totalsize + data_offset + 3) & ~3))

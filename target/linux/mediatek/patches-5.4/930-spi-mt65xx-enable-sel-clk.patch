@@ -1,0 +1,15 @@
+--- a/drivers/spi/spi-mt65xx.c
++++ b/drivers/spi/spi-mt65xx.c
+@@ -1156,6 +1156,12 @@ static int mtk_spi_probe(struct platform
+ 		goto err_put_master;
+ 	}
+ 
++	ret = clk_prepare_enable(mdata->sel_clk);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "failed to enable sel_clk (%d)\n", ret);
++		goto err_put_master;
++	}
++
+ 	ret = clk_set_parent(mdata->sel_clk, mdata->parent_clk);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to clk_set_parent (%d)\n", ret);

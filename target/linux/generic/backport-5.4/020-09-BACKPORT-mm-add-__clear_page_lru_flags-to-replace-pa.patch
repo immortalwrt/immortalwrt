@@ -1,0 +1,120 @@
+From 16d3c016eabd1964657d5099ae745b57c9d6b10d Mon Sep 17 00:00:00 2001
+From: Yu Zhao <yuzhao@google.com>
+Date: Fri, 2 Oct 2020 01:54:36 -0600
+Subject: [PATCH] BACKPORT: mm: add __clear_page_lru_flags() to replace
+ page_off_lru()
+
+Similar to page_off_lru(), the new function does non-atomic clearing
+of PageLRU() in addition to PageActive() and PageUnevictable(), on a
+page that has no references left.
+
+If PageActive() and PageUnevictable() are both set, refuse to clear
+either and leave them to bad_page(). This is a behavior change that
+is meant to help debug.
+
+Link: https://lore.kernel.org/linux-mm/20201207220949.830352-7-yuzhao@google.com/
+Link: https://lkml.kernel.org/r/20210122220600.906146-7-yuzhao@google.com
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+Cc: Alex Shi <alex.shi@linux.alibaba.com>
+Cc: Hugh Dickins <hughd@google.com>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Roman Gushchin <guro@fb.com>
+Cc: Vladimir Davydov <vdavydov.dev@gmail.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+(cherry picked from commit 875601796267214f286d3581fe74f2805d060fe8)
+
+BUG=b:123039911
+TEST=Built
+
+Change-Id: I86b973cd52a0ddb0fb1453c5fcd787aa885297e6
+Reviewed-on: https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/2940116
+Tested-by: Yu Zhao <yuzhao@chromium.org>
+Reviewed-by: Sonny Rao <sonnyrao@chromium.org>
+Commit-Queue: Yu Zhao <yuzhao@chromium.org>
+---
+ include/linux/mm_inline.h | 28 ++++++++++------------------
+ mm/swap.c                 |  6 ++----
+ mm/vmscan.c               |  3 +--
+ 3 files changed, 13 insertions(+), 24 deletions(-)
+
+--- a/include/linux/mm_inline.h
++++ b/include/linux/mm_inline.h
+@@ -60,27 +60,19 @@ static inline enum lru_list page_lru_bas
+ }
+ 
+ /**
+- * page_off_lru - which LRU list was page on? clearing its lru flags.
+- * @page: the page to test
+- *
+- * Returns the LRU list a page was on, as an index into the array of LRU
+- * lists; and clears its Unevictable or Active flags, ready for freeing.
++ * __clear_page_lru_flags - clear page lru flags before releasing a page
++ * @page: the page that was on lru and now has a zero reference
+  */
+-static __always_inline enum lru_list page_off_lru(struct page *page)
++static __always_inline void __clear_page_lru_flags(struct page *page)
+ {
+-	enum lru_list lru;
++	__ClearPageLRU(page);
+ 
+-	if (PageUnevictable(page)) {
+-		__ClearPageUnevictable(page);
+-		lru = LRU_UNEVICTABLE;
+-	} else {
+-		lru = page_lru_base_type(page);
+-		if (PageActive(page)) {
+-			__ClearPageActive(page);
+-			lru += LRU_ACTIVE;
+-		}
+-	}
+-	return lru;
++	/* this shouldn't happen, so leave the flags to bad_page() */
++	if (PageActive(page) && PageUnevictable(page))
++		return;
++
++	__ClearPageActive(page);
++	__ClearPageUnevictable(page);
+ }
+ 
+ /**
+--- a/mm/swap.c
++++ b/mm/swap.c
+@@ -67,9 +67,8 @@ static void __page_cache_release(struct
+ 		spin_lock_irqsave(&pgdat->lru_lock, flags);
+ 		lruvec = mem_cgroup_page_lruvec(page, pgdat);
+ 		VM_BUG_ON_PAGE(!PageLRU(page), page);
+-		__ClearPageLRU(page);
+ 		del_page_from_lru_list(page, lruvec);
+-		page_off_lru(page);
++		__clear_page_lru_flags(page);
+ 		spin_unlock_irqrestore(&pgdat->lru_lock, flags);
+ 	}
+ 	__ClearPageWaiters(page);
+@@ -819,9 +818,8 @@ void release_pages(struct page **pages,
+ 
+ 			lruvec = mem_cgroup_page_lruvec(page, locked_pgdat);
+ 			VM_BUG_ON_PAGE(!PageLRU(page), page);
+-			__ClearPageLRU(page);
+ 			del_page_from_lru_list(page, lruvec);
+-			page_off_lru(page);
++			__clear_page_lru_flags(page);
+ 		}
+ 
+ 		__ClearPageWaiters(page);
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -1898,9 +1898,8 @@ static unsigned noinline_for_stack move_
+ 		add_page_to_lru_list(page, lruvec);
+ 
+ 		if (put_page_testzero(page)) {
+-			__ClearPageLRU(page);
+ 			del_page_from_lru_list(page, lruvec);
+-			__ClearPageActive(page);
++			__clear_page_lru_flags(page);
+ 
+ 			if (unlikely(PageCompound(page))) {
+ 				spin_unlock_irq(&pgdat->lru_lock);

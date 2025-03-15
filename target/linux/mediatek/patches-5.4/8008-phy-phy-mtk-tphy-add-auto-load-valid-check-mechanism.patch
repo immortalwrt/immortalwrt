@@ -1,0 +1,153 @@
+From 1d5819e90f2ef6dead11809744372a9863227a92 Mon Sep 17 00:00:00 2001
+From: Zhanyong Wang <zhanyong.wang@mediatek.com>
+Date: Tue, 25 Jan 2022 19:03:34 +0800
+Subject: [PATCH 5/5] phy: phy-mtk-tphy: add auto-load-valid check mechanism
+ support
+
+add auto-load-valid check mechanism support
+
+Signed-off-by: Zhanyong Wang <zhanyong.wang@mediatek.com>
+---
+ drivers/phy/mediatek/phy-mtk-tphy.c | 67 +++++++++++++++++++++++++++--
+ 1 file changed, 64 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/phy/mediatek/phy-mtk-tphy.c b/drivers/phy/mediatek/phy-mtk-tphy.c
+index 59d6ac3..4adc505 100644
+--- a/drivers/phy/mediatek/phy-mtk-tphy.c
++++ b/drivers/phy/mediatek/phy-mtk-tphy.c
+@@ -345,9 +345,13 @@ struct mtk_phy_instance {
+ 	};
+ 	struct clk *ref_clk;	/* reference clock of anolog phy */
+ 	u32 efuse_sw_en;
++	bool efuse_alv_en;
++	u32 efuse_autoloadvalid;
+ 	u32 efuse_intr;
+ 	u32 efuse_tx_imp;
+ 	u32 efuse_rx_imp;
++	bool efuse_alv_ln1_en;
++	u32 efuse_ln1_autoloadvalid;
+ 	u32 efuse_intr_ln1;
+ 	u32 efuse_tx_imp_ln1;
+ 	u32 efuse_rx_imp_ln1;
+@@ -980,6 +984,7 @@ static int phy_efuse_get(struct mtk_tphy *tphy, struct mtk_phy_instance *instanc
+ {
+ 	struct device *dev = &instance->phy->dev;
+ 	int ret = 0;
++	bool alv = false;
+ 
+ 	dev_err(dev, "try to get sw efuse\n");
+ 
+@@ -998,6 +1003,20 @@ static int phy_efuse_get(struct mtk_tphy *tphy, struct mtk_phy_instance *instanc
+ 
+ 	switch (instance->type) {
+ 	case PHY_TYPE_USB2:
++		alv = of_property_read_bool(dev->of_node, "auto_load_valid");
++		if (alv) {
++			instance->efuse_alv_en = alv;
++			ret = nvmem_cell_read_variable_le_u32(dev, "auto_load_valid",
++							&instance->efuse_autoloadvalid);
++			if (ret) {
++				dev_err(dev, "fail to get u2 alv efuse, %d\n", ret);
++				break;
++			}
++			dev_info(dev,
++				"u2 auto load valid efuse: ENABLE with value: %u\n",
++				instance->efuse_autoloadvalid);
++		}
++
+ 		ret = nvmem_cell_read_variable_le_u32(dev, "intr", &instance->efuse_intr);
+ 		if (ret) {
+ 			dev_err(dev, "fail to get u2 intr efuse, %d\n", ret);
+@@ -1015,6 +1034,20 @@ static int phy_efuse_get(struct mtk_tphy *tphy, struct mtk_phy_instance *instanc
+ 		break;
+ 	case PHY_TYPE_USB3:
+ 	case PHY_TYPE_PCIE:
++		alv = of_property_read_bool(dev->of_node, "auto_load_valid");
++		if (alv) {
++			instance->efuse_alv_en = alv;
++			ret = nvmem_cell_read_variable_le_u32(dev, "auto_load_valid",
++							&instance->efuse_autoloadvalid);
++			if (ret) {
++				dev_err(dev, "fail to get u3(pcei) alv efuse, %d\n", ret);
++				break;
++			}
++			dev_info(dev,
++				"u3 auto load valid efuse: ENABLE with value: %u\n",
++				instance->efuse_autoloadvalid);
++		}
++
+ 		ret = nvmem_cell_read_variable_le_u32(dev, "intr", &instance->efuse_intr);
+ 		if (ret) {
+ 			dev_err(dev, "fail to get u3 intr efuse, %d\n", ret);
+@@ -1049,6 +1082,20 @@ static int phy_efuse_get(struct mtk_tphy *tphy, struct mtk_phy_instance *instanc
+ 		if (tphy->pdata->version != MTK_PHY_V4)
+ 			break;
+ 
++		alv = of_property_read_bool(dev->of_node, "auto_load_valid_ln1");
++		if (alv) {
++			instance->efuse_alv_ln1_en = alv;
++			ret = nvmem_cell_read_variable_le_u32(dev, "auto_load_valid_ln1",
++							&instance->efuse_ln1_autoloadvalid);
++			if (ret) {
++				dev_err(dev, "fail to get pcie auto_load_valid efuse, %d\n", ret);
++				break;
++			}
++			dev_info(dev,
++				"pcie auto load valid efuse: ENABLE with value: %u\n",
++				instance->efuse_ln1_autoloadvalid);
++		}
++
+ 		ret = nvmem_cell_read_variable_le_u32(dev, "intr_ln1", &instance->efuse_intr_ln1);
+ 		if (ret) {
+ 			dev_err(dev, "fail to get u3 lane1 intr efuse, %d\n", ret);
+@@ -1100,6 +1147,10 @@ static void phy_efuse_set(struct mtk_phy_instance *instance)
+ 
+ 	switch (instance->type) {
+ 	case PHY_TYPE_USB2:
++		if (instance->efuse_alv_en &&
++		    instance->efuse_autoloadvalid == 1)
++			break;
++
+ 		tmp = readl(u2_banks->misc + U3P_MISC_REG1);
+ 		tmp |= MR1_EFUSE_AUTO_LOAD_DIS;
+ 		writel(tmp, u2_banks->misc + U3P_MISC_REG1);
+@@ -1112,6 +1163,10 @@ static void phy_efuse_set(struct mtk_phy_instance *instance)
+ 
+ 		break;
+ 	case PHY_TYPE_USB3:
++		if (instance->efuse_alv_en &&
++		    instance->efuse_autoloadvalid == 1)
++			break;
++
+ 		tmp = readl(u3_banks->phyd + U3P_U3_PHYD_RSV);
+ 		tmp |= P3D_RG_EFUSE_AUTO_LOAD_DIS;
+ 		writel(tmp, u3_banks->phyd + U3P_U3_PHYD_RSV);
+@@ -1138,6 +1193,10 @@ static void phy_efuse_set(struct mtk_phy_instance *instance)
+ 
+ 		break;
+ 	case PHY_TYPE_PCIE:
++		if (instance->efuse_alv_en &&
++		    instance->efuse_autoloadvalid == 1)
++			break;
++
+ 		tmp = readl(u3_banks->phyd + U3P_U3_PHYD_RSV);
+ 		tmp |= P3D_RG_EFUSE_AUTO_LOAD_DIS;
+ 		writel(tmp, u3_banks->phyd + U3P_U3_PHYD_RSV);
+@@ -1162,9 +1221,11 @@ static void phy_efuse_set(struct mtk_phy_instance *instance)
+ 			__func__, instance->efuse_tx_imp,
+ 			instance->efuse_rx_imp, instance->efuse_intr);
+ 
+-		if (!instance->efuse_intr_ln1 &&
+-		    !instance->efuse_rx_imp_ln1 &&
+-		    !instance->efuse_tx_imp_ln1)
++		if ((!instance->efuse_intr_ln1 &&
++		     !instance->efuse_rx_imp_ln1 &&
++		     !instance->efuse_tx_imp_ln1) ||
++		    (instance->efuse_alv_ln1_en &&
++		     instance->efuse_ln1_autoloadvalid == 1))
+ 			break;
+ 
+ 		tmp = readl(u3_banks->phyd + SSUSB_LN1_OFFSET + U3P_U3_PHYD_RSV);
+-- 
+2.18.0
+

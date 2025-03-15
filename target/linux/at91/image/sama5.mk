@@ -15,17 +15,23 @@ define Build/at91-sdcard
 	$(KDIR)/$(DEVICE_NAME)-fit-zImage.itb \
 	::$(DEVICE_NAME)-fit.itb
 
-  mcopy -i $@.boot \
-	$(BIN_DIR)/u-boot-$(DEVICE_DTS:at91-%=%)_mmc/u-boot.bin \
-	::u-boot.bin
-
-  $(if $(findstring sama5d4-xplained,$@), \
-	  mcopy -i $@.boot \
+  $(if $(findstring sama5d27-som1-ek,$@), \
+      mcopy -i $@.boot \
+          $(BIN_DIR)/u-boot-$(DEVICE_DTS:at91-%=%)_mmc1/u-boot.bin \
+          ::u-boot.bin
+      mcopy -i $@.boot \
+          $(BIN_DIR)/at91bootstrap-$(DEVICE_DTS:at91-%=%)sd1_uboot/at91bootstrap.bin \
+          ::BOOT.bin,
+      mcopy -i $@.boot \
+          $(BIN_DIR)/u-boot-$(DEVICE_DTS:at91-%=%)_mmc/u-boot.bin \
+          ::u-boot.bin
+      $(if $(findstring sama5d4-xplained,$@), \
+          mcopy -i $@.boot \
               $(BIN_DIR)/at91bootstrap-$(DEVICE_DTS:at91-%=%)sd_uboot_secure/at91bootstrap.bin \
               ::BOOT.bin,
           mcopy -i $@.boot \
               $(BIN_DIR)/at91bootstrap-$(DEVICE_DTS:at91-%=%)sd_uboot/at91bootstrap.bin \
-              ::BOOT.bin)
+              ::BOOT.bin))
 
   $(CP) uboot-env.txt $@-uboot-env.txt
   sed -i '2d;3d' $@-uboot-env.txt
@@ -39,7 +45,7 @@ define Build/at91-sdcard
   ./gen_at91_sdcard_img.sh \
 	$@.img \
 	$@.boot \
-	$(IMAGE_ROOTFS) \
+	$(KDIR)/root.ext4 \
 	$(AT91_SD_BOOT_PARTSIZE) \
 	$(CONFIG_TARGET_ROOTFS_PARTSIZE)
 
@@ -47,17 +53,6 @@ define Build/at91-sdcard
 
   rm -f $@.img $@.boot $@-uboot.env $@-uboot-env.txt)
 endef
-
-define Device/microchip_sama5d2-icp
-  $(Device/evaluation-dtb)
-  DEVICE_VENDOR := Microchip
-  DEVICE_MODEL := SAMA5D2 ICP
-  DEVICE_DTS := at91-sama5d2_icp
-  SUPPORTED_DEVICES := microchip,sama5d2-icp
-  KERNEL_SIZE := 6144k
-  $(Device/evaluation-sdimage)
-endef
-TARGET_DEVICES += microchip_sama5d2-icp
 
 define Device/microchip_sama5d2-xplained
   $(Device/evaluation-dtb)
@@ -80,17 +75,6 @@ define Device/microchip_sama5d27-som1-ek
   $(Device/evaluation-sdimage)
 endef
 TARGET_DEVICES += microchip_sama5d27-som1-ek
-
-define Device/microchip_sama5d27-wlsom1-ek
-  $(Device/evaluation-dtb)
-  DEVICE_VENDOR := Microchip
-  DEVICE_MODEL := SAMA5D27 WSOM1 Ek
-  DEVICE_DTS := at91-sama5d27_wlsom1_ek
-  SUPPORTED_DEVICES := microchip,sama5d27-wlsom1-ek
-  KERNEL_SIZE := 6144k
-  $(Device/evaluation-sdimage)
-endef
-TARGET_DEVICES += microchip_sama5d27-wlsom1-ek
 
 define Device/microchip_sama5d2-ptc-ek
   $(Device/evaluation-dtb)
@@ -120,7 +104,6 @@ ifeq ($(strip $(CONFIG_EXTERNAL_KERNEL_TREE)),"")
     $(Device/evaluation-fit)
     DEVICE_VENDOR := Laird
     DEVICE_MODEL := WB50N
-    DEVICE_DTS := at91-wb50n
     DEVICE_PACKAGES := \
 	  kmod-mmc-at91 kmod-ath6kl-sdio ath6k-firmware \
 	  kmod-usb-storage kmod-fs-vfat kmod-fs-msdos \

@@ -1,0 +1,110 @@
+From a36a2ac4005e9c1e58bd5e1ffd2672337d535c51 Mon Sep 17 00:00:00 2001
+From: Yu Zhao <yuzhao@google.com>
+Date: Mon, 13 Jul 2020 11:37:30 -0600
+Subject: [PATCH] BACKPORT: mm/vmscan.c: use add_page_to_lru_list()
+
+Patch series "mm: lru related cleanups", v2.
+
+The cleanups are intended to reduce the verbosity in lru list operations
+and make them less error-prone.  A typical example would be how the
+patches change __activate_page():
+
+ static void __activate_page(struct page *page, struct lruvec *lruvec)
+ {
+ 	if (!PageActive(page) && !PageUnevictable(page)) {
+-		int lru = page_lru_base_type(page);
+ 		int nr_pages = thp_nr_pages(page);
+
+-		del_page_from_lru_list(page, lruvec, lru);
++		del_page_from_lru_list(page, lruvec);
+ 		SetPageActive(page);
+-		lru += LRU_ACTIVE;
+-		add_page_to_lru_list(page, lruvec, lru);
++		add_page_to_lru_list(page, lruvec);
+ 		trace_mm_lru_activate(page);
+
+There are a few more places like __activate_page() and they are
+unnecessarily repetitive in terms of figuring out which list a page should
+be added onto or deleted from.  And with the duplicated code removed, they
+are easier to read, IMO.
+
+Patch 1 to 5 basically cover the above.  Patch 6 and 7 make code more
+robust by improving bug reporting.  Patch 8, 9 and 10 take care of some
+dangling helpers left in header files.
+
+This patch (of 10):
+
+There is add_page_to_lru_list(), and move_pages_to_lru() should reuse it,
+not duplicate it.
+
+Link: https://lkml.kernel.org/r/20210122220600.906146-1-yuzhao@google.com
+Link: https://lore.kernel.org/linux-mm/20201207220949.830352-2-yuzhao@google.com/
+Link: https://lkml.kernel.org/r/20210122220600.906146-2-yuzhao@google.com
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+Reviewed-by: Alex Shi <alex.shi@linux.alibaba.com>
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+Cc: Hugh Dickins <hughd@google.com>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Vladimir Davydov <vdavydov.dev@gmail.com>
+Cc: Roman Gushchin <guro@fb.com>
+Cc: Matthew Wilcox <willy@infradead.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+(cherry picked from commit 42895ea73bcd37c4a79e4c9f681ab8b82243c7f7)
+
+BUG=b:123039911
+TEST=Built
+
+Change-Id: I11a7493ee7263b03453c2bc203e9770e12f2577a
+Reviewed-on: https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/2940111
+Tested-by: Yu Zhao <yuzhao@chromium.org>
+Reviewed-by: Sonny Rao <sonnyrao@chromium.org>
+Commit-Queue: Yu Zhao <yuzhao@chromium.org>
+---
+ mm/vmscan.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
+
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -1879,7 +1879,7 @@ static unsigned noinline_for_stack move_
+ 						     struct list_head *list)
+ {
+ 	struct pglist_data *pgdat = lruvec_pgdat(lruvec);
+-	int nr_pages, nr_moved = 0;
++	int nr_moved = 0;
+ 	LIST_HEAD(pages_to_free);
+ 	struct page *page;
+ 	enum lru_list lru;
+@@ -1887,8 +1887,8 @@ static unsigned noinline_for_stack move_
+ 	while (!list_empty(list)) {
+ 		page = lru_to_page(list);
+ 		VM_BUG_ON_PAGE(PageLRU(page), page);
++		list_del(&page->lru);
+ 		if (unlikely(!page_evictable(page))) {
+-			list_del(&page->lru);
+ 			spin_unlock_irq(&pgdat->lru_lock);
+ 			putback_lru_page(page);
+ 			spin_lock_irq(&pgdat->lru_lock);
+@@ -1898,10 +1898,7 @@ static unsigned noinline_for_stack move_
+ 
+ 		SetPageLRU(page);
+ 		lru = page_lru(page);
+-
+-		nr_pages = hpage_nr_pages(page);
+-		update_lru_size(lruvec, lru, page_zonenum(page), nr_pages);
+-		list_move(&page->lru, &lruvec->lists[lru]);
++		add_page_to_lru_list(page, lruvec, lru);
+ 
+ 		if (put_page_testzero(page)) {
+ 			__ClearPageLRU(page);
+@@ -1915,7 +1912,7 @@ static unsigned noinline_for_stack move_
+ 			} else
+ 				list_add(&page->lru, &pages_to_free);
+ 		} else {
+-			nr_moved += nr_pages;
++			nr_moved += hpage_nr_pages(page);
+ 		}
+ 	}
+ 

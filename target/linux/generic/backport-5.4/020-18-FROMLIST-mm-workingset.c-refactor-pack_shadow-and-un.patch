@@ -1,0 +1,145 @@
+From 42d051841615dd1e9d6806616f6a7ed4a78ba1c5 Mon Sep 17 00:00:00 2001
+From: Yu Zhao <yuzhao@google.com>
+Date: Wed, 5 May 2021 12:21:41 -0600
+Subject: [PATCH] FROMLIST: mm/workingset.c: refactor pack_shadow() and
+ unpack_shadow()
+
+This patches moves the bucket order and PageWorkingset() out of
+pack_shadow() and unpack_shadow(). It has no merits on its own but
+makes the upcoming changes to mm/workingset.c less diffy.
+
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
+(am from https://lore.kernel.org/patchwork/patch/1432181/)
+
+BUG=b:123039911
+TEST=Built
+
+Change-Id: I474378b573d2e1614a9798dca0949d1d6fba3e25
+Reviewed-on: https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/2951286
+Reviewed-by: Yu Zhao <yuzhao@chromium.org>
+Commit-Queue: Yu Zhao <yuzhao@chromium.org>
+Tested-by: Yu Zhao <yuzhao@chromium.org>
+---
+ mm/workingset.c | 55 +++++++++++++++++++++----------------------------
+ 1 file changed, 23 insertions(+), 32 deletions(-)
+
+--- a/mm/workingset.c
++++ b/mm/workingset.c
+@@ -167,9 +167,9 @@
+  * refault distance will immediately activate the refaulting page.
+  */
+ 
+-#define EVICTION_SHIFT	((BITS_PER_LONG - BITS_PER_XA_VALUE) +	\
+-			 1 + NODES_SHIFT + MEM_CGROUP_ID_SHIFT)
+-#define EVICTION_MASK	(~0UL >> EVICTION_SHIFT)
++#define EVICTION_SHIFT		(BITS_PER_XA_VALUE - MEM_CGROUP_ID_SHIFT - NODES_SHIFT)
++#define EVICTION_MASK		(BIT(EVICTION_SHIFT) - 1)
++#define WORKINGSET_WIDTH	1
+ 
+ /*
+  * Eviction timestamps need to be able to cover the full range of
+@@ -181,36 +181,23 @@
+  */
+ static unsigned int bucket_order __read_mostly;
+ 
+-static void *pack_shadow(int memcgid, pg_data_t *pgdat, unsigned long eviction,
+-			 bool workingset)
++static void *pack_shadow(int memcg_id, struct pglist_data *pgdat, unsigned long val)
+ {
+-	eviction >>= bucket_order;
+-	eviction &= EVICTION_MASK;
+-	eviction = (eviction << MEM_CGROUP_ID_SHIFT) | memcgid;
+-	eviction = (eviction << NODES_SHIFT) | pgdat->node_id;
+-	eviction = (eviction << 1) | workingset;
++	val = (val << MEM_CGROUP_ID_SHIFT) | memcg_id;
++	val = (val << NODES_SHIFT) | pgdat->node_id;
+ 
+-	return xa_mk_value(eviction);
++	return xa_mk_value(val);
+ }
+ 
+-static void unpack_shadow(void *shadow, int *memcgidp, pg_data_t **pgdat,
+-			  unsigned long *evictionp, bool *workingsetp)
++static unsigned long unpack_shadow(void *shadow, int *memcg_id, struct pglist_data **pgdat)
+ {
+-	unsigned long entry = xa_to_value(shadow);
+-	int memcgid, nid;
+-	bool workingset;
++	unsigned long val = xa_to_value(shadow);
+ 
+-	workingset = entry & 1;
+-	entry >>= 1;
+-	nid = entry & ((1UL << NODES_SHIFT) - 1);
+-	entry >>= NODES_SHIFT;
+-	memcgid = entry & ((1UL << MEM_CGROUP_ID_SHIFT) - 1);
+-	entry >>= MEM_CGROUP_ID_SHIFT;
+-
+-	*memcgidp = memcgid;
+-	*pgdat = NODE_DATA(nid);
+-	*evictionp = entry << bucket_order;
+-	*workingsetp = workingset;
++	*pgdat = NODE_DATA(val & (BIT(NODES_SHIFT) - 1));
++	val >>= NODES_SHIFT;
++	*memcg_id = val & (BIT(MEM_CGROUP_ID_SHIFT) - 1);
++
++	return val >> MEM_CGROUP_ID_SHIFT;
+ }
+ 
+ /**
+@@ -235,7 +222,9 @@ void *workingset_eviction(struct page *p
+ 
+ 	lruvec = mem_cgroup_lruvec(pgdat, memcg);
+ 	eviction = atomic_long_inc_return(&lruvec->inactive_age);
+-	return pack_shadow(memcgid, pgdat, eviction, PageWorkingset(page));
++	eviction >>= bucket_order;
++	eviction = (eviction << WORKINGSET_WIDTH) | PageWorkingset(page);
++	return pack_shadow(memcgid, pgdat, eviction);
+ }
+ 
+ /**
+@@ -258,7 +247,7 @@ void workingset_refault(struct page *pag
+ 	bool workingset;
+ 	int memcgid;
+ 
+-	unpack_shadow(shadow, &memcgid, &pgdat, &eviction, &workingset);
++	eviction = unpack_shadow(shadow, &memcgid, &pgdat);
+ 
+ 	rcu_read_lock();
+ 	/*
+@@ -282,6 +271,8 @@ void workingset_refault(struct page *pag
+ 		goto out;
+ 	lruvec = mem_cgroup_lruvec(pgdat, memcg);
+ 	refault = atomic_long_read(&lruvec->inactive_age);
++	workingset = eviction & (BIT(WORKINGSET_WIDTH) - 1);
++	eviction = (eviction >> WORKINGSET_WIDTH) << bucket_order;
+ 	active_file = lruvec_lru_size(lruvec, LRU_ACTIVE_FILE, MAX_NR_ZONES);
+ 
+ 	/*
+@@ -300,7 +291,7 @@ void workingset_refault(struct page *pag
+ 	 * longest time, so the occasional inappropriate activation
+ 	 * leading to pressure on the active list is not a problem.
+ 	 */
+-	refault_distance = (refault - eviction) & EVICTION_MASK;
++	refault_distance = (refault - eviction) & (EVICTION_MASK >> WORKINGSET_WIDTH);
+ 
+ 	inc_lruvec_state(lruvec, WORKINGSET_REFAULT);
+ 
+@@ -539,7 +530,7 @@ static int __init workingset_init(void)
+ 	unsigned int max_order;
+ 	int ret;
+ 
+-	BUILD_BUG_ON(BITS_PER_LONG < EVICTION_SHIFT);
++	BUILD_BUG_ON(EVICTION_SHIFT < WORKINGSET_WIDTH);
+ 	/*
+ 	 * Calculate the eviction bucket size to cover the longest
+ 	 * actionable refault distance, which is currently half of
+@@ -547,7 +538,7 @@ static int __init workingset_init(void)
+ 	 * some more pages at runtime, so keep working with up to
+ 	 * double the initial memory by using totalram_pages as-is.
+ 	 */
+-	timestamp_bits = BITS_PER_LONG - EVICTION_SHIFT;
++	timestamp_bits = EVICTION_SHIFT - WORKINGSET_WIDTH;
+ 	max_order = fls_long(totalram_pages() - 1);
+ 	if (max_order > timestamp_bits)
+ 		bucket_order = max_order - timestamp_bits;

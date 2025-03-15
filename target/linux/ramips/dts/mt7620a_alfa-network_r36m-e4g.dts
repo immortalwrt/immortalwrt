@@ -4,7 +4,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "alfa-network,r36m-e4g", "ralink,mt7620a-soc";
@@ -87,8 +86,7 @@
 		};
 
 		lan {
-			function = LED_FUNCTION_LAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:lan";
 			gpios = <&gpio2 3 GPIO_ACTIVE_LOW>;
 		};
 
@@ -111,14 +109,12 @@
 		};
 
 		wan {
-			function = LED_FUNCTION_WAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:wan";
 			gpios = <&gpio2 4 GPIO_ACTIVE_LOW>;
 		};
 
 		wlan {
-			function = LED_FUNCTION_WLAN;
-			color = <LED_COLOR_ID_ORANGE>;
+			label = "orange:wlan";
 			gpios = <&gpio3 0 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "phy0radio";
 		};
@@ -130,8 +126,7 @@
 };
 
 &ethernet {
-	nvmem-cells = <&macaddr_factory_28>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0x28>;
 };
 
 &gpio1 {
@@ -192,24 +187,10 @@
 				read-only;
 			};
 
-			partition@40000 {
+			factory: partition@40000 {
 				label = "factory";
 				reg = <0x40000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_factory_0: eeprom@0 {
-						reg = <0x0 0x200>;
-					};
-
-					macaddr_factory_28: macaddr@28 {
-						reg = <0x28 0x6>;
-					};
-				};
 			};
 
 			partition@50000 {
@@ -226,6 +207,5 @@
 };
 
 &wmac {
-	nvmem-cells = <&eeprom_factory_0>;
-	nvmem-cell-names = "eeprom";
+	ralink,mtd-eeprom = <&factory 0x0>;
 };

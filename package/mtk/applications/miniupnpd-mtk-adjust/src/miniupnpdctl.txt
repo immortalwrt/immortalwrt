@@ -1,0 +1,18 @@
+miniupnpdctl
+
+the communication between a running miniupnpd and miniupnpdctl is
+established through a unix socket. "/var/run/miniupnpd.ctl"
+
+miniupnpdctl can send the following commands :
+
+1 - print all open sockets
+2 - print config
+3 - print current redirections
+
+show options
+show permissions/show perms?
+show rdr
+show opensockets
+
+show all ?
+

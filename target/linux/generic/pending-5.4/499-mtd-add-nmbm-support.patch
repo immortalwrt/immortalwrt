@@ -1,0 +1,21 @@
+--- a/drivers/mtd/Kconfig
++++ b/drivers/mtd/Kconfig
+@@ -228,6 +228,8 @@ source "drivers/mtd/ubi/Kconfig"
+ 
+ source "drivers/mtd/hyperbus/Kconfig"
+ 
++source "drivers/mtd/nmbm/Kconfig"
++
+ source "drivers/mtd/composite/Kconfig"
+ 
+ endif # MTD
+--- a/drivers/mtd/Makefile
++++ b/drivers/mtd/Makefile
+@@ -33,5 +33,7 @@ obj-$(CONFIG_MTD_SPI_NOR)	+= spi-nor/
+ obj-$(CONFIG_MTD_UBI)		+= ubi/
+ obj-$(CONFIG_MTD_HYPERBUS)	+= hyperbus/
+ 
++obj-y				+= nmbm/
++
+ # Composite drivers must be loaded last
+ obj-y				+= composite/

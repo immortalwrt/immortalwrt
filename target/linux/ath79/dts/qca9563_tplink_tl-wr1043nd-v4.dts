@@ -1,16 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
-#include <dt-bindings/leds/common.h>
-
 #include "qca9563_tplink_tl-wr1043n.dtsi"
 
 / {
 	compatible = "tplink,tl-wr1043nd-v4", "qca,qca9563";
 	model = "TP-Link TL-WR1043ND v4";
-
-	aliases {
-		label-mac-device = &wmac;
-	};
 
 	gpio-export {
 		compatible = "gpio-export";
@@ -53,16 +47,6 @@
 				label = "info";
 				reg = <0xf50000 0x020000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_info_8: macaddr@8 {
-						reg = <0x8 0x6>;
-					};
-				};
 			};
 
 			partition@f70000 {
@@ -83,20 +67,10 @@
 				read-only;
 			};
 
-			partition@ff0000 {
+			art: partition@ff0000 {
 				label = "art";
 				reg = <0xff0000 0x010000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					cal_art_1000: calibration@1000 {
-						reg = <0x1000 0x440>;
-					};
-				};
 			};
 		};
 	};
@@ -104,8 +78,7 @@
 
 &leds {
 	usb {
-		function = LED_FUNCTION_USB;
-		color = <LED_COLOR_ID_GREEN>;
+		label = "green:usb";
 		gpios = <&gpio 7 GPIO_ACTIVE_LOW>;
 		trigger-sources = <&hub_port0>;
 		linux,default-trigger = "usbport";
@@ -117,15 +90,12 @@
 };
 
 &usb0 {
+	#address-cells = <1>;
+	#size-cells = <0>;
 	status = "okay";
-};
 
-&eth0 {
-	nvmem-cells = <&macaddr_info_8>;
-	nvmem-cell-names = "mac-address";
-};
-
-&wmac {
-	nvmem-cells = <&macaddr_info_8>, <&cal_art_1000>;
-	nvmem-cell-names = "mac-address", "calibration";
+	hub_port0: port@1 {
+		reg = <1>;
+		#trigger-source-cells = <0>;
+	};
 };

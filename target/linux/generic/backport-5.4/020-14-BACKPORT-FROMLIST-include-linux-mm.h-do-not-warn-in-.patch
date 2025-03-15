@@ -1,0 +1,57 @@
+From 5e63b5c96495b43418b56abc29abf15438fdd2fd Mon Sep 17 00:00:00 2001
+From: Yu Zhao <yuzhao@google.com>
+Date: Tue, 29 Sep 2020 14:54:14 -0600
+Subject: [PATCH] BACKPORT: FROMLIST: include/linux/mm.h: do not warn in
+ page_memcg_rcu() if !CONFIG_MEMCG
+
+page_memcg_rcu() warns on !rcu_read_lock_held() regardless of
+CONFIG_MEMCG. The following legit code trips the warning when
+!CONFIG_MEMCG, since lock_page_memcg() and unlock_page_memcg() are
+empty for this config.
+
+  memcg = lock_page_memcg(page1)
+    (rcu_read_lock() if CONFIG_MEMCG=y)
+
+  do something to page1
+
+  if (page_memcg_rcu(page2) == memcg)
+    do something to page2 too as it cannot be migrated away from the
+    memcg either.
+
+  unlock_page_memcg(page1)
+    (rcu_read_unlock() if CONFIG_MEMCG=y)
+
+Locking/unlocking rcu consistently for both configs is rigorous but it
+also forces unnecessary locking upon users who have no interest in
+CONFIG_MEMCG.
+
+This patch removes the assertion for !CONFIG_MEMCG, because
+page_memcg_rcu() has a few callers and there are no concerns regarding
+their correctness at the moment.
+
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
+(am from https://lore.kernel.org/patchwork/patch/1432176/)
+
+BUG=b:123039911
+TEST=Built
+
+Change-Id: I0d3d8d5cfc69827d2214641d689480cded0557e2
+Reviewed-on: https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/2951282
+Reviewed-by: Yu Zhao <yuzhao@chromium.org>
+Commit-Queue: Yu Zhao <yuzhao@chromium.org>
+Tested-by: Yu Zhao <yuzhao@chromium.org>
+---
+ include/linux/mm.h | 1 -
+ 1 file changed, 1 deletion(-)
+
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1329,7 +1329,6 @@ static inline struct mem_cgroup *page_me
+ }
+ static inline struct mem_cgroup *page_memcg_rcu(struct page *page)
+ {
+-	WARN_ON_ONCE(!rcu_read_lock_held());
+ 	return NULL;
+ }
+ #endif

@@ -1,0 +1,217 @@
+# $Id: Makefile.linux,v 1.95 2017/12/12 11:40:14 nanard Exp $
+# MiniUPnP project
+# (c) 2006-2021 Thomas Bernard
+# http://miniupnp.free.fr/ or https://miniupnp.tuxfamily.org/
+# Author : Thomas Bernard
+# for use with GNU Make
+#
+# options can be passed to configure through CONFIG_OPTIONS :
+# $ CONFIG_OPTIONS="--ipv6 --igd2" make
+#
+# To install use :
+# $ DESTDIR=/dummyinstalldir make install
+# or :
+# $ INSTALLPREFIX=/usr/local make install
+# or :
+# $ make install
+# (default INSTALLPREFIX is /usr)
+#
+# if your system hasn't iptables libiptc headers and binary correctly
+# installed, you need to get iptables sources from http://netfilter.org/
+# ./configure them and build them then miniupnpd will build using :
+# $ IPTABLESPATH=/path/to/iptables-1.4.1 make
+#
+CONFIG_OPTIONS ?= $(cat .configure.cache)
+CONFIG_OPTIONS += --firewall=iptables
+#CFLAGS = -O -g -DDEBUG
+CFLAGS ?= -Os
+CFLAGS += -fno-strict-aliasing
+CFLAGS += -fno-common
+CFLAGS += -fstack-protector -fPIE
+CFLAGS += -D_FORTIFY_SOURCE=2
+CPPFLAGS += -D_GNU_SOURCE
+CFLAGS += -Wall
+CFLAGS += -Wextra -Wstrict-prototypes -Wdeclaration-after-statement
+#CFLAGS += -Wno-missing-field-initializers
+#CFLAGS += -ansi	# iptables headers does use typeof which is a gcc extension
+LDFLAGS += -Wl,-z,now -Wl,-z,relro -pie
+CC ?= gcc
+RM = rm -f
+INSTALL = install
+STRIP ?= strip
+PKG_CONFIG ?= pkg-config
+CP = cp
+DOXYGEN ?= doxygen
+
+DEPFLAGS = -MM -MG -MT $(patsubst %.d,%.o,$@) -MT $@
+# -M : with system headers, -MM : without
+
+INSTALLPREFIX ?= $(PREFIX)/usr
+SBININSTALLDIR ?= $(INSTALLPREFIX)/sbin
+ETCINSTALLDIR = $(PREFIX)/etc/miniupnpd
+MANINSTALLDIR = $(INSTALLPREFIX)/share/man/man8
+
+include config.mk
+include $(SRCDIR)/gitrev.mk
+include $(SRCDIR)/objects.mk
+
+# sources in netfilter/ directory
+NETFILTEROBJS = iptcrdr.o iptpinhole.o nfct_get.o
+
+ALLOBJS = $(BASEOBJS) $(LNXOBJS) $(NETFILTEROBJS)
+
+DEP = $(ALLOBJS:.o=.d)
+
+NETFILTER_SCRIPTS = $(addprefix $(SRCDIR)/netfilter/, \
+	iptables_init.sh iptables_removeall.sh \
+	ip6tables_init.sh ip6tables_removeall.sh \
+	miniupnpd_functions.sh)
+
+ifneq ($(IPTABLES_PCFILE_FOUND),1)
+
+ifeq "$(wildcard /etc/gentoo-release )" ""
+LDLIBS ?= -liptc
+else # gentoo
+# the following is better, at least on gentoo with iptables 1.4.6
+# see http://miniupnp.tuxfamily.org/forum/viewtopic.php?p=1618
+# and http://miniupnp.tuxfamily.org/forum/viewtopic.php?p=2183
+LDLIBS ?= -lip4tc
+CPPFLAGS := -DIPTABLES_143 $(CPPFLAGS)
+endif
+
+endif # ifneq ($(IPTABLES_PCFILE_FOUND),1)
+
+#LDLIBS += -lnfnetlink
+
+# OpenWrt packager disables https server for IGD v2 and hardcodes libuuid support
+ifeq ($(TARGET_OPENWRT),)
+LDLIBS += $(shell $(PKG_CONFIG) --static --libs-only-l libssl)
+
+TEST := $(shell $(PKG_CONFIG) --exists uuid && echo 1)
+ifeq ($(TEST),1)
+LDLIBS += $(shell $(PKG_CONFIG) --static --libs-only-l uuid)
+else
+$(info please install uuid-dev package / libuuid)
+endif # ($(TEST),1)
+endif # ($(TARGET_OPENWRT,)
+
+ifneq ($(shell ldd --version | grep GLIBC),)
+GLIBC_VERSION := $(shell ldd --version | head -n 1 | sed 's/^.* //')
+GLIBC_VERSION_MAJOR = $(shell echo $(GLIBC_VERSION) | cut -f 1 -d . )
+GLIBC_VERSION_MINOR = $(shell echo $(GLIBC_VERSION) | cut -f 2 -d . )
+# clock_gettime() needs -lrt when glibc version < 2.17
+LDLIBS += $(shell if [ $(GLIBC_VERSION_MAJOR) -lt 2 ] \
+  || [ \( $(GLIBC_VERSION_MAJOR) -eq 2 \) -a \( $(GLIBC_VERSION_MINOR) -lt 17 \) ] ; \
+  then echo "-lrt" ; fi )
+endif
+
+TESTUPNPDESCGENOBJS = testupnpdescgen.o upnpdescgen.o
+
+EXECUTABLES = miniupnpd testupnpdescgen testgetifstats \
+              testupnppermissions miniupnpdctl testgetifaddr \
+              testgetroute testasyncsendto testportinuse \
+              testssdppktgen testminissdp
+
+.PHONY:	all clean install depend dox
+
+all:	$(EXECUTABLES)
+
+clean:
+	$(RM) config.h
+	$(RM) $(ALLOBJS)
+	$(RM) $(DEP)
+	$(RM) $(EXECUTABLES)
+	$(RM) testupnpdescgen.o testgetifstats.o
+	$(RM) testupnppermissions.o testgetifaddr.o
+	$(RM) testgetroute.o testasyncsendto.o
+	$(RM) testportinuse.o
+	$(RM) testminissdp.o
+	$(RM) testssdppktgen.o
+	$(RM) miniupnpdctl.o
+	$(RM) validateupnppermissions validategetifaddr validatessdppktgen
+	$(RM) -r dox/
+
+install:	miniupnpd $(SRCDIR)/miniupnpd.8 $(SRCDIR)/miniupnpd.conf \
+	$(NETFILTER_SCRIPTS) \
+	$(SRCDIR)/linux/miniupnpd.init.d.script
+	$(STRIP) miniupnpd
+	$(INSTALL) -d $(DESTDIR)$(SBININSTALLDIR)
+	$(INSTALL) miniupnpd $(DESTDIR)$(SBININSTALLDIR)
+	$(INSTALL) -d $(DESTDIR)$(ETCINSTALLDIR)
+	$(INSTALL) $(SRCDIR)/netfilter/iptables_init.sh $(DESTDIR)$(ETCINSTALLDIR)
+	$(INSTALL) $(SRCDIR)/netfilter/iptables_removeall.sh $(DESTDIR)$(ETCINSTALLDIR)
+	$(INSTALL) $(SRCDIR)/netfilter/ip6tables_init.sh $(DESTDIR)$(ETCINSTALLDIR)
+	$(INSTALL) $(SRCDIR)/netfilter/ip6tables_removeall.sh $(DESTDIR)$(ETCINSTALLDIR)
+	$(INSTALL) $(SRCDIR)/netfilter/miniupnpd_functions.sh $(DESTDIR)$(ETCINSTALLDIR)
+	$(INSTALL) -m 0644 -b $(SRCDIR)/miniupnpd.conf $(DESTDIR)$(ETCINSTALLDIR)
+	$(INSTALL) -d $(DESTDIR)$(PREFIX)/etc/init.d
+	$(INSTALL) $(SRCDIR)/linux/miniupnpd.init.d.script $(DESTDIR)$(PREFIX)/etc/init.d/miniupnpd
+	$(INSTALL) -d $(DESTDIR)$(MANINSTALLDIR)
+	$(INSTALL) -m 0644 $(SRCDIR)/miniupnpd.8 $(DESTDIR)$(MANINSTALLDIR)
+	gzip -f $(DESTDIR)$(MANINSTALLDIR)/miniupnpd.8
+
+# genuuid is using the uuidgen CLI tool which is part of libuuid
+# from the e2fsprogs
+# 'cat /proc/sys/kernel/random/uuid' could be also used
+miniupnpd.conf:	$(SRCDIR)/miniupnpd.conf
+ifeq ($(TARGET_OPENWRT),)
+	sed -e "s/^uuid=[-0-9a-f]*/uuid=`(genuuid||uuidgen||uuid) 2>/dev/null`/" $< > $@.tmp
+else
+	sed -e "s/^uuid=[-0-9a-f]*/uuid=`($(STAGING_DIR_HOST)/bin/genuuid||$(STAGING_DIR_HOST)/bin/uuidgen||$(STAGING_DIR_HOST)/bin/uuid) 2>/dev/null`/" $< > $@.tmp
+endif
+	mv $@.tmp $@
+
+include $(SRCDIR)/check.mk
+
+miniupnpd:	$(BASEOBJS) $(LNXOBJS) $(NETFILTEROBJS)
+
+testupnpdescgen:	$(TESTUPNPDESCGENOBJS)
+
+testgetifstats:	testgetifstats.o getifstats.o
+
+testupnppermissions:	testupnppermissions.o upnppermissions.o
+
+testgetifaddr:	testgetifaddr.o getifaddr.o
+
+testgetroute:	testgetroute.o getroute.o upnputils.o
+
+testssdppktgen:	testssdppktgen.o
+
+testasyncsendto:	testasyncsendto.o asyncsendto.o upnputils.o \
+	getroute.o
+
+testportinuse:	testportinuse.o portinuse.o getifaddr.o \
+	iptcrdr.o
+
+testminissdp:	testminissdp.o minissdp.o upnputils.o upnpglobalvars.o \
+	asyncsendto.o getroute.o
+
+
+miniupnpdctl:	miniupnpdctl.o
+
+config.mk config.h:	$(SRCDIR)/configure $(SRCDIR)/VERSION
+	$(SHELL) $< $(CONFIG_OPTIONS)
+
+depend:	$(DEP)
+
+%.d:	$(SRCDIR)/%.c
+	$(CC) $(CPPFLAGS) $(DEPFLAGS) -o $@ $<
+
+dox:	$(SRCDIR)/miniupnpd.doxyconf
+	(cat $< ; echo "INPUT=$(SRCDIR)" ) | $(DOXYGEN) -
+
+%.o:	$(SRCDIR)/%.c
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
+
+%.o:	$(SRCDIR)/linux/%.c
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
+
+%.o:	$(SRCDIR)/netfilter/%.c
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
+
+print-%:
+	@echo "$* = $($*)"
+
+ifneq ($(MAKECMDGOALS),clean)
+-include $(DEP)
+endif

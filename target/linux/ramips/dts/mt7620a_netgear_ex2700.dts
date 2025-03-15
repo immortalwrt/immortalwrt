@@ -3,11 +3,7 @@
  * Copyright (C) 2016 Joseph C. Lehner <joseph.c.lehner@gmail.com>
  */
 
-#include "mt7620a.dtsi"
-
-#include <dt-bindings/gpio/gpio.h>
-#include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
+#include "mt7620a_netgear_ex2700_wn3000rp-v3.dtsi"
 
 / {
 	compatible = "netgear,ex2700", "ralink,mt7620a-soc";
@@ -20,35 +16,17 @@
 		led-upgrade = &led_power_green;
 	};
 
-	keys {
-		compatible = "gpio-keys";
-
-		reset {
-			label = "reset";
-			gpios = <&gpio0 1 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_RESTART>;
-		};
-
-		wps {
-			label = "wps";
-			gpios = <&gpio0 2 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_WPS_BUTTON>;
-		};
-	};
-
 	leds {
 		compatible = "gpio-leds";
 
 		led_power_green: power_g {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio0 9 GPIO_ACTIVE_LOW>;
 			default-state = "on";
 		};
 
 		power_r {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_RED>;
+			label = "red:power";
 			gpios = <&gpio0 11 GPIO_ACTIVE_LOW>;
 		};
 
@@ -73,88 +51,34 @@
 		};
 
 		wps {
-			function = LED_FUNCTION_WPS;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:wps";
 			gpios = <&gpio1 15 GPIO_ACTIVE_LOW>;
 		};
 	};
 };
 
-&gpio1 {
-	status = "okay";
-};
-
-&spi0 {
-	status = "okay";
-
-	flash@0 {
-		compatible = "jedec,spi-nor";
-		reg = <0>;
-		spi-max-frequency = <10000000>;
-
-		partitions {
-			compatible = "fixed-partitions";
-			#address-cells = <1>;
-			#size-cells = <1>;
-
-			partition@0 {
-				label = "u-boot";
-				reg = <0x0 0x30000>;
-				read-only;
-			};
-
-			partition@30000 {
-				label = "u-boot-env";
-				reg = <0x30000 0x10000>;
-				read-only;
-			};
-
-			partition@40000 {
-				compatible = "denx,uimage";
-				label = "firmware";
-				reg = <0x40000 0x3b0000>;
-			};
-
-			partition@3f0000 {
-				label = "art";
-				reg = <0x3f0000 0x10000>;
-				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_art_0: macaddr@0 {
-						reg = <0x0 0x6>;
-					};
-
-					macaddr_art_6: macaddr@6 {
-						reg = <0x6 0x6>;
-					};
-
-					eeprom_art_1000: eeprom@1000 {
-						reg = <0x1000 0x200>;
-					};
-				};
-			};
-		};
+&partitions {
+	partition@0 {
+		label = "u-boot";
+		reg = <0x0 0x30000>;
+		read-only;
 	};
-};
 
-&ethernet {
-	nvmem-cells = <&macaddr_art_0>;
-	nvmem-cell-names = "mac-address";
-};
+	partition@30000 {
+		label = "u-boot-env";
+		reg = <0x30000 0x10000>;
+		read-only;
+	};
 
-&wmac {
-	nvmem-cells = <&eeprom_art_1000>, <&macaddr_art_6>;
-	nvmem-cell-names = "eeprom", "mac-address";
-};
+	partition@40000 {
+		compatible = "denx,uimage";
+		label = "firmware";
+		reg = <0x40000 0x3b0000>;
+	};
 
-&state_default {
-	default {
-		groups = "i2c", "uartf", "spi refclk";
-		function = "gpio";
+	art: partition@3f0000 {
+		label = "art";
+		reg = <0x3f0000 0x10000>;
+		read-only;
 	};
 };

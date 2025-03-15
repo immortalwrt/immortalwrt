@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
-#include <dt-bindings/leds/common.h>
-
 #include "ar9344_tplink_cpe.dtsi"
 
 / {
@@ -16,8 +14,7 @@
 		compatible = "gpio-leds";
 
 		lan {
-			function = LED_FUNCTION_LAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:lan";
 			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
 		};
 

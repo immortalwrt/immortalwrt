@@ -1,0 +1,11 @@
+--- a/mt_wifi/embedded/common/cmm_sanity.c	2022-11-27 21:58:55.000000000 +0800
++++ b/mt_wifi/embedded/common/cmm_sanity.c	2023-09-02 10:45:49.871356520 +0800
+@@ -245,7 +245,7 @@ BOOLEAN PeerAddBARspActionSanity(
+ 	pAddFrame->TimeOutValue = cpu2le16(pAddFrame->TimeOutValue);
+ 
+ 	if (pAddFrame->BaParm.BAPolicy != IMMED_BA) {
+-		MTWF_DBG(pAd, DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_WARN, "ADDBA Resp Ba Policy[%d] not support\n", pAddFrame->BaParm.BAPolicy);
++		MTWF_DBG(pAd, DBG_CAT_MLME, DBG_SUBCAT_ALL, DBG_LVL_DEBUG, "ADDBA Resp Ba Policy[%d] not support\n", pAddFrame->BaParm.BAPolicy);
+ 		return FALSE;
+ 	}
+ 

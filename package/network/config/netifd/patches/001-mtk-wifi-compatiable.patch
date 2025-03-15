@@ -1,0 +1,63 @@
+diff -u -r a/wireless.c b/wireless.c
+--- a/wireless.c	2025-01-05 00:21:27.485086788 +0800
++++ b/wireless.c	2025-01-05 00:23:21.337303616 +0800
+@@ -1156,16 +1156,16 @@
+ {
+ 	struct wireless_station *sta;
+ 	struct blob_attr *tb[__STA_ATTR_MAX];
+-	struct blob_attr *cur;
++	//struct blob_attr *cur;
+ 	char *name_buf;
+ 	char name[8];
+ 
+ 	blobmsg_parse_attr(sta_policy, __STA_ATTR_MAX, tb, data);
+-
++/*
+ 	cur = tb[STA_ATTR_DISABLED];
+ 	if (cur && blobmsg_get_bool(cur))
+ 		return;
+-
++*/
+ 	sprintf(name, "%d", vif->sta_idx++);
+ 
+ 	sta = calloc_a(sizeof(*sta),
+@@ -1196,16 +1196,16 @@
+ {
+ 	struct wireless_vlan *vlan;
+ 	struct blob_attr *tb[__VLAN_ATTR_MAX];
+-	struct blob_attr *cur;
++	//struct blob_attr *cur;
+ 	char *name_buf;
+ 	char name[8];
+ 
+ 	blobmsg_parse_attr(vlan_policy, __VLAN_ATTR_MAX, tb, data);
+-
++/*
+ 	cur = tb[VLAN_ATTR_DISABLED];
+ 	if (cur && blobmsg_get_bool(cur))
+ 		return;
+-
++*/
+ 	sprintf(name, "%d", vif->vlan_idx++);
+ 
+ 	vlan = calloc_a(sizeof(*vlan), &name_buf, strlen(name) + 1);
+@@ -1236,16 +1236,16 @@
+ {
+ 	struct wireless_interface *vif;
+ 	struct blob_attr *tb[__VIF_ATTR_MAX];
+-	struct blob_attr *cur;
++	//struct blob_attr *cur;
+ 	char *name_buf;
+ 	char name[8];
+ 
+ 	blobmsg_parse_attr(vif_policy, __VIF_ATTR_MAX, tb, data);
+-
++/*
+ 	cur = tb[VIF_ATTR_DISABLED];
+ 	if (cur && blobmsg_get_bool(cur))
+ 		return NULL;
+-
++*/
+ 	sprintf(name, "%d", wdev->vif_idx++);
+ 
+ 	vif = calloc_a(sizeof(*vif),

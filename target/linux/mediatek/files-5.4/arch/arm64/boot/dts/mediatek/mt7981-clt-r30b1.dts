@@ -1,0 +1,50 @@
+/dts-v1/;
+#include "mt7981-clt-r30b1-base.dtsi"
+
+/ {
+	nmbm_spim_nand {
+		compatible = "generic,nmbm";
+
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		lower-mtd-device = <&spi_nand>;
+		forced-create;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "BL2";
+				reg = <0x00000 0x100000>;
+			};
+
+			partition@100000 {
+				label = "u-boot-env";
+				reg = <0x100000 0x80000>;
+			};
+
+			factory: partition@180000 {
+				label = "Factory";
+				reg = <0x180000 0x200000>;
+			};
+
+			partition@380000 {
+				label = "FIP";
+				reg = <0x380000 0x200000>;
+			};
+
+			partition@580000 {
+				label = "ubi";
+				reg = <0x580000 0x4000000>;
+			};
+
+			partition@4580000 {
+				label = "data";
+				reg = <0x4580000 0x2000000>;
+			};
+		};
+	};
+};

@@ -64,18 +64,6 @@
 				reg = <0x0 0x20000>;
 				label = "u-boot";
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_uboot_1fc00: macaddr@1fc00 {
-						compatible = "mac-base";
-						reg = <0x1fc00 0x6>;
-						#nvmem-cell-cells = <1>;
-					};
-				};
 			};
 
 			partition@20000 {
@@ -101,19 +89,18 @@
 		#gpio-cells = <2>;
 		gpio-controller;
 		qca,no-eeprom;
-		nvmem-cells = <&macaddr_uboot_1fc00 0>;
-		nvmem-cell-names = "mac-address";
+		mtd-mac-address = <&uboot 0x1fc00>;
 	};
 };
 
-&eth0 {		/* WAN interface, initialized last as eth1 */
+&eth0 {
 	status = "okay";
 
-	nvmem-cells = <&macaddr_uboot_1fc00 1>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&uboot 0x1fc00>;
+	mtd-mac-address-increment = <(-1)>;
 };
 
-&eth1 {		/* LAN interface, initialized first as eth0 */
-	nvmem-cells = <&macaddr_uboot_1fc00 0>;
-	nvmem-cell-names = "mac-address";
+&eth1 {
+	mtd-mac-address = <&uboot 0x1fc00>;
+	mtd-mac-address-increment = <1>;
 };

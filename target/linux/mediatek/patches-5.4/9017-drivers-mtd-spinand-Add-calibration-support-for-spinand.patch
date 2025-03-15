@@ -1,0 +1,89 @@
+From 6bd88d34cb5a5cb1d7c544c9f5b430105b000308 Mon Sep 17 00:00:00 2001
+From: "SkyLake.Huang" <skylake.huang@mediatek.com>
+Date: Thu, 23 Jun 2022 18:39:56 +0800
+Subject: [PATCH] drivers: mtd: spinand: Add calibration support for spinand
+
+Signed-off-by: SkyLake.Huang <skylake.huang@mediatek.com>
+---
+ drivers/mtd/nand/spi/core.c | 58 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 58 insertions(+)
+
+diff --git a/drivers/mtd/nand/spi/core.c b/drivers/mtd/nand/spi/core.c
+index 9f5f95ff7..b346c7a8a 100644
+--- a/drivers/mtd/nand/spi/core.c
++++ b/drivers/mtd/nand/spi/core.c
+@@ -789,6 +789,60 @@ static int spinand_manufacturer_match(struct spinand_device *spinand,
+ 	return -ENOTSUPP;
+ }
+ 
++int spinand_cal_read(void *priv, u32 *addr, int addrlen, u8 *buf, int readlen) {
++	int ret;
++	u8 status;
++	struct spinand_device *spinand = (struct spinand_device *)priv;
++	struct device *dev = &spinand->spimem->spi->dev;
++
++	typedef struct nand_pos my_pos;
++	my_pos pos;
++	typedef struct nand_page_io_req my_req;
++	my_req req;
++
++	if(addrlen != sizeof(struct nand_addr)/sizeof(unsigned int)) {
++		dev_err(dev, "Must provide correct addr(length) for spinand calibration\n");
++		return -EINVAL;
++	}
++
++	ret = spinand_reset_op(spinand);
++	if (ret)
++		return ret;
++
++	/* We should store our golden data in first target because
++	 * we can't switch target at this moment.
++	 */
++	pos = (my_pos){
++		.target = 0,
++		.lun = *addr,
++		.plane = *(addr+1),
++		.eraseblock = *(addr+2),
++		.page = *(addr+3),
++	};
++
++	req = (my_req){
++		.pos = pos,
++		.dataoffs = *(addr+4),
++		.datalen = readlen,
++		.databuf.in = buf,
++		.mode = MTD_OPS_AUTO_OOB,
++	};
++
++	ret = spinand_load_page_op(spinand, &req);
++	if (ret)
++		return ret;
++
++	ret = spinand_wait(spinand, &status);
++	if (ret < 0)
++		return ret;
++
++	struct spi_mem_op op = SPINAND_PAGE_READ_FROM_CACHE_OP(
++		false, 0, 1, buf, readlen);
++	ret = spi_mem_exec_op(spinand->spimem, &op);
++
++	return 0;
++}
++
+ static int spinand_id_detect(struct spinand_device *spinand)
+ {
+ 	u8 *id = spinand->id.data;
+@@ -1004,6 +1058,10 @@ static int spinand_init(struct spinand_device *spinand)
+ 	if (!spinand->scratchbuf)
+ 		return -ENOMEM;
+ 
++	ret = spi_mem_do_calibration(spinand->spimem, spinand_cal_read, spinand);
++	if (ret)
++		dev_err(dev, "Failed to calibrate SPI-NAND (err = %d)\n", ret);
++
+ 	ret = spinand_detect(spinand);
+ 	if (ret)
+ 		goto err_free_bufs;
+-- 
+2.18.0
+

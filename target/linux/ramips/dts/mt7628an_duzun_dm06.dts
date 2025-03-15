@@ -66,8 +66,7 @@
 };
 
 &ethernet {
-	nvmem-cells = <&macaddr_factory_4>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0x4>;
 };
 
 &esw {
@@ -96,7 +95,7 @@
 	flash@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
-		spi-max-frequency = <50000000>;
+		spi-max-frequency = <60000000>;
 		m25p,fast-read;
 
 		partitions {
@@ -116,20 +115,10 @@
 				read-only;
 			};
 
-			partition@40000 {
+			factory: partition@40000 {
 				label = "factory";
 				reg = <0x40000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_factory_4: macaddr@4 {
-						reg = <0x4 0x6>;
-					};
-				};
 			};
 
 			partition@50000 {

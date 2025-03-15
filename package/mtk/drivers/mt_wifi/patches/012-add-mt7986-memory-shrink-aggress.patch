@@ -1,0 +1,14 @@
+--- a/mt_wifi/chips/mt7986.c	2022-11-27 21:58:55.000000000 +0800
++++ b/mt_wifi/chips/mt7986.c	2023-11-15 09:48:03.261447607 +0800
+@@ -12157,7 +12157,11 @@
+ 	chip_cap->tkn_info.low_water_mark = 5;
+ 	chip_cap->tkn_info.hw_tx_token_cnt = 8192;
+ #ifdef MEMORY_SHRINK
++#ifdef MEMORY_SHRINK_AGGRESS
++	chip_cap->tkn_info.token_rx_cnt = 4592;
++#else
+ 	chip_cap->tkn_info.token_rx_cnt = 12288;
++#endif	/* MEMORY_SHRINK_AGGRESS */
+ #else
+ 	chip_cap->tkn_info.token_rx_cnt = 15360;
+ #endif

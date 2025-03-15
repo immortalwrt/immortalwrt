@@ -1,0 +1,81 @@
+--- a/drivers/spi/spi-mt65xx.c
++++ b/drivers/spi/spi-mt65xx.c
+@@ -184,7 +184,7 @@ static const struct mtk_spi_compatible m
+  */
+ static const struct mtk_chip_config mtk_default_chip_info = {
+ 	.sample_sel = 0,
+-	.get_tick_dly = 0,
++	.get_tick_dly = 1,
+ };
+ 
+ static const struct of_device_id mtk_spi_of_match[] = {
+@@ -730,8 +730,11 @@ static int mtk_spi_mem_adjust_op_size(st
+ 
+ 	if (op->data.dir != SPI_MEM_NO_DATA) {
+ 		opcode_len = 1 + op->addr.nbytes + op->dummy.nbytes;
+-		if (opcode_len + op->data.nbytes > MTK_SPI_IPM_PACKET_SIZE)
++		if (opcode_len + op->data.nbytes > MTK_SPI_IPM_PACKET_SIZE) {
+ 			op->data.nbytes = MTK_SPI_IPM_PACKET_SIZE -opcode_len;
++			/* force data buffer dma-aligned. */
++			op->data.nbytes -= op->data.nbytes % 4;
++		}
+ 	}
+ 
+ 	return 0;
+@@ -758,10 +761,6 @@ static bool mtk_spi_mem_supports_op(stru
+ 			return false;
+ 	}
+ 
+-	if (op->data.dir == SPI_MEM_DATA_IN &&
+-	    !IS_ALIGNED((size_t)op->data.buf.in, 4))
+-		return false;
+-
+ 	return true;
+ }
+ 
+@@ -820,6 +819,7 @@ static int mtk_spi_mem_exec_op(struct sp
+ 	struct mtk_spi *mdata = spi_master_get_devdata(mem->spi->master);
+ 	u32 reg_val, nio = 1, tx_size;
+ 	char *tx_tmp_buf;
++	char *rx_tmp_buf;
+ 	int ret = 0;
+ 
+ 	mdata->use_spimem = true;
+@@ -914,10 +914,18 @@ static int mtk_spi_mem_exec_op(struct sp
+ 	}
+ 
+ 	if (op->data.dir == SPI_MEM_DATA_IN) {
++		if(!IS_ALIGNED((size_t)op->data.buf.in, 4)) {
++			rx_tmp_buf = kzalloc(op->data.nbytes, GFP_KERNEL | GFP_DMA);
++			if (!rx_tmp_buf)
++				return -ENOMEM;
++		}
++		else
++			rx_tmp_buf = op->data.buf.in;
++
+ 		mdata->rx_dma = dma_map_single(mdata->dev,
+-					       op->data.buf.in,
+-					       op->data.nbytes,
+-					       DMA_FROM_DEVICE);
++						   rx_tmp_buf,
++						   op->data.nbytes,
++						   DMA_FROM_DEVICE);
+ 		if (dma_mapping_error(mdata->dev, mdata->rx_dma)) {
+ 			ret = -ENOMEM;
+ 			goto unmap_tx_dma;
+@@ -947,9 +955,14 @@ static int mtk_spi_mem_exec_op(struct sp
+ 	writel(reg_val, mdata->base + SPI_CMD_REG);
+ 
+ unmap_rx_dma:
+-	if (op->data.dir == SPI_MEM_DATA_IN)
++	if (op->data.dir == SPI_MEM_DATA_IN) {
++		if(!IS_ALIGNED((size_t)op->data.buf.in, 4)) {
++			memcpy(op->data.buf.in, rx_tmp_buf, op->data.nbytes);
++			kfree(rx_tmp_buf);
++		}
+ 		dma_unmap_single(mdata->dev, mdata->rx_dma,
+ 				 op->data.nbytes, DMA_FROM_DEVICE);
++	}
+ unmap_tx_dma:
+ 	dma_unmap_single(mdata->dev, mdata->tx_dma,
+ 			 tx_size, DMA_TO_DEVICE);

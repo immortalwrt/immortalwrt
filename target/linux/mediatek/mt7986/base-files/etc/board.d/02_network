@@ -1,0 +1,136 @@
+#!/bin/sh
+
+. /lib/functions.sh
+. /lib/functions/uci-defaults.sh
+. /lib/functions/system.sh
+
+mediatek_setup_interfaces()
+{
+	local board="$1"
+
+	case $board in
+	*fpga*)
+		ucidef_set_interfaces_lan_wan "eth0" "eth1"
+		ucidef_add_switch "switch0" \
+			"0:lan" "1:lan" "2:lan" "3:lan" "4:wan" "6u@eth0" "5u@eth1"
+		;;
+	*gsw*)
+		ucidef_set_interfaces_lan_wan "eth0" "eth1"
+		ucidef_add_switch "switch0" \
+			"0:lan" "1:lan" "2:lan" "3:lan" "4:lan" "5:lan" "6u@eth0"
+		;;
+	xiaomi,redmi-router-ax6000*)
+		ucidef_set_interfaces_lan_wan "eth1 lan1 lan2 lan3" wan
+		;;
+	bananapi,bpi-r3mini*)
+		ucidef_set_interfaces_lan_wan "eth0" wan
+		;;
+	netcore,n60 |\
+	ruijie,rg-x60-pro*)
+		ucidef_set_interfaces_lan_wan "lan0 lan1 lan2 lan3" wan
+		;;
+ 	glinet,gl-mt6000)
+ 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 lan5" wan
+ 		;;
+	jdcloud,re-cp-03)
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" wan
+		;;
+ 	tplink,tl-xdr6086)
+ 		ucidef_set_interfaces_lan_wan "lan1 lan2" wan
+ 		;;
+ 	tplink,tl-xdr6088)
+ 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 lan5" wan
+ 		;;
+	*)
+		ucidef_set_interfaces_lan_wan "lan0 lan1 lan2 lan3 lan4 lan5" eth1
+		;;
+	esac
+}
+
+mediatek_setup_macs()
+{
+	local board="$1"
+	local lan_mac=""
+	local wan_mac=""
+	local part_name="Factory"
+	
+	case $board in
+	*netcore,n60*)
+		wifi_mac=$(mtd_get_mac_binary $part_name 4)
+		lan_mac="$(macaddr_add $wifi_mac -1)"
+		wan_mac="$(macaddr_add $wifi_mac -2)"
+		;;
+	glinet,gl-mt6000)
+ 		label_mac=$(mmc_get_mac_binary factory 0x0a)
+ 		wan_mac=$label_mac
+ 		lan_mac=$(macaddr_add "$label_mac" 2)
+ 		;;
+	ruijie,rg-x60-pro*)
+ 		label_mac=$(mtd_get_mac_ascii product_info ethaddr)
+ 		wan_mac=$label_mac
+ 		lan_mac=$(macaddr_add "$label_mac" 1)
+		local b0dat="$(l1dat if2dat ra0)"
+		local b1dat="$(l1dat if2dat rax0)"
+		if [ -f ${b0dat} ] && ! grep -q "MacAddress=" ${b0dat}; then
+			local b0mac="$(macaddr_add $label_mac 2)"
+			echo "MacAddress=$b0mac" >> ${b0dat}
+		fi
+		if [ -f ${b1dat} ] && ! grep -q "MacAddress=" ${b1dat}; then
+			local b1mac="$(macaddr_add $label_mac 3)"
+			echo "MacAddress=$b1mac" >> ${b1dat}
+		fi
+ 		;;
+	jdcloud,re-cp-03)
+		wan_mac=$(mmc_get_mac_binary factory 0x2a)
+		lan_mac=$(mmc_get_mac_binary factory 0x24)
+		label_mac=$lan_mac
+		;;
+ 	tplink,tl-xdr6086|\
+ 	tplink,tl-xdr6088)
+		lan_mac=$(mtd_get_mac_binary config 0x1c)
+		wan_mac=$(macaddr_add "$lan_mac" 1)
+		local b0dat="$(l1dat if2dat ra0)"
+		local b1dat="$(l1dat if2dat rax0)"
+		if [ -f ${b0dat} ] && ! grep -q "MacAddress=" ${b0dat}; then
+			local b0mac="$lan_mac"
+			echo "MacAddress=$b0mac" >> ${b0dat}
+		fi
+		if [ -f ${b1dat} ] && ! grep -q "MacAddress=" ${b1dat}; then
+			local b1mac="$(macaddr_add $lan_mac 2)"
+			echo "MacAddress=$b1mac" >> ${b1dat}
+		fi
+		;;
+	xiaomi,redmi-router-ax6000*)
+		wan_mac=$(mtd_get_mac_ascii Bdata ethaddr_wan)
+		lan_mac=$(mtd_get_mac_ascii Bdata ethaddr)
+		;;
+	*)
+		lan_mac=$(mtd_get_mac_binary "Factory" "0x2A")
+		wan_mac=$(mtd_get_mac_binary "Factory" "0x24")
+		;;
+	esac
+
+	case "$lan_mac" in
+		00:00:00:00:00:00);;
+		ff:ff:ff:ff:ff:ff);;
+		*)
+		[ -n "$lan_mac" ] && ucidef_set_interface_macaddr "lan" "$lan_mac"
+	;;
+	esac
+
+	case "$wan_mac" in
+		00:00:00:00:00:00);;
+		ff:ff:ff:ff:ff:ff);;
+		*)
+		[ -n "$wan_mac" ] && ucidef_set_interface_macaddr "wan" "$wan_mac"
+	;;
+	esac
+}
+
+board_config_update
+board=$(board_name)
+mediatek_setup_interfaces $board
+mediatek_setup_macs $board
+board_config_flush
+
+exit 0

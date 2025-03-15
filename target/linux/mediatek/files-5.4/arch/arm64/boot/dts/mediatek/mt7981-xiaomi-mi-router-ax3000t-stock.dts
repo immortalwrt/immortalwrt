@@ -1,0 +1,53 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+/dts-v1/;
+#include "mt7981-xiaomi-mi-router.dtsi"
+
+/ { 
+	model = "Xiaomi Mi Router AX3000T (stock layout)";
+	compatible = "xiaomi,mi-router-ax3000t-stock", "mediatek,mt7981";
+};
+
+&i2c0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c_pins>;
+	status = "okay";
+
+	nfc@57 {
+		compatible = "nt082c";
+		reg = <0x57>;
+	};
+};
+
+&partitions {
+	// ubi_kernel is the ubi partition in stock.
+	partition@600000 {
+		label = "ubi_kernel";
+		reg = <0x600000 0x2200000>;
+	};
+
+	/* ubi is the result of squashing
+	 * consecutive stock partitions:
+	 * - ubi1
+	 * - overlay
+	 * - data
+	 */
+	partition@2800000 {
+		label = "ubi";
+		reg = <0x2800000 0x4e00000>;
+	};
+	
+	partition@7600000 {
+		label = "KF";
+		reg = <0x7600000 0x40000>;
+	};
+};
+
+&pio {
+	i2c_pins: i2c-pins {
+		mux {
+			function = "i2c";
+			groups = "i2c0_1";
+		};
+	};
+};

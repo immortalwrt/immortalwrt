@@ -1,0 +1,57 @@
+From 5f8c12ffa661e3707790f59827a45ff4102f2886 Mon Sep 17 00:00:00 2001
+From: Zhanyong Wang <zhanyong.wang@mediatek.com>
+Date: Mon, 15 Aug 2022 14:13:50 +0800
+Subject: [PATCH] xHCI: change compliance mode de-emphasis default as gen1
+
+Port0 is using Gen2 Phy for 10GHz, and Port0 is running
+on 5GHz actually. hence to change compliance mode de-
+emphasis default as Gen1.
+
+Signed-off-by: Zhanyong Wang <zhanyong.wang@mediatek.com>
+---
+ drivers/usb/host/xhci-mtk.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/drivers/usb/host/xhci-mtk.c b/drivers/usb/host/xhci-mtk.c
+index 2a4b73a658f9..b1201fb65fd6 100644
+--- a/drivers/usb/host/xhci-mtk.c
++++ b/drivers/usb/host/xhci-mtk.c
+@@ -24,6 +24,11 @@
+ #include "xhci-mtk.h"
+ #include "xhci-mtk-test.h"
+ 
++/* COMPLIANCE_CP5_CP7_TXDEEMPH_10G register */
++#define COMPLIANCE_CP5_CP7_TXDEEMPH_10G  0x2428
++#define CP5_CP7_TXDEEMPH_10G		 GENMASK(17, 0)
++#define CP5_CP7_TXDEEMPH_10G_VAL(val)	((val) & 0x03FFFF)
++
+ /* ip_pw_ctrl0 register */
+ #define CTRL0_IP_SW_RST	BIT(0)
+ 
+@@ -415,6 +420,7 @@ static int xhci_mtk_setup(struct usb_hcd *hcd)
+ {
+ 	struct xhci_hcd_mtk *mtk = hcd_to_mtk(hcd);
+ 	int ret;
++	u32 val;
+ 
+ 	if (usb_hcd_is_primary_hcd(hcd)) {
+ 		ret = xhci_mtk_ssusb_config(mtk);
+@@ -432,6 +438,15 @@ static int xhci_mtk_setup(struct usb_hcd *hcd)
+ 			return ret;
+ 	}
+ 
++	/* change COMPLIANCE_CP5_CP7_TXDEEMPH_10G  as Gen1 instead Gen2 */
++	if (hcd->rsrc_start == 0x11190000ULL) {
++		val  = readl(mtk->hcd->regs + COMPLIANCE_CP5_CP7_TXDEEMPH_10G);
++		val &= ~CP5_CP7_TXDEEMPH_10G;
++		val |= 0x00001;
++		val = CP5_CP7_TXDEEMPH_10G_VAL(val);
++		writel(val, mtk->hcd->regs + COMPLIANCE_CP5_CP7_TXDEEMPH_10G);
++	}
++
+ 	return ret;
+ }
+ 
+-- 
+2.18.0
+

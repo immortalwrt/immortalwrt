@@ -2,20 +2,21 @@
 
 / {
 	compatible = "zyxel,p-2812hnu-f1", "zyxel,p-2812hnu", "lantiq,xway", "lantiq,vr9";
-	model = "Zyxel P-2812HNU-F1";
+	model = "ZyXEL P-2812HNU-F1";
+
+	aliases {
+		led-usb = &led_usb1;
+		led-usb2 = &led_usb2;
+	};
 
 	leds {
-		usb1 {
+		led_usb1: usb1 {
 			label = "green:usb1";
 			gpios = <&gpio 38 GPIO_ACTIVE_LOW>;
-			trigger-sources = <&ehci_port1>;
-			linux,default-trigger = "usbport";
 		};
-		usb2 {
+		led_usb2: usb2 {
 			label = "green:usb2";
 			gpios = <&gpio 44 GPIO_ACTIVE_LOW>;
-			trigger-sources = <&ehci_port2>;
-			linux,default-trigger = "usbport";
 		};
 	};
 };
@@ -29,8 +30,6 @@
 
 		pinctrl-0 = <&nand_pins>, <&nand_cs1_pins>;
 		pinctrl-names = "default";
-
-		nand-use-soft-ecc-engine;
 
 		partitions {
 			compatible = "fixed-partitions";
@@ -47,11 +46,11 @@
 			};
 			partition@60000 {
 				label = "kernel";
-				reg = <0x60000 0x500000>;
+				reg = <0x60000 0x300000>;
 			};
-			partition@560000 {
+			partition@360000 {
 				label = "ubi";
-				reg = <0x560000 0x7aa0000>;
+				reg = <0x360000 0x7ca0000>;
 			};
 		};
 	};

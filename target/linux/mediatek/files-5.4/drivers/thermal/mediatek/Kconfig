@@ -1,0 +1,9 @@
+config MTK_SOC_THERMAL_LVTS
+        tristate "LVTS (Low voltage thermal sensor) driver for Mediatek SoCs"
+        depends on HAS_IOMEM
+        depends on NVMEM
+        help
+          Enable this option if you want to get SoC temperature
+          information for Mediatek platforms. This driver
+          configures LVTS thermal controllers to collect temperatures
+          via Analog Serial Interface(ASIF).

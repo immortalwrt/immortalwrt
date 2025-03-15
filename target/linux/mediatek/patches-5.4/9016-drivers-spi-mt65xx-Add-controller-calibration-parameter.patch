@@ -1,0 +1,48 @@
+From ac9ed3898b80a81ce220a682749767ef189094a8 Mon Sep 17 00:00:00 2001
+From: "SkyLake.Huang" <skylake.huang@mediatek.com>
+Date: Thu, 23 Jun 2022 18:39:03 +0800
+Subject: [PATCH] drivers: spi-mt65xx: Add controller's calibration paramter
+
+Signed-off-by: SkyLake.Huang <skylake.huang@mediatek.com>
+---
+ drivers/spi/spi-mt65xx.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/drivers/spi/spi-mt65xx.c b/drivers/spi/spi-mt65xx.c
+index 0afd00891..1b272d15c 100644
+--- a/drivers/spi/spi-mt65xx.c
++++ b/drivers/spi/spi-mt65xx.c
+@@ -727,6 +727,21 @@ static irqreturn_t mtk_spi_interrupt(int irq, void *dev_id)
+ 	return IRQ_HANDLED;
+ }
+ 
++static int mtk_spi_append_caldata(struct spi_controller *ctlr)
++{
++	struct spi_cal_target *cal_target = kmalloc(sizeof(*cal_target), GFP_KERNEL);
++	struct mtk_spi *mdata = spi_master_get_devdata(ctlr);
++
++	cal_target->cal_item = &mdata->dev_config.get_tick_dly;
++	cal_target->cal_min = 0;
++	cal_target->cal_max = 7;
++	cal_target->step = 1;
++
++	list_add(&cal_target->list, ctlr->cal_target);
++
++	return 0;
++}
++
+ static int mtk_spi_mem_adjust_op_size(struct spi_mem *mem,
+                                       struct spi_mem_op *op)
+ {
+@@ -1009,6 +1024,8 @@ static int mtk_spi_probe(struct platform_device *pdev)
+ 	master->can_dma = mtk_spi_can_dma;
+ 	master->setup = mtk_spi_setup;
+ 
++	master->append_caldata = mtk_spi_append_caldata;
++
+ 	of_id = of_match_node(mtk_spi_of_match, pdev->dev.of_node);
+ 	if (!of_id) {
+ 		dev_err(&pdev->dev, "failed to probe of_node\n");
+-- 
+2.18.0
+

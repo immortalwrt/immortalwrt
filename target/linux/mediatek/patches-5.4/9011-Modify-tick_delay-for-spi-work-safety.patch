@@ -1,0 +1,25 @@
+From 02205bef8a645d4374d2869e3a5a5a1d7c2e693a Mon Sep 17 00:00:00 2001
+From: Qii Wang <qii.wang@mediatek.com>
+Date: Sat, 14 May 2022 14:18:13 +0800
+Subject: [PATCH] [Modify tick_delay for spi work safety]
+
+---
+ drivers/spi/spi-mt65xx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/spi/spi-mt65xx.c b/drivers/spi/spi-mt65xx.c
+index bef03bd8c..c19e2d4d7 100644
+--- a/drivers/spi/spi-mt65xx.c
++++ b/drivers/spi/spi-mt65xx.c
+@@ -195,7 +195,7 @@ static const struct mtk_spi_compatible mt8183_compat = {
+  */
+ static const struct mtk_chip_config mtk_default_chip_info = {
+ 	.sample_sel = 0,
+-	.get_tick_dly = 1,
++	.get_tick_dly = 2,
+ };
+ 
+ static const struct of_device_id mtk_spi_of_match[] = {
+-- 
+2.18.0
+

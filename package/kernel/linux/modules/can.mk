@@ -13,7 +13,6 @@ define KernelPackage/can
   KCONFIG:=\
 	CONFIG_CAN=m \
 	CONFIG_CAN_DEV \
-	CONFIG_CAN_NETLINK=y \
 	CONFIG_CAN_CALC_BITTIMING=y \
 	CONFIG_CAN_LEDS=y \
 	CONFIG_CAN_AT91=n \
@@ -120,9 +119,9 @@ $(eval $(call KernelPackage,can-c-can-platform))
 define KernelPackage/can-flexcan
   TITLE:=Support for Freescale FLEXCAN based chips
   KCONFIG:=CONFIG_CAN_FLEXCAN
-  FILES:=$(LINUX_DIR)/drivers/net/can/flexcan/flexcan.ko
+  FILES:=$(LINUX_DIR)/drivers/net/can/flexcan.ko
   AUTOLOAD:=$(call AutoProbe,flexcan)
-  $(call AddDepends/can,@TARGET_imx)
+  $(call AddDepends/can,@TARGET_imx6)
 endef
 
 define KernelPackage/can-flexcan/description
@@ -153,7 +152,7 @@ define KernelPackage/can-mcp251x
 	CONFIG_SPI=y \
 	CONFIG_CAN_MCP251X
   FILES:=$(LINUX_DIR)/drivers/net/can/spi/mcp251x.ko
-  AUTOLOAD:=$(call AutoProbe,mcp251x)
+  AUTOLOAD:=$(call AutoProbe,can-mcp251x)
   $(call AddDepends/can)
 endef
 
@@ -183,7 +182,7 @@ $(eval $(call KernelPackage,can-raw))
 define KernelPackage/can-slcan
   TITLE:=Serial / USB serial CAN Adaptors (slcan)
   KCONFIG:=CONFIG_CAN_SLCAN
-  FILES:=$(LINUX_DIR)/drivers/net/can/slcan/slcan.ko
+  FILES:=$(LINUX_DIR)/drivers/net/can/slcan.ko
   AUTOLOAD:=$(call AutoProbe,slcan)
   $(call AddDepends/can)
 endef
@@ -231,9 +230,9 @@ $(eval $(call KernelPackage,can-usb-ems))
 
 define KernelPackage/can-usb-esd
   TITLE:=ESD USB/2 CAN/USB interface
-  KCONFIG:=CONFIG_CAN_ESD_USB
-  FILES:=$(LINUX_DIR)/drivers/net/can/usb/esd_usb.ko
-  AUTOLOAD:=$(call AutoProbe,esd_usb2 esd_usb)
+  KCONFIG:=CONFIG_CAN_ESD_USB2
+  FILES:=$(LINUX_DIR)/drivers/net/can/usb/esd_usb2.ko
+  AUTOLOAD:=$(call AutoProbe,esd_usb2)
   $(call AddDepends/can,+kmod-usb-core)
 endef
 
@@ -243,25 +242,6 @@ define KernelPackage/can-usb-esd/description
 endef
 
 $(eval $(call KernelPackage,can-usb-esd))
-
-
-define KernelPackage/can-usb-gs
-  TITLE:=Geschwister Schneider UG interfaces
-  KCONFIG:=CONFIG_CAN_GS_USB
-  FILES:= \
-	$(LINUX_DIR)/drivers/net/can/usb/gs_usb.ko
-  AUTOLOAD:=$(call AutoProbe,gs_usb)
-  $(call AddDepends/can,+kmod-usb-core)
-endef
-
-define KernelPackage/can-usb-gsr/description
-  This driver supports the Geschwister Schneider and
-  bytewerk.org candleLight compatible
-  (https://github.com/candle-usb/candleLight_fw) USB/CAN
-  interfaces.
-endef
-
-$(eval $(call KernelPackage,can-usb-gs))
 
 
 define KernelPackage/can-usb-kvaser

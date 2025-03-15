@@ -1,3 +1,4 @@
+#!/bin/sh
 # Copyright (C) 2013-2015 OpenWrt.org
 
 . /lib/functions/uci-defaults.sh

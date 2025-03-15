@@ -1,0 +1,116 @@
+--- a/mt_wifi/embedded/common/ee_flash.c	2022-04-25 18:12:11.000000000 +0800
++++ b/mt_wifi/embedded/common/ee_flash.c	2022-11-02 20:29:54.654154912 +0800
+@@ -27,113 +27,12 @@
+ #include	"rt_config.h"
+ #include "hdev/hdev.h"
+ 
+-/*decision flash api by compiler flag*/
+-#ifdef CONFIG_PROPRIETARY_DRIVER
+-/*
+-* @ used for proprietary driver support, can't read/write mtd on driver
+-* @ read: mtd flash patrition use request firmware to load
+-* @ write: write not support, use ated to write to flash
+-*/
+-static void flash_bin_read(void *ctrl, UCHAR *p, ULONG a, ULONG b)
+-{
+-	struct _RTMP_ADAPTER *ad = ((struct hdev_ctrl *) ctrl)->priv;
+-	UCHAR *buffer = NULL;
+-	UINT32 len = 0;
+-	UCHAR *name = get_dev_eeprom_binary(ad);
+-
+-	/*load from request firmware*/
+-	os_load_code_from_bin(ad, &buffer, name, &len);
+-
+-	if (len > 0 && buffer != NULL) {
+-		os_move_mem(p, buffer + a, b);
+-	}
+-
+-	if (buffer != NULL) {
+-#ifdef MT7981
+-		vfree(buffer);
+-#else
+-		os_free_mem(buffer);
+-#endif
+-	}
+-}
+-
+-static void flash_bin_write(void *ctrl, UCHAR *p, ULONG a, ULONG b)
+-{
+-	MTWF_DBG(NULL, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+-		 "proprietary driver not support flash write, will write on ated.\n");
+-}
+-
+-#define flash_read(_ctrl, _ptr, _offset, _len) flash_bin_read(_ctrl, _ptr, _offset, _len)
+-#define flash_write(_ctrl, _ptr, _offset, _len) flash_bin_write(_ctrl, _ptr, _offset, _len)
+-
+-#else
+-
+-#ifdef CONFIG_RALINK_FLASH_API
+-/*
+-* @ The flag "CONFIG_RALINK_FLASH_API" is used for APSoC Linux SDK
+-*/
+-
+-int32_t FlashRead(
+-	uint32_t *dst,
+-	uint32_t *src,
+-	uint32_t count);
+-
+-int32_t FlashWrite(
+-	uint16_t *source,
+-	uint16_t *destination,
+-	uint32_t numBytes);
+-
+-#define flash_read(_ctrl, _ptr, _offset, _len) FlashRead((uint16_t *)_ptr, (uint16_t *)_offset, (uint32_t)_len)
+-#define flash_write(_ctrl, _ptr, _offset, _len) FlashWrite(_ptr, _offset, _len)
+-
+-#else
+-/*============================================================================*/
+-#ifdef RA_MTD_RW_BY_NUM
+-
+-/*
+-* @ The flag "CONFIG_RALINK_FLASH_API" is used for APSoC Linux SDK
+-*/
+-
+-#if defined(CONFIG_RT2880_FLASH_32M)
+-#define MTD_NUM_FACTORY 5
+-#else
+-#define MTD_NUM_FACTORY 2
+-#endif
+-extern int ra_mtd_write(int num, loff_t to, size_t len, const u_char *buf);
+-extern int ra_mtd_read(int num, loff_t from, size_t len, u_char *buf);
+-
+-#define flash_read(_ctrl, _ptr, _offset, _len) ra_mtd_read(MTD_NUM_FACTORY, 0, (size_t)_len, _ptr)
+-#define flash_write(_ctrl, _ptr, _offset, _len) ra_mtd_write(MTD_NUM_FACTORY, 0, (size_t)_len, _ptr)
+-
+-#else
+-
+-#ifdef CONFIG_WIFI_MTD
+-/*
+-* @ used mtd mode flash partition from proprietary driver mt_wifi_mtd.c
+-*/
+ int mt_mtd_write_nm_wifi(char *name, loff_t to, size_t len, const u_char *buf);
+ int mt_mtd_read_nm_wifi(char *name, loff_t from, size_t len, u_char *buf);
+ 
+ #define flash_read(_ctrl, _ptr, _offset, _len) mt_mtd_read_nm_wifi("Factory", _offset, (size_t)_len, _ptr)
+ #define flash_write(_ctrl, _ptr, _offset, _len) mt_mtd_write_nm_wifi("Factory", _offset, (size_t)_len, _ptr)
+ 
+-#else
+-/*
+-* @ use sdk export func.
+-*/
+-
+-extern int ra_mtd_write_nm(char *name, loff_t to, size_t len, const u_char *buf);
+-extern int ra_mtd_read_nm(char *name, loff_t from, size_t len, u_char *buf);
+-
+-#define flash_read(_ctrl, _ptr, _offset, _len) ra_mtd_read_nm("Factory", _offset, (size_t)_len, _ptr)
+-#define flash_write(_ctrl, _ptr, _offset, _len) ra_mtd_write_nm("Factory", _offset, (size_t)_len, _ptr)
+-
+-#endif /*CONFIG_WIFI_MTD*/
+-#endif /*RA_MTD_RW_BY_NUM*/
+-#endif /* CONFIG_RALINK_FLASH_API */
+-#endif /*CONFIG_PROPRIETERY_DRIVER*/
+-
+-
+ void RtmpFlashRead(
+ 	void *hdev_ctrl,
+ 	UCHAR *p,

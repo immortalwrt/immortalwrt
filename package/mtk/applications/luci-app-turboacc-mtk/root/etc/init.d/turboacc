@@ -1,0 +1,77 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2018 Lean <coolsnowwolf@gmail.com>
+# Copyright (C) 2019-2022 Tianling Shen <cnsztl@immortalwrt.org>
+
+START=90
+STOP=10
+
+start() {
+	config_load "turboacc"
+
+	local fastpath
+	config_get fastpath "config" "fastpath"
+
+	if [ "$fastpath" != "fast_classifier" ] && lsmod | grep -q "fast_classifier"; then
+		echo "0" > "/sys/fast_classifier/skip_to_bridge_ingress" 2>"/dev/null"
+		rm -f "/dev/sfe_ipv6"
+		rmmod "fast_classifier" 2>"/dev/null"
+	fi
+
+	if [ "$fastpath" != "shortcut_fe_cm" ] && lsmod | grep -q "shortcut_fe_cm"; then
+		rmmod "shortcut_fe_cm" 2>"/dev/null"
+	fi
+
+	if [ "$fastpath" != "mediatek_hnat" ] && lsmod | grep -q "mtkhnat"; then
+		echo "0" > "/sys/kernel/debug/hnat/hook_toggle" 2>"/dev/null"
+	fi
+
+	case "$fastpath" in
+	"fast_classifier")
+		local fastpath_fc_br fastpath_fc_ipv6
+		config_get_bool fastpath_fc_br "config" "fastpath_fc_br" "0"
+		config_get_bool fastpath_fc_ipv6 "config" "fastpath_fc_ipv6" "0"
+
+		lsmod | grep -q "fast_classifier" || modprobe "fast_classifier" 2>"/dev/null"
+		echo "$fastpath_fc_br" > "/sys/fast_classifier/skip_to_bridge_ingress" 2>"/dev/null"
+		if [ "$fastpath_fc_ipv6" -eq "1" ]; then
+			[ -e "/dev/sfe_ipv6" ] || mknod "/dev/sfe_ipv6" "c" "$(cat "/sys/sfe_ipv6/debug_dev")" "0"
+		else
+			[ ! -e "/dev/sfe_ipv6" ] || rm -f "/dev/sfe_ipv6"
+		fi
+		;;
+	"shortcut_fe_cm")
+		lsmod |grep -q "shortcut_fe_cm" || modprobe "shortcut_fe_cm" 2>"/dev/null"
+		;;
+	"mediatek_hnat")
+		local fastpath_mh_eth_hnat
+		local hnat_path="/sys/kernel/debug/hnat"
+
+		config_get_bool "fastpath_mh_eth_hnat" "config" "fastpath_mh_eth_hnat" "1"
+		echo "$fastpath_mh_eth_hnat" > "$hnat_path/hook_toggle"
+
+		if [ "$fastpath_mh_eth_hnat" -eq "1" ]; then
+			local fastpath_mh_eth_hnat_v6 fastpath_mh_eth_hnat_macvlan fastpath_mh_eth_hnat_bind_rate
+
+			config_get_bool "fastpath_mh_eth_hnat_v6" "config" "fastpath_mh_eth_hnat_v6" "1"
+			echo "8 $fastpath_mh_eth_hnat_v6" > "$hnat_path/hnat_setting"
+
+			config_get "fastpath_mh_eth_hnat_bind_rate" "config" "fastpath_mh_eth_hnat_bind_rate" "30"
+			echo "11 $fastpath_mh_eth_hnat_bind_rate" > "$hnat_path/hnat_setting"
+
+			config_get_bool "fastpath_mh_eth_hnat_macvlan" "config" "fastpath_mh_eth_hnat_macvlan" "0"
+			echo "12 $fastpath_mh_eth_hnat_macvlan" > "$hnat_path/hnat_setting"
+		fi
+		;;
+	esac
+
+	local fullcone
+	config_get "fullcone" "config" "fullcone" "0"
+	echo "$fullcone" > /proc/sys/net/netfilter/nf_conntrack_nat_mode
+
+	local tcpcca
+	config_get "tcpcca" "config" "tcpcca" "cubic"
+	sysctl -w net.ipv4.tcp_congestion_control="$tcpcca" >"/dev/null"
+
+	uci -q commit "firewall"
+	/etc/init.d/firewall restart >"/dev/null" 2>&1
+}

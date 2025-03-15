@@ -2,7 +2,7 @@
 
 / {
 	compatible = "zyxel,p-2812hnu-f3", "zyxel,p-2812hnu", "lantiq,xway", "lantiq,vr9";
-	model = "Zyxel P-2812HNU-F3";
+	model = "ZyXEL P-2812HNU-F3";
 };
 
 &pci0 {
@@ -50,8 +50,6 @@
 		reg = <1 0x0 0x2000000>;
 		#address-cells = <1>;
 		#size-cells = <1>;
-
-		nand-use-soft-ecc-engine;
 
 		partition@0 {
 			label = "kernel";

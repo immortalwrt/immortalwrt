@@ -4,7 +4,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "wavlink,wl-wn530hg4", "ralink,mt7620a-soc";
@@ -15,26 +14,24 @@
 		led-failsafe = &led_status_blue;
 		led-running = &led_status_blue;
 		led-upgrade = &led_status_blue;
+		serial0 = &uartlite;
 	};
 
 	leds {
 		compatible = "gpio-leds";
 
 		led_status_blue: status_blue {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:status";
 			gpios = <&gpio0 10 GPIO_ACTIVE_LOW>;
 		};
 
 		status_yellow {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_YELLOW>;
+			label = "yellow:status";
 			gpios = <&gpio0 11 GPIO_ACTIVE_LOW>;
 		};
 
 		status_red {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_RED>;
+			label = "red:status";
 			gpios = <&gpio0 8 GPIO_ACTIVE_HIGH>;
 		};
 	};
@@ -75,28 +72,10 @@
 				read-only;
 			};
 
-			partition@40000 {
+			factory: partition@40000 {
 				label = "factory";
 				reg = <0x40000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_factory_0: eeprom@0 {
-						reg = <0x0 0x200>;
-					};
-
-					eeprom_factory_8000: eeprom@8000 {
-						reg = <0x8000 0x200>;
-					};
-
-					macaddr_factory_28: macaddr@28 {
-						reg = <0x28 0x6>;
-					};
-				};
 			};
 
 			partition@50000 {
@@ -119,8 +98,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&rgmii2_pins &mdio_pins>;
 
-	nvmem-cells = <&macaddr_factory_28>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0x28>;
 
 	mediatek,portmap = "llllw";
 
@@ -147,8 +125,7 @@
 &pcie0 {
 	mt76@0,0 {
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&eeprom_factory_8000>;
-		nvmem-cell-names = "eeprom";
+		mediatek,mtd-eeprom = <&factory 0x8000>;
 		ieee80211-freq-limit = <5000000 6000000>;
 	};
 };
@@ -157,6 +134,6 @@
 	pinctrl-names = "default", "pa_gpio";
 	pinctrl-0 = <&pa_pins>;
 	pinctrl-1 = <&pa_gpio_pins>;
-	nvmem-cells = <&eeprom_factory_0>;
-	nvmem-cell-names = "eeprom";
+
+	ralink,mtd-eeprom = <&factory 0x0>;
 };

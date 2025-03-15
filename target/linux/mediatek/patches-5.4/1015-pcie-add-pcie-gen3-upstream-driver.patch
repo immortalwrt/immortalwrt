@@ -1,0 +1,36 @@
+diff --git a/drivers/pci/controller/Kconfig b/drivers/pci/controller/Kconfig
+index 70e0782..67988f8 100644
+--- a/drivers/pci/controller/Kconfig
++++ b/drivers/pci/controller/Kconfig
+@@ -241,6 +241,19 @@ config PCIE_MEDIATEK
+ 	  Say Y here if you want to enable PCIe controller support on
+ 	  MediaTek SoCs.
+ 
++config PCIE_MEDIATEK_GEN3
++	tristate "MediaTek Gen3 PCIe controller"
++	depends on ARCH_MEDIATEK || COMPILE_TEST
++	depends on PCI_MSI_IRQ_DOMAIN
++	help
++	  Adds support for PCIe Gen3 MAC controller for MediaTek SoCs.
++	  This PCIe controller is compatible with Gen3, Gen2 and Gen1 speed,
++	  and support up to 256 MSI interrupt numbers for
++	  multi-function devices.
++
++	  Say Y here if you want to enable Gen3 PCIe controller support on
++	  MediaTek SoCs.
++
+ config PCIE_MOBIVEIL
+ 	bool "Mobiveil AXI PCIe controller"
+ 	depends on ARCH_ZYNQMP || COMPILE_TEST
+diff --git a/drivers/pci/controller/Makefile b/drivers/pci/controller/Makefile
+index a2a22c9..54a496a 100644
+--- a/drivers/pci/controller/Makefile
++++ b/drivers/pci/controller/Makefile
+@@ -27,6 +27,7 @@ obj-$(CONFIG_PCIE_ROCKCHIP) += pcie-rockchip.o
+ obj-$(CONFIG_PCIE_ROCKCHIP_EP) += pcie-rockchip-ep.o
+ obj-$(CONFIG_PCIE_ROCKCHIP_HOST) += pcie-rockchip-host.o
+ obj-$(CONFIG_PCIE_MEDIATEK) += pcie-mediatek.o
++obj-$(CONFIG_PCIE_MEDIATEK_GEN3) += pcie-mediatek-gen3.o
+ obj-$(CONFIG_PCIE_MOBIVEIL) += pcie-mobiveil.o
+ obj-$(CONFIG_PCIE_TANGO_SMP8759) += pcie-tango.o
+ obj-$(CONFIG_VMD) += vmd.o

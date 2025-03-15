@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
-#include <dt-bindings/leds/common.h>
-
 #include "mt7628an_iptime.dtsi"
 
 / {
@@ -25,8 +23,7 @@
 		};
 
 		led_cpu: cpu {
-			function = LED_FUNCTION_CPU;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:cpu";
 			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
 		};
 

@@ -1,0 +1,3 @@
+config MTK_ICE_DEBUG
+	bool "ICE_DEBUG"
+	default y if ARCH_MEDIATEK

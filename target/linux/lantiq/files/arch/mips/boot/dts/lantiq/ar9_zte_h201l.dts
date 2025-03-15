@@ -1,7 +1,6 @@
 #include "ar9.dtsi"
 
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "zte,h201l", "lantiq,xway", "lantiq,ar9";
@@ -53,8 +52,7 @@
 		compatible = "gpio-leds";
 
 		power_green: power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio 19 GPIO_ACTIVE_LOW>;
 			default-state = "keep";
 		};
@@ -71,18 +69,15 @@
 			gpios = <&gpio 39 GPIO_ACTIVE_LOW>;
 		};
 		wps {
-			function = LED_FUNCTION_WPS;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:wps";
 			gpios = <&gpio 22 GPIO_ACTIVE_LOW>;
 		};
 		wifi: wifi {
-			function = LED_FUNCTION_WLAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:wlan";
 			gpios = <&gpio 6 GPIO_ACTIVE_LOW>;
 		};
 		led_usb: usb {
-			function = LED_FUNCTION_USB;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:usb";
 			gpios = <&gpio 14 GPIO_ACTIVE_LOW>;
 		};
 	};
@@ -96,23 +91,16 @@
 			gpio-export,output = <1>;
 			gpios = <&gpio 38 GPIO_ACTIVE_HIGH>;
 		};
+		usb {
+			gpio-export,name = "usb";
+			gpio-export,output = <1>;
+			gpios = <&gpio 28 GPIO_ACTIVE_HIGH>;
+		};
 		wifi {
 			gpio-export,name = "wifi";
 			gpio-export,output = <1>;
 			gpios = <&gpio 7 GPIO_ACTIVE_HIGH>;
 		};
-	};
-
-	usb_phy: regulator-usb-phy {
-		compatible = "regulator-fixed";
-
-		regulator-name = "USB_PHY";
-
-		regulator-min-microvolt = <5000000>;
-		regulator-max-microvolt = <5000000>;
-
-		gpios = <&gpio 28 GPIO_ACTIVE_HIGH>;
-		enable-active-high;
 	};
 
 	usb_vbus: regulator-usb-vbus {
@@ -123,7 +111,7 @@
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 
-		gpios = <&gpio 36 GPIO_ACTIVE_HIGH>;
+		gpio = <&gpio 36 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 	};
 };
@@ -173,7 +161,6 @@
 
 &usb_phy0 {
 	status = "okay";
-	phy-supply = <&usb_phy>;
 };
 
 

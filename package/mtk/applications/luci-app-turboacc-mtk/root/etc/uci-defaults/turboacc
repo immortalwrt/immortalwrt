@@ -1,0 +1,49 @@
+#!/bin/sh
+
+[ "$(uci -q get "turboacc.global.set")" -eq "1" ] && exit 0
+
+cat <<-EOF > "/etc/config/turboacc"
+
+config turboacc 'global'
+	option set '0'
+
+config turboacc 'config'
+	option tcpcca 'cubic'
+
+EOF
+
+kernel_ver="$(uname -r)"
+
+if [ -e "/lib/modules/$kernel_ver/mtkhnat.ko" ]; then
+	uci -q set "turboacc.config.fastpath"="mediatek_hnat"
+	uci -q set "turboacc.config.fastpath_mh_eth_hnat"="1"
+	uci -q set "turboacc.config.fastpath_mh_eth_hnat_v6"="1"
+	uci -q set "turboacc.config.fastpath_mh_eth_hnat_macvlan"="0"
+	uci -q set "turboacc.config.fastpath_mh_eth_hnat_bind_rate"="30"
+	uci -q set "turboacc.config.fastpath_mh_eth_hnat_ppenum"="2"
+elif [ -e "/lib/modules/$kernel_ver/fast-classifier.ko" ]; then
+	uci -q set "turboacc.config.fastpath"="fast_classifier"
+	uci -q set "turboacc.config.fastpath_fc_br"="1"
+	if [ -d "/proc/sys/net/ipv6" ]; then
+		uci -q set "turboacc.config.fastpath_fc_ipv6"="1"
+	else
+		uci -q set "turboacc.config.fastpath_fc_ipv6"="0"
+	fi
+elif [ -e "/lib/modules/$kernel_ver/shortcut-fe-cm.ko" ]; then
+	uci -q set "turboacc.config.fastpath"="shortcut_fe_cm"
+else
+	uci -q set "turboacc.config.fastpath"="none"
+fi
+
+uci -q set "turboacc.config.fullcone"="0"
+
+uci -q commit "turboacc"
+
+uci -q batch <<-EOF >"/dev/null"
+	delete ucitrack.@turboacc[-1]
+	add ucitrack turboacc
+	set ucitrack.@turboacc[-1].init=turboacc
+	commit ucitrack
+EOF
+
+exit 0

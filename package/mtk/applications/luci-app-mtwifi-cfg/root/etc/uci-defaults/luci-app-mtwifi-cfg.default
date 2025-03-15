@@ -1,0 +1,17 @@
+#!/bin/sh
+
+if [ -d /www/luci-static/resources/view/network ]; then
+	mv -f /usr/share/luci-app-mtwifi-cfg/wireless-mtk.js /www/luci-static/resources/view/network/wireless.js
+fi
+
+if [ -d /usr/share/luci/menu.d ]; then
+	mv -f /usr/share/luci-app-mtwifi-cfg/luci-mod-status.json /usr/share/luci/menu.d/luci-mod-status.json
+fi
+
+luci_network_js="/www/luci-static/resources/network.js"
+
+if [ -f $luci_network_js ]; then
+	if ! grep -sq 'ra\[xiyez\]' $luci_network_js ; then
+		sed -i 's#/^wlan\\d+/,#/^wlan\\d+/,/^ra[xiyez]?\\d+/,/^apcli[xiyez]?\\d+/,#' $luci_network_js
+	fi
+fi

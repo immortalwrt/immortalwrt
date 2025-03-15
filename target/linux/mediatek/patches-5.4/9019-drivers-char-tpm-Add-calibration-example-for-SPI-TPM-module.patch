@@ -1,0 +1,97 @@
+From 6110010f7b88392a3094f2aaec91ee54151cde2a Mon Sep 17 00:00:00 2001
+From: "SkyLake.Huang" <skylake.huang@mediatek.com>
+Date: Thu, 23 Jun 2022 18:43:02 +0800
+Subject: [PATCH] drivers: char: tpm: Add calibration example for SPI TPM
+ module
+
+Signed-off-by: SkyLake.Huang <skylake.huang@mediatek.com>
+---
+ drivers/char/tpm/tpm_tis_core.c | 19 +++++++++++++++++++
+ drivers/char/tpm/tpm_tis_core.h |  2 ++
+ drivers/char/tpm/tpm_tis_spi.c  |  7 +++++++
+ 3 files changed, 28 insertions(+)
+
+diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
+index 70f785994..b9898a56d 100644
+--- a/drivers/char/tpm/tpm_tis_core.c
++++ b/drivers/char/tpm/tpm_tis_core.c
+@@ -817,6 +817,21 @@ static const struct tpm_class_ops tpm_tis = {
+ 	.clk_enable = tpm_tis_clkrun_enable,
+ };
+ 
++int tpm_tis_cal_read(void *priv, u32 *addr, int addrlen, u8 *buf, int readlen)
++{
++	int rc;
++	u32 vendor;
++
++	rc = tpm_tis_read32((struct tpm_tis_data *)priv, TPM_DID_VID(0), &vendor);
++	if (rc < 0)
++		return -EIO;
++
++	buf[0] = (vendor >> 24) & 0xff;
++	buf[1] = (vendor >> 16) & 0xff;
++
++	return 0;
++}
++
+ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
+ 		      const struct tpm_tis_phy_ops *phy_ops,
+ 		      acpi_handle acpi_dev_handle)
+@@ -864,6 +879,10 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
+ 	if (chip->ops->clk_enable != NULL)
+ 		chip->ops->clk_enable(chip, true);
+ 
++	rc = priv->phy_ops->do_calibration(priv, dev);
++	if (rc)
++		goto out_err;
++
+ 	if (wait_startup(chip, 0) != 0) {
+ 		rc = -ENODEV;
+ 		goto out_err;
+diff --git a/drivers/char/tpm/tpm_tis_core.h b/drivers/char/tpm/tpm_tis_core.h
+index 7337819f5..7bb0bc8b6 100644
+--- a/drivers/char/tpm/tpm_tis_core.h
++++ b/drivers/char/tpm/tpm_tis_core.h
+@@ -106,6 +106,7 @@ struct tpm_tis_phy_ops {
+ 	int (*read16)(struct tpm_tis_data *data, u32 addr, u16 *result);
+ 	int (*read32)(struct tpm_tis_data *data, u32 addr, u32 *result);
+ 	int (*write32)(struct tpm_tis_data *data, u32 addr, u32 src);
++	int (*do_calibration)(struct tpm_tis_data *data, struct device *dev);
+ };
+ 
+ static inline int tpm_tis_read_bytes(struct tpm_tis_data *data, u32 addr,
+@@ -158,6 +159,7 @@ static inline bool is_bsw(void)
+ }
+ 
+ void tpm_tis_remove(struct tpm_chip *chip);
++int tpm_tis_cal_read(void *priv, u32 *addr, int addrlen, u8 *buf, int readlen);
+ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
+ 		      const struct tpm_tis_phy_ops *phy_ops,
+ 		      acpi_handle acpi_dev_handle);
+diff --git a/drivers/char/tpm/tpm_tis_spi.c b/drivers/char/tpm/tpm_tis_spi.c
+index 19513e622..3be2d53a5 100644
+--- a/drivers/char/tpm/tpm_tis_spi.c
++++ b/drivers/char/tpm/tpm_tis_spi.c
+@@ -184,12 +184,19 @@ static int tpm_tis_spi_write32(struct tpm_tis_data *data, u32 addr, u32 value)
+ 	return rc;
+ }
+ 
++int tpm_tis_spi_do_calibration(struct tpm_tis_data *priv, struct device *dev) {
++	struct spi_device *spi = container_of(dev,
++                                         struct spi_device, dev);
++	return spi_do_calibration(spi->master, spi, tpm_tis_cal_read, priv);
++}
++
+ static const struct tpm_tis_phy_ops tpm_spi_phy_ops = {
+ 	.read_bytes = tpm_tis_spi_read_bytes,
+ 	.write_bytes = tpm_tis_spi_write_bytes,
+ 	.read16 = tpm_tis_spi_read16,
+ 	.read32 = tpm_tis_spi_read32,
+ 	.write32 = tpm_tis_spi_write32,
++	.do_calibration = tpm_tis_spi_do_calibration,
+ };
+ 
+ static int tpm_tis_spi_probe(struct spi_device *dev)
+-- 
+2.18.0
+

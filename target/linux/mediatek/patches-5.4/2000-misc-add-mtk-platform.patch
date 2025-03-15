@@ -1,0 +1,17 @@
+diff -urN a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+--- a/drivers/misc/Kconfig	2021-06-29 15:10:00.970788831 +0800
++++ b/drivers/misc/Kconfig	2021-06-29 15:09:41.579158152 +0800
+@@ -481,4 +481,5 @@
+ source "drivers/misc/ocxl/Kconfig"
+ source "drivers/misc/cardreader/Kconfig"
+ source "drivers/misc/habanalabs/Kconfig"
++source "drivers/misc/mediatek/Kconfig"
+ endmenu
+diff -urN a/drivers/misc/Makefile b/drivers/misc/Makefile
+--- a/drivers/misc/Makefile	2021-06-29 15:10:15.150518461 +0800
++++ b/drivers/misc/Makefile	2021-06-29 15:09:46.939056121 +0800
+@@ -57,3 +57,4 @@
+ obj-$(CONFIG_PVPANIC)   	+= pvpanic.o
+ obj-$(CONFIG_HABANA_AI)		+= habanalabs/
+ obj-$(CONFIG_XILINX_SDFEC)	+= xilinx_sdfec.o
++obj-$(CONFIG_ARCH_MEDIATEK)	+= mediatek/

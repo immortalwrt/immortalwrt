@@ -1,0 +1,118 @@
+From 9b2a6300b255465ce69c462746da1c401267a5c6 Mon Sep 17 00:00:00 2001
+From: Yu Zhao <yuzhao@google.com>
+Date: Sat, 26 Sep 2020 21:17:18 -0600
+Subject: [PATCH] BACKPORT: FROMLIST: mm, x86: support the access bit on
+ non-leaf PMD entries
+
+Some architectures support the accessed bit on non-leaf PMD entries
+(parents) in addition to leaf PTE entries (children) where pages are
+mapped, e.g., x86_64 sets the accessed bit on a parent when using it
+as part of linear-address translation [1]. Page table walkers who are
+interested in the accessed bit on children can take advantage of this:
+they do not need to search the children when the accessed bit is not
+set on a parent, given that they have previously cleared the accessed
+bit on this parent.
+
+[1]: Intel 64 and IA-32 Architectures Software Developer's Manual
+     Volume 3 (October 2019), section 4.8
+
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
+(am from https://lore.kernel.org/patchwork/patch/1432178/)
+
+BUG=b:123039911
+TEST=Built
+
+Change-Id: I1a17be3ae926f721f7b17ea1539e5c39e8c4f9a8
+Reviewed-on: https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/2951285
+Reviewed-by: Yu Zhao <yuzhao@chromium.org>
+Commit-Queue: Yu Zhao <yuzhao@chromium.org>
+Tested-by: Yu Zhao <yuzhao@chromium.org>
+---
+ arch/Kconfig                   | 9 +++++++++
+ arch/x86/Kconfig               | 1 +
+ arch/x86/include/asm/pgtable.h | 2 +-
+ arch/x86/mm/pgtable.c          | 5 ++++-
+ include/asm-generic/pgtable.h  | 4 ++--
+ 5 files changed, 17 insertions(+), 4 deletions(-)
+
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -602,6 +602,15 @@ config HAVE_ARCH_TRANSPARENT_HUGEPAGE
+ config HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD
+ 	bool
+ 
++config HAVE_ARCH_PARENT_PMD_YOUNG
++	bool
++	depends on PGTABLE_LEVELS > 2
++	help
++	  Architectures that select this are able to set the accessed bit on
++	  non-leaf PMD entries in addition to leaf PTE entries where pages are
++	  mapped. For them, page table walkers that clear the accessed bit may
++	  stop at non-leaf PMD entries if they do not see the accessed bit.
++
+ config HAVE_ARCH_HUGE_VMAP
+ 	bool
+ 
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -146,6 +146,7 @@ config X86
+ 	select HAVE_ARCH_TRACEHOOK
+ 	select HAVE_ARCH_TRANSPARENT_HUGEPAGE
+ 	select HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD if X86_64
++	select HAVE_ARCH_PARENT_PMD_YOUNG	if X86_64
+ 	select HAVE_ARCH_VMAP_STACK		if X86_64
+ 	select HAVE_ARCH_WITHIN_STACK_FRAMES
+ 	select HAVE_ASM_MODVERSIONS
+--- a/arch/x86/include/asm/pgtable.h
++++ b/arch/x86/include/asm/pgtable.h
+@@ -842,7 +842,7 @@ static inline pte_t *pte_offset_kernel(p
+ 
+ static inline int pmd_bad(pmd_t pmd)
+ {
+-	return (pmd_flags(pmd) & ~_PAGE_USER) != _KERNPG_TABLE;
++	return ((pmd_flags(pmd) | _PAGE_ACCESSED) & ~_PAGE_USER) != _KERNPG_TABLE;
+ }
+ 
+ static inline unsigned long pages_to_mb(unsigned long npg)
+--- a/arch/x86/mm/pgtable.c
++++ b/arch/x86/mm/pgtable.c
+@@ -543,7 +543,7 @@ int ptep_test_and_clear_young(struct vm_
+ 	return ret;
+ }
+ 
+-#ifdef CONFIG_TRANSPARENT_HUGEPAGE
++#if defined(CONFIG_TRANSPARENT_HUGEPAGE) || defined(CONFIG_HAVE_ARCH_PARENT_PMD_YOUNG)
+ int pmdp_test_and_clear_young(struct vm_area_struct *vma,
+ 			      unsigned long addr, pmd_t *pmdp)
+ {
+@@ -555,6 +555,9 @@ int pmdp_test_and_clear_young(struct vm_
+ 
+ 	return ret;
+ }
++#endif
++
++#ifdef CONFIG_TRANSPARENT_HUGEPAGE
+ int pudp_test_and_clear_young(struct vm_area_struct *vma,
+ 			      unsigned long addr, pud_t *pudp)
+ {
+--- a/include/asm-generic/pgtable.h
++++ b/include/asm-generic/pgtable.h
+@@ -74,7 +74,7 @@ static inline int ptep_test_and_clear_yo
+ #endif
+ 
+ #ifndef __HAVE_ARCH_PMDP_TEST_AND_CLEAR_YOUNG
+-#ifdef CONFIG_TRANSPARENT_HUGEPAGE
++#if defined(CONFIG_TRANSPARENT_HUGEPAGE) || defined(CONFIG_HAVE_ARCH_PARENT_PMD_YOUNG)
+ static inline int pmdp_test_and_clear_young(struct vm_area_struct *vma,
+ 					    unsigned long address,
+ 					    pmd_t *pmdp)
+@@ -95,7 +95,7 @@ static inline int pmdp_test_and_clear_yo
+ 	BUILD_BUG();
+ 	return 0;
+ }
+-#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
++#endif /* CONFIG_TRANSPARENT_HUGEPAGE || CONFIG_HAVE_ARCH_PARENT_PMD_YOUNG */
+ #endif
+ 
+ #ifndef __HAVE_ARCH_PTEP_CLEAR_YOUNG_FLUSH

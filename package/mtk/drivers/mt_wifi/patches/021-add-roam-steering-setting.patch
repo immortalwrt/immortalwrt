@@ -1,0 +1,128 @@
+--- a/mt_wifi/embedded/ap/ap.c	2022-11-27 21:58:55.000000000 +0800
++++ b/mt_wifi/embedded/ap/ap.c	2024-01-02 09:12:33.129403401 +0800
+@@ -2892,6 +2892,11 @@
+ VOID MacTableMaintenance(RTMP_ADAPTER *pAd)
+ {
+ 	int wcid, startWcid, i;
++	char path[20]={0};
++	char arg1[6]={0};
++	char arg2[24]={0};
++	char *argv[]={path,arg1,arg2,NULL};
++	char *envp[]={NULL};
+ #ifdef DOT11_N_SUPPORT
+ 	BOOLEAN	bRdgActive = FALSE;
+ 	BOOLEAN bRalinkBurstMode;
+@@ -3963,6 +3968,24 @@
+ 		}
+ 
+ 		avgRssi = RTMPAvgRssi(pAd, &pEntry->RssiSample);
++		
++		if ( pEntry->RssiSample.Rssi_Updated && pMbss->SteeringThreshold &&
++			(avgRssi < pMbss->SteeringThreshold)) {
++			
++			MTWF_DBG(pAd, DBG_CAT_AP, DBG_SUBCAT_ALL, DBG_LVL_NOTICE,
++					 "Steering STA "MACSTR", RSSI SteeringThreshold Thres[%d]-[%d]\n",
++					  MAC2STR(pEntry->Addr), pMbss->SteeringThreshold,	avgRssi);
++					  
++				if (WMODE_CAP_2G(pEntry->wdev->PhyMode)) {
++				snprintf(argv[0], sizeof(path), "/sbin/steeringsta");
++				snprintf(argv[1], sizeof(arg1), "ra0");
++				snprintf(argv[2], sizeof(arg2), ""MACSTR"",MAC2STR(pEntry->Addr));}
++				else {
++				snprintf(argv[0], sizeof(path), "/sbin/steeringsta");
++				snprintf(argv[1], sizeof(arg1), "rax0");
++				snprintf(argv[2], sizeof(arg2), ""MACSTR"",MAC2STR(pEntry->Addr));}
++				call_usermodehelper(path, argv, envp,UMH_NO_WAIT);
++		}
+ 
+ 		if ( pEntry->RssiSample.Rssi_Updated && pMbss->RssiLowForStaKickOut &&
+ 			(avgRssi < pMbss->RssiLowForStaKickOut)) {
+@@ -3984,6 +4007,7 @@
+ 					REASON_DEAUTH_STA_LEAVING);
+ #endif
+ 		}
++		
+ 
+ 		if (bDisconnectSta) {
+ 			/* send wireless event - for ageout */
+--- a/mt_wifi/embedded/ap/ap_cfg.c	2022-11-27 21:58:55.000000000 +0800
++++ b/mt_wifi/embedded/ap/ap_cfg.c	2024-01-01 00:53:22.132505954 +0800
+@@ -419,6 +419,7 @@
+ INT Set_AP_ASSOC_REQ_RSSI_THRESHOLD(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
+ 
+ INT	Set_AP_KickStaRssiLow_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
++INT	Set_AP_SteeringThreshold_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
+ 
+ INT Set_BasicRate_Proc(RTMP_ADAPTER *pAd, RTMP_STRING *arg);
+ 
+@@ -1251,6 +1252,7 @@
+ #endif /* SPECIFIC_TX_POWER_SUPPORT */
+ 	{"AssocReqRssiThres",           Set_AP_ASSOC_REQ_RSSI_THRESHOLD},
+ 	{"KickStaRssiLow",				Set_AP_KickStaRssiLow_Proc},
++	{"Steeringthresold",				Set_AP_SteeringThreshold_Proc},
+ 	{"PtkRekey",					Set_PtkRekey_Proc},
+ #ifdef OCE_SUPPORT
+ 	{"OceRssiThreshold",			Set_OceRssiThreshold_Proc},
+@@ -14528,6 +14530,16 @@
+ 	TRUE if all parameters are OK, FALSE otherwise
+     ==========================================================================
+ */
++
++/*
++    ==========================================================================
++    Description:
++	Set lower limit for AP steering a STA.
++    Return:
++	TRUE if all parameters are OK, FALSE otherwise
++    ==========================================================================
++*/
++
+ INT Set_AP_KickStaRssiLow_Proc(
+ 	IN  PRTMP_ADAPTER    pAd,
+ 	IN  RTMP_STRING *arg)
+@@ -14555,6 +14567,35 @@
+ 
+ 	return TRUE;
+ }
++
++
++INT Set_AP_SteeringThreshold_Proc(
++	IN  PRTMP_ADAPTER    pAd,
++	IN  RTMP_STRING *arg)
++{
++	POS_COOKIE pObj = (POS_COOKIE) pAd->OS_Cookie;
++	UCHAR           apidx = pObj->ioctl_if;
++	UINT j;
++	CHAR rssi;
++
++	rssi = os_str_tol(arg, 0, 10);
++
++	if (rssi == 0)
++		MTWF_DBG(pAd, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_INFO, "Disable SteeringThreshold Function\n");
++	else if (rssi > 0 || rssi < -100) {
++		MTWF_DBG(pAd, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR, "SteeringThreshold Value Error.\n");
++		return FALSE;
++	}
++
++	pAd->ApCfg.MBSSID[apidx].SteeringThreshold = rssi;
++	MTWF_DBG(pAd, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_INFO, "I/F(ra%d) SteeringThreshold=%d\n", apidx,
++			 pAd->ApCfg.MBSSID[apidx].SteeringThreshold);
++
++	for (j = BSS0; j < pAd->ApCfg.BssidNum; j++)
++		MTWF_DBG(pAd, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_INFO, "%d. ==> %d\n", j, pAd->ApCfg.MBSSID[j].SteeringThreshold);
++
++	return TRUE;
++}
+ 
+ /*
+     ==========================================================================
+--- a/mt_wifi/embedded/include/rtmp.h	2022-11-27 21:58:55.000000000 +0800
++++ b/mt_wifi/embedded/include/rtmp.h	2024-01-01 01:04:57.047724405 +0800
+@@ -2971,6 +2971,7 @@
+ 	/* YF@20120417: Avoid connecting to AP in Poor Env, value 0 fOr disable. */
+ 	CHAR AssocReqRssiThreshold;
+ 	CHAR RssiLowForStaKickOut;
++	CHAR SteeringThreshold;
+ 
+ #ifdef CUSTOMER_VENDOR_IE_SUPPORT
+ 	/*For AP vendor ie*/

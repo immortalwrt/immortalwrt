@@ -1,8 +1,6 @@
 #include "ar9.dtsi"
 
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
-#include <dt-bindings/mtd/partitions/uimage.h>
 
 / {
 	compatible = "avm,fritz7320", "lantiq,xway", "lantiq,ar9";
@@ -46,8 +44,7 @@
 	leds {
 		compatible = "gpio-leds";
 		power: power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio 44 GPIO_ACTIVE_LOW>;
 			default-state = "keep";
 		};
@@ -60,8 +57,7 @@
 			gpios = <&gpio 38 GPIO_ACTIVE_LOW>;
 		};
 		wlan: wlan {
-			function = LED_FUNCTION_WLAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:wlan";
 			gpios = <&gpio 37 GPIO_ACTIVE_LOW>;
 		};
 		info_green: info_green {
@@ -82,7 +78,7 @@
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 
-		gpios = <&gpio 50 GPIO_ACTIVE_HIGH>;
+		gpio = <&gpio 50 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 	};
 
@@ -94,26 +90,15 @@
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 
-		gpios = <&gpio 51 GPIO_ACTIVE_HIGH>;
+		gpio = <&gpio 51 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 	};
 };
 
 &gsw {
 	phy-mode = "mii";
-	phy-handle = <&phy0>;
-	nvmem-cells = <&macaddr_ath9k_cal_a91 (-2)>;
-	nvmem-cell-names = "mac-address";
-
-	mdio-bus {
-		#address-cells = <1>;
-		#size-cells = <0>;
-
-		phy0: ethernet-phy@0 {
-			reg = <0>;
-			reset-gpios = <&gpio 36 GPIO_ACTIVE_LOW>;
-		};
-	};
+	mtd-mac-address = <&ath9k_cal 0xa91>;
+	mtd-mac-address-increment = <(-2)>;
 };
 
 &gpio {
@@ -121,12 +106,6 @@
 	pinctrl-0 = <&state_default>;
 
 	state_default: pinmux {
-		phy-rst {
-			lantiq,pins = "io36";
-			lantiq,pull = <0>;
-			lantiq,open-drain;
-			lantiq,output = <1>;
-		};
 		usb0_vbus {
 			lantiq,pins = "io50";
 			lantiq,pull = <0>;
@@ -157,30 +136,11 @@
 				label = "urlader";
 				reg = <0x00000 0x20000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					cal_ath9k_cal_985: calibration@985 {
-						reg = <0x985 0x3d8>;
-					};
-
-					macaddr_ath9k_cal_a91: macaddr@a91 {
-						compatible = "mac-base";
-						reg = <0xa91 0x6>;
-						#nvmem-cell-cells = <1>;
-					};
-				};
 			};
 
 			partition@20000 {
-				compatible = "openwrt,uimage", "denx,uimage";
 				label = "firmware";
 				reg = <0x20000 0xf60000>;
-				openwrt,ih-magic = <IH_MAGIC_OKLI>;
-				openwrt,offset = <0x11000>;
 			};
 
 			partition@f80000 {
@@ -207,13 +167,12 @@
 		    <&pci_req3_pins>, <&pci_req4_pins>;
 
 	req-mask = <0xf>;
-	reset-gpios = <&gpio 21 GPIO_ACTIVE_LOW>;
+	gpio-reset = <&gpio 21 GPIO_ACTIVE_HIGH>;
 
 	wifi@0,0 {
-		compatible = "pci168c,002d";
+		compatible = "pci0,0";
 		reg = <0x7000 0 0 0 0>;
-		nvmem-cells = <&cal_ath9k_cal_985>;
-		nvmem-cell-names = "calibration";
+		qca,no-eeprom; /* load from ath9k-eeprom-pci-0000:00:0e.0.bin */
 	};
 };
 

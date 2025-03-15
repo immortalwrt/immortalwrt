@@ -1,0 +1,69 @@
+From 45e277af28e0517cea1581d4f7f0c48d116314a9 Mon Sep 17 00:00:00 2001
+From: Yu Zhao <yuzhao@google.com>
+Date: Sat, 18 Jul 2020 01:46:37 -0600
+Subject: [PATCH] BACKPORT: mm: remove superfluous __ClearPageActive()
+
+To activate a page, mark_page_accessed() always holds a reference on it.
+It either gets a new reference when adding a page to
+lru_pvecs.activate_page or reuses an existing one it previously got when
+it added a page to lru_pvecs.lru_add.  So it doesn't call SetPageActive()
+on a page that doesn't have any reference left.  Therefore, the race is
+impossible these days (I didn't brother to dig into its history).
+
+For other paths, namely reclaim and migration, a reference count is always
+held while calling SetPageActive() on a page.
+
+SetPageSlabPfmemalloc() also uses SetPageActive(), but it's irrelevant to
+LRU pages.
+
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Reviewed-by: Yang Shi <shy828301@gmail.com>
+Cc: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+Cc: David Hildenbrand <david@redhat.com>
+Cc: Huang Ying <ying.huang@intel.com>
+Cc: Hugh Dickins <hughd@google.com>
+Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
+Cc: Mel Gorman <mgorman@techsingularity.net>
+Cc: Michal Hocko <mhocko@suse.com>
+Cc: Nicholas Piggin <npiggin@gmail.com>
+Cc: Qian Cai <cai@lca.pw>
+Link: http://lkml.kernel.org/r/20200818184704.3625199-2-yuzhao@google.com
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+(cherry picked from commit 6f4dd8de4835563de9bae797ce1d7a13465a7a7d)
+
+BUG=b:123039911
+TEST=Built
+
+Change-Id: I3e50ae28408b2936b1eb72210b3046eac8485701
+Reviewed-on: https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/2940109
+Tested-by: Yu Zhao <yuzhao@chromium.org>
+Reviewed-by: Sonny Rao <sonnyrao@chromium.org>
+Commit-Queue: Yu Zhao <yuzhao@chromium.org>
+---
+ mm/memremap.c | 2 --
+ mm/swap.c     | 2 --
+ 2 files changed, 4 deletions(-)
+
+--- a/mm/memremap.c
++++ b/mm/memremap.c
+@@ -419,8 +419,6 @@ void __put_devmap_managed_page(struct pa
+ 	 * holds a reference on the page.
+ 	 */
+ 	if (count == 1) {
+-		/* Clear Active bit in case of parallel mark_page_accessed */
+-		__ClearPageActive(page);
+ 		__ClearPageWaiters(page);
+ 
+ 		mem_cgroup_uncharge(page);
+--- a/mm/swap.c
++++ b/mm/swap.c
+@@ -829,8 +829,6 @@ void release_pages(struct page **pages,
+ 			del_page_from_lru_list(page, lruvec, page_off_lru(page));
+ 		}
+ 
+-		/* Clear Active bit in case of parallel mark_page_accessed */
+-		__ClearPageActive(page);
+ 		__ClearPageWaiters(page);
+ 
+ 		list_add(&page->lru, &pages_to_free);

@@ -1,11 +1,8 @@
 . /lib/functions.sh
 
 case "$(board_name)" in
-	jjplus,ja76pf2|\
 	meraki,mr12|\
-	meraki,mr16|\
-	ubnt,routerstation|\
-	ubnt,routerstation-pro)
+	meraki,mr16)
 		uci set system.@system[0].compat_version="2.0"
 		uci commit system
 		;;

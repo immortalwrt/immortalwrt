@@ -1,0 +1,20 @@
+--- a/include/uapi/linux/wireless.h
++++ b/include/uapi/linux/wireless.h
+@@ -678,7 +678,7 @@
+  *	Generic format for most parameters that fit in an int
+  */
+ struct iw_param {
+-  __s32		value;		/* The value of the parameter itself */
++  __u64		value;		/* The value of the parameter itself */
+   __u8		fixed;		/* Hardware should not use auto select */
+   __u8		disabled;	/* Disable the feature */
+   __u16		flags;		/* Various specifc flags (if any) */
+@@ -1002,7 +1002,7 @@ struct iw_range {
+ 
+ 	/* Rates */
+ 	__u8		num_bitrates;	/* Number of entries in the list */
+-	__s32		bitrate[IW_MAX_BITRATES];	/* list, in bps */
++	__u64		bitrate[IW_MAX_BITRATES];	/* list, in bps */
+ 
+ 	/* RTS threshold */
+ 	__s32		min_rts;	/* Minimal RTS threshold */

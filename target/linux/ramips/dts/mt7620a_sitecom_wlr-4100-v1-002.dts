@@ -4,7 +4,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "sitecom,wlr-4100-v1-002", "ralink,mt7620a-soc";
@@ -25,8 +24,7 @@
 		compatible = "gpio-leds";
 
 		led_power: power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_AMBER>;
+			label = "amber:power";
 			gpios = <&gpio0 9 GPIO_ACTIVE_LOW>;
 			default-state = "on";
 		};
@@ -38,8 +36,7 @@
 		};
 
 		wps {
-			function = LED_FUNCTION_WPS;
-			color = <LED_COLOR_ID_WHITE>;
+			label = "white:wps";
 			gpios = <&gpio1 15 GPIO_ACTIVE_LOW>;
 		};
 	};
@@ -105,24 +102,10 @@
 				read-only;
 			};
 
-			partition@40000 {
+			factory: partition@40000 {
 				label = "factory";
 				reg = <0x40000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_factory_0: eeprom@0 {
-						reg = <0x0 0x200>;
-					};
-
-					macaddr_factory_4: macaddr@4 {
-						reg = <0x4 0x6>;
-					};
-				};
 			};
 
 			partition@50000 {
@@ -150,8 +133,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&rgmii1_pins &mdio_pins>;
 
-	nvmem-cells = <&macaddr_factory_4>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0x4>;
 
 	port@5 {
 		status = "okay";
@@ -190,8 +172,9 @@
 };
 
 &wmac {
-	nvmem-cells = <&eeprom_factory_0>;
-	nvmem-cell-names = "eeprom";
+	status = "okay";
+
+	ralink,mtd-eeprom = <&factory 0x0>;
 };
 
 &state_default {
@@ -200,3 +183,4 @@
 		function = "gpio";
 	};
 };
+

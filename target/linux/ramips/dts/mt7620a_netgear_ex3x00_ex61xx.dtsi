@@ -2,7 +2,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	aliases {
@@ -32,15 +31,13 @@
 		compatible = "gpio-leds";
 
 		led_power_green: power_green {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio2 23 GPIO_ACTIVE_LOW>;
 			default-state = "on";
 		};
 
 		led_power_amber: power_amber {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_AMBER>;
+			label = "amber:power";
 			gpios = <&gpio2 28 GPIO_ACTIVE_LOW>;
 		};
 
@@ -65,8 +62,7 @@
 		};
 
 		wps {
-			function = LED_FUNCTION_WPS;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:wps";
 			gpios = <&gpio2 27 GPIO_ACTIVE_LOW>;
 		};
 	};
@@ -101,28 +97,10 @@
 				read-only;
 			};
 
-			partition@40000 {
+			factory: partition@40000 {
 				label = "factory";
 				reg = <0x40000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_factory_0: eeprom@0 {
-						reg = <0x0 0x200>;
-					};
-
-					eeprom_factory_8000: eeprom@8000 {
-						reg = <0x8000 0x200>;
-					};
-
-					macaddr_factory_28: macaddr@28 {
-						reg = <0x28 0x6>;
-					};
-				};
 			};
 
 			partition@50000 {
@@ -153,20 +131,17 @@
 &pcie0 {
 	mt76@0,0 {
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&eeprom_factory_8000>;
-		nvmem-cell-names = "eeprom";
+		mediatek,mtd-eeprom = <&factory 0x8000>;
 		ieee80211-freq-limit = <5000000 6000000>;
 	};
 };
 
 &ethernet {
-	nvmem-cells = <&macaddr_factory_28>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0x28>;
 };
 
 &wmac {
-	nvmem-cells = <&eeprom_factory_0>;
-	nvmem-cell-names = "eeprom";
+	ralink,mtd-eeprom = <&factory 0x0>;
 };
 
 &state_default {
@@ -175,4 +150,3 @@
 		function = "gpio";
 	};
 };
-

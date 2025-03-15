@@ -9,7 +9,6 @@
 		led-failsafe = &led_usr;
 		led-running = &led_usr;
 		led-upgrade = &led_usr;
-		label-mac-device = &gmac1;
 	};
 
 	leds {
@@ -27,7 +26,7 @@
 
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
-		gpios = <&gpio 9 GPIO_ACTIVE_HIGH>;
+		gpio = <&gpio 9 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 		regulator-boot-on;
 		regulator-always-on;
@@ -39,7 +38,7 @@
 
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
-		gpios = <&gpio 10 GPIO_ACTIVE_HIGH>;
+		gpio = <&gpio 10 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 		regulator-boot-on;
 		regulator-always-on;
@@ -51,7 +50,7 @@
 
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
-		gpios = <&gpio 11 GPIO_ACTIVE_HIGH>;
+		gpio = <&gpio 11 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 		regulator-boot-on;
 		regulator-always-on;
@@ -63,7 +62,7 @@
 
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
-		gpios = <&gpio 12 GPIO_ACTIVE_HIGH>;
+		gpio = <&gpio 12 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 		regulator-always-on;
 	};
@@ -91,35 +90,21 @@
 	};
 };
 
-&gmac1 {
-	status = "okay";
-	label = "wan";
-	phy-handle = <&ethphy0>;
-
-	nvmem-cells = <&macaddr_hard 0>;
-	nvmem-cell-names = "mac-address";
-};
-
-&ethphy0 {
-	/delete-property/ interrupts;
-};
-
 &switch0 {
 	ports {
+		port@0 {
+			status = "okay";
+			label = "wan";
+		};
+
 		port@1 {
 			status = "okay";
 			label = "lan1";
-
-			nvmem-cells = <&macaddr_hard 1>;
-			nvmem-cell-names = "mac-address";
 		};
 
 		port@2 {
 			status = "okay";
 			label = "lan2";
-
-			nvmem-cells = <&macaddr_hard 2>;
-			nvmem-cell-names = "mac-address";
 		};
 	};
 };
@@ -140,9 +125,5 @@
 };
 
 &pcie {
-	status = "okay";
-};
-
-&uartlite3 {
 	status = "okay";
 };

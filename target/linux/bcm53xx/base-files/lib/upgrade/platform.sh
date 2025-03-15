@@ -1,7 +1,6 @@
 RAMFS_COPY_BIN='osafeloader oseama otrx truncate'
 
 PART_NAME=firmware
-REQUIRE_IMAGE_METADATA=0
 
 BCM53XX_FW_FORMAT=
 BCM53XX_FW_BOARD_ID=
@@ -38,7 +37,6 @@ platform_expected_image() {
 
 	case "$machine" in
 		"dlink,dir-885l")	echo "seamaseal wrgac42_dlink.2015_dir885l"; return;;
-		"dlink,dir-890l")	echo "seamaseal wrgac36_dlink.2013gui_dir890"; return;;
 		"luxul,abr-4500-v1")	echo "lxl ABR-4500"; return;;
 		"luxul,xap-810-v1")	echo "lxl XAP-810"; return;;
 		"luxul,xap-1410-v1")	echo "lxl XAP-1410"; return;;
@@ -195,17 +193,13 @@ platform_other_check_image() {
 }
 
 platform_check_image() {
-	local board
-
-	board="$(board_name)"
-	case "$board" in
-	meraki,mr26 | \
-	meraki,mr32 | \
-	meraki,mx64 | \
-	meraki,mx64-a0 | \
-	meraki,mx65)
-		# NAND sysupgrade
-		return 0
+	case "$(board_name)" in
+	meraki,mr32)
+		# Ideally, REQUIRE_IMAGE_METADATA=1 would suffice
+		# but this would require converting all other
+		# devices too.
+		nand_do_platform_check meraki-mr32 "$1"
+		return $?
 		;;
 	*)
 		platform_other_check_image "$1"
@@ -400,20 +394,20 @@ platform_other_do_upgrade() {
 
 platform_do_upgrade() {
 	case "$(board_name)" in
-	meraki,mr26 | \
 	meraki,mr32)
-		REQUIRE_IMAGE_METADATA=1
 		CI_KERNPART="part.safe"
-		nand_do_upgrade "$1"
-		;;
-	meraki,mx64 | \
-	meraki,mx64-a0 | \
-	meraki,mx65)
-		REQUIRE_IMAGE_METADATA=1
 		nand_do_upgrade "$1"
 		;;
 	*)
 		platform_other_do_upgrade "$1"
+		;;
+	esac
+}
+
+platform_nand_pre_upgrade() {
+	case "$(board_name)" in
+	meraki,mr32)
+		CI_KERNPART="part.safe"
 		;;
 	esac
 }

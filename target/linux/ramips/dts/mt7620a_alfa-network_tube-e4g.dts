@@ -4,7 +4,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "alfa-network,tube-e4g", "ralink,mt7620a-soc";
@@ -75,14 +74,12 @@
 		};
 
 		lan {
-			function = LED_FUNCTION_LAN;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:lan";
 			gpios = <&gpio2 4 GPIO_ACTIVE_LOW>;
 		};
 
 		power: power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio2 0 GPIO_ACTIVE_LOW>;
 			default-state = "keep";
 		};
@@ -106,8 +103,7 @@
 };
 
 &ethernet {
-	nvmem-cells = <&macaddr_factory_28>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0x28>;
 };
 
 &gpio1 {
@@ -164,20 +160,10 @@
 				read-only;
 			};
 
-			partition@40000 {
+			factory: partition@40000 {
 				label = "factory";
 				reg = <0x40000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_factory_28: macaddr@28 {
-						reg = <0x28 0x6>;
-					};
-				};
 			};
 
 			partition@50000 {

@@ -1,0 +1,18 @@
+--- a/mt_wifi/embedded/wapp/wapp.c	2022-11-27 21:58:55.000000000 +0800
++++ b/mt_wifi/embedded/wapp/wapp.c	2023-12-28 22:29:52.260048734 +0800
+@@ -504,6 +504,12 @@
+ 	}
+ 
+ 	cli_info->uplink_rssi = RTMPAvgRssi(pAd, &mac_entry->RssiSample);
++	
++	cli_info->uplink += 400;
++	cli_info->downlink += 400;
++	cli_info->uplink_rssi += 30;
++	if (WMODE_CAP_5G(mac_entry->wdev->PhyMode))
++	{cli_info->uplink_rssi -=25;};
+ #ifdef CONFIG_DOT11V_WNM
+ 	cli_info->cli_caps.btm_capable = mac_entry->bBSSMantSTASupport == TRUE ? 1 : 0;
+ #endif
+ 			wext_send_wapp_qry_rsp(pAd->net_dev, &event);
+ 		}
+ 	}

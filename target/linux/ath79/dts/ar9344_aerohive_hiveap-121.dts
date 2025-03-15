@@ -4,7 +4,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "aerohive,hiveap-121", "qca,ar9344";
@@ -37,14 +36,12 @@
 		compatible = "gpio-leds";
 
 		led_power_orange: power_orange {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_ORANGE>;
+			label = "orange:power";
 			gpios = <&gpio 14 GPIO_ACTIVE_LOW>;
 		};
 
 		led_power_white: power_white {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_WHITE>;
+			label = "white:power";
 			gpios = <&gpio 21 GPIO_ACTIVE_LOW>;
 		};
 	};
@@ -109,8 +106,8 @@
 		compatible = "pci168c,0030";
 		reg = <0x0000 0 0 0 0>;
 
-		nvmem-cells = <&macaddr_hw_info_0 2>;
-		nvmem-cell-names = "mac-address";
+		mtd-mac-address = <&hw_info 0x0>;
+		mtd-mac-address-increment = <2>;
 	};
 };
 
@@ -143,18 +140,6 @@
 				label = "hw-info";
 				reg = <0x90000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_hw_info_0: macaddr@0 {
-						compatible = "mac-base";
-						reg = <0x0 0x6>;
-						#nvmem-cell-cells = <1>;
-					};
-				};
 			};
 
 			partition@a0000 {
@@ -175,8 +160,8 @@
 &wmac {
 	status = "okay";
 
-	nvmem-cells = <&macaddr_hw_info_0 1>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&hw_info 0x0>;
+	mtd-mac-address-increment = <1>;
 };
 
 &nand {
@@ -230,8 +215,7 @@
 
 	pll-data = <0x06000000 0x00000101 0x00001313>;
 
-	nvmem-cells = <&macaddr_hw_info_0 0>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&hw_info 0x0>;
 
 	phy-mode = "rgmii-id";
 	phy-handle = <&phy0>;

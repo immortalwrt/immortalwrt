@@ -1,0 +1,11 @@
+#!/bin/sh
+case "$1" in
+	"rax0")
+		wappctrl rax0 mbo steer_sta $2
+		return 0
+	;;
+	*)
+		wappctrl ra0 mbo steer_sta $2
+		return 0
+	;;
+esac

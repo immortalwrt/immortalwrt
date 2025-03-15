@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2017-2021 OpenWrt.org
+# Copyright (C) 2017 OpenWrt.org
 
 include $(TOPDIR)/rules.mk
 
@@ -10,9 +10,8 @@ BOARDNAME:=MIPS pistachio
 FEATURES:=fpu usb usbgadget squashfs targz nand
 CPU_TYPE:=24kc
 CPU_SUBTYPE:=24kf
-SUBTARGETS:=generic
 
-KERNEL_PATCHVER:=6.6
+KERNEL_PATCHVER:=5.4
 
 include $(INCLUDE_DIR)/target.mk
 

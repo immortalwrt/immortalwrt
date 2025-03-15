@@ -27,13 +27,34 @@ endef
 
 $(eval $(call KernelPackage,btmtkuart))
 
-define KernelPackage/iio-mt6577-auxadc
-  TITLE:=Mediatek AUXADC driver
-  DEPENDS:=@(TARGET_mediatek_mt7622||TARGET_mediatek_filogic)
-  KCONFIG:=CONFIG_MEDIATEK_MT6577_AUXADC
+define KernelPackage/sdhci-mtk
+  SUBMENU:=Other modules
+  TITLE:=Mediatek SDHCI driver
+  DEPENDS:=@TARGET_mediatek_mt7622 +kmod-sdhci
+  KCONFIG:=CONFIG_MMC_MTK 
   FILES:= \
-	$(LINUX_DIR)/drivers/iio/adc/mt6577_auxadc.ko
-  AUTOLOAD:=$(call AutoProbe,mt6577_auxadc)
-  $(call AddDepends/iio)
+	$(LINUX_DIR)/drivers/mmc/host/mtk-sd.ko
+  AUTOLOAD:=$(call AutoProbe,mtk-sd,1)
 endef
-$(eval $(call KernelPackage,iio-mt6577-auxadc))
+
+$(eval $(call KernelPackage,sdhci-mtk))
+
+define KernelPackage/mediatek_hnat
+  SUBMENU:=Network Devices
+  TITLE:=Mediatek HNAT module
+  DEPENDS:=@TARGET_mediatek +kmod-nf-conntrack +wireless-tools +@KERNEL_WIRELESS_EXT
+  AUTOLOAD:=$(call AutoLoad,20,mtkhnat)
+  MODPARAMS.mtkhnat:=ppe_cnt=2
+  KCONFIG:= \
+	CONFIG_BRIDGE_NETFILTER=y \
+	CONFIG_NETFILTER_FAMILY_BRIDGE=y \
+	CONFIG_NET_MEDIATEK_HNAT
+  FILES:= \
+        $(LINUX_DIR)/drivers/net/ethernet/mediatek/mtk_hnat/mtkhnat.ko
+endef
+
+define KernelPackage/mediatek_hnat/description
+  Kernel modules for MediaTek HW NAT offloading
+endef
+
+$(eval $(call KernelPackage,mediatek_hnat))

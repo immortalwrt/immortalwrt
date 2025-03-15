@@ -1,0 +1,185 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:91
+msgid "Acceleration Status"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:191
+msgid "Boardcom_FULLCONE_NAT"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:151
+msgid "Bridge Acceleration"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:95
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:99
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:103
+msgid "Collecting data..."
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:120
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:188
+msgid "Disable"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:57
+msgid "Disabled"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:159
+msgid "Enable IPv6 Acceleration."
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:177
+msgid "Enable ethernet HNAT for MACVLAN WAN device"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:178
+msgid "Enable hardware offloading for macvlan (sing wan only)."
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:183
+msgid "HNAT bind rate threshold (pps)"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:184
+msgid "The smaller the threshold, the easier it is for the connection to be accelerated."
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:152
+msgid ""
+"Enable bridge acceleration (may be functional conflict with bridge-mode VPN "
+"server)."
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:165
+msgid "Enable ethernet HNAT"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:171
+msgid "Enable ethernet IPv6 HNAT"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:172
+msgid "Enable hardware offloading for wired IPv6 connections."
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:166
+msgid "Enable hardware offloading for wired connections."
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:178
+msgid "Enable hardware offloading for wireless connections."
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:177
+msgid "Enable wireless HNAT"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:124
+msgid "Fast classifier"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:136
+msgid "Fast classifier connection manager for the shortcut forwarding engine."
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:94
+msgid "FastPath Engine"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:118
+msgid "Fastpath engine"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:122
+msgid "Flow offloading"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:98
+msgid "Full Cone NAT"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:186
+msgid "Full cone NAT"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:187
+msgid "Full cone NAT (NAT1) can improve gaming performance effectively."
+msgstr ""
+
+#: applications/luci-app-turboacc/root/usr/share/rpcd/acl.d/luci-app-turboacc.json:3
+msgid "Grant UCI access for luci-app-turboacc"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:145
+msgid "Hardware flow offloading"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:158
+msgid "IPv6 acceleration"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:128
+msgid "MediaTek HNAT"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:140
+msgid "MediaTek's open source hardware offloading engine."
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:74
+msgid "Open source flow offloading engine (fast path or hardware NAT)."
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:179
+msgid "Redirect to wireless settings"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:146
+msgid "Requires hardware NAT support. Implemented at least for mt7621."
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:126
+msgid "SFE connection manager"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:138
+msgid "Simple connection manager for the shortcut forwarding engine."
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:134
+msgid "Software based offloading for routing/NAT."
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:102
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:195
+msgid "TCP CCA"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:196
+msgid "TCP congestion control algorithm."
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:119
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:142
+msgid "The offloading engine for routing/NAT."
+msgstr ""
+
+#: applications/luci-app-turboacc/root/usr/share/luci/menu.d/luci-app-turboacc.json:3
+msgid "TurboACC"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:73
+msgid "TurboACC settings"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:190
+msgid "XT_FULLCONE_NAT"
+msgstr ""
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:191
+msgid "Boardcom_FULLCONE_NAT"
+msgstr ""

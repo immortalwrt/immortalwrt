@@ -1,0 +1,213 @@
+--- a/drivers/crypto/inside-secure/safexcel.c
++++ b/drivers/crypto/inside-secure/safexcel.c
+@@ -304,6 +304,11 @@
+ 		/* Enable access to all IFPP program memories */
+ 		writel(EIP197_PE_ICE_RAM_CTRL_FPP_PROG_EN,
+ 		       EIP197_PE(priv) + EIP197_PE_ICE_RAM_CTRL(pe));
++
++		/* bypass the OCE, if present */
++		if (priv->flags & EIP197_OCE)
++			writel(EIP197_DEBUG_OCE_BYPASS, EIP197_PE(priv) +
++							EIP197_PE_DEBUG(pe));
+ 	}
+ 
+ }
+@@ -403,13 +408,13 @@
+ 	const struct firmware *fw[FW_NB];
+ 	char fw_path[37], *dir = NULL;
+ 	int i, j, ret = 0, pe;
+-	int ipuesz, ifppsz, minifw = 0;
++	int ipuesz, ifppsz, minifw = 1;
+ 
+ 	if (priv->version == EIP197D_MRVL)
+ 		dir = "eip197d";
+ 	else if (priv->version == EIP197B_MRVL ||
+ 		 priv->version == EIP197_DEVBRD)
+-		dir = "eip197b";
++		dir = "eip197_minifw";
+ 	else
+ 		return -ENODEV;
+ 
+@@ -592,6 +597,11 @@
+ 	 */
+ 	if (priv->flags & SAFEXCEL_HW_EIP197) {
+ 		val = readl(EIP197_HIA_AIC(priv) + EIP197_HIA_MST_CTRL);
++		/* Clear axi_burst_size and rx_burst_size */
++		val &= 0xffffff00;
++		/* Set axi_burst_size = 3, rx_burst_size = 3 */
++		val |= EIP197_MST_CTRL_RD_CACHE(3);
++		val |= EIP197_MST_CTRL_WD_CACHE(3);
+ 		val |= EIP197_MST_CTRL_TX_MAX_CMD(5);
+ 		writel(val, EIP197_HIA_AIC(priv) + EIP197_HIA_MST_CTRL);
+ 	}
+@@ -792,6 +802,12 @@
+ 			return ret;
+ 	}
+ 
++	/* Allow clocks to be forced on for EIP197 */
++	if (priv->flags & SAFEXCEL_HW_EIP197) {
++		writel(0xffffffff, EIP197_HIA_GEN_CFG(priv) + EIP197_FORCE_CLOCK_ON);
++		writel(0xffffffff, EIP197_HIA_GEN_CFG(priv) + EIP197_FORCE_CLOCK_ON2);
++	}
++
+ 	return safexcel_hw_setup_cdesc_rings(priv) ?:
+ 	       safexcel_hw_setup_rdesc_rings(priv) ?:
+ 	       0;
+@@ -1498,6 +1514,9 @@
+ 	hwopt = readl(EIP197_GLOBAL(priv) + EIP197_OPTIONS);
+ 	hiaopt = readl(EIP197_HIA_AIC(priv) + EIP197_HIA_OPTIONS);
+ 
++	priv->hwconfig.icever = 0;
++	priv->hwconfig.ocever = 0;
++	priv->hwconfig.psever = 0;
+ 	if (priv->flags & SAFEXCEL_HW_EIP197) {
+ 		/* EIP197 */
+ 		peopt = readl(EIP197_PE(priv) + EIP197_PE_OPTIONS(0));
+@@ -1516,8 +1535,37 @@
+ 					    EIP197_N_RINGS_MASK;
+ 		if (hiaopt & EIP197_HIA_OPT_HAS_PE_ARB)
+ 			priv->flags |= EIP197_PE_ARB;
+-		if (EIP206_OPT_ICE_TYPE(peopt) == 1)
++		if (EIP206_OPT_ICE_TYPE(peopt) == 1) {
+ 			priv->flags |= EIP197_ICE;
++			/* Detect ICE EIP207 class. engine and version */
++			version = readl(EIP197_PE(priv) +
++				  EIP197_PE_ICE_VERSION(0));
++			if (EIP197_REG_LO16(version) != EIP207_VERSION_LE) {
++				dev_err(dev, "EIP%d: ICE EIP207 not detected.\n",
++					peid);
++				return -ENODEV;
++			}
++			priv->hwconfig.icever = EIP197_VERSION_MASK(version);
++		}
++		if (EIP206_OPT_OCE_TYPE(peopt) == 1) {
++			priv->flags |= EIP197_OCE;
++			/* Detect EIP96PP packet stream editor and version */
++			version = readl(EIP197_PE(priv) + EIP197_PE_PSE_VERSION(0));
++			if (EIP197_REG_LO16(version) != EIP96_VERSION_LE) {
++				dev_err(dev, "EIP%d: EIP96PP not detected.\n", peid);
++				return -ENODEV;
++			}
++			priv->hwconfig.psever = EIP197_VERSION_MASK(version);
++			/* Detect OCE EIP207 class. engine and version */
++			version = readl(EIP197_PE(priv) +
++				  EIP197_PE_ICE_VERSION(0));
++			if (EIP197_REG_LO16(version) != EIP207_VERSION_LE) {
++				dev_err(dev, "EIP%d: OCE EIP207 not detected.\n",
++					peid);
++				return -ENODEV;
++			}
++			priv->hwconfig.ocever = EIP197_VERSION_MASK(version);
++		}
+ 		/* If not a full TRC, then assume simple TRC */
+ 		if (!(hwopt & EIP197_OPT_HAS_TRC))
+ 			priv->flags |= EIP197_SIMPLE_TRC;
+@@ -1555,13 +1603,14 @@
+ 				    EIP197_PE_EIP96_OPTIONS(0));
+ 
+ 	/* Print single info line describing what we just detected */
+-	dev_info(priv->dev, "EIP%d:%x(%d,%d,%d,%d)-HIA:%x(%d,%d,%d),PE:%x/%x,alg:%08x\n",
++	dev_info(priv->dev, "EIP%d:%x(%d,%d,%d,%d)-HIA:%x(%d,%d,%d),PE:%x/%x(alg:%08x)/%x/%x/%x\n",
+ 		 peid, priv->hwconfig.hwver, hwctg, priv->hwconfig.hwnumpes,
+ 		 priv->hwconfig.hwnumrings, priv->hwconfig.hwnumraic,
+ 		 priv->hwconfig.hiaver, priv->hwconfig.hwdataw,
+ 		 priv->hwconfig.hwcfsize, priv->hwconfig.hwrfsize,
+ 		 priv->hwconfig.ppver, priv->hwconfig.pever,
+-		 priv->hwconfig.algo_flags);
++		 priv->hwconfig.algo_flags, priv->hwconfig.icever,
++		 priv->hwconfig.ocever, priv->hwconfig.psever);
+ 
+ 	safexcel_configure(priv);
+ 
+@@ -1690,6 +1739,7 @@
+ {
+ 	struct device *dev = &pdev->dev;
+ 	struct safexcel_crypto_priv *priv;
++	struct resource *res;
+ 	int ret;
+ 
+ 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+@@ -1701,7 +1751,11 @@
+ 
+ 	platform_set_drvdata(pdev, priv);
+ 
+-	priv->base = devm_platform_ioremap_resource(pdev, 0);
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -EINVAL;
++
++	priv->base = devm_ioremap(dev, res->start, resource_size(res));
+ 	if (IS_ERR(priv->base)) {
+ 		dev_err(dev, "failed to get resource\n");
+ 		return PTR_ERR(priv->base);
+--- a/drivers/crypto/inside-secure/safexcel.h
++++ b/drivers/crypto/inside-secure/safexcel.h
+@@ -22,6 +22,7 @@
+ #define EIP96_VERSION_LE			0x9f60
+ #define EIP201_VERSION_LE			0x36c9
+ #define EIP206_VERSION_LE			0x31ce
++#define EIP207_VERSION_LE			0x30cf
+ #define EIP197_REG_LO16(reg)			(reg & 0xffff)
+ #define EIP197_REG_HI16(reg)			((reg >> 16) & 0xffff)
+ #define EIP197_VERSION_MASK(reg)		((reg >> 16) & 0xfff)
+@@ -34,6 +35,7 @@
+ 
+ /* EIP206 OPTIONS ENCODING */
+ #define EIP206_OPT_ICE_TYPE(n)			((n>>8)&3)
++#define EIP206_OPT_OCE_TYPE(n)			((n>>10)&3)
+ 
+ /* EIP197 OPTIONS ENCODING */
+ #define EIP197_OPT_HAS_TRC			BIT(31)
+@@ -168,6 +170,7 @@
+ #define EIP197_PE_ICE_FPP_CTRL(n)		(0x0d80 + (0x2000 * (n)))
+ #define EIP197_PE_ICE_PPTF_CTRL(n)		(0x0e00 + (0x2000 * (n)))
+ #define EIP197_PE_ICE_RAM_CTRL(n)		(0x0ff0 + (0x2000 * (n)))
++#define EIP197_PE_ICE_VERSION(n)		(0x0ffc + (0x2000 * (n)))
+ #define EIP197_PE_EIP96_TOKEN_CTRL(n)		(0x1000 + (0x2000 * (n)))
+ #define EIP197_PE_EIP96_FUNCTION_EN(n)		(0x1004 + (0x2000 * (n)))
+ #define EIP197_PE_EIP96_CONTEXT_CTRL(n)		(0x1008 + (0x2000 * (n)))
+@@ -176,10 +179,15 @@
+ #define EIP197_PE_EIP96_FUNCTION2_EN(n)		(0x1030 + (0x2000 * (n)))
+ #define EIP197_PE_EIP96_OPTIONS(n)		(0x13f8 + (0x2000 * (n)))
+ #define EIP197_PE_EIP96_VERSION(n)		(0x13fc + (0x2000 * (n)))
++#define EIP197_PE_OCE_VERSION(n)		(0x1bfc + (0x2000 * (n)))
+ #define EIP197_PE_OUT_DBUF_THRES(n)		(0x1c00 + (0x2000 * (n)))
+ #define EIP197_PE_OUT_TBUF_THRES(n)		(0x1d00 + (0x2000 * (n)))
++#define EIP197_PE_PSE_VERSION(n)		(0x1efc + (0x2000 * (n)))
++#define EIP197_PE_DEBUG(n)			(0x1ff4 + (0x2000 * (n)))
+ #define EIP197_PE_OPTIONS(n)			(0x1ff8 + (0x2000 * (n)))
+ #define EIP197_PE_VERSION(n)			(0x1ffc + (0x2000 * (n)))
++#define EIP197_FORCE_CLOCK_ON2			0xffd8
++#define EIP197_FORCE_CLOCK_ON			0xffe8
+ #define EIP197_MST_CTRL				0xfff4
+ #define EIP197_OPTIONS				0xfff8
+ #define EIP197_VERSION				0xfffc
+@@ -353,6 +361,9 @@
+ /* EIP197_PE_EIP96_TOKEN_CTRL2 */
+ #define EIP197_PE_EIP96_TOKEN_CTRL2_CTX_DONE	BIT(3)
+ 
++/* EIP197_PE_DEBUG */
++#define EIP197_DEBUG_OCE_BYPASS			BIT(1)
++
+ /* EIP197_STRC_CONFIG */
+ #define EIP197_STRC_CONFIG_INIT			BIT(31)
+ #define EIP197_STRC_CONFIG_LARGE_REC(s)		(s<<8)
+@@ -777,6 +788,7 @@
+ 	EIP197_PE_ARB		= BIT(2),
+ 	EIP197_ICE		= BIT(3),
+ 	EIP197_SIMPLE_TRC	= BIT(4),
++	EIP197_OCE		= BIT(5),
+ };
+ 
+ struct safexcel_hwconfig {
+@@ -784,7 +796,10 @@
+ 	int hwver;
+ 	int hiaver;
+ 	int ppver;
++	int icever;
+ 	int pever;
++	int ocever;
++	int psever;
+ 	int hwdataw;
+ 	int hwcfsize;
+ 	int hwrfsize;

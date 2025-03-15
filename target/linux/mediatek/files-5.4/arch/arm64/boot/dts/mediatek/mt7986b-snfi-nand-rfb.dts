@@ -1,0 +1,193 @@
+/dts-v1/;
+#include "mt7986b.dtsi"
+#include "mt7986b-pinctrl.dtsi"
+#include "mt7986-snfi-nand-partition.dtsi"
+/ {
+	model = "MediaTek MT7986b RFB";
+	compatible = "mediatek,mt7986b-2500wan-snfi-snand-rfb";
+	chosen {
+		bootargs = "console=ttyS0,115200n1 loglevel=8  \
+				earlycon=uart8250,mmio32,0x11002000";
+	};
+
+	memory {
+		reg = <0 0x40000000 0 0x10000000>;
+	};
+};
+
+&uart0 {
+	status = "okay";
+};
+
+/* Warning: pins shared with &snand */
+&uart1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart1_pins>;
+	status = "disabled";
+};
+
+/* Warning: pins shared with &spi1 */
+&uart2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart2_pins>;
+	status = "disabled";
+};
+
+&i2c0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c_pins>;
+	status = "okay";
+};
+
+&watchdog {
+	status = "okay";
+};
+
+&eth {
+	status = "okay";
+
+	gmac0: mac@0 {
+		compatible = "mediatek,eth-mac";
+		reg = <0>;
+		phy-mode = "2500base-x";
+
+		fixed-link {
+			speed = <2500>;
+			full-duplex;
+			pause;
+		};
+	};
+
+	gmac1: mac@1 {
+		compatible = "mediatek,eth-mac";
+		reg = <1>;
+		phy-mode = "2500base-x";
+
+		fixed-link {
+			speed = <2500>;
+			full-duplex;
+			pause;
+		};
+	};
+
+	mdio: mdio-bus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		phy5: phy@5 {
+			compatible = "ethernet-phy-id67c9.de0a";
+			reg = <5>;
+			reset-gpios = <&pio 6 1>;
+			reset-assert-us = <600>;
+			reset-deassert-us = <20000>;
+			phy-mode = "2500base-x";
+		};
+
+		phy6: phy@6 {
+			compatible = "ethernet-phy-id67c9.de0a";
+			reg = <6>;
+			phy-mode = "2500base-x";
+		};
+
+		switch@0 {
+			compatible = "mediatek,mt7531";
+			reg = <31>;
+			reset-gpios = <&pio 5 0>;
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				port@0 {
+					reg = <0>;
+					label = "lan0";
+				};
+
+				port@1 {
+					reg = <1>;
+					label = "lan1";
+				};
+
+				port@2 {
+					reg = <2>;
+					label = "lan2";
+				};
+
+				port@3 {
+					reg = <3>;
+					label = "lan3";
+				};
+
+				port@6 {
+					reg = <6>;
+					label = "cpu";
+					ethernet = <&gmac0>;
+					phy-mode = "2500base-x";
+
+					fixed-link {
+						speed = <2500>;
+						full-duplex;
+						pause;
+					};
+				};
+			};
+		};
+	};
+};
+
+&hnat {
+	mtketh-wan = "eth1";
+	mtketh-lan = "lan";
+	mtketh-max-gmac = <2>;
+	status = "okay";
+};
+
+/* Warning: pins shared with &uart1 */
+&snand {
+	pinctrl-names = "default";
+	pinctrl-0 = <&snfi_pins>;
+	mediatek,quad-spi;
+	status = "okay";
+
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+	};
+};
+
+/* Warning: pins shared with &uart2 */
+&spi1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spic_pins>;
+	status = "okay";
+};
+
+&wbsys {
+	mediatek,mtd-eeprom = <&factory 0x0000>;
+	status = "okay";
+};
+
+&pio {
+	snfi_pins: snfi-pins-23-to-28 {
+		mux {
+			function = "flash";
+			groups = "snfi";
+		};
+		conf-clk {
+			pins = "SPI0_CLK";
+			drive-strength = <MTK_DRIVE_8mA>;
+			mediatek,pull-down-adv = <0>;	/* bias-disable */
+		};
+		conf-pu {
+			pins = "SPI0_CS", "SPI0_HOLD", "SPI0_WP";
+			drive-strength = <MTK_DRIVE_6mA>;
+			mediatek,pull-up-adv = <0>;	/* bias-disable */
+		};
+		conf-pd {
+			pins = "SPI0_MOSI", "SPI0_MISO";
+			drive-strength = <MTK_DRIVE_6mA>;
+			mediatek,pull-down-adv = <0>;	/* bias-disable */
+		};
+	};
+};

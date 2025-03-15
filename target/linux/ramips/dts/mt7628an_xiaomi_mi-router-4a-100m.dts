@@ -1,43 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
-#include <dt-bindings/leds/common.h>
-
 #include "mt7628an_xiaomi_mi-router-4.dtsi"
 
 / {
 	compatible = "xiaomi,mi-router-4a-100m", "mediatek,mt7628an-soc";
 	model = "Xiaomi Mi Router 4A (100M Edition)";
-
-	aliases {
-		led-boot = &led_power_yellow;
-		led-failsafe = &led_power_yellow;
-		led-running = &led_power_blue;
-		led-upgrade = &led_power_yellow;
-		label-mac-device = &ethernet;
-	};
-
-	leds {
-		compatible = "gpio-leds";
-
-		led_power_blue: power_blue {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_BLUE>;
-			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
-		};
-
-		led_power_yellow: power_yellow {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_YELLOW>;
-			gpios = <&gpio 44 GPIO_ACTIVE_LOW>;
-		};
-
-		wan {
-			function = LED_FUNCTION_WAN;
-			color = <LED_COLOR_ID_BLUE>;
-			gpios = <&gpio 37 GPIO_ACTIVE_LOW>;
-		};
-	};
-
 };
 
 &partitions {
@@ -62,15 +29,14 @@
 	wifi@0,0 {
 		compatible = "mediatek,mt76";
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&eeprom_factory_8000>;
-		nvmem-cell-names = "eeprom";
+		mediatek,mtd-eeprom = <&factory 0x8000>;
 		ieee80211-freq-limit = <5000000 6000000>;
 	};
 };
 
 &ethernet {
-	nvmem-cells = <&macaddr_factory_4 (-1)>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0x4>;
+	mtd-mac-address-increment = <(-1)>;
 };
 
 &esw {

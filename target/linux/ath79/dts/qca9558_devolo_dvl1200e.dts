@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
-#include <dt-bindings/leds/common.h>
-
 #include "qca9558_devolo_dvl1xxx.dtsi"
 
 / {
@@ -19,15 +17,13 @@
 		compatible = "gpio-leds";
 
 		led_status_blue: status_blue {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:status";
 			gpios = <&gpio 14 GPIO_ACTIVE_LOW>;
 			default-state = "on";
 		};
 
 		led_status_red: status_red {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_RED>;
+			label = "red:status";
 			gpios = <&gpio 15 GPIO_ACTIVE_LOW>;
 		};
 	};
@@ -62,8 +58,8 @@
 &eth1 {
 	status = "okay";
 
-	nvmem-cells = <&macaddr_art_0 1>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&art 0x00>;
+	mtd-mac-address-increment = <1>;
 
 	phy-handle = <&phy1>;
 	pll-data = <0x03000101 0x00000101 0x00001313>;

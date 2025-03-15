@@ -1,0 +1,9 @@
+do_setup_ppenum() {
+    if [ -f "/etc/modules.d/20-mediatek_hnat" ]; then
+        PPE_NUM="$(uci -q get turboacc.config.fastpath_mh_eth_hnat_ppenum)"
+        PPE_ENTRYNUM="$(uci -q get turboacc.config.fastpath_mh_eth_hnat_ppe_entrynum)"
+        echo "mtkhnat ppe_cnt=${PPE_NUM:-2}" > /etc/modules.d/20-mediatek_hnat
+    fi
+}
+
+boot_hook_add preinit_main do_setup_ppenum

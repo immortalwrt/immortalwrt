@@ -1,0 +1,236 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"PO-Revision-Date: 2024-08-07 18:30+0000\n"
+"Last-Translator: Džiugas Januševičius <dziugas1959@hotmail.com>\n"
+"Language-Team: Lithuanian <https://hosted.weblate.org/projects/openwrt/"
+"luciapplicationsupnp/lt/>\n"
+"Language: lt\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"(n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 5.7-dev\n"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:182
+msgid ""
+"ACLs specify which external ports may be redirected to which internal "
+"addresses and ports"
+msgstr ""
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:202
+msgid "Action"
+msgstr "Veiksmas"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:31
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:113
+msgid "Active UPnP Redirects"
+msgstr ""
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:119
+msgid "Advanced Settings"
+msgstr "Pažangūs nustatymai"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:131
+msgid "Advertise as IGDv1 device instead of IGDv2"
+msgstr ""
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:203
+msgid "Allow"
+msgstr "Leisti"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:128
+msgid "Allow adding forwards only to requesting ip addresses"
+msgstr ""
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:150
+msgid "Announced model number"
+msgstr "Paskelbtas modelio numeris"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:149
+msgid "Announced serial number"
+msgstr "Paskelbtas serijos numeris"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:160
+msgid "Clean rules interval"
+msgstr "Išvalyti taisyklių intervalus"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:156
+msgid "Clean rules threshold"
+msgstr "Išvalyti taisyklių slenksčius"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:45
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:85
+msgid "Client Address"
+msgstr "Kliento adresas"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:47
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:87
+msgid "Client Port"
+msgstr "Kliento prievadas"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:188
+msgid "Comment"
+msgstr "Komentuoti"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:66
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:62
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:106
+msgid "Delete"
+msgstr "Ištrinti"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:204
+msgid "Deny"
+msgstr "Atmesti/Neprileisti"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:48
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:88
+msgid "Description"
+msgstr "Aprašas/-ymas"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:148
+msgid "Device UUID"
+msgstr "Įrenginio „UUID“"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:136
+msgid "Downlink"
+msgstr ""
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:130
+msgid "Enable IGDv1 mode"
+msgstr "Įjungti „IGDv1“ režimą"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:125
+msgid "Enable NAT-PMP functionality"
+msgstr "Įgalinti „NAT-PMP“ funkcionalumą"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:124
+msgid "Enable UPnP functionality"
+msgstr "Įgalinti „UPnP“ funkcionalumą"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:133
+msgid "Enable additional logging"
+msgstr "Įjungti papildomą žurnalinimą"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:127
+msgid "Enable secure mode"
+msgstr "Įjungti „saugųjį režimą“"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:44
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:84
+msgid "External Port"
+msgstr "Išorinis prievadas"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:190
+msgid "External ports"
+msgstr "Išoriniai prievadai"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:118
+msgid "General Settings"
+msgstr "Bendri nustatymai"
+
+#: applications/luci-app-upnp/root/usr/share/rpcd/acl.d/luci-app-upnp.json:3
+msgid "Grant access to upnp procedures"
+msgstr "Duoti prieigą prie „upnp procedures“"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:46
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:86
+msgid "Host"
+msgstr "Skleidėjas/Vedėjas"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:194
+msgid "Internal addresses"
+msgstr "Vidiniai adresai"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:198
+msgid "Internal ports"
+msgstr "Vidiniai prievadai"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:181
+msgid "MiniUPnP ACLs"
+msgstr "„MiniUPnP ACLs“"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:116
+msgid "MiniUPnP settings"
+msgstr "„MiniUPnP“ nustatymai"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:152
+msgid "Notify interval"
+msgstr "Pranešimo intervalas"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:142
+msgid "Port"
+msgstr "Prievadas"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:164
+msgid "Presentation URL"
+msgstr "Pateikties „URL“ – saitas"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:43
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:83
+msgid "Protocol"
+msgstr "Protokolas"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:134
+msgid "Puts extra debugging information into the system log"
+msgstr "Įdeda papildomą derinimo informaciją į sistemos žurnalą"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:146
+msgid "Report system instead of daemon uptime"
+msgstr ""
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:172
+msgid "STUN Host"
+msgstr "„STUN“ skleidėjas/vedėjas"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:176
+msgid "STUN Port"
+msgstr "„STUN“ prievadas"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:121
+msgid "Start UPnP and NAT-PMP service"
+msgstr "Paleisti „UPnP“ ir „NAT-PMP“ tarnybą"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:70
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:66
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:110
+msgid "There are no active redirects."
+msgstr ""
+
+#: applications/luci-app-upnp/root/usr/share/luci/menu.d/luci-app-upnp.json:3
+msgid "UPnP"
+msgstr "„UPnP“"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:76
+msgid ""
+"UPnP allows clients in the local network to automatically configure the "
+"router."
+msgstr ""
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:167
+msgid "UPnP lease file"
+msgstr ""
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:75
+msgid "Universal Plug & Play"
+msgstr ""
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:60
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:56
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:100
+msgid "Unknown"
+msgstr "Nežinoma/-s/-i"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:139
+msgid "Uplink"
+msgstr ""
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:170
+msgid "Use STUN"
+msgstr "Naudoti „STUN“"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:137
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:140
+msgid "Value in KByte/s, informational only"
+msgstr "Reikšmė kilobaitais per sekundę (KB/s), tik informacinis"

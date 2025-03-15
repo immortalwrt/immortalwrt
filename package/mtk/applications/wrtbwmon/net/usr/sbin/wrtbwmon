@@ -1,0 +1,460 @@
+#!/bin/sh
+#
+
+# Default input parameters for wrtbwmon.
+runMode=0
+Monitor46=4
+
+# Some parameters for monitor process.
+for46=
+updatePID=
+logFile=/var/log/wrtbwmon.log
+lockFile=/var/lock/wrtbwmon.lock
+pidFile=/var/run/wrtbwmon.pid
+tmpDir=/var/tmp/wrtbwmon
+interval4=0
+interval6=0
+
+# Debug parameters for readDB.awk.
+mode=
+DEBUG=
+
+# Constant parameter for wrtbwmon.
+binDir=/usr/sbin
+dataDir=/usr/share/wrtbwmon
+
+networkFuncs=/lib/functions/network.sh
+uci=`which uci 2>/dev/null`
+nslookup=`which nslookup 2>/dev/null`
+nvram=`which nvram 2>/dev/null`
+
+chains='INPUT OUTPUT FORWARD'
+interfaces='eth0 tun0 br-lan' # in addition to detected WAN
+
+# DNS server for reverse lookups provided in "DNS".
+# don't perform reverse DNS lookups by default
+DO_RDNS=${DNS-}
+
+header="#mac,ip,iface,speed_in,speed_out,in,out,total,first_date,last_date"
+
+createDbIfMissing() {
+	[ ! -f "$DB" ] && echo $header > "$DB"
+	[ ! -f "$DB6" ] && echo $header > "$DB6"
+}
+
+checkDbArg() {
+	[ -z "$DB" ] && echo "ERROR: Missing argument 2 (database file)" && exit 1
+}
+
+checkDB() {
+	[ ! -f "$DB" ] && echo "ERROR: $DB does not exist" && exit 1
+	[ ! -w "$DB" ] && echo "ERROR: $DB is not writable" && exit 1
+	[ ! -f "$DB6" ] && echo "ERROR: $DB6 does not exist" && exit 1
+	[ ! -w "$DB6" ] && echo "ERROR: $DB6 is not writable" && exit 1
+}
+
+checkWAN() {
+	[ -z "$1" ] && echo "Warning: failed to detect WAN interface."
+}
+
+lookup() {
+	local MAC=$1
+	local IP=$2
+	local userDB=$3
+	local USERSFILE=
+	local USER=
+	for USERSFILE in $userDB /tmp/dhcp.leases /tmp/dnsmasq.conf /etc/dnsmasq.conf /etc/hosts; do
+		[ -e "$USERSFILE" ] || continue
+
+		case $USERSFILE in
+			/tmp/dhcp.leases )
+			USER=$(grep -i "$MAC" $USERSFILE | cut -f4 -s -d' ')
+			;;
+			/etc/hosts )
+			USER=$(grep "^$IP " $USERSFILE | cut -f2 -s -d' ')
+			;;
+			* )
+			USER=$(grep -i "$MAC" "$USERSFILE" | cut -f2 -s -d,)
+			;;
+		esac
+
+		[ "$USER" = "*" ] && USER=
+		[ -n "$USER" ] && break
+
+	done
+
+	if [ -n "$DO_RDNS" -a -z "$USER" -a "$IP" != "NA" -a -n "$nslookup" ]; then
+		USER=`$nslookup $IP $DNS | awk '!/server can/{if($4){print $4; exit}}' | sed -re 's/[.]$//'`
+	fi
+
+	[ -z "$USER" ] && USER=${MAC}
+	echo $USER
+}
+
+detectIF() {
+	local IF=
+	if [ -f "$networkFuncs" ]; then
+		IF=`. $networkFuncs; network_get_device netdev $1; echo $netdev`
+		[ -n "$IF" ] && echo $IF && return
+	fi
+
+	if [ -n "$uci" -a -x "$uci" ]; then
+		IF=`$uci get network.${1}.ifname 2>/dev/null`
+		[ $? -eq 0 -a -n "$IF" ] && echo $IF && return
+	fi
+
+	if [ -n "$nvram" -a -x "$nvram" ]; then
+		IF=`$nvram get ${1}_ifname 2>/dev/null`
+		[ $? -eq 0 -a -n "$IF" ] && echo $IF && return
+	fi
+}
+
+detectLAN() {
+	[ -e /sys/class/net/br-lan ] && echo br-lan && return
+	local lan=$(detectIF lan)
+	[ -n "$lan" ] && echo $lan && return
+}
+
+detectWAN() {
+	local wan=$(detectIF wan)
+	[ -n "$wan" ] && echo $wan && return
+	wan=$(ip route show 2>/dev/null | grep default | sed -re '/^default/ s/default.*dev +([^ ]+).*/\1/')
+	[ -n "$wan" ] && echo $wan && return
+	[ -f "$networkFuncs" ] && wan=$(. $networkFuncs; network_find_wan wan; echo $wan)
+	[ -n "$wan" ] && echo $wan && return
+}
+
+lockFunc() {
+	#Realize the lock function by busybox lock or flock command.
+	#	if !(lock -n $lockFile) >/dev/null 2>&1; then
+	#		exit 1
+	#	fi
+	#The following lock method is realized by other's function.
+
+	local attempts=0
+	local flag=0
+
+	while [ "$flag" = 0 ]; do
+		local tempfile=$(mktemp $tmpDir/lock.XXXXXX)
+		ln $tempfile $lockFile >/dev/null 2>&1 && flag=1
+		rm $tempfile
+
+		if [ "$flag" = 1 ]; then
+			[ -n "$DEBUG" ] && echo ${updatePID} "got lock after $attempts attempts"
+			flag=1
+		else
+			sleep 1
+			attempts=$(($attempts+1))
+			[ -n "$DEBUG" ] && echo ${updatePID} "The $attempts attempts."
+			[ "$attempts" -ge 10 ] && exit
+		fi
+	done
+}
+
+unlockFunc() {
+	#Realize the lock function by busybox lock or flock command.
+	#	lock -u $lockFile
+	#	rm -f $lockFile
+	#	[ -n "$DEBUG" ] && echo ${updatePID} "released lock"
+	#The following lock method is realized by other's function.
+
+	rm -f $lockFile
+	[ -n "$DEBUG" ] && echo ${updatePID} "released lock"
+}
+
+# chain
+newChain() {
+	local chain=$1
+	local ipt=$2
+	# Create the RRDIPT_$chain chain (it doesn't matter if it already exists).
+
+	$ipt -t mangle -N RRDIPT_$chain 2> /dev/null
+
+	# Add the RRDIPT_$chain CHAIN to the $chain chain if not present
+	$ipt -t mangle -C $chain -j RRDIPT_$chain 2>/dev/null
+	if [ $? -ne 0 ]; then
+		[ -n "$DEBUG" ] && echo "DEBUG: $ipt chain misplaced, recreating it..."
+		$ipt -t mangle -I $chain -j RRDIPT_$chain
+	fi
+}
+
+# chain tun
+newRuleIF() {
+	local chain=$1
+	local IF=$2
+	local ipt=$3
+	local cmd=
+
+	if [ "$chain" = "OUTPUT" ]; then
+		cmd="$ipt -t mangle -o $IF -j RETURN"
+	elif [ "$chain" = "INPUT" ]; then
+		cmd="$ipt -t mangle -i $IF -j RETURN"
+	fi
+	[ -n "$cmd" ] && eval $cmd " -C RRDIPT_$chain 2>/dev/null" || eval $cmd " -A RRDIPT_$chain"
+}
+
+publish() {
+	# sort DB
+	# busybox sort truncates numbers to 32 bits
+	grep -v '^#' $DB | awk -F, '{OFS=","; a=sprintf("%f",$6/1e6); $6=""; print a,$0}' | tr -s ',' | sort -rn | awk -F, '{OFS=",";$1=sprintf("%f",$1*1e6);print}' > $tmpDir/sorted_${updatePID}.tmp
+
+	# create HTML page
+	local htmPage="$tmpDir/${pb_html##*/}"
+	rm -f $htmPage
+	cp $dataDir/usage.htm1 $htmPage
+
+	while IFS=, read PEAKUSAGE_IN MAC IP IFACE SPEED_IN SPEED_OUT PEAKUSAGE_OUT TOTAL FIRSTSEEN LASTSEEN
+	do
+		echo "
+new Array(\"$(lookup $MAC $IP $user_def)\",\"$MAC\",\"$IP\",$SPEED_IN,$SPEED_OUT,
+$PEAKUSAGE_IN,$PEAKUSAGE_OUT,$TOTAL,\"$FIRSTSEEN\",\"$LASTSEEN\")," >> $htmPage
+	done < $tmpDir/sorted_${updatePID}.tmp
+	echo "0);" >> $htmPage
+
+	sed "s/(date)/`date`/" < $dataDir/usage.htm2 >> $htmPage
+	mv $htmPage "$pb_html"
+}
+
+updatePrepare() {
+	checkDbArg
+	createDbIfMissing
+	checkDB
+	[ -e $tmpDir ] || mkdir -p  $tmpDir
+
+	for46="$Monitor46"
+	local timeNow=$(cat /proc/uptime | awk '{print $1}')
+
+	if [ -e "$logFile" ]; then
+		local timeLast4=$(awk -F'[: ]+' '/ipv4/{print $2}' "$logFile")
+		local timeLast6=$(awk -F'[: ]+' '/ipv6/{print $2}' "$logFile")
+		interval4=$(awk -v now=$timeNow -v last=$timeLast4 'BEGIN{print (now-last)}');
+		interval6=$(awk -v now=$timeNow -v last=$timeLast6 'BEGIN{print (now-last)}');
+
+		for ii in 4 6; do
+			[[ -n "$(echo $for46 | grep ${ii})" ]] && {
+				if [[ "$(eval echo \$interval${ii})" \> "0.9" ]]; then
+					sed -i "s/^ipv${ii}: [0-9\.]\{1,\}/ipv${ii}: $timeNow/ig" "$logFile"
+				else
+					for46=`echo "$for46" | sed "s/${ii}//g"`
+				fi
+			}
+		done
+	else
+		echo -e "ipv4: $timeNow\nipv6: $timeNow" >"$logFile"
+	fi
+	return 0
+}
+
+update() {
+	updatePID=$( sh -c 'echo $PPID' )
+
+	lockFunc
+
+	local wan=$(detectWAN)
+	checkWAN $wan
+	interfaces="$interfaces $wan"
+
+	[ "$for46" = 4 ] && IPT='iptables'
+	[ "$for46" = 6 ] && IPT='ip6tables'
+	[ "$for46" = 46 ] && IPT='iptables ip6tables'
+
+	for ii in $IPT ; do
+		if [ -z "$( ${ii}-save | grep RRDIPT )" ]; then
+
+			for chain in $chains; do
+				newChain $chain $ii
+			done
+
+			# track local data
+			for chain in INPUT OUTPUT; do
+				for interface in $interfaces; do
+					[ -n "$interface" ] && [ -e "/sys/class/net/$interface" ] && newRuleIF $chain $interface $ii
+				done
+			done
+		fi
+		# this will add rules for hosts in arp table
+		> $tmpDir/${ii}_${updatePID}.tmp
+
+		for chain in $chains; do
+			$ii -nvxL RRDIPT_$chain -t mangle -Z >> $tmpDir/${ii}_${updatePID}.tmp
+		done
+	done
+
+	[ -f $tmpDir/iptables_${updatePID}.tmp ] && (
+		awk -v mode="$mode" -v interfaces="$interfaces" -v wanIF="$wan" -v interval=$interval4 \
+		-v ipv6="0" -f $binDir/readDB.awk \
+		$DB \
+		/proc/net/arp \
+		$tmpDir/iptables_${updatePID}.tmp
+	)
+
+	[ -f $tmpDir/ip6tables_${updatePID}.tmp ] && (
+		echo "This file is geneated by 'ip -6 neigh'" > $tmpDir/ip6addr_${updatePID}.tmp
+		`ip -6 neigh >> $tmpDir/ip6addr_${updatePID}.tmp`;
+
+		awk -v mode="$mode" -v interfaces="$interfaces" -v wanIF="$wan" -v interval=$interval6 \
+		-v ipv6="1" -f $binDir/readDB.awk \
+		"$DB6" \
+		$tmpDir/ip6addr_${updatePID}.tmp \
+		$tmpDir/ip6tables_${updatePID}.tmp
+	)
+
+	[ "$Monitor46" = 46 ] && (
+		cp $DB $DB46
+		cat $DB6 >> $DB46
+		awk -f $binDir/readDB.awk "$DB46"
+	)
+
+	[ -n "$pb_html" ] && publish
+
+	rm -f $tmpDir/*_${updatePID}.tmp
+	unlockFunc
+}
+
+renamefile() {
+	local base=$(basename -- "$1")
+	local ext=$([ -z "${base/*.*/}"  ] && echo ".${base##*.}" || echo '')
+	local base="${base%.*}"
+	echo "$(dirname $1)/${base}$2$ext" && return
+}
+
+ending() {
+	iptables-save | grep -v RRDIPT | iptables-restore
+	ip6tables-save | grep -v RRDIPT | ip6tables-restore
+
+	if checkPid $pidFile; then
+		local pid=$( cat $pidFile )
+		rm -rf $lockFile $logFile $pidFile $tmpDir/*
+		kill -9 $pid >> /dev/null 2>&1
+	fi
+	echo "exit!!"
+}
+
+checkPid() {
+	[ -e "$1" ] && local pid=$(cat $1) || return 1
+	[ -d "/proc/$pid" ] && {
+		[ -n "$( cat /proc/$pid/cmdline | grep wrtbwmon )" ] && return 0
+	}
+	return 1
+}
+
+sleepProcess() {
+	sleep 1m
+	kill -CONT $1 >>/dev/null 2>&1
+}
+
+loop() {
+	trap 'ending' INT TERM HUP QUIT
+	if checkPid $pidFile; then
+		echo "Another wrtbwmon is on running!!!"
+	else
+		local loopPID=$( sh -c 'echo $PPID' )
+		local SPID=
+		echo $loopPID > $pidFile
+		while true ;do
+			[ -n "$SPID" ] && kill -9 $SPID >>/dev/null 2>&1
+			sleepProcess $loopPID &
+			SPID=$!
+			updatePrepare && update
+			kill -STOP $loopPID >>/dev/null 2>&1
+		done
+	fi
+	trap INT TERM HUP QUIT
+}
+
+tips() {
+	echo \
+"Usage: $0 [options...]
+Options:
+   -k 			Exit the wrtbwmon!
+   -f dbfile	Set the DB file path
+   -u usrfile	Set the user_def file path
+   -p htmlfile	Set the publish htm file path
+   -d			Enter the foreground mode.
+   -D			Enter the daemo mode.
+   -4			Listen to ipv4 only.
+   -6			Listen to ipv6 only.
+   -46			Listen to ipv4 and ipv6.
+
+Note: [user_file] is an optional file to match users with MAC addresses.
+	   Its format is \"00:MA:CA:DD:RE:SS,username\", with one entry per line."
+}
+
+############################################################
+
+while [ $# != 0 ];do
+	case $1 in
+		"-k" )
+			/etc/init.d/wrtbwmon stop
+			exit 0
+		;;
+		"-f" )
+			shift
+			if [ $# -gt 0 ];then
+				DB=$1
+				DB6="$(renamefile $DB .6)"
+				DB46="$(renamefile $DB .46)"
+			else
+				echo "No db file path seted, exit!!"
+				exit 1
+			fi
+		;;
+		"-u")
+			shift
+			if [ $# -gt 0 ];then
+				user_def=$1
+			else
+				echo "No user define file path seted, exit!!"
+				exit 1
+			fi
+		;;
+
+		"-p")
+			shift
+			if [ $# -gt 0 ];then
+				pb_html=$1
+			else
+				echo "No publish html file path seted, exit!!"
+				exit 1
+			fi
+		;;
+
+		"-d")
+			runMode=1
+		;;
+
+		"-D")
+			runMode=2
+		;;
+
+		"-4")
+			Monitor46=4
+		;;
+
+		"-6")
+			Monitor46=6
+		;;
+
+		"-46")
+			Monitor46=46
+		;;
+
+		"&&" | "||" | ";")
+			break
+		;;
+
+		"*")
+			tips
+		;;
+	esac
+
+	shift
+done
+
+if [ "$runMode" = '1' ]; then
+	loop
+elif [ "$runMode" = '2' ]; then
+	loop >>/dev/null 2>&1 &
+else
+	updatePrepare && update
+fi

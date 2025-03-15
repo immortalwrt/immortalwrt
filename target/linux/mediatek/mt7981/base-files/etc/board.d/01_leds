@@ -1,0 +1,59 @@
+#!/bin/sh
+#
+# Copyright © 2017 OpenWrt.org
+#
+
+. /lib/functions/leds.sh
+. /lib/functions/uci-defaults.sh
+
+board=$(board_name)
+
+board_config_update
+
+case "$board" in
+abt,asr3000)
+	ucidef_set_led_netdev "wan" "WAN" "green:wan" "wan"
+	ucidef_set_led_netdev "wlan2g" "WLAN2G" "green:wlan2g" "ra0"
+	ucidef_set_led_netdev "wlan5g" "WLAN5G" "green:wlan5g" "rax0"
+	;;
+clt,r30b1)
+	ucidef_set_led_default "all_ctrl" "ALL_CTRL" "ctrl_led_all" "1"
+	ucidef_set_led_default "internet" "INTERNET" "led_internet" "1"
+	ucidef_set_led_default "power_red" "POWER_RED" "led_power" "0"
+	;;
+imou,lc-hx3001|\
+nokia,ea0326gmp)
+	ucidef_set_led_netdev "wan" "WAN" "green:wan" "wan" "link"
+	ucidef_set_led_netdev "lan" "LAN" "green:lan" "eth0" "link"
+	ucidef_set_led_netdev "wlan" "WLAN" "green:wlan" "rax0" "link"
+	;;
+livinet,zr-3020)
+	ucidef_set_led_netdev "internet" "INTERNET" "blue:internet" "wan"
+	ucidef_set_led_netdev "wlan2g" "WLAN2G" "blue:wlan2g" "ra0" "link"
+	ucidef_set_led_netdev "wlan5g" "WLAN5G" "blue:wlan5g" "rax0" "link"
+	;;
+xiaomi,mi-router-wr30u*)
+	ucidef_set_led_netdev "network" "NETWORK" "blue:network" "wan"
+	;;
+*360,t7*)
+	ucidef_set_led_default "green" "GREEN" "360t7:green" "1"
+	ucidef_set_led_default "red" "RED" "360t7:red" "0"
+	;;
+h3c,nx30pro)
+	ucidef_set_led_default "green" "GREEN" "nx30pro:green" "1"
+	ucidef_set_led_default "red" "RED" "nx30pro:red" "0"
+	;;
+konka,komi-a31)
+        ucidef_set_led_netdev "blue" "BLUE" "blue:status" "wan" "link"
+	;;
+nradio,wt9103)
+	ucidef_set_led_default "power" "POWER" "hc:blue:status" "1"
+	ucidef_set_led_netdev "wifi" "WIFI" "hc:blue:wifi" "rax0" "link"
+	ucidef_set_led_netdev "5g" "5G" "hc:blue:cmode5" "wan" "tx rx"
+	ucidef_set_led_netdev "lan" "LAN" "hc:blue:cmode4" "br-lan" "tx rx"
+	;;
+esac
+
+board_config_flush
+
+exit 0

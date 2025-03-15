@@ -1,0 +1,29 @@
+&pio {
+	i2c_pins: i2c-pins-3-4 {
+		mux {
+			function = "i2c";
+			groups = "i2c";
+		};
+	};
+
+	uart1_pins: uart1-pins-23-to-26 {
+		mux {
+			function = "uart";
+			groups = "uart1_1";
+		};
+	};
+
+	uart2_pins: uart1-pins-29-to-32 {
+		mux {
+			function = "uart";
+			groups = "uart2_0";
+		};
+	};
+
+	spic_pins: spi1-pins-29-to-32 {
+		mux {
+			function = "spi";
+			groups = "spi1_2";
+		};
+	};
+};

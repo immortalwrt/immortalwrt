@@ -9,7 +9,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "unielec,u7621-06", "mediatek,mt7621-soc";
@@ -50,8 +49,7 @@
 		compatible = "gpio-leds";
 
 		led_status: status {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:status";
 			gpios = <&gpio 10 GPIO_ACTIVE_LOW>;
 		};
 
@@ -75,14 +73,8 @@
 	status = "okay";
 };
 
-&gmac1 {
-	status = "okay";
-	label = "wan";
-	phy-handle = <&ethphy4>;
-};
-
-&ethphy4 {
-	/delete-property/ interrupts;
+&gmac0 {
+	mtd-mac-address = <&factory 0xe000>;
 };
 
 &switch0 {
@@ -105,6 +97,13 @@
 		port@3 {
 			status = "okay";
 			label = "lan4";
+		};
+
+		port@4 {
+			status = "okay";
+			label = "wan";
+			mtd-mac-address = <&factory 0xe000>;
+			mtd-mac-address-increment = <1>;
 		};
 	};
 };

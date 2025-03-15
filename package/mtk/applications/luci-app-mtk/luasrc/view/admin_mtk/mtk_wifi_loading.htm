@@ -1,0 +1,90 @@
+<%#
+    File name : mtk_wifi_loading.htm
+    This file is used in WebUI based on LuCI to handle the loading event.
+%>
+<%+header%>
+<%
+local disp = require "luci.dispatcher"
+local request = disp.context.request
+local url = "/"..table.concat(request,'/',5)
+%>
+<h2><%:Wireless%></h2>
+<div class="alert-message" id="BusyMsg">
+    <img src="<%=resource%>/icons/loading.gif" alt="" style="vertical-align:middle" />
+    <big><strong><%:Please wait while the settings are being applied.%></strong></big>
+</div>
+<div class="alert-message error" id="TimeoutMsgDiv" style="display:none">
+    <big><strong id="TimeoutMsg">Device is taking too much time to apply the settings!</strong></big>
+</div>
+
+<script type="text/javascript">
+    function visit_url(url)
+    {
+        window.onbeforeunload = function() {};
+        if(url && url.indexOf('<%=controller%>') != -1){
+            location = url;
+        }
+        else{
+            location = '<%=luci.dispatcher.build_url("admin", "network", "wifi")%>';
+        }
+    }
+
+    function get_apply_status_cb(rsp, remNumTries)
+    {
+        try{
+            var r = JSON.parse(rsp);
+            if(r.status == "DONE"){
+                visit_url('<%=url%>');
+                return;
+            }
+            else if(r.status == "REBOOT"){
+                visit_url('<%=luci.dispatcher.build_url("admin", "network", "wifi", "apply_reboot")%>');
+                return;
+            }
+        }
+        catch(e){}
+        finally{
+            remNumTries -= 1;
+            if(remNumTries > 0){
+                window.setTimeout(get_apply_status, 5000, remNumTries);
+            }
+            else{
+                show_header();
+                document.getElementById("TimeoutMsgDiv").style.display = '';
+                document.getElementById("BusyMsg").style.display = 'none';
+            }
+        }
+    }
+
+    function get_apply_status(remNumTries)
+    {
+        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_apply_status")%>', null, 
+            function(x)
+            {
+                console.log(x);
+                get_apply_status_cb(x.response, remNumTries);
+            }
+        );
+    }
+
+    function show_header()
+    {
+         document.getElementsByTagName("HEADER")[0].style.display = "block";
+    }
+
+    function hide_header()
+    {
+         document.getElementsByTagName("HEADER")[0].style.display = "none";
+    }
+
+    window.onload = function(){
+        hide_header();
+        window.setTimeout(get_apply_status, 5000, 180);
+    }
+
+    window.onbeforeunload = function(evt) {
+        evt.returnValue = "Saved data have not been applied yet! Are you sure?";
+        return evt.returnValue;
+    }
+</script>
+<%+footer%>

@@ -1,0 +1,271 @@
+From f12f0f777d322f8eb546651824a1bda9387a875f Mon Sep 17 00:00:00 2001
+From: Ben Peled <bpeled@marvell.com>
+Date: Sun, 28 Apr 2019 13:53:21 +0300
+Subject: [PATCH] marvell: clk/cpufreq: add ap807 cpu clock support
+
+Change ap-cpu-clk driver to support both ap806 and ap807 cpu clock.
+
+Change-Id: If633cdf7a1778ed7e23169021672bb8dc9e3413a
+Signed-off-by: Ben Peled <bpeled@marvell.com>
+Reviewed-on: https://sj1git1.cavium.com/7825
+Tested-by: sa_ip-sw-jenkins <sa_ip-sw-jenkins@marvell.com>
+Reviewed-by: Stefan Chulski <Stefan.Chulski@cavium.com>
+Reviewed-by: Nadav Haklai <Nadav.Haklai@cavium.com>
+---
+ drivers/clk/mvebu/ap-cpu-clk.c      | 130 +++++++++++++++++++++-------
+ drivers/cpufreq/armada-8k-cpufreq.c |   3 +
+ 2 files changed, 103 insertions(+), 30 deletions(-)
+
+--- a/drivers/clk/mvebu/ap-cpu-clk.c
++++ b/drivers/clk/mvebu/ap-cpu-clk.c
+@@ -15,7 +15,6 @@
+ #include <linux/mfd/syscon.h>
+ #include <linux/of.h>
+ #include <linux/of_address.h>
+-#include <linux/of_platform.h>
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
+ #include "armada_ap_cp_helper.h"
+@@ -30,11 +29,13 @@
+ 
+ #define APN806_MAX_DIVIDER		32
+ 
+-/**
++/*
+  * struct cpu_dfs_regs: CPU DFS register mapping
+- * @divider_reg: full integer ratio from PLL frequency to CPU clock frequency
+- * @force_reg: request to force new ratio regardless of relation to other clocks
+- * @ratio_reg: central request to switch ratios
++ * @divider_reg: Full Integer Ratio from PLL-out
++ * frequency to CPU clock frequency
++ * @force_reg: Request to force new ratio regardless
++ * of relation to other clocks
++ * @ratio_reg: Central request to switch ratios
+  */
+ struct cpu_dfs_regs {
+ 	unsigned int divider_reg;
+@@ -51,30 +52,30 @@ struct cpu_dfs_regs {
+ 	int ratio_state_cluster_offset;
+ };
+ 
++#define STATUS_POLL_PERIOD_US		1
++#define STATUS_POLL_TIMEOUT_US		1000000
++
++#define to_ap_cpu_clk(_hw) container_of(_hw, struct ap_cpu_clk, hw)
++
+ /* AP806 CPU DFS register mapping*/
+-#define AP806_CA72MP2_0_PLL_CR_0_REG_OFFSET		0x278
+-#define AP806_CA72MP2_0_PLL_CR_1_REG_OFFSET		0x280
+-#define AP806_CA72MP2_0_PLL_CR_2_REG_OFFSET		0x284
+-#define AP806_CA72MP2_0_PLL_SR_REG_OFFSET		0xC94
+-
+-#define AP806_CA72MP2_0_PLL_CR_CLUSTER_OFFSET		0x14
+-#define AP806_PLL_CR_0_CPU_CLK_DIV_RATIO_OFFSET		0
+-#define AP806_PLL_CR_CPU_CLK_DIV_RATIO			0
++#define AP806_CA72MP2_0_PLL_CR_0_REG_OFFSET			0x278
++#define AP806_CA72MP2_0_PLL_CR_1_REG_OFFSET			0x280
++#define AP806_CA72MP2_0_PLL_CR_2_REG_OFFSET			0x284
++#define AP806_CA72MP2_0_PLL_SR_REG_OFFSET			0xC94
++
++#define AP806_CA72MP2_0_PLL_CR_CLUSTER_OFFSET			0x14
++#define AP806_PLL_CR_0_CPU_CLK_DIV_RATIO_OFFSET			0
++#define AP806_PLL_CR_CPU_CLK_DIV_RATIO				0
+ #define AP806_PLL_CR_0_CPU_CLK_DIV_RATIO_MASK \
+ 			(0x3f << AP806_PLL_CR_0_CPU_CLK_DIV_RATIO_OFFSET)
+-#define AP806_PLL_CR_0_CPU_CLK_RELOAD_FORCE_OFFSET	24
++#define AP806_PLL_CR_0_CPU_CLK_RELOAD_FORCE_OFFSET		24
+ #define AP806_PLL_CR_0_CPU_CLK_RELOAD_FORCE_MASK \
+ 			(0x1 << AP806_PLL_CR_0_CPU_CLK_RELOAD_FORCE_OFFSET)
+-#define AP806_PLL_CR_0_CPU_CLK_RELOAD_RATIO_OFFSET	16
+-#define AP806_CA72MP2_0_PLL_RATIO_STABLE_OFFSET	0
+-#define AP806_CA72MP2_0_PLL_RATIO_STATE			11
+-
+-#define STATUS_POLL_PERIOD_US		1
+-#define STATUS_POLL_TIMEOUT_US		1000000
++#define AP806_PLL_CR_0_CPU_CLK_RELOAD_RATIO_OFFSET		16
++#define AP806_CA72MP2_0_PLL_CLKDIV_RATIO_STABLE_OFFSET		0
++#define AP806_CA72MP2_0_PLL_CLKDIV_RATIO_STABLE_CLUSTER_OFFSET	11
+ 
+-#define to_ap_cpu_clk(_hw) container_of(_hw, struct ap_cpu_clk, hw)
+-
+-static const struct cpu_dfs_regs ap806_dfs_regs = {
++struct cpu_dfs_regs ap806_dfs_regs = {
+ 	.divider_reg = AP806_CA72MP2_0_PLL_CR_0_REG_OFFSET,
+ 	.force_reg = AP806_CA72MP2_0_PLL_CR_1_REG_OFFSET,
+ 	.ratio_reg = AP806_CA72MP2_0_PLL_CR_2_REG_OFFSET,
+@@ -85,8 +86,9 @@ static const struct cpu_dfs_regs ap806_d
+ 	.divider_offset = AP806_PLL_CR_0_CPU_CLK_DIV_RATIO_OFFSET,
+ 	.divider_ratio = AP806_PLL_CR_CPU_CLK_DIV_RATIO,
+ 	.ratio_offset = AP806_PLL_CR_0_CPU_CLK_RELOAD_RATIO_OFFSET,
+-	.ratio_state_offset = AP806_CA72MP2_0_PLL_RATIO_STABLE_OFFSET,
+-	.ratio_state_cluster_offset = AP806_CA72MP2_0_PLL_RATIO_STABLE_OFFSET,
++	.ratio_state_offset = AP806_CA72MP2_0_PLL_CLKDIV_RATIO_STABLE_OFFSET,
++	.ratio_state_cluster_offset =
++		AP806_CA72MP2_0_PLL_CLKDIV_RATIO_STABLE_CLUSTER_OFFSET
+ };
+ 
+ /* AP807 CPU DFS register mapping */
+@@ -108,7 +110,7 @@ static const struct cpu_dfs_regs ap806_d
+ #define	AP807_CA72MP2_0_PLL_CLKDIV_RATIO_STABLE_OFFSET		20
+ #define AP807_CA72MP2_0_PLL_CLKDIV_RATIO_STABLE_CLUSTER_OFFSET	3
+ 
+-static const struct cpu_dfs_regs ap807_dfs_regs = {
++struct cpu_dfs_regs ap807_dfs_regs = {
+ 	.divider_reg = AP807_DEVICE_GENERAL_CONTROL_10_REG_OFFSET,
+ 	.force_reg = AP807_DEVICE_GENERAL_CONTROL_11_REG_OFFSET,
+ 	.ratio_reg = AP807_DEVICE_GENERAL_CONTROL_11_REG_OFFSET,
+@@ -138,7 +140,7 @@ struct ap_cpu_clk {
+ 	struct device *dev;
+ 	struct clk_hw hw;
+ 	struct regmap *pll_cr_base;
+-	const struct cpu_dfs_regs *pll_regs;
++	struct cpu_dfs_regs *pll_regs;
+ };
+ 
+ static unsigned long ap_cpu_clk_recalc_rate(struct clk_hw *hw,
+@@ -176,8 +178,9 @@ static int ap_cpu_clk_set_rate(struct cl
+ 	reg |= (divider << clk->pll_regs->divider_offset);
+ 
+ 	/*
+-	 * AP807 CPU divider has two channels with ratio 1:3 and divider_ratio
+-	 * is 1. Otherwise, in the case of the AP806, divider_ratio is 0.
++	 * AP807 cpu divider has two channels with ratio 1:3
++	 * and divider_ratio is set to one otherwise(AP806)
++	 * divider_ratio set to zero
+ 	 */
+ 	if (clk->pll_regs->divider_ratio) {
+ 		reg &= ~(AP807_PLL_CR_1_CPU_CLK_DIV_RATIO_MASK);
+@@ -252,19 +255,16 @@ static int ap_cpu_clock_probe(struct pla
+ 	 * cluster number is 1.
+ 	 */
+ 	nclusters = 1;
+-	for_each_of_cpu_node(dn) {
++	for_each_node_by_type(dn, "cpu") {
+ 		int cpu, err;
+ 
+ 		err = of_property_read_u32(dn, "reg", &cpu);
+-		if (WARN_ON(err)) {
+-			of_node_put(dn);
++		if (WARN_ON(err))
+ 			return err;
+-		}
+ 
+ 		/* If cpu2 or cpu3 is enabled */
+ 		if (cpu & APN806_CLUSTER_NUM_MASK) {
+ 			nclusters = 2;
+-			of_node_put(dn);
+ 			break;
+ 		}
+ 	}
+@@ -283,7 +283,7 @@ static int ap_cpu_clock_probe(struct pla
+ 	if (!ap_cpu_data)
+ 		return -ENOMEM;
+ 
+-	for_each_of_cpu_node(dn) {
++	for_each_node_by_type(dn, "cpu") {
+ 		char *clk_name = "cpu-cluster-0";
+ 		struct clk_init_data init;
+ 		const char *parent_name;
+@@ -291,10 +291,8 @@ static int ap_cpu_clock_probe(struct pla
+ 		int cpu, err;
+ 
+ 		err = of_property_read_u32(dn, "reg", &cpu);
+-		if (WARN_ON(err)) {
+-			of_node_put(dn);
++		if (WARN_ON(err))
+ 			return err;
+-		}
+ 
+ 		cluster_index = cpu & APN806_CLUSTER_NUM_MASK;
+ 		cluster_index >>= APN806_CLUSTER_NUM_OFFSET;
+@@ -306,7 +304,6 @@ static int ap_cpu_clock_probe(struct pla
+ 		parent = of_clk_get(np, cluster_index);
+ 		if (IS_ERR(parent)) {
+ 			dev_err(dev, "Could not get the clock parent\n");
+-			of_node_put(dn);
+ 			return -EINVAL;
+ 		}
+ 		parent_name =  __clk_get_name(parent);
+@@ -317,18 +314,25 @@ static int ap_cpu_clock_probe(struct pla
+ 		ap_cpu_clk[cluster_index].pll_cr_base = regmap;
+ 		ap_cpu_clk[cluster_index].hw.init = &init;
+ 		ap_cpu_clk[cluster_index].dev = dev;
+-		ap_cpu_clk[cluster_index].pll_regs = of_device_get_match_data(&pdev->dev);
+ 
++		if (of_device_is_compatible(pdev->dev.of_node,
++					"marvell,ap806-cpu-clock")) {
++			ap_cpu_clk[cluster_index].pll_regs = &ap806_dfs_regs;
++		} else if (of_device_is_compatible(pdev->dev.of_node,
++					"marvell,ap807-cpu-clock")) {
++			ap_cpu_clk[cluster_index].pll_regs = &ap807_dfs_regs;
++		} else {
++			dev_err(dev, "no supported compatible device found\n");
++			return -EINVAL;
++		}
+ 		init.name = ap_cpu_clk[cluster_index].clk_name;
+ 		init.ops = &ap_cpu_clk_ops;
+ 		init.num_parents = 1;
+ 		init.parent_names = &parent_name;
+ 
+ 		ret = devm_clk_hw_register(dev, &ap_cpu_clk[cluster_index].hw);
+-		if (ret) {
+-			of_node_put(dn);
++		if (ret)
+ 			return ret;
+-		}
+ 		ap_cpu_data->hws[cluster_index] = &ap_cpu_clk[cluster_index].hw;
+ 	}
+ 
+@@ -342,14 +346,8 @@ static int ap_cpu_clock_probe(struct pla
+ }
+ 
+ static const struct of_device_id ap_cpu_clock_of_match[] = {
+-	{
+-		.compatible = "marvell,ap806-cpu-clock",
+-		.data = &ap806_dfs_regs,
+-	},
+-	{
+-		.compatible = "marvell,ap807-cpu-clock",
+-		.data = &ap807_dfs_regs,
+-	},
++	{ .compatible = "marvell,ap806-cpu-clock", },
++	{ .compatible = "marvell,ap807-cpu-clock", },
+ 	{ }
+ };
+ 
+--- a/drivers/cpufreq/armada-8k-cpufreq.c
++++ b/drivers/cpufreq/armada-8k-cpufreq.c
+@@ -128,16 +128,14 @@ static int __init armada_8k_cpufreq_init
+ 	struct cpumask cpus;
+ 
+ 	node = of_find_compatible_node(NULL, NULL, "marvell,ap806-cpu-clock");
+-	if (!node || !of_device_is_available(node)) {
+-		of_node_put(node);
++	if (!node)
++		node = of_find_compatible_node(NULL, NULL,
++					       "marvell,ap807-cpu-clock");
++	if (!node || !of_device_is_available(node))
+ 		return -ENODEV;
+-	}
+-	of_node_put(node);
+ 
+ 	nb_cpus = num_possible_cpus();
+ 	freq_tables = kcalloc(nb_cpus, sizeof(*freq_tables), GFP_KERNEL);
+-	if (!freq_tables)
+-		return -ENOMEM;
+ 	cpumask_copy(&cpus, cpu_possible_mask);
+ 
+ 	/*
+@@ -204,12 +202,6 @@ static void __exit armada_8k_cpufreq_exi
+ }
+ module_exit(armada_8k_cpufreq_exit);
+ 
+-static const struct of_device_id __maybe_unused armada_8k_cpufreq_of_match[] = {
+-	{ .compatible = "marvell,ap806-cpu-clock" },
+-	{ },
+-};
+-MODULE_DEVICE_TABLE(of, armada_8k_cpufreq_of_match);
+-
+ MODULE_AUTHOR("Gregory Clement <gregory.clement@bootlin.com>");
+ MODULE_DESCRIPTION("Armada 8K cpufreq driver");
+ MODULE_LICENSE("GPL");

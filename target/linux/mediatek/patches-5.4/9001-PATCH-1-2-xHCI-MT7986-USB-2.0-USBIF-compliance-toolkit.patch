@@ -1,0 +1,136 @@
+From 4d19c233a01598a28fdc528ebaeb7a1b4bb6884f Mon Sep 17 00:00:00 2001
+From: Zhanyong Wang <zhanyong.wang@mediatek.com>
+Date: Mon, 15 Aug 2022 12:40:22 +0800
+Subject: [PATCH 2/3] xHCI: MT79xx USB 2.0 USBIF compliance toolkit
+
+MT79xx USB 2.0 USBIF compliance toolkit
+
+Signed-off-by: Zhanyong Wang <zhanyong.wang@mediatek.com>
+---
+ drivers/usb/host/Kconfig    |  9 +++++++++
+ drivers/usb/host/Makefile   | 10 ++++++++++
+ drivers/usb/host/xhci-mtk.c |  5 ++++-
+ drivers/usb/host/xhci-mtk.h |  7 +++++++
+ drivers/usb/host/xhci.c     |  2 +-
+ drivers/usb/host/xhci.h     |  1 +
+ 6 files changed, 32 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/usb/host/Kconfig b/drivers/usb/host/Kconfig
+index 79b2e79dddd0..12b1bf9aa043 100644
+--- a/drivers/usb/host/Kconfig
++++ b/drivers/usb/host/Kconfig
+@@ -69,6 +69,15 @@ config USB_XHCI_MTK
+ 	  found in MediaTek SoCs.
+ 	  If unsure, say N.
+ 
++config USB_XHCI_MTK_DEBUGFS
++	tristate "xHCI DEBUGFS support for Mediatek MT65xx"
++	depends on USB_XHCI_MTK && DEBUG_FS
++       default y
++	---help---
++	  Say 'Y' to enable the debugfs support for the xHCI host controller
++	  found in Mediatek MT65xx SoCs.
++	  If don't need, say N.
++
+ config USB_XHCI_MVEBU
+ 	tristate "xHCI support for Marvell Armada 375/38x/37xx"
+ 	select USB_XHCI_PLATFORM
+diff --git a/drivers/usb/host/Makefile b/drivers/usb/host/Makefile
+index b191361257cc..f064f836db2b 100644
+--- a/drivers/usb/host/Makefile
++++ b/drivers/usb/host/Makefile
+@@ -21,6 +21,16 @@ endif
+ 
+ ifneq ($(CONFIG_USB_XHCI_MTK), )
+ 	xhci-hcd-y += xhci-mtk-sch.o
++	xhci-hcd-$(CONFIG_USB_XHCI_MTK_DEBUGFS) += xhci-mtk-test.o
++	xhci-hcd-$(CONFIG_USB_XHCI_MTK_DEBUGFS) += xhci-mtk-unusual.o
++	xhci-hcd-$(CONFIG_USB_XHCI_MTK_DEBUGFS) += xhci-mtk-intr-en.o
++	xhci-hcd-$(CONFIG_USB_XHCI_MTK_DEBUGFS) += xhci-mtk-vrt-vref.o
++	xhci-hcd-$(CONFIG_USB_XHCI_MTK_DEBUGFS) += xhci-mtk-term-vref.o
++	xhci-hcd-$(CONFIG_USB_XHCI_MTK_DEBUGFS) += xhci-mtk-hstx-srctrl.o
++	xhci-hcd-$(CONFIG_USB_XHCI_MTK_DEBUGFS) += xhci-mtk-discth.o
++	xhci-hcd-$(CONFIG_USB_XHCI_MTK_DEBUGFS) += xhci-mtk-chgdt-en.o
++	xhci-hcd-$(CONFIG_USB_XHCI_MTK_DEBUGFS) += xhci-mtk-reg.o
++	xhci-hcd-$(CONFIG_USB_XHCI_MTK_DEBUGFS) += xhci-mtk-preemphasic.o
+ endif
+ 
+ xhci-plat-hcd-y := xhci-plat.o
+diff --git a/drivers/usb/host/xhci-mtk.c b/drivers/usb/host/xhci-mtk.c
+index 104296fdd03e..d4345657945d 100644
+--- a/drivers/usb/host/xhci-mtk.c
++++ b/drivers/usb/host/xhci-mtk.c
+@@ -19,9 +19,10 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
+-
++#include <linux/usb/of.h>
+ #include "xhci.h"
+ #include "xhci-mtk.h"
++#include "xhci-mtk-test.h"
+ 
+ /* ip_pw_ctrl0 register */
+ #define CTRL0_IP_SW_RST	BIT(0)
+@@ -581,6 +582,7 @@ static int xhci_mtk_probe(struct platform_device *pdev)
+ 	ret = usb_add_hcd(xhci->shared_hcd, irq, IRQF_SHARED);
+ 	if (ret)
+ 		goto dealloc_usb2_hcd;
++	hqa_create_attr(dev);
+ 
+ 	return 0;
+ 
+@@ -615,6 +617,7 @@ static int xhci_mtk_remove(struct platform_device *dev)
+ 	struct usb_hcd	*hcd = mtk->hcd;
+ 	struct xhci_hcd	*xhci = hcd_to_xhci(hcd);
+ 	struct usb_hcd  *shared_hcd = xhci->shared_hcd;
++	hqa_remove_attr(&dev->dev);
+ 
+ 	pm_runtime_put_noidle(&dev->dev);
+ 	pm_runtime_disable(&dev->dev);
+diff --git a/drivers/usb/host/xhci-mtk.h b/drivers/usb/host/xhci-mtk.h
+index 985e7a19f6f6..1540c66799d7 100644
+--- a/drivers/usb/host/xhci-mtk.h
++++ b/drivers/usb/host/xhci-mtk.h
+@@ -158,6 +158,13 @@ struct xhci_hcd_mtk {
+ 	struct regmap *uwk;
+ 	u32 uwk_reg_base;
+ 	u32 uwk_vers;
++
++#ifdef CONFIG_USB_XHCI_MTK_DEBUGFS
++	int     test_mode;
++	size_t  hqa_size;
++	u32     hqa_pos;
++	char   *hqa_buf;
++#endif
+ };
+ 
+ static inline struct xhci_hcd_mtk *hcd_to_mtk(struct usb_hcd *hcd)
+diff --git a/drivers/usb/host/xhci.c b/drivers/usb/host/xhci.c
+index 9fe35bb67731..4f62eddce6ab 100644
+--- a/drivers/usb/host/xhci.c
++++ b/drivers/usb/host/xhci.c
+@@ -711,7 +711,7 @@ EXPORT_SYMBOL_GPL(xhci_run);
+  * Disable device contexts, disable IRQs, and quiesce the HC.
+  * Reset the HC, finish any completed transactions, and cleanup memory.
+  */
+-static void xhci_stop(struct usb_hcd *hcd)
++void xhci_stop(struct usb_hcd *hcd)
+ {
+ 	u32 temp;
+ 	struct xhci_hcd *xhci = hcd_to_xhci(hcd);
+diff --git a/drivers/usb/host/xhci.h b/drivers/usb/host/xhci.h
+index a9031f494984..b54be4833ef7 100644
+--- a/drivers/usb/host/xhci.h
++++ b/drivers/usb/host/xhci.h
+@@ -2070,6 +2070,7 @@ int xhci_halt(struct xhci_hcd *xhci);
+ int xhci_start(struct xhci_hcd *xhci);
+ int xhci_reset(struct xhci_hcd *xhci, u64 timeout_us);
+ int xhci_run(struct usb_hcd *hcd);
++void xhci_stop(struct usb_hcd *hcd);
+ int xhci_gen_setup(struct usb_hcd *hcd, xhci_get_quirks_t get_quirks);
+ void xhci_shutdown(struct usb_hcd *hcd);
+ void xhci_init_driver(struct hc_driver *drv,
+-- 
+2.18.0
+

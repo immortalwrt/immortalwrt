@@ -1,0 +1,38 @@
+diff --git a/drivers/clk/mediatek/Kconfig b/drivers/clk/mediatek/Kconfig
+index 23393d5..cf3a53e 100644
+--- a/drivers/clk/mediatek/Kconfig
++++ b/drivers/clk/mediatek/Kconfig
+@@ -275,6 +275,14 @@ config COMMON_CLK_MT7981
+ 	  This driver supports MediaTek MT7981 basic clocks and clocks
+ 	  required for various periperals found on MediaTek.
+ 
++config COMMON_CLK_MT7988
++	bool "Clock driver for MediaTek MT7988"
++	depends on ARCH_MEDIATEK || COMPILE_TEST
++	select COMMON_CLK_MEDIATEK
++	---help---
++	  This driver supports MediaTek MT7988 basic clocks and clocks
++	  required for various periperals found on MediaTek.
++
+ config COMMON_CLK_MT8135
+ 	bool "Clock driver for MediaTek MT8135"
+ 	depends on (ARCH_MEDIATEK && ARM) || COMPILE_TEST
+diff --git a/drivers/clk/mediatek/Makefile b/drivers/clk/mediatek/Makefile
+index ffe0850..43ca85d 100644
+--- a/drivers/clk/mediatek/Makefile
++++ b/drivers/clk/mediatek/Makefile
+@@ -41,6 +41,7 @@ obj-$(CONFIG_COMMON_CLK_MT7629_ETHSYS) += clk-mt7629-eth.o
+ obj-$(CONFIG_COMMON_CLK_MT7629_HIFSYS) += clk-mt7629-hif.o
+ obj-$(CONFIG_COMMON_CLK_MT7986) += clk-mt7986.o
+ obj-$(CONFIG_COMMON_CLK_MT7981) += clk-mt7981.o
++obj-$(CONFIG_COMMON_CLK_MT7988) += clk-mt7988.o
+ obj-$(CONFIG_COMMON_CLK_MT8135) += clk-mt8135.o
+ obj-$(CONFIG_COMMON_CLK_MT8173) += clk-mt8173.o
+ obj-$(CONFIG_COMMON_CLK_MT8183) += clk-mt8183.o
+@@ -57,4 +58,4 @@ obj-$(CONFIG_COMMON_CLK_MT8183_VDECSYS) += clk-mt8183-vdec.o
+ obj-$(CONFIG_COMMON_CLK_MT8183_VENCSYS) += clk-mt8183-venc.o
+ obj-$(CONFIG_COMMON_CLK_MT8516) += clk-mt8516.o
+ obj-$(CONFIG_COMMON_CLK_MT8516_AUDSYS) += clk-mt8516-aud.o
+-obj-y += clk-bringup.o
+\ No newline at end of file
++obj-y += clk-bringup.o

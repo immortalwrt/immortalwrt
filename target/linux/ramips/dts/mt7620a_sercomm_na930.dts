@@ -2,7 +2,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "sercomm,na930", "ralink,mt7620a-soc";
@@ -84,8 +83,7 @@
 		};
 
 		status {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:status";
 			gpios = <&gpio2 26 GPIO_ACTIVE_LOW>;
 			trigger-sources = <&ohci_port1>, <&ehci_port1>;
 			linux,default-trigger = "usbport";
@@ -97,8 +95,7 @@
 		};
 
 		led_power: power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:power";
 			gpios = <&gpio2 29 GPIO_ACTIVE_LOW>;
 		};
 	};

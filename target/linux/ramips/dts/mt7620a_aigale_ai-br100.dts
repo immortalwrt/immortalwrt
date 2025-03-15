@@ -2,7 +2,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "aigale,ai-br100", "ralink,mt7620a-soc";
@@ -19,14 +18,12 @@
 		compatible = "gpio-leds";
 
 		wan {
-			function = LED_FUNCTION_WAN;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:wan";
 			gpios = <&gpio2 4 GPIO_ACTIVE_LOW>;
 		};
 
 		led_wlan: wlan {
-			function = LED_FUNCTION_WLAN;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:wlan";
 			gpios = <&gpio3 0 GPIO_ACTIVE_LOW>;
 		};
 	};
@@ -75,24 +72,10 @@
 				read-only;
 			};
 
-			partition@30000 {
+			factory: partition@30000 {
 				label = "factory";
 				reg = <0x30000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_factory_0: eeprom@0 {
-						reg = <0x0 0x200>;
-					};
-
-					macaddr_factory_4: macaddr@4 {
-						reg = <0x4 0x6>;
-					};
-				};
 			};
 
 			partition@40000 {
@@ -120,13 +103,11 @@
 };
 
 &ethernet {
-	nvmem-cells = <&macaddr_factory_4>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0x4>;
 
 	mediatek,portmap = "llllw";
 };
 
 &wmac {
-	nvmem-cells = <&eeprom_factory_0>;
-	nvmem-cell-names = "eeprom";
+	ralink,mtd-eeprom = <&factory 0x0>;
 };

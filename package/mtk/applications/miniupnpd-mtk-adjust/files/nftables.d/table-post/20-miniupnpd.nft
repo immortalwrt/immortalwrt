@@ -1,0 +1,3 @@
+chain upnp_forward {}
+chain upnp_prerouting {}
+chain upnp_postrouting {}

@@ -2,23 +2,10 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	aliases {
 		label-mac-device = &wan;
-	};
-
-	leds {
-		compatible = "gpio-leds";
-
-		usb {
-			function = LED_FUNCTION_USB;
-			color = <LED_COLOR_ID_GREEN>;
-			gpios = <&gpio 27 GPIO_ACTIVE_LOW>;
-			trigger-sources = <&xhci_ehci_port1>, <&ehci_port2>;
-			linux,default-trigger = "usbport";
-		};
 	};
 
 	keys {
@@ -44,7 +31,7 @@
 	flash@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
-		spi-max-frequency = <50000000>;
+		spi-max-frequency = <80000000>;
 		m25p,fast-read;
 
 		partitions {
@@ -64,32 +51,10 @@
 				read-only;
 			};
 
-			partition@40000 {
+			factory: partition@40000 {
 				label = "factory";
 				reg = <0x40000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_factory_0: eeprom@0 {
-						reg = <0x0 0x400>;
-					};
-
-					eeprom_factory_8000: eeprom@8000 {
-						reg = <0x8000 0x200>;
-					};
-
-					macaddr_factory_2e: macaddr@2e {
-						reg = <0x2e 0x6>;
-					};
-
-					macaddr_factory_e000: macaddr@e000 {
-						reg = <0xe000 0x6>;
-					};
-				};
 			};
 
 			partition@50000 {
@@ -109,8 +74,7 @@
 	wifi@0,0 {
 		compatible = "mediatek,mt76";
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&eeprom_factory_0>;
-		nvmem-cell-names = "eeprom";
+		mediatek,mtd-eeprom = <&factory 0x0>;
 
 		led {
 			led-sources = <0>;
@@ -123,8 +87,7 @@
 	wifi@0,0 {
 		compatible = "mediatek,mt76";
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&eeprom_factory_8000>;
-		nvmem-cell-names = "eeprom";
+		mediatek,mtd-eeprom = <&factory 0x8000>;
 		ieee80211-freq-limit = <5000000 6000000>;
 
 		led {
@@ -134,13 +97,8 @@
 	};
 };
 
-&ethernet {
-	pinctrl-0 = <&mdio_pins>, <&rgmii1_pins>;
-};
-
 &gmac0 {
-	nvmem-cells = <&macaddr_factory_e000>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0xe000>;
 };
 
 &switch0 {
@@ -167,8 +125,7 @@
 		wan: port@4 {
 			status = "okay";
 			label = "wan";
-			nvmem-cells = <&macaddr_factory_2e>;
-			nvmem-cell-names = "mac-address";
+			mtd-mac-address = <&factory 0x2e>;
 		};
 	};
 };

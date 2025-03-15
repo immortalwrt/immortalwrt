@@ -1,0 +1,29 @@
+From 8a79db5e83a5d52c74e6f3c40d6f312cf899213e Mon Sep 17 00:00:00 2001
+From: Jyri Sarha <jsarha@ti.com>
+Date: Wed, 8 Jan 2020 10:30:07 +0200
+Subject: [PATCH 1/5] dt-bindings: phy: Add PHY_TYPE_DP definition
+
+Add definition for DisplayPort phy type.
+
+Signed-off-by: Jyri Sarha <jsarha@ti.com>
+Reviewed-by: Roger Quadros <rogerq@ti.com>
+Reviewed-by: Kishon Vijay Abraham I <kishon@ti.com>
+Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
+---
+ include/dt-bindings/phy/phy.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/dt-bindings/phy/phy.h b/include/dt-bindings/phy/phy.h
+index b6a1eaf1b339..1f3f866fae7b 100644
+--- a/include/dt-bindings/phy/phy.h
++++ b/include/dt-bindings/phy/phy.h
+@@ -16,5 +16,6 @@
+ #define PHY_TYPE_USB2		3
+ #define PHY_TYPE_USB3		4
+ #define PHY_TYPE_UFS		5
++#define PHY_TYPE_DP		6
+ 
+ #endif /* _DT_BINDINGS_PHY */
+-- 
+2.18.0
+

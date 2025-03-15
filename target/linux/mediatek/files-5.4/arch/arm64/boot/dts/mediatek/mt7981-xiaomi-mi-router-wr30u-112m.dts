@@ -1,0 +1,33 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+/dts-v1/;
+#include "mt7981-xiaomi-mi-router.dtsi"
+
+/ { 
+	model = "Xiaomi Mi Router WR30U (112M UBI layout)";
+	compatible = "xiaomi,mi-router-wr30u-112m", "mediatek,mt7981";
+};
+
+&leds {
+	led_network_blue {
+		label = "blue:network";
+		gpios = <&pio 11 GPIO_ACTIVE_LOW>;
+	};
+
+	led_network_yellow {
+		label = "yellow:network";
+		gpios = <&pio 12 GPIO_ACTIVE_LOW>;
+	};
+};
+
+&partitions {
+	partition@600000 {
+		label = "ubi";
+		reg = <0x600000 0x7000000>;
+	};
+
+	partition@7600000 {
+		label = "KF";
+		reg = <0x7600000 0x40000>;
+	};
+};

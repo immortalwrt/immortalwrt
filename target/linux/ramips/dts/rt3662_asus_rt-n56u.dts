@@ -2,7 +2,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "asus,rt-n56u", "ralink,rt3662-soc", "ralink,rt3883-soc";
@@ -37,28 +36,10 @@
 				read-only;
 			};
 
-			partition@40000 {
+			factory: partition@40000 {
 				reg = <0x00040000 0x00010000>;
 				label = "factory";
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_factory_0: eeprom@0 {
-						reg = <0x0 0x200>;
-					};
-
-					eeprom_factory_8000: eeprom@8000 {
-						reg = <0x8000 0x200>;
-					};
-
-					macaddr_factory_4: macaddr@4 {
-						reg = <0x4 0x6>;
-					};
-				};
 			};
 
 			partition@50000 {
@@ -73,11 +54,12 @@
 		compatible = "realtek,rtl8367";
 		gpio-sda = <&gpio0 1 GPIO_ACTIVE_HIGH>;
 		gpio-sck = <&gpio0 2 GPIO_ACTIVE_HIGH>;
-		realtek,extif = <8 1 0 1 1 1 1 1 1 2>;
+		realtek,extif1 = <1 0 1 1 1 1 1 1 2>;
 	};
 
 	keys {
-		compatible = "gpio-keys";
+		compatible = "gpio-keys-polled";
+		poll-interval = <100>;
 
 		reset {
 			label = "reset";
@@ -96,26 +78,22 @@
 		compatible = "gpio-leds";
 
 		led_power: power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:power";
 			gpios = <&gpio0 0 GPIO_ACTIVE_LOW>;
 		};
 
 		lan {
-			function = LED_FUNCTION_LAN;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:lan";
 			gpios = <&gpio0 19 GPIO_ACTIVE_LOW>;
 		};
 
 		wan {
-			function = LED_FUNCTION_WAN;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:wan";
 			gpios = <&gpio1 3 GPIO_ACTIVE_LOW>;
 		};
 
 		usb {
-			function = LED_FUNCTION_USB;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:usb";
 			gpios = <&gpio1 0 GPIO_ACTIVE_LOW>;
 		};
 	};
@@ -133,8 +111,7 @@
 };
 
 &ethernet {
-	nvmem-cells = <&macaddr_factory_4>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0x4>;
 
 	port@0 {
 		mediatek,fixed-link = <1000 1 1 1>;
@@ -151,15 +128,14 @@
 	wifi@0,0 {
 		compatible = "pci1814,3091";
 		reg = <0x10000 0 0 0 0>;
-		nvmem-cells = <&eeprom_factory_8000>;
-		nvmem-cell-names = "eeprom";
+		ralink,mtd-eeprom = <&factory 0x8000>;
 	};
 };
 
 &wmac {
+	status = "okay";
 	ralink,2ghz = <0>;
-	nvmem-cells = <&eeprom_factory_0>;
-	nvmem-cell-names = "eeprom";
+	ralink,mtd-eeprom = <&factory 0x0>;
 };
 
 &ehci {

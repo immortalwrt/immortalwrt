@@ -2,7 +2,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "huawei,hg255d", "ralink,rt3052-soc";
@@ -38,24 +37,10 @@
 				read-only;
 			};
 
-			partition@60000 {
+			factory: partition@60000 {
 				label = "factory";
 				reg = <0x60000 0x20000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_factory_0: eeprom@0 {
-						reg = <0x0 0x200>;
-					};
-
-					macaddr_factory_28: macaddr@28 {
-						reg = <0x28 0x6>;
-					};
-				};
 			};
 
 			partition@80000 {
@@ -76,8 +61,7 @@
 		compatible = "gpio-leds";
 
 		led_power: power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio0 8 GPIO_ACTIVE_LOW>;
 		};
 
@@ -87,22 +71,19 @@
 		};
 
 		wifi {
-			function = LED_FUNCTION_WLAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:wlan";
 			gpios = <&gpio0 14 GPIO_ACTIVE_LOW>;
 		};
 
 		usb {
-			function = LED_FUNCTION_USB;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:usb";
 			gpios = <&gpio0 9 GPIO_ACTIVE_LOW>;
 			trigger-sources = <&otg_port1>;
 			linux,default-trigger = "usbport";
 		};
 
 		wps {
-			function = LED_FUNCTION_WPS;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:wps";
 			gpios = <&gpio0 12 GPIO_ACTIVE_LOW>;
 		};
 
@@ -113,7 +94,8 @@
 	};
 
 	keys {
-		compatible = "gpio-keys";
+		compatible = "gpio-keys-polled";
+		poll-interval = <10>;
 
 		reset {
 			label = "reset";
@@ -143,8 +125,7 @@
 };
 
 &ethernet {
-	nvmem-cells = <&macaddr_factory_28>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0x28>;
 };
 
 &esw {
@@ -152,8 +133,7 @@
 };
 
 &wmac {
-	nvmem-cells = <&eeprom_factory_0>;
-	nvmem-cell-names = "eeprom";
+	ralink,mtd-eeprom = <&factory 0x0>;
 };
 
 &otg {

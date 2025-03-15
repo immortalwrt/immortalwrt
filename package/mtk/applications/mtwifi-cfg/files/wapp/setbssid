@@ -1,0 +1,25 @@
+ra0_7981_channel="$(uci get wireless.MT7981_1_1.channel)"
+ra0_7986_channel="$(uci get wireless.MT7986_1_1.channel)"
+rax0_7981_channel="$(uci get wireless.MT7981_1_2.channel)"
+rax0_7986_channel="$(uci get wireless.MT7986_1_2.channel)"
+if [ "$ra0_7981_channel" -gt "0" ];then 
+    wappctrl ra0 mbo nebor_op_ch $ra0_7981_channel
+fi
+if [ "$ra0_7986_channel" -gt "0" ];then 
+    wappctrl ra0 mbo nebor_op_ch $ra0_7986_channel
+fi
+if [ "$rax0_7981_channel" -gt "0" ];then 
+    wappctrl rax0 mbo nebor_op_ch $rax0_7981_channel
+fi
+if [ "$rax0_7986_channel" -gt "0" ];then
+    wappctrl rax0 mbo nebor_op_ch $rax0_7986_channel
+fi
+bssid=$2
+array=(${bssid//\/ })
+for var in ${array[@]}
+        do
+        echo $var
+        wappctrl $1 mbo nebor_bssid $var
+        wappctrl $1 mbo add_test_nr $var
+        done
+

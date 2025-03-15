@@ -2,7 +2,7 @@
 
 / {
 	compatible = "unbranded,wr512-3gn-8m", "unbranded,wr512-3gn", "ralink,rt3052-soc";
-	model = "Unbranded WR512-3GN (8M)";
+	model = "WR512-3GN (8M)";
 
 	flash@1f000000 {
 		compatible = "cfi-flash";
@@ -27,20 +27,10 @@
 				read-only;
 			};
 
-			partition@40000 {
+			factory: partition@40000 {
 				label = "factory";
 				reg = <0x40000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_factory_0: eeprom@0 {
-						reg = <0x0 0x200>;
-					};
-				};
 			};
 
 			partition@50000 {

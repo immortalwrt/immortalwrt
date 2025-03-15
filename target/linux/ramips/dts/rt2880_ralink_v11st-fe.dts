@@ -2,7 +2,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "ralink,v11st-fe", "ralink,rt2880-soc";
@@ -37,20 +36,10 @@
 				read-only;
 			};
 
-			partition@40000 {
+			factory: partition@40000 {
 				reg = <0x00040000 0x00010000>;
 				label = "factory";
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_factory_0: eeprom@0 {
-						reg = <0x0 0x200>;
-					};
-				};
 			};
 
 			partition@50000 {
@@ -62,7 +51,8 @@
 	};
 
 	keys {
-		compatible = "gpio-keys";
+		compatible = "gpio-keys-polled";
+		poll-interval = <100>;
 
 		wps {
 			label = "wps";
@@ -75,8 +65,7 @@
 		compatible = "gpio-leds";
 
 		led_status: status {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:status";
 			gpios = <&gpio0 12 GPIO_ACTIVE_LOW>;
 		};
 	};
@@ -91,6 +80,5 @@
 };
 
 &wmac {
-	nvmem-cells = <&eeprom_factory_0>;
-	nvmem-cell-names = "eeprom";
+	ralink,mtd-eeprom = <&factory 0x0>;
 };

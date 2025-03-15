@@ -1,0 +1,1526 @@
+$Id: Changelog.txt,v 1.518 2024/06/22 22:30:01 nanard Exp $
+
+2024/07/11:
+  PCP: Check nonce when renewing IPv6 pinhole
+
+VERSION 2.3.7 : released on 2024/06/22
+
+2024/06/17:
+  FreeBSD: use libpfctl (FreeBSD 15+ or --libpfctl)
+
+2024/06/09:
+  default NOTIFY interval of 900s minus a random value
+
+2024/04/29:
+  ipv6: prefer globally routable addresses
+
+VERSION 2.3.6 : released on 2024/03/20
+
+2024/03/05:
+  NFTables: rewrite rule parsing code to fix source/dest address parsing.
+
+2024/03/04:
+  NFTables: add upnp_nftables_family_split option to use NFPROTO_IPV4/IPV6
+  instead of the generic NFPROTO_INET
+
+VERSION 2.3.5 : released on 2024/03/02
+
+2024/02/25:
+  fix IGDv2 WANIPConnection XML service description for AddAnyPortMapping
+  out argument is NewReservedPort, not NewExternalPort
+
+2024/01/17:
+  default path for miniupnpd.conf is /etc/miniupnpd/miniupnpd.conf
+  under linux
+
+2024/01/15:
+  fix SUBSCRIBE timeout compliance (should be >= 1800 seconds)
+  PCP: fix enforcing min_lifetime minimum of 120secs
+  CACHE-CONTROL: max-age=1800 in M-SEARCH response
+
+2024/01/07:
+  pf: fix for OpenBSD 7.4
+
+VERSION 2.3.4 : released on 2024/01/04
+
+2024/01/04:
+  Fix parsing of action string in ExecuteSoapAction()
+
+2023/06/29:
+  Disable DeviceProtection service by default
+
+2023/06/23:
+  detect FDSSDP as a Microsoft client
+
+2023/05/27:
+  option enable_natpmp => enable_pcp_pmp
+  add a short list of build-time options in --version output
+  enable secure mode by default
+
+VERSION 2.3.3 : released on 2023/02/17
+
+2023/02/04:
+  Fix PinholeVerification()
+
+2023/01/28
+  Fix updating of existing pinhole leasetime by AddPinhole
+
+VERSION 2.3.2 : released on 2023/01/20
+
+2023/01/15:
+  Fix NFTables again (RULE_HANDLE using more than 32 bits)
+
+2022/10/21:
+  Add option to match rules description with regex
+
+VERSION 2.3.1 : released on 2022/10/16
+
+2022/10/10:
+  NFTables : fix for Big Endian. iport was always read as 0
+
+2022/08/06:
+  Fixes DeletePCPMap() for "IPv6 pinholes" with netfilter_nftables backend
+
+2022/06/02:
+  Fixes "Port Triggering" with OpenBSD 4.7+
+
+2022/05/18:
+  improve configure script for cross builds
+
+2022/02/19:
+  prefer non-reserved over reserved addresses in getifaddr()
+  pf: use external IP for NAT in double NAT setups
+  miniupnpd.init.d.script: support nftables
+
+VERSION 2.3.0 : released on 2022/01/23
+
+2021/12/01:
+  NFTables : use scripts to create table and chains
+  (see https://github.com/miniupnp/miniupnp/pull/584)
+
+2021/11/17:
+  NFTables : use the nat chain for inet rules (Sven Auhagen)
+  (see https://github.com/miniupnp/miniupnp/pull/562)
+
+VERSION 2.2.3 : released on 2021/08/21
+
+2021/08/18:
+  lease file for IPv6 pinholes
+
+2021/08/11:
+  Detect Microsoft User-Agent: and force IGDv1 in that case
+
+2021/06/18:
+  Fails on config parsing and init errors.
+  print errors during init to both syslog and stderr.
+
+2021/05/22:
+  dynamically retrieve `uname -r`
+
+VERSION 2.2.2 : released on 2021/05/13
+
+2021/04/22:
+  Add SO_REUSEPORT option for SSDP receive sockets
+
+2021/03/31:
+  GetExternalIPAddress returns empty string when the External IP address can
+    not be retrieved.
+
+2021/02/26:
+  iptables_removeall.sh: fix the cleanup of PREROUTING mangle chain
+
+VERSION 2.2.1 : released on 2020/12/20
+ (only minor build corrections)
+
+VERSION 2.2.0 : released on 2020/10/31
+
+2020/10/30:
+  OpenBSD: portinuse.c compatible with OpenBSD 5.5+
+
+2020/10/26:
+  Improve AddAnyPortMapping port selection
+
+2020/10/22:
+  netfilter_nft: fix rule-cache update when using the same chain name in
+    both tables.
+
+2020/06/20:
+  -v/-vv to output more log (LOG_INFO / LOG_DEBUG)
+  AddAnyPortMapping() tries all possible ports
+
+2020/06/10:
+  improvements and bug fixes in netfilter_nft/nftnlrdr_misc.c
+
+2020/06/05:
+  fix handling of ipv4 M-SEARCH received on ipv6 sockets
+  numerous fixes in linux/nftables implementation
+
+2020/06/03:
+  configure --disable-fork to disable going to background
+  improve upnp_get_portmapping_number_of_entries()
+
+2020/05/30:
+  "IGD2 Port Triggering" pf implementation (adding a nat rule)
+
+2020/05/07:
+  Linux: use libcap or libcap-ng to drop unnecessary capabilities
+
+2020/05/04:
+  Move configuration detection from Makefiles to configure (was genconfig.sh)
+  update linux Makefiles
+
+2020/04/29:
+  fix for bridges
+
+2020/04/21:
+  Remove FW API detecting code from Makefile (BSD). generate bsdmake.inc
+  netfilter: addmasqueraderule() even if internal/external ports are the same
+  improve error and debug log in upnpstun.c
+
+2020/04/20:
+  Fix "IGD2 Port Triggering" in update_portmapping()
+
+2020/04/12:
+  pf: disabled setting dst address in rule by default
+
+2020/04/09:
+  Option to disable IPv6 at runtime : -4 / ipv6_disable=yes
+
+2020/03/29:
+  Fix FreeBSD build
+
+2019/12/18:
+  Fix PCPSendUnsolicitedAnnounce() when IPv6 is not available
+
+2019/10/05:
+  Use OpenSSL TLS_server_method() instead of TLSv1_server_method()
+  Add --version commandline option
+
+2019/10/03:
+  Use OpenBSD pledge()
+
+2019/10/02:
+  Working NFTables implementation thanks to Paul Chambers
+
+2019/09/24:
+  Distinguish between iptables and nftables in genconfig.sh
+
+2019/09/01:
+  fix of nftables scripts : https://github.com/miniupnp/miniupnp/pull/395
+
+2019/08/24:
+  Small fixes in netfilter code
+
+2019/06/25:
+  Update netfilter nftables code
+
+2019/05/21:
+  Allow to use two different network interfaces for IPv4 and IPv6 internet
+
+2019/05/02:
+  Fix ssdp notify on unrelated interfaces
+
+2019/04/09:
+  Fix buffer over-read in upnpevents.c with urls in the form http://ip:port
+
+2019/04/05:
+  Fix memory leak in upnpreplyparse.c with NewPortListing element
+
+2019/03/22:
+  netfilter: miniupnpd_functions.sh parsing fix.
+    fix postrouting chain init.
+    use iptables -I instead of -A to add rules
+
+2019/03/09:
+  check NULL protocol arg in AddAnyPortMapping
+
+2019/03/07:
+  Update portinuse code to reflect changes made in FreeBSD 12.0
+
+2019/02/12:
+  linux/getifstats.c: use custom strtoul() implementation to roll over
+    after 2^32-1
+
+2019/02/03:
+  netfilter: fix build with linux kernel 5.0
+
+2018/12/18:
+  upnp_redirect(): accept NULL desc argument (avoid DOS in AddPortMapping)
+  upnp_event_prepare(): check the return value of snprintf()
+
+2018/09/07:
+  Fix PCP Public address announcement
+
+2018/07/06:
+  STUN support
+
+VERSION 2.1 : released on 2018/05/08
+
+2018/05/02:
+  option to store remaining time in leasefile
+
+2018/04/12:
+  pf: set dst address in rule if use_ext_ip_addr is set
+
+2018/04/06:
+  Add options for netfilter scripts
+
+2018/03/13:
+  Use monotonic clock for timeouts, etc.
+
+2018/02/22:
+  Add option force_igd_desc_v1 to force devices and services versions
+    to 1 in IGD v2 mode
+
+2017/12/12:
+  Fix a few buffer overrun in SSDP and SOAP parsing
+
+2017/11/02:
+  PCP : reset epoch after address change
+
+2017/05/26:
+  merge https://github.com/miniupnp/miniupnp/tree/randomize_url branch
+
+2017/05/24:
+  get SSDP packet receiving interface index and use it to check if the
+    packet is from a LAN
+
+2017/03/13:
+  default to client address for AddPortMapping when <NewInternalClient>
+    is empty
+  pass ext_if_name to add_pinhole()
+
+2016/12/23:
+  Fix UDA-1.2.10 Man header empty or invalid
+
+2016/12/16:
+  Do not try to open IPv6 sockets once it is disabled
+
+2016/12/01:
+  Fix "AddPinhole Twice" test
+
+2016/11/11:
+  fixes build for Solaris/SunOS
+
+2016/07/23:
+  fixes build error on DragonFly BSD
+
+VERSION 2.0 : released on 2016/04/19
+
+2016/04/18:
+  linux/netfilter: fix compile time detection of iptables version >= 1.4.3
+
+2016/03/08:
+  linux/netfilter: do not add MASQUERADE rule if ports are equals
+
+2016/02/19:
+  set IPv6 Hop limit to 10
+  fix HOST: header of event notifications in IPv6
+  be more compliant on 64bit machines : ui4 in [0;2^32-1]
+
+2016/02/16:
+  minor changes to follow UDA 1.1 more closely.
+  more argument checking in Soap methods.
+
+2016/02/12:
+  return error 729 - ConflictWithOtherMechanisms if IGD v2 is enabled.
+  add iptc_init() check in iptcrdr.c/init_redirect()
+  add update_portmapping() / update_portmapping_desc_timestamp() functions
+
+2016/02/11:
+  use Linux libuuid uuid_generate() / BSD uuid_create() API
+
+2016/01/28:
+  renamed iptables chain MINIUPNPD-PCP-PEER to MINIUPNPD-POSTROUTING
+  implemented "IGD2 Port Triggering" with netfilter/iptables
+
+2016/01/18:
+  fix pcpserver.c CreatePCPMap_FW() : check pinhole before adding
+
+2015/12/16:
+  improve syslog message for incoming HTTP requests
+
+2015/12/13:
+  --disable-pppconn to disable WanPPPConnection
+  more fixes in DeviceProtection service
+
+2015/12/12:
+  add commandline option to genconfig.sh to set UPnP (UDA) version
+  advertise correct service and device versions when IGDv2 is enabled
+  fix action arguments for DeviceProtection service
+  fix event subscription renewal (include SID in response)
+
+2015/11/16:
+  Fix bsd/getroute.c get_src_for_route_to() when args are NULL
+
+2015/11/02:
+  use LOG_INFO instead of LOG_ERR for PCP PEER and MAP success
+
+2015/10/30:
+  fix : properly call find_ipv6_addr() with the 1st LAN interface
+  use name server from query in SOAP responses (continued)
+
+2015/10/24:
+  move SSDP_PACKET_MAX_LEN definition to config.h. also set default to 1024.
+
+2015/09/22:
+  cleanup UPNP_VERSION macro / add UPNP_VERSION_MAJOR, UPNP_VERSION_MINOR
+  Don't use packed structs anymore to read/write PCP messages
+
+2015/09/15:
+  use name server from query in SOAP responses
+
+2015/09/14:
+  Randomize URLs to avoid http://www.filet-o-firewall.com/
+    https://github.com/filetofirewall/fof
+    (specific branch, merged later, see above)
+
+2015/08/25:
+  better bind socket to right interface(s),
+    using struct ip_mreqn, SO_BINDTODEVICE
+
+2015/04/30:
+  Adding linux/nftables support
+
+2015/04/26:
+  Remove dependency to libnfnetlink
+  fix typos in miniupnpd.conf
+
+2015/03/09:
+  fix get_portmappings_in_range() for linux/netfilter
+
+2015/03/07:
+  don't die when IPv6 is enabled and interface has no IPv4 address
+
+2015/02/10:
+  IP wildcard for AddPinhole() is empty string
+
+2014/12/10:
+  Checking Host: HTTP request header to prevent DNS rebinding attack
+  configurable BOOTID.UPNP.ORG SSDP header
+  use time for BOOTID.UPNP.ORG value
+
+2014/12/09:
+  fix upnp_add_inboundpinhole() : check inet_pton() return
+  fix upnp_redirect() : check inet_aton() return
+  fix potential memory corruption in upnpsoap.c/GetListOfPortMappings()
+  fix buffer overrun in ParseHttpHeaders() if Content-Length doesn't contain any digit !
+  check if BuildHeader_upnphttp() failed to allocate memory
+    Credits goes to Stephen Röttger of the Google Security Team for identifying
+    the vulnerabilities
+
+2014/12/04:
+  check "sysctl -n net.ipv6.bindv6only" for linux
+
+2014/11/28:
+  fixes ExecuteSoapAction if SoapAction value is not enclosed into
+    double quotes
+
+2014/11/07:
+  sockaddr_to_string() includes scope in IPv6 addresses
+
+VERSION 1.9 : released on 2014/10/27
+
+2014/10/23:
+  Properly implements NAT-PMP mapping removal according to RCF6886
+
+2014/10/22:
+  Discard NAT-PMP packets coming from the WAN
+  Send SSDP announces to IPv6 link-local, site-local
+    and global multicast addresses
+
+2014/10/21:
+  small modifications to compile with exotic C libraries
+
+2014/10/14:
+  add comments in miniupnpd.conf regarding security
+
+2014/09/25:
+  DeletePortMapping now checks for client IP in Securemode
+
+2014/06/xx:
+  Various fixes :
+    e->ipv6.flags |= IP6T_F_PROTO; (netfilter)
+    fix natpmp.c byte order conversion 
+    add small delay before SSDP response to prevent flooding
+
+2014/05/22:
+  Add ipv6_bind_address (option "ipv6_listening_ip")
+  disable IPv6 when socket(PF_INTET6, ...) errors with EAFNOSUPPORT
+  Add IPV6 multicast membership only on selected "LAN" interfaces
+
+2014/05/20:
+  be more strict when parsing LAN addresses / interface names
+
+2014/05/19:
+  set source address for IPV6 packets sendto_schedule2() etc.
+
+2014/05/15:
+  Fix deletePortMappingRange()
+
+2014/04/21:
+  Fix PCP when request contain 0 IPv4 external address
+  Remove pointer casting in natpmp.c
+
+2014/04/15:
+  rewrite iptables_*.sh scripts
+
+2014/04/12:
+  Add FreeBSD support for CHECK_PORTINUSE
+  Add PCP support for CHECK_PORTINUSE
+
+2014/04/09:
+  Add HTTPS support and skeleton of DeviceProtection implementation
+
+2014/03/24:
+  start work to enable IPv6 PCP operations
+
+2014/03/14:
+  reject renewal of subscribtion that already timeouted
+  Support for multiple URL in Callback: header (SUBSCRIBE)
+
+2014/03/13:
+  fix getifaddr_in6() (used for PCP)
+  implement permissions with PCP Map
+  fix upnp_event_notify_connect() when ENABLE_IPV6 is set
+
+2014/03/10:
+  Enable PCP by default.
+  Work in IPv6 on system where PF_INET6 are restricted to IPv6 only
+  change ipv6_enabled/ipv6fc_inbound_pinhole_allowed/ipv6fc_firewall_enabled
+    global vars to flags in runtime_flags
+
+2014/03/09:
+  IPv6 support in testgetifaddr
+
+2014/03/07:
+  NAT-PMP search an allowed eport instead of returning an error
+    if the original eport is not allowed.
+
+2014/03/06:
+  Fix add_filter_rule2() for pf.
+
+2014/02/28:
+  log message when shutting down
+  natpmp : avoid hang when all external ports in use
+
+2014/02/25:
+  add implementation of scheduled sendto (asyncsendto) in order
+  to retry failed sendto() calls or schedule sending of packets
+
+2014/02/24:
+  Defaulting to SSDP_RESPOND_SAME_VERSION
+
+2014/02/11:
+  Fix PCP Map renewal
+
+2014/02/06:
+  possibility to disable ipv6 at runtime
+
+2014/02/03:
+  PCP : Add support for ANNOUNCE requests
+  minixml now handle XML comments
+
+2013/12/16:
+  Attempt to compile with OS X/pf
+
+2013/12/13:
+  Make all manufacturer info configurable thanks to Leo Moll
+  Merge PCP support (see https://github.com/miniupnp/miniupnp)
+
+2013/06/13:
+  Have 3 UUID for the 3 devices (IGD, WAN Device, WAN Connection Device)
+
+2013/06/06:
+  update upnpreplyparse to allow larger values (128 chars instead of 64)
+
+2013/06/05:
+  check Service ID in SetDefaultConnectionService method
+  Don't advertise WANPPPConnection in UPNP_STRICT mode
+
+2013/05/29:
+  Remove namespace from variable name elements in Events "propertyset"
+    to comply with UPNP DeviceArchitecture v1.1.
+
+2013/05/20:
+  Adding support for IP Filter version 5.x
+
+2013/05/16:
+  refuses non integer <NewPortMappingIndex> values
+
+2013/05/14:
+  Update upnpreplyparse to take into account "empty" elements
+
+2013/05/03:
+  Use pkg-config under linux to find libiptc. Thanks to Olivier Langlois
+
+2013/04/29:
+  Add warning message when using IPv4 address for listening_ip with IPv6 enabled
+
+2013/04/27:
+  Uses ifr_addr if ifr_netmask is not defined in struct ifreq
+
+2013/04/26:
+  Correctly handle truncated snprintf() in SSDP code
+
+2013/04/24:
+  to avoid build race conditions, genconfig.sh now uses a temporary file
+
+2013/04/20:
+  use scope in get_lan_for_peer() for IPv6 addresses
+
+2013/03/23:
+  autodetect LAN interface netmask instead of defaulting to /24
+
+2013/02/11:
+  Use $(DESTDIR) in Makefile.linux.
+  see https://github.com/miniupnp/miniupnp/issues/26
+
+2013/02/07:
+  Add DATE: header in SSDP packets
+  Fix SSDP packets sent with uuid as ST: header to conform to UDA
+  ignore SSDP packets missing the MX: header in UPNP_STRICT mode
+  Added Ext: header to HTTP responses to conform to UDA
+  Refactored SendSSDPNotifies() and SendSSDPGoodbye() and add
+    missing ssdp:alive and ssdp:byebye with NT uuid value.
+
+VERSION 1.8 : released on 2013/02/06
+
+2013/02/06:
+  Check source address of incomining HTTP connections and SSDP
+    packets in order to filter out WAN SSDP and HTTP traffic.
+  Implement get_src_for_route_to() for *BSD
+  fix 2 potential memory leaks in GetListOfPortMappings()
+
+2013/01/29:
+  upnphttp.c: Fix and comment the findendheaders() function
+  upnphttp.c: remove strchr() call in ParseHttpHeaders()
+    add comments to explain how buffer is checked before calls
+    to ParseHttpHeaders()
+
+2013/01/27:
+  upnphttp.c: ParseHttpHeaders() now checks atoi() return
+
+2012/12/11:
+  More return value check for malloc() and realloc()
+
+2012/10/23:
+  minor modifications to linux/getroute.c and testgetroute.c
+
+2012/10/04:
+  updated DEFAULTCONNECTIONSERVICE_MAGICALVALUE for IGDv2
+  increased default buffer size for HTTP response
+  More argument check for SOAP actions in UPNP_STRICT mode
+  Better error checking after connect() in upnpevent
+
+2012/10/03:
+  Fix atoi() on null pointer in upnpsoap.c
+  properly set service/device version in SSDP messages
+  fix newSubscriber() for IP6FirewallControl and DeviceProtection services
+  Enforce compliance for SUBSCRIBE messages (UPNP_STRICT mode)
+  Enforce compliance for UNSUBSCRIBE messages (UPNP_STRICT mode)
+  Ignore "-Wmissing-field-initializers" in upnpdescgen.c
+  check size of h->res_buf before building HTTP response
+  ENABLE_HTTP_DATE : add a Date: header to all HTTP responses
+
+2012/09/27:
+  Fixes with DISABLE_CONFIG_FILE
+  and UPNP_STRICT
+  UPC must be a 12 decimal digit code
+  SetDefaultConnectionService() checks its argumnents in UPNP_STRICT mode
+  Support for Accept-Language/Content-Language HTTP headers
+  Content-Type is now text/xml; charset="utf-8" to conform with UDA v1.1
+  Support Expect: 100-continue for POST HTTP requests
+  Manage services/devices versions in minissdp.c
+  Rename all include guards to not clash with C99.
+   (7.1.3 Reserved identifiers)
+
+2012/09/20:
+  Cleaning code in ipfw (Jardel Weyrich)
+
+2012/09/18:
+  Fixing a bug in clean_pinhole_list() under linux/netfilter
+
+2012/09/15:
+  Adding an informational message at startup
+
+2012/08/24:
+  Moved man page to section 8. miniupnpd.1 => miniupnpd.8
+  Added install of miniupnpd.8 man page in Makefile.linux
+
+2012/08/10:
+  improved SubmitServicesToMiniSSDPD() function fiability
+
+2012/07/17:
+  Add -A command line option to add permission rules
+
+2012/07/14:
+  Add -z command line option to change friendly name (thanks to Shawn Fisher)
+
+2012/07/10:
+  Detect port in use - patch by David Kerr
+
+2012/06/29:
+  added DISABLE_CONFIG_FILE in options.h to disable miniupnpd.conf parsing
+  Add command line parsing for clean_ruleset_interval option
+
+2012/06/28:
+  Only activate -L option for PF and IPF
+  -a option takes two arguments with MULTIPLE_EXTERNAL_IP defined
+
+2012/06/23:
+  in UPNP_STRICT mode, the literal IPv6 address in "location:" of SSDP
+  messages is the source address used to send the message
+
+2012/06/08:
+  Disable -ansi CFLAGS in Makefile.linux because recent iptables headers
+  make use of typeof keyword which is a GCC extension.
+
+2012/05/31:
+  Improvements in autodetecting firewall under (Free)BSD
+
+2012/05/28:
+  Cleanup HTTP request handling. Answer 405 when relevant
+
+VERSION 1.7 : released the 2012/05/28
+
+2012/05/28:
+  clean linux/ifacewatcher.c
+  set natpmp socket non blocking
+
+2012/05/24:
+  More solaris fixes
+
+2012/05/21:
+  Clean signal handling
+
+2012/05/08:
+  Clean expired IPv6 pinholes correctly. and also with linux/netfilter.
+
+2012/05/07:
+  Finalizing netfilter version of get_pinhole_info()
+
+2012/05/01:
+  Move IPv6FirewallControl related code from upnpredirect.c to upnppinhole.c
+  Add netfilter implementation for
+    delete_pinhole()/update_pinhole()/get_pinhole_info()
+
+2012/04/30:
+  Clean up settings of CFLAGS in Makefile's
+  Remove Warnings caused by signed/unsigned integer comparaisons
+  Also fix a couple of integer/pointer comparaisons.
+  Add UNUSED(arg) macro to remove unused argument warning.
+  Fix error handling in upnpevents.c (was causing segfault on Solaris !)
+
+2012/04/26:
+  Started to implement add_pinhole() for netfilter (linux)
+
+2012/04/25:
+  Fixed a bug in upnphttp that happened when POST is received in several
+  recv() calls and realloc() is called so the buffer used is moved.
+
+2012/04/23:
+  Implement CheckPinholeWorking GetPinholePackets. WANIPv6FirewallControl
+  UpdatePinhole still to be done. And also netfilter/ipf/ipfw versions
+
+2012/04/20:
+  Enough WANIPv6FirewallControl is implemented on pf so that AddPinhole() and
+    DeletePinhole() works !
+
+2012/04/19:
+  First working experiment of IPv6 "pinhole" with pf
+
+2012/04/15:
+  More C++ => ANSI C comments to compile with -ansi option
+  Add command line arguments to genconfig.sh config script.
+
+2012/04/12:
+  Set TTL on SSDP Notify sockets (IPv4). TTL is set to 2 (recommendation from
+    UPnP Device Architecture v1.1)
+
+2012/04/06:
+  Implementing IPv6 support :
+    Send SSDP NOTIFY ssdp:alive and ssdp:goodbye messages in IPv6.
+  Use UPnP/1.1 in SERVER: string as required in UPnP Device architecture 1.1.
+  Allow LAN interface to be given as interface names, instead of interface
+    IP addresses. It will allow IPv6 operations.
+  fix linux/getifstats.c when bitrate is unknown
+
+2012/03/31:
+  Only remove pidfile if one was written in the first place.
+
+2012/03/19:
+  Fix ipfilter support (thanks dhowland https://github.com/dhowland)
+
+2012/03/14:
+  Changes to miniupnpd.init.d.script by Shawn Landden
+
+2012/03/05:
+  fixed reload_from_lease_file().
+
+2012/02/15:
+  Change parselanaddr() function to allow 192.168.1.1/255.255.255.0 in
+    configuration file.
+  Change read_permission_line() to allow 192.168.1.1/255.255.255.0 in
+    permission line (in configuration file).
+
+2012/02/12:
+  More syntax checks in upnppermissions.c
+
+2012/02/11:
+  Fix ipfw/Mac OS X specific source files to compile ok with -ansi flag
+
+2012/02/09:
+  Make HTTP listen socket non blocking (so accept() can't block)
+  Make SSDP receive sockets non blocking
+  use sockaddr_to_string() in SendSSDPAnnonce2 to handle IPv6 addresses
+
+2012/02/06:
+  Make HTTP (SOAP) sockets non blocking.
+
+2012/02/05:
+  Compile ok with -ansi flag.
+  Save a few bytes in options.c using a string repository, instead of a fixed size
+    buffer for each option value.
+
+2012/02/04:
+  Added friendly_name= option to config file
+
+2012/02/03:
+  Anchor name (PF) is now configurable through the config file with anchor=
+  Added test of presence of /lib/libip4tc.so and /lib/libip6tc.so files in
+    Makefile.linux in order to add -lip4tc and -lip6tc to LIBS accordingly.
+
+2012/02/01:
+  always handle EAGAIN, EWOULDBLOCK and EINTR after recv()/recvfrom() calls
+
+2012/01/20:
+  Always #include <netinet/in.h> before #include <arpa/inet.h> (for OpenBSD)
+  .onrdomain field was added in pf with OpenBSD 5.0. Add PFRULE_HAS_ONRDOMAIN
+
+2012/01/02:
+  Fixing netfilter/iptables_*.sh scripts for new ifconfig output format.
+  getifaddr.c: added additional checks on structure returned by getifaddrs()
+  Fixing Mac OS X makefile for installation
+
+2011/11/18:
+  avoid infinite loop in SendResp_upnphttp() in case of error
+  Replaced SendResp_upnphttp() + CloseSocket_upnphttp() by
+    SendRespAndClose_upnphttp()
+  Tomato specifics in genconfig.sh
+
+2011/07/30:
+  netfilter : Added a tiny_nf_nat.h file to compile with iptables
+    installed headers.
+    include xtables.h instead of iptables.h
+
+VERSION 1.6 : released the 2011/07/25
+
+2011/07/25:
+  Update doc for version 1.6
+
+2011/07/15:
+  Fixing code with MULTIPLE_EXTERNAL_IP defined.
+
+2011/06/27:
+  IPv6 support for UPnP events.
+  Security checks in UPnP events.
+
+2011/06/22:
+  Remote host for GetListOfPortMappings
+  Remote host support for ipfw (tested on Mac OS X)
+
+2011/06/20:
+  support for iptables-1.4.11.1
+
+2011/06/18:
+  Remote host support for pf version
+
+2011/06/04:
+  Supporting RemoteHost (mandatory in IGD v2)
+
+2011/06/03:
+  Enabling events by default
+
+2011/06/01:
+  Fixing Timeout missing in SUBSCRIBE renewal responses
+  (thanks to Pranesh Kulkarni)
+  Added comments about changes between IGD v1 and IGD v2
+
+2011/05/28:
+  Description and leaseduration kept in ipfw version of the code.
+  Fixing ipfw code after testing under Mac OS X 10.6.7 (darwin 10.7.0)
+
+2011/05/27:
+  Finishing and testing LeaseDuration support under OpenBSD.
+  Changing NAT-PMP port mapping lifetime support to match
+  lease duration support.
+  NAT-PMP address change announce broadcasted to both port
+  5350 and 5351 to be compatible with client following the
+  version of NAT PMP specification from 2008 or earlier.
+  writepidfile() Overwrite file if already existing
+
+2011/05/26:
+  fix in linux/getifstats.c.
+  See http://miniupnp.tuxfamily.org/forum/viewtopic.php?p=2212
+  Implementation of LeaseDuration support.
+
+2011/05/23:
+  added get_wan_connection_status_str()
+
+2011/05/20:
+  adding ifacewatcher thanks to Alexey Osipov
+  GET /DP.xml is now available. The description has to be completed.
+
+2011/05/19:
+  Add getconnstatus.c/.h. Don't always have ConnectionStatus to "Connected"
+  Events for WANIPv6FirewallControll
+
+2011/05/16:
+  patches for gentoo linux.
+  generation of the DeviceProtection service description.
+
+2011/05/15:
+  Making the SSDP receiving socket work in IPv6 !
+
+2011/05/14:
+  Support for HTTP in both IPv6 and IPv4.
+  IPv6 for SSDP receiving socket.
+
+2011/05/13:
+  add new options in genconfig.sh (IGD_V2, ENABLE_DP_SERVICE)
+  add global vars ipv6fc_firewall_enabled and ipv6fc_inbound_pinhole_allowed
+  have MACROS for magical values in upnpdescgen.c, add eventing vars for WanIPv6FirewallControl.
+  applied 0001-Cosmetic-changes.patch(see http://miniupnp.tuxfamily.org/forum/viewtopic.php?t=764)
+  applied 0002-Remove-lan-addresses-limit-by-changing-storage-type-.patch
+  replaced some of the urn:schemas-upnp-org:device:* literal strings by macros.
+  adding some support for IP v6. #define ENABLE_IPV6
+  added -fno-strict-aliasing to compile options.
+
+2011/05/09:
+  updating upnp descriptions for IGDv2
+
+2011/05/07:
+  Adding WANIPv6FirewallContro to upnp description
+
+2011/04/30:
+  adding a UPNP_STRICT config macro. Use it now for checking RemoteHost.
+  ENABLE_6FC_SERVICE : add the implementations of WANIPv6FirewallControl actions
+
+2011/04/11:
+  preparing getifaddr() for IP v6
+  preparing SSDP stuff for IP v6. Trying to conform to UDA v1.1
+
+2011/03/09:
+  Some modifications thanks to Daniel Dickinson to improve OpenWrt
+  build.
+  Fixed some warnings.
+
+2011/03/03:
+  Added code to generate devices/services descriptions for IGD v2
+  (to be continued)
+
+2011/03/02:
+  improved netfilter/delete_redirect_and_filter_rules() in order
+  to remove the right filter rule, even if it has another index than
+  the nat rule.
+
+2011/03/01:
+  clean up an fixes to make netfilter/testiptcrdr compile
+
+2011/02/21:
+  Make "Makefile" work under Mac OS X with bsdmake.
+  added get_portmappings_in_range() in ipfwrdr.c
+
+2011/02/07:
+  added get_portmappings_in_range() / upnp_get_portmappings_in_range()
+
+2011/02/06:
+  Implementation of GetListOfPortMappings
+
+2011/01/27:
+  Reverting "fixes" done in linux/iptables code the 2010/09/27.
+  see http://miniupnp.tuxfamily.org/forum/viewtopic.php?t=741
+
+2011/01/04:
+  added MINIUPNPD_VERSION in config.h. Taken from VERSION file.
+
+VERSION 1.5 : released the 2011/01/01
+
+2011/01/01:
+  Started to implement some of the new methods from WANIPConnection v2
+
+2010/09/27:
+  Some fixes in the linux/iptables code when
+  miniupnpd_nat_chain <> miniupnpd_forward_chain
+
+2010/09/21:
+  Patch to support nfqueue thanks to Colin McFarlane
+
+2010/08/07:
+  Update Mac OS X / ipfw stuff from Jardel Weyrich
+  Fix in Makefile.linux for x86_64
+
+2010/05/06:
+  Bugfix un CleanNATPMPRules() : see http://miniupnp.tuxfamily.org/forum/viewtopic.php?t=640
+
+2010/03/14:
+  Fixing natpmp sockets.
+
+2010/03/08:
+  Fix Makefile.linux to compile properly under Mandriva/rh/Fedora with
+    Iptables >= 1.4.3
+  Workaround for bad uptime when started with a bad time set.
+
+2010/03/07:
+  Tried to make a OpenBSD version 4.7 compatible code... still some
+  issues.
+
+2010/03/06:
+  updates to testobsdrdr
+
+2010/03/03:
+  -lip4tc in Makefile.linux.
+
+2010/02/15:
+  some more error handling in set_startup_time()
+  silencing some warnings
+
+2010/01/14:
+  Open Several sockets for NAT-PMP to make sure the source address
+  of NAT-PMP replies is right.
+  see http://miniupnp.tuxfamily.org/forum/viewtopic.php?t=609
+
+2009/12/31:
+  miniupnpdctl now output command line arguments.
+  added a -h option to get help. improved help.
+
+2009/12/22:
+  using PRIu64 format to printf u_int64_t
+  Fixing calls to get_redirect_rule_by_index() : ifname should be initialized.
+  Add header lines to miniupnpdctl output
+
+2009/11/06:
+  implementing sending of ip address change notification when receiving
+    the signal SIGUSR1
+
+VERSION 1.4 : released the 2009/10/30
+
+2009/10/10:
+  Integrate IPfilter patch from Roy Marples.
+  Fix Netfilter code for old netfilter :
+    see http://miniupnp.tuxfamily.org/forum/viewtopic.php?t=584
+  trim the description string in reload_from_lease_file()
+
+2009/09/21:
+  Fixing unclosed raw sockets bug with netfilter code.
+
+2009/09/04:
+  Fixes in ipf code thanks to Roy Marples
+  Enable DragonFly BSD Support thanks to Roy Marples.
+  Allow packager to define default location of config file via CFLAGS
+  Respect $DESTDIR when installing
+
+2009/08/20:
+  Adding some support for MacOS X and IPFW
+  SO_REUSEADDR in minissdp.c for SSDP listening socket
+
+2009/06/05:
+  unlink lease file in reload_from_lease_file()
+
+2009/05/16:
+  Fixed a buffer overflow in ProcessSSDPRequest()
+
+2009/05/11:
+  improving genconfig.sh for NetBSD : detecting use of pf or ipf
+
+VERSION 1.3 :
+2009/04/17:
+  working support for iptables >= 1.4.3
+
+2009/04/13:
+  work to support iptables-1.4.3 and up
+
+2009/04/10:
+  fix in upnpevents_removeSubscriber()
+
+2009/02/14:
+  added reload_from_lease_file()
+
+2009/02/13:
+  Changes in upnpdescgen.c to allow to remove empty elements
+  strcasecmp instead of strcmp on path comparaisons to allow
+  bugged clients to work
+
+2009/01/29:
+  Some minor changes to Makefile
+  improving Makefile.linux in order to build with iptables not properly
+  installed on the system.
+
+2009/01/23:
+  Fixing upnpevents thanks to Justin Maggard
+
+2008/10/15:
+  getifstats() return -1 when supplied with bad arguments
+
+2008/10/11:
+  Fixed NAT-PMP response when IP not allocated to external interface
+
+2008/10/09:
+  adding testgetifaddr
+  Reporting Unconnected status when the "external interface" has
+  no IP address assigned. Also added some comments
+
+VERSION 1.2 :
+
+2008/10/07:
+  updating docs
+
+2008/10/06:
+  MiniUPnPd is now able to use MiniSSDPd to manage SSDP M-SEARCH answering
+
+2008/10/03:
+  You can now let miniupnpd choose itself the HTTP port used.
+
+2008/10/01:
+  Improvements in genconfig.sh for detecting ipf or pf (under FreeBSD)
+  and improve debian/ubuntu stuff.
+  custom chain name patch from :
+    http://miniupnp.tuxfamily.org/forum/viewtopic.php?t=493
+
+2008/08/24:
+  added USE_IFNAME_IN_RULES macro that can be disabled in order to
+  remove interface name from rules.
+
+2008/07/10:
+  Fixed compilation without ENABLE_L3F_SERVICE
+
+2008/04/27:
+  correct UNSUBSCRIBE processing
+
+2008/04/25(bis):
+  changed iptables_removeall.sh and iptables_init.sh in order
+  to remove IP from the rules
+
+VERSION 1.1 :
+
+2008/04/25:
+  Eventing is allmost completly implemented
+
+2008/04/24:
+  Correct event handling ?
+
+2008/04/08:
+  enabling tag in PF rules. quick can be set off.
+
+2008/03/13:
+  implementing event notify
+
+2008/03/11:
+  fixing a command line parsing error
+
+2008/03/09:
+  optimisations in upnpsoap.c
+
+2008/03/08:
+  optimizing upnpsoap.c for size
+
+2008/03/06:
+  Worked on the Eventing : generating XML event notifications
+    Send initial notification after subscribe
+  Improved pretty print of testupnpdescgen
+  Reduced Memory usage of upnpdescgen
+  fixed a small bug in the description
+
+2008/03/03:
+  Fixed miniupnpd.c for compiling without natpmp support
+  fixed presentationURL not there with L3F
+  fixing lease file creation/modification
+
+2008/02/25:
+  Rewrite of Send501() and Send404()
+  More work on events
+  genconfig.sh autodetects pf/ipf
+
+2008/02/24:
+  Started to implement UPnP Events. do NOT use it at the moment !
+
+2008/02/21:
+  Added support for the Layer3Forwarding Service
+  added init_redirect() and shutdown_redirect() functions
+
+2008/02/20:
+  Removed Ext: HTTP header when useless
+  enabled the dummy service by default to please windows XP !
+
+2008/02/07:
+  upnp_enable patch by Nikos Mavrogiannopoulos.
+  lease_file patch by Nikos Mavrogiannopoulos.
+
+2008/01/29:
+  some changes to Makefile.openwrt
+  use daemon() - daemonize() is still available for systems lacking daemon()
+
+VERSION 1.0 :
+2008/01/27:
+  moved lan_addr to upnpglobalvars.h/.c
+  Adding experimental multiple external IP support.
+
+2008/01/22:
+  removed dummy service from description to improve compatibility
+  with emule client
+  Add "secure mode". put runtime flags in the same variable
+
+2008/01/14:
+  Fixed a bug in options.c for the parsing of empty lines.
+
+2008/01/03:
+  Fixed CleanExpiredNATPMP()
+
+2008/01/02:
+  Adding a queue parameter for setting ALTQ in pf
+
+2007/12/27:
+  improving some stuff with the PF_ENABLE_FILTER_RULE.
+
+2007/12/22:
+  Adding a runtime option to enable/disable NAT-PMP
+
+2007/12/20:
+  Added a cache in linux getifstats(). Please enable by editing config.h
+
+2007/12/14:
+  Updating an existing NAT-PMP mapping now works
+
+2007/12/13:
+  NAT-PMP code now remove expired mappings
+  TCP/UDP where swapped in NAT-PMP code
+
+2007/12/04:
+  Adding details to the error message for sendto(udp_notify)
+
+2007/11/27:
+  pf code doesn't generate filter rules by default anymore. The
+  #ifdef PF_ENABLE_FILTER_RULES must be uncommented in config.h.
+
+2007/11/02:
+  moved some of the prototypes common to all firewalls to commonrdr.h
+  Added functionalities to NAT-PMP
+
+2007/11/01:
+  Debugged NAT-PMP code
+
+2007/10/28:
+  Cleaning and improving NAT-PMP code
+
+2007/10/25:
+  improved the NAT-PMP experimental support
+  updated README and INSTALL files
+
+2007/10/24:
+  Adding support for NAT-PMP (from apple !)
+
+2007/10/11:
+  Checking the commandline for errors.
+
+2007/10/08:
+  Improved the BSD/Solaris Makefile
+  Merging last code from Darren Reed. Solaris/IPF should work now !
+  added a man page.
+
+2007/10/07:
+  Adding Darren Reed code for ipf.
+
+2007/10/06:
+  Adding SunOS support thanks to Darren Reed.
+  Reorganizing os/firewall dependent code thanks to Darren Reed.
+
+2007/09/27:
+  linux make install support PREFIX variable
+
+2007/09/25:
+  reorganizing LAN sockets/address to improve multi LAN support.
+  SSDP announces are sent to all configured networks.
+  SSDP responses are "customized" by subnetwork.
+
+2007/09/24:
+  prototype code to remove unused rules
+  miniupnpdctl now display current rules
+  synchronised add_filter_rule2() prototype between pf and netfilter code.
+
+2007/09/19:
+  Correctly filling the Cache-control header in SSDP packets
+
+2007/08/28:
+  update PFRULE_INOUT_COUNTS detection for FreeBSD
+
+2007/08/27:
+  update version in genconfig.sh
+  do not error when a duplicate redirection is requested.
+
+2007/07/16:
+  really fixed the compilation bug with linux>=2.6.22
+
+2007/07/04:
+  fixed an error in options.c that prevented to use packet_log option
+
+2007/07/03:
+  improved genconfig.sh
+  fixed a compilation bug with linux>=2.6.22
+
+2007/06/22:
+  added PFRULE_INOUT_COUNTS macro to enable separate in/out packet and
+  bytes counts in pf for OpenBSD >= 3.8
+
+2007/06/15:
+  removed a possible racecondition in writepidfile()
+
+2007/06/12:
+  improved genconfig.sh : no more "echo -e", use lsb_release when available
+
+2007/06/11:
+  get_redirect_rule*() functions now return some statistics about
+  rule usage (bytes and packets)
+
+2007/06/07:
+  Fixed the get_redirect_desc() in the linux/netfilter code
+
+2007/06/05:
+  Clean up init code in miniupnpd.c
+  Added a syslog message in SoapError()
+
+2007/06/04:
+  Now store redirection descriptions in the linux/netfilter code
+
+2007/05/21:
+  Answers to SSDP M-SEARCH requests with ST: ssdp:all
+  added make install to Makefile.linux
+
+2007/05/10:
+  Fixed a bug int the DeletePortMapping linux/netfilter implementation
+  It was allways the 1st rule that was deleted.
+
+2007/04/26:
+  Fixed config.h.openwrt
+
+2007/04/16:
+  added something in the INSTALL file about the FreeBSD send(udp_notify)
+  problem fix (allowing 239.0.0.0/8 explicitely in pf.conf)
+
+2007/03/30:
+  added setsockopt(s, SOL_SOCKET, SO_BROADCAST ...) for broadcasting
+  socket
+
+2007/03/17:
+  Fixed filter rule under linux : it was using wrong port !
+  thanks to Wesley W. Terpstra
+
+2007/03/01:
+  Moved some of the SSDP code from miniupnpd.c to minissdp.c
+
+2007/02/28:
+  creating miniupnpdctl
+
+2007/02/26:
+  use LOG_MINIUPNPD macro for openlog()
+  simplify miniupndShutdown()
+
+2007/02/09:
+  improved genconfig.h
+  Added stuff to change the pf rule "rdr" to "rdr pass"
+
+2007/02/07:
+  Corrected Bytes per seconds to bits per second.
+  Ryan cleaned up comments and typos.
+  Ryan cleaned up daemonize stuff.
+  Ryan added possibility to configure model number and serial number
+
+2007/01/30:
+  ryan improved the robustness of most UPnP Soap methods
+  I added a target in the Makefiles to properly generate an uuid using
+  command line tools.
+  Improved configuration file parsing.
+
+2007/01/29:
+  Adding uuid option in miniupnpd.conf
+
+2007/01/27:
+  Added upnppermissions stuff : adding some security to UPnP !
+  fixed XML description thanks to Ryan Wagoner
+  improved QueryStateVariable thanks to Ryan Wagoner
+
+2007/01/22:
+  use getifaddr() for each GetExtenalIPAddress() Call.
+  We can change the ip during execution without pb
+
+2007/01/17:
+  Lots of code cleanup
+
+2007/01/12:
+  Fixed a nasty bug in the linux/netfilter version of get_filter_rule()
+
+2007/01/11:
+  Improved the handling of the miniupnpd.conf file.
+  added -f option to choose which config file to read.
+
+2007/01/10:
+  Fixed potential bugs with ClearNameValueList()
+
+2007/01/08:
+  All by Ryan Wagoner :
+  - coding style and comments cleanup
+  - using now option file miniupnpd.conf
+
+2007/01/03:
+  changed "xx active incoming HTTP connections" msg
+
+2007/01/02:
+  Patch from Ryan Wagoner :
+  - no need to open sockets if we can't set the error handlers
+  - format the usage so it fits nicely on a standard size terminal
+  - fix up log_err message so they have the same format and you know what
+    they are related to
+  - use same "white space" style throughout
+  - on shutdown no need to continue if opening socket or setsockopt fails
+
+2006/12/14:
+  reduce amount of log lines (keeping the same information)
+
+2006/12/07:
+  Fixed Makefiles
+  fixed typos in logs
+  version 1.0-RC1 released
+
+2006/12/02:
+  moved strings from upnpdescgen.c to upnpdescstrings.h for
+  easier modification
+  Server: HTTP header now comes from a #define
+  added a compilation-time generated config.h
+
+2006/11/30:
+  minixml updated. should have no impact
+  Added support for presentationURL with -w switch
+  implemented getifstats() for linux. Added testgetifstats program
+  improved error handling in getifstats() BSD
+
+2006/11/26:
+  no need to have miniupnpc sources to compile miniupnpd.
+  Makefile.openwrt updated
+  Closing sockets on exit thanks to Ryan Wagoner
+
+2006/11/23:
+  now handling signal SIGINT
+  setting HTTP socket with REUSEADDR thanks to Ryan Wagoner
+  daemon now tested on a Linksys WRT54G device running OpenWrt !
+
+2006/11/21:
+  disabling rtableid in pf code.
+
+2006/11/22:
+  Also responds on M-SEARCH with the uuid
+
+2006/11/20:
+  gaining some space in upnpsoap.c
+
+2006/11/19:
+  Cleaning up code to comply with ANSI C89
+
+2006/11/17:
+  Linux version now deleting both nat and accept rules
+  implemented -U option under Linux
+
+2006/11/16:
+  implemented delete_redirect_rule() for linux
+  returning error 714 in DeletePortMapping() when needed
+
+2006/11/12:
+  The linux/netfilter version should now WORK !
+  fix in the writepidfile() function. open with a mode !
+
+2006/11/10:
+  fixing the XML description generation for big endian machines
+  working on the linux/netfilter port
+
+2006/11/09:
+  improved a lot the handling of HTTP error cases
+
+2006/11/08:
+  Tried to make the Makefile compatible with both BSDmake
+  and GNUmake. It was hard because of $^ and $<
+
+2006/11/07:
+  Makefile compatible with BSD make
+  make install target.
+  getifstats.c compatible with both OpenBSD and FreeBSD.
+
+2006/11/06:
+  added getifstats.c for openBSD. May not work under FreeBSD ?
+  now reports bytes/packets sent/received
+  reporting bitrates
+  possibility to report system uptime
+
+2006/10/29:
+  added a -L option to enable loggin (is off by default now).
+
+2006/10/28:
+  Patch by Ryan Wagoner to correct the XML description (was NewUpTime
+  instead of NewUptime) and implement uptime.
+  Trying to fix the memory leak. Added some comments
+  added a -d option for debugging purpose
+  Tnaks to valgrind (under linux!) I removed a small memory access error.
+
+2006/10/27:
+  Thanks to a patch sent by Michael van Tellingen, miniupnpd is
+  now ignoring NOTIFY packets sent by other devices and is
+  writing is own pid to /var/run/miniupnpd.pid
+
+2006/10/23:
+  Allways set sendEvents="no" in XML description (was causing
+  pb with winXP as SUBSCRIBE is not implemented)
+
+2006/10/22:
+  added translation from hostname to IP in the AddPortMapping() method
+  Thanks to Ryan Wagoner.
+
+2006/10/18:
+  Added an INSTALL file
+
+2006/10/13:
+  Added the possibility to change the notify interval
+
+2006/09/29:
+  Improved compliance of the XML Descriptions
+  pretty print for testupnpdescgen
+
+2006/09/25:
+  improved the Error 404 response.
+  Better serviceType and serviceId for dummy service...
+
+2006/09/24:
+  updating the XML description generator
+
+2006/09/18:
+  Thanks to Rick Richard, support for SSDP "alive" and "byebye" notifications
+  was added. The -u options was also added. The SSDP response are now
+  improved.
+  The -o option is now working (to force a specific external IP address).
+  The Soap Methods errors are correctly responded (401 Invalid Action)
+
+2006/09/09:
+  Added code to handle filter rules. Thanks to Seth Mos (pfsense.com)
+  storing the descriptions in the label of the rule
+
+2006/09/02:
+  improved the generation of the XML descriptions.
+  I still need to add allowed values to variables.
+
+2006/07/29:
+  filtering SSDP requests and responding with same ST: field
+
+2006/07/25:
+  Added a dummy description for the WANDevice
+
+2006/07/20:
+  Command line arguments processing
+  Added possibility to listen internally on several interfaces
+

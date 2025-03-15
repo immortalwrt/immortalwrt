@@ -1,0 +1,14 @@
+#!/bin/sh /etc/rc.common
+
+START=80
+USE_PROCD=1
+
+start_service() {
+	if [ -f /sys/class/gpio/export ]; then
+		### enable M.2 5G RM500U-CN Module Power ###
+		echo 443 > /sys/class/gpio/export
+		echo 431 > /sys/class/gpio/export
+		echo out > /sys/class/gpio/gpio431/direction
+		echo   0 > /sys/class/gpio/gpio431/value
+	fi
+}

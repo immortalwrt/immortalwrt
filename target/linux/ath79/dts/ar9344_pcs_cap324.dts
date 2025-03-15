@@ -4,7 +4,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	model = "PowerCloud Systems CAP324";
@@ -35,41 +34,35 @@
 		compatible = "gpio-leds";
 
 		led_power_amber: power_amber {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_AMBER>;
+			label = "amber:power";
 			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
 		};
 
 		led_power_green: power_green {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio 12 GPIO_ACTIVE_LOW>;
 			default-state = "on";
 		};
 
 		wlan_amber {
-			function = LED_FUNCTION_WLAN;
-			color = <LED_COLOR_ID_AMBER>;
+			label = "amber:wlan";
 			gpios = <&gpio 19 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "phy1tpt";
 		};
 
 		wlan_green {
-			function = LED_FUNCTION_WLAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:wlan";
 			gpios = <&gpio 18 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "phy0tpt";
 		};
 
 		lan_amber {
-			function = LED_FUNCTION_LAN;
-			color = <LED_COLOR_ID_AMBER>;
+			label = "amber:lan";
 			gpios = <&gpio 15 GPIO_ACTIVE_LOW>;
 		};
 
 		lan_green {
-			function = LED_FUNCTION_LAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:lan";
 			gpios = <&gpio 14 GPIO_ACTIVE_LOW>;
 		};
 	};
@@ -110,30 +103,10 @@
 				reg = <0x050000 0x0fa0000>;
 			};
 
-			partition@7f0000 {
+			art: partition@7f0000 {
 				label = "art";
 				reg = <0xff0000 0x010000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_art_0: macaddr@0 {
-						compatible = "mac-base";
-						reg = <0x0 0x6>;
-						#nvmem-cell-cells = <1>;
-					};
-
-					cal_art_1000: calibration@1000 {
-						reg = <0x1000 0x440>;
-					};
-
-					cal_art_5000: calibration@5000 {
-						reg = <0x5000 0x440>;
-					};
-				};
 			};
 		};
 	};
@@ -145,8 +118,10 @@
 	ath9k: wifi@0,0 {
 		compatible = "168c,0030";
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&macaddr_art_0 (-2)>, <&cal_art_5000>;
-		nvmem-cell-names = "mac-address", "calibration";
+		mtd-mac-address = <&art 0x0>;
+		mtd-mac-address-increment = <(-2)>;
+		mtd-cal-data = <&art 0x5000>;
+		qca,no-eeprom;
 		ieee80211-freq-limit = <2402000 2482000>;
 		#gpio-cells = <2>;
 		gpio-controller;
@@ -157,12 +132,15 @@
 	status = "okay";
 
 	ieee80211-freq-limit = <4900000 5990000>;
-	nvmem-cells = <&macaddr_art_0 (-1)>, <&cal_art_1000>;
-	nvmem-cell-names = "mac-address", "calibration";
+	mtd-cal-data = <&art 0x1000>;
+	mtd-mac-address = <&art 0x0>;
+	mtd-mac-address-increment = <(-1)>;
 };
 
 &mdio0 {
 	status = "okay";
+
+	phy-mask = <0>;
 
 	phy0: ethernet-phy@0 {
 		reg = <0>;
@@ -176,8 +154,7 @@
 	/* default for ar934x, except for 1000M */
 	pll-data = <0x06000000 0x00000101 0x00001616>;
 
-	nvmem-cells = <&macaddr_art_0 0>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&art 0x0>;
 
 	phy-mode = "rgmii";
 	phy-handle = <&phy0>;

@@ -6,12 +6,12 @@ include $(TOPDIR)/rules.mk
 
 ARCH:=arm
 BOARD:=sunxi
-BOARDNAME:=Allwinner ARM SoCs
-FEATURES:=usb ext4 display rootfs-part rtc squashfs
+BOARDNAME:=Allwinner A1x/A20/A3x/H3/H5/R40
+FEATURES:=fpu usb ext4 display rtc squashfs
 SUBTARGETS:=cortexa8 cortexa7 cortexa53
 
-KERNEL_PATCHVER:=6.6
-
+KERNEL_PATCHVER:=5.4
+KERNEL_TESTING_PATCHVER:=5.4
 KERNELNAME:=zImage dtbs
 
 # A10: Cortex-A8
@@ -21,11 +21,11 @@ KERNELNAME:=zImage dtbs
 # A80: octa Cortex-A15/A7
 # H3: quad Cortex-A7
 # R40: quad Cortex-A7
-# A64/H5/H6/H616: quad Cortex-A53
 
 include $(INCLUDE_DIR)/target.mk
 
 DEFAULT_PACKAGES += uboot-envtools
-DEFAULT_PACKAGES += partx-utils mkf2fs automount autocore luci-app-cpufreq
+DEFAULT_PACKAGES += partx-utils mkf2fs automount
+DEFAULT_PACKAGES += autocore-arm luci-app-cpufreq
 
 $(eval $(call BuildTarget))

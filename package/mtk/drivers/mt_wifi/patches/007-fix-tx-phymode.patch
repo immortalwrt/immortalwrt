@@ -1,0 +1,22 @@
+--- a/mt_wifi/embedded/common/cmm_info.c	2023-08-25 01:53:57.822614787 +0800
++++ b/mt_wifi/embedded/common/cmm_info.c	2023-08-25 01:51:04.886997741 +0800
+@@ -7045,6 +7045,7 @@ typedef struct _RT_802_11_MAC_TABLE_FIX
+ UINT32 RTMPGetLastTxRate_fix(PRTMP_ADAPTER pAd, MAC_TABLE_ENTRY *pEntry)
+ {
+ 	HTTRANSMIT_SETTING_FIX lastTxRate;
++	UCHAR phy_mode;
+ #ifdef RACTRL_FW_OFFLOAD_SUPPORT
+ 	EXT_EVENT_TX_STATISTIC_RESULT_T rTxStatResult;
+ #endif
+@@ -7052,7 +7053,10 @@ UINT32 RTMPGetLastTxRate_fix(PRTMP_ADAPT
+ #ifdef RACTRL_FW_OFFLOAD_SUPPORT
+ 	os_zero_mem(&rTxStatResult, sizeof(EXT_EVENT_TX_STATISTIC_RESULT_T));
+ 	MtCmdGetTxStatistic(pAd, GET_TX_STAT_ENTRY_TX_RATE, 0/*Don't Care*/, pEntry->wcid, &rTxStatResult);
+-	lastTxRate.field.MODE = rTxStatResult.rEntryTxRate.MODE;
++	phy_mode = rTxStatResult.rEntryTxRate.MODE;
++	if (phy_mode >> 3)
++		phy_mode >>= 3;	
++	lastTxRate.field.MODE = phy_mode;
+ 	lastTxRate.field.BW = rTxStatResult.rEntryTxRate.BW;
+ 	lastTxRate.field.ldpc = rTxStatResult.rEntryTxRate.ldpc ? 1 : 0;
+ 	lastTxRate.field.ShortGI = rTxStatResult.rEntryTxRate.ShortGI ? 1 : 0;

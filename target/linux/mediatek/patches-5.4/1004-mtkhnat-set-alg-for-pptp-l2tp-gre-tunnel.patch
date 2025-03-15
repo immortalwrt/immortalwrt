@@ -1,0 +1,147 @@
+--- a/drivers/net/ppp/pptp.c
++++ b/drivers/net/ppp/pptp.c
+@@ -33,6 +33,7 @@
+ #include <net/route.h>
+ #include <net/gre.h>
+ #include <net/pptp.h>
++#include <net/netfilter/nf_flow_table.h>
+ 
+ #include <linux/uaccess.h>
+ 
+@@ -128,6 +129,25 @@ static void del_chan(struct pppox_sock *
+ 	spin_unlock(&chan_lock);
+ }
+ 
++#if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
++static int pptp_flow_offload_check(struct ppp_channel *chan,
++				   struct flow_offload_hw_path *path)
++{
++	struct sock *sk = (struct sock *)chan->private;
++	struct pppox_sock *po = pppox_sk(sk);
++
++	if (path->flags & FLOW_OFFLOAD_PATH_TNL)
++		return -EEXIST;
++
++	if (sk_pppox(po)->sk_state & PPPOX_DEAD)
++		return -EINVAL;
++
++	path->flags |= FLOW_OFFLOAD_PATH_TNL;
++
++	return 0;
++}
++#endif /* IS_ENABLED(CONFIG_NF_FLOW_TABLE) */
++
+ static int pptp_xmit(struct ppp_channel *chan, struct sk_buff *skb)
+ {
+ 	struct sock *sk = (struct sock *) chan->private;
+@@ -598,6 +618,9 @@ static int pptp_ppp_ioctl(struct ppp_cha
+ static const struct ppp_channel_ops pptp_chan_ops = {
+ 	.start_xmit = pptp_xmit,
+ 	.ioctl      = pptp_ppp_ioctl,
++#if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
++	.flow_offload_check = pptp_flow_offload_check,
++#endif /* IS_ENABLED(CONFIG_NF_FLOW_TABLE) */
+ };
+ 
+ static struct proto pptp_sk_proto __read_mostly = {
+--- a/include/net/netfilter/nf_flow_table.h
++++ b/include/net/netfilter/nf_flow_table.h
+@@ -96,6 +96,7 @@ struct flow_offload {
+ #define FLOW_OFFLOAD_PATH_DSA		BIT(3)
+ #define FLOW_OFFLOAD_PATH_DSLITE	BIT(4)
+ #define FLOW_OFFLOAD_PATH_6RD		BIT(5)
++#define FLOW_OFFLOAD_PATH_TNL		BIT(6)
+ 
+ struct flow_offload_hw_path {
+ 	struct net_device *dev;
+--- a/net/ipv4/ip_gre.c
++++ b/net/ipv4/ip_gre.c
+@@ -39,6 +39,7 @@
+ #include <net/inet_ecn.h>
+ #include <net/xfrm.h>
+ #include <net/net_namespace.h>
++#include <net/netfilter/nf_flow_table.h>
+ #include <net/netns/generic.h>
+ #include <net/rtnetlink.h>
+ #include <net/gre.h>
+@@ -901,6 +902,18 @@ static int ipgre_close(struct net_device
+ }
+ #endif
+ 
++#if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
++static int gre_dev_flow_offload_check(struct flow_offload_hw_path *path)
++{
++	if (path->flags & FLOW_OFFLOAD_PATH_TNL)
++		return -EEXIST;
++
++	path->flags |= FLOW_OFFLOAD_PATH_TNL;
++
++	return 0;
++}
++#endif /* CONFIG_NF_FLOW_TABLE */
++
+ static const struct net_device_ops ipgre_netdev_ops = {
+ 	.ndo_init		= ipgre_tunnel_init,
+ 	.ndo_uninit		= ip_tunnel_uninit,
+@@ -1264,6 +1277,9 @@ static const struct net_device_ops gre_t
+ 	.ndo_get_stats64	= ip_tunnel_get_stats64,
+ 	.ndo_get_iflink		= ip_tunnel_get_iflink,
+ 	.ndo_fill_metadata_dst	= gre_fill_metadata_dst,
++#if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
++	.ndo_flow_offload_check = gre_dev_flow_offload_check,
++#endif
+ };
+ 
+ static int erspan_tunnel_init(struct net_device *dev)
+--- a/net/l2tp/l2tp_ppp.c
++++ b/net/l2tp/l2tp_ppp.c
+@@ -89,6 +89,7 @@
+ #include <linux/nsproxy.h>
+ #include <net/net_namespace.h>
+ #include <net/netns/generic.h>
++#include <net/netfilter/nf_flow_table.h>
+ #include <net/ip.h>
+ #include <net/udp.h>
+ #include <net/inet_common.h>
+@@ -124,9 +125,14 @@ struct pppol2tp_session {
+ };
+ 
+ static int pppol2tp_xmit(struct ppp_channel *chan, struct sk_buff *skb);
++static int l2tp_ppp_flow_offload_check(struct ppp_channel *chan,
++				       struct flow_offload_hw_path *path);
+ 
+ static const struct ppp_channel_ops pppol2tp_chan_ops = {
+ 	.start_xmit =  pppol2tp_xmit,
++#if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
++	.flow_offload_check = l2tp_ppp_flow_offload_check,
++#endif /* IS_ENABLED(CONFIG_NF_FLOW_TABLE) */
+ };
+ 
+ static const struct proto_ops pppol2tp_ops;
+@@ -335,6 +341,26 @@ error:
+ 	return error;
+ }
+ 
++#if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
++static int l2tp_ppp_flow_offload_check(struct ppp_channel *chan,
++				       struct flow_offload_hw_path *path)
++{
++	struct sock *sk = (struct sock *)chan->private;
++	struct l2tp_session *session;
++
++	if (path->flags & FLOW_OFFLOAD_PATH_TNL)
++		return -EEXIST;
++
++	session = pppol2tp_sock_to_session(sk);
++	if (!session)
++		return -EINVAL;
++
++	path->flags |= FLOW_OFFLOAD_PATH_TNL;
++
++	return 0;
++}
++#endif /* IS_ENABLED(CONFIG_NF_FLOW_TABLE) */
++
+ /* Transmit function called by generic PPP driver.  Sends PPP frame
+  * over PPPoL2TP socket.
+  *

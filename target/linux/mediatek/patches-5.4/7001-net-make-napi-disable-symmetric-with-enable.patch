@@ -1,0 +1,64 @@
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v2] net: make napi_disable() symmetric with enable
+From: Jakub Kicinski <kuba@kernel.org>
+Date: Fri, 24 Sep 2021 13:24:53 -0700
+Message-Id: <20210924202453.1051687-1-kuba@kernel.org>
+To: davem@davemloft.net
+Cc: netdev@vger.kernel.org, eric.dumazet@gmail.com, weiwan@google.com, xuanzhuo@linux.alibaba.com, Jakub Kicinski <kuba@kernel.org>
+List-Id: <netdev.vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Commit 3765996e4f0b ("napi: fix race inside napi_enable") fixed
+an ordering bug in napi_enable() and made the napi_enable() diverge
+from napi_disable(). The state transitions done on disable are
+not symmetric to enable.
+
+There is no known bug in napi_disable() this is just refactoring.
+
+Eric suggests we can also replace msleep(1) with a more opportunistic
+usleep_range().
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ net/core/dev.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index f24c3a9..f0a556a 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6386,18 +6386,25 @@ EXPORT_SYMBOL(netif_napi_add);
+ 
+ void napi_disable(struct napi_struct *n)
+ {
++	unsigned long val, new;
++
+ 	might_sleep();
+ 	set_bit(NAPI_STATE_DISABLE, &n->state);
+ 
+-	while (test_and_set_bit(NAPI_STATE_SCHED, &n->state))
+-		msleep(1);
+-	while (test_and_set_bit(NAPI_STATE_NPSVC, &n->state))
+-		msleep(1);
++	do {
++		val = READ_ONCE(n->state);
++		if (val & (NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC)) {
++			usleep_range(20, 200);
++			continue;
++		}
++
++		new = val | NAPIF_STATE_SCHED | NAPIF_STATE_NPSVC;
++		new &= ~(NAPIF_STATE_THREADED);
++	} while (cmpxchg(&n->state, val, new) != val);
+ 
+ 	hrtimer_cancel(&n->timer);
+ 
+ 	clear_bit(NAPI_STATE_DISABLE, &n->state);
+-	clear_bit(NAPI_STATE_THREADED, &n->state);
+ }
+ EXPORT_SYMBOL(napi_disable);
+ 
+-- 
+2.31.1

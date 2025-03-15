@@ -1,0 +1,30 @@
+From c5d3cdad688ed75fb311a3a671eb30ba7106d7d3 Mon Sep 17 00:00:00 2001
+From: Dilip Kota <eswara.kota@linux.intel.com>
+Date: Tue, 19 May 2020 14:19:19 +0800
+Subject: [PATCH 2/5] dt-bindings: phy: Add PHY_TYPE_XPCS definition
+
+Add definition for Ethernet PCS phy type.
+
+Signed-off-by: Dilip Kota <eswara.kota@linux.intel.com>
+Acked-by: Rob Herring <robh@kernel.org>
+Acked-By: Vinod Koul <vkoul@kernel.org>
+Link: https://lore.kernel.org/r/6091f0d2a1046f1e3656d9e33b6cc433d5465eaf.1589868358.git.eswara.kota@linux.intel.com
+Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
+---
+ include/dt-bindings/phy/phy.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/dt-bindings/phy/phy.h b/include/dt-bindings/phy/phy.h
+index 1f3f866fae7b..3727ef72138b 100644
+--- a/include/dt-bindings/phy/phy.h
++++ b/include/dt-bindings/phy/phy.h
+@@ -17,5 +17,6 @@
+ #define PHY_TYPE_USB3		4
+ #define PHY_TYPE_UFS		5
+ #define PHY_TYPE_DP		6
++#define PHY_TYPE_XPCS		7
+ 
+ #endif /* _DT_BINDINGS_PHY */
+-- 
+2.18.0
+

@@ -4,7 +4,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "buffalo,bhr-4grv2", "qca,qca9557";
@@ -21,8 +20,7 @@
 		compatible = "gpio-leds";
 
 		led_power: power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio 19 GPIO_ACTIVE_LOW>;
 			default-state = "on";
 		};
@@ -93,24 +91,10 @@
 				reg = <0x050000 0xfa0000>;
 			};
 
-			partition@ff0000 {
+			art: partition@ff0000 {
 				label = "art";
 				reg = <0xff0000 0x010000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_art_0: macaddr@0 {
-						reg = <0x0 0x6>;
-					};
-
-					macaddr_art_6: macaddr@6 {
-						reg = <0x6 0x6>;
-					};
-				};
 			};
 		};
 	};
@@ -134,8 +118,7 @@
 &eth0 {
 	status = "okay";
 
-	nvmem-cells = <&macaddr_art_0>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&art 0x0>;
 	phy-handle = <&phy0>;
 	pll-data = <0x56000000 0x00000101 0x00001616>;
 };
@@ -143,8 +126,7 @@
 &eth1 {
 	status = "okay";
 
-	nvmem-cells = <&macaddr_art_6>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&art 0x6>;
 	pll-data = <0x03000101 0x00000101 0x00001616>;
 
 	fixed-link {

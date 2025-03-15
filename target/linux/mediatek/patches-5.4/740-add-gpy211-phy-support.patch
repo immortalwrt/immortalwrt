@@ -1,0 +1,28 @@
+Index: linux-5.4.119/drivers/net/phy/Kconfig
+===================================================================
+--- linux-5.4.119.orig/drivers/net/phy/Kconfig
++++ linux-5.4.119/drivers/net/phy/Kconfig
+@@ -468,6 +468,11 @@ config FIXED_PHY
+ 
+ 	  Currently tested with mpc866ads and mpc8349e-mitx.
+ 
++config GPY211_PHY
++	tristate "GPY211 PHY"
++	---help---
++	  Supports the Intel GPY211 PHY with rate adaption.
++
+ config ICPLUS_PHY
+ 	tristate "ICPlus PHYs"
+ 	---help---
+Index: linux-5.4.119/drivers/net/phy/Makefile
+===================================================================
+--- linux-5.4.119.orig/drivers/net/phy/Makefile
++++ linux-5.4.119/drivers/net/phy/Makefile
+@@ -86,6 +86,7 @@ obj-$(CONFIG_DP83TC811_PHY)	+= dp83tc811
+ obj-$(CONFIG_DP83848_PHY)	+= dp83848.o
+ obj-$(CONFIG_DP83867_PHY)	+= dp83867.o
+ obj-$(CONFIG_FIXED_PHY)		+= fixed_phy.o
++obj-$(CONFIG_GPY211_PHY)	+= gpy211.o
+ obj-$(CONFIG_ICPLUS_PHY)	+= icplus.o
+ obj-$(CONFIG_INTEL_XWAY_PHY)	+= intel-xway.o
+ obj-$(CONFIG_LSI_ET1011C_PHY)	+= et1011c.o

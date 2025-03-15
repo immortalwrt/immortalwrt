@@ -1,0 +1,104 @@
+From f8c45effbd31e3b66802c0c2556933e7f122b180 Mon Sep 17 00:00:00 2001
+From: Yu Zhao <yuzhao@google.com>
+Date: Thu, 23 Jul 2020 14:01:45 -0600
+Subject: [PATCH] BACKPORT: mm: use self-explanatory macros rather than
+ "2"
+
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Cc: Alex Shi <alex.shi@linux.alibaba.com>
+Link: http://lkml.kernel.org/r/20200831175042.3527153-2-yuzhao@google.com
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+(cherry picked from commit ed0173733dd468883198c3136284394320b8fad6)
+
+BUG=b:123039911
+TEST=Built
+
+Change-Id: Idb88d5839e920893589bca08121196a5dd719354
+Reviewed-on: https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/2940110
+Tested-by: Yu Zhao <yuzhao@chromium.org>
+Reviewed-by: Sonny Rao <sonnyrao@chromium.org>
+Commit-Queue: Yu Zhao <yuzhao@chromium.org>
+---
+ include/linux/mmzone.h | 14 ++++++++------
+ mm/memcontrol.c        |  4 ++--
+ mm/vmscan.c            |  4 +---
+ 3 files changed, 11 insertions(+), 11 deletions(-)
+
+--- a/include/linux/mmzone.h
++++ b/include/linux/mmzone.h
+@@ -282,17 +282,17 @@ static inline int is_active_lru(enum lru
+ 	return (lru == LRU_ACTIVE_ANON || lru == LRU_ACTIVE_FILE);
+ }
+ 
++#define ANON_AND_FILE 2
++
+ struct zone_reclaim_stat {
+ 	/*
+ 	 * The pageout code in vmscan.c keeps track of how many of the
+ 	 * mem/swap backed and file backed pages are referenced.
+ 	 * The higher the rotated/scanned ratio, the more valuable
+ 	 * that cache is.
+-	 *
+-	 * The anon LRU stats live in [0], file LRU stats in [1]
+ 	 */
+-	unsigned long		recent_rotated[2];
+-	unsigned long		recent_scanned[2];
++	unsigned long		recent_rotated[ANON_AND_FILE];
++	unsigned long		recent_scanned[ANON_AND_FILE];
+ };
+ 
+ struct lruvec {
+@@ -414,6 +414,8 @@ enum zone_type {
+ 
+ #ifndef __GENERATING_BOUNDS_H
+ 
++#define ASYNC_AND_SYNC 2
++
+ struct zone {
+ 	/* Read-mostly fields */
+ 
+@@ -533,8 +535,8 @@ struct zone {
+ #if defined CONFIG_COMPACTION || defined CONFIG_CMA
+ 	/* pfn where compaction free scanner should start */
+ 	unsigned long		compact_cached_free_pfn;
+-	/* pfn where async and sync compaction migration scanner should start */
+-	unsigned long		compact_cached_migrate_pfn[2];
++	/* pfn where compaction migration scanner should start */
++	unsigned long		compact_cached_migrate_pfn[ASYNC_AND_SYNC];
+ 	unsigned long		compact_init_migrate_pfn;
+ 	unsigned long		compact_init_free_pfn;
+ #endif
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -3984,8 +3984,8 @@ static int memcg_stat_show(struct seq_fi
+ 		pg_data_t *pgdat;
+ 		struct mem_cgroup_per_node *mz;
+ 		struct zone_reclaim_stat *rstat;
+-		unsigned long recent_rotated[2] = {0, 0};
+-		unsigned long recent_scanned[2] = {0, 0};
++		unsigned long recent_rotated[ANON_AND_FILE] = {};
++		unsigned long recent_scanned[ANON_AND_FILE] = {};
+ 
+ 		for_each_online_pgdat(pgdat) {
+ 			mz = mem_cgroup_nodeinfo(memcg, pgdat->node_id);
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -2307,7 +2307,7 @@ static void get_scan_count(struct lruvec
+ {
+ 	int swappiness = mem_cgroup_swappiness(memcg);
+ 	struct zone_reclaim_stat *reclaim_stat = &lruvec->reclaim_stat;
+-	u64 fraction[2];
++	u64 fraction[ANON_AND_FILE];
+ 	u64 denominator = 0;	/* gcc */
+ 	struct pglist_data *pgdat = lruvec_pgdat(lruvec);
+ 	unsigned long anon_prio, file_prio;
+@@ -2418,8 +2418,6 @@ static void get_scan_count(struct lruvec
+ 	 * Because workloads change over time (and to avoid overflow)
+ 	 * we keep these statistics as a floating average, which ends
+ 	 * up weighing recent references more than old ones.
+-	 *
+-	 * anon in [0], file in [1]
+ 	 */
+ 
+ 	anon  = lruvec_lru_size(lruvec, LRU_ACTIVE_ANON, MAX_NR_ZONES) +

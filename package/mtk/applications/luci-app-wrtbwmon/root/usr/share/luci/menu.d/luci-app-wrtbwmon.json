@@ -1,0 +1,41 @@
+{
+	"admin/network/usage": {
+		"title": "Traffic Status",
+		"order": 60,
+		"action": {
+			"type": "alias",
+			"path": "admin/network/usage/details"
+		},
+		"depends": {
+			"acl": [ "luci-app-wrtbwmon" ],
+			"uci": { "wrtbwmon": true }
+		}
+	},
+
+	"admin/network/usage/details": {
+		"title": "Details",
+		"order": 10,
+		"action": {
+			"type": "view",
+			"path": "wrtbwmon/details"
+		}
+	},
+
+	"admin/network/usage/config": {
+		"title": "Configuration",
+		"order": 20,
+		"action": {
+			"type": "view",
+			"path": "wrtbwmon/config"
+		}
+	},
+
+	"admin/network/usage/custom": {
+		"title": "User file",
+		"order": 30,
+		"action": {
+			"type": "view",
+			"path": "wrtbwmon/custom"
+		}
+	}
+}

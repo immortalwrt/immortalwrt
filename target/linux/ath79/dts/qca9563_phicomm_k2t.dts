@@ -4,7 +4,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	model = "Phicomm K2T";
@@ -21,20 +20,17 @@
 		compatible = "gpio-leds";
 
 		status_blue {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:status";
 			gpios = <&gpio 6 GPIO_ACTIVE_LOW>;
 		};
 
 		led_status_red: status_red {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_RED>;
+			label = "red:status";
 			gpios = <&gpio 7 GPIO_ACTIVE_HIGH>;
 		};
 
 		status_yellow {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_YELLOW>;
+			label = "yellow:status";
 			gpios = <&gpio 8 GPIO_ACTIVE_LOW>;
 		};
 	};
@@ -52,13 +48,6 @@
 
 &pcie {
 	status = "okay";
-
-	wifi@0,0 {
-		compatible = "qcom,ath10k";
-		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&precal_art_5000>;
-		nvmem-cell-names = "pre-calibration";
-	};
 };
 
 &spi {
@@ -98,24 +87,10 @@
 				reg = <0x090000 0xf60000>;
 			};
 
-			partition@ff0000 {
+			art: partition@ff0000 {
 				label = "art";
 				reg = <0xff0000 0x010000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					cal_art_1000: calibration@1000 {
-						reg = <0x1000 0x440>;
-					};
-
-					precal_art_5000: pre-calibration@5000 {
-						reg = <0x5000 0x2f20>;
-					};
-				};
 			};
 		};
 	};
@@ -123,6 +98,8 @@
 
 &mdio0 {
 	status = "okay";
+
+	phy-mask = <0>;
 
 	phy0: ethernet-phy@0 {
 		reg = <0>;
@@ -151,7 +128,5 @@
 
 &wmac {
 	status = "okay";
-
-	nvmem-cells = <&cal_art_1000>;
-	nvmem-cell-names = "calibration";
+	mtd-cal-data = <&art 0x1000>;
 };

@@ -1,0 +1,79 @@
+From 0bc68af9137dc3f30b161de4ce546c7799f88d1e Mon Sep 17 00:00:00 2001
+From: Shivamurthy Shastri <sshivamurthy@micron.com>
+Date: Wed, 11 Mar 2020 18:57:33 +0100
+Subject: [PATCH] mtd: spinand: micron: identify SPI NAND device with
+ Continuous Read mode
+
+Add SPINAND_HAS_CR_FEAT_BIT flag to identify the SPI NAND device with
+the Continuous Read mode.
+
+Some of the Micron SPI NAND devices have the "Continuous Read" feature
+enabled by default, which does not fit the subsystem needs.
+
+In this mode, the READ CACHE command doesn't require the starting column
+address. The device always output the data starting from the first
+column of the cache register, and once the end of the cache register
+reached, the data output continues through the next page. With the
+continuous read mode, it is possible to read out the entire block using
+a single READ command, and once the end of the block reached, the output
+pins become High-Z state. However, during this mode the read command
+doesn't output the OOB area.
+
+Hence, we disable the feature at probe time.
+
+Signed-off-by: Shivamurthy Shastri <sshivamurthy@micron.com>
+Reviewed-by: Boris Brezillon <boris.brezillon@collabora.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20200311175735.2007-5-sshivamurthy@micron.com
+---
+ drivers/mtd/nand/spi/micron.c | 16 ++++++++++++++++
+ include/linux/mtd/spinand.h   |  1 +
+ 2 files changed, 17 insertions(+)
+
+diff --git a/drivers/mtd/nand/spi/micron.c b/drivers/mtd/nand/spi/micron.c
+index 26925714a9fbac..956f7710aca263 100644
+--- a/drivers/mtd/nand/spi/micron.c
++++ b/drivers/mtd/nand/spi/micron.c
+@@ -18,6 +18,8 @@
+ #define MICRON_STATUS_ECC_4TO6_BITFLIPS	(3 << 4)
+ #define MICRON_STATUS_ECC_7TO8_BITFLIPS	(5 << 4)
+ 
++#define MICRON_CFG_CR			BIT(0)
++
+ static SPINAND_OP_VARIANTS(read_cache_variants,
+ 		SPINAND_PAGE_READ_FROM_CACHE_QUADIO_OP(0, 2, NULL, 0),
+ 		SPINAND_PAGE_READ_FROM_CACHE_X4_OP(0, 1, NULL, 0),
+@@ -137,7 +139,21 @@ static const struct spinand_info micron_spinand_table[] = {
+ 				     micron_8_ecc_get_status)),
+ };
+ 
++static int micron_spinand_init(struct spinand_device *spinand)
++{
++	/*
++	 * M70A device series enable Continuous Read feature at Power-up,
++	 * which is not supported. Disable this bit to avoid any possible
++	 * failure.
++	 */
++	if (spinand->flags & SPINAND_HAS_CR_FEAT_BIT)
++		return spinand_upd_cfg(spinand, MICRON_CFG_CR, 0);
++
++	return 0;
++}
++
+ static const struct spinand_manufacturer_ops micron_spinand_manuf_ops = {
++	.init = micron_spinand_init,
+ };
+ 
+ const struct spinand_manufacturer micron_spinand_manufacturer = {
+diff --git a/include/linux/mtd/spinand.h b/include/linux/mtd/spinand.h
+index f4c4ae87181b27..1077c45721ff25 100644
+--- a/include/linux/mtd/spinand.h
++++ b/include/linux/mtd/spinand.h
+@@ -284,6 +284,7 @@ struct spinand_ecc_info {
+ };
+ 
+ #define SPINAND_HAS_QE_BIT		BIT(0)
++#define SPINAND_HAS_CR_FEAT_BIT		BIT(1)
+ 
+ /**
+  * struct spinand_info - Structure used to describe SPI NAND chips

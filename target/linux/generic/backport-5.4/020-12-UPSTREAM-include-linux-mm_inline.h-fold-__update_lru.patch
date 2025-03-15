@@ -1,0 +1,62 @@
+From a13fb50b6ae0de88dba9057c061b343ef2e41170 Mon Sep 17 00:00:00 2001
+From: Yu Zhao <yuzhao@google.com>
+Date: Fri, 2 Oct 2020 02:41:47 -0600
+Subject: [PATCH] UPSTREAM: include/linux/mm_inline.h: fold
+ __update_lru_size() into its sole caller
+
+All other references to the function were removed after commit
+a892cb6b977f ("mm/vmscan.c: use update_lru_size() in update_lru_sizes()").
+
+Link: https://lore.kernel.org/linux-mm/20201207220949.830352-10-yuzhao@google.com/
+Link: https://lkml.kernel.org/r/20210122220600.906146-10-yuzhao@google.com
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+Reviewed-by: Alex Shi <alex.shi@linux.alibaba.com>
+Cc: Hugh Dickins <hughd@google.com>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Roman Gushchin <guro@fb.com>
+Cc: Vladimir Davydov <vdavydov.dev@gmail.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+(cherry picked from commit 289ccba18af436f2b65ec69b2be1b086ec9f24a4)
+
+BUG=b:123039911
+TEST=Built
+
+Change-Id: I81f7635f8d2ddd4f2269a2d56647914817fc9951
+Reviewed-on: https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/2940119
+Reviewed-by: Sean Paul <seanpaul@chromium.org>
+Reviewed-by: Sonny Rao <sonnyrao@chromium.org>
+Tested-by: Yu Zhao <yuzhao@chromium.org>
+Commit-Queue: Yu Zhao <yuzhao@chromium.org>
+---
+ include/linux/mm_inline.h | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
+
+--- a/include/linux/mm_inline.h
++++ b/include/linux/mm_inline.h
+@@ -23,7 +23,7 @@ static inline int page_is_file_cache(str
+ 	return !PageSwapBacked(page);
+ }
+ 
+-static __always_inline void __update_lru_size(struct lruvec *lruvec,
++static __always_inline void update_lru_size(struct lruvec *lruvec,
+ 				enum lru_list lru, enum zone_type zid,
+ 				int nr_pages)
+ {
+@@ -32,13 +32,6 @@ static __always_inline void __update_lru
+ 	__mod_lruvec_state(lruvec, NR_LRU_BASE + lru, nr_pages);
+ 	__mod_zone_page_state(&pgdat->node_zones[zid],
+ 				NR_ZONE_LRU_BASE + lru, nr_pages);
+-}
+-
+-static __always_inline void update_lru_size(struct lruvec *lruvec,
+-				enum lru_list lru, enum zone_type zid,
+-				int nr_pages)
+-{
+-	__update_lru_size(lruvec, lru, zid, nr_pages);
+ #ifdef CONFIG_MEMCG
+ 	mem_cgroup_update_lru_size(lruvec, lru, zid, nr_pages);
+ #endif

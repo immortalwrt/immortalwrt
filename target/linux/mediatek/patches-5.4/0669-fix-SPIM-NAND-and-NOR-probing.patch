@@ -1,0 +1,33 @@
+--- a/drivers/spi/spi-mt65xx.c
++++ b/drivers/spi/spi-mt65xx.c
+@@ -1073,7 +1073,7 @@ static int mtk_spi_probe(struct platform
+ 		goto err_put_master;
+ 	}
+ 
+-/*
++
+ 	mdata->parent_clk = devm_clk_get(&pdev->dev, "parent-clk");
+ 	if (IS_ERR(mdata->parent_clk)) {
+ 		ret = PTR_ERR(mdata->parent_clk);
+@@ -1101,17 +1101,17 @@ static int mtk_spi_probe(struct platform
+ 		goto err_put_master;
+ 	}
+ 
+-	ret = clk_set_parent(mdata->sel_clk, mdata->parent_clk);
++	/*ret = clk_set_parent(mdata->sel_clk, mdata->parent_clk);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to clk_set_parent (%d)\n", ret);
+ 		clk_disable_unprepare(mdata->spi_clk);
+ 		goto err_put_master;
+ 	}
+ 
+-	clk_disable_unprepare(mdata->spi_clk);
++	clk_disable_unprepare(mdata->sel_clk);*/
++
++	//pm_runtime_enable(&pdev->dev);
+ 
+-	pm_runtime_enable(&pdev->dev);
+-*/
+ 	ret = devm_spi_register_master(&pdev->dev, master);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "failed to register master (%d)\n", ret);

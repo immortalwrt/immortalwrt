@@ -1,0 +1,40 @@
+#!/bin/sh
+
+### enable fan ###
+echo 0 > /sys/class/pwm/pwmchip0/export
+echo 10000 > /sys/class/pwm/pwmchip0/pwm0/period
+echo 7000 > /sys/class/pwm/pwmchip0/pwm0/duty_cycle
+echo normal > /sys/class/pwm/pwmchip0/pwm0/polarity
+echo 1 > /sys/class/pwm/pwmchip0/pwm0/enable
+
+while :
+do
+	sleep 20
+	result=`cat /sys/class/thermal/thermal_zone0/temp`
+
+	temperature=$((result))
+	#echo $temperature
+	if [ ${temperature} -le 58000 ]; then
+		echo 5000 >  /sys/class/pwm/pwmchip0/pwm0/duty_cycle
+	fi
+
+	if [ ${temperature} -ge 58000 ]; then
+		echo 5000 >  /sys/class/pwm/pwmchip0/pwm0/duty_cycle
+	fi
+
+	if [ ${temperature} -ge 62000 ]; then
+		echo 4500 >  /sys/class/pwm/pwmchip0/pwm0/duty_cycle
+	fi
+
+	if [ ${temperature} -ge 75000 ]; then
+		echo 3700 >  /sys/class/pwm/pwmchip0/pwm0/duty_cycle
+	fi
+
+	if [ ${temperature} -ge 80000 ]; then
+		echo 2500 >  /sys/class/pwm/pwmchip0/pwm0/duty_cycle
+	fi
+
+	if [ ${temperature} -ge 85000 ]; then
+		echo 1000 >  /sys/class/pwm/pwmchip0/pwm0/duty_cycle
+	fi
+done

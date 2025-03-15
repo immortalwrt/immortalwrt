@@ -1,0 +1,9 @@
+#!/bin/sh
+
+uci -q batch <<-EOF >/dev/null
+	delete ucitrack.@eqos[-1]
+	add ucitrack eqos
+EOF
+
+rm -f /tmp/luci-indexcache
+exit 0

@@ -1,0 +1,84 @@
+#!/bin/sh /etc/rc.common
+# Copyright (c) 2011-2015 OpenWrt.org
+
+START=60
+
+USE_PROCD=1
+
+start_service(){
+  /etc/mwan3helper/genipset.sh cn '/etc/mwan3helper/all_cn.txt'
+  /etc/mwan3helper/genipset.sh ct '/etc/mwan3helper/chinatelecom.txt'
+  /etc/mwan3helper/genipset.sh cnc '/etc/mwan3helper/unicom_cnc.txt'
+  /etc/mwan3helper/genipset.sh cmcc '/etc/mwan3helper/cmcc.txt'
+  /etc/mwan3helper/genipset.sh crtc '/etc/mwan3helper/crtc.txt'
+  /etc/mwan3helper/genipset.sh cernet '/etc/mwan3helper/cernet.txt'
+  /etc/mwan3helper/genipset.sh gwbn '/etc/mwan3helper/gwbn.txt'
+  /etc/mwan3helper/genipset.sh othernet '/etc/mwan3helper/othernet.txt'
+  en=$(uci get mwan3helper.config.enabled 2>/dev/null)
+  dns=$(uci get mwan3helper.config.dns 2>/dev/null)
+  dev=$(uci get mwan3helper.config.dev 2>/dev/null)
+  dnsen=$(uci get mwan3helper.config.dnsen 2>/dev/null)
+  mode=$(uci get mwan3helper.config.mode 2>/dev/null)
+  dnsserver=$(uci get mwan3helper.config.dnsserver 2>/dev/null)
+  if [ $en -eq 1 ];  then
+    mkdir -p /tmp/etc/dnsmasq-mwan3.d
+    ipset -N gfwlist hash:net 2>/dev/null
+    if [ $dnsen -eq 1 ];  then
+    awk '!/^$/&&!/^#/{printf("ipset=/.%s/'"gfwlist"'\n",$0)}' /etc/mwan3helper/gfw.txt > /tmp/etc/dnsmasq-mwan3.d/mwan3_gfwlist.conf
+    awk '!/^$/&&!/^#/{printf("server=/.%s/'"$dnsserver#53"'\n",$0)}' /etc/mwan3helper/gfw.txt >> /tmp/etc/dnsmasq-mwan3.d/mwan3_gfwlist.conf
+    cat > /tmp/dnsmasq.d/dnsmasq-mwan3.conf <<EOF
+conf-dir=/var/etc/dnsmasq-mwan3.d
+EOF
+    fi
+    /etc/init.d/dnsmasq restart
+    ip route del default table 200
+    ip route add default via $dns dev $dev table 200
+    ip rule del table 200 
+    ip rule add table 200 fwmark 200
+    
+    iptables -t mangle -D PREROUTING -i br-lan -j MARK --set-mark 200
+    iptables -t mangle -D PREROUTING -i br-lan -m set --match-set cn dst  -j MARK --set-mark 0
+    iptables -t mangle -D PREROUTING -s $dns   -j MARK --set-mark 0
+    iptables -t mangle -D PREROUTING -i br-lan  -m set --match-set gfwlist dst  -j MARK --set-mark 200
+    if [ $mode -eq 0 ];  then
+    iptables -t mangle -A PREROUTING -i br-lan -j MARK --set-mark 200
+    iptables -t mangle -A PREROUTING -i br-lan -m set --match-set cn dst  -j MARK --set-mark 0
+    fi
+    iptables -t mangle -A PREROUTING -i br-lan -m set --match-set gfwlist dst  -j MARK --set-mark 200
+    iptables -t mangle -A PREROUTING -s $dns   -j MARK --set-mark 0
+    sed -i '/\/etc\/init.d\/mwan3helper start/d' /etc/firewall.user
+    echo "/etc/init.d/mwan3helper start" >> /etc/firewall.user
+    ipset add gfwlist 91.108.4.0/22
+    ipset add gfwlist 91.108.8.0/22
+    ipset add gfwlist 91.108.56.0/22
+    ipset add gfwlist 95.161.64.0/20
+    ipset add gfwlist 149.154.160.0/22
+    ipset add gfwlist 149.154.164.0/22
+  fi
+}
+
+stop_service(){
+	rm -f /tmp/dnsmasq.d/dnsmasq-mwan3.conf
+    /etc/init.d/dnsmasq restart
+    dns=$(uci get mwan3helper.config.dns 2>/dev/null)
+    dev=$(uci get mwan3helper.config.dev 2>/dev/null)
+    ip route del default table 200
+
+    ip rule del table 200 
+     iptables -t mangle -D PREROUTING -i br-lan -j MARK --set-mark 200
+    iptables -t mangle -D PREROUTING -i br-lan -m set --match-set cn dst  -j MARK --set-mark 0
+    iptables -t mangle -D PREROUTING -s $dns   -j MARK --set-mark 0
+    iptables -t mangle -D PREROUTING -i br-lan  -m set --match-set gfwlist dst  -j MARK --set-mark 200
+    sed -i '/\/etc\/init.d\/mwan3helper start/d' /etc/firewall.user
+    
+}
+
+reload_service() {
+	stop
+	start
+}
+
+service_triggers() {
+	procd_add_reload_trigger "mwan3helper"
+}
+

@@ -1,0 +1,16 @@
+--- a/mt_wifi/embedded/mgmt/mgmt_vht.c
++++ b/mt_wifi/embedded/mgmt/mgmt_vht.c
+@@ -636,13 +636,9 @@
+ 				} else {
+ 					/* can not know peer capability,
+ 					use the bw from support opclass as maximum capability. */
+-					if ((bw_from_opclass != NULL) && ((*bw_from_opclass) < BW_80))
+-						pEntry->MaxHTPhyMode.field.BW = BW_40;
+-					else {
+ 						pEntry->MaxHTPhyMode.field.BW = BW_80;
+ 						pEntry->MaxHTPhyMode.field.ShortGI = (vht_sgi & (cap->vht_cap.sgi_80M));
+ 					}
+-				}
+ 				pEntry->MaxHTPhyMode.field.STBC = ((wlan_config_get_vht_stbc(pEntry->wdev) & cap->vht_cap.rx_stbc)  ? 1 : 0);
+ 			} else if ((ht_phyinfo->vht_bw == VHT_BW_80) && (cap->vht_cap.ch_width != 0)) {
+ 				/* bw80 */

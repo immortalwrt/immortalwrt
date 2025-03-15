@@ -2,6 +2,14 @@
 
 #include "mt7621_elecom_wrc-gs.dtsi"
 
+&gmac0 {
+	mtd-mac-address = <&factory 0xe000>;
+};
+
+&wan {
+	mtd-mac-address = <&factory 0xe006>;
+};
+
 &state_default {
 	gpio {
 		groups = "uart3", "jtag", "wdt", "sdhci";
@@ -13,8 +21,7 @@
 	wifi@0,0 {
 		compatible = "mediatek,mt76";
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&eeprom_factory_0>;
-		nvmem-cell-names = "eeprom";
+		mediatek,mtd-eeprom = <&factory 0x0000>;
 		ieee80211-freq-limit = <2400000 2500000>;
 
 		led {
@@ -28,8 +35,7 @@
 	wifi@0,0 {
 		compatible = "mediatek,mt76";
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&eeprom_factory_8000>;
-		nvmem-cell-names = "eeprom";
+		mediatek,mtd-eeprom = <&factory 0x8000>;
 		ieee80211-freq-limit = <5000000 6000000>;
 
 		led {

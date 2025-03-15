@@ -10,19 +10,20 @@ BOARDNAME:=x86
 FEATURES:=squashfs ext4 vdi vmdk vhdx pcmcia targz fpu boot-part rootfs-part
 SUBTARGETS:=64 generic legacy geode
 
-KERNEL_PATCHVER:=6.6
+KERNEL_PATCHVER:=5.4
+KERNEL_TESTING_PATCHVER:=5.4
 
 KERNELNAME:=bzImage
 
 include $(INCLUDE_DIR)/target.mk
 
-DEFAULT_PACKAGES += fdisk mkf2fs partx-utils kmod-button-hotplug kmod-e1000e kmod-i40e \
-		    kmod-igb kmod-igbvf kmod-igc kmod-ixgbe kmod-ixgbevf kmod-pcnet32 \
-		    kmod-tulip kmod-vmxnet3 kmod-r8101 kmod-r8125 kmod-r8126 kmod-r8168 \
-		    kmod-8139cp kmod-8139too kmod-fs-f2fs kmod-usb-hid kmod-usb-net \
-		    kmod-usb-net-asix kmod-usb-net-asix-ax88179 kmod-usb-net-rtl8150 \
-		    kmod-usb-net-rtl8152-vendor grub2-bios-setup i915-firmware-dmc \
-		    automount autocore
+DEFAULT_PACKAGES += alsa-utils partx-utils mkf2fs fdisk kmod-button-hotplug kmod-usb-hid kmod-e1000e \
+		    kmod-i40e-vendor kmod-igb-vendor kmod-igbvf kmod-igc kmod-ixgbe-vendor kmod-ixgbevf-vendor \
+		    kmod-pcnet32 kmod-tulip kmod-vmxnet3 kmod-r8101 kmod-r8125 kmod-r8168 kmod-8139cp \
+		    kmod-8139too kmod-tg3 kmod-fs-f2fs kmod-ac97 kmod-sound-hda-core kmod-sound-hda-codec-realtek \
+		    kmod-sound-hda-codec-via kmod-sound-via82xx kmod-sound-hda-intel kmod-sound-hda-codec-hdmi \
+		    kmod-sound-i8x0 kmod-usb-audio kmod-usb-net kmod-usb-net-asix kmod-usb-net-asix-ax88179 \
+		    kmod-usb-net-rtl8150 kmod-usb-net-rtl8152-vendor autocore-x86 automount
 
 $(eval $(call BuildTarget))
 

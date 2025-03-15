@@ -1,0 +1,155 @@
+From a667dec5b7b10ed855e9e45437372e4e298770d9 Mon Sep 17 00:00:00 2001
+From: Yu Zhao <yuzhao@google.com>
+Date: Sat, 26 Jun 2021 18:30:43 -0600
+Subject: [PATCH] CHROMIUM: mm: multigenerational lru: add
+ arch_has_hw_pte_young()
+
+Add arch_has_hw_pte_young() to indicate whether the h/w accessed bit
+is supported. For those CPUs that don't, e.g., arm64 v8.0, we skip
+walk_mm_list() and solely rely on lru_gen_scan_around(). This still
+retains ~80% of the performance improvement.
+
+BUG=b:123039911
+TEST=Built
+
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+Change-Id: I32e1380bc5966b4cb3ba5a9796c95af61fa8fc4a
+Reviewed-on: https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/2991721
+Reviewed-by: Yu Zhao <yuzhao@chromium.org>
+Tested-by: Yu Zhao <yuzhao@chromium.org>
+Commit-Queue: Sonny Rao <sonnyrao@chromium.org>
+Commit-Queue: Yu Zhao <yuzhao@chromium.org>
+---
+ arch/arm64/include/asm/cpucaps.h    |  3 ++-
+ arch/arm64/include/asm/cpufeature.h |  6 ++++++
+ arch/arm64/include/asm/pgtable.h    |  7 +++++++
+ arch/arm64/kernel/cpufeature.c      | 10 ++++++++++
+ arch/x86/include/asm/pgtable.h      |  6 ++++++
+ include/asm-generic/pgtable.h       |  7 +++++++
+ mm/vmscan.c                         |  8 ++++++++
+ 7 files changed, 46 insertions(+), 1 deletion(-)
+
+--- a/arch/arm64/include/asm/cpucaps.h
++++ b/arch/arm64/include/asm/cpucaps.h
+@@ -58,7 +58,8 @@
+ #define ARM64_SPECTRE_BHB			48
+ #define ARM64_WORKAROUND_1742098		49
+ #define ARM64_WORKAROUND_SPECULATIVE_SSBS	50
++#define ARM64_HW_AF				51
+ 
+-#define ARM64_NCAPS				51
++#define ARM64_NCAPS				52
+ 
+ #endif /* __ASM_CPUCAPS_H */
+--- a/arch/arm64/include/asm/cpufeature.h
++++ b/arch/arm64/include/asm/cpufeature.h
+@@ -666,6 +666,12 @@ static inline bool system_has_prio_mask_
+ 	       system_uses_irq_prio_masking();
+ }
+ 
++static inline bool system_has_hw_af(void)
++{
++	return IS_ENABLED(CONFIG_ARM64_HW_AFDBM) &&
++	       cpus_have_const_cap(ARM64_HW_AF);
++}
++
+ #define ARM64_BP_HARDEN_UNKNOWN		-1
+ #define ARM64_BP_HARDEN_WA_NEEDED	0
+ #define ARM64_BP_HARDEN_NOT_REQUIRED	1
+--- a/arch/arm64/include/asm/pgtable.h
++++ b/arch/arm64/include/asm/pgtable.h
+@@ -31,6 +31,7 @@
+ 
+ #include <asm/cmpxchg.h>
+ #include <asm/fixmap.h>
++#include <asm/cpufeature.h>
+ #include <linux/mmdebug.h>
+ #include <linux/mm_types.h>
+ #include <linux/sched.h>
+@@ -854,6 +855,12 @@ static inline pmd_t pmdp_establish(struc
+ 
+ extern int kern_addr_valid(unsigned long addr);
+ 
++static inline bool arch_has_hw_pte_young(void)
++{
++	return system_has_hw_af();
++}
++#define arch_has_hw_pte_young arch_has_hw_pte_young
++
+ #include <asm-generic/pgtable.h>
+ 
+ /*
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -1541,6 +1541,16 @@ static const struct arm64_cpu_capabiliti
+ 		.matches = has_hw_dbm,
+ 		.cpu_enable = cpu_enable_hw_dbm,
+ 	},
++	{
++		.desc = "Hardware update of the Access flag",
++		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
++		.capability = ARM64_HW_AF,
++		.sys_reg = SYS_ID_AA64MMFR1_EL1,
++		.sign = FTR_UNSIGNED,
++		.field_pos = ID_AA64MMFR1_HADBS_SHIFT,
++		.min_field_value = 1,
++		.matches = has_cpuid_feature,
++	},
+ #endif
+ 	{
+ 		.desc = "CRC32 instructions",
+--- a/arch/x86/include/asm/pgtable.h
++++ b/arch/x86/include/asm/pgtable.h
+@@ -1467,6 +1467,12 @@ static inline bool arch_has_pfn_modify_c
+ 	return boot_cpu_has_bug(X86_BUG_L1TF);
+ }
+ 
++static inline bool arch_has_hw_pte_young(void)
++{
++	return true;
++}
++#define arch_has_hw_pte_young arch_has_hw_pte_young
++
+ #include <asm-generic/pgtable.h>
+ #endif	/* __ASSEMBLY__ */
+ 
+--- a/include/asm-generic/pgtable.h
++++ b/include/asm-generic/pgtable.h
+@@ -121,6 +121,13 @@ static inline int pmdp_clear_flush_young
+ #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+ #endif
+ 
++#ifndef arch_has_hw_pte_young
++static inline bool arch_has_hw_pte_young(void)
++{
++	return false;
++}
++#endif
++
+ #ifndef __HAVE_ARCH_PTEP_GET_AND_CLEAR
+ static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
+ 				       unsigned long address,
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -4199,6 +4199,11 @@ static long get_nr_to_scan(struct lruvec
+ 	if (get_hi_wmark(max_seq, min_seq, swappiness) > MIN_NR_GENS)
+ 		return nr_to_scan;
+ 
++	if (!arch_has_hw_pte_young()) {
++		inc_max_seq(lruvec, max_seq);
++		return nr_to_scan;
++	}
++
+ 	/* kswapd uses lru_gen_age_node() */
+ 	if (current_is_kswapd())
+ 		return 0;
+@@ -4287,6 +4292,9 @@ static void lru_gen_age_node(struct pgli
+ 
+ 	VM_BUG_ON(!current_is_kswapd());
+ 
++	if (!arch_has_hw_pte_young())
++		return;
++
+ 	memcg = mem_cgroup_iter(NULL, NULL, NULL);
+ 	do {
+ 		struct lruvec *lruvec = mem_cgroup_lruvec(pgdat, memcg);

@@ -37,6 +37,7 @@
 			partition@0 {
 				label = "RouterBoot";
 				reg = <0x0 0x40000>;
+				read-only;
 				compatible = "mikrotik,routerboot-partitions";
 				#address-cells = <1>;
 				#size-cells = <1>;
@@ -49,14 +50,6 @@
 
 				hard_config {
 					read-only;
-
-					nvmem-layout {
-						compatible = "mikrotik,routerboot-nvmem";
-
-						macaddr_hard: base-mac-address {
-							#nvmem-cell-cells = <1>;
-						};
-					};
 				};
 
 				partition@10000 {

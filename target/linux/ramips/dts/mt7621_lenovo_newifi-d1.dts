@@ -2,11 +2,10 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "lenovo,newifi-d1", "mediatek,mt7621-soc";
-	model = "Lenovo Newifi D1";
+	model = "Newifi-D1";
 
 	aliases {
 		led-boot = &led_blue;
@@ -24,20 +23,17 @@
 		compatible = "gpio-leds";
 
 		status-red {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_RED>;
+			label = "red:status";
 			gpios = <&gpio 14 GPIO_ACTIVE_LOW>;
 		};
 
 		status-green {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:status";
 			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
 		};
 
 		led_blue: status-blue {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:status";
 			gpios = <&gpio 16 GPIO_ACTIVE_LOW>;
 			default-state = "on";
 		};
@@ -50,12 +46,6 @@
 			label = "reset";
 			gpios = <&gpio 15 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
-		};
-
-		wps {
-			label = "wps";
-			gpios = <&gpio 18 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_WPS_BUTTON>;
 		};
 	};
 
@@ -107,32 +97,10 @@
 				read-only;
 			};
 
-			partition@40000 {
+			factory: partition@40000 {
 				label = "factory";
 				reg = <0x40000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_factory_0: eeprom@0 {
-						reg = <0x0 0x400>;
-					};
-
-					eeprom_factory_8000: eeprom@8000 {
-						reg = <0x8000 0x200>;
-					};
-
-					macaddr_factory_e000: macaddr@e000 {
-						reg = <0xe000 0x6>;
-					};
-
-					macaddr_factory_e006: macaddr@e006 {
-						reg = <0xe006 0x6>;
-					};
-				};
 			};
 
 			partition@50000 {
@@ -151,8 +119,7 @@
 &pcie0 {
 	mt76@0,0 {
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&eeprom_factory_8000>;
-		nvmem-cell-names = "eeprom";
+		mediatek,mtd-eeprom = <&factory 0x8000>;
 		ieee80211-freq-limit = <5000000 6000000>;
 	};
 };
@@ -160,27 +127,12 @@
 &pcie1 {
 	mt76@0,0 {
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&eeprom_factory_0>;
-		nvmem-cell-names = "eeprom";
+		mediatek,mtd-eeprom = <&factory 0x0000>;
 	};
 };
 
 &gmac0 {
-	nvmem-cells = <&macaddr_factory_e000>;
-	nvmem-cell-names = "mac-address";
-};
-
-&gmac1 {
-	status = "okay";
-	label = "wan";
-	phy-handle = <&ethphy4>;
-
-	nvmem-cells = <&macaddr_factory_e006>;
-	nvmem-cell-names = "mac-address";
-};
-
-&ethphy4 {
-	/delete-property/ interrupts;
+	mtd-mac-address = <&factory 0xe000>;
 };
 
 &switch0 {
@@ -194,12 +146,18 @@
 			status = "okay";
 			label = "lan1";
 		};
+
+		port@4 {
+			status = "okay";
+			label = "wan";
+			mtd-mac-address = <&factory 0xe006>;
+		};
 	};
 };
 
 &state_default {
 	gpio {
-		groups = "jtag", "uart2", "wdt";
+		groups = "jtag", "uart2";
 		function = "gpio";
 	};
 };

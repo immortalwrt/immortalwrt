@@ -1,5 +1,3 @@
-#include <dt-bindings/leds/common.h>
-
 #include "amazonse.dtsi"
 
 / {
@@ -30,15 +28,13 @@
 
 		/* power led: red=off, green=on */
 		power: power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
 			default-state = "keep";
 		};
 
 		lan: lan {
-			function = LED_FUNCTION_LAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:lan";
 			gpios = <&gpio 3 GPIO_ACTIVE_LOW>;
 		};
 

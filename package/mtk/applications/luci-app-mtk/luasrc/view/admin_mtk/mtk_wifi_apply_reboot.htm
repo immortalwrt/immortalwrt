@@ -1,0 +1,67 @@
+<%#
+    File name : mtk_wifi_apply_reboot.htm
+    This file is used in WebUI based on LuCI to handle the reboot event.
+%>
+<%+header%>
+    <h2><a>Reboot Device</a><h2>
+    <div id="div_reboot_warn">
+        <p class="alert-message">
+            As the driver does not support addition or deletion of interfaces on the fly,
+            the settings which were changed during addition or deletion of interfaces have not been applied yet!
+            <br /><br />
+            <strong>
+                The changed settings will be applied only after reboot of the device.
+                Please click on the Reboot button.
+            </strong>
+            <br /><br />
+            <strong>Tip:</strong><br />
+            Add or delete as many interfaces as required before reboot so that you do not have to reboot the device again.<br />
+            Please follow below instructions to add or delete an interface;</em><br />
+            1. Go to <a href='<%=luci.dispatcher.build_url("admin", "network", "wifi")%>'>Wireless Overview</a> web-page.<br />
+            2. Click on Add button to add a new interface or click on Remove button to delete an existing interface.<br />
+            3. If you are are adding a new interface, then, click on <em>Save</em> button after filling out all the required fields such as SSID etc.<br />
+            4. Once you are done with addition/deletion of interfaces, then please click on <em>Reload</em> button or
+               <em>Save and Apply</em> button on any web-page which will redirect to this web-page to perform the reboot of the device.</br>
+        </p>
+        <input class="cbi-button cbi-button-apply" type="button" value="Reboot" onclick="init_reboot()" />
+    </div>
+    <h4 id="msg_on_reboot" class="alert-message warning" style="display:none">
+        <img src="<%=resource%>/icons/loading.gif" alt="" style="vertical-align:middle" />
+        Please wait while the reboot of the device is on progress.
+    </h4>
+    <h4 id="unreach_msg" class="alert-message error" style="display:none">Device has not come on-line yet!</h4>
+    <script type="text/javascript">
+        function online()
+        {
+            location = '<%=controller%>';
+        }
+
+        function ping(numPings)
+        {
+            var loadingImg = document.createElement('IMG');
+            loadingImg.onload = online;
+            loadingImg.src = '<%=resource%>/icons/loading.gif?' + Math.random();
+            numPings -= 1;
+            if(numPings <= 0){
+                document.getElementById("msg_on_reboot").style.display = 'none';
+                document.getElementById("unreach_msg").style.display = '';
+            }
+            else{
+                window.setTimeout(ping, 10000, numPings);
+            }
+        }
+
+        function init_reboot_cb()
+        {
+            window.setTimeout(ping, 10000, 18);
+        }
+
+        function init_reboot()
+        {
+            document.getElementById('div_reboot_warn').style.display = 'none';
+            document.getElementById('msg_on_reboot').style.display = '';
+            (new XHR()).post('<%=controller%>/admin/mtk/wifi/reboot', { token: '<%=token%>' }, init_reboot_cb);
+        }
+
+    </script>
+<%+footer%>

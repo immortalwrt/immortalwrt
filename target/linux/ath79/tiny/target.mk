@@ -1,5 +1,5 @@
 BOARDNAME:=Devices with small flash
-FEATURES += low_mem small_flash
+FEATURES += small_flash
 
 DEFAULT_PACKAGES += wpad-basic-openssl
 

@@ -14,7 +14,6 @@
 #include <linux/module.h>
 #include <linux/dma-mapping.h>
 #include <linux/mtd/mtd.h>
-#include <linux/mtd/nand.h>
 #include <linux/mtd/rawnand.h>
 #include <linux/mtd/partitions.h>
 #include <linux/platform_device.h>
@@ -720,7 +719,7 @@ static void ar934x_nfc_cmdfunc(struct nand_chip *nand, unsigned int command,
 		break;
 
 	case NAND_CMD_PAGEPROG:
-		if (nand->ecc.engine_type == NAND_ECC_ENGINE_TYPE_ON_HOST) {
+		if (nand->ecc.mode == NAND_ECC_HW) {
 			/* the data is already written */
 			break;
 		}
@@ -1325,18 +1324,18 @@ static int ar934x_nfc_attach_chip(struct nand_chip *nand)
 	if (ret)
 		return ret;
 
-	if (nand->ecc.engine_type == NAND_ECC_ENGINE_TYPE_ON_HOST) {
-		if (mtd->writesize == 2048)
-			nand->options |= NAND_NO_SUBPAGE_WRITE;
+	if (mtd->writesize == 2048)
+		nand->options |= NAND_NO_SUBPAGE_WRITE;
 
+	if (nand->ecc.mode == NAND_ECC_HW) {
 		ret = ar934x_nfc_setup_hwecc(nfc);
 		if (ret)
 			return ret;
-	} else if (nand->ecc.engine_type != NAND_ECC_ENGINE_TYPE_SOFT) {
-		dev_err(dev, "unknown ECC mode %d\n", nand->ecc.engine_type);
+	} else if (nand->ecc.mode != NAND_ECC_SOFT) {
+		dev_err(dev, "unknown ECC mode %d\n", nand->ecc.mode);
 		return -EINVAL;
-	} else if ((nand->ecc.algo != NAND_ECC_ALGO_BCH) &&
-		   (nand->ecc.algo != NAND_ECC_ALGO_HAMMING)) {
+	} else if ((nand->ecc.algo != NAND_ECC_BCH) &&
+		   (nand->ecc.algo != NAND_ECC_HAMMING)) {
 		dev_err(dev, "unknown software ECC algo %d\n", nand->ecc.algo);
 		return -EINVAL;
 	}
@@ -1359,6 +1358,7 @@ static const struct nand_controller_ops ar934x_nfc_controller_ops = {
 static int ar934x_nfc_probe(struct platform_device *pdev)
 {
 	struct ar934x_nfc *nfc;
+	struct resource *res;
 	struct mtd_info *mtd;
 	struct nand_chip *nand;
 	int ret;
@@ -1366,13 +1366,19 @@ static int ar934x_nfc_probe(struct platform_device *pdev)
 	pdev->dev.dma_mask = &ar934x_nfc_dma_mask;
 	pdev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
 
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	if (!res) {
+		dev_err(&pdev->dev, "failed to get I/O memory\n");
+		return -EINVAL;
+	}
+
 	nfc = devm_kzalloc(&pdev->dev, sizeof(struct ar934x_nfc), GFP_KERNEL);
 	if (!nfc) {
 		dev_err(&pdev->dev, "failed to allocate driver data\n");
 		return -ENOMEM;
 	}
 
-	nfc->base = devm_platform_ioremap_resource(pdev, 0);
+	nfc->base = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(nfc->base)) {
 		dev_err(&pdev->dev, "failed to remap I/O memory\n");
 		return PTR_ERR(nfc->base);
@@ -1418,7 +1424,7 @@ static int ar934x_nfc_probe(struct platform_device *pdev)
 	nand->legacy.read_byte = ar934x_nfc_read_byte;
 	nand->legacy.write_buf = ar934x_nfc_write_buf;
 	nand->legacy.read_buf = ar934x_nfc_read_buf;
-	nand->ecc.engine_type = NAND_ECC_ENGINE_TYPE_ON_HOST;	/* default */
+	nand->ecc.mode = NAND_ECC_HW;	/* default */
 	nand->priv = nfc;
 	platform_set_drvdata(pdev, nfc);
 
@@ -1458,8 +1464,7 @@ static int ar934x_nfc_remove(struct platform_device *pdev)
 
 	nfc = platform_get_drvdata(pdev);
 	if (nfc) {
-		mtd_device_unregister(nand_to_mtd(&nfc->nand_chip));
-		nand_cleanup(&nfc->nand_chip);
+		nand_release(&nfc->nand_chip);
 		ar934x_nfc_free_buf(nfc);
 	}
 
@@ -1478,6 +1483,7 @@ static struct platform_driver ar934x_nfc_driver = {
 	.remove		= ar934x_nfc_remove,
 	.driver = {
 		.name	= AR934X_NFC_DRIVER_NAME,
+		.owner	= THIS_MODULE,
 		.of_match_table = ar934x_nfc_match,
 	},
 };

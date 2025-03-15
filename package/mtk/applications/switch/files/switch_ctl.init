@@ -1,0 +1,16 @@
+#!/bin/sh /etc/rc.common
+
+START=25
+USE_PROCD=1
+
+service_triggers() {
+    procd_add_reload_interface_trigger "lan"
+}
+
+start_service() {
+    logger -t "switch_ctl" "restart mt753x all ports"
+    source "/usr/sbin/switch_ctl.sh"
+    sw_poweroff_ports "0 1 2 3 4"
+    sleep 2
+    sw_poweron_ports "0 1 2 3 4"
+}

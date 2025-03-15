@@ -4,7 +4,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	aliases {
@@ -12,6 +11,7 @@
 		led-failsafe = &led_power;
 		led-running = &led_power;
 		led-upgrade = &led_power;
+		label-mac-device = &eth1;
 	};
 
 	keys {
@@ -34,8 +34,7 @@
 		compatible = "gpio-leds";
 
 		led_power: power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio 16 GPIO_ACTIVE_LOW>;
 			default-state = "on";
 		};
@@ -53,14 +52,12 @@
 		};
 
 		wan_green {
-			function = LED_FUNCTION_WAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:wan";
 			gpios = <&gpio 20 GPIO_ACTIVE_LOW>;
 		};
 
 		lan {
-			function = LED_FUNCTION_LAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:lan";
 			gpios = <&gpio 2 GPIO_ACTIVE_LOW>;
 		};
 	};
@@ -74,12 +71,20 @@
 	status = "okay";
 
 	phy-handle = <&swphy4>;
+
+	mtd-mac-address = <&info 0x8>;
+	mtd-mac-address-increment = <1>;
 };
 
 &eth1 {
 	status = "okay";
+
+	mtd-mac-address = <&info 0x8>;
 };
 
 &wmac {
 	status = "okay";
+
+	mtd-cal-data = <&art 0x1000>;
+	mtd-mac-address = <&info 0x8>;
 };

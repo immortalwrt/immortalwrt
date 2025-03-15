@@ -5,10 +5,6 @@
 / {
 	compatible = "netgear,wndr3700-v5", "mediatek,mt7621-soc";
 	model = "Netgear WNDR3700 v5";
-
-	aliases {
-		label-mac-device = &gmac0;
-	};
 };
 
 &spi0 {
@@ -36,30 +32,10 @@
 				read-only;
 			};
 
-			partition@f30000 {
+			factory: partition@f30000 {
 				label = "factory";
 				reg = <0xf30000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom0: eeprom@0 {
-						reg = <0x0 0x400>;
-					};
-
-					macaddr_factory_4: macaddr@4 {
-						compatible = "mac-base";
-						reg = <0x4 0x6>;
-						#nvmem-cell-cells = <1>;
-					};
-
-					eeprom1: eeprom@8000 {
-						reg = <0x8000 0x200>;
-					};
-				};
 			};
 
 			partition@50000 {
@@ -69,14 +45,4 @@
 			};
 		};
 	};
-};
-
-&gmac0 {
-	nvmem-cells = <&macaddr_factory_4 0>;
-	nvmem-cell-names = "mac-address";
-};
-
-&gmac1 {
-	nvmem-cells = <&macaddr_factory_4 1>;
-	nvmem-cell-names = "mac-address";
 };

@@ -1,0 +1,92 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: package/mtk/applications/luci-app-eqos-mtk/htdocs/luci-static/resources/view/eqos.js:87
+msgid "Comment"
+msgstr ""
+
+#: package/mtk/applications/luci-app-eqos-mtk/htdocs/luci-static/resources/view/eqos.js:40
+msgid "Download speed (Mbit/s)"
+msgstr ""
+
+#: package/mtk/applications/luci-app-eqos-mtk/htdocs/luci-static/resources/view/eqos.js:79
+msgid "Download speed (kbit/s)"
+msgstr ""
+
+#: package/mtk/applications/luci-app-eqos-mtk/htdocs/luci-static/resources/view/eqos.js:18
+#: package/mtk/applications/luci-app-eqos-mtk/root/usr/share/luci/menu.d/luci-app-eqos.json:3
+msgid "EQoS"
+msgstr ""
+
+#: package/mtk/applications/luci-app-eqos-mtk/htdocs/luci-static/resources/view/eqos.js:23
+#: package/mtk/applications/luci-app-eqos-mtk/htdocs/luci-static/resources/view/eqos.js:57
+msgid "Enable"
+msgstr ""
+
+#: package/mtk/applications/luci-app-eqos-mtk/htdocs/luci-static/resources/view/eqos.js:36
+msgid ""
+"Enabling fair queue will automatically perform hardware offloading  "
+"forwarding for every local host "
+msgstr ""
+
+#: package/mtk/applications/luci-app-eqos-mtk/root/usr/share/rpcd/acl.d/luci-app-eqos.json:3
+msgid "Grant UCI access for luci-app-eqos"
+msgstr ""
+
+#: package/mtk/applications/luci-app-eqos-mtk/htdocs/luci-static/resources/view/eqos.js:60
+msgid "IPV4 address"
+msgstr ""
+
+#: package/mtk/applications/luci-app-eqos-mtk/htdocs/luci-static/resources/view/eqos.js:71
+msgid "IPV6 host"
+msgstr ""
+
+#: package/mtk/applications/luci-app-eqos-mtk/htdocs/luci-static/resources/view/eqos.js:31
+msgid "IPV6Enable"
+msgstr ""
+
+#: package/mtk/applications/luci-app-eqos-mtk/htdocs/luci-static/resources/view/eqos.js:91
+msgid "InterfaceName(start from 0)"
+msgstr ""
+
+#: package/mtk/applications/luci-app-eqos-mtk/htdocs/luci-static/resources/view/eqos.js:27
+msgid "Load balance"
+msgstr ""
+
+#: package/mtk/applications/luci-app-eqos-mtk/htdocs/luci-static/resources/view/eqos.js:19
+msgid "Network speed control service.(Compatiable with Mediatek HNAT)"
+msgstr ""
+
+#: package/mtk/applications/luci-app-eqos-mtk/htdocs/luci-static/resources/view/eqos.js:28
+msgid ""
+"Please set a different gateway hop for each network interface before filling "
+"in the network interface name. Fill in PPPOE-WAN for dialing and eth1 for "
+"DHCP. Leaving it blank to disable it.Please use commas as interface name "
+"separators. Example: pppoe-wan,eth1"
+msgstr ""
+
+#: package/mtk/applications/luci-app-eqos-mtk/htdocs/luci-static/resources/view/eqos.js:35
+msgid "SMART_HWQOS"
+msgstr ""
+
+#: package/mtk/applications/luci-app-eqos-mtk/htdocs/luci-static/resources/view/eqos.js:52
+msgid ""
+"Speed limit and route choose based on IP address(using unique comment less "
+"than 32 will enable hardware QOS)"
+msgstr ""
+
+#: package/mtk/applications/luci-app-eqos-mtk/htdocs/luci-static/resources/view/eqos.js:41
+msgid "Total download bandwidth."
+msgstr ""
+
+#: package/mtk/applications/luci-app-eqos-mtk/htdocs/luci-static/resources/view/eqos.js:46
+msgid "Total upload bandwidth."
+msgstr ""
+
+#: package/mtk/applications/luci-app-eqos-mtk/htdocs/luci-static/resources/view/eqos.js:45
+msgid "Upload speed (Mbit/s)"
+msgstr ""
+
+#: package/mtk/applications/luci-app-eqos-mtk/htdocs/luci-static/resources/view/eqos.js:83
+msgid "Upload speed (kbit/s)"
+msgstr ""

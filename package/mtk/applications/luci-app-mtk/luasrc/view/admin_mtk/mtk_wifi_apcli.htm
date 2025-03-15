@@ -1,0 +1,1139 @@
+
+<%+header%>
+<!--
+    This module is a demo to configure MTK' proprietary WiFi driver.
+    Basic idea is to bypass uci and edit wireless profile (mt76xx.dat) directly.
+    LuCI's WiFi configuration is more logical and elegent, but it's quite tricky to 
+    translate uci into MTK's WiFi profile (like we did in "uci2dat").
+
+    Hua Shao <nossiac@163.com>
+-->
+<%
+local disp = require "luci.dispatcher"
+-- local request  = disp.context.path
+local request = disp.context.request
+local mtkwifi = require("mtkwifi")
+--local devname = string.match(request[5], "(mt.+)%.")
+local devname = request[5]
+local devs = mtkwifi.get_all_devs()
+local dev = {}
+local vif = {}
+local vifidx
+for _,v in ipairs(devs) do
+    if v.devname == devname then
+        dev = v
+    end
+end
+
+local vifname = request[6] or dev.apcli.vifname
+assert(vifname)
+vif = dev and dev.vifs[vifname] or nil
+vifidx = vif and vif.vifidx or nil
+--print(devs, dev, dev.apcli, devname, vifname)
+
+local cfgs = mtkwifi.load_profile(dev.profile)
+
+%>
+
+<style>
+
+.tab-disabled {
+        cursor: not-allowed;
+        pointer-events: none;
+        background: #f6f6f6;
+}
+
+#disable-txt {
+        color: red;
+        display: inline-flex;
+        height: 35px;
+        align-items: center;
+}
+
+</style>
+
+<script type="text/javascript" src="<%=resource%>/cbi.js?v=git-17.250.41546-90ac861"></script>
+<script type="text/javascript">
+
+var waiting_count = 0;
+
+</script>
+
+<div class="alert-message" id="BusyText_ApCli" style="display:none;">
+    <img src="<%=resource%>/icons/loading.gif" alt="" style="vertical-align:middle" />
+    <big><strong><%:Please wait while the request is being processed.%></strong></big>
+</div>
+<div id="apcli_body_div">
+    <form method="post" name="cbi" action="<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_cfg", devname, vifname)%>" enctype="multipart/form-data" onreset="return cbi_validate_reset(this);" onsubmit="return validate_all() && cbi_validate_form(this, '<%:Some fields are invalid, cannot save values!%>')" autocomplete="off">
+        <fieldset class="cbi-section">
+            <h2><%:ApCli Configurations%> - <%=vifname and devname.."@"..vifname or devname%>
+                <%local diff = mtkwifi.diff_profile(dev.profile)%>
+                <%if next(diff) ~= nil then%>
+                    <span style="color:red;">( <a href="javascript:location.href='<%=luci.dispatcher.build_url("admin", "network", "wifi", "reload", devname)%>'"><%:Click here%></a> <%:to apply changes%>)</span>
+                <%end%>
+            </h2>
+            <input type="hidden" name="__activeTab" id="__activeTab" value="apcli">
+            <input type="hidden" name="__pin_ap_ssid" id="__pin_ap_ssid" value="">
+            <input type="hidden" name="ApCliAuthMode" id="ApCliAuthMode" value="<%=cfgs.ApCliAuthMode%>">
+            <input type="hidden" name="ApCliEncrypType" id="ApCliEncrypType" value="<%=cfgs.ApCliEncrypType%>">
+            <input type="hidden" name="ApCliPMFMFPC" id="ApCliPMFMFPC" value="<%=cfgs.ApCliPMFMFPC%>">
+            <input type="hidden" name="ApCliPMFMFPR" id="ApCliPMFMFPR" value="<%=cfgs.ApCliPMFMFPR%>">
+            <input type="hidden" name="ApCliPMFSHA256" id="ApCliPMFSHA256" value="<%=cfgs.ApCliPMFSHA256%>">
+            <input type="hidden" name="ApCliOWETranIe" id="ApCliOWETranIe" value="<%=cfgs.ApCliOWETranIe%>">
+
+            <fieldset class="cbi-section" id="vif-cfg-apcli">
+                <h3><%:ApCli Available Wireless Networks%></h3>
+                <p class="left">
+                    <input id="scan" type="button" class="cbi-button cbi-button-find" onclick="get_ap_list('<%=vifname%>')" value="<%:Scan Wireless Network%>"/>
+                </p>
+                <div id="aplist">
+                    <!--
+                        <table>
+                            <tr>
+                                <th>SSID</th>
+                                <th>SSID Length</th>
+                                <th>Channel</th>
+                                <th>BSSID</th>
+                                <th>AuthMode</th>
+                                <th>RSSI</th>
+                            </tr>
+                        </table>
+                    -->
+                </div>
+            </fieldset>
+            <fieldset class="cbi-section" id="vif-cfg-apcli-config">
+                <h3><%:ApCli Connection Configurations%></h3>
+                <table class="cbi-section-table">
+                    <tr>
+                        <td><%:ApClient Mode%></td>
+                        <td>
+                            <input type="radio" name="ApCliEnable" id="ApCliEnableRadioOn" value="1" <% if cfgs.ApCliEnable == "1" then %> checked="checked"<% end %> onclick="toggle_apcli(true)"/><%:Enable%>
+                            <input type="radio" name="ApCliEnable" id="ApCliEnableRadioOff" value="0" <% if cfgs.ApCliEnable ~= "1" then %> checked="checked"<% end %> onclick="toggle_apcli(false)"/><%:Disable%>
+                        </td>
+                    </tr>
+                    <tbody id="apcli_cfg" <% if cfgs.ApCliEnable ~= "1" then %> style="display:none;" <% end %> >
+                        <tr>
+                            <td><%:MAC Repeater Mode%></td>
+                            <td>
+                                <input type="radio" name="MACRepeaterEn" value="1" <% if cfgs.MACRepeaterEn == "1" then %> checked="checked"<% end %>/><%:Enable%>
+                                <input type="radio" name="MACRepeaterEn" value="0" <% if cfgs.MACRepeaterEn ~= "1" then %> checked="checked"<% end %>/><%:Disable%>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><%:Root AP SSID%></td>
+                            <td>
+                                <input type="text" name="ApCliSsid" id="ApCliSsid" value="<%=cfgs.ApCliSsid and cfgs.ApCliSsid:gsub("\"","&quot;") or nil%>"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><%:Root AP Channel%></td>
+                            <td>
+                                <input type="text" name="Channel" id="Channel" value="<%=dev.Channel%>"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><%:Root AP Authentication Mode%></td>
+                            <td>
+                                <select cfg="ApCliAuthMode" id="__authModeSel" onchange="ApCliAuthMode_onchange(this.options[this.options.selectedIndex].value, false, true)">
+                                    <% for _,v in ipairs(dev.ApCliAuthModeList) do %>
+                                        <% if ((cfgs.ApCliAuthMode == "OPEN" and cfgs.ApCliEncrypType== "NONE" and cfgs.ApCliOWETranIe ~= "1") or
+                                               (cfgs.ApCliAuthMode == "OWE" and cfgs.ApCliEncrypType== "AES" and cfgs.ApCliOWETranIe == "1")) then
+                                            if(v == "Disable") then %>
+                                                <option value="<%=v%>" selected="selected" ><%=v%>
+                                                </option>
+                                            <% else %>
+                                                <option value="<%=v%>" ><%=v%></option>
+                                            <% end %>
+                                        <% elseif (v == "Enhanced Open" and (cfgs.ApCliAuthMode == "OWE" and cfgs.ApCliEncrypType== "AES" and cfgs.ApCliOWETranIe ~= "1")) then %>
+                                            <option value="<%=v%>" selected="selected" ><%=v%>
+                                            </option>
+                                        <% else %>
+                                            <option value="<%=v%>" <% if cfgs.ApCliAuthMode==v then %> selected="selected" <% end %>><%=v%></option>
+                                        <% end %>
+                                    <% end %>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody id="apcli_wpa" <% if cfgs.ApCliAuthMode ~= "WPAPSK" and cfgs.ApCliAuthMode ~= "WPA2PSK" and cfgs.ApCliAuthMode ~= "WPA3PSK" and (not (cfgs.ApCliAuthMode == "OWE" and cfgs.ApCliEncrypType== "AES" and cfgs.ApCliOWETranIe ~= "1")) then %> style="display:none;"<% end %>>
+                        <tr>
+                            <td><%:Root AP Encryption%></td>
+                            <td>
+                                <select id="__wpaApCliEncrypType" >
+                                    <% for _, v in ipairs(dev.EncryptionTypeList) do %>
+                                        <% if v ~= "GCMP256" then %>
+                                            <% if cfgs.ApCliAuthMode == "WPA3PSK" or cfgs.ApCliAuthMode == "OWE" then %>
+                                                <% if v == "AES" then %>
+                                                    <option value="<%=v%>" selected="selected" ><%=v%></option>
+                                                <% else %>
+                                                    <option value="<%=v%>" disabled="disabled" ><%=v%></option>
+                                                <% end %>
+                                            <% else %>
+                                                <option value="<%=v%>" <% if cfgs.ApCliEncrypType==v then %> selected="selected" <% end %>><%=v%></option>
+                                            <% end %>
+                                        <% end %>
+                                    <% end %>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr <% if (cfgs.ApCliAuthMode == "OWE" and cfgs.ApCliEncrypType== "AES" and cfgs.ApCliOWETranIe ~= "1") then %> style="display:none;"<% end %>>
+                            <td><%:Root AP WPA Key%></td>
+                            <td>
+                                <input type="text" name="ApCliWPAPSK" id="ApCliWPAPSK" value="<%=cfgs.ApCliWPAPSK and cfgs.ApCliWPAPSK:gsub("\"","&quot;") or nil%>"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody id="apcli_pmf" <% if cfgs.ApCliAuthMode ~= "WPA2PSK" and cfgs.ApCliAuthMode ~= "WPA3PSK" then %> style="display:none;" <% end %>>
+                        <tr>
+                            <td><%:ApCli MFPC%></td>
+                            <td>
+                                <input id="__apcli_pmfmfpc"
+                                <% if cfgs.ApCliPMFMFPC == "1" then %>
+                                    checked="checked"
+                                <% end %>
+                                <% if cfgs.ApCliAuthMode == "WPA3PSK" then %>
+                                    disabled="disabled"
+                                <% end %>
+                                type="checkbox">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><%:ApCli MFPR%></td>
+                            <td>
+                                <input id="__apcli_pmfmfpr"
+                                <% if cfgs.ApCliPMFMFPR == "1" then %>
+                                    checked="checked"
+                                <% end %>
+                                <% if cfgs.ApCliAuthMode == "WPA3PSK" then %>
+                                    disabled="disabled"
+                                <% end %>
+                                type="checkbox">
+                            </td>
+                        </tr>
+                        <tr id="apcli_pmf_sha256_row" <% if cfgs.ApCliAuthMode == "WPA3PSK" then %> style="display:none" <% end %> >
+                            <td><%:ApCli MFPSHA256%></td>
+                            <td>
+                                <input id="__apcli_pmfsha256"
+                                <% if cfgs.ApCliPMFSHA256 == "1" then %>
+                                    checked="checked"
+                                <% end %>
+                                <% if cfgs.ApCliAuthMode == "WPA3PSK" then %>
+                                    disabled="disabled"
+                                <% end %>
+                                type="checkbox">
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody id="apcli_wep"<% if cfgs.ApCliEncrypType ~= "WEP" then %> style="display: none;"<% end %>>
+                        <tr>
+                            <td><%:Root AP Encryption%></td>
+                            <td>
+                                <select id="__wepApCliEncrypType" >
+                                    <option value="WEP" selected="selected">WEP</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><%:WEP Default Key%></td>
+                            <td>
+                                <select name="ApCliDefaultKeyID" id="ApCliDefaultKeyID">
+                                    <option value="1" <%if tonumber(cfgs.ApCliDefaultKeyID) == 1 then%>selected="selected"<%end%>>1</option>
+                                    <option value="2" <%if tonumber(cfgs.ApCliDefaultKeyID) == 2 then%>selected="selected"<%end%>>2</option>
+                                    <option value="3" <%if tonumber(cfgs.ApCliDefaultKeyID) == 3 then%>selected="selected"<%end%>>3</option>
+                                    <option value="4" <%if tonumber(cfgs.ApCliDefaultKeyID) == 4 then%>selected="selected"<%end%>>4</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><%:Root AP WEP Key%> 1</td>
+                            <td>
+                                <input type="text" name="ApCliKey1Str" id="ApCliKey1Str" value="<%=cfgs.ApCliKey1Str and cfgs.ApCliKey1Str:gsub("\"","&quot;") or nil%>" maxlength="26"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><%:WEP Key Type%> 1</td>
+                            <td>
+                                <select id="ApCliKey1Type" name="ApCliKey1Type">
+                                <option value="1" <%if tonumber(cfgs.ApCliKey1Type) == 1 then %> selected="selected"<%end%>>ASCII</option>
+                                <option value="0" <%if tonumber(cfgs.ApCliKey1Type) == 0 then %> selected="selected"<%end%>>Hex</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><%:Root AP WEP Key%> 2</td>
+                            <td>
+                                <input type="text" name="ApCliKey2Str" id="ApCliKey2Str" value="<%=cfgs.ApCliKey2Str and cfgs.ApCliKey2Str:gsub("\"","&quot;") or nil%>" maxlength="26"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><%:WEP Key Type%> 2</td>
+                            <td>
+                                <select id="ApCliKey2Type" name="ApCliKey2Type">
+                                <option value="1" <%if tonumber(cfgs.ApCliKey2Type) == 1 then %> selected="selected"<%end%>>ASCII</option>
+                                <option value="0" <%if tonumber(cfgs.ApCliKey2Type) == 0 then %> selected="selected"<%end%>>Hex</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><%:Root AP WEP Key%> 3</td>
+                            <td>
+                                <input type="text" name="ApCliKey3Str" id="ApCliKey3Str" value="<%=cfgs.ApCliKey3Str and cfgs.ApCliKey3Str:gsub("\"","&quot;") or nil%>" maxlength="26"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><%:WEP Key Type%> 3</td>
+                            <td>
+                                <select id="ApCliKey3Type" name="ApCliKey3Type">
+                                <option value="1" <%if tonumber(cfgs.ApCliKey3Type) == 1 then %> selected="selected"<%end%>>ASCII</option>
+                                <option value="0" <%if tonumber(cfgs.ApCliKey3Type) == 0 then %> selected="selected"<%end%>>Hex</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><%:Root AP WEP Key%> 4</td>
+                            <td>
+                                <input type="text" name="ApCliKey4Str" id="ApCliKey4Str" value="<%=cfgs.ApCliKey4Str and cfgs.ApCliKey4Str:gsub("\"","&quot;") or nil%>" maxlength="26"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><%:WEP Key Type%> 4</td>
+                            <td>
+                                <select id="ApCliKey4Type" name="ApCliKey4Type">
+                                <option value="1" <%if tonumber(cfgs.ApCliKey4Type) == 1 then %> selected="selected"<%end%>>ASCII</option>
+                                <option value="0" <%if tonumber(cfgs.ApCliKey4Type) == 0 then %> selected="selected"<%end%>>Hex</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+            <div class="cbi-page-actions" id="apcli_form_buttons">
+                <input class="cbi-button cbi-button-apply" name="__apply" value="<%:Save & Apply%>" type="submit">
+                <input class="cbi-button cbi-button-apply" value="<%:Save%>" type="submit">
+                <input class="cbi-button cbi-button-reset" value="<%:Reset%>" type="reset">
+            </div>
+        </fieldset>
+    </form>
+</div>
+
+
+
+<script type="text/javascript">
+
+    var ap_list;
+    function create_ap_table (aplist) {
+        var table = document.createElement('TABLE');
+        table.setAttribute("id", "aplist_table");
+        table.setAttribute("class", "cbi-section-table");
+        for (var i in aplist) {
+            var tr = table.insertRow(i);
+            var td0 = tr.insertCell(0);
+            td0.innerHTML = aplist[i].ssid;
+            var td1 = tr.insertCell(1);
+            td1.innerHTML = aplist[i].ssid_len;
+            var td2 = tr.insertCell(2);
+            td2.innerHTML = aplist[i].channel;
+            var td3 = tr.insertCell(3);
+            td3.innerHTML = aplist[i].bssid;
+            var td4 = tr.insertCell(4);
+            td4.innerHTML = aplist[i].security;
+            var td5 = tr.insertCell(5);
+            td5.innerHTML = aplist[i].rssi;
+            var td6 = tr.insertCell(6);
+            if ((aplist[i].authmode == "OPEN" &&
+                (aplist[i].encrypttype == "NONE" || aplist[i].encrypttype == "WEP")) ||
+                (aplist[i].authmode == "SHARED" && aplist[i].encrypttype == "WEP") ||
+                (aplist[i].authmode == "WPAPSK" &&
+                (aplist[i].encrypttype == "TKIP" || aplist[i].encrypttype == "TKIPAES" || aplist[i].encrypttype == "AES" )) ||
+                (aplist[i].authmode == "WPA2PSK" &&
+                (aplist[i].encrypttype == "TKIP" || aplist[i].encrypttype == "TKIPAES" || aplist[i].encrypttype == "AES" )) ||
+                (aplist[i].authmode == "WPAPSKWPA2PSK" &&
+                (aplist[i].encrypttype == "TKIP" || aplist[i].encrypttype == "TKIPAES" || aplist[i].encrypttype == "AES" )) ||
+                (aplist[i].authmode == "OWE" && aplist[i].encrypttype == "AES") ||
+                (aplist[i].authmode == "WPA3PSK" && aplist[i].encrypttype == "AES") ||
+                (aplist[i].authmode == "WPA2PSKWPA3PSK" && aplist[i].encrypttype == "AES")) {
+                td6.innerHTML = '<a href="javascript:choose_rootap(\''+i+'\')" ><%:Choose This%></a>';
+            } else {
+                td6.innerHTML = 'Security Not Supported';
+            }
+        }
+
+        var tr = table.insertRow(0);
+        var td0 = tr.insertCell(0);
+        td0.innerHTML = '<strong>SSID</strong>';
+        var td1 = tr.insertCell(1);
+        td1.innerHTML = '<strong>SSID <%:Length%></strong>';
+        var td2 = tr.insertCell(2);
+        td2.innerHTML = '<strong><%:Channel%></strong>';
+        var td3 = tr.insertCell(3);
+        td3.innerHTML = '<strong>BSSID</strong>';
+        var td4 = tr.insertCell(4);
+        td4.innerHTML = '<strong><%:Security Mode%></strong>';
+        var td5 = tr.insertCell(5);
+        td5.innerHTML = '<strong><%:Signal%></strong>';
+        var td6 = tr.insertCell(6);
+        td6.innerHTML = '<strong><%:Action%></strong>';
+
+        var div = document.getElementById('aplist');
+        div.innerHTML = "";
+        div.appendChild(table);
+    }
+
+    function decodeURISafe(str) {
+        try {
+            return decodeURI(str);
+        } catch(e) {
+            return "???";
+        }
+    }
+
+    function get_ap_list(vifname) {
+        document.getElementById("apcli_body_div").style.display="none";
+        document.getElementById("BusyText_ApCli").style.display="";
+
+        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "apcli_scan")%>/' + vifname, null,
+            function(x)
+            {
+                console.log(x);
+                try{
+                    ap_list = JSON.parse(x.response);
+                    console.log(ap_list);
+                    for(var i=0; i<ap_list.length; i++){
+
+                        if(ap_list[i].ssid.toLowerCase().match(/^0x/)){
+                            var rawStr = ap_list[i].ssid.substr(2).trim();
+                            var rawStr = rawStr.replace(/&nbsp;/g,"");
+                            var tmp = "";
+                            for(j=0; j<rawStr.length; j+=2){
+                                tmp += "%" + rawStr.charAt(j) + rawStr.charAt(j+1);
+                            }
+                            ap_list[i].ssid = decodeURISafe(tmp);
+                        }
+                    }
+                    create_ap_table(ap_list);
+                }
+                catch(e){
+                    alert("Invalid response received for ApCli Scan request!\nPlease try again.");
+                    console.log("Invalid response received for ApCli Scan request!",e.message,e.name);
+                }
+                finally{
+                    document.getElementById("BusyText_ApCli").style.display="none";
+                    document.getElementById("apcli_body_div").style.display="";
+                }
+            }
+        );
+    }
+
+    function toggle_apcli (show) {
+        if (show) {
+            document.getElementById('apcli_cfg').style.display = "";
+            ApCliAuthMode_onchange(document.getElementById("__authModeSel").value, true, false);
+        }
+        else {
+            document.getElementById('apcli_cfg').style.display = "none";
+            document.getElementById('apcli_wpa').style.display = "none";
+            document.getElementById('apcli_wep').style.display = "none";
+            document.getElementById('apcli_pmf').style.display = "none";
+        }
+    }
+
+    function ApCliAuthMode_onchange (to, isOnLoad, isOnChange) {
+        var wpa_enc_type_sel = document.getElementById("__wpaApCliEncrypType");
+        var apcli_wpa_tbody = document.getElementById("apcli_wpa");
+        var apcli_wpa_key_row = document.getElementById("ApCliWPAPSK").parentNode.parentNode;
+        var apcli_wep_tbody = document.getElementById("apcli_wep");
+        var apcli_pmf_tbody = document.getElementById("apcli_pmf");
+        var apcli_pmf_256sha_row = document.getElementById("apcli_pmf_sha256_row");
+        var apcli_pmf_pc_cbox = document.getElementById("__apcli_pmfmfpc");
+        var apcli_pmf_pr_cbox = document.getElementById("__apcli_pmfmfpr");
+        var apcli_pmf_256sha_cbox = document.getElementById("__apcli_pmfsha256");
+
+        switch(to){
+            case "Disable":
+                apcli_wep_tbody.style.display="none";
+                apcli_wpa_tbody.style.display="none";
+                apcli_wpa_key_row.style.display="none";
+                apcli_pmf_tbody.style.display="none";
+                apcli_pmf_pc_cbox.disabled = true;
+                apcli_pmf_pc_cbox.checked = false;
+                apcli_pmf_pr_cbox.disabled = true;
+                apcli_pmf_pr_cbox.checked = false;
+                apcli_pmf_256sha_cbox.disabled = true;
+                apcli_pmf_256sha_cbox.checked = false;
+            break;
+            case "OPEN":
+            case "SHARED":
+                apcli_wep_tbody.style.display="";
+                apcli_wpa_tbody.style.display="none";
+                apcli_wpa_key_row.style.display="none";
+                apcli_pmf_tbody.style.display="none";
+                apcli_pmf_pc_cbox.disabled = true;
+                apcli_pmf_pc_cbox.checked = false;
+                apcli_pmf_pr_cbox.disabled = true;
+                apcli_pmf_pr_cbox.checked = false;
+                apcli_pmf_256sha_cbox.disabled = true;
+                apcli_pmf_256sha_cbox.checked = false;
+            break;
+            case "WPAPSK":
+                apcli_wep_tbody.style.display="none";
+                apcli_wpa_tbody.style.display="";
+                apcli_wpa_key_row.style.display="";
+                apcli_pmf_tbody.style.display="none";
+                apcli_pmf_pc_cbox.disabled = true;
+                apcli_pmf_pc_cbox.checked = false;
+                apcli_pmf_pr_cbox.disabled = true;
+                apcli_pmf_pr_cbox.checked = false;
+                apcli_pmf_256sha_cbox.disabled = true;
+                apcli_pmf_256sha_cbox.checked = false;
+                for (var idx=0; idx < wpa_enc_type_sel.length; idx++) {
+                    if( wpa_enc_type_sel.options[idx].value == "AES" ||
+                        wpa_enc_type_sel.options[idx].value == "TKIP" ||
+                        wpa_enc_type_sel.options[idx].value == "TKIPAES"){
+                        wpa_enc_type_sel.options[idx].disabled = false;
+                    }
+                    else{
+                        wpa_enc_type_sel.options[idx].disabled = true;
+                        wpa_enc_type_sel.options[idx].selected = false;
+                    }
+                }
+            break;
+            case "WPA2PSK":
+                apcli_wep_tbody.style.display="none";
+                apcli_wpa_tbody.style.display="";
+                apcli_wpa_key_row.style.display="";
+                apcli_pmf_tbody.style.display="";
+                apcli_pmf_256sha_row.style.display="";
+                apcli_pmf_pc_cbox.disabled = false;
+                apcli_pmf_pr_cbox.disabled = false;
+                apcli_pmf_256sha_cbox.disabled = false;
+                if(isOnLoad){
+                    <% if cfgs.ApCliAuthMode == "WPA2PSK" and cfgs.ApCliPMFMFPC == "1" then %>
+                        apcli_pmf_pc_cbox.checked = true;
+                    <% else %>
+                        apcli_pmf_pc_cbox.checked = false;
+                    <% end %>
+                    <% if cfgs.ApCliAuthMode == "WPA2PSK" and cfgs.ApCliPMFMFPR == "1" then %>
+                        apcli_pmf_pr_cbox.checked = true;
+                    <% else %>
+                        apcli_pmf_pr_cbox.checked = false;
+                    <% end %>
+                    <% if cfgs.ApCliAuthMode == "WPA2PSK" and cfgs.ApCliPMFSHA256 == "1" then %>
+                        apcli_pmf_256sha_cbox.checked = true;
+                    <% else %>
+                        apcli_pmf_256sha_cbox.checked = false;
+                    <% end %>
+                }
+                else if(isOnChange){
+                    apcli_pmf_pc_cbox.checked = true;
+                    apcli_pmf_pr_cbox.checked = false;
+                    apcli_pmf_256sha_cbox.checked = false;
+                }
+                else{
+                    apcli_pmf_pc_cbox.checked = false;
+                    apcli_pmf_pr_cbox.checked = false;
+                    apcli_pmf_256sha_cbox.checked = false;
+                }
+                for (var idx=0; idx < wpa_enc_type_sel.length; idx++) {
+                    if( wpa_enc_type_sel.options[idx].value == "AES" ||
+                        wpa_enc_type_sel.options[idx].value == "TKIP" ||
+                        wpa_enc_type_sel.options[idx].value == "TKIPAES"){
+                        wpa_enc_type_sel.options[idx].disabled = false;
+                    }
+                    else{
+                        wpa_enc_type_sel.options[idx].disabled = true;
+                        wpa_enc_type_sel.options[idx].selected = false;
+                    }
+                }
+            break;
+            case "WPA3PSK":
+                apcli_wep_tbody.style.display="none";
+                apcli_wpa_tbody.style.display="";
+                apcli_wpa_key_row.style.display="";
+                apcli_pmf_tbody.style.display="";
+                apcli_pmf_256sha_row.style.display="none";
+                apcli_pmf_pc_cbox.disabled = true;
+                apcli_pmf_pc_cbox.checked = true;
+                apcli_pmf_pr_cbox.disabled = true;
+                apcli_pmf_pr_cbox.checked = true;
+                apcli_pmf_256sha_cbox.disabled = true;
+                apcli_pmf_256sha_cbox.checked = true;
+                for (var idx=0; idx < wpa_enc_type_sel.length; idx++) {
+                    if(wpa_enc_type_sel.options[idx].value == "AES"){
+                        wpa_enc_type_sel.options[idx].disabled = false;
+                        wpa_enc_type_sel.options[idx].selected = true;
+                    }
+                    else{
+                        wpa_enc_type_sel.options[idx].disabled = true;
+                        wpa_enc_type_sel.options[idx].selected = false;
+                    }
+                }
+            break;
+            case "Enhanced Open":
+                apcli_wep_tbody.style.display="none";
+                apcli_wpa_tbody.style.display="";
+                apcli_wpa_key_row.style.display="none";
+                apcli_pmf_tbody.style.display="";
+                apcli_pmf_256sha_row.style.display="none";
+                apcli_pmf_pc_cbox.disabled = true;
+                apcli_pmf_pc_cbox.checked = true;
+                apcli_pmf_pr_cbox.disabled = true;
+                apcli_pmf_pr_cbox.checked = true;
+                apcli_pmf_256sha_cbox.disabled = true;
+                apcli_pmf_256sha_cbox.checked = true;
+                for (var idx=0; idx < wpa_enc_type_sel.length; idx++) {
+                    if(wpa_enc_type_sel.options[idx].value == "AES"){
+                        wpa_enc_type_sel.options[idx].disabled = false;
+                        wpa_enc_type_sel.options[idx].selected = true;
+                    }
+                    else{
+                        wpa_enc_type_sel.options[idx].disabled = true;
+                        wpa_enc_type_sel.options[idx].selected = false;
+                    }
+                }
+            break;
+            default:
+                console.log("ApCliAuthMode_onchange: Unknown ApCli AuthMode!",to);
+            break;
+        }
+    }
+
+    function choose_rootap(index) {
+        document.getElementById("ApCliSsid").value=decode_ssid(ap_list[index].ssid);
+        document.getElementById("Channel").value=ap_list[index].channel;
+        document.getElementById("ApCliEnableRadioOff").checked = false;
+        document.getElementById("ApCliEnableRadioOn").checked = true;
+        document.getElementById("apcli_cfg").style.display = "";
+        var auth_mode_sel = document.getElementById("__authModeSel");
+        var wpa_enc_type_sel = document.getElementById("__wpaApCliEncrypType");
+        var apcli_pmf_tbody = document.getElementById("apcli_pmf");
+        var apcli_pmf_pc_cbox = document.getElementById("__apcli_pmfmfpc");
+        var apcli_pmf_pr_cbox = document.getElementById("__apcli_pmfmfpr");
+        var apcli_pmf_256sha_cbox = document.getElementById("__apcli_pmfsha256");
+
+        switch(ap_list[index].authmode){
+            case "OPEN":
+                if (ap_list[index].encrypttype == "NONE"){
+                    auth_mode_sel.value="Disable";
+                }
+                else{
+                    auth_mode_sel.value="OPEN";
+                }
+                ApCliAuthMode_onchange(auth_mode_sel.value, false, false);
+            break;
+            case "SHARED":
+                auth_mode_sel.value="SHARED";
+                ApCliAuthMode_onchange("SHARED", false, false);
+                wpa_enc_type_sel.value = ap_list[index].encrypttype;
+            break;
+            case "WPAPSK":
+                auth_mode_sel.value="WPAPSK";
+                ApCliAuthMode_onchange("WPAPSK", false, false);
+                wpa_enc_type_sel.value = ap_list[index].encrypttype;
+            break;
+            case "WPA2PSK":
+                auth_mode_sel.value="WPA2PSK";
+                ApCliAuthMode_onchange("WPA2PSK", false, false);
+                wpa_enc_type_sel.value = ap_list[index].encrypttype;
+                apcli_pmf_pc_cbox.checked = true;
+                apcli_pmf_pr_cbox.checked = false;
+                apcli_pmf_256sha_cbox.checked = false;
+            break;
+            case "WPAPSKWPA2PSK":
+                auth_mode_sel.value="WPA2PSK";
+                ApCliAuthMode_onchange("WPA2PSK", false, false);
+                wpa_enc_type_sel.value = ap_list[index].encrypttype;
+                apcli_pmf_tbody.style.display="none";
+                apcli_pmf_pc_cbox.disabled = true;
+                apcli_pmf_pc_cbox.checked = false;
+                apcli_pmf_pr_cbox.disabled = true;
+                apcli_pmf_pr_cbox.checked = false;
+                apcli_pmf_256sha_cbox.disabled = true;
+                apcli_pmf_256sha_cbox.checked = false;
+            break;
+            case "WPA3PSK":
+                auth_mode_sel.value="WPA3PSK";
+                ApCliAuthMode_onchange("WPA3PSK", false, false);
+            break;
+            case "WPA2PSKWPA3PSK":
+                auth_mode_sel.value="WPA3PSK";
+                ApCliAuthMode_onchange("WPA3PSK", false, false);
+                apcli_pmf_pr_cbox.checked = false;
+                apcli_pmf_256sha_cbox.checked = false;
+            break;
+            case "OWE":
+                auth_mode_sel.value="Enhanced Open";
+                ApCliAuthMode_onchange("Enhanced Open", false, false);
+            break;
+            default:
+                console.log("choose_rootap: Unknown ApCli AuthMode!",to);
+            break;
+        }
+        document.getElementById("ApCliWPAPSK").value="";
+        document.getElementById("ApCliKey1Str").value="";
+        document.getElementById("ApCliKey2Str").value="";
+        document.getElementById("ApCliKey3Str").value="";
+        document.getElementById("ApCliKey4Str").value="";
+    }
+
+    function decode_ssid(ssid)
+    {
+        ssid = ssid.replace(/&amp;/g, "&");
+        ssid = ssid.replace(/&lt;/g, "<");
+        ssid = ssid.replace(/&gt;/g, ">");
+        ssid = ssid.replace(/&#34;/g, "\"");
+        ssid = ssid.replace(/&#39;/g, "'");
+        ssid = ssid.replace(/&nbsp;/g, " ");
+        var patt = new RegExp(/&#(\d+);/);
+
+        while (res = patt.exec(ssid))
+        {
+            ssid = ssid.replace("&#" + res[1] + ";", String.fromCharCode(res[1]));
+        }
+        return ssid;
+    }
+
+    //Interaction functions
+    //========================================================================================
+    function change_ap(ap_idx)
+    {
+        document.getElementById("__pin_ap_ssid").value = ap_list[ap_idx]['ssid'];
+        document.getElementById("root_ap_ssid").value = decode_ssid(ap_list[ap_idx]['ssid']);
+        document.getElementById("pin_ap_bssid").value = ap_list[ap_idx]['bssid'];
+    }
+
+    function on_any_start()
+    {
+        show_waiting('ON');
+    }
+
+    function on_any_end()
+    {
+        show_waiting('OFF');
+    }
+
+    function on_rescan_start(mode, vifname)
+    {
+        on_any_start();
+        clean_aplist_table();
+        get_site_survey(vifname, mode);
+
+        //show_waiting('OFF');
+    }
+
+    function on_rescan_end()
+    {
+        on_any_end();
+    }
+
+    function display(mode, id)
+    {
+        document.getElementById(id).style.display = mode;
+    }
+
+    //Sub function
+    //========================================================================================
+    function show_waiting(mode)
+    {
+        if(mode == "ON"){
+            waiting_count += 1;
+            document.getElementById("BusyText_ApCli").style.display="";
+        } else {
+            waiting_count = 0;
+            document.getElementById("BusyText_ApCli").style.display="none";
+        }
+        console.log("waiting_count="+waiting_count);
+    }
+
+    function clean_aplist_table()
+    {
+        var table = document.getElementById('aplist-site-survey');
+        //console.log("clean_aplist_table.aplist len=" + table.rows.length);
+        while(table.rows.length > 1)
+            table.deleteRow(-1);
+    }
+
+    function insert_aplist_table()
+    {
+        var i, tr_row, td_cell;
+        var tableid = document.getElementById('aplist-site-survey');
+
+        for (i = 0; ap_list[i] ; i++){
+            tr_row = tableid.insertRow(-1);
+            td_cell = tr_row.insertCell(-1);
+            td_cell.innerHTML = "<input type='radio' name='ap_idx' value='" + i + "' onClick='change_ap(this.value)'>";
+            td_cell = tr_row.insertCell(-1);
+            td_cell.innerHTML = ap_list[i]['channel'];
+            td_cell = tr_row.insertCell(-1);
+            td_cell.innerHTML = ap_list[i]['ssid'];
+            td_cell = tr_row.insertCell(-1);
+            td_cell.innerHTML = ap_list[i]['ssid_len'];
+            td_cell = tr_row.insertCell(-1);
+            td_cell.innerHTML = ap_list[i]['bssid'];
+            td_cell = tr_row.insertCell(-1);
+            td_cell.innerHTML = ap_list[i]['security'];
+            td_cell = tr_row.insertCell(-1);
+            td_cell.innerHTML = ap_list[i]['rssi'];
+            td_cell = tr_row.insertCell(-1);
+            td_cell.innerHTML = ap_list[i]['mode'];
+            td_cell = tr_row.insertCell(-1);
+            td_cell.innerHTML = ap_list[i]['extch'];
+            td_cell = tr_row.insertCell(-1);
+            td_cell.innerHTML = ap_list[i]['nt'];
+            td_cell = tr_row.insertCell(-1);
+            td_cell.innerHTML = ap_list[i]['wps'];
+        }
+    }
+
+    function ssid_encode(ssid)
+    {
+        var decoded_ssid = decode_ssid(ssid);
+        if (ssid != "" && decoded_ssid.length > 32){
+            alert("The length of SSID exceeds 32 characters!");
+            return "";
+        }
+        return encodeURIComponent(ssid);
+    }
+
+    function ValidateChecksum(PIN)
+    {
+        var accum = 0;
+        if (pincode.length == 4)
+            return 1;
+        if (pincode.length != 8)
+            return 0;
+
+        accum += 3 * (parseInt(pincode / 10000000) % 10);
+        accum += 1 * (parseInt(pincode / 1000000) % 10);
+        accum += 3 * (parseInt(pincode / 100000) % 10);
+        accum += 1 * (parseInt(pincode / 10000) % 10);
+        accum += 3 * (parseInt(pincode / 1000) % 10);
+        accum += 1 * (parseInt(pincode / 100) % 10);
+        accum += 3 * (parseInt(pincode / 10) % 10);
+        accum += 1 * (parseInt(pincode / 1) % 10);
+
+        return ((accum % 10) == 0);
+    }
+
+    //Ajax functions
+    //========================================================================================
+    function get_site_survey_cb(request, mode)
+    {
+        //console.log("get_wps_site_survey_cb.responseText=" + request.responseText);
+        //console.log("get_wps_site_survey_cb.args=" + mode);
+        ap_list = JSON.parse(request);
+
+        clean_aplist_table();
+        insert_aplist_table();
+
+        on_rescan_end();
+    }
+
+    function get_site_survey(vifname, mode)
+    {
+        XHR.get('<%=luci.dispatcher.build_url("admin",  "network",  "wifi",  "apcli_scan")%>/' + vifname, null, 
+            function(x)
+            {
+                console.log(x);
+                console.log(x.response);
+                get_site_survey_cb(x.response, mode);
+            }
+        );
+    }
+
+    function check_OWE()
+    {
+        var inp_ssid = document.getElementById("ApCliSsid").value;
+        console.log("check_OWE: inp_ssid = ",inp_ssid);
+        for(var idx in ap_list){
+            console.log("check_OWE: ap_list[",idx,"]['ssid'] = ",ap_list[idx]['ssid']);
+            if (ap_list[idx]['ssid'] == inp_ssid &&
+               (ap_list[idx].hasOwnProperty('OWETranIe') && ap_list[idx]['OWETranIe'] == "YES")){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function checkHex(str)
+    {
+        var len = str.length;
+        for (var i=0; i<str.length; i++) {
+            if ((str.charAt(i) >= '0' && str.charAt(i) <= '9') ||
+                (str.charAt(i) >= 'a' && str.charAt(i) <= 'f') ||
+                (str.charAt(i) >= 'A' && str.charAt(i) <= 'F') ){
+                    continue;
+            }else
+                return false;
+        }
+        return true;
+    }
+
+    function checkInjection(str)
+    {
+        var len = str.length;
+        for (var i=0; i<str.length; i++) {
+            if ( str.charAt(i) == '\r' || str.charAt(i) == '\n'){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function check_Wep()
+    {
+        var e = document.getElementById("ApCliDefaultKeyID");
+        var defaultidx = e.options[e.selectedIndex].value;
+        var keyvalue = document.getElementById("ApCliKey"+defaultidx+"Str").value;
+        if (keyvalue.length == 0){
+            alert('Please enter Root AP WEP Key ' + defaultidx + ' !');
+            return false;
+        }
+        var keylength = keyvalue.length;
+        if (keylength != 0){
+            if (document.getElementById("ApCliKey"+defaultidx+"Type").selectedIndex == "0"){
+                if(keylength != 5 && keylength != 13) {
+                    alert('Please enter 5 or 13 characters as Root AP WEP Key ' + defaultidx + ' !');
+                    return false;
+                }
+                if(checkInjection(keyvalue)== false){
+                    alert('Root AP WEP Key '+ defaultidx +" contains invalid characters!");
+                    return false;
+                }
+            }
+            else if (document.getElementById("ApCliKey"+defaultidx+"Type").selectedIndex == "1"){
+                if(keylength != 10 && keylength != 26) {
+                    alert('Please enter 10 or 26 characters as Root AP WEP Key ' + defaultidx + ' !');
+                    return false;
+                }
+                if(checkHex(keyvalue) == false){
+                    alert('Invalid Wep key1 format!');
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    function check_WpaKey()
+    {
+        var wpaPskId = document.getElementById("ApCliWPAPSK");
+        var keyvalue = wpaPskId.value;
+        if (keyvalue.length == 0){
+            alert('Please enter Root AP WPA Key!');
+            wpaPskId.select();
+            wpaPskId.focus();
+            return false;
+        }
+
+        if (keyvalue.length < 8){
+            alert('Please enter at least 8 characters as Root AP WPA Key!');
+            wpaPskId.select();
+            wpaPskId.focus();
+            return false;
+        }
+        if(checkHex(keyvalue) == true){
+            if (keyvalue.length > 64) {
+                alert('Please enter 8~63 ASCII or 64 Hexadecimal characters as Root AP WPA Key!');
+                wpaPskId.select();
+                wpaPskId.focus();
+                return false;
+            }
+        }
+        else{
+            if (keyvalue.length > 63 ){
+                alert('Please enter 8~63 ASCII or 64 Hexadecimal characters as Root AP WPA Key!');
+                wpaPskId.select();
+                wpaPskId.focus();
+                return false;
+            }
+        }
+        if(checkInjection(keyvalue) == false){
+            alert('Invalid characters in Root AP WPA Key!');
+            wpaPskId.select();
+            wpaPskId.focus();
+            return false;
+        }
+        return true;
+    }
+
+    function validate_security()
+    {
+        var ssid = document.getElementById("ApCliSsid").value;
+        var auth_mode_sel = document.getElementById("__authModeSel");
+        var wpa_enc_type_sel = document.getElementById("__wpaApCliEncrypType");
+        var apcli_pmf_pc_cbox = document.getElementById("__apcli_pmfmfpc");
+        var apcli_pmf_pr_cbox = document.getElementById("__apcli_pmfmfpr");
+        var apcli_pmf_256sha_cbox = document.getElementById("__apcli_pmfsha256");
+        var datAuthMode = document.getElementById("ApCliAuthMode");
+        var datEncType = document.getElementById("ApCliEncrypType");
+        var datPmfPc = document.getElementById("ApCliPMFMFPC");
+        var datPmfPr = document.getElementById("ApCliPMFMFPR");
+        var datPmfSha256 = document.getElementById("ApCliPMFSHA256");
+        var datOweTranIe = document.getElementById("ApCliOWETranIe");
+
+        if(ssid.length == 0){
+            return true; // To let user enable only ApCli
+        }
+
+        switch(auth_mode_sel.value){
+            case "Disable":
+                if(check_OWE()){
+                    datAuthMode.value = "OWE";
+                    datEncType.value = "AES";
+                    datPmfPc.value ="1";
+                    datPmfPr.value = "1";
+                    datPmfSha256.value = "1";
+                    datOweTranIe.value = "1";
+                }
+                else{
+                    datAuthMode.value = "OPEN";
+                    datEncType.value = "NONE";
+                    datPmfPc.value = "0";
+                    datPmfPr.value = "0";
+                    datPmfSha256.value = "0";
+                    datOweTranIe.value = "0";
+                }
+            break;
+            case "OPEN":
+                if(check_Wep()){
+                    datAuthMode.value = "OPEN";
+                    datEncType.value = "WEP";
+                    datPmfPc.value = "0";
+                    datPmfPr.value = "0";
+                    datPmfSha256.value = "0";
+                    datOweTranIe.value = "0";
+                }
+                else{
+                    return false;
+                }
+            break;
+            case "SHARED":
+                if(check_Wep()){
+                    datAuthMode.value = "SHARED";
+                    datEncType.value = "WEP";
+                    datPmfPc.value = "0";
+                    datPmfPr.value = "0";
+                    datPmfSha256.value = "0";
+                    datOweTranIe.value = "0";
+                }
+                else{
+                    return false;
+                }
+            break;
+            case "WPAPSK":
+                if(check_WpaKey()){
+                    datAuthMode.value = "WPAPSK";
+                    datEncType.value = wpa_enc_type_sel.value;
+                    datPmfPc.value = "0";
+                    datPmfPr.value = "0";
+                    datPmfSha256.value = "0";
+                    datOweTranIe.value = "0";
+                }
+                else{
+                    return false;
+                }
+            break;
+            case "WPA2PSK":
+                if(check_WpaKey()){
+                    datAuthMode.value = "WPA2PSK";
+                    datEncType.value = wpa_enc_type_sel.value;
+                    datPmfPc.value = apcli_pmf_pc_cbox.checked ? "1" : "0";
+                    datPmfPr.value = apcli_pmf_pr_cbox.checked ? "1" : "0";
+                    datPmfSha256.value = apcli_pmf_256sha_cbox.checked ? "1" : "0";
+                    datOweTranIe.value = "0";
+                }
+                else{
+                    return false;
+                }
+            break;
+            case "WPA3PSK":
+                if(check_WpaKey()){
+                    datAuthMode.value = "WPA3PSK";
+                    datEncType.value = "AES";
+                    datPmfPc.value ="1";
+                    datPmfPr.value = apcli_pmf_pr_cbox.checked ? "1" : "0";
+                    datPmfSha256.value = apcli_pmf_256sha_cbox.checked ? "1" : "0";
+                    datOweTranIe.value = "0";
+                }
+                else{
+                    return false;
+                }
+            break;
+            case "Enhanced Open":
+                datAuthMode.value = "OWE";
+                datEncType.value = "AES";
+                datPmfPc.value ="1";
+                datPmfPr.value = "1";
+                datPmfSha256.value = "1";
+                datOweTranIe.value = "0";
+            break;
+            default:
+                console.log("Root AP Authentication Mode is not supported!",auth_mode_sel.value);
+                alert("Root AP Authentication Mode is not supported!");
+                return false;
+        }
+        return true;
+    }
+
+    function validate_ssid()
+    {
+        var ssid = document.getElementById("ApCliSsid").value;
+        if(ssid.length > 32){
+            alert("Invalid Root AP SSID!\n"+
+                  "Please enter Root AP SSID with characters ranging from 1 character to 32 characters.\n");
+            return false;
+        }
+        return true;
+    }
+
+    function validate_all()
+    {
+        if(validate_ssid() &&
+           validate_security()){
+            return true;
+        }
+        return false;
+    }
+
+    function get_apply_status_cb(rsp)
+    {
+        try{
+            var r = JSON.parse(rsp);
+        }
+        catch(e){
+            return;
+        }
+        if(r.status == "ON_PROGRESS"){
+            var u = confirm("Device is applying the saved settings now!\n" +
+                "It is recommended to wait until all the saved settings are applied.\n" +
+                "Please click on 'OK' button to wait for the device.\n" +
+                "or click on 'Cancel' button to configure the settings available in current web-page.");
+            if (u == true) {
+                location = '<%=luci.dispatcher.build_url("admin", "network", "wifi", "loading")%>' + window.location.pathname;
+            }
+        }
+    }
+
+    function get_apply_status()
+    {
+        XHR.get('<%=luci.dispatcher.build_url("admin", "network", "wifi", "get_apply_status")%>', null,
+            function(x)
+            {
+                console.log(x);
+                get_apply_status_cb(x.response);
+            }
+        );
+    }
+
+    window.onload = function() {
+        get_apply_status();
+        <% if cfgs.ApCliEnable == "1" then %>
+            toggle_apcli(true);
+        <% else %>
+            toggle_apcli(false);
+        <% end %>
+    }
+
+</script>
+
+<%+footer%>

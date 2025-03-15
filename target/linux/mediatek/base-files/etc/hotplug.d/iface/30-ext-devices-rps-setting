@@ -1,0 +1,19 @@
+#!/bin/sh
+
+NPROCS="$(grep -c "^processor.*:" /proc/cpuinfo)"
+[ "$NPROCS" -gt 1 ] || exit
+
+IFNAME_PREFIX="${INTERFACE%%[0-9]*}"
+
+if [ "${IFNAME_PREFIX}" = "usb" ] || [ "${IFNAME_PREFIX}" = "wwan" ] || [ "${IFNAME_PREFIX}" = "rmnet" ] || [ "${IFNAME_PREFIX}" = "eth2" ] || [ "${IFNAME_PREFIX}" = "eth3" ] || [ "${IFNAME_PREFIX}" = "eth4" ] || [ "${IFNAME_PREFIX}" = "eth5" ]; then
+    if [ "$ACTION" = add ]; then
+        if [ "$NPROCS" -gt 2 ]; then
+        # set usb/wwan rps to cpu2
+        echo 2 > /sys/class/net/${INTERFACE}/queues/rx-0/rps_cpus
+        else
+        # set usb/wwan rps to cpu1
+        echo 1 > /sys/class/net/${INTERFACE}/queues/rx-0/rps_cpus
+        fi
+    fi
+    [ -f /etc/init.d/mtk_smp ] && /etc/init.d/mtk_smp restart
+fi

@@ -1,0 +1,203 @@
+# $Id: Makefile,v 1.88 2016/02/10 20:32:43 nanard Exp $
+# MiniUPnP project
+# http://miniupnp.free.fr/ or https://miniupnp.tuxfamily.org/
+# Author: Thomas Bernard
+#
+# Makefile for miniupnpd (MiniUPnP daemon)
+#
+# This Makefile should work for SunOS/Solaris.
+# This Makefile is NOT compatible with GNU Make.
+# Linux users, please use Makefile.linux :
+#  make -f Makefile.linux
+#
+# options can be passed to configure through CONFIG_OPTIONS :
+# $ CONFIG_OPTIONS="--ipv6 --igd2" make
+#
+
+CFLAGS = -pipe -Os
+#CFLAGS = -pipe -O -g -DDEBUG
+#CFLAGS += -ansi
+CFLAGS += -Wall
+CFLAGS += -W
+CFLAGS += -Wstrict-prototypes
+#CFLAGS += -Wdeclaration-after-statement
+#CFLAGS += -Wno-missing-field-initializers
+CFLAGS += -fno-common
+CFLAGS += -D_XOPEN_SOURCE
+CFLAGS += -D_XOPEN_SOURCE_EXTENDED=1
+CFLAGS += -D__EXTENSIONS__
+CC = gcc
+RM = rm -f
+MV = mv
+INSTALL = install
+STRIP = strip
+
+# OSNAME and FWNAME are used for building OS or FW dependent code.
+OSNAME :sh = uname -s
+ARCH :sh = uname -m
+
+FWNAME = ipf
+
+# Solaris specific CFLAGS
+CFLAGS :sh += echo "-DSOLARIS2=`uname -r | cut -d. -f2`"
+# "amd64"
+CFLAGS += -m64 -mcmodel=kernel -mno-red-zone -ffreestanding
+# "sparc64"
+#CFLAGS += -m64 -mcmodel=medlow
+LDFLAGS += -m64
+
+STDOBJS = miniupnpd.o upnphttp.o upnpdescgen.o upnpsoap.o \
+          upnpredirect.o getifaddr.o daemonize.o upnpglobalvars.o \
+          options.o upnppermissions.o minissdp.o natpmp.o pcpserver.o \
+          upnpevents.o upnputils.o getconnstatus.o \
+          upnpstun.o \
+          upnppinhole.o asyncsendto.o portinuse.o
+BSDOBJS = bsd/getifstats.o bsd/ifacewatcher.o bsd/getroute.o
+SUNOSOBJS = solaris/getifstats.o bsd/ifacewatcher.o bsd/getroute.o
+MACOBJS = mac/getifstats.o bsd/ifacewatcher.o bsd/getroute.o
+PFOBJS = pf/obsdrdr.o pf/pfpinhole.o
+IPFOBJS = ipf/ipfrdr.o
+IPFWOBJS = ipfw/ipfwrdr.o ipfw/ipfwaux.o
+MISCOBJS = upnpreplyparse.o minixml.o
+
+ALLOBJS = $(STDOBJS) $(MISCOBJS)
+ALLOBJS += $(SUNOSOBJS)
+TESTGETIFSTATSOBJS = testgetifstats.o solaris/getifstats.o
+TESTGETROUTEOBJS = testgetroute.o upnputils.o bsd/getroute.o
+
+#.if $(FWNAME) == "pf"
+#ALLOBJS += $(PFOBJS)
+#.elif $(FWNAME) == "ipfw"
+#ALLOBJS += $(IPFWOBJS)
+#.else
+ALLOBJS += $(IPFOBJS)
+#.endif
+
+TESTUPNPDESCGENOBJS = testupnpdescgen.o upnpdescgen.o
+TESTUPNPPERMISSIONSOBJS = testupnppermissions.o upnppermissions.o
+TESTGETIFADDROBJS = testgetifaddr.o getifaddr.o
+MINIUPNPDCTLOBJS = miniupnpdctl.o
+TESTASYNCSENDTOOBJS = testasyncsendto.o asyncsendto.o upnputils.o bsd/getroute.o
+TESTPORTINUSEOBJS = testportinuse.o portinuse.o getifaddr.o
+
+EXECUTABLES = miniupnpd testupnpdescgen testgetifstats \
+              testupnppermissions miniupnpdctl \
+              testgetifaddr testgetroute testasyncsendto \
+              testportinuse testssdppktgen
+
+LIBS += -lsocket -lnsl -lkstat -lresolv
+LIBS += -luuid
+
+LIBS += -lssl -lcrypto
+
+# set PREFIX variable to install in the wanted place
+
+INSTALLBINDIR = $(PREFIX)/sbin
+INSTALLETCDIR = $(PREFIX)/etc
+# INSTALLMANDIR = $(PREFIX)/man
+INSTALLMANDIR = /usr/share/man
+
+all:	$(EXECUTABLES)
+
+clean:
+	$(RM) $(STDOBJS) $(BSDOBJS) $(SUNOSOBJS) $(MACOBJS) $(EXECUTABLES) \
+	testupnpdescgen.o \
+	$(MISCOBJS) config.h testgetifstats.o testupnppermissions.o \
+	miniupnpdctl.o testgetifaddr.o testgetroute.o testasyncsendto.o \
+	testportinuse.o \
+	$(PFOBJS) $(IPFOBJS) $(IPFWOBJS)
+	$(RM) validateupnppermissions validategetifaddr validatessdppktgen
+
+install:	miniupnpd genuuid
+	$(STRIP) miniupnpd
+	$(INSTALL) -d $(DESTDIR)$(INSTALLBINDIR)
+	$(INSTALL) -m 755 miniupnpd $(DESTDIR)$(INSTALLBINDIR)
+	$(INSTALL) -d $(DESTDIR)$(INSTALLETCDIR)
+	$(INSTALL) -b miniupnpd.conf $(DESTDIR)$(INSTALLETCDIR)
+	# TODO : install man page correctly
+#	$(INSTALL) -d $(INSTALLMANDIR)
+#	$(INSTALL) miniupnpd.8 $(INSTALLMANDIR)/cat8/miniupnpd.0
+
+# genuuid is using the uuid cli tool available under OpenBSD 4.0 in
+# the uuid-1.5.0 package
+# any other cli tool returning a uuid on stdout should work.
+UUID :sh = if which uuidgen 2>&1 > /dev/null; then \
+        echo `uuidgen` ; \
+        elif which uuid 2>&1 > /dev/null; then \
+        echo `uuid` ; \
+        else echo "00000000-0000-0000-0000-000000000000"; \
+        fi
+
+# bash or ksh
+SH :sh = which bash || which ksh
+
+genuuid:
+	$(MV) miniupnpd.conf miniupnpd.conf.before
+	sed -e "s/^uuid=[-0-9a-fA-F]*/uuid=$(UUID)/" miniupnpd.conf.before > miniupnpd.conf
+	$(RM) miniupnpd.conf.before
+
+check:  validateupnppermissions validategetifaddr validatessdppktgen
+
+validateupnppermissions: testupnppermissions testupnppermissions.sh
+	$(SH) ./testupnppermissions.sh
+	touch $@
+
+validategetifaddr:	testgetifaddr testgetifaddr.sh
+	./testgetifaddr.sh
+	touch $@
+
+validatessdppktgen:	testssdppktgen
+	./testssdppktgen
+	touch $@
+
+depend:	config.h
+	mkdep $(ALLOBJS:.o=.c) testupnpdescgen.c testgetifstats.c \
+    testupnppermissions.c miniupnpdctl.c testgetifaddr.c \
+	testgetroute.c testportinuse.c testasyncsendto.c \
+	testssdppktgen.c
+
+miniupnpd: config.h $(ALLOBJS)
+	$(CC) $(LDFLAGS) -o $@ $(ALLOBJS) $(LIBS)
+
+# BSDmake :
+#	$(CC) $(LDFLAGS) -o $@ $> $(LIBS)
+
+miniupnpdctl:	config.h $(MINIUPNPDCTLOBJS)
+	$(CC) $(LDFLAGS) -o $@ $(MINIUPNPDCTLOBJS) -lsocket
+
+testupnpdescgen:	config.h $(TESTUPNPDESCGENOBJS)
+	$(CC) $(LDFLAGS) -o $@ $(TESTUPNPDESCGENOBJS) $(LIBS)
+
+testgetifstats:	config.h $(TESTGETIFSTATSOBJS)
+	$(CC) $(LDFLAGS) -o $@ $(TESTGETIFSTATSOBJS) $(LIBS)
+
+testgetifaddr:	config.h $(TESTGETIFADDROBJS)
+	$(CC) $(LDFLAGS) -o $@ $(TESTGETIFADDROBJS) $(LIBS)
+
+testupnppermissions:	config.h $(TESTUPNPPERMISSIONSOBJS)
+	$(CC) $(LDFLAGS) -o $@ $(TESTUPNPPERMISSIONSOBJS) $(LIBS)
+
+testgetroute:	config.h $(TESTGETROUTEOBJS)
+	$(CC) $(LDFLAGS) -o $@ $(TESTGETROUTEOBJS) $(LIBS)
+
+testasyncsendto:	config.h $(TESTASYNCSENDTOOBJS)
+	$(CC) $(LDFLAGS) -o $@ $(TESTASYNCSENDTOOBJS) -lsocket -lnsl
+
+testportinuse:	config.h $(TESTPORTINUSEOBJS)
+	$(CC) $(LDFLAGS) -o $@ $(TESTPORTINUSEOBJS) $(LIBS)
+
+# gmake :
+#	$(CC) $(CFLAGS) -o $@ $^
+# BSDmake :
+#	$(CC) $(CFLAGS) -o $@ $>
+
+config.h:	configure VERSION
+	./configure $(CONFIG_OPTIONS)
+
+.SUFFIXES:	.o .c
+.c.o:
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+#	$(CC) $(CFLAGS) -c -o $(.TARGET) $(.IMPSRC)
+
+

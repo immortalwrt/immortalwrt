@@ -1,0 +1,45 @@
+interface=$1
+array=(${interface//,/ })
+        PPP_NUM=0
+
+        for var in ${array[@]}
+        do
+        let PPP_NUM=PPP_NUM+1
+        done
+        
+        i=0
+        for var in ${array[@]}
+        do
+        ipaddr=$(ip route show |grep default | grep $var | awk '{print $3 }')
+        iptables -t mangle -D PREROUTING -i br-lan -m conntrack --ctstate NEW -m statistic --mode nth --every $PPP_NUM --packet $i -j CONNMARK --set-mark 2"$i"
+        iptables -t mangle -D PREROUTING -i br-lan -m connmark --mark 2"$i" -j MARK --set-mark 2"$i"
+        iptables -t mangle -A PREROUTING -i br-lan -m conntrack --ctstate NEW -m statistic --mode nth --every $PPP_NUM --packet $i -j CONNMARK --set-mark 2"$i"
+        iptables -t mangle -A PREROUTING -i br-lan -m connmark --mark 2"$i" -j MARK --set-mark 2"$i"
+        ip rule del table 2"$i"0
+        ip rule add fwmark 2"$i" table 2"$i"0
+        ip route del default table 2"$i"0
+        ip route add default via $ipaddr dev $var table 2"$i"0
+        let i=i+1
+        done
+        
+        
+        i=0
+        for var in ${array[@]}
+        do
+        ipaddr=$(ip route show |grep default | grep $var | awk '{print $3 }')
+        iptables -t mangle -D PREROUTING  -m conntrack --ctstate NEW -d $ipaddr/24 -j MARK --set-mark 2"$i"
+        iptables -t mangle -A PREROUTING  -m conntrack --ctstate NEW -d $ipaddr/24 -j MARK --set-mark 2"$i"
+        let i=i+1
+        done
+        
+        iptables -t mangle -D PREROUTING -p tcp --dport 443 -m conntrack --ctstate NEW -j MARK --set-mark 20
+        iptables -t mangle -A PREROUTING -p tcp --dport 443 -m conntrack --ctstate NEW -j MARK --set-mark 20
+        
+        iptables -t mangle -D PREROUTING -p udp --dport 443 -m conntrack --ctstate NEW -j MARK --set-mark 20
+        iptables -t mangle -A PREROUTING -p udp --dport 443 -m conntrack --ctstate NEW -j MARK --set-mark 20
+        
+        iptables -t mangle -D POSTROUTING -m conntrack --ctstate NEW -j CONNMARK --save-mark
+        iptables -t mangle -A POSTROUTING -m conntrack --ctstate NEW -j CONNMARK --save-mark
+        iptables -t mangle -D PREROUTING -i br-lan -m conntrack --ctstate ESTABLISHED,RELATED -j CONNMARK --restore-mark
+        iptables -t mangle -A PREROUTING -i br-lan -m conntrack --ctstate ESTABLISHED,RELATED -j CONNMARK --restore-mark
+        ip route flush cache

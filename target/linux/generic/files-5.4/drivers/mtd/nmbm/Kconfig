@@ -1,0 +1,35 @@
+
+config NMBM
+	bool "Enable NAND mapping block management"
+	default n
+	select CRC32
+
+choice
+	prompt "Default log level"
+	depends on NMBM
+	default NMBM_LOG_LEVEL_INFO
+
+config NMBM_LOG_LEVEL_DEBUG
+	bool "0 - Debug"
+
+config NMBM_LOG_LEVEL_INFO
+	bool "1 - Info"
+
+config NMBM_LOG_LEVEL_WARN
+	bool "2 - Warn"
+
+config NMBM_LOG_LEVEL_ERR
+	bool "3 - Error"
+
+config NMBM_LOG_LEVEL_EMERG
+	bool "4 - Emergency"
+
+config NMBM_LOG_LEVEL_NONE
+	bool "5 - None"
+
+endchoice
+
+config NMBM_MTD
+	bool "Enable MTD based NAND mapping block management"
+	default n
+	depends on NMBM

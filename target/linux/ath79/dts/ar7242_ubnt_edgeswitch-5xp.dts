@@ -67,8 +67,7 @@
 	phy-handle = <&phy0>;
 	phy-mode = "rgmii";
 
-	nvmem-cells = <&macaddr_art_0>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&art 0x0>;
 
 	fixed-link {
 		speed = <1000>;

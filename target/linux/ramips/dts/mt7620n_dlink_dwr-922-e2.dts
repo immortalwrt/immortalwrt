@@ -4,8 +4,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
-#include <dt-bindings/mtd/partitions/uimage.h>
 
 / {
 	compatible = "dlink,dwr-922-e2", "ralink,mt7620n-soc";
@@ -42,8 +40,7 @@
 		};
 
 		lan {
-			function = LED_FUNCTION_LAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:lan";
 			gpios = <&gpio1 15 GPIO_ACTIVE_HIGH>;
 		};
 
@@ -117,14 +114,12 @@
 			};
 
 			partition@10000 {
-				compatible = "openwrt,uimage", "denx,uimage";
-				openwrt,ih-magic = <IH_MAGIC_OKLI>;
-				openwrt,offset = <0x10000>;
+				compatible = "amit,jimage";
 				label = "firmware";
 				reg = <0x10000 0xfe0000>;
 			};
 
-			partition@ff0000 {
+			config: partition@ff0000 {
 				label = "config";
 				reg = <0xff0000 0x10000>;
 				read-only;

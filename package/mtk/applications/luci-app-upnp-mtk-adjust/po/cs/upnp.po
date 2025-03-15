@@ -1,0 +1,238 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"PO-Revision-Date: 2024-07-08 22:10+0000\n"
+"Last-Translator: Milan <cirhanmilan@seznam.cz>\n"
+"Language-Team: Czech <https://hosted.weblate.org/projects/openwrt/"
+"luciapplicationsupnp/cs/>\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
+"X-Generator: Weblate 5.7-dev\n"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:182
+msgid ""
+"ACLs specify which external ports may be redirected to which internal "
+"addresses and ports"
+msgstr ""
+"ACL stanovují, které vnější porty by měly být přesměrovány na které vnitřní "
+"adresy a porty"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:202
+msgid "Action"
+msgstr "Akce"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:31
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:113
+msgid "Active UPnP Redirects"
+msgstr "Aktivní přesměrování UPnP"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:119
+msgid "Advanced Settings"
+msgstr "Pokročilé možnosti"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:131
+msgid "Advertise as IGDv1 device instead of IGDv2"
+msgstr "Inzerovat jako IGDv1 zařízení místo IGDv2"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:203
+msgid "Allow"
+msgstr ""
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:128
+msgid "Allow adding forwards only to requesting ip addresses"
+msgstr "Povolit přesměrování pouze na dotazující ip adresy"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:150
+msgid "Announced model number"
+msgstr "Oznámené číslo modelu"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:149
+msgid "Announced serial number"
+msgstr "Oznámené sériové číslo"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:160
+msgid "Clean rules interval"
+msgstr "Interval čištění pravidel"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:156
+msgid "Clean rules threshold"
+msgstr "Práh čištění pravidel"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:45
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:85
+msgid "Client Address"
+msgstr "Adresa klienta"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:47
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:87
+msgid "Client Port"
+msgstr "Port klienta"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:188
+msgid "Comment"
+msgstr "Komentář"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:66
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:62
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:106
+msgid "Delete"
+msgstr "Odstranit"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:204
+msgid "Deny"
+msgstr ""
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:48
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:88
+msgid "Description"
+msgstr "Popis"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:148
+msgid "Device UUID"
+msgstr "UUID zařízení"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:136
+msgid "Downlink"
+msgstr "Downlink"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:130
+msgid "Enable IGDv1 mode"
+msgstr "Povolit režim IGDv1"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:125
+msgid "Enable NAT-PMP functionality"
+msgstr "Povolit funkčnost NAT-PMP"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:124
+msgid "Enable UPnP functionality"
+msgstr "Povolit funkčnost UPnP"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:133
+msgid "Enable additional logging"
+msgstr "Povolit přídavné logování"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:127
+msgid "Enable secure mode"
+msgstr "Povolit bezpečný režim"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:44
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:84
+msgid "External Port"
+msgstr "Vnější port"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:190
+msgid "External ports"
+msgstr "Vnější porty"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:118
+msgid "General Settings"
+msgstr "Obecná nastavení"
+
+#: applications/luci-app-upnp/root/usr/share/rpcd/acl.d/luci-app-upnp.json:3
+msgid "Grant access to upnp procedures"
+msgstr "Udělit oprávnění k procedůrám upnp"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:46
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:86
+msgid "Host"
+msgstr "Hostitel"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:194
+msgid "Internal addresses"
+msgstr "Vnitřní adresy"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:198
+msgid "Internal ports"
+msgstr "Vnitřní porty"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:181
+msgid "MiniUPnP ACLs"
+msgstr "MiniUPnP ACL listy"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:116
+msgid "MiniUPnP settings"
+msgstr "Nastavení MiniUPnP"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:152
+msgid "Notify interval"
+msgstr "Interval oznamování"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:142
+msgid "Port"
+msgstr "Port"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:164
+msgid "Presentation URL"
+msgstr "Prezentační URL"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:43
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:83
+msgid "Protocol"
+msgstr "Protokol"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:134
+msgid "Puts extra debugging information into the system log"
+msgstr "Vypisovat extra ladící informace do systémového záznamu"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:146
+msgid "Report system instead of daemon uptime"
+msgstr "Hlásit uptime systému namísto uptime daemonu"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:172
+msgid "STUN Host"
+msgstr "STUN Hostitel"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:176
+msgid "STUN Port"
+msgstr "STUN Port"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:121
+msgid "Start UPnP and NAT-PMP service"
+msgstr "Spustit službu UPnP a NAT-PMP"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:70
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:66
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:110
+msgid "There are no active redirects."
+msgstr "Neexistují žádná aktivní přesměrování."
+
+#: applications/luci-app-upnp/root/usr/share/luci/menu.d/luci-app-upnp.json:3
+msgid "UPnP"
+msgstr "UPnP"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:76
+msgid ""
+"UPnP allows clients in the local network to automatically configure the "
+"router."
+msgstr ""
+"UPnP umožňuje klientům v místní síti automaticky nakonfigurovat router."
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:167
+msgid "UPnP lease file"
+msgstr "Soubor UPnP výpůjček"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:75
+msgid "Universal Plug & Play"
+msgstr "Univerzální Plug & Play"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/status/include/80_upnp.js:60
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:56
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:100
+msgid "Unknown"
+msgstr "Neznámé"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:139
+msgid "Uplink"
+msgstr "Uplink"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:170
+msgid "Use STUN"
+msgstr "Použít STUN"
+
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:137
+#: applications/luci-app-upnp/htdocs/luci-static/resources/view/upnp/upnp.js:140
+msgid "Value in KByte/s, informational only"
+msgstr "Pouze informační hodnoty (v KByte/s)"

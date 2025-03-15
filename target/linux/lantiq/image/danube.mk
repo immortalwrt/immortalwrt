@@ -10,9 +10,8 @@ define Device/arcadyan_arv4510pw
 	kmod-ltq-adsl-danube-fw-a kmod-ltq-atm-danube \
 	ltq-adsl-app ppp-mod-pppoa \
 	kmod-ltq-tapi kmod-ltq-vmmc \
-	kmod-rt2800-pci kmod-ath5k wpad-openssl
+	kmod-rt2800-pci kmod-ath5k wpad-basic-openssl
   SUPPORTED_DEVICES += ARV4510PW
-  DEFAULT := n
 endef
 TARGET_DEVICES += arcadyan_arv4510pw
 
@@ -61,7 +60,7 @@ define Device/arcadyan_arv7510pw22
 	kmod-ltq-adsl-danube-fw-a kmod-ltq-atm-danube \
 	ltq-adsl-app ppp-mod-pppoa \
 	kmod-ltq-tapi kmod-ltq-vmmc \
-	kmod-rt2800-pci wpad-openssl \
+	kmod-rt2800-pci wpad-basic-openssl \
 	kmod-usb-uhci kmod-usb2 kmod-usb2-pci
   SUPPORTED_DEVICES += ARV7510PW22
 endef
@@ -94,7 +93,7 @@ define Device/arcadyan_arv7519pw
 	kmod-ltq-adsl-danube-mei kmod-ltq-adsl-danube \
 	kmod-ltq-adsl-danube-fw-a kmod-ltq-atm-danube \
 	ltq-adsl-app ppp-mod-pppoa \
-	kmod-rt2800-pci wpad-openssl
+	kmod-rt2800-pci wpad-basic-openssl
   SUPPORTED_DEVICES += ARV7519PW
 endef
 TARGET_DEVICES += arcadyan_arv7519pw
@@ -177,14 +176,14 @@ define Device/audiocodes_mp-252
 	kmod-usb-ledtrig-usbport kmod-usb-dwc2 \
 	kmod-rt2800-pci \
 	ltq-adsl-app ppp-mod-pppoa \
-	wpad-openssl
+	wpad-basic-openssl
   SUPPORTED_DEVICES += ACMP252
 endef
 TARGET_DEVICES += audiocodes_mp-252
 
 define Device/bt_homehub-v2b
   $(Device/NAND)
-  DEVICE_VENDOR := British Telecom (BT)
+  DEVICE_VENDOR := British Telecom
   DEVICE_MODEL := Home Hub 2
   DEVICE_VARIANT := Type B
   BOARD_NAME := BTHOMEHUBV2B
@@ -193,7 +192,7 @@ define Device/bt_homehub-v2b
   DEVICE_PACKAGES := kmod-usb-dwc2 \
 	kmod-ltq-adsl-danube-mei kmod-ltq-adsl-danube \
 	kmod-ltq-adsl-danube-fw-a kmod-ltq-atm-danube \
-	kmod-ltq-deu-danube ltq-adsl-app ppp-mod-pppoa \
+	ltq-adsl-app ppp-mod-pppoa \
 	kmod-ath9k kmod-owl-loader wpad-basic-openssl
   SUPPORTED_DEVICES += BTHOMEHUBV2B
   DEFAULT := n
@@ -220,6 +219,5 @@ define Device/siemens_gigaset-sx76x
 	ltq-adsl-app ppp-mod-pppoe \
 	kmod-ath5k wpad-basic-openssl
   SUPPORTED_DEVICES += GIGASX76X
-  DEFAULT := n
 endef
 TARGET_DEVICES += siemens_gigaset-sx76x

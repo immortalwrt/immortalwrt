@@ -1,0 +1,36 @@
+From 120baca4e8b019d03c8d1a29012cea911629247a Mon Sep 17 00:00:00 2001
+From: Bc-bocun Chen <bc-bocun.chen@mediatek.com>
+Date: Mon, 18 Sep 2023 11:13:51 +0800
+Subject: [PATCH] net dsa add netdev_upper_dev_link
+
+---
+ net/dsa/slave.c                |  11 +
+ 1 files changed, 11 insertions(+), 0 deletions(-)
+
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 2dfaa1e..a60a26c 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -1495,8 +1495,19 @@ int dsa_slave_create(struct dsa_port *port)
+ 		goto out_phy;
+ 	}
+ 
++	rtnl_lock();
++
++	ret = netdev_upper_dev_link(master, slave_dev, NULL);
++
++	rtnl_unlock();
++
++	if (ret)
++		goto out_unregister;
++
+ 	return 0;
+ 
++out_unregister:
++	unregister_netdev(slave_dev);
+ out_phy:
+ 	rtnl_lock();
+ 	phylink_disconnect_phy(p->dp->pl);
+-- 
+2.18.0
+

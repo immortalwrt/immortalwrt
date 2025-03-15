@@ -4,7 +4,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "siemens,ws-ap3610", "qca,ar7161";
@@ -18,18 +17,23 @@
 		label-mac-device = &eth0;
 	};
 
+	extosc: ref {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-output-names = "ref";
+		clock-frequency = <40000000>;
+	};
+
 	leds {
 		compatible = "gpio-leds";
 
 		led_power_green: led_power_green {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio 7 GPIO_ACTIVE_LOW>;
 		};
 
 		led_power_red: led_power_red {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_RED>;
+			label = "red:power";
 			gpios = <&gpio 8 GPIO_ACTIVE_LOW>;
 		};
 
@@ -106,7 +110,7 @@
 	flash@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
-		spi-max-frequency = <50000000>;
+		spi-max-frequency = <25000000>;
 
 		partitions {
 			compatible = "fixed-partitions";

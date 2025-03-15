@@ -1,0 +1,221 @@
+/dts-v1/;
+#include "mt7981.dtsi"
+/ {
+	model = "MediaTek MT7981 RFB";
+	compatible = "mediatek,mt7981-snfi-snand-pcie-2500wan-p5-rfb";
+	chosen {
+		bootargs = "console=ttyS0,115200n1 loglevel=8  \
+				earlycon=uart8250,mmio32,0x11002000";
+	};
+
+	memory {
+		// fpga ddr2: 128MB*2
+		reg = <0 0x40000000 0 0x10000000>;
+	};
+
+	gpio-keys {
+			compatible = "gpio-keys";
+				reset {
+					label = "reset";
+					linux,code = <KEY_RESTART>;
+					gpios = <&pio 1 GPIO_ACTIVE_LOW>;
+				};
+
+				wps {
+					label = "wps";
+					linux,code = <KEY_WPS_BUTTON>;
+					gpios = <&pio 0 GPIO_ACTIVE_HIGH>;
+				};
+	};
+
+	nmbm_snfi {
+		compatible = "generic,nmbm";
+
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		lower-mtd-device = <&snand>;
+		forced-create;
+		empty-page-ecc-protected;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "BL2";
+				reg = <0x00000 0x0100000>;
+				read-only;
+			};
+
+			partition@100000 {
+				label = "u-boot-env";
+				reg = <0x0100000 0x0080000>;
+			};
+
+			factory: partition@180000 {
+				label = "Factory";
+				reg = <0x180000 0x0200000>;
+			};
+
+			partition@380000 {
+				label = "FIP";
+				reg = <0x380000 0x0200000>;
+			};
+
+			partition@580000 {
+				label = "ubi";
+				reg = <0x580000 0x4000000>;
+			};
+		};
+	};
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&watchdog {
+	status = "okay";
+};
+
+&eth {
+        status = "okay";
+
+        gmac0: mac@0 {
+                compatible = "mediatek,eth-mac";
+                reg = <0>;
+                phy-mode = "2500base-x";
+
+                fixed-link {
+                        speed = <2500>;
+                        full-duplex;
+                        pause;
+                };
+        };
+
+        mdio: mdio-bus {
+                #address-cells = <1>;
+                #size-cells = <0>;
+
+		phy5: phy@5 {
+			compatible = "ethernet-phy-id67c9.de0a";
+			reg = <5>;
+			reset-gpios = <&pio 14 1>;
+			reset-assert-us = <600>;
+			reset-deassert-us = <20000>;
+			phy-mode = "2500base-x";
+		};
+
+                switch@0 {
+                        compatible = "mediatek,mt7531";
+                        reg = <31>;
+                        reset-gpios = <&pio 39 0>;
+
+                        ports {
+                                #address-cells = <1>;
+                                #size-cells = <0>;
+
+                                port@0 {
+                                        reg = <0>;
+                                        label = "lan1";
+                                };
+
+                                port@1 {
+                                        reg = <1>;
+                                        label = "lan2";
+                                };
+
+                                port@2 {
+                                        reg = <2>;
+                                        label = "lan3";
+                                };
+
+                                port@3 {
+                                        reg = <3>;
+                                        label = "lan4";
+                                };
+
+                        	port@5 {
+                                	reg = <5>;
+	                                label = "wan";
+        	                        phy-mode = "2500base-x";
+
+                	                fixed-link {
+                        	                speed = <2500>;
+                                	        full-duplex;
+                                        	pause;
+	                                };
+        	                };
+
+                                port@6 {
+                                        reg = <6>;
+                                        label = "cpu";
+                                        ethernet = <&gmac0>;
+                                        phy-mode = "2500base-x";
+
+                                        fixed-link {
+                                                speed = <2500>;
+                                                full-duplex;
+                                                pause;
+                                        };
+                                };
+                        };
+                };
+        };
+};
+
+&hnat {
+	mtketh-wan = "wan";
+	mtketh-lan = "lan";
+	mtketh-max-gmac = <1>;
+	status = "okay";
+};
+
+&snand {
+	pinctrl-names = "default";
+	pinctrl-0 = <&snfi_pins>;
+	status = "okay";
+	mediatek,quad-spi;
+};
+
+&spi1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spic_pins>;
+	status = "disabled";
+};
+
+&pcie {
+        pinctrl-names = "default";
+        pinctrl-0 = <&pcie_pins>;
+        status = "okay";
+};
+
+&pio {
+
+        pcie_pins: pcie-pins {
+                mux {
+                        function = "pcie";
+                        groups = "pcie_pereset", "pcie_clk", "pcie_wake";
+                };
+        };
+
+	snfi_pins: snfi-pins {
+		mux {
+			function = "flash";
+			groups = "snfi";
+		};
+	};
+
+	spic_pins: spi1-pins {
+		mux {
+			function = "spi";
+			groups = "spi1_1";
+		};
+	};
+};
+
+&xhci {
+	status = "okay";
+};

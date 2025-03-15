@@ -748,7 +748,7 @@ static int rk3328_dmcfreq_probe(struct platform_device *pdev)
 		return PTR_ERR(data->dmc_clk);
 	}
 
-	data->edev = devfreq_event_get_edev_by_phandle(dev, "devfreq-events", 0);
+	data->edev = devfreq_event_get_edev_by_phandle(dev, 0);
 	if (IS_ERR(data->edev))
 		return -EPROBE_DEFER;
 

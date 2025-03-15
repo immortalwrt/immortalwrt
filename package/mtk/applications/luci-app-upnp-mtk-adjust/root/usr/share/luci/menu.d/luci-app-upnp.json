@@ -1,0 +1,13 @@
+{
+	"admin/services/upnp": {
+		"title": "UPnP",
+		"action": {
+			"type": "view",
+			"path": "upnp/upnp"
+		},
+		"depends": {
+			"acl": [ "luci-app-upnp" ],
+			"uci": { "upnpd": true }
+		}
+	}
+}

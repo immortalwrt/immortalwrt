@@ -24,8 +24,8 @@
 &eth0 {
 	status = "okay";
 
-	nvmem-cells = <&macaddr_uboot_1fc00 (-1)>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&uboot 0x1fc00>;
+	mtd-mac-address-increment = <(-1)>;
 
 	gmac-config {
 		device = <&gmac>;
@@ -38,8 +38,8 @@
 &eth1 {
 	status = "okay";
 
-	nvmem-cells = <&macaddr_uboot_1fc00 1>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&uboot 0x1fc00>;
+	mtd-mac-address-increment = <1>;
 };
 
 &pinmux {
@@ -66,18 +66,6 @@
 				label = "u-boot";
 				reg = <0x000000 0x020000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_uboot_1fc00: macaddr@1fc00 {
-						compatible = "mac-base";
-						reg = <0x1fc00 0x6>;
-						#nvmem-cell-cells = <1>;
-					};
-				};
 			};
 
 			partition@20000 {

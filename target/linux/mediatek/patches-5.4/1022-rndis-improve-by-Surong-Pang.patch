@@ -1,0 +1,474 @@
+--- a/drivers/usb/gadget/function/f_rndis.c
++++ b/drivers/usb/gadget/function/f_rndis.c
+@@ -77,6 +77,12 @@ struct f_rndis {
+ 	struct usb_ep			*notify;
+ 	struct usb_request		*notify_req;
+ 	atomic_t			notify_count;
++
++	struct net_device		*netdev;
++	/* For multi-frame RNDIS TX */
++	u16				prepared_tx_skb_count;
++	struct sk_buff			*prepared_tx_skb;
++	struct hrtimer			task_timer;
+ };
+ 
+ static inline struct f_rndis *func_to_rndis(struct usb_function *f)
+@@ -92,6 +98,7 @@ static inline struct f_rndis *func_to_rndis(struct usb_function *f)
+ #define RNDIS_STATUS_INTERVAL_MS	32
+ #define STATUS_BYTECOUNT		8	/* 8 bytes data */
+ 
++#define TX_TIMEOUT_NSECS 200000
+ 
+ /* interface descriptor: */
+ 
+@@ -102,9 +109,9 @@ static struct usb_interface_descriptor rndis_control_intf = {
+ 	/* .bInterfaceNumber = DYNAMIC */
+ 	/* status endpoint is optional; this could be patched later */
+ 	.bNumEndpoints =	1,
+-	.bInterfaceClass =	USB_CLASS_COMM,
+-	.bInterfaceSubClass =   USB_CDC_SUBCLASS_ACM,
+-	.bInterfaceProtocol =   USB_CDC_ACM_PROTO_VENDOR,
++	.bInterfaceClass =	USB_CLASS_WIRELESS_CONTROLLER,
++	.bInterfaceSubClass =	0x01,
++	.bInterfaceProtocol =	USB_CDC_ACM_PROTO_AT_PCCA101_WAKE,
+ 	/* .iInterface = DYNAMIC */
+ };
+ 
+@@ -162,10 +169,10 @@ rndis_iad_descriptor = {
+ 	.bDescriptorType =	USB_DT_INTERFACE_ASSOCIATION,
+ 
+ 	.bFirstInterface =	0, /* XXX, hardcoded */
+-	.bInterfaceCount = 	2,	// control + data
+-	.bFunctionClass =	USB_CLASS_COMM,
+-	.bFunctionSubClass =	USB_CDC_SUBCLASS_ETHERNET,
+-	.bFunctionProtocol =	USB_CDC_PROTO_NONE,
++	.bInterfaceCount =	2, // control + data
++	.bFunctionClass =	USB_CLASS_WIRELESS_CONTROLLER,
++	.bFunctionSubClass =	0x01,
++	.bFunctionProtocol =	USB_CDC_ACM_PROTO_AT_PCCA101_WAKE,
+ 	/* .iFunction = DYNAMIC */
+ };
+ 
+@@ -352,20 +359,104 @@ static struct usb_gadget_strings *rndis_strings[] = {
+ 	NULL,
+ };
+ 
++/*
++ * The transmit should only be run if no skb data has been sent
++ * for a certain duration.
++ */
++static enum hrtimer_restart rndis_tx_timeout(struct hrtimer *data)
++{
++	struct f_rndis *rndis = container_of(data, struct f_rndis, task_timer);
++	struct net_device *netdev = READ_ONCE(rndis->netdev);
++
++	if (netdev) {
++		/* XXX This allowance of a NULL skb argument to ndo_start_xmit
++		 * XXX is not sane.  The gadget layer should be redesigned so
++		 * XXX that the dev->wrap() invocations to build SKBs is transparent
++		 * XXX and performed in some way outside of the ndo_start_xmit
++		 * XXX interface.
++		 *
++		 * This will call directly into u_ether's eth_start_xmit()
++		 */
++		netdev->netdev_ops->ndo_start_xmit(NULL, netdev);
++	}
++	return HRTIMER_NORESTART;
++}
++
++static struct sk_buff *package_for_tx(struct f_rndis *rndis)
++{
++	struct sk_buff *skb = NULL;
++
++	/* Stop the timer */
++	hrtimer_try_to_cancel(&rndis->task_timer);
++
++	/* Merge the skbs */
++	swap(skb, rndis->prepared_tx_skb);
++
++	return skb;
++}
++
+ /*-------------------------------------------------------------------------*/
+ 
+ static struct sk_buff *rndis_add_header(struct gether *port,
+ 					struct sk_buff *skb)
+ {
+-	struct sk_buff *skb2;
++	struct f_rndis *rndis = func_to_rndis(&port->func);
++	struct usb_composite_dev *cdev = rndis->port.func.config->cdev;
++	struct rndis_params *params = rndis->params;
++	struct sk_buff *skb2 = NULL;
++	int head_len = sizeof(struct rndis_packet_msg_type);
++
++	if (skb) {
++		if (rndis->prepared_tx_skb &&
++			(rndis->prepared_tx_skb_count >= params->max_in_pkts_per_xfer ||
++			(rndis->prepared_tx_skb->len + skb->len + head_len) >=
++			params->max_in_size_per_xfer)) {
++			DBG(cdev, "prepared tx skb count %d, len %d\n",
++				rndis->prepared_tx_skb_count, rndis->prepared_tx_skb->len);
++			skb2 = package_for_tx(rndis);
++		}
++
++		if (!rndis->prepared_tx_skb) {
++			/* Create a new skb for multi xfer. */
++			DBG(cdev, "create a new multi skb, len %d\n", params->max_in_size_per_xfer);
++
++			rndis->prepared_tx_skb =
++				alloc_skb(params->max_in_size_per_xfer, GFP_ATOMIC);
++			if (!rndis->prepared_tx_skb)
++				goto err;
+ 
+-	if (!skb)
+-		return NULL;
++			rndis->prepared_tx_skb->dev = rndis->netdev;
++			rndis->prepared_tx_skb_count = 0;
+ 
++			/* Start the timer. */
++			hrtimer_start(&rndis->task_timer, TX_TIMEOUT_NSECS,
++				      HRTIMER_MODE_REL_SOFT);
++		}
++
++		/*
++		 * Add the new data to the skb
++		 * PacketAlignmentFactor is 0, no need to add padding
++		 */
++		rndis_copy_hdr(rndis->prepared_tx_skb, skb);
++		skb_put_data(rndis->prepared_tx_skb, skb->data, skb->len);
++		rndis->prepared_tx_skb_count++;
++		dev_consume_skb_any(skb);
++		skb = NULL;
++	} else if (rndis->prepared_tx_skb) {
++		/* If we get here eth_start_xmit() was called with NULL skb by
++		 * rndis_tx_timeout() - hence, this is our signal to flush/send.
++		 */
++		DBG(cdev, "timer expired, prepared tx skb count %d, len %d\n",
++			rndis->prepared_tx_skb_count, rndis->prepared_tx_skb->len);
++		skb2 = package_for_tx(rndis);
++	}
++	return skb2;
++
++err:
+ 	skb2 = skb_realloc_headroom(skb, sizeof(struct rndis_packet_msg_type));
+ 	rndis_add_hdr(skb2);
+ 
+-	dev_kfree_skb(skb);
++	dev_consume_skb_any(skb);
+ 	return skb2;
+ }
+ 
+@@ -546,6 +637,7 @@ static int rndis_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
+ 
+ 		if (rndis->port.in_ep->enabled) {
+ 			DBG(cdev, "reset rndis\n");
++			rndis->netdev = NULL;
+ 			gether_disconnect(&rndis->port);
+ 		}
+ 
+@@ -582,8 +674,9 @@ static int rndis_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
+ 		net = gether_connect(&rndis->port);
+ 		if (IS_ERR(net))
+ 			return PTR_ERR(net);
++		rndis->netdev = net;
+ 
+-		rndis_set_param_dev(rndis->params, net,
++		rndis_set_param_dev(&rndis->port, rndis->params, net,
+ 				&rndis->port.cdc_filter);
+ 	} else
+ 		goto fail;
+@@ -604,6 +697,7 @@ static void rndis_disable(struct usb_function *f)
+ 	DBG(cdev, "rndis deactivated\n");
+ 
+ 	rndis_uninit(rndis->params);
++	rndis->netdev = NULL;
+ 	gether_disconnect(&rndis->port);
+ 
+ 	usb_ep_disable(rndis->notify);
+@@ -793,6 +887,9 @@ rndis_bind(struct usb_configuration *c, struct usb_function *f)
+ 		goto fail_free_descs;
+ 	}
+ 
++	hrtimer_init(&rndis->task_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_SOFT);
++	rndis->task_timer.function = rndis_tx_timeout;
++
+ 	/* NOTE:  all that is done without knowing or caring about
+ 	 * the network link ... which is unavailable to this code
+ 	 * until we're activated via set_alt().
+@@ -956,6 +1053,8 @@ static void rndis_unbind(struct usb_configuration *c, struct usb_function *f)
+ {
+ 	struct f_rndis		*rndis = func_to_rndis(f);
+ 
++	hrtimer_cancel(&rndis->task_timer);
++
+ 	kfree(f->os_desc_table);
+ 	f->os_desc_n = 0;
+ 	usb_free_all_descriptors(f);
+ 	
+--- a/drivers/usb/gadget/function/rndis.c
++++ b/drivers/usb/gadget/function/rndis.c
+@@ -39,6 +39,8 @@
+ 
+ #include "rndis.h"
+ 
++static int max_out_pkts_per_xfer;
++static int max_out_size_per_xfer;
+ 
+ /* The driver for your USB chip needs to support ep0 OUT to work with
+  * RNDIS, plus all three CDC Ethernet endpoints (interrupt not optional).
+@@ -574,12 +576,12 @@ static int rndis_init_response(struct rndis_params *params,
+ 	resp->MinorVersion = cpu_to_le32(RNDIS_MINOR_VERSION);
+ 	resp->DeviceFlags = cpu_to_le32(RNDIS_DF_CONNECTIONLESS);
+ 	resp->Medium = cpu_to_le32(RNDIS_MEDIUM_802_3);
+-	resp->MaxPacketsPerTransfer = cpu_to_le32(1);
+-	resp->MaxTransferSize = cpu_to_le32(
+-		  params->dev->mtu
++	resp->MaxPacketsPerTransfer = cpu_to_le32(params->max_out_pkts_per_xfer);
++	resp->MaxTransferSize = cpu_to_le32(params->max_out_pkts_per_xfer *
++		  (params->dev->mtu
+ 		+ sizeof(struct ethhdr)
+ 		+ sizeof(struct rndis_packet_msg_type)
+-		+ 22);
++		+ 22));
+ 	resp->PacketAlignmentFactor = cpu_to_le32(0);
+ 	resp->AFListOffset = cpu_to_le32(0);
+ 	resp->AFListSize = cpu_to_le32(0);
+@@ -790,7 +792,7 @@ EXPORT_SYMBOL_GPL(rndis_set_host_mac);
+  */
+ int rndis_msg_parser(struct rndis_params *params, u8 *buf)
+ {
+-	u32 MsgType, MsgLength;
++	u32 MsgType, MsgLength, RequestID, MajorVersion, MinorVersion, MaxTransferSize;
+ 	__le32 *tmp;
+ 
+ 	if (!buf)
+@@ -813,7 +815,12 @@ int rndis_msg_parser(struct rndis_params *params, u8 *buf)
+ 	case RNDIS_MSG_INIT:
+ 		pr_debug("%s: RNDIS_MSG_INIT\n",
+ 			__func__);
++		RequestID   = get_unaligned_le32(tmp++);
++		MajorVersion = get_unaligned_le32(tmp++);
++		MinorVersion = get_unaligned_le32(tmp++);
++		MaxTransferSize = get_unaligned_le32(tmp++);
+ 		params->state = RNDIS_INITIALIZED;
++		params->max_in_size_per_xfer = MaxTransferSize;
+ 		return rndis_init_response(params, (rndis_init_msg_type *)buf);
+ 
+ 	case RNDIS_MSG_HALT:
+@@ -922,6 +929,8 @@ struct rndis_params *rndis_register(void (*resp_avail)(void *v), void *v)
+ 	params->media_state = RNDIS_MEDIA_STATE_DISCONNECTED;
+ 	params->resp_avail = resp_avail;
+ 	params->v = v;
++	params->max_in_pkts_per_xfer  = RNDIS_MAX_IN_PKTS_PER_XFER;
++	params->max_out_pkts_per_xfer = RNDIS_MAX_OUT_PKTS_PER_XFER;
+ 	INIT_LIST_HEAD(&params->resp_queue);
+ 	spin_lock_init(&params->resp_lock);
+ 	pr_debug("%s: configNr = %d\n", __func__, i);
+@@ -954,8 +963,8 @@ void rndis_deregister(struct rndis_params *params)
+ 	rndis_put_nr(i);
+ }
+ EXPORT_SYMBOL_GPL(rndis_deregister);
+-int rndis_set_param_dev(struct rndis_params *params, struct net_device *dev,
+-			u16 *cdc_filter)
++int rndis_set_param_dev(struct gether *port, struct rndis_params *params,
++			struct net_device *dev, u16 *cdc_filter)
+ {
+ 	pr_debug("%s:\n", __func__);
+ 	if (!dev)
+@@ -965,7 +974,18 @@ int rndis_set_param_dev(struct rndis_params *params, struct net_device *dev,
+ 
+ 	params->dev = dev;
+ 	params->filter = cdc_filter;
+-
++	params->max_out_size_per_xfer = (params->max_out_pkts_per_xfer *
++					(dev->mtu
++					+ sizeof(struct ethhdr)
++					+ sizeof(struct rndis_packet_msg_type)
++					+ 22));
++	port->is_fixed = true;
++	port->fixed_out_len = params->max_out_size_per_xfer;
++
++	pr_debug("mtu %d, fixed_out_len %d\n", dev->mtu, port->fixed_out_len);
++
++	max_out_pkts_per_xfer = params->max_out_pkts_per_xfer;
++	max_out_size_per_xfer = params->max_out_size_per_xfer;
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(rndis_set_param_dev);
+@@ -1013,6 +1033,23 @@ void rndis_add_hdr(struct sk_buff *skb)
+ }
+ EXPORT_SYMBOL_GPL(rndis_add_hdr);
+ 
++void rndis_copy_hdr(struct sk_buff *dest_skb, struct sk_buff *new_skb)
++{
++	struct rndis_packet_msg_type header;
++	int head_len = sizeof(header);
++
++	if (!dest_skb || !new_skb)
++		return;
++
++	memset(&header, 0, head_len);
++	header.MessageType = cpu_to_le32(RNDIS_MSG_PACKET);
++	header.MessageLength = cpu_to_le32(head_len + new_skb->len);
++	header.DataOffset = cpu_to_le32(36);
++	header.DataLength = cpu_to_le32(new_skb->len);
++	skb_put_data(dest_skb, &header, head_len);
++}
++EXPORT_SYMBOL_GPL(rndis_copy_hdr);
++
+ void rndis_free_response(struct rndis_params *params, u8 *buf)
+ {
+ 	rndis_resp_t *r, *n;
+@@ -1071,26 +1108,78 @@ int rndis_rm_hdr(struct gether *port,
+ 			struct sk_buff *skb,
+ 			struct sk_buff_head *list)
+ {
+-	/* tmp points to a struct rndis_packet_msg_type */
+-	__le32 *tmp = (void *)skb->data;
++	int ret = 0;
++	int num_pkts = 1;
+ 
+-	/* MessageType, MessageLength */
+-	if (cpu_to_le32(RNDIS_MSG_PACKET)
+-			!= get_unaligned(tmp++)) {
+-		dev_kfree_skb_any(skb);
+-		return -EINVAL;
+-	}
+-	tmp++;
++	while (skb->len) {
++		struct rndis_packet_msg_type *hdr;
++		struct sk_buff *skb2;
++		u32 msg_len, data_offset, data_len;
++
++		/* some rndis hosts send extra byte to avoid zlp, ignore it */
++		if (skb->len == 1) {
++			pr_info("skb len 1, should ignore!\n");
++			break;
++		}
++
++		if (skb->len < sizeof(*hdr)) {
++			pr_err("invalid rndis pkt: skblen:%u hdr_len:%zu",
++			       skb->len, sizeof(*hdr));
++			skb->len = 0;
++			ret = -EINVAL;
++			break;
++		}
+ 
+-	/* DataOffset, DataLength */
+-	if (!skb_pull(skb, get_unaligned_le32(tmp++) + 8)) {
+-		dev_kfree_skb_any(skb);
+-		return -EOVERFLOW;
++		hdr = (void *)skb->data;
++		msg_len = le32_to_cpu(hdr->MessageLength);
++		data_offset = le32_to_cpu(hdr->DataOffset);
++		data_len = le32_to_cpu(hdr->DataLength);
++
++		if (skb->len < msg_len ||
++		    ((data_offset + data_len + 8) > msg_len)) {
++			pr_err("invalid rndis message: %d/%d/%d/%d, len:%d\n",
++			       le32_to_cpu(hdr->MessageType),
++			       msg_len, data_offset, data_len, skb->len);
++			skb->len = 0;
++			ret = -EOVERFLOW;
++			break;
++		}
++		if (le32_to_cpu(hdr->MessageType) != RNDIS_MSG_PACKET) {
++			pr_err("invalid rndis message: %d/%d/%d/%d, len:%d\n",
++			       le32_to_cpu(hdr->MessageType), msg_len,
++			       data_offset, data_len, skb->len);
++			skb->len = 0;
++			ret = -EINVAL;
++			break;
++		}
++
++		skb_pull(skb, data_offset + 8);
++
++		if (data_len == skb->len) {
++			skb_trim(skb, data_len);
++			break;
++		}
++
++		skb2 = skb_clone(skb, GFP_ATOMIC);
++		if (!skb2) {
++			pr_err("%s:skb clone failed\n", __func__);
++			skb->len = 0;
++			ret = -ENOMEM;
++			break;
++		}
++
++		skb_pull(skb, msg_len - (data_offset + 8));
++		skb_trim(skb2, data_len);
++		skb_queue_tail(list, skb2);
++
++		num_pkts++;
+ 	}
+-	skb_trim(skb, get_unaligned_le32(tmp++));
++
++	if (num_pkts > max_out_pkts_per_xfer)
++		pr_err("max out pkts per xfer rcvd %d\n", num_pkts);
+ 
+ 	skb_queue_tail(list, skb);
+-	return 0;
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(rndis_rm_hdr);
+ 
+
+--- a/drivers/usb/gadget/function/rndis.h
++++ b/drivers/usb/gadget/function/rndis.h
+@@ -19,6 +19,9 @@
+ #define RNDIS_MAXIMUM_FRAME_SIZE	1518
+ #define RNDIS_MAX_TOTAL_SIZE		1558
+ 
++#define RNDIS_MAX_IN_PKTS_PER_XFER	10
++#define RNDIS_MAX_OUT_PKTS_PER_XFER	3
++
+ typedef struct rndis_init_msg_type {
+ 	__le32	MessageType;
+ 	__le32	MessageLength;
+@@ -175,18 +178,24 @@ typedef struct rndis_params {
+ 	void			*v;
+ 	struct list_head	resp_queue;
+ 	spinlock_t		resp_lock;
++
++	u32			max_in_size_per_xfer;
++	u32			max_in_pkts_per_xfer;
++	u32			max_out_size_per_xfer;
++	u32			max_out_pkts_per_xfer;
+ } rndis_params;
+ 
+ /* RNDIS Message parser and other useless functions */
+ int  rndis_msg_parser(struct rndis_params *params, u8 *buf);
+ struct rndis_params *rndis_register(void (*resp_avail)(void *v), void *v);
+ void rndis_deregister(struct rndis_params *params);
+-int  rndis_set_param_dev(struct rndis_params *params, struct net_device *dev,
+-			 u16 *cdc_filter);
++int  rndis_set_param_dev(struct gether *port, struct rndis_params *params,
++			 struct net_device *dev, u16 *cdc_filter);
+ int  rndis_set_param_vendor(struct rndis_params *params, u32 vendorID,
+ 			    const char *vendorDescr);
+ int  rndis_set_param_medium(struct rndis_params *params, u32 medium,
+ 			     u32 speed);
++void rndis_copy_hdr(struct sk_buff *dest_skb, struct sk_buff *new_skb);
+ void rndis_add_hdr(struct sk_buff *skb);
+ int rndis_rm_hdr(struct gether *port, struct sk_buff *skb,
+ 			struct sk_buff_head *list);
+-- 
+2.34.1
+
+
+^ permalink raw reply related	[flat|nested] 6+ messages in thread
+* Re: [PATCH] usb: gadget: rndis: add multi packages support for rndis
+  2024-03-06  5:49 [PATCH] usb: gadget: rndis: add multi packages support for rndis Surong Pang
+@ 2024-03-26  9:34 ` Greg KH
+  2024-03-26  9:36 ` Greg KH
+  1 sibling, 0 replies; 6+ messages in thread
+From: Greg KH @ 2024-03-26  9:34 UTC (permalink / raw)
+  To: Surong Pang; +Cc: linux-usb, linux-kernel, Orson.Zhai, Zhiyong.liu, Surong.Pang
+
+On Wed, Mar 06, 2024 at 01:49:49PM +0800, Surong Pang wrote:
+> As ncm, aggergate multi skb packages and transfer them at one URB.
+> In USB2.0, the network throughput can be improved from about 18MB/S
+> to 35MB/S.
+
+Why is rndis still being used?  It's 

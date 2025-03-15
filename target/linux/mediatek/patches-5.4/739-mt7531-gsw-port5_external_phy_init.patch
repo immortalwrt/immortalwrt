@@ -1,0 +1,156 @@
+From 9206472ba03032aea120604e8637b52408ca4b3a Mon Sep 17 00:00:00 2001
+From: Landen Chao <landen.chao@mediatek.com>
+Date: Fri, 29 May 2020 15:12:35 +0800
+Subject: [PATCH 2/2] 740_patch
+
+Change-Id: I7e0164751702f573d5185c4290ff78688f42f603
+---
+ drivers/net/phy/mtk/mt753x/Makefile        |  3 +-
+ drivers/net/phy/mtk/mt753x/mt7531.c        |  3 +
+ drivers/net/phy/mtk/mt753x/mt753x.h        |  1 +
+ drivers/net/phy/mtk/mt753x/mt753x_extphy.c | 69 ++++++++++++++++++++++
+ drivers/net/phy/mtk/mt753x/mt753x_extphy.h | 18 ++++++
+ 5 files changed, 93 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/net/phy/mtk/mt753x/mt753x_extphy.c
+ create mode 100644 drivers/net/phy/mtk/mt753x/mt753x_extphy.h
+
+diff --git a/drivers/net/phy/mtk/mt753x/Makefile b/drivers/net/phy/mtk/mt753x/Makefile
+index 384b0ff7..694ffa83 100644
+--- a/drivers/net/phy/mtk/mt753x/Makefile
++++ b/drivers/net/phy/mtk/mt753x/Makefile
+@@ -7,5 +7,6 @@ obj-$(CONFIG_MT753X_GSW)	+= mt753x.o
+ mt753x-$(CONFIG_SWCONFIG)	+= mt753x_swconfig.o
+ 
+ mt753x-y			+= mt753x_mdio.o mt7530.o mt7531.o \
+-					mt753x_common.o mt753x_vlan.o mt753x_nl.o mt753x_phy.o
++					mt753x_common.o mt753x_vlan.o mt753x_nl.o mt753x_phy.o \
++					mt753x_extphy.o
+ 
+diff --git a/drivers/net/phy/mtk/mt753x/mt7531.c b/drivers/net/phy/mtk/mt753x/mt7531.c
+index 04729835..4a2943b1 100644
+--- a/drivers/net/phy/mtk/mt753x/mt7531.c
++++ b/drivers/net/phy/mtk/mt753x/mt7531.c
+@@ -265,6 +265,9 @@ static int mt7531_set_port_sgmii_force_mode(struct gsw_mt753x *gsw, u32 port,
+ 		return -EINVAL;
+ 	}
+ 
++	if (port == 5)
++		extphy_init(gsw, port);
++
+ 	port_base = port - 5;
+ 
+ 	switch (port_cfg->speed) {
+diff --git a/drivers/net/phy/mtk/mt753x/mt753x.h b/drivers/net/phy/mtk/mt753x/mt753x.h
+index 5053a7d7..a3f343cd 100644
+--- a/drivers/net/phy/mtk/mt753x/mt753x.h
++++ b/drivers/net/phy/mtk/mt753x/mt753x.h
+@@ -154,6 +154,7 @@ void mt753x_irq_worker(struct work_struct *work);
+ void mt753x_irq_enable(struct gsw_mt753x *gsw);
+ 
+ int mt753x_phy_calibration(struct gsw_mt753x *gsw, u8 phyaddr);
++int extphy_init(struct gsw_mt753x *gsw, int addr);
+ 
+ /* MDIO Indirect Access Registers */
+ #define MII_MMD_ACC_CTL_REG		0x0d
+diff --git a/drivers/net/phy/mtk/mt753x/mt753x_extphy.c b/drivers/net/phy/mtk/mt753x/mt753x_extphy.c
+new file mode 100644
+index 00000000..f58e8a62
+--- /dev/null
++++ b/drivers/net/phy/mtk/mt753x/mt753x_extphy.c
+@@ -0,0 +1,69 @@
++/*
++ * Driver for MediaTek MT7531 gigabit switch
++ *
++ * Copyright (C) 2018 MediaTek Inc. All Rights Reserved.
++ *
++ * Author: Landen Chao <landen.chao@mediatek.com>
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ */
++
++#include <linux/kernel.h>
++#include <linux/mii.h>
++
++#include "mt753x.h"
++#include "mt753x_regs.h"
++#include "mt753x_extphy.h"
++
++int gpy211_init(struct gsw_mt753x *gsw, int addr)
++{
++	/* Enable rate adaption */
++	gsw->mmd_write(gsw, addr, 0x1e, 0x8, 0x24e2);
++
++	return 0;
++}
++
++static struct mt753x_extphy_id extphy_tbl[] = {
++        {0x67c9de00, 0x0fffffff0, gpy211_init},
++};
++
++static u32 get_cl22_phy_id(struct gsw_mt753x *gsw, int addr)
++{
++	int phy_reg;
++	u32 phy_id = 0;
++
++	phy_reg = gsw->mii_read(gsw, addr, MII_PHYSID1);
++	if (phy_reg < 0)
++		return 0;
++	phy_id = (phy_reg & 0xffff) << 16;
++
++	/* Grab the bits from PHYIR2, and put them in the lower half */
++	phy_reg = gsw->mii_read(gsw, addr, MII_PHYSID2);
++	if (phy_reg < 0)
++		return 0;
++
++	phy_id |= (phy_reg & 0xffff);
++
++	return phy_id;
++}
++
++static inline bool phy_id_is_match(u32 id, struct mt753x_extphy_id *phy)
++{
++	return ((id & phy->phy_id_mask) == (phy->phy_id & phy->phy_id_mask));
++}
++
++int extphy_init(struct gsw_mt753x *gsw, int addr)
++{
++	int i;
++	u32 phy_id;
++	struct mt753x_extphy_id *extphy;
++
++	phy_id = get_cl22_phy_id(gsw, addr);
++	for (i = 0; i < ARRAY_SIZE(extphy_tbl); i++) {
++		extphy = &extphy_tbl[i];
++		if(phy_id_is_match(phy_id, extphy))
++			extphy->init(gsw, addr);
++	}
++
++	return 0;
++}
+diff --git a/drivers/net/phy/mtk/mt753x/mt753x_extphy.h b/drivers/net/phy/mtk/mt753x/mt753x_extphy.h
+new file mode 100644
+index 00000000..2b72c8a9
+--- /dev/null
++++ b/drivers/net/phy/mtk/mt753x/mt753x_extphy.h
+@@ -0,0 +1,18 @@
++/*
++ * Driver for MediaTek MT753x gigabit switch
++ *
++ * Copyright (C) 2018 MediaTek Inc. All Rights Reserved.
++ *
++ * Author: Landen Chao <landen.chao@mediatek.com>
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ */
++
++#ifndef _MT753X_EXTPHY_H_
++#define _MT753X_EXTPHY_H_
++struct mt753x_extphy_id {
++        u32 phy_id;
++        u32 phy_id_mask;
++	int (*init)(struct gsw_mt753x *gsw, int addr);
++};
++#endif
+-- 
+2.17.1
+

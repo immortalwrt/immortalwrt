@@ -5,7 +5,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	model = "Engenius EAP300 v2";
@@ -33,15 +32,13 @@
 		compatible = "gpio-leds";
 
 		led_power: power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:power";
 			gpios = <&gpio 0 GPIO_ACTIVE_LOW>;
 			default-state = "on";
 		};
 
 		wlan {
-			function = LED_FUNCTION_WLAN;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:wlan";
 			gpios = <&gpio 17 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "phy0tpt";
 		};
@@ -49,29 +46,11 @@
 };
 
 &eth1 {
-	nvmem-cells = <&macaddr_art_0>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&art 0x0>;
 };
 
 &wmac {
 	status = "okay";
 
-	nvmem-cells = <&cal_art_1000>;
-	nvmem-cell-names = "calibration";
-};
-
-&art {
-	nvmem-layout {
-		compatible = "fixed-layout";
-		#address-cells = <1>;
-		#size-cells = <1>;
-
-		macaddr_art_0: macaddr@0 {
-			reg = <0x0 0x6>;
-		};
-
-		cal_art_1000: calibration@1000 {
-			reg = <0x1000 0x440>;
-		};
-	};
+	mtd-cal-data = <&art 0x1000>;
 };

@@ -2,7 +2,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "d-team,pbr-d1", "mediatek,mt7628an-soc";
@@ -27,16 +26,14 @@
 		compatible = "gpio-leds";
 
 		usb {
-			function = LED_FUNCTION_USB;
-			color = <LED_COLOR_ID_ORANGE>;
+			label = "orange:usb";
 			gpios = <&gpio 0 GPIO_ACTIVE_LOW>;
 			trigger-sources = <&ohci_port1>, <&ehci_port1>;
 			linux,default-trigger = "usbport";
 		};
 
 		led_power: power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_ORANGE>;
+			label = "orange:power";
 			gpios = <&gpio 14 GPIO_ACTIVE_LOW>;
 			default-state = "on";
 		};
@@ -115,20 +112,10 @@
 				reg = <0x30000 0x10000>;
 			};
 
-			partition@40000 {
+			factory: partition@40000 {
 				label = "factory";
 				reg = <0x40000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_factory_28: macaddr@28 {
-						reg = <0x28 0x6>;
-					};
-				};
 			};
 
 			partition@50000 {
@@ -165,11 +152,10 @@
 };
 
 &ethernet {
-	nvmem-cells = <&macaddr_factory_28>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0x28>;
 };
 
 &sdhci {
 	status = "okay";
-	cd-inverted;
+	mediatek,cd-high;
 };

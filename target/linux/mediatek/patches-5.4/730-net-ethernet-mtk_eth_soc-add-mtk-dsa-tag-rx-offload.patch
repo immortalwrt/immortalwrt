@@ -1,0 +1,44 @@
+--- linux-5.4.77.orig/net/dsa/tag_mtk.c
++++ linux-5.4.77/net/dsa/tag_mtk.c
+@@ -73,22 +73,28 @@ static struct sk_buff *mtk_tag_rcv(struc
+ 	bool is_multicast_skb = is_multicast_ether_addr(dest) &&
+ 				!is_broadcast_ether_addr(dest);
+ 
+-	if (unlikely(!pskb_may_pull(skb, MTK_HDR_LEN)))
+-		return NULL;
++	if (dev->features & NETIF_F_HW_VLAN_CTAG_RX) {
++		hdr = ntohs(skb->vlan_proto);
++		skb->vlan_proto = 0;
++		skb->vlan_tci = 0;
++	} else {
++		if (unlikely(!pskb_may_pull(skb, MTK_HDR_LEN)))
++			return NULL;
+ 
+-	/* The MTK header is added by the switch between src addr
+-	 * and ethertype at this point, skb->data points to 2 bytes
+-	 * after src addr so header should be 2 bytes right before.
+-	 */
+-	phdr = (__be16 *)(skb->data - 2);
+-	hdr = ntohs(*phdr);
++		/* The MTK header is added by the switch between src addr
++		 * and ethertype at this point, skb->data points to 2 bytes
++		 * after src addr so header should be 2 bytes right before.
++		 */
++		phdr = (__be16 *)(skb->data - 2);
++		hdr = ntohs(*phdr);
+ 
+-	/* Remove MTK tag and recalculate checksum. */
+-	skb_pull_rcsum(skb, MTK_HDR_LEN);
++		/* Remove MTK tag and recalculate checksum. */
++		skb_pull_rcsum(skb, MTK_HDR_LEN);
+ 
+-	memmove(skb->data - ETH_HLEN,
+-		skb->data - ETH_HLEN - MTK_HDR_LEN,
+-		2 * ETH_ALEN);
++		memmove(skb->data - ETH_HLEN,
++			skb->data - ETH_HLEN - MTK_HDR_LEN,
++			2 * ETH_ALEN);
++	}
+ 
+ 	/* Get source port information */
+ 	port = (hdr & MTK_HDR_RECV_SOURCE_PORT_MASK);

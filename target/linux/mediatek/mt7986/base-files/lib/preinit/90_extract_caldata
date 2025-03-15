@@ -1,0 +1,28 @@
+. /lib/functions/caldata.sh
+. /lib/functions/system.sh
+
+caldata_validate() {
+	local macprefix
+
+	[ -e "/lib/firmware/$FIRMWARE" ] || return 1
+
+	macprefix=$(hexdump -v -n 2 -s 4 -e '1/1 "%02x:" "%02x"' "/lib/firmware/$FIRMWARE" 2>"/dev/null")
+	if [ "$macprefix" = "00:0c" ] || [ -z "$macprefix" ]; then
+		return 1
+	else
+		return 0
+	fi
+}
+
+do_extract_caldata() {
+	case $(board_name) in
+	glinet,gl-mt6000|\
+	jdcloud,re-cp-03)
+		FIRMWARE=MT7986_ePAeLNA_EEPROM_AX6000.bin
+		caldata_validate && exit 0
+		caldata_extract_mmc "factory" 0x0 0x1000
+		;;
+	esac
+}
+
+boot_hook_add preinit_main do_extract_caldata

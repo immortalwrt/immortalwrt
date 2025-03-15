@@ -1,0 +1,515 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Auto"
+msgstr "自动"
+
+msgid "Disable"
+msgstr "禁用"
+
+msgid "US"
+msgstr "US (美国)"
+
+msgid "JP"
+msgstr "JP (日本)"
+
+msgid "FR"
+msgstr "FR (法国)"
+
+msgid "IE"
+msgstr "IE (爱尔兰)"
+
+msgid "CN"
+msgstr "CN (中国)"
+
+msgid "NONE"
+msgstr "无"
+
+msgid "Short"
+msgstr "Short (短)"
+
+msgid "long"
+msgstr "Long (长)"
+
+msgid "Enable"
+msgstr "启用"
+
+msgid "Mandatory"
+msgstr "强制"
+
+msgid "Always On"
+msgstr "始终开启"
+
+msgid "Always Off"
+msgstr "始终关闭"
+
+msgid "Tempature"
+msgstr "温度"
+
+msgid "Tx Power"
+msgstr "发射功率"
+
+msgid "Driver version"
+msgstr "驱动版本"
+
+msgid "Current Band"
+msgstr "当前频段"
+
+msgid "Work mode"
+msgstr "工作模式"
+
+msgid "CONFIG"
+msgstr "配置"
+
+msgid "RELOAD"
+msgstr "重载"
+
+msgid "ADD"
+msgstr "添加"
+
+msgid "RECONNECT"
+msgstr "重连"
+
+msgid "DISABLE"
+msgstr "禁用"
+
+msgid "ENABLE"
+msgstr "启用"
+
+msgid "REMOVE"
+msgstr "移除"
+
+msgid "Station List"
+msgstr "已连接站点"
+
+msgid "Interface"
+msgstr "接口"
+
+msgid "MAC-Address"
+msgstr "MAC地址"
+
+msgid "Signal"
+msgstr "信号强度"
+
+msgid "TX Rate"
+msgstr "发射速率"
+
+msgid "Rx Rate"
+msgstr "接收速率"
+
+msgid "Connected Time"
+msgstr "已连接时间"
+
+msgid "Channel"
+msgstr "信道"
+
+msgid "Security Mode"
+msgstr "加密方式"
+
+msgid "Action"
+msgstr "动作"
+
+msgid "Choose This"
+msgstr "选择"
+
+msgid "40MHz HT Ext Channel"
+msgstr "HT 40MHz 扩展信道"
+
+msgid "80MHz Second VHT Channel"
+msgstr "VHT 80MHz 第二信道"
+
+msgid "Type"
+msgstr "接口类型"
+
+msgid "Status"
+msgstr "状态"
+
+msgid "DISCONNECT"
+msgstr "断开"
+
+msgid "Connected"
+msgstr "已连接"
+
+msgid "Disconnected"
+msgstr "未连接"
+
+msgid "FATAL ERROR: Incorrect Profile Settings"
+msgstr "严重错误: 配置文件设置不正确"
+
+msgid "Error: value not present in dat file"
+msgstr "错误：dat文件中未指定SSID值"
+
+msgid "Wireless is disabled or not associated"
+msgstr "无线已禁用或未关联"
+
+msgid "Processing request."
+msgstr "正在处理请求..."
+
+msgid "need reload to apply changes"
+msgstr "请重启无线以应用设置"
+
+msgid "Click here"
+msgstr "点击此处"
+
+msgid "to apply changes"
+msgstr "以应用设置"
+
+msgid "Wireless Mode"
+msgstr "无线模式"
+
+msgid "Chip Configurations"
+msgstr "无线芯片设置"
+
+msgid "Device Configuration"
+msgstr "无线设备设置"
+
+msgid "Interface Configurations"
+msgstr "无线接口设置"
+
+msgid "ApCli Configurations"
+msgstr "ApCli设置"
+
+msgid "Loading connection information of"
+msgstr "正在加载连接信息"
+
+msgid "ApCli Available Wireless Networks"
+msgstr "ApCli可用无线网络列表"
+
+msgid "ApCli Connection Configurations"
+msgstr "ApCli连接设置"
+
+msgid "Decline BA Request"
+msgstr "拒绝BlockAck请求"
+
+msgid "Reverse Direction Grant (RDG)"
+msgstr "HT反向授权(RDG)"
+
+msgid "BA Win size"
+msgstr "Block Ack窗口大小"
+
+msgid "HT Disallow TKIP"
+msgstr "不允许HT TKIP"
+
+msgid "Wi-Fi HWNAT"
+msgstr "启用Wi-Fi硬件加速"
+
+msgid "E2pAccessMode"
+msgstr "EEPROM访问方式"
+
+msgid "Beacon Interval"
+msgstr "Beacon间隔"
+
+msgid "Data Beacon Rate (DTIM)"
+msgstr "DTIM周期"
+
+msgid "BG Protection Mode"
+msgstr "BG保护模式"
+
+msgid "Short Preamble"
+msgstr "启用短前导码"
+
+msgid "TX Burst"
+msgstr "启用突发传输"
+
+msgid "Short Slot"
+msgstr "启用短时槽"
+
+msgid "Channel Auto"
+msgstr "自动信道"
+
+msgid "BSS color"
+msgstr "BSS颜色代码"
+
+msgid "TWT Support"
+msgstr "TWT节能机制"
+
+msgid "Country Code"
+msgstr "国家代码"
+
+msgid "Country Region"
+msgstr "国家区域"
+
+msgid "Channel BandWidth"
+msgstr "信道宽度"
+
+msgid "TX Stream"
+msgstr "发射空间流"
+
+msgid "RX Stream"
+msgstr "接收空间流"
+
+msgid "TX Power"
+msgstr "发射功率"
+
+msgid "DFS"
+msgstr "动态频率选择(DFS)"
+
+msgid "Beam Forming and MIMO Setting"
+msgstr "波束成形与MU-MIMO设置"
+
+msgid "Spatial Reuse"
+msgstr "空间复用"
+
+msgid "Auth Mode"
+msgstr "认证模式"
+
+msgid "Encryption"
+msgstr "加密方式"
+
+msgid "Key Renewal Interval"
+msgstr "组密钥更新周期"
+
+msgid "Key"
+msgstr "密码"
+
+msgid "MFPC"
+msgstr "兼容保护管理帧(MFPC)"
+
+msgid "MFPR"
+msgstr "强制保护管理帧(MFPR)"
+
+msgid "Hidden SSID"
+msgstr "隐藏SSID"
+
+msgid "AP Isolation"
+msgstr "启用AP隔离"
+
+msgid "WMM Capable"
+msgstr "启用WMM"
+
+msgid "Fixed TX Rate"
+msgstr "固定发射速率"
+
+msgid "HT STBC"
+msgstr "启用HT STBC"
+
+msgid "HT LDPC"
+msgstr "启用HT LDPC"
+
+msgid "VHT STBC"
+msgstr "启用VHT STBC"
+
+msgid "VHT LDPC"
+msgstr "启用VHT LDPC"
+
+msgid "DLS Capable"
+msgstr "启用终端直通(DLS)"
+
+msgid "802.11k RRM"
+msgstr "启用 802.11k"
+
+msgid "802.11r FT"
+msgstr "启用 802.11r"
+
+msgid "APSD Capable"
+msgstr "启用节能模式(APSD)"
+
+msgid "Fragment Threshold"
+msgstr "分片阈值"
+
+msgid "RTS Threshold"
+msgstr "RTS阈值"
+
+msgid "VHT Short GI"
+msgstr "VHT保护间隔(GI)"
+
+msgid "VHT BW Signaling"
+msgstr "VHT动态频宽信令"
+
+msgid "Dynamic"
+msgstr "动态"
+
+msgid "HT Protection"
+msgstr "HT保护模式"
+
+msgid "HT Guard Interval"
+msgstr "HT保护间隔(GI)"
+
+msgid "HT Operating Mode"
+msgstr "HT操作模式"
+
+msgid "HT Mixed Mode"
+msgstr "HT混合模式(Mixed)"
+
+msgid "HT Green Field"
+msgstr "HT绿野模式(Green Field)"
+
+msgid "Auto Block ACK"
+msgstr "自动块确认(BlockAck)"
+
+msgid "Access Control"
+msgstr "访问控制"
+
+msgid "Access Policy"
+msgstr "访问控制策略"
+
+msgid "Access control MAC address list"
+msgstr "访问控制MAC地址列表"
+
+msgid "White List"
+msgstr "白名单模式"
+
+msgid "Black List"
+msgstr "黑名单模式"
+
+msgid "Basic Settings"
+msgstr "基本设置"
+
+msgid "HE Settings"
+msgstr "HE设置"
+
+msgid "DL OFDMA"
+msgstr "下行OFDMA"
+
+msgid "UL OFDMA"
+msgstr "上行OFDMA"
+
+msgid "DL MU-MIMO"
+msgstr "下行MU-MIMO"
+
+msgid "UL MU-MIMO"
+msgstr "上行MU-MIMO"
+
+msgid "Scan Wireless Network"
+msgstr "扫描无线网络"
+
+msgid "ApClient Mode"
+msgstr "AP客户端模式"
+
+msgid "APClient/Repeater Mode."
+msgstr "AP客户端中继模式。"
+
+msgid "MAC Repeater Mode"
+msgstr "启用MAC中继模式"
+
+msgid "Root AP SSID"
+msgstr "上级AP SSID"
+
+msgid "Root AP Channel"
+msgstr "上级AP信道"
+
+msgid "Root AP Authentication Mode"
+msgstr "上级AP认证方式"
+
+msgid "Root AP Encryption"
+msgstr "上级AP加密方式"
+
+msgid "Root AP WPA Key"
+msgstr "上级AP WPA密钥"
+
+msgid "ApCli MFPC"
+msgstr "ApCli兼容保护管理帧(MFPC)"
+
+msgid "ApCli MFPR"
+msgstr "ApCli强制保护管理帧(MFPR)"
+
+msgid "ApCli MFPSHA256"
+msgstr "ApCli启用SHA256保护管理帧"
+
+msgid "WEP Default Key"
+msgstr "WEP默认密钥ID"
+
+msgid "Root AP WEP Key"
+msgstr "上级AP WEP密钥"
+
+msgid "Length"
+msgstr "长度"
+
+msgid "WEP Key"
+msgstr "WEP密钥"
+
+msgid "WEP Key Type"
+msgstr "WEP密钥类型"
+
+msgid "PMK Cache Period"
+msgstr "PMK缓存周期"
+
+msgid "WEP for 8021X"
+msgstr "启用8021X WEP"
+
+msgid "Pre-Authentication"
+msgstr "启用预认证"
+
+msgid "Radius Server IP"
+msgstr "Radius认证服务器IP"
+
+msgid "Radius Server Port"
+msgstr "Radius认证服务器端口"
+
+msgid "Radius Key"
+msgstr "Radius密钥"
+
+msgid "Radius Session Timeout"
+msgstr "Radius会话超时时间"
+
+msgid "Radius Idle Timeout"
+msgstr "Radius空闲超时时间"
+
+msgid "MFPSHA256"
+msgstr "启用SHA256保护管理帧"
+
+msgid "Please wait while the settings are being applied."
+msgstr "正在应用设置，请稍候。"
+
+msgid "Please wait while the request is being processed."
+msgstr "正在处理请求，请稍候。"
+
+msgid "No wireless device found!"
+msgstr "未找到无线设备！"
+
+msgid "Please input a valid radius server port number."
+msgstr "请输入有效的Radius服务器端口号。"
+
+msgid "The radius shared secret contains invalid characters."
+msgstr "Radius密钥包含无效字符。"
+
+msgid "Please input a valid session timeout number or u may have left it empty."
+msgstr "请输入有效的Radius会话超时时间。"
+
+msgid "Radius session time out is empty."
+msgstr "Radius会话超时时间为空。"
+
+msgid "Please input a valid idle timeout number or u may have left it empty."
+msgstr "请输入有效的Radius空闲超时时间。"
+
+msgid "Radius idle time out is empty."
+msgstr "Radius空闲超时时间为空。"
+
+msgid "IGMP Snooping"
+msgstr "IGMP 侦听"
+
+msgid "Security"
+msgstr "安全性"
+
+msgid "Restore Profile to Factory Settings"
+msgstr "恢复无线配置文件为出厂设置"
+
+msgid "Are you sure to RELOAD"
+msgstr "你确认要重载"
+
+msgid "Are you sure to DISABLE"
+msgstr "你确认要禁用"
+
+msgid "Are you sure to REMOVE"
+msgstr "你确认要移除"
+
+msgid "Are you sure to RECONNECT"
+msgstr "你确认要重新连接"
+
+msgid "Are you sure to DISCONNECT"
+msgstr "你确认要断开"
+
+msgid "Are you sure to ADD wireless interface?"
+msgstr "你确认要新增无线接口?"
+
+msgid "Enable wireless device"
+msgstr "启用此无线设备"
+
+msgid "Wireless device is disabled"
+msgstr "无线设备已禁用"
+
+msgid "Kick STA Threshold"
+msgstr "弱信号剔除阈值"
+
+msgid "STA Assoc Threshold"
+msgstr "弱信号接入阈值"

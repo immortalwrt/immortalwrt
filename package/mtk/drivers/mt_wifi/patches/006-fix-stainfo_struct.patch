@@ -1,0 +1,157 @@
+--- a/mt_wifi/embedded/common/cmm_info.c	2023-08-25 01:02:11.348135475 +0800
++++ b/mt_wifi/embedded/common/cmm_info.c	2023-08-25 01:05:43.760179658 +0800
+@@ -6980,21 +6980,104 @@ USHORT RTMPGetLastTxRate(PRTMP_ADAPTER p
+ 		lastTxRate.field.MCS = getLegacyOFDMMCSIndex(rTxStatResult.rEntryTxRate.MCS) & 0x0000003F;
+ 	else
+ 		lastTxRate.field.MCS = rTxStatResult.rEntryTxRate.MCS;
++#else
++	lastTxRate.word = pEntry->HTPhyMode.word;
++#endif /* RACTRL_FW_OFFLOAD_SUPPORT */
++	return lastTxRate.word;
++}
++
++// fix AvgRssi3 and HTTRANSMIT_SETTING.MODE
++
++typedef union _HTTRANSMIT_SETTING_FIX {
++#ifdef RT_BIG_ENDIAN
++	struct {
++		USHORT MODE:4;	/* Use definition MODE_xxx. */
++		USHORT iTxBF:1;
++		USHORT eTxBF:1;
++		USHORT STBC:1;	/* only support in HT/VHT mode with MCS0~7 */
++		USHORT ShortGI:1;	/* TBD: need to extend to 2 bits for HE GI */
++		USHORT BW:2;	/* channel bandwidth 20MHz/40/80 MHz */
++		USHORT ldpc:1;
++		USHORT MCS:6;	/* MCS */
++	} field;
++#else
++	struct {
++		USHORT MCS:6;
++		USHORT ldpc:1;
++		USHORT BW:2;
++		USHORT ShortGI:1;
++		USHORT STBC:1;
++		USHORT eTxBF:1;
++		USHORT iTxBF:1;
++		USHORT MODE:4;
++	} field;
++#endif
++	UINT32 word;
++} HTTRANSMIT_SETTING_FIX, *PHTTRANSMIT_SETTING_FIX;
+ 
++typedef struct _RT_802_11_MAC_ENTRY_FIX {
++	UCHAR ApIdx;
++	UCHAR Addr[MAC_ADDR_LEN];
++	UINT16 Aid;
++	UCHAR Psm;		/* 0:PWR_ACTIVE, 1:PWR_SAVE */
++	UCHAR MimoPs;		/* 0:MMPS_STATIC, 1:MMPS_DYNAMIC, 3:MMPS_Enabled */
++	CHAR AvgRssi0;
++	CHAR AvgRssi1;
++	CHAR AvgRssi2;
++	CHAR AvgRssi3;
++	UINT32 ConnectedTime;
++	HTTRANSMIT_SETTING_FIX TxRate;
++	HTTRANSMIT_SETTING_FIX LastRxRate;
++	/*
++		sync with WEB UI's structure for ioctl usage.
++	*/
++	SHORT StreamSnr[3];				/* BF SNR from RXWI. Units=0.25 dB. 22 dB offset removed */
++	SHORT SoundingRespSnr[3];			/* SNR from Sounding Response. Units=0.25 dB. 22 dB offset removed */
++	/*	SHORT TxPER;	*/					/* TX PER over the last second. Percent */
++	/*	SHORT reserved;*/
++} RT_802_11_MAC_ENTRY_FIX, *PRT_802_11_MAC_ENTRY_FIX;
++
++typedef struct _RT_802_11_MAC_TABLE_FIX {
++	ULONG Num;
++	RT_802_11_MAC_ENTRY_FIX Entry[MAX_LEN_OF_MAC_TABLE];
++} RT_802_11_MAC_TABLE_FIX, *PRT_802_11_MAC_TABLE_FIX;
++
++UINT32 RTMPGetLastTxRate_fix(PRTMP_ADAPTER pAd, MAC_TABLE_ENTRY *pEntry)
++{
++	HTTRANSMIT_SETTING_FIX lastTxRate;
++#ifdef RACTRL_FW_OFFLOAD_SUPPORT
++	EXT_EVENT_TX_STATISTIC_RESULT_T rTxStatResult;
++#endif
++	os_zero_mem(&lastTxRate, sizeof(HTTRANSMIT_SETTING_FIX));
++#ifdef RACTRL_FW_OFFLOAD_SUPPORT
++	os_zero_mem(&rTxStatResult, sizeof(EXT_EVENT_TX_STATISTIC_RESULT_T));
++	MtCmdGetTxStatistic(pAd, GET_TX_STAT_ENTRY_TX_RATE, 0/*Don't Care*/, pEntry->wcid, &rTxStatResult);
++	lastTxRate.field.MODE = rTxStatResult.rEntryTxRate.MODE;
++	lastTxRate.field.BW = rTxStatResult.rEntryTxRate.BW;
++	lastTxRate.field.ldpc = rTxStatResult.rEntryTxRate.ldpc ? 1 : 0;
++	lastTxRate.field.ShortGI = rTxStatResult.rEntryTxRate.ShortGI ? 1 : 0;
++	lastTxRate.field.STBC = rTxStatResult.rEntryTxRate.STBC;
++
++	if (lastTxRate.field.MODE >= MODE_VHT)
++		lastTxRate.field.MCS = (((rTxStatResult.rEntryTxRate.VhtNss - 1) & 0x3) << 4) + rTxStatResult.rEntryTxRate.MCS;
++	else if (lastTxRate.field.MODE == MODE_OFDM)
++		lastTxRate.field.MCS = getLegacyOFDMMCSIndex(rTxStatResult.rEntryTxRate.MCS) & 0x0000003F;
++	else
++		lastTxRate.field.MCS = rTxStatResult.rEntryTxRate.MCS;
+ #else
+ 	lastTxRate.word = pEntry->HTPhyMode.word;
+ #endif /* RACTRL_FW_OFFLOAD_SUPPORT */
+ 	return lastTxRate.word;
+ }
+ 
+-USHORT RTMPGetLastRxRate(PRTMP_ADAPTER pAd, MAC_TABLE_ENTRY *pEntry)
++UINT32 RTMPGetLastRxRate(PRTMP_ADAPTER pAd, MAC_TABLE_ENTRY *pEntry)
+ {
+-	HTTRANSMIT_SETTING lastRxRate;
++	HTTRANSMIT_SETTING_FIX lastRxRate;
+ 	UCHAR ucBand = HcGetBandByWdev(pEntry->wdev);
+ #ifdef RACTRL_FW_OFFLOAD_SUPPORT
+ 	EXT_EVENT_PHY_STATE_RX_RATE rRxStatResult = {0, 0, 0, 0, 0, 0, 0, 0};
+ #endif
+-	os_zero_mem(&lastRxRate, sizeof(HTTRANSMIT_SETTING));
++	os_zero_mem(&lastRxRate, sizeof(HTTRANSMIT_SETTING_FIX));
+ 
+ #ifdef RACTRL_FW_OFFLOAD_SUPPORT
+ 	MtCmdPhyGetRxRate(pAd, CMD_PHY_STATE_CONTENTION_RX_PHYRATE, ucBand, pEntry->wcid, &rRxStatResult);
+@@ -7022,11 +7105,11 @@ VOID RTMPIoctlGetMacTableStaInfo(
+ {
+ 	INT i;
+ 	BOOLEAN need_send = FALSE;
+-	RT_802_11_MAC_TABLE *pMacTab = NULL;
+-	PRT_802_11_MAC_ENTRY pDst;
++	RT_802_11_MAC_TABLE_FIX *pMacTab = NULL;
++	PRT_802_11_MAC_ENTRY_FIX pDst;
+ 	MAC_TABLE_ENTRY *pEntry;
+ 	/* allocate memory */
+-	os_alloc_mem(NULL, (UCHAR **)&pMacTab, sizeof(RT_802_11_MAC_TABLE));
++	os_alloc_mem(NULL, (UCHAR **)&pMacTab, sizeof(RT_802_11_MAC_TABLE_FIX));
+ 	CHAR rssi[4] = {-127, -127, -127, -127};
+ 
+ 	if (pMacTab == NULL) {
+@@ -7034,7 +7117,7 @@ VOID RTMPIoctlGetMacTableStaInfo(
+ 		return;
+ 	}
+ 
+-	NdisZeroMemory(pMacTab, sizeof(RT_802_11_MAC_TABLE));
++	NdisZeroMemory(pMacTab, sizeof(RT_802_11_MAC_TABLE_FIX));
+ 
+ 	for (i = 0; VALID_UCAST_ENTRY_WCID(pAd, i); i++) {
+ 		pEntry = &(pAd->MacTab.Content[i]);
+@@ -7060,10 +7143,11 @@ VOID RTMPIoctlGetMacTableStaInfo(
+ 			pDst->AvgRssi0 = rssi[0];
+ 			pDst->AvgRssi1 = rssi[1];
+ 			pDst->AvgRssi2 = rssi[2];
++			pDst->AvgRssi3 = rssi[3];
+ 			/* the connected time per entry*/
+ 			pDst->ConnectedTime = pEntry->StaConnectTime;
+-			pDst->TxRate.word = RTMPGetLastTxRate(pAd, pEntry);
+-			pDst->LastRxRate = RTMPGetLastRxRate(pAd, pEntry);
++			pDst->TxRate.word = RTMPGetLastTxRate_fix(pAd, pEntry);
++			pDst->LastRxRate.word = RTMPGetLastRxRate(pAd, pEntry);
+ 			pMacTab->Num += 1;
+ 			/* Add to avoid Array cross board */
+ 			if (pMacTab->Num >= MAX_LEN_OF_MAC_TABLE)
+@@ -7072,7 +7156,7 @@ VOID RTMPIoctlGetMacTableStaInfo(
+ 		}
+ 	}
+ 
+-	wrq->u.data.length = sizeof(RT_802_11_MAC_TABLE);
++	wrq->u.data.length = sizeof(RT_802_11_MAC_TABLE_FIX);
+ 
+ 	if (copy_to_user(wrq->u.data.pointer, pMacTab, wrq->u.data.length))
+ 		MTWF_DBG(pAd, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_INFO, "copy_to_user() fail\n");

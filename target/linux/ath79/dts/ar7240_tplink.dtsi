@@ -4,7 +4,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	aliases {
@@ -54,8 +53,7 @@
 		compatible = "gpio-leds";
 
 		wlan {
-			function = LED_FUNCTION_WLAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:wlan";
 			gpios = <&ath9k 1 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "phy0tpt";
 		};
@@ -79,18 +77,6 @@
 				reg = <0x0 0x20000>;
 				label = "u-boot";
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_uboot_1fc00: macaddr@1fc00 {
-						compatible = "mac-base";
-						reg = <0x1fc00 0x6>;
-						#nvmem-cell-cells = <1>;
-					};
-				};
 			};
 
 			partition@20000 {
@@ -99,7 +85,7 @@
 				label = "firmware";
 			};
 
-			partition@3f0000 {
+			art: partition@3f0000 {
 				reg = <0x3f0000 0x10000>;
 				label = "art";
 				read-only;
@@ -118,8 +104,7 @@
 	ath9k: wifi@0,0 {
 		reg = <0x0000 0 0 0 0>;
 		qca,no-eeprom;
-		nvmem-cells = <&macaddr_uboot_1fc00 0>;
-		nvmem-cell-names = "mac-address";
+		mtd-mac-address = <&uboot 0x1fc00>;
 		#gpio-cells = <2>;
 		gpio-controller;
 	};

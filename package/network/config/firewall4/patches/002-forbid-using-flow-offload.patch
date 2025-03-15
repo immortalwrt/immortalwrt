@@ -1,0 +1,22 @@
+diff -u -r a/root/usr/share/firewall4/templates/ruleset.uc b/root/usr/share/firewall4/templates/ruleset.uc
+--- a/root/usr/share/firewall4/templates/ruleset.uc	2024-09-22 18:36:40.807922000 +0800
++++ b/root/usr/share/firewall4/templates/ruleset.uc	2024-09-24 22:46:42.733466056 +0800
+@@ -22,7 +22,6 @@
+ 		devices = {{ fw4.set(flowtable_devices, true) }};
+ 		counter;
+ {% if (fw4.default_option("flow_offloading_hw")): %}
+-		flags offload;
+ {% endif %}
+ 	}
+ 
+diff -u -r a/root/usr/share/ucode/fw4.uc b/root/usr/share/ucode/fw4.uc
+--- a/root/usr/share/ucode/fw4.uc	2024-09-22 18:36:40.815665000 +0800
++++ b/root/usr/share/ucode/fw4.uc	2024-09-24 22:48:01.357146392 +0800
+@@ -527,7 +527,6 @@
+ 	},
+ 
+ 	resolve_offload_devices: function() {
+-		if (!this.default_option("flow_offloading"))
+ 			return [];
+ 
+ 		let devstatus = null;

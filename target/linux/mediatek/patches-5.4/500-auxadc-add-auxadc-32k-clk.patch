@@ -1,0 +1,68 @@
+diff --git a/drivers/iio/adc/mt6577_auxadc.c b/drivers/iio/adc/mt6577_auxadc.c
+index 2449d91..b8a43eb 100644
+--- a/drivers/iio/adc/mt6577_auxadc.c
++++ b/drivers/iio/adc/mt6577_auxadc.c
+@@ -42,6 +42,7 @@ struct mtk_auxadc_compatible {
+ struct mt6577_auxadc_device {
+ 	void __iomem *reg_base;
+ 	struct clk *adc_clk;
++	struct clk *adc_32k_clk;
+ 	struct mutex lock;
+ 	const struct mtk_auxadc_compatible *dev_comp;
+ };
+@@ -214,6 +215,12 @@ static int __maybe_unused mt6577_auxadc_resume(struct device *dev)
+ 		return ret;
+ 	}
+ 
++	ret = clk_prepare_enable(adc_dev->adc_32k_clk);
++	if (ret) {
++		pr_err("failed to enable auxadc clock\n");
++		return ret;
++	}
++
+ 	mt6577_auxadc_mod_reg(adc_dev->reg_base + MT6577_AUXADC_MISC,
+ 			      MT6577_AUXADC_PDN_EN, 0);
+ 	mdelay(MT6577_AUXADC_POWER_READY_MS);
+@@ -228,6 +235,8 @@ static int __maybe_unused mt6577_auxadc_suspend(struct device *dev)
+ 
+ 	mt6577_auxadc_mod_reg(adc_dev->reg_base + MT6577_AUXADC_MISC,
+ 			      0, MT6577_AUXADC_PDN_EN);
++
++	clk_disable_unprepare(adc_dev->adc_32k_clk);
+ 	clk_disable_unprepare(adc_dev->adc_clk);
+ 
+ 	return 0;
+@@ -272,6 +281,17 @@ static int mt6577_auxadc_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
++	adc_dev->adc_32k_clk = devm_clk_get(&pdev->dev, "32k");
++	if (IS_ERR(adc_dev->adc_32k_clk)) {
++		dev_err(&pdev->dev, "failed to get auxadc 32k clock\n");
++	} else {
++		ret = clk_prepare_enable(adc_dev->adc_32k_clk);
++		if (ret) {
++			dev_err(&pdev->dev, "failed to enable auxadc 32k clock\n");
++			return ret;
++		}
++	}
++
+ 	adc_clk_rate = clk_get_rate(adc_dev->adc_clk);
+ 	if (!adc_clk_rate) {
+ 		ret = -EINVAL;
+@@ -301,6 +321,7 @@ static int mt6577_auxadc_probe(struct platform_device *pdev)
+ 	mt6577_auxadc_mod_reg(adc_dev->reg_base + MT6577_AUXADC_MISC,
+ 			      0, MT6577_AUXADC_PDN_EN);
+ err_disable_clk:
++	clk_disable_unprepare(adc_dev->adc_32k_clk);
+ 	clk_disable_unprepare(adc_dev->adc_clk);
+ 	return ret;
+ }
+@@ -315,6 +336,7 @@ static int mt6577_auxadc_remove(struct platform_device *pdev)
+ 	mt6577_auxadc_mod_reg(adc_dev->reg_base + MT6577_AUXADC_MISC,
+ 			      0, MT6577_AUXADC_PDN_EN);
+ 
++	clk_disable_unprepare(adc_dev->adc_32k_clk);
+ 	clk_disable_unprepare(adc_dev->adc_clk);
+ 
+ 	return 0;

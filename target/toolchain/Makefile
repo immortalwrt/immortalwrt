@@ -26,7 +26,7 @@ all: compile
 
 TOOLCHAIN_PREFIX:=$(TOOLCHAIN_BUILD_DIR)/toolchain-$(ARCH)$(ARCH_SUFFIX)_gcc-$(GCCV)$(DIR_SUFFIX)
 
-$(BIN_DIR)/$(TOOLCHAIN_NAME).tar.zst: clean
+$(BIN_DIR)/$(TOOLCHAIN_NAME).tar.bz2: clean
 	mkdir -p $(TOOLCHAIN_BUILD_DIR)
 	$(TAR) -cf - -C $(TOPDIR)/staging_dir/  \
 	       $(foreach exclude,$(EXCLUDE_DIRS),--exclude="$(exclude)") \
@@ -62,14 +62,13 @@ $(BIN_DIR)/$(TOOLCHAIN_NAME).tar.zst: clean
 	find $(TOOLCHAIN_BUILD_DIR) -name CVS | $(XARGS) rm -rf
 	mkdir -p $(BIN_DIR)
 	(cd $(BUILD_DIR); \
-		tar -I '$(STAGING_DIR_HOST)/bin/zstd -T0 --ultra -20' -cf $@ $(TOOLCHAIN_NAME) \
-		--mtime="$(shell date --date=@$(SOURCE_DATE_EPOCH))"; \
+		tar cfj $@ $(TOOLCHAIN_NAME); \
 	)
 
 download:
 prepare:
-compile: $(BIN_DIR)/$(TOOLCHAIN_NAME).tar.zst
+compile: $(BIN_DIR)/$(TOOLCHAIN_NAME).tar.bz2
 install: compile
 
 clean:
-	rm -rf $(TOOLCHAIN_BUILD_DIR) $(BIN_DIR)/$(TOOLCHAIN_NAME).tar.zst
+	rm -rf $(TOOLCHAIN_BUILD_DIR) $(BIN_DIR)/$(TOOLCHAIN_NAME).tar.bz2

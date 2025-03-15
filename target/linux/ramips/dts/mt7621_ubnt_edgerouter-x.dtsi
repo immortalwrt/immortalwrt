@@ -20,49 +20,43 @@
 };
 
 &gmac0 {
-	nvmem-cells = <&macaddr_factory_22 0>;
-	nvmem-cell-names = "mac-address";
-	openwrt,netdev-name = "dsa";
+	mtd-mac-address = <&factory 0x22>;
+	label = "dsa";
 };
 
 &switch0 {
 	ports {
 		port@0 {
 			status = "okay";
-			openwrt,netdev-name = "eth0";
-			/delete-property/ label;
+			label = "eth0";
 		};
 
 		port@1 {
 			status = "okay";
-			openwrt,netdev-name = "eth1";
-			nvmem-cells = <&macaddr_factory_22 1>;
-			nvmem-cell-names = "mac-address";
-			/delete-property/ label;
+			label = "eth1";
+			mtd-mac-address = <&factory 0x22>;
+			mtd-mac-address-increment = <1>;
 		};
 
 		port@2 {
 			status = "okay";
-			openwrt,netdev-name = "eth2";
-			nvmem-cells = <&macaddr_factory_22 2>;
-			nvmem-cell-names = "mac-address";
-			/delete-property/ label;
+			label = "eth2";
+			mtd-mac-address = <&factory 0x22>;
+			mtd-mac-address-increment = <2>;
 		};
 
 		port@3 {
 			status = "okay";
-			openwrt,netdev-name = "eth3";
-			nvmem-cells = <&macaddr_factory_22 3>;
-			nvmem-cell-names = "mac-address";
-			/delete-property/ label;
+			label = "eth3";
+			mtd-mac-address = <&factory 0x22>;
+			mtd-mac-address-increment = <3>;
 		};
 
 		port@4 {
 			status = "okay";
-			openwrt,netdev-name = "eth4";
-			nvmem-cells = <&macaddr_factory_22 4>;
-			nvmem-cell-names = "mac-address";
-			/delete-property/ label;
+			label = "eth4";
+			mtd-mac-address = <&factory 0x22>;
+			mtd-mac-address-increment = <4>;
 		};
 	};
 };
@@ -87,26 +81,19 @@
 			read-only;
 		};
 
-		partition@e0000 {
+		factory: partition@e0000 {
 			label = "factory";
 			reg = <0xe0000 0x60000>;
-
-			nvmem-layout {
-				compatible = "fixed-layout";
-				#address-cells = <1>;
-				#size-cells = <1>;
-
-				macaddr_factory_22: macaddr@22 {
-					compatible = "mac-base";
-					reg = <0x22 0x6>;
-					#nvmem-cell-cells = <1>;
-				};
-			};
 		};
 
 		partition@140000 {
-			label = "kernel";
-			reg = <0x140000 0x600000>;
+			label = "kernel1";
+			reg = <0x140000 0x300000>;
+		};
+
+		partition@440000 {
+			label = "kernel2";
+			reg = <0x440000 0x300000>;
 		};
 
 		partition@740000 {
@@ -118,7 +105,7 @@
 
 &state_default {
 	gpio {
-		groups = "uart2", "uart3", "pcie", "jtag";
+		groups = "uart2", "uart3", "pcie", "rgmii2", "jtag";
 		function = "gpio";
 	};
 };

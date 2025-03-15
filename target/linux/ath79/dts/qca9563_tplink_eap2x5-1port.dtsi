@@ -55,18 +55,6 @@
 				label = "info";
 				reg = <0x030000 0x010000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_info_8: macaddr@8 {
-						compatible = "mac-base";
-						reg = <0x8 0x6>;
-						#nvmem-cell-cells = <1>;
-					};
-				};
 			};
 
 			partition@40000 {
@@ -93,16 +81,6 @@
 				label = "art";
 				reg = <0xff0000 0x010000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					calibration_ath9k: calibration@1000 {
-						reg = <0x1000 0x440>;
-					};
-				};
 			};
 		};
 	};
@@ -120,15 +98,23 @@
 
 	pinctrl-names = "default";
 	pinctrl-0 = <&mdio_pins>;
+
+	phy-mask = <0x10>;
+
+	phy4: ethernet-phy@4 {
+		reg = <4>;
+		reset-gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
+	};
 };
 
 &eth0 {
 	status = "okay";
 
+	phy-handle = <&phy4>;
+	phy-mode = "sgmii";
 	pll-data = <0x03000000 0x00000101 0x00001313>;
 
-	nvmem-cells = <&macaddr_info_8 0>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&info 0x8>;
 
 	qca956x-serdes-fixup;
 
@@ -140,6 +126,6 @@
 &wmac {
 	status = "okay";
 
-	nvmem-cells = <&macaddr_info_8 0>, <&calibration_ath9k>;
-	nvmem-cell-names = "mac-address", "calibration";
+	mtd-cal-data = <&art 0x1000>;
+	mtd-mac-address = <&info 0x8>;
 };

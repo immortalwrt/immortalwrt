@@ -55,16 +55,6 @@
 				reg = <0x0 0x20000>;
 				label = "u-boot";
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_uboot_1fc00: macaddr@1fc00 {
-						reg = <0x1fc00 0x6>;
-					};
-				};
 			};
 
 			firmware: partition@20000 {
@@ -73,20 +63,10 @@
 				label = "firmware";
 			};
 
-			partition@7f0000 {
+			art: partition@7f0000 {
 				reg = <0x7f0000 0x10000>;
 				label = "art";
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					cal_art_1000: calibration@1000 {
-						reg = <0x1000 0x440>;
-					};
-				};
 			};
 		};
 	};
@@ -95,8 +75,7 @@
 &eth0 {
 	status = "okay";
 
-	nvmem-cells = <&macaddr_uboot_1fc00>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&uboot 0x1fc00>;
 
 	gmac-config {
 		device = <&gmac>;
@@ -122,7 +101,6 @@
 
 &wmac {
 	status = "okay";
-
-	nvmem-cells = <&macaddr_uboot_1fc00>, <&cal_art_1000>;
-	nvmem-cell-names = "mac-address", "calibration";
+	mtd-cal-data = <&art 0x1000>;
+	mtd-mac-address = <&uboot 0x1fc00>;
 };

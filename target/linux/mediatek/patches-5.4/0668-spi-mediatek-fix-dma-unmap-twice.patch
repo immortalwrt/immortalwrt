@@ -1,0 +1,16 @@
+--- a/drivers/spi/spi-mt65xx.c
++++ b/drivers/spi/spi-mt65xx.c
+@@ -946,12 +946,10 @@ static int mtk_spi_mem_exec_op(struct sp
+ 		reg_val &= ~SPI_CMD_RX_DMA;
+ 	writel(reg_val, mdata->base + SPI_CMD_REG);
+ 
++unmap_rx_dma:
+ 	if (op->data.dir == SPI_MEM_DATA_IN)
+ 		dma_unmap_single(mdata->dev, mdata->rx_dma,
+ 				 op->data.nbytes, DMA_FROM_DEVICE);
+-unmap_rx_dma:
+-	dma_unmap_single(mdata->dev, mdata->rx_dma,
+-			 op->data.nbytes, DMA_FROM_DEVICE);
+ unmap_tx_dma:
+ 	dma_unmap_single(mdata->dev, mdata->tx_dma,
+ 			 tx_size, DMA_TO_DEVICE);

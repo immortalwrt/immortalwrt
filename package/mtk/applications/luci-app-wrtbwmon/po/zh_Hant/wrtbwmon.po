@@ -1,0 +1,276 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2023-04-26 18:31+0800\n"
+"Last-Translator: Victor Tseng (palatis@gmail.com)\n"
+"Language-Team: \n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.2.2\n"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:177
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:611
+msgid "10 seconds"
+msgstr "10 秒"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:177
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:609
+msgid "2 seconds"
+msgstr "2 秒"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:177
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:612
+msgid "30 seconds"
+msgstr "30 秒"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:177
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:610
+msgid "5 seconds"
+msgstr "5 秒"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:603
+msgid "Auto update every:"
+msgstr "重新整理間隔："
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:201
+msgid "Cancel"
+msgstr "取消"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:14
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:503
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:556
+msgid "Clients"
+msgstr "用戶端"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:132
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:567
+msgid "Collecting data..."
+msgstr "蒐集資料中…"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:75
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:167
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:210
+#: root/usr/share/luci/menu.d/luci-app-wrtbwmon.json:25
+msgid "Configuration"
+msgstr "設定"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:597
+msgid "Configure Options"
+msgstr "設定選項"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:195
+msgid "Configure the default values for luci-app-wrtbwmon."
+msgstr "設定 luci-app-wrtbwmon 的預設值。"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/config.js:24
+msgid "Database path"
+msgstr "資料庫路徑"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:178
+msgid "Default Columns"
+msgstr "預設顯示的欄位"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:176
+msgid "Default Protocol"
+msgstr "預設協定"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:177
+msgid "Default Refresh Interval"
+msgstr "預設重新整理間隔"
+
+#: root/usr/share/luci/menu.d/luci-app-wrtbwmon.json:16
+msgid "Details"
+msgstr "詳細"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:177
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:608
+msgid "Disabled"
+msgstr "已停用"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:16
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:558
+msgid "Download"
+msgstr "下載"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:184
+msgid "Downstream Bandwidth"
+msgstr "下行頻寬"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:618
+msgid "Downstream:"
+msgstr "下行："
+
+#: htdocs/luci-static/resources/view/wrtbwmon/custom.js:18
+msgid "Each line must have the following format:"
+msgstr "每一行皆必須使用以下格式："
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:21
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:563
+msgid "First Seen"
+msgstr "初次發現"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/config.js:18
+msgid "General settings"
+msgstr "通用設定"
+
+#: root/usr/share/rpcd/acl.d/luci-app-wrtbwmon.json:3
+msgid "Grant access to LuCI app wrtbwmon"
+msgstr "授權給 LuCI app wrtbwmon"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:185
+msgid "Hide MAC Addresses"
+msgstr "隱藏 MAC 地址"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:181
+msgid "IEC - 1024"
+msgstr "IEC - 1024"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/config.js:21
+msgid "Keep running in the background"
+msgstr "保持背景執行"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:22
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:564
+msgid "Last Seen"
+msgstr "最後發現"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:425
+msgid "Last updated at %s."
+msgstr "最後於 %s 發現。"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:168
+msgid "Loading configuration data..."
+msgstr "載入設定資料…"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:15
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:557
+msgid "MAC"
+msgstr "MAC"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:181
+msgid "Multiple of Unit"
+msgstr "速率計量單位格式"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:578
+msgid "Protocol:"
+msgstr "協定："
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:592
+msgid "Reset Database"
+msgstr "重置資料庫"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:181
+msgid "SI - 1000"
+msgstr "SI - 1000"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:207
+msgid "Save"
+msgstr "儲存"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:76
+msgid "Saving configuration data..."
+msgstr "正在保存設定資料…"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:179
+msgid "Show Zeros"
+msgstr "顯示無流量的紀錄"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:502
+msgid "TOTAL"
+msgstr "總計"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/config.js:24
+msgid ""
+"This box is used to select the Database path, which is /tmp/usage.db by "
+"default."
+msgstr "選擇資料庫路徑，預設為 /tmp/usage.db。"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:60
+msgid "This will delete the database file. Are you sure?"
+msgstr "這會刪除目前的資料庫檔案，您確定嗎？"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:20
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:562
+msgid "Total"
+msgstr "總頻寬"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:18
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:560
+msgid "Total Down"
+msgstr "總下載"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:19
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:561
+msgid "Total Up"
+msgstr "總上傳"
+
+#: root/usr/share/luci/menu.d/luci-app-wrtbwmon.json:3
+msgid "Traffic Status"
+msgstr "頻寬使用狀況"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:180
+msgid "Transfer Speed in Bits"
+msgstr "以位元表示傳輸速率"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/custom.js:9
+msgid "Unable to load the customized hostname file:"
+msgstr "無法載入自訂的主機名稱檔案："
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:81
+msgid "Unable to save %s: %s"
+msgstr "無法保存 %s：%s"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:376
+msgid "Updating again in %s second(s)."
+msgstr "於 %s 秒後更新。"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:17
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:559
+msgid "Upload"
+msgstr "上傳"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:183
+msgid "Upstream Bandwidth"
+msgstr "上行頻寬"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:627
+msgid "Upstream:"
+msgstr "上行："
+
+#: htdocs/luci-static/resources/view/wrtbwmon/config.js:16
+msgid "Usage - Configuration"
+msgstr "頻寬使用狀況 - 設定"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/custom.js:16
+msgid "Usage - Custom User File"
+msgstr "頻寬使用狀況 - 自訂主機名稱列表"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:574
+msgid "Usage - Details"
+msgstr "頻寬使用狀況 - 詳細資料"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:182
+msgid "Use DSL Bandwidth"
+msgstr "使用 DSL 頻寬"
+
+#: root/usr/share/luci/menu.d/luci-app-wrtbwmon.json:34
+msgid "User file"
+msgstr "使用者檔案"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:176
+msgid "ipv4"
+msgstr "ipv4"
+
+#: htdocs/luci-static/resources/view/wrtbwmon/details.js:176
+msgid "ipv6"
+msgstr "ipv6"
+
+#~ msgid "Default More Columns"
+#~ msgstr "預設顯示更多欄位"
+
+#~ msgid "Show More Columns:"
+#~ msgstr "顯示更多欄位："

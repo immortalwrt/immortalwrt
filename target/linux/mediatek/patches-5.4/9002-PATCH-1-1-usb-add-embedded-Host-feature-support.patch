@@ -1,0 +1,124 @@
+From be6839b4144867c7ea6ffbedb6c6a2a42976e16d Mon Sep 17 00:00:00 2001
+From: Zhanyong Wang <zhanyong.wang@mediatek.com>
+Date: Thu, 17 Jun 2021 16:09:04 +0800
+Subject: [PATCH 3/3] usb: add embedded Host feature support
+
+add EH(Embedded Host) feature for PET authentication
+1. need CONFIG_USB_OTG_WHITELIST enable
+   CONFIG_USB_OTG_WHITELIST=y
+
+2. host device tree node need include "tpl-support" keyword
+   &xhci {
+	   tpl-support;
+   }
+
+Signed-off-by: Zhanyong Wang <zhanyong.wang@mediatek.com>
+---
+ drivers/usb/core/hub.c           |  9 +++++---
+ drivers/usb/core/otg_whitelist.h | 39 ++++++++++++++++++++++++++++++++
+ drivers/usb/host/xhci-mtk.c      |  2 ++
+ 3 files changed, 47 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
+index 4cf0dc7f330d..f2f330606d0c 100644
+--- a/drivers/usb/core/hub.c
++++ b/drivers/usb/core/hub.c
+@@ -2422,6 +2422,8 @@ static int usb_enumerate_device(struct usb_device *udev)
+ 			if (err < 0)
+ 				dev_dbg(&udev->dev, "HNP fail, %d\n", err);
+ 		}
++
++		dev_info(&udev->dev, "Unsupported Device!\n");
+ 		return -ENOTSUPP;
+ 	}
+ 
+@@ -4779,9 +4781,10 @@ hub_port_init(struct usb_hub *hub, struct usb_device *udev, int port1,
+ 				goto fail;
+ 			}
+ 			if (r) {
+-				if (r != -ENODEV)
+-					dev_err(&udev->dev, "device descriptor read/64, error %d\n",
+-							r);
++				if (r != -ENODEV) {
++					dev_err(&udev->dev, "device descriptor read/64, error %d\n", r);
++					dev_info(&udev->dev, "Device No Respond\n");
++				}
+ 				retval = -EMSGSIZE;
+ 				continue;
+ 			}
+diff --git a/drivers/usb/core/otg_whitelist.h b/drivers/usb/core/otg_whitelist.h
+index 2ae90158ded7..a8dd221334c1 100644
+--- a/drivers/usb/core/otg_whitelist.h
++++ b/drivers/usb/core/otg_whitelist.h
+@@ -39,9 +39,44 @@ static struct usb_device_id whitelist_table[] = {
+ { USB_DEVICE(0x0525, 0xa4a0), },
+ #endif
+ 
++/* xhci-mtk usb3 root-hub */
++{ USB_DEVICE(0x1d6b, 0x0003), },
++
++/* xhci-mtk usb2 root-hub */
++{ USB_DEVICE(0x1d6b, 0x0002), },
++
++/*  */
++{ USB_INTERFACE_INFO(USB_CLASS_MASS_STORAGE, 0, 0) },
++
+ { }	/* Terminating entry */
+ };
+ 
++static bool usb_match_any_interface(struct usb_device *udev,
++				    const struct usb_device_id *id)
++{
++	unsigned int i;
++
++	for (i = 0; i < udev->descriptor.bNumConfigurations; ++i) {
++		struct usb_host_config *cfg = &udev->config[i];
++		unsigned int j;
++
++		for (j = 0; j < cfg->desc.bNumInterfaces; ++j) {
++			struct usb_interface_cache *cache;
++			struct usb_host_interface *intf;
++
++			cache = cfg->intf_cache[j];
++			if (cache->num_altsetting == 0)
++				continue;
++
++			intf = &cache->altsetting[0];
++			if (id->bInterfaceClass == intf->desc.bInterfaceClass)
++				return true;
++		}
++	}
++
++	return false;
++}
++
+ static int is_targeted(struct usb_device *dev)
+ {
+ 	struct usb_device_id	*id = whitelist_table;
+@@ -90,6 +125,10 @@ static int is_targeted(struct usb_device *dev)
+ 		    (id->bDeviceProtocol != dev->descriptor.bDeviceProtocol))
+ 			continue;
+ 
++		if ((id->match_flags & USB_DEVICE_ID_MATCH_INT_INFO) &&
++		    !usb_match_any_interface(dev, id))
++			continue;
++
+ 		return 1;
+ 	}
+ 
+diff --git a/drivers/usb/host/xhci-mtk.c b/drivers/usb/host/xhci-mtk.c
+index d4345657945d..2a4b73a658f9 100644
+--- a/drivers/usb/host/xhci-mtk.c
++++ b/drivers/usb/host/xhci-mtk.c
+@@ -571,6 +571,8 @@ static int xhci_mtk_probe(struct platform_device *pdev)
+ 		goto disable_device_wakeup;
+ 	}
+ 
++	hcd->tpl_support = of_usb_host_tpl_support(node);
++	xhci->shared_hcd->tpl_support = hcd->tpl_support;
+ 	ret = usb_add_hcd(hcd, irq, IRQF_SHARED);
+ 	if (ret)
+ 		goto put_usb3_hcd;
+-- 
+2.18.0
+

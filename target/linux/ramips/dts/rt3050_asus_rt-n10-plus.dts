@@ -2,7 +2,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "asus,rt-n10-plus", "ralink,rt3050-soc";
@@ -38,24 +37,10 @@
 				read-only;
 			};
 
-			partition@40000 {
+			devconf: partition@40000 {
 				label = "devconf";
 				reg = <0x40000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_devconf_0: eeprom@0 {
-						reg = <0x0 0x200>;
-					};
-
-					macaddr_devconf_4: macaddr@4 {
-						reg = <0x4 0x6>;
-					};
-				};
 			};
 
 			partition@50000 {
@@ -70,14 +55,14 @@
 		compatible = "gpio-leds";
 
 		led_wps: wps {
-			function = LED_FUNCTION_WPS;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:wps";
 			gpios = <&gpio0 14 GPIO_ACTIVE_LOW>;
 		};
 	};
 
 	keys {
-		compatible = "gpio-keys";
+		compatible = "gpio-keys-polled";
+		poll-interval = <20>;
 
 		reset {
 			label = "reset";
@@ -94,8 +79,7 @@
 };
 
 &ethernet {
-	nvmem-cells = <&macaddr_devconf_4>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&devconf 0x4>;
 };
 
 &esw {
@@ -103,6 +87,5 @@
 };
 
 &wmac {
-	nvmem-cells = <&eeprom_devconf_0>;
-	nvmem-cell-names = "eeprom";
+	ralink,mtd-eeprom = <&devconf 0x0>;
 };

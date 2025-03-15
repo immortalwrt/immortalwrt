@@ -1,0 +1,36 @@
+diff --git a/drivers/regulator/Kconfig b/drivers/regulator/Kconfig
+index 3ee6353..2e393a7 100644
+--- a/drivers/regulator/Kconfig
++++ b/drivers/regulator/Kconfig
+@@ -798,6 +798,16 @@ config REGULATOR_RT5033
+ 	  RT5033 PMIC. The device supports multiple regulators like
+ 	  current source, LDO and Buck.
+ 
++config REGULATOR_RT5190A
++	tristate "Richtek RT5190A PMIC"
++	depends on I2C
++       select REGMAP_I2C
++	help
++	  This add support for voltage regulator in Ritchtek RT5190A PMIC.
++	  It integrates 1 channel buck controller, 3 channels high efficiency
++	  buck converters, 1 LDO, mute AC OFF depop function, with the general
++	  I2C control interface.
++
+ config REGULATOR_S2MPA01
+ 	tristate "Samsung S2MPA01 voltage regulator"
+ 	depends on MFD_SEC_CORE
+diff --git a/drivers/regulator/Makefile b/drivers/regulator/Makefile
+index 2210ba5..bf75b77 100644
+--- a/drivers/regulator/Makefile
++++ b/drivers/regulator/Makefile
+@@ -100,6 +100,7 @@ obj-$(CONFIG_REGULATOR_RC5T583)  += rc5t583-regulator.o
+ obj-$(CONFIG_REGULATOR_RK808)   += rk808-regulator.o
+ obj-$(CONFIG_REGULATOR_RN5T618) += rn5t618-regulator.o
+ obj-$(CONFIG_REGULATOR_RT5033)	+= rt5033-regulator.o
++obj-$(CONFIG_REGULATOR_RT5190A) += rt5190a-regulator.o
+ obj-$(CONFIG_REGULATOR_S2MPA01) += s2mpa01.o
+ obj-$(CONFIG_REGULATOR_S2MPS11) += s2mps11.o
+ obj-$(CONFIG_REGULATOR_S5M8767) += s5m8767.o
+-- 
+2.18.0
+

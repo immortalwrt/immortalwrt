@@ -85,28 +85,10 @@
 			read-only;
 		};
 
-		partition@100000 {
+		factory: partition@100000 {
 			label = "Factory";
 			reg = <0x100000 0x80000>;
 			read-only;
-
-			nvmem-layout {
-				compatible = "fixed-layout";
-				#address-cells = <1>;
-				#size-cells = <1>;
-
-				eeprom_factory_0: eeprom@0 {
-					reg = <0x0 0xe00>;
-				};
-
-				macaddr_factory_3fff4: macaddr@3fff4 {
-					reg = <0x3fff4 0x6>;
-				};
-
-				macaddr_factory_3fffa: macaddr@3fffa {
-					reg = <0x3fffa 0x6>;
-				};
-			};
 		};
 
 		partition@180000 {
@@ -153,28 +135,13 @@
 	wifi@0,0 {
 		compatible = "mediatek,mt76";
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&eeprom_factory_0>;
-		nvmem-cell-names = "eeprom";
+		mediatek,mtd-eeprom = <&factory 0x0>;
 		mediatek,disable-radar-background;
 	};
 };
 
 &gmac0 {
-	nvmem-cells = <&macaddr_factory_3fff4>;
-	nvmem-cell-names = "mac-address";
-};
-
-&gmac1 {
-	status = "okay";
-	label = "wan";
-	phy-handle = <&ethphy4>;
-
-	nvmem-cells = <&macaddr_factory_3fffa>;
-	nvmem-cell-names = "mac-address";
-};
-
-&ethphy4 {
-	/delete-property/ interrupts;
+	mtd-mac-address = <&factory 0x3fff4>;
 };
 
 &switch0 {
@@ -192,6 +159,12 @@
 		port@2 {
 			status = "okay";
 			label = "lan3";
+		};
+
+		port@4 {
+			status = "okay";
+			label = "wan";
+			mtd-mac-address = <&factory 0x3fffa>;
 		};
 	};
 };

@@ -1,0 +1,96 @@
+--- a/mt_wifi/embedded/ap/ap_cfg.c
++++ b/mt_wifi/embedded/ap/ap_cfg.c
+@@ -29235,6 +29235,46 @@ INT32 rtmp_get_macPower(IN VOID *pAdSrc)
+ 	return retPwr;
+ }
+ 
++INT32 rtmp_get_mgmtpwr(IN VOID *pAdSrc)
++{
++	INT8 BandIdx;
++	INT32 Tx_Pwr = 0;
++	PRTMP_ADAPTER ad = (PRTMP_ADAPTER)pAdSrc;
++	POS_COOKIE pObj = NULL;
++	UCHAR apidx = 0;
++	struct wifi_dev *wdev = NULL;
++
++	if (ad == NULL) {
++		MTWF_DBG(NULL, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR, "ad null!\n");
++		return -EFAULT;
++	}
++	pObj = (POS_COOKIE)ad->OS_Cookie;
++	if (pObj == NULL) {
++		MTWF_DBG(NULL, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR, "pObj null!\n");
++		return -EFAULT;
++	}
++
++	if ((pObj->ioctl_if_type == INT_MBSSID) || (pObj->ioctl_if_type == INT_MAIN))
++	{
++		apidx = pObj->ioctl_if;
++		if (apidx >= ad->ApCfg.BssidNum)
++			return -EFAULT;
++
++		wdev = &ad->ApCfg.MBSSID[apidx].wdev;
++
++		if (wdev)
++			BandIdx = HcGetBandByWdev(wdev);
++		else
++			BandIdx = BAND0;
++
++		Tx_Pwr = (ad->ApCfg.MgmtTxPwr[BandIdx] + ad->ApCfg.EpaFeGain[BandIdx] + (wdev->TxPwrDelta)) / 2;
++
++		return Tx_Pwr;
++	}
++
++	return -EFAULT;
++}
++
+ #ifdef CONFIG_6G_SUPPORT
+ INT show_bssmnger_info(RTMP_ADAPTER *pAd, RTMP_STRING *arg)
+ {
+--- a/mt_wifi/os/linux/ap_ioctl.c
++++ b/mt_wifi/os/linux/ap_ioctl.c
+@@ -574,6 +574,8 @@ const struct iw_handler_def rt28xx_ap_iw
+ };
+ #endif /* CONFIG_APSTA_MIXED_SUPPORT */
+ 
++INT32 rtmp_get_mgmtpwr(IN VOID *pAdSrc);
++
+ INT rt28xx_ap_ioctl(void *net_dev_obj, void *data_obj, int cmd) /* snowpin for ap/sta */
+ {
+ 	struct net_device *net_dev;
+@@ -801,18 +803,24 @@ INT rt28xx_ap_ioctl(void *net_dev_obj, v
+ 	{
+ 		INT32 powerval = 0;
+ 
+-		wdev = pIoctlConfig->wdev;
+-		if (wdev->if_up_down_state == FALSE) {
+-			MTWF_DBG(pAd, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+-			"RT_PRIV_IOCTL interface is down, cmd [%x] return!!!\n", cmd);
+-			return -ENETDOWN;
++		if (RT_DEV_PRIV_FLAGS_GET(net_dev) == INT_MAIN || 
++			RT_DEV_PRIV_FLAGS_GET(net_dev) == INT_MBSSID) {
++			wdev = pIoctlConfig->wdev;
++			if (wdev->if_up_down_state == FALSE) {
++				MTWF_DBG(pAd, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_INFO,
++				"RT_PRIV_IOCTL interface is down, cmd [%x] return!!!\n", cmd);
++				return -ENETDOWN;
++			}
++			powerval = rtmp_get_mgmtpwr(pAd);
++			MTWF_DBG(pAd, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_INFO, "power = %d\n", powerval);
++			wrqin->u.txpower.value = powerval;/* The value of the parameter itself */
++			wrqin->u.txpower.disabled = 0;/* Disable the feature */
++			wrqin->u.txpower.flags = 0;/* dBm */
++			wrqin->u.txpower.fixed = 0;/* Hardware should not use auto select */
++		} else {
++			Status = RTMP_IO_EOPNOTSUPP;
+ 		}
+-		powerval = rtmp_get_macPower(pAd);
+-		MTWF_DBG(pAd, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_INFO, "power = %d\n", powerval);
+-		wrqin->u.txpower.value = powerval;/* The value of the parameter itself */
+-		wrqin->u.txpower.disabled = 0;/* Disable the feature */
+-		wrqin->u.txpower.flags = 0;/* dBm */
+-		wrqin->u.txpower.fixed = 0;/* Hardware should not use auto select */
++
+ 		break;
+ 	}
+ 	case SIOCGIWRANGE:	/*Get range of parameters */

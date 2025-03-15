@@ -1,0 +1,961 @@
+#! /bin/sh
+# $Id: configure,v 1.130 2024/06/22 19:20:10 nanard Exp $
+# vim: tabstop=4 shiftwidth=4 noexpandtab
+#
+# miniupnp daemon
+# http://miniupnp.free.fr or https://miniupnp.tuxfamily.org/
+# (c) 2006-2024 Thomas Bernard
+# This software is subject to the conditions detailed in the
+# LICENCE file provided within the distribution
+
+# default to UPnP Device Architecture (UDA) v1.1
+# some control points do not like UDA v2.0
+UPNP_VERSION_MAJOR=1
+UPNP_VERSION_MINOR=1
+
+# input environment variables :
+# IPV6, IGD2, STRICT, DEBUG, LEASFILE, VENDORCFG, PCP_PEER,
+# PORTINUSE, REGEX, DISABLEPPPCONN, FW, IPTABLESPATH, TARGET_OPENWRT,
+# PKG_CONFIG, NO_BACKGROUND_NO_PIDFILE, DYNAMIC_OS_VERSION
+# OS_NAME, OS_VERSION, OS_MACHINE, V6SOCKETS_ARE_V6ONLY
+# USE_LIBPFCTL
+
+if [ -z "$DYNAMIC_OS_VERSION" ] ; then
+  DYNAMIC_OS_VERSION=1
+fi
+
+for argv; do
+case "$argv" in
+	--ipv6) IPV6=1 ;;
+	--igd2) IGD2=1 ;;
+	--strict) STRICT=1 ;;
+	--debug) DEBUG=1 ;;
+	--leasefile) LEASEFILE=1 ;;
+	--vendorcfg) VENDORCFG=1 ;;
+	--pcp-peer) PCP_PEER=1 ;;
+	--portinuse) PORTINUSE=1 ;;
+	--regex) REGEX=1 ;;
+	--uda-version=*)
+		UPNP_VERSION=$(echo $argv | cut -d= -f2)
+		UPNP_VERSION_MAJOR=$(echo $UPNP_VERSION | cut -s -d. -f1)
+		UPNP_VERSION_MINOR=$(echo $UPNP_VERSION | cut -s -d. -f2)
+		echo "Setting UPnP version major=$UPNP_VERSION_MAJOR minor=$UPNP_VERSION_MINOR"
+		if [ -z "$UPNP_VERSION_MAJOR" ] || [ -z "$UPNP_VERSION_MINOR" ] ; then
+			echo "UPnP Version invalid in option $argv"
+			exit 1
+		fi ;;
+	--disable-pppconn) DISABLEPPPCONN=1 ;;
+	--disable-fork) NO_BACKGROUND_NO_PIDFILE=1 ;;
+	--firewall=*)
+	    FW=$(echo $argv | cut -d= -f2) ;;
+	--libpfctl) USE_LIBPFCTL=1 ;;
+	--iptablespath=*)
+		IPTABLESPATH=$(echo $argv | cut -d= -f2) ;;
+	--getifaddrs) GETIFADDRS=1 ;;
+	--v6sockets-v6only) V6SOCKETS_ARE_V6ONLY=1 ;;
+	--host-os=*)
+		OS_NAME=$(echo $argv | cut -d= -f2) ;;
+	--host-os-version=*)
+		OS_VERSION=$(echo $argv | cut -d= -f2) ;;
+	--host-machine=*)
+		OS_MACHINE=$(echo $argv | cut -d= -f2) ;;
+	--help|-h)
+		echo "Usage: $0 [options]"
+		echo " --help                Show this help"
+		echo " --ipv6                Enable IPv6"
+		echo " --igd2                Build an IGDv2 instead of an IGDv1"
+		echo " --strict              Stricter compliance with UPnP specifications"
+		echo " --debug               #define DEBUG 1"
+		echo " --leasefile           Enable lease file"
+		echo " --vendorcfg           Enable configuration of manufacturer info"
+		echo " --pcp-peer            Enable PCP PEER operation"
+		echo " --portinuse           Enable port in use check"
+		echo " --regex               Enable description regex filter"
+		echo " --uda-version=x.x     Set advertised UPnP version (default to ${UPNP_VERSION_MAJOR}.${UPNP_VERSION_MINOR})"
+		echo " --disable-pppconn     Disable WANPPPConnection"
+		echo " --firewall=<name>     Force firewall type (nftables, iptables, pf, ipf, ipfw)"
+		echo " --libpfctl            Use libpfctl"
+		echo " --iptablespath=/path  Use a specific version of iptables"
+		echo " --disable-fork        Do not go to background and do not write pid file"
+		echo " --getifaddrs          Force use getifaddrs() to obtain interface addresses"
+		echo " --v6sockets-v6only    v6 sockets don't do v4, ie sysctl net.inet6.ip6.v6only=1"
+		echo " --host-os=<name>      For cross build. result of uname -s on the host machine"
+		echo " --host-os-version=x.x For cross build. result of uname -r on the host machine"
+		echo " --host-machine=<arch> For cross build. result of uname -m on the host machine"
+		exit 1
+		;;
+	*)
+		echo "Option not recognized: $argv"
+		echo "Use -h option to display help"
+		exit 1
+		;;
+esac
+done
+
+echo $* > .configure.cache
+BASEDIR=`dirname "$0"`
+RM="rm -f"
+MV="mv"
+CONFIGFILE=`mktemp tmp.config.h.XXXXXXXXXX`
+CONFIGFILE_FINAL="config.h"
+CONFIGMACRO="CONFIG_H_INCLUDED"
+if [ -z "$PKG_CONFIG" ] ; then
+	PKG_CONFIG=`command -v pkg-config`
+fi
+
+MINIUPNPD_DATE=`date +"%Y%m%d"`
+if [ -n "$SOURCE_DATE_EPOCH" ]; then
+	if date --version 2>&1 | grep -q GNU; then
+		MINIUPNPD_DATE=`date --utc --date="@$SOURCE_DATE_EPOCH" +"%Y%m%d"`
+	else
+		MINIUPNPD_DATE=`TZ=UTC date -j -f %s $SOURCE_DATE_EPOCH +%Y%m%d`
+	fi
+fi
+
+# Facility to syslog
+LOG_MINIUPNPD="LOG_DAEMON"
+
+# Makefile to use
+MAKEFILE=
+
+if [ -z "$OS_NAME" ] ; then
+# detecting the OS name and version
+OS_NAME=`uname -s`
+OS_VERSION=`uname -r`
+OS_MACHINE=`uname -m`
+
+# pfSense special case
+if [ -f /etc/platform ]; then
+	if [ `cat /etc/platform` = "pfSense" ]; then
+		OS_NAME=pfSense
+		OS_VERSION=`cat /etc/version`
+	fi
+fi
+
+# OpenWrt special case
+if [ -f ./os.openwrt ]; then
+	OS_NAME=OpenWrt
+	OS_VERSION=$(cat ./os.openwrt)
+fi
+
+# AstLinux special case
+if [ -f ./os.astlinux ]; then
+	OS_NAME=AstLinux
+	OS_VERSION=$(cat ./os.astlinux)
+fi
+
+# Tomato USB special case
+if [ -f ../shared/tomato_version ]; then
+	OS_NAME=Tomato
+	TOMATO_VER=`cat ../shared/tomato_version | cut -d' ' -f2,3`
+	OS_VERSION="Tomato $TOMATO_VER"
+fi
+
+# OpenEmbedded special case
+if [ -f ./os.openembedded ]; then
+	OS_NAME=OpenEmbedded
+	OS_VERSION=$(cat ./os.openembedded)
+fi
+
+else
+CROSSBUILD=1
+if [ -z "$OS_VERSION" ] || [ -z "$OS_MACHINE" ] ; then
+	echo "OS_NAME set to \"$OS_NAME\"."
+	echo "Please also set OS_VERSION/--host-os-version and OS_MACHINE/--host-machine"
+	exit 1
+fi
+fi
+
+${RM} ${CONFIGFILE}
+
+echo "/* MiniUPnP Project" >> ${CONFIGFILE}
+echo " * http://miniupnp.free.fr/ or https://miniupnp.tuxfamily.org/" >> ${CONFIGFILE}
+echo " * (c) 2006-2024 Thomas Bernard" >> ${CONFIGFILE}
+echo " * Generated by $0 on `date`" >> ${CONFIGFILE}
+echo " * `uname -a`" >> ${CONFIGFILE}
+if [ -z "$*" ] ; then
+	echo " * using no command line option */" >> ${CONFIGFILE}
+else
+	echo " * using command line options $* */" >> ${CONFIGFILE}
+fi
+echo "#ifndef $CONFIGMACRO" >> ${CONFIGFILE}
+echo "#define $CONFIGMACRO" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+echo "#include <inttypes.h>" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+echo "#define MINIUPNPD_VERSION \"`cat ${BASEDIR}/VERSION`\"" >> ${CONFIGFILE}
+echo "#define MINIUPNPD_DATE	\"$MINIUPNPD_DATE\"" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+
+if [ -n "$DEBUG" ] ; then
+	echo "#define DEBUG 1" >> ${CONFIGFILE}
+	echo "" >> ${CONFIGFILE}
+fi
+
+cat >> ${CONFIGFILE} <<EOF
+#ifndef XSTR
+#define XSTR(s) STR(s)
+#define STR(s) #s
+#endif /* XSTR */
+EOF
+
+echo "" >> ${CONFIGFILE}
+cat >> ${CONFIGFILE} <<EOF
+/* UPnP version reported in XML descriptions
+ * 1.0 / 1.1 / 2.0 depending on which UDA (UPnP Device Architecture) Version */
+#define UPNP_VERSION_MAJOR	${UPNP_VERSION_MAJOR}
+#define UPNP_VERSION_MINOR	${UPNP_VERSION_MINOR}
+#define UPNP_VERSION_MAJOR_STR	XSTR(UPNP_VERSION_MAJOR)
+#define UPNP_VERSION_MINOR_STR	XSTR(UPNP_VERSION_MINOR)
+EOF
+echo "" >> ${CONFIGFILE}
+
+# OS Specific stuff
+case $OS_NAME in
+	OpenBSD)
+		MAKEFILE=Makefile.bsd
+		MAJORVER=`echo $OS_VERSION | cut -d. -f1`
+		MINORVER=`echo $OS_VERSION | cut -d. -f2`
+		#echo "OpenBSD majorversion=$MAJORVER minorversion=$MINORVER"
+		# The pledge() system call first appeared in OpenBSD 5.9.
+		if [ \( $MAJORVER -ge 6 \) -o \( $MAJORVER -eq 5 -a $MINORVER -ge 9 \) ]; then
+			# as of writing (OpenBSD 6.7) DIOCGETRULES is not included in the
+			# operations allowed by the "pf" pledge.
+			echo "/*#define HAS_PLEDGE*/" >> ${CONFIGFILE}
+		fi
+		# rtableid was introduced in OpenBSD 4.0
+		if [ $MAJORVER -ge 4 ]; then
+			echo "#define PFRULE_HAS_RTABLEID" >> ${CONFIGFILE}
+		fi
+		# from the 3.8 version, packets and bytes counters are double : in/out
+		if [ \( $MAJORVER -ge 4 \) -o \( $MAJORVER -eq 3 -a $MINORVER -ge 8 \) ]; then
+			echo "#define PFRULE_INOUT_COUNTS" >> ${CONFIGFILE}
+		fi
+		# from the 4.7 version, new pf
+		if [ \( $MAJORVER -ge 5 \) -o \( $MAJORVER -eq 4 -a $MINORVER -ge 7 \) ]; then
+			echo "#define PF_NEWSTYLE" >> ${CONFIGFILE}
+		fi
+		# onrdomain was introduced in OpenBSD 5.0
+		if [ $MAJORVER -ge 5 ]; then
+			echo "#define PFRULE_HAS_ONRDOMAIN" >> ${CONFIGFILE}
+		fi
+		# before OpenBSD 5.5 inpt_queue was CIRCLEQ
+		if [ $MAJORVER -lt 5 ] || [ $MAJORVER -eq 5 -a $MINORVER -lt 5 ]; then
+			echo "#define INPT_QUEUE_IS_CIRCLEQ" >> ${CONFIGFILE}
+		fi
+		FW=pf
+		echo "#define USE_IFACEWATCHER 1" >> ${CONFIGFILE}
+		OS_URL=https://www.openbsd.org/
+		# net.inet6.ip6.v6only has been removed in recent OpenBSD versions
+		# Default to 1 in that case
+		if [ "$CROSSBUILD" != "1" ] && [ -z "$V6SOCKETS_ARE_V6ONLY" ] ; then
+			if sysctl net.inet6.ip6 | grep net.inet6.ip6.v6only ; then
+				V6SOCKETS_ARE_V6ONLY=`sysctl -n net.inet6.ip6.v6only`
+			else
+				V6SOCKETS_ARE_V6ONLY=1
+			fi
+		fi
+		;;
+	FreeBSD | GNU/kFreeBSD)
+		MAKEFILE=Makefile.bsd
+		if [ "$CROSSBUILD" != "1" ] ; then
+			VER=`grep '#define __FreeBSD_version' /usr/include/sys/param.h | awk '{print $3}'`
+			if [ $VER -ge 700049 ]; then
+				echo "#define PFRULE_INOUT_COUNTS" >> ${CONFIGFILE}
+			fi
+			if [ $VER -ge 1500000 ]; then
+				USE_LIBPFCTL=1
+			fi
+		else
+			VER=`echo $OS_VERSION | cut -d. -f1`
+			if [ $VER -ge 7 ]; then
+				echo "#define PFRULE_INOUT_COUNTS" >> ${CONFIGFILE}
+			fi
+			if [ $VER -ge 15 ]; then
+				USE_LIBPFCTL=1
+			fi
+		fi
+		HAVE_IP_MREQN=1
+		# new way to see which one to use PF or IPF.
+		# see https://miniupnp.tuxfamily.org/forum/viewtopic.php?p=957
+		if [ "$CROSSBUILD" != "1" ] && [ -z $FW ] && [ -f /etc/rc.subr ] && [ -f /etc/defaults/rc.conf ] ; then
+			# source file with handy subroutines like checkyesno
+			. /etc/rc.subr
+			# source config file so we can probe vars
+			. /etc/defaults/rc.conf
+			if [ -f /etc/rc.conf ] ; then
+				. /etc/rc.conf
+			fi
+			if checkyesno ipfilter_enable; then
+				echo "Using ipf"
+				FW=ipf
+			elif checkyesno pf_enable; then
+				echo "Using pf"
+				FW=pf
+			elif checkyesno firewall_enable; then
+				echo "Using ifpw"
+				FW=ipfw
+			fi
+		fi
+		if [ -z $FW ] ; then
+			echo "Could not detect usage of ipf, pf, ipfw. Compiling for pf by default"
+			FW=pf
+		fi
+		if [ "$FW" = "ipfw" ] ; then
+			echo "!!! ipfw is known to not work with FreeBSD, please contribute !!!"
+			echo "!!! see https://github.com/miniupnp/miniupnp/issues/596       !!!"
+		fi
+		echo "#define USE_IFACEWATCHER 1" >> ${CONFIGFILE}
+		OS_URL=https://www.freebsd.org/
+		if [ "$CROSSBUILD" != "1" ] && [ -z "$V6SOCKETS_ARE_V6ONLY" ] ; then
+			V6SOCKETS_ARE_V6ONLY=`sysctl -n net.inet6.ip6.v6only`
+		fi
+		;;
+	pfSense)
+		MAKEFILE=Makefile.bsd
+		# we need to detect if PFRULE_INOUT_COUNTS macro is needed
+		FW=pf
+		echo "#define USE_IFACEWATCHER 1" >> ${CONFIGFILE}
+		OS_URL=https://www.pfsense.com/
+		if [ "$CROSSBUILD" != "1" ] && [ -z "$V6SOCKETS_ARE_V6ONLY" ] ; then
+			V6SOCKETS_ARE_V6ONLY=`sysctl -n net.inet6.ip6.v6only`
+		fi
+		;;
+	NetBSD)
+		MAKEFILE=Makefile.bsd
+		if [ "$CROSSBUILD" != "1" ] && [ -z $FW ] && [ -f /etc/rc.subr ] && [ -f /etc/rc.conf ] ; then
+			# source file with handy subroutines like checkyesno
+			. /etc/rc.subr
+			# source config file so we can probe vars
+			. /etc/rc.conf
+			if checkyesno pf; then
+				FW=pf
+			elif checkyesno ipfilter; then
+				FW=ipf
+			fi
+		fi
+		if [ -z $FW ] ; then
+			echo "Could not detect ipf nor pf, defaulting to pf."
+			FW=pf
+		fi
+		echo "#define USE_IFACEWATCHER 1" >> ${CONFIGFILE}
+		OS_URL=https://www.netbsd.org/
+		;;
+	DragonFly)
+		MAKEFILE=Makefile.bsd
+		if [ "$CROSSBUILD" != "1" ] && [ -z $FW ] && [ -f /etc/rc.subr ] && [ -f /etc/rc.conf ] ; then
+			# source file with handy subroutines like checkyesno
+			. /etc/rc.subr
+			# source config file so we can probe vars
+			. /etc/rc.conf
+			if checkyesno pf; then
+				FW=pf
+			elif checkyesno ipfilter; then
+				FW=ipf
+			fi
+		fi
+		if [ -z $FW ] ; then
+			echo "Could not detect ipf nor pf, defaulting to pf."
+			FW=pf
+		fi
+		echo "#define USE_IFACEWATCHER 1" >> ${CONFIGFILE}
+		# PFRULE_INOUT_COUNTS should be set for DragonFly > 2.8
+		# version detection is not yet added to this script.
+		echo "#define PFRULE_INOUT_COUNTS" >> ${CONFIGFILE}
+		# net.inet6.ip6.v6only has been on by default for many years
+		# and this sysctl node has been removed
+		V6SOCKETS_ARE_V6ONLY=1
+		OS_URL=https://www.dragonflybsd.org/
+		;;
+	SunOS)
+		MAKEFILE=Makefile.bsd
+		echo "#define USE_IFACEWATCHER 1" >> ${CONFIGFILE}
+		FW=ipf
+		echo "#define LOG_PERROR 0" >> ${CONFIGFILE}
+		echo "#define SOLARIS_KSTATS 1" >> ${CONFIGFILE}
+		# solaris 10 does not define u_int64_t ?
+		# but it does define uint64_t
+		echo "typedef uint64_t u_int64_t;" >> ${CONFIGFILE}
+		OS_URL=https://www.oracle.com/solaris/
+		;;
+	Linux)
+		OS_URL=https://www.kernel.org/
+		KERNVERA=`echo $OS_VERSION | awk -F. '{print $1}'`
+		KERNVERB=`echo $OS_VERSION | awk -F. '{print $2}'`
+		KERNVERC=`echo $OS_VERSION | awk -F. '{print $3}'`
+		KERNVERD=`echo $OS_VERSION | awk -F. '{print $4}'`
+		#echo "$KERNVERA.$KERNVERB.$KERNVERC.$KERNVERD"
+		# from the 2.4 version, struct ip_mreqn instead of struct ip_mreq
+		if [ \( $KERNVERA -ge 3 \) -o \( $KERNVERA -eq 2 -a $KERNVERB -ge 4 \) ]; then
+			HAVE_IP_MREQN=1
+		fi
+		if [ "$CROSSBUILD" != "1" ] ; then
+			# Debian GNU/Linux special case
+			if [ -f /etc/debian_version ]; then
+				OS_NAME=Debian
+				OS_VERSION=`cat /etc/debian_version`
+				OS_URL=https://www.debian.org/
+			fi
+			# same thing for Gentoo linux
+			if  [ -f /etc/gentoo-release ]; then
+				OS_NAME=Gentoo
+				OS_VERSION=`cat /etc/gentoo-release`
+				OS_URL=https://www.gentoo.org/
+			fi
+			# ClearOS special case
+			if [ -f /etc/clearos-release ]; then
+				OS_NAME=ClearOS
+				OS_VERSION=`grep ^base_version /etc/product | awk '{ print $3 }'`
+				OS_URL=https://www.clearos.com/
+			fi
+			# use lsb_release (Linux Standard Base) when available
+			LSB_RELEASE=`command -v lsb_release`
+			if [ 0 -eq $? ]; then
+				OS_NAME=`${LSB_RELEASE} -i -s`
+				OS_VERSION=`${LSB_RELEASE} -r -s`
+				case $OS_NAME in
+					Chimera)
+						OS_URL=https://chimera-linux.org/
+						OS_VERSION=`uname -r`
+						;;
+					Debian)
+						OS_URL=https://www.debian.org/
+						OS_VERSION=`${LSB_RELEASE} -c -s`
+						;;
+					Ubuntu)
+						OS_URL=https://ubuntu.com/
+						OS_VERSION=`${LSB_RELEASE} -c -s`
+						;;
+					Gentoo)
+						OS_URL=https://www.gentoo.org/
+						;;
+					arch)
+						OS_URL=https://archlinux.org/
+						OS_VERSION=`uname -r`
+						;;
+				esac
+			fi
+		fi
+		echo "#define USE_IFACEWATCHER 1" >> ${CONFIGFILE}
+		if [ "$CROSSBUILD" != "1" ] ; then
+			if [ -z ${FW} ]; then
+				# test the current environment to determine which to use
+				# Would be better to check for actual presence of nftable rules, but that requires root privileges
+				if [ -x "$(command -v nft)" ]; then
+					FW=nftables
+				else
+					FW=iptables
+				fi
+			fi
+			if [ -z "$V6SOCKETS_ARE_V6ONLY" ] ; then
+			V6SOCKETS_ARE_V6ONLY=`$(find /sbin /bin /usr/sbin /usr/bin -name sysctl) -n net.ipv6.bindv6only`
+			fi
+		fi
+		;;
+	OpenWrt)
+		OS_URL=https://www.openwrt.org/
+		echo "#define USE_IFACEWATCHER 1" >> ${CONFIGFILE}
+		GETIFADDRS=1
+		;;
+	OpenEmbedded)
+		OS_URL=https://www.openembedded.org/
+		echo "#define USE_IFACEWATCHER 1" >> ${CONFIGFILE}
+		FW=iptables
+		;;
+	AstLinux)
+		OS_URL=https://www.astlinux-project.org/
+		echo "#define USE_IFACEWATCHER 1" >> ${CONFIGFILE}
+		FW=iptables
+		;;
+	Tomato)
+		OS_NAME=UPnP
+		OS_URL=http://tomatousb.org/
+		echo "" >> ${CONFIGFILE}
+		echo "#ifndef TOMATO" >> ${CONFIGFILE}
+		echo "#define TOMATO" >> ${CONFIGFILE}
+		echo "#endif" >> ${CONFIGFILE}
+		echo "" >> ${CONFIGFILE}
+		echo "#ifdef LINUX26" >> ${CONFIGFILE}
+		echo "#define USE_IFACEWATCHER 1" >> ${CONFIGFILE}
+		echo "#endif" >> ${CONFIGFILE}
+		echo "#ifdef TCONFIG_IPV6" >> ${CONFIGFILE}
+		echo "#define ENABLE_IPV6" >> ${CONFIGFILE}
+		echo "#endif" >> ${CONFIGFILE}
+		FW=iptables
+		;;
+	Darwin)
+		MAKEFILE=Makefile.macosx
+		MAJORVER=`echo $OS_VERSION | cut -d. -f1`
+		echo "#define USE_IFACEWATCHER 1" >> ${CONFIGFILE}
+		# OS X switched to pf since 10.7 Lion (Darwin 11.0)
+		if [ $MAJORVER -ge 11 ] ; then
+			FW=pf
+			echo "#define PFRULE_INOUT_COUNTS" >> ${CONFIGFILE}
+		else
+			FW=ipfw
+		fi
+		OS_URL=https://developer.apple.com/macos/
+		;;
+	*)
+		echo "Unknown OS : $OS_NAME"
+		echo "Supported OS_NAME / --host-os values : "
+		# find all the cases in this "case $OS_NAME in" statement :
+		awk '/# OS Specific stuff/{if(b>0){b=0}else{b=NR}} (b>0&&NR>b){print}' "$0" | grep '^	[^\(]*)$' | grep -v '*)' | tr ')|' " \n" | tr -d '\t ' | sort | tr "\n" " " ; echo ""
+		echo "Please contact the author at https://miniupnp.tuxfamily.org/ or http://miniupnp.free.fr/."
+		exit 1
+		;;
+esac
+
+case $FW in
+	pf)
+		echo "#define USE_PF 1" >> ${CONFIGFILE}
+		if [ "$USE_LIBPFCTL" = "1" ] ; then
+			echo "#define USE_LIBPFCTL 1" >> ${CONFIGFILE}
+		fi
+		;;
+	ipf)
+		echo "#define USE_IPF 1" >> ${CONFIGFILE}
+		;;
+	ipfw)
+		echo "#define USE_IPFW 1" >> ${CONFIGFILE}
+		;;
+	iptables)
+		MAKEFILE=Makefile.linux
+		echo "#define USE_NETFILTER 1" >> ${CONFIGFILE}
+		echo "#define USE_IPTABLES  1" >> ${CONFIGFILE}
+		echo "# generated by $0 on `date`" > config.mk
+		echo "SRCDIR = ${BASEDIR}" >> config.mk
+		echo "CPPFLAGS += -I." >> config.mk
+		if [ "$PKG_CONFIG" ] ; then
+			if ${PKG_CONFIG} --exists libiptc ; then
+				IPTABLESVERSION=`${PKG_CONFIG} --modversion libiptc`
+				echo "detected libiptc version $IPTABLESVERSION"
+				echo "# detected libiptc version $IPTABLESVERSION" >> config.mk
+				echo "IPTABLES_PCFILE_FOUND = 1" >> config.mk
+				IPTVER1=`echo $IPTABLESVERSION | cut -d. -f1`
+				IPTVER2=`echo $IPTABLESVERSION | cut -d. -f2`
+				IPTVER3=`echo $IPTABLESVERSION | cut -d. -f3`
+				if [ $IPTVER1 -gt 1 ] || \
+				   [ \( $IPTVER1 -eq 1 \) -a \( \( $IPTVER2 -gt 4 \) \
+				     -o \( \( $IPTVER2 -eq 4 \) -a \( $IPTVER3 -ge 3 \) \) \) ] ; then
+					IPTABLES_143=1
+				fi
+				echo "CFLAGS += `${PKG_CONFIG} --cflags libiptc`" >> config.mk
+				echo "LDLIBS += `${PKG_CONFIG} --static --libs-only-l libiptc`" >> config.mk
+				echo "LDFLAGS += `${PKG_CONFIG} --libs-only-L --libs-only-other libiptc`" >> config.mk
+			else
+				echo "Warning: no libiptc pkg-config found"
+			fi
+			if ${PKG_CONFIG} --atleast-version=1.0.2 libnetfilter_conntrack \
+			   && ${PKG_CONFIG} --atleast-version=1.0.3 libmnl ; then
+				echo "CPPFLAGS += -DUSE_NFCT" >> config.mk
+				echo "LDLIBS += `${PKG_CONFIG} --static --libs-only-l libmnl libnetfilter_conntrack`" >> config.mk
+			fi
+		fi
+		if [ "$IPTABLESPATH" ] ; then
+			echo "CPPFLAGS += -I${IPTABLESPATH}/include/" >> config.mk
+			echo "LDFLAGS += -L${IPTABLESPATH}/libiptc/" >> config.mk
+			# to test : change the following test to [ "$OS_NAME" != "OpenWrt" ]
+			if [ -z "$TARGET_OPENWRT" ] ; then
+				IPTABLESVERSION=`grep "\#define VERSION" ${IPTABLESPATH}/config.h | tr -d \" |cut -d" " -f3`
+				echo "detected libiptc version $IPTABLESVERSION"
+				echo "# detected libiptc version $IPTABLESVERSION" >> config.mk
+				IPTVER1=`echo $IPTABLESVERSION | cut -d. -f1`
+				IPTVER2=`echo $IPTABLESVERSION | cut -d. -f2`
+				IPTVER3=`echo $IPTABLESVERSION | cut -d. -f3`
+				if [ $IPTVER1 -gt 1 ] || \
+				   [ \( $IPTVER1 -eq 1 \) -a \( \( $IPTVER2 -gt 4 \) \
+				     -o \( \( $IPTVER2 -eq 4 \) -a \( $IPTVER3 -ge 3 \) \) \) ] ; then
+					IPTABLES_143=1
+				fi
+				if [ "$IPTABLES_143" = "1" ] ; then
+					echo "LDLIBS += ${IPTABLESPATH}/libiptc/.libs/libip4tc.o" >> config.mk
+				else
+					echo "LDLIBS += ${IPTABLESPATH}/libiptc/libiptc.a" >> config.mk
+				fi
+			else
+				# OpenWrt
+				# check for system-wide iptables files. Test if iptables version >= 1.4.3
+				# the following test has to be verified :
+				if test -f /usr/include/iptables/internal.h && \
+				   grep -q "\#define IPTABLES_VERSION" /usr/include/iptables/internal.h ; then
+					IPTABLES_143=1
+					echo "LDLIBS += -liptc" >> config.mk
+				fi
+				arch=`echo $OS_MACHINE | grep -q x86_64 && echo 64`
+				if test -f /usr/lib${arch}/libiptc.a ; then
+					echo "LDLIBS += -liptc /usr/lib${arch}/libiptc.a" >> config.mk
+				fi
+			fi
+		elif [ -z "${PKG_CONFIG}" ] ; then
+			# IPTABLESPATH not defined and no pkg-config
+			if test -f /usr/include/xtables.h && \
+			   grep -q "XTABLES_VERSION_CODE" /usr/include/xtables.h ; then
+				IPTABLES_143=1
+				echo "LDLIBS += -liptc" >> config.mk
+				if test -f /lib/libip4tc.so ; then
+					echo "LDLIBS += -lip4tc" >> config.mk
+				fi
+				if test -f /lib/libip6tc.so ; then
+					echo "LDLIBS += -lip6tc" >> config.mk
+				fi
+			fi
+		fi
+		echo "/* when IPTABLES_143 is defined, miniupnpd uses the new API" >> ${CONFIGFILE}
+		echo " * from libiptc 1.4.3+ */ " >> ${CONFIGFILE}
+		if [ "$IPTABLES_143" = "1" ] ; then
+			echo "#define IPTABLES_143" >> ${CONFIGFILE}
+		else
+			echo "#undef IPTABLES_143" >> ${CONFIGFILE}
+		fi
+		;;
+	nftables)
+		MAKEFILE=Makefile.linux_nft
+		echo "#define USE_NETFILTER 1" >> ${CONFIGFILE}
+		echo "#define USE_NFTABLES  1" >> ${CONFIGFILE}
+		echo "# generated by $0 on `date`" > config.mk
+		echo "SRCDIR = ${BASEDIR}" >> config.mk
+		echo "CPPFLAGS += -I." >> config.mk
+		;;
+	*)
+		echo "Unknown Firewall/packet filtering software [$FW]"
+		echo "Please contact the author at http://miniupnp.free.fr/ or https://miniupnp.tuxfamily.org/."
+		exit 1
+		;;
+esac
+
+if [ "$FW" = "iptables" ] || [ "$FW" = "nftables" ] ; then
+	# linux
+	if [ "$PKG_CONFIG" ] ; then
+		if ${PKG_CONFIG} --exists libcap ; then
+			echo "detected libcap `${PKG_CONFIG} --modversion libcap`"
+			echo "CFLAGS += `${PKG_CONFIG} --cflags libcap`" >> config.mk
+			echo "LDLIBS += `${PKG_CONFIG} --libs-only-l libcap`" >> config.mk
+			echo "LDFLAGS += `${PKG_CONFIG} --libs-only-L --libs-only-other libcap`" >> config.mk
+			echo "#define HAS_LIBCAP" >> ${CONFIGFILE}
+		elif ${PKG_CONFIG} --exists libcap-ng ; then
+			echo "detected libcap-ng `${PKG_CONFIG} --modversion libcap-ng`"
+			echo "CFLAGS += `${PKG_CONFIG} --cflags libcap-ng`" >> config.mk
+			echo "LDLIBS += `${PKG_CONFIG} --libs-only-l libcap-ng`" >> config.mk
+			echo "LDFLAGS += `${PKG_CONFIG} --libs-only-L --libs-only-other libcap-ng`" >> config.mk
+			echo "#define HAS_LIBCAP_NG" >> ${CONFIGFILE}
+		fi
+	fi
+fi
+
+if [ "$MAKEFILE" = "Makefile.linux" ] || [ "$MAKEFILE" = "Makefile.linux_nft" ] || [ "$MAKEFILE" = "Makefile.macosx" ] ; then
+	DEFAULT_CONFIG=/etc/miniupnpd/miniupnpd.conf
+else
+	DEFAULT_CONFIG=/etc/miniupnpd.conf
+fi
+
+if [ "$MAKEFILE" = "Makefile.bsd" ] || [ "$OS_NAME" = "Darwin" ] || [ "$OS_NAME" = "SunOS" ] ; then
+	echo "FWNAME = $FW" > bsdmake.inc
+	echo "SRCDIR = ${BASEDIR}" >> bsdmake.inc
+	echo "CPPFLAGS += -I." >> bsdmake.inc
+	if [ "$USE_LIBPFCTL" = "1" ] ; then
+		echo "CPPFLAGS += -I/usr/local/include/" >> bsdmake.inc
+		echo "LDFLAGS += -L/usr/local/lib" >> bsdmake.inc
+		echo "LIBS += -lpfctl" >> bsdmake.inc
+	fi
+fi
+if [ "$MAKEFILE" ] ; then
+	cp "${BASEDIR}/${MAKEFILE}" Makefile && echo "${BASEDIR}/${MAKEFILE} -> Makefile"
+fi
+
+# UUID API
+case $OS_NAME in
+	OpenWrt)
+		echo "#define LIB_UUID" >> ${CONFIGFILE}
+		;;
+	*)
+		if grep uuid_create /usr/include/uuid.h > /dev/null 2>&1 ; then
+			echo "#define BSD_UUID" >> ${CONFIGFILE}
+		fi
+		if grep uuid_generate /usr/include/uuid/uuid.h > /dev/null 2>&1 ; then
+			echo "#define LIB_UUID" >> ${CONFIGFILE}
+		fi
+		;;
+esac
+
+# set V6SOCKETS_ARE_V6ONLY to 0 if it was not set above
+if [ -z "$V6SOCKETS_ARE_V6ONLY" ] ; then
+	V6SOCKETS_ARE_V6ONLY=0
+fi
+
+echo "Configuring compilation for [$OS_NAME] [$OS_VERSION] [$OS_MACHINE] with [$FW] firewall software."
+echo "Please edit config.h for more compilation options."
+
+# define SUPPORT_REMOTEHOST if the FW related code really supports setting
+# a RemoteHost
+if [ \( "$FW" = "nftables" \) -o \( "$FW" = "iptables" \) -o \( "$FW" = "pf" \) -o \( "$FW" = "ipfw" \) ] ; then
+	echo "#define SUPPORT_REMOTEHOST" >> ${CONFIGFILE}
+fi
+
+echo "/* Enable IGD2 \"Port Triggering\" as defined in Section 2.5.16" >> ${CONFIGFILE}
+echo " * figure 2.2 in UPnP-gw-WANIPConnection-v2-Service.pdf */" >> ${CONFIGFILE}
+echo "#define ENABLE_PORT_TRIGGERING" >> ${CONFIGFILE}
+
+echo "" >> ${CONFIGFILE}
+if [ $DYNAMIC_OS_VERSION -ne 0 ] ; then
+  OS_VERSION="%s"
+  echo "#define DYNAMIC_OS_VERSION 1" >> ${CONFIGFILE}
+fi
+echo "#define OS_NAME		\"$OS_NAME\"" >> ${CONFIGFILE}
+echo "#define OS_VERSION	\"$OS_NAME/$OS_VERSION\"" >> ${CONFIGFILE}
+echo "#define OS_URL		\"${OS_URL}\"" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+
+echo "/* syslog facility to be used by miniupnpd */" >> ${CONFIGFILE}
+echo "#define LOG_MINIUPNPD		 ${LOG_MINIUPNPD}" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+
+echo "/* Uncomment the following line to allow miniupnpd to be" >> ${CONFIGFILE}
+echo " * controlled by miniupnpdctl */" >> ${CONFIGFILE}
+echo "/*#define USE_MINIUPNPDCTL*/" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+
+echo "/* Comment the following line to disable NAT-PMP operations */" >> ${CONFIGFILE}
+echo "#define ENABLE_NATPMP" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+
+echo "/* Comment the following line to disable PCP operations */" >> ${CONFIGFILE}
+echo "#define ENABLE_PCP" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+
+echo "#ifdef ENABLE_PCP" >> ${CONFIGFILE}
+if [ -n "$PCP_PEER" ]; then
+echo "/* Comment the following line to disable PCP PEER operation */" >> ${CONFIGFILE}
+echo "#define PCP_PEER" >> ${CONFIGFILE}
+else
+echo "/* Uncomment the following line to enable PCP PEER operation */" >> ${CONFIGFILE}
+echo "/*#define PCP_PEER*/" >> ${CONFIGFILE}
+fi
+echo "#ifdef PCP_PEER" >> ${CONFIGFILE}
+echo "/*#define PCP_FLOWP*/" >> ${CONFIGFILE}
+echo "#endif /*PCP_PEER*/" >> ${CONFIGFILE}
+echo "/*#define PCP_SADSCP*/" >> ${CONFIGFILE}
+echo "#endif /*ENABLE_PCP*/" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+
+echo "/* Uncomment the following line to enable generation of" >> ${CONFIGFILE}
+echo " * filter rules with pf */" >> ${CONFIGFILE}
+echo "/*#define PF_ENABLE_FILTER_RULES*/">> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+
+echo "/* Uncomment the following line to set dst address in rdr rules with pf." >> ${CONFIGFILE}
+echo " * It is disabled by default because of" >> ${CONFIGFILE}
+echo " * https://github.com/miniupnp/miniupnp/issues/433 */" >> ${CONFIGFILE}
+echo "/*#define PF_SET_DST_ADDR*/">> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+
+echo "/* Uncomment the following line to enable caching of results of" >> ${CONFIGFILE}
+echo " * the getifstats() function */" >> ${CONFIGFILE}
+echo "/*#define ENABLE_GETIFSTATS_CACHING*/" >> ${CONFIGFILE}
+echo "/* The cache duration is indicated in seconds */" >> ${CONFIGFILE}
+echo "#define GETIFSTATS_CACHING_DURATION 2" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+
+echo "/* Uncomment the following line to enable multiple external ip support */" >> ${CONFIGFILE}
+echo "/* note : That is EXPERIMENTAL, do not use that unless you know perfectly what you are doing */" >> ${CONFIGFILE}
+echo "/* Dynamic external ip adresses are not supported when this option is enabled." >> ${CONFIGFILE}
+echo " * Also note that you would need to configure your .conf file accordingly. */" >> ${CONFIGFILE}
+echo "/*#define MULTIPLE_EXTERNAL_IP*/" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+
+echo "/* Comment the following line to use home made daemonize() func instead" >> ${CONFIGFILE}
+echo " * of BSD daemon() */" >> ${CONFIGFILE}
+echo "#define USE_DAEMON" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+
+echo "/* Uncomment the following line to enable lease file support */" >> ${CONFIGFILE}
+if [ -n "$LEASEFILE" ] ; then
+	echo "#define ENABLE_LEASEFILE" >> ${CONFIGFILE}
+else
+	echo "/*#define ENABLE_LEASEFILE*/" >> ${CONFIGFILE}
+fi
+echo "/* Uncomment the following line to store remaining time in lease file */" >> ${CONFIGFILE}
+echo "/*#define LEASEFILE_USE_REMAINING_TIME*/" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+
+echo "/* Uncomment the following line to enable port in use check */" >> ${CONFIGFILE}
+if [ -n "$PORTINUSE" ]; then
+	echo "#define CHECK_PORTINUSE" >> ${CONFIGFILE}
+else
+	echo "/*#define CHECK_PORTINUSE*/" >> ${CONFIGFILE}
+fi
+echo "" >> ${CONFIGFILE}
+
+echo "/* Uncomment the following line to enable description regex filter */" >> ${CONFIGFILE}
+if [ -n "$REGEX" ]; then
+	echo "#define ENABLE_REGEX" >> ${CONFIGFILE}
+else
+	echo "/*#define ENABLE_REGEX*/" >> ${CONFIGFILE}
+fi
+echo "" >> ${CONFIGFILE}
+
+echo "/* Define one or none of the two following macros in order to make some" >> ${CONFIGFILE}
+echo " * clients happy. It will change the XML Root Description of the IGD." >> ${CONFIGFILE}
+echo " * Enabling the Layer3Forwarding Service seems to be the more compatible" >> ${CONFIGFILE}
+echo " * option. */" >> ${CONFIGFILE}
+echo "/*#define HAS_DUMMY_SERVICE*/" >> ${CONFIGFILE}
+echo "#define ENABLE_L3F_SERVICE" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+
+echo "/* define ADVERTISE_WANPPPCONN to allow buggy Control Point to use" >> ${CONFIGFILE}
+echo " * WANPPPConnection instead of WANIPConnection. */" >>  ${CONFIGFILE}
+if [ -n "$STRICT" ] || [ -n "$DISABLEPPPCONN" ] ; then
+	echo "/*#define ADVERTISE_WANPPPCONN*/" >> ${CONFIGFILE}
+else
+	echo "#define ADVERTISE_WANPPPCONN" >> ${CONFIGFILE}
+fi
+echo "" >> ${CONFIGFILE}
+
+echo "/* Enable IP v6 support */" >> ${CONFIGFILE}
+if [ -n "$IPV6" ]; then
+	echo "#define ENABLE_IPV6" >> ${CONFIGFILE}
+else
+	echo "/*#define ENABLE_IPV6*/" >> ${CONFIGFILE}
+fi
+echo "" >> ${CONFIGFILE}
+
+echo "/* Define V6SOCKETS_ARE_V6ONLY if AF_INET6 sockets are restricted" >> ${CONFIGFILE}
+echo " * to IPv6 communications only. */" >> ${CONFIGFILE}
+if [ $V6SOCKETS_ARE_V6ONLY -eq 1 ] ; then
+	echo "#define V6SOCKETS_ARE_V6ONLY" >> ${CONFIGFILE}
+else
+	echo "/*#define V6SOCKETS_ARE_V6ONLY*/" >> ${CONFIGFILE}
+fi
+echo "" >> ${CONFIGFILE}
+
+if [ -n "$HAVE_IP_MREQN" ]; then
+	echo "#define HAVE_IP_MREQN" >> ${CONFIGFILE}
+	echo "" >> ${CONFIGFILE}
+fi
+
+echo "/* Enable the support of IGD v2 specification." >> ${CONFIGFILE}
+echo " * This is not fully tested yet and can cause incompatibilities with some" >> ${CONFIGFILE}
+echo " * control points, so enable with care. */" >> ${CONFIGFILE}
+if [ -n "$IGD2" ]; then
+	echo "#define IGD_V2" >> ${CONFIGFILE}
+else
+	echo "/*#define IGD_V2*/" >> ${CONFIGFILE}
+fi
+echo "" >> ${CONFIGFILE}
+
+echo "#ifdef IGD_V2" >> ${CONFIGFILE}
+echo "/* Enable DeviceProtection service (IGDv2) - incomplete implementation */" >> ${CONFIGFILE}
+echo "/*#define ENABLE_DP_SERVICE*/" >> ${CONFIGFILE}
+echo "/*#define ENABLE_HTTPS*/" >> ${CONFIGFILE}
+echo "/*#define HTTPS_CERTFILE \"/path/to/certificate.pem\"*/" >> ${CONFIGFILE}
+echo "/*#define HTTPS_KEYFILE \"/path/to/private.key\"*/" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+echo "/* Enable WANIPv6FirewallControl service (IGDv2). needs IPv6 */" >> ${CONFIGFILE}
+echo "#ifdef ENABLE_IPV6" >> ${CONFIGFILE}
+echo "#define ENABLE_6FC_SERVICE" >> ${CONFIGFILE}
+echo "#endif /* ENABLE_IPV6 */" >> ${CONFIGFILE}
+echo "#endif /* IGD_V2 */" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+
+echo "/* UPnP Events support. Working well enough to be enabled by default." >> ${CONFIGFILE}
+echo " * It can be disabled to save a few bytes. */" >> ${CONFIGFILE}
+echo "#define ENABLE_EVENTS" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+
+echo "/* include interface name in pf and ipf rules */" >> ${CONFIGFILE}
+echo "#define USE_IFNAME_IN_RULES" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+
+echo "/* Experimental NFQUEUE support. */" >> ${CONFIGFILE}
+echo "/*#define ENABLE_NFQUEUE*/" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+
+echo "/* Enable to make MiniUPnPd more strict about UPnP conformance" >> ${CONFIGFILE}
+echo " * and the messages it receives from control points */" >> ${CONFIGFILE}
+if [ -n "$STRICT" ] ; then
+	echo "#define UPNP_STRICT" >> ${CONFIGFILE}
+else
+	echo "/*#define UPNP_STRICT*/" >> ${CONFIGFILE}
+fi
+echo "" >> ${CONFIGFILE}
+
+echo "/* If SSDP_RESPOND_SAME_VERSION is defined, the M-SEARCH response" >> ${CONFIGFILE}
+echo " * include the same device version as was contained in the search" >> ${CONFIGFILE}
+echo " * request. It conforms to UPnP DA v1.1 */" >> ${CONFIGFILE}
+echo "#define SSDP_RESPOND_SAME_VERSION" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+
+echo "/* Add the optional Date: header in all HTTP responses */" >> ${CONFIGFILE}
+if [ -n "$STRICT" ] ; then
+	echo "#define ENABLE_HTTP_DATE" >> ${CONFIGFILE}
+else
+	echo "/*#define ENABLE_HTTP_DATE*/" >> ${CONFIGFILE}
+fi
+echo "" >> ${CONFIGFILE}
+
+echo "/* Wait a little before answering M-SEARCH request */" >> ${CONFIGFILE}
+if [ -n "$STRICT" ] ; then
+	echo "#define DELAY_MSEARCH_RESPONSE" >> ${CONFIGFILE}
+else
+	echo "/*#define DELAY_MSEARCH_RESPONSE*/" >> ${CONFIGFILE}
+fi
+echo "" >> ${CONFIGFILE}
+
+echo "/* disable reading and parsing of config file (miniupnpd.conf) */" >> ${CONFIGFILE}
+echo "/*#define DISABLE_CONFIG_FILE*/" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+
+echo "#define DEFAULT_CONFIG \"${DEFAULT_CONFIG}\"" >> ${CONFIGFILE}
+echo "" >> ${CONFIGFILE}
+
+echo "/* Uncomment the following line to configure all manufacturer infos through miniupnpd.conf */" >> ${CONFIGFILE}
+if [ -n "$VENDORCFG" ] ; then
+	echo "#define ENABLE_MANUFACTURER_INFO_CONFIGURATION" >> ${CONFIGFILE}
+else
+	echo "/*#define ENABLE_MANUFACTURER_INFO_CONFIGURATION*/" >> ${CONFIGFILE}
+fi
+echo "" >> ${CONFIGFILE}
+
+cat >> ${CONFIGFILE} <<EOF
+#if defined(ENABLE_6FC_SERVICE) || (defined(ENABLE_PCP) && defined(ENABLE_IPV6))
+#define ENABLE_UPNPPINHOLE
+#endif
+
+EOF
+
+cat >> ${CONFIGFILE} <<EOF
+/* Uncomment the following line if your device does not have a proper clock
+ * BOOTID.UPNP.ORG can be set with command line */
+#define USE_TIME_AS_BOOTID
+
+EOF
+
+cat >> ${CONFIGFILE} <<EOF
+/* With the following macro defined, a random string is prepended to all URLs */
+/*#define RANDOMIZE_URLS*/
+
+/* maximum length of SSDP packets we are generating
+ * (reception is done in a 1500byte buffer) */
+#define SSDP_PACKET_MAX_LEN 1024
+
+EOF
+
+echo "/* disable forking to the background and writing the pid file */" >> ${CONFIGFILE}
+if [ -n "$NO_BACKGROUND_NO_PIDFILE" ] && [ $NO_BACKGROUND_NO_PIDFILE -eq 1 ] ; then
+	echo "#define NO_BACKGROUND_NO_PIDFILE" >> ${CONFIGFILE}
+else
+	echo "/*#define NO_BACKGROUND_NO_PIDFILE*/" >> ${CONFIGFILE}
+fi
+
+echo "/* Whether to use getifaddrs() to determine interface addresses */" >> ${CONFIGFILE}
+if [ -n "$GETIFADDRS" ] && [ $GETIFADDRS -eq 1 ] ; then
+	echo "#define USE_GETIFADDRS" >> ${CONFIGFILE}
+else
+	echo "/*#define USE_GETIFADDRS*/" >> ${CONFIGFILE}
+fi
+
+echo "#endif /* ${CONFIGMACRO} */" >> ${CONFIGFILE}
+
+${MV} ${CONFIGFILE} ${CONFIGFILE_FINAL}
+
+exit 0

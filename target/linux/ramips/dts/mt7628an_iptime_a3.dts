@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
-#include <dt-bindings/leds/common.h>
-
 #include "mt7628an_iptime.dtsi"
 
 / {
@@ -19,14 +17,12 @@
 		compatible = "gpio-leds";
 
 		led_cpu: cpu {
-			function = LED_FUNCTION_CPU;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:cpu";
 			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
 		};
 
 		wlan {
-			function = LED_FUNCTION_WLAN;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:wlan";
 			gpios = <&gpio 46 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "phy0tpt";
 		};

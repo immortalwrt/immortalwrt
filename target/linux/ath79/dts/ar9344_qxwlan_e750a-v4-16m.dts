@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
-#include <dt-bindings/leds/common.h>
-
 #include "ar9344_qxwlan_e750x.dtsi"
 
 / {
@@ -11,14 +9,12 @@
 
 &leds {
 	lan {
-		function = LED_FUNCTION_LAN;
-		color = <LED_COLOR_ID_GREEN>;
+		label = "green:lan";
 		gpios = <&gpio 19 GPIO_ACTIVE_LOW>;
 	};
 
 	wan {
-		function = LED_FUNCTION_WAN;
-		color = <LED_COLOR_ID_GREEN>;
+		label = "green:wan";
 		gpios = <&gpio 18 GPIO_ACTIVE_LOW>;
 	};
 };
@@ -28,15 +24,14 @@
 
 	phy-handle = <&swphy4>;
 
-	nvmem-cells = <&macaddr_pridata_400 1>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&pridata 0x400>;
+	mtd-mac-address-increment = <1>;
 };
 
 &eth1 {
 	status = "okay";
 
-	nvmem-cells = <&macaddr_pridata_400 0>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&pridata 0x400>;
 
 	gmac-config {
 		device = <&gmac>;

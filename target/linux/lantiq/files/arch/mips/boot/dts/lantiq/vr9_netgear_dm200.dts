@@ -1,7 +1,6 @@
 #include "vr9.dtsi"
 
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 #include <dt-bindings/mips/lantiq_rcu_gphy.h>
 
 / {
@@ -56,24 +55,20 @@
 		compatible = "gpio-leds";
 
 		power_amber: power_amber {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_AMBER>;
+			label = "amber:power";
 			gpios = <&gpio 0 GPIO_ACTIVE_HIGH>;
 		};
 		power_green: power_green {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio 1 GPIO_ACTIVE_HIGH>;
 		};
 
 		lan_amber {
-			function = LED_FUNCTION_LAN;
-			color = <LED_COLOR_ID_AMBER>;
+			label = "amber:lan";
 			gpios = <&gpio 33 GPIO_ACTIVE_HIGH>;
 		};
 		lan_green {
-			function = LED_FUNCTION_LAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:lan";
 			gpios = <&gpio 11 GPIO_ACTIVE_HIGH>;
 		};
 
@@ -88,23 +83,37 @@
 	};
 };
 
+&eth0 {
+	lantiq,phys = <&gphy1>;
+
+	interface@0 {
+		compatible = "lantiq,xrx200-pdi";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0>;
+
+		ethernet@4 {
+			compatible = "lantiq,xrx200-pdi-port";
+			reg = <4>;
+			phy-mode = "mii";
+			phy-handle = <&phy13>;
+		};
+	};
+
+	mdio {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "lantiq,xrx200-mdio";
+
+		phy13: ethernet-phy@13 {
+			reg = <0x13>;
+			compatible = "lantiq,phy22f", "ethernet-phy-ieee802.3-c22";
+		};
+	};
+};
+
 &gphy1 {
 	lantiq,gphy-mode = <GPHY_MODE_FE>;
-};
-
-&gswip_mdio {
-	phy13: ethernet-phy@13 {
-		reg = <0x13>;
-	};
-};
-
-&gswip_ports {
-	port@4 {
-		reg = <4>;
-		label = "lan";
-		phy-mode = "internal";
-		phy-handle = <&phy13>;
-	};
 };
 
 &pcie0 {

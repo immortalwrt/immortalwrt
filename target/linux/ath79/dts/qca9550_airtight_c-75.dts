@@ -4,7 +4,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	model = "AirTight Networks C-75";
@@ -12,10 +11,9 @@
 
 	aliases {
 		label-mac-device = &eth0;
-		led-boot = &led_power_amber;
-		led-running = &led_power_green;
-		led-failsafe = &led_power_amber;
-		led-upgrade = &led_power_amber;
+		led-boot = &led_power;
+		led-failsafe = &led_power;
+		led-upgrade = &led_power;
 	};
 
 	keys {
@@ -31,16 +29,10 @@
 	leds {
 		compatible = "gpio-leds";
 
-		led_power_amber: power-amber {
-			color = <LED_COLOR_ID_AMBER>;
-			function = LED_FUNCTION_POWER;
-			gpios = <&gpio 14 GPIO_ACTIVE_LOW>;
-		};
-
-		led_power_green: power-green {
-			color = <LED_COLOR_ID_GREEN>;
-			function = LED_FUNCTION_POWER;
-			gpios = <&gpio 4 GPIO_ACTIVE_LOW>;
+		led_power: power {
+			label = "amber:power";
+			gpios = <&gpio 14 GPIO_ACTIVE_HIGH>;
+			default-state = "on";
 		};
 
 		wlan2g {
@@ -71,8 +63,7 @@
 &eth0 {
 	status = "okay";
 
-	nvmem-cells = <&macaddr_art_0>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&art 0x0>;
 	phy-handle = <&phy0>;
 	pll-data = <0xa6000000 0x00000101 0x00001616>;
 };
@@ -96,8 +87,7 @@
 &eth1 {
 	status = "okay";
 
-	nvmem-cells = <&macaddr_art_6>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&art 0x6>;
 	pll-data = <0x03000101 0x00000101 0x00001616>;
 
 	fixed-link {
@@ -150,28 +140,10 @@
 				reg = <0x060000 0xf90000>;
 			};
 
-			partition@ff0000 {
+			art: partition@ff0000 {
 				label = "art";
 				reg = <0xff0000 0x010000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_art_0: macaddr@0 {
-						reg = <0x0 0x6>;
-					};
-
-					macaddr_art_6: macaddr@6 {
-						reg = <0x6 0x6>;
-					};
-
-					cal_art_1000: calibration@1000 {
-						reg = <0x1000 0x440>;
-					};
-				};
 			};
 		};
 	};
@@ -205,6 +177,5 @@
 &wmac {
 	status = "okay";
 
-	nvmem-cells = <&cal_art_1000>;
-	nvmem-cell-names = "calibration";
+	mtd-cal-data = <&art 0x1000>;
 };

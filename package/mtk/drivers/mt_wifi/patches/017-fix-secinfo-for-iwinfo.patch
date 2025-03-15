@@ -1,0 +1,77 @@
+--- a/mt_wifi/embedded/ap/ap_cfg.c	2023-12-03 11:58:49.612252012 +0800
++++ b/mt_wifi/embedded/ap/ap_cfg.c	2023-12-03 11:58:03.205793459 +0800
+@@ -11419,7 +11419,7 @@ INT RTMPAPQueryInformation(
+ 			Status = copy_to_user(wrq->u.data.pointer, &pAd->ApCfg.MBSSID[ifIndex].AccessControlList, sizeof(RT_802_11_ACL));
+ 
+ 		break;
+-#ifdef CONFIG_HOTSPOT
++
+ #ifdef CONFIG_DOT11V_WNM
+ 
+ 	case OID_802_11_WNM_IPV4_PROXY_ARP_LIST: {
+@@ -11457,19 +11457,37 @@ INT RTMPAPQueryInformation(
+ 
+ 	case OID_802_11_SECURITY_TYPE: {
+ 		BSS_STRUCT *pMbss;
++		PSTA_ADMIN_CONFIG pApCliEntry;
+ 		PUCHAR pType;
+-		struct security_type *SecurityType;
++		struct security_type_new *SecurityType;
+ 
+ 		MTWF_DBG(pAd, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_INFO,
+ 				 "Query:OID_802_11_SECURITY_TYPE\n");
++
++		if (pObj->ioctl_if_type == INT_APCLI && ifIndex >= MAX_APCLI_NUM) {
++			MTWF_DBG(pAd, DBG_CAT_ALL, DBG_SUBCAT_ALL, DBG_LVL_ERROR, "error station index\n");
++			return FALSE;
++		}
++
+ 		os_alloc_mem(NULL, &pType, sizeof(*SecurityType));
+-		SecurityType = (struct security_type *)pType;
++		SecurityType = (struct security_type_new *)pType;
++
++		if (pObj->ioctl_if_type == INT_APCLI) {
++			pApCliEntry = &pAd->StaCfg[ifIndex];
++			SecurityType->ifindex = ifIndex;
++			SecurityType->auth_mode = pApCliEntry->wdev.SecConfig.AKMMap;
++			SecurityType->encryp_type = pApCliEntry->wdev.SecConfig.PairwiseCipher;
++			wrq->u.data.length = sizeof(*SecurityType);
++			Status = copy_to_user(wrq->u.data.pointer, pType, sizeof(*SecurityType));
++		} else if(pObj->ioctl_if_type == INT_MAIN || pObj->ioctl_if_type == INT_MBSSID) {
+ 		pMbss = &pAd->ApCfg.MBSSID[ifIndex];
+ 		SecurityType->ifindex = ifIndex;
+-		SecurityType->auth_mode = SecAuthModeNewToOld(pMbss->wdev.SecConfig.AKMMap);
+-		SecurityType->encryp_type = SecEncryModeNewToOld(pMbss->wdev.SecConfig.PairwiseCipher);
++			SecurityType->auth_mode = pMbss->wdev.SecConfig.AKMMap;
++			SecurityType->encryp_type = pMbss->wdev.SecConfig.PairwiseCipher;
+ 		wrq->u.data.length = sizeof(*SecurityType);
+ 		Status = copy_to_user(wrq->u.data.pointer, pType, sizeof(*SecurityType));
++		}
++
+ 		os_free_mem(pType);
+ 	}
+ 	break;
+@@ -11527,7 +11545,7 @@ INT RTMPAPQueryInformation(
+ 	}
+ 	break;
+ #endif /* CONFIG_HOTSPOT_R3 */
+-#endif
++
+ #ifdef WAPP_SUPPORT
+ 	case OID_802_11_WIFI_VER: {
+ 		int ret;
+--- a/mt_wifi/embedded/include/oid.h	2022-11-27 21:58:55.000000000 +0800
++++ b/mt_wifi/embedded/include/oid.h	2023-12-03 10:30:10.630435691 +0800
+@@ -2002,6 +2002,12 @@ struct security_type {
+ 	UINT8 encryp_type;
+ };
+ 
++struct security_type_new {
++	UINT32 ifindex;
++	UINT32 auth_mode;
++	UINT32 encryp_type;
++};
++
+ struct wnm_req_data {
+ 	UINT32 ifindex;
+ 	UCHAR peer_mac_addr[6];

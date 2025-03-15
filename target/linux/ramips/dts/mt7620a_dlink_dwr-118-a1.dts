@@ -4,8 +4,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
-#include <dt-bindings/mtd/partitions/uimage.h>
 
 / {
 	compatible = "dlink,dwr-118-a1", "ralink,mt7620a-soc";
@@ -37,8 +35,7 @@
 		compatible = "gpio-leds";
 
 		wan {
-			function = LED_FUNCTION_WAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:wan";
 			gpios = <&gpio3 0 GPIO_ACTIVE_LOW>;
 		};
 
@@ -48,8 +45,7 @@
 		};
 
 		lan {
-			function = LED_FUNCTION_LAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:lan";
 			gpios = <&gpio2 1 GPIO_ACTIVE_LOW>;
 		};
 
@@ -59,8 +55,7 @@
 		};
 
 		usb {
-			function = LED_FUNCTION_USB;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:usb";
 			gpios = <&gpio0 11 GPIO_ACTIVE_LOW>;
 			trigger-sources = <&ohci_port1>, <&ehci_port1>;
 			linux,default-trigger = "usbport";
@@ -97,7 +92,7 @@
 	flash@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
-		spi-max-frequency = <50000000>;
+		spi-max-frequency = <80000000>;
 
 		partitions {
 			compatible = "fixed-partitions";
@@ -111,33 +106,15 @@
 			};
 
 			partition@10000 {
-				compatible = "openwrt,uimage", "denx,uimage";
-				openwrt,ih-magic = <IH_MAGIC_OKLI>;
-				openwrt,offset = <0x10000>;
+				compatible = "amit,jimage";
 				label = "firmware";
 				reg = <0x10000 0xfe0000>;
 			};
 
-			partition@ff0000 {
+			config: partition@ff0000 {
 				label = "config";
 				reg = <0xff0000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_config_e083: eeprom@e083 {
-						reg = <0xe083 0x200>;
-					};
-
-					macaddr_config_e496: macaddr@e496 {
-						compatible = "mac-base";
-						reg = <0xe496 0x6>;
-						#nvmem-cell-cells = <1>;
-					};
-				};
 			};
 		};
 	};
@@ -165,8 +142,9 @@
 &pcie0 {
 	wifi@0,0 {
 		reg = <0x0000 0 0 0 0>;
-		nvmem-cells = <&eeprom_config_e083>, <&macaddr_config_e496 2>;
-		nvmem-cell-names = "eeprom", "mac-address";
+		mtd-mac-address = <&config 0xe496>;
+		mtd-mac-address-increment = <(2)>;
+		mediatek,mtd-eeprom = <&config 0xe083>;
 
 		led {
 			led-sources = <0>;

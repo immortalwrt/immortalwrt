@@ -1,0 +1,35 @@
+--- a/drivers/mtd/ubi/block.c
++++ b/drivers/mtd/ubi/block.c
+@@ -97,6 +97,12 @@ static DEFINE_IDR(ubiblock_minor_idr);
+ static DEFINE_MUTEX(devices_mutex);
+ static int ubiblock_major;
+ 
++static char rootfs_volume[256] = "rootfs";
++module_param_string(rootfs_volume, rootfs_volume, sizeof(rootfs_volume), 0444);
++
++static bool no_default_rootdev;
++module_param(no_default_rootdev, bool, 0444);
++
+ static int __init ubiblock_set_param(const char *val,
+ 				     const struct kernel_param *kp)
+ {
+@@ -460,8 +466,9 @@ int ubiblock_create(struct ubi_volume_in
+ 		 dev->ubi_num, dev->vol_id, vi->name);
+ 	mutex_unlock(&devices_mutex);
+ 
+-	if (!strcmp(vi->name, "rootfs") &&
++	if (!strcmp(vi->name, rootfs_volume) &&
+ 	    IS_ENABLED(CONFIG_MTD_ROOTFS_ROOT_DEV) &&
++	    !no_default_rootdev &&
+ 	    ROOT_DEV == 0) {
+ 		pr_notice("ubiblock: device ubiblock%d_%d (%s) set to be root filesystem\n",
+ 			  dev->ubi_num, dev->vol_id, vi->name);
+@@ -681,7 +688,7 @@ static void __init ubiblock_create_auto_
+ 	struct ubi_volume_info vi;
+ 
+ 	for (ubi_num = 0; ubi_num < UBI_MAX_DEVICES; ubi_num++) {
+-		desc = ubi_open_volume_nm(ubi_num, "rootfs", UBI_READONLY);
++		desc = ubi_open_volume_nm(ubi_num, rootfs_volume, UBI_READONLY);
+ 		if (IS_ERR(desc))
+ 			continue;
+ 

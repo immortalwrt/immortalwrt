@@ -1,0 +1,69 @@
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+
+/dts-v1/;
+#include "mt7986a-xiaomi-redmi-router-ax6000.dtsi"
+
+/ {
+	model = "Xiaomi Redmi Router AX6000 (stock layout)";
+	compatible = "xiaomi,redmi-router-ax6000-stock", "mediatek,mt7986a";
+
+	nmbm_spim_nand {
+		compatible = "generic,nmbm";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		lower-mtd-device = <&spi_nand>;
+		forced-create;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <0x01>;
+			#size-cells = <0x01>;
+
+			partition@0 {
+				label = "BL2";
+				reg = <0x00 0x100000>;
+			};
+
+			partition@100000 {
+				label = "Nvram";
+				reg = <0x100000 0x40000>;
+			};
+
+			partition@140000 {
+				label = "Bdata";
+				reg = <0x140000 0x40000>;
+			};
+
+			partition@180000 {
+				label = "Factory";
+				reg = <0x180000 0x200000>;
+			};
+
+			partition@380000 {
+				label = "FIP";
+				reg = <0x380000 0x200000>;
+			};
+
+			partition@580000 {
+				label = "crash";
+				reg = <0x580000 0x40000>;
+			};
+
+			partition@5c0000 {
+				label = "crash_log";
+				reg = <0x5c0000 0x40000>;
+			};
+
+			partition@600000 {
+				label = "ubi_kernel";
+				reg = <0x600000 0x1e00000>;
+			};
+
+			partition@2400000 {
+				label = "ubi";
+				reg = <0x2400000 0x5000000>;
+			};
+		};
+	};
+};

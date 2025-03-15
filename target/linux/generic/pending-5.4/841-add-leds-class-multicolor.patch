@@ -1,0 +1,30 @@
+--- a/drivers/leds/Kconfig
++++ b/drivers/leds/Kconfig
+@@ -30,6 +30,17 @@ config LEDS_CLASS_FLASH
+ 	  for the flash related features of a LED device. It can be built
+ 	  as a module.
+ 
++config LEDS_CLASS_MULTICOLOR
++	tristate "LED Multicolor Class Support"
++	depends on LEDS_CLASS
++	default n
++	help
++	  This option enables the multicolor LED sysfs class in /sys/class/leds.
++	  It wraps LED class and adds multicolor LED specific sysfs attributes
++	  and kernel internal API to it. You'll need this to provide support
++	  for multicolor LEDs that are grouped together. This class is not
++	  intended for single color LEDs. It can be built as a module.
++
+ config LEDS_BRIGHTNESS_HW_CHANGED
+ 	bool "LED Class brightness_hw_changed attribute support"
+ 	depends on LEDS_CLASS
+--- a/drivers/leds/Makefile
++++ b/drivers/leds/Makefile
+@@ -4,6 +4,7 @@
+ obj-$(CONFIG_NEW_LEDS)			+= led-core.o
+ obj-$(CONFIG_LEDS_CLASS)		+= led-class.o
+ obj-$(CONFIG_LEDS_CLASS_FLASH)		+= led-class-flash.o
++obj-$(CONFIG_LEDS_CLASS_MULTICOLOR)	+= led-class-multicolor.o
+ obj-$(CONFIG_LEDS_TRIGGERS)		+= led-triggers.o
+ 
+ # LED Platform Drivers

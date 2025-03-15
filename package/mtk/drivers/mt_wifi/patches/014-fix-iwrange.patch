@@ -1,0 +1,76 @@
+--- a/mt_wifi/os/linux/ap_ioctl.c
++++ b/mt_wifi/os/linux/ap_ioctl.c
+@@ -818,8 +818,51 @@ INT rt28xx_ap_ioctl(void *net_dev_obj, v
+ 		break;
+ 	}
+ 	case SIOCGIWRANGE:	/*Get range of parameters */
+-		Status = NDIS_STATUS_SUCCESS;
++	{
++		if (wrqin->u.data.pointer) {
++#if (KERNEL_VERSION(5, 4, 0) > LINUX_VERSION_CODE)
++			if (access_ok(VERIFY_WRITE, wrqin->u.data.pointer, sizeof(struct iw_range)) != TRUE)
++#else
++			if (access_ok(wrqin->u.data.pointer, sizeof(struct iw_range)) != TRUE)
++#endif
++				break;
++
++			if (sizeof(struct iw_range) <= wrq->u.data.length) {
++				struct iw_range range;
++				UCHAR BandIdx;
++				UINT32 Freq;
++				USHORT i = 0;
++				CHANNEL_CTRL *pChCtrl;
++				PRTMP_ADAPTER pAdin = (PRTMP_ADAPTER)pAd;
++				wdev = pIoctlConfig->wdev;
++
++				memset(&range, 0, sizeof(struct iw_range));
++
++				range.we_version_compiled = WIRELESS_EXT;
++
++				BandIdx = wlan_operate_get_ch_band(wdev);
++				pChCtrl = hc_get_channel_ctrl(pAdin->hdev_ctrl, BandIdx);
++
++				for (i = 0; i < pChCtrl->ChListNum && i < IW_MAX_FREQUENCIES; i++) {
++					RTMP_MapChannelID2KHZ(pChCtrl->ChList[i].Channel, &Freq);
++					range.freq[i].m = Freq / 1000;
++					range.freq[i].e = 6;
++					range.freq[i].i = pChCtrl->ChList[i].Channel;
++				}
++
++				range.num_channels = i;
++				range.num_frequency = i;
++
++				wrqin->u.data.length = sizeof(struct iw_range);
++
++				if (copy_to_user(wrqin->u.data.pointer, &range, sizeof(struct iw_range)))
++					Status = RTMP_IO_EFAULT;
++			} else {
++				Status = RTMP_IO_E2BIG;
++			}
++		}
+ 		break;
++	}
+ 	case SIOCGIWRETRY:	/*get retry limits and lifetime */
+ 	case SIOCSIWRETRY:	/*set retry limits and lifetime */
+ 		Status = RTMP_IO_EOPNOTSUPP;
+@@ -832,7 +875,7 @@ INT rt28xx_ap_ioctl(void *net_dev_obj, v
+ 		if ((wdev != NULL) && (wdev->if_up_down_state == FALSE)) {
+ 			if (wdev_down_exec_ioctl(wrq, subcmd) == FALSE) {
+ 				MTWF_DBG(pAd, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+-					"interface is down, cmd [%x] return!!!\n", cmd);
++					"interface is down, cmd [%x] subcmd [%x] return!!!\n", cmd, subcmd);
+ 				return -ENETDOWN;
+ 			}
+ 		}
+--- a/mt_wifi/embedded/ap/ap_cfg.c
++++ b/mt_wifi/embedded/ap/ap_cfg.c
+@@ -29622,6 +29622,9 @@ BOOLEAN wdev_down_exec_ioctl(RTMP_IOCTL_
+ 		}
+ 	}
+ 
++	if (cmd == OID_802_11_COUNTRYCODE)
++		retval = TRUE;
++
+ 	if (buf)
+ 		os_free_mem(buf);
+ 

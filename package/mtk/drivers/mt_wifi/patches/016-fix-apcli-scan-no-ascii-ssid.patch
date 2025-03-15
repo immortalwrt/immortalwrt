@@ -1,0 +1,64 @@
+--- a/mt_wifi/os/linux/ap_ioctl.c	2023-12-03 09:29:00.237904279 +0800
++++ b/mt_wifi/os/linux/ap_ioctl.c	2023-12-03 09:29:11.851634173 +0800
+@@ -979,6 +979,8 @@ INT rt28xx_ap_ioctl(void *net_dev_obj, v
+ 	case RTPRIV_IOCTL_GSITESURVEY:
+ 		wdev = pIoctlConfig->wdev;
+ 
++		wrq->u.data.flags = wrqin->u.data.flags;
++
+ 		if ((wdev != NULL) && (wdev->if_up_down_state == FALSE)) {
+ 			MTWF_DBG(pAd, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR,
+ 				"interface is down, cmd [%x] return!!!\n", cmd);
+--- a/mt_wifi/embedded/common/cmm_info.c	2023-12-03 09:29:00.241237726 +0800
++++ b/mt_wifi/embedded/common/cmm_info.c	2023-12-03 09:30:31.017670696 +0800
+@@ -6335,7 +6335,8 @@ RTMP_STRING *GetAuthMode(CHAR auth)
+ VOID RTMPCommSiteSurveyData(
+ 	IN  RTMP_STRING *msg,
+ 	IN  BSS_ENTRY * pBss,
+-	IN  UINT32 MsgLen)
++	IN  UINT32 MsgLen,
++	IN  BOOLEAN RawSSID)
+ {
+ 	INT         Rssi = 0;
+ 	UINT        Rssi_Quality = 0;
+@@ -6355,6 +6356,10 @@ VOID RTMPCommSiteSurveyData(
+ 	/*SSID*/
+ 	NdisZeroMemory(Ssid, (MAX_LEN_OF_SSID + 1));
+ 
++	if (RawSSID)
++		NdisMoveMemory(Ssid, pBss->Ssid, pBss->SsidLen);
++	else
++	{
+ 	if (RTMPCheckStrPrintAble((PCHAR)pBss->Ssid, pBss->SsidLen))
+ 		NdisMoveMemory(Ssid, pBss->Ssid, pBss->SsidLen);
+ 	else {
+@@ -6375,6 +6380,7 @@ VOID RTMPCommSiteSurveyData(
+ 			}
+ 		}
+ 	}
++	}
+ 
+ 	LeftBufSize = MsgLen - strlen(msg);
+ 	ret = snprintf(msg + strlen(msg), LeftBufSize, "%-33s", Ssid);
+@@ -6602,6 +6608,7 @@ BOOLEAN ascii2int(RTMP_STRING *in, UINT3
+ }
+ 
+ #if defined(AP_SCAN_SUPPORT) || defined(CONFIG_STA_SUPPORT)
++#define GET_MAC_TABLE_STRUCT_FLAG_RAW_SSID 0x1
+ VOID RTMPIoctlGetSiteSurvey(
+ 	IN	PRTMP_ADAPTER	pAdapter,
+ 	IN	RTMP_IOCTL_INPUT_STRUCT	 *wrq)
+@@ -6807,7 +6814,12 @@ VOID RTMPIoctlGetSiteSurvey(
+ 			MTWF_DBG(pAdapter, DBG_CAT_CFG, DBG_SUBCAT_ALL, DBG_LVL_ERROR, "Snprintf failed!\n");
+ 			goto ERROR;
+ 		}
+-		RTMPCommSiteSurveyData(msg, pBss, TotalLen);
++
++		if (wrq->u.data.flags & GET_MAC_TABLE_STRUCT_FLAG_RAW_SSID)
++			RTMPCommSiteSurveyData(msg, pBss, TotalLen, true);
++		else
++			RTMPCommSiteSurveyData(msg, pBss, TotalLen, false);
++
+ #ifdef WSC_INCLUDED
+ 
+ 		/*WPS*/

@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
-#include <dt-bindings/leds/common.h>
-
 #include "mt7620n_netgear_n300.dtsi"
 
 / {
@@ -20,20 +18,17 @@
 		compatible = "gpio-leds";
 
 		led_power: power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio0 21 GPIO_ACTIVE_LOW>;
 		};
 
 		wan {
-			function = LED_FUNCTION_WAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:wan";
 			gpios = <&gpio0 19 GPIO_ACTIVE_HIGH>;
 		};
 
 		wlan {
-			function = LED_FUNCTION_WLAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:wlan";
 			gpios = <&gpio3 0 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "phy0radio";
 		};

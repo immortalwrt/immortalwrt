@@ -1,2 +1,1 @@
 BOARDNAME:=Generic
-FEATURES += nand

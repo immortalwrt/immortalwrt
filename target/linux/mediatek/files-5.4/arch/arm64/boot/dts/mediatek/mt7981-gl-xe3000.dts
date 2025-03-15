@@ -1,0 +1,311 @@
+/dts-v1/;
+#include "mt7981.dtsi"
+/ {
+	model = "GL.iNet GL-XE3000";
+	compatible = "glinet,xe3000-emmc", "mediatek,mt7981";
+
+	chosen {
+		bootargs = "console=ttyS0,115200n1 loglevel=8  \
+				earlycon=uart8250,mmio32,0x11002000 \
+				root=PARTLABEL=rootfs rootwait rootfstype=squashfs,f2fs \
+				block2mtd.block2mtd=/dev/mmcblk0p1,65536,log";
+	};
+
+	reg_3p3v: regulator-3p3v {
+		compatible = "regulator-fixed";
+		regulator-name = "fixed-3.3V";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-boot-on;
+		regulator-always-on;
+	};
+
+	gl-hw {
+		compatible = "gl-hw-info";
+		model = "xe3000";
+		wan = "eth0";
+		lan = "eth1";
+		build-in-modem = "0001:01:00.0";
+		pcie-bus = "0001:01:00.0";
+		usb-port = "1-1.3";
+		fan = "pwmchip0";
+		flash_size = <7456>;
+		temperature = "/sys/devices/virtual/thermal/thermal_zone0/temp";
+		reset-button = "gpio-456";
+		radio = "mt798111 mt798112";
+		mcu = "/dev/ttyS1,9600";
+		cfg-partition = "/dev/mmcblk0p5";
+		dfs;
+		factory_data {
+			device_mac = "/dev/mmcblk0p3", "0x0a";
+			device_ddns = "/dev/mmcblk0p3", "0x10";
+			device_sn_bak = "/dev/mmcblk0p3", "0x20";
+			device_sn = "/dev/mmcblk0p3", "0x30";
+			country_code = "/dev/mmcblk0p3", "0x88";
+		};
+	};
+
+	gpio-keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			linux,code = <KEY_RESTART>;
+			gpios = <&pio 1 GPIO_ACTIVE_LOW>;
+		};
+
+	};
+
+	gpio-export {
+		compatible = "gpio-export";
+
+		hub_power {
+			gpio-export,name = "hub_power";
+			gpio-export,output = <1>;
+			gpios = <&pio 5 GPIO_ACTIVE_HIGH>;
+		};
+
+		5G_power {
+			gpio-export,name = "5G_power";
+			gpio-export,output = <1>;
+			gpios = <&pio 11 GPIO_ACTIVE_HIGH>;
+		};
+
+		5G_control {
+			gpio-export,name = "5G_control";
+			gpio-export,output = <1>;
+			gpios = <&pio 9 GPIO_ACTIVE_HIGH>;
+		};
+
+		5G_reset {
+			gpio-export,name = "5G_reset";
+			gpio-export,output = <1>;
+			gpios = <&pio 10 GPIO_ACTIVE_HIGH>;
+		};
+
+		fan_power {
+			gpio-export,name = "fan_power";
+			gpio-export,output = <1>;
+			gpios = <&pio 28 GPIO_ACTIVE_HIGH>;
+		};
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led@0 {
+			label = "wifi:2g";
+			gpios = <&pio 30 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+
+		led@1 {
+			label = "wifi:5g";
+			gpios = <&pio 38 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+
+		led@2 {
+			label = "5G:signal:led1";
+			gpios = <&pio 6 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+
+		led@3 {
+			label = "5G:signal:led2";
+			gpios = <&pio 7 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+
+		led@4 {
+			label = "5G:signal:led3";
+			gpios = <&pio 8 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+
+		led@5 {
+			label = "5G:signal:led4";
+			gpios = <&pio 4 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		led@6 {
+			label = "power";
+			gpios = <&pio 39 GPIO_ACTIVE_LOW>;
+			default-state = "on";
+		};
+
+		led@7 {
+			label = "internet";
+			gpios = <&pio 31 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+	};
+
+	gl_fan {
+		compatible = "gl-fan";
+		interrupt-parent = <&pio>;
+		interrupts = <29 IRQ_TYPE_EDGE_RISING>;
+	};
+
+	pwm-fan {
+		compatible = "pwm-fan";
+		cooling-min-state = <0>;
+		cooling-max-state = <255>;
+		#cooling-cells = <2>;
+		pwms = <&pwm 0 40000 0>;
+		cooling-levels = <0 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36
+				36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 36 37 38 39
+				40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59
+				60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79
+				80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99
+				100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119
+				120 121 122 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139
+				140 141 142 143 144 145 146 147 148 149 150 151 152 153 154 155 156 157 158 159
+				160 161 162 163 164 165 166 167 168 169 170 171 172 173 174 175 176 177 178 179
+				180 181 182 183 184 185 186 187 188 189 190 191 192 193 194 195 196 197 198 199
+				200 201 202 203 204 205 206 207 208 209 210 211 212 213 214 215 216 217 218 219
+				220 221 222 223 224 225 226 227 228 229 230 231 232 233 234 235 236 237 238 239
+				240 241 242 243 244 245 246 247 248 249 250 251 252 253 254 255>;
+	};
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&uart1 {
+	pinctrl-names = "default";
+        pinctrl-0 = <&uart1_pins>;
+	status = "okay";
+};
+
+&watchdog {
+	status = "okay";
+};
+
+&mmc0 {
+         pinctrl-names = "default", "state_uhs";
+         pinctrl-0 = <&mmc0_pins_default>;
+         pinctrl-1 = <&mmc0_pins_uhs>;
+         bus-width = <8>;
+         max-frequency = <52000000>;
+         cap-mmc-highspeed;
+         vmmc-supply = <&reg_3p3v>;
+         non-removable;
+         status = "okay";
+};
+
+&eth {
+	status = "okay";
+
+	gmac0: mac@0 {
+		compatible = "mediatek,eth-mac";
+		reg = <0>;
+		phy-mode = "2500base-x";
+		fixed-link {
+			speed = <2500>;
+			full-duplex;
+			pause;
+		};
+	};
+
+	gmac1: mac@1 {
+		label = "lan";
+		compatible = "mediatek,eth-mac";
+		reg = <1>;
+		phy-mode = "gmii";
+		phy-handle = <&phy0>;
+	};
+
+	mdio: mdio-bus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		phy0: ethernet-phy@0 {
+			compatible = "ethernet-phy-id03a2.9461";
+			reg = <0>;
+			phy-mode = "gmii";
+			nvmem-cells = <&phy_calibration>;
+			nvmem-cell-names = "phy-cal-data";
+		};
+
+		phy5: phy@5 {
+			compatible = "ethernet-phy-id67c9.de0a";
+			reg = <5>;
+			reset-gpios = <&pio 14 1>;
+			reset-assert-us = <600>;
+			reset-deassert-us = <20000>;
+		};
+	};
+};
+
+&hnat {
+	mtketh-wan = "eth0";
+	mtketh-lan = "eth1";
+	mtketh-ppd = "eth1";
+	mtketh-max-gmac = <2>;
+	status = "okay";
+};
+
+&spi1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spic_pins>;
+	status = "disabled";
+};
+
+&pio {
+	spic_pins: spi1-pins {
+		mux {
+			function = "spi";
+			groups = "spi1_1";
+		};
+	};
+	mmc0_pins_default: mmc0-pins-default {
+		mux {
+			function = "flash";
+			groups =  "emmc";
+		};
+	};
+	mmc0_pins_uhs: mmc0-pins-uhs {
+		mux {
+			function = "flash";
+			groups =  "emmc";
+		};
+	};
+	pcie_pins: pcie-pins {
+		mux {
+			function = "pcie";
+			groups = "pcie_pereset", "pcie_clk", "pcie_wake";
+		};
+	};
+	pwm0_pin: pwm0-pin-g0 {
+		mux {
+			function = "pwm";
+			groups = "pwm0_1";
+		};
+	};
+
+	uart1_pins: uart1-pins-g1 {
+		mux {
+                        function = "uart";
+                        groups = "uart1_1_no_cts_rts";
+		};
+	};
+};
+
+&xhci {
+	phys = <&u2port0 PHY_TYPE_USB2>;
+	status = "okay";
+};
+
+&pcie {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie_pins>;
+	status = "okay";
+};
+
+&pwm {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pwm0_pin>;
+};

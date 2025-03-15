@@ -1,0 +1,377 @@
+diff -u -r a/include/net/netfilter/ipv4/nf_reject.h b/include/net/netfilter/ipv4/nf_reject.h
+--- a/include/net/netfilter/ipv4/nf_reject.h	2023-08-30 22:27:28.000000000 +0800
++++ b/include/net/netfilter/ipv4/nf_reject.h	2024-09-28 10:21:13.061401754 +0800
+@@ -8,7 +8,8 @@
+ #include <net/netfilter/nf_reject.h>
+ 
+ void nf_send_unreach(struct sk_buff *skb_in, int code, int hook);
+-void nf_send_reset(struct net *net, struct sk_buff *oldskb, int hook);
++void nf_send_reset(struct net *net, struct sock *, struct sk_buff *oldskb,
++		   int hook);
+ 
+ const struct tcphdr *nf_reject_ip_tcphdr_get(struct sk_buff *oldskb,
+ 					     struct tcphdr *_oth, int hook);
+diff -u -r a/include/net/netfilter/ipv6/nf_reject.h b/include/net/netfilter/ipv6/nf_reject.h
+--- a/include/net/netfilter/ipv6/nf_reject.h	2023-08-30 22:27:28.000000000 +0800
++++ b/include/net/netfilter/ipv6/nf_reject.h	2024-09-28 10:21:40.475289019 +0800
+@@ -8,7 +8,8 @@
+ void nf_send_unreach6(struct net *net, struct sk_buff *skb_in, unsigned char code,
+ 		      unsigned int hooknum);
+ 
+-void nf_send_reset6(struct net *net, struct sk_buff *oldskb, int hook);
++void nf_send_reset6(struct net *net, struct sock *sk, struct sk_buff *oldskb,
++		    int hook);
+ 
+ const struct tcphdr *nf_reject_ip6_tcphdr_get(struct sk_buff *oldskb,
+ 					      struct tcphdr *otcph,
+diff -u -r a/include/net/netfilter/nf_reject.h b/include/net/netfilter/nf_reject.h
+--- a/include/net/netfilter/nf_reject.h	2023-08-30 22:27:28.000000000 +0800
++++ b/include/net/netfilter/nf_reject.h	2024-09-28 10:31:10.528955726 +0800
+@@ -5,12 +5,25 @@
+ #include <linux/types.h>
+ #include <uapi/linux/in.h>
+ 
+-static inline bool nf_reject_verify_csum(__u8 proto)
++static inline bool nf_reject_verify_csum(struct sk_buff *skb, int dataoff,
++					  __u8 proto)
+ {
+ 	/* Skip protocols that don't use 16-bit one's complement checksum
+ 	 * of the entire payload.
+ 	 */
+ 	switch (proto) {
++		/* Protocols with optional checksums. */
++		case IPPROTO_UDP: {
++			const struct udphdr *udp_hdr;
++			struct udphdr _udp_hdr;
++			udp_hdr = skb_header_pointer(skb, dataoff,
++						     sizeof(_udp_hdr),
++						     &_udp_hdr);
++			if (!udp_hdr || udp_hdr->check)
++				return true;
++			return false;
++		}
++		case IPPROTO_GRE:
+ 		/* Protocols with other integrity checks. */
+ 		case IPPROTO_AH:
+ 		case IPPROTO_ESP:
+@@ -20,8 +33,6 @@
+ 		case IPPROTO_UDPLITE:
+ 		case IPPROTO_DCCP:
+ 
+-		/* Protocols with optional checksums. */
+-		case IPPROTO_GRE:
+ 			return false;
+ 	}
+ 	return true;
+diff -u -r a/include/net/route.h b/include/net/route.h
+--- a/include/net/route.h	2023-08-30 22:27:28.000000000 +0800
++++ b/include/net/route.h	2024-09-28 10:39:40.963414466 +0800
+@@ -350,7 +350,7 @@
+ 	struct net *net = dev_net(dst->dev);
+ 
+ 	if (hoplimit == 0)
+-		hoplimit = net->ipv4.sysctl_ip_default_ttl;
++		hoplimit = READ_ONCE(net->ipv4.sysctl_ip_default_ttl);
+ 	return hoplimit;
+ }
+ 
+diff -u -r a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
+--- a/net/ipv4/ip_sockglue.c	2023-08-30 22:27:28.000000000 +0800
++++ b/net/ipv4/ip_sockglue.c	2024-09-28 10:40:14.025487386 +0800
+@@ -1398,7 +1398,7 @@
+ 	{
+ 		struct net *net = sock_net(sk);
+ 		val = (inet->uc_ttl == -1 ?
+-		       net->ipv4.sysctl_ip_default_ttl :
++		       READ_ONCE(net->ipv4.sysctl_ip_default_ttl) :
+ 		       inet->uc_ttl);
+ 		break;
+ 	}
+diff -u -r a/net/ipv4/netfilter/ipt_REJECT.c b/net/ipv4/netfilter/ipt_REJECT.c
+--- a/net/ipv4/netfilter/ipt_REJECT.c	2023-08-30 22:27:28.000000000 +0800
++++ b/net/ipv4/netfilter/ipt_REJECT.c	2024-09-28 10:22:35.369683771 +0800
+@@ -56,7 +56,8 @@
+ 		nf_send_unreach(skb, ICMP_PKT_FILTERED, hook);
+ 		break;
+ 	case IPT_TCP_RESET:
+-		nf_send_reset(xt_net(par), skb, hook);
++		nf_send_reset(xt_net(par), par->state->sk, skb, hook);
++		break;
+ 	case IPT_ICMP_ECHOREPLY:
+ 		/* Doesn't happen. */
+ 		break;
+diff -u -r a/net/ipv4/netfilter/nf_reject_ipv4.c b/net/ipv4/netfilter/nf_reject_ipv4.c
+--- a/net/ipv4/netfilter/nf_reject_ipv4.c	2023-08-30 22:27:28.000000000 +0800
++++ b/net/ipv4/netfilter/nf_reject_ipv4.c	2024-09-28 10:43:01.180301064 +0800
+@@ -96,8 +96,23 @@
+ }
+ EXPORT_SYMBOL_GPL(nf_reject_ip_tcphdr_put);
+ 
++static int nf_reject_fill_skb_dst(struct sk_buff *skb_in)
++{
++	struct dst_entry *dst = NULL;
++	struct flowi fl;
++	memset(&fl, 0, sizeof(struct flowi));
++	fl.u.ip4.daddr = ip_hdr(skb_in)->saddr;
++	nf_ip_route(dev_net(skb_in->dev), &dst, &fl, false);
++	if (!dst)
++		return -1;
++	skb_dst_set(skb_in, dst);
++	return 0;
++}
++
++
+ /* Send RST reply */
+-void nf_send_reset(struct net *net, struct sk_buff *oldskb, int hook)
++void nf_send_reset(struct net *net, struct sock *sk, struct sk_buff *oldskb,
++		   int hook)
+ {
+ 	struct net_device *br_indev __maybe_unused;
+ 	struct sk_buff *nskb;
+@@ -108,6 +123,10 @@
+ 	oth = nf_reject_ip_tcphdr_get(oldskb, &_oth, hook);
+ 	if (!oth)
+ 		return;
++		
++	if ((hook == NF_INET_PRE_ROUTING) &&
++	    nf_reject_fill_skb_dst(oldskb) < 0)
++		return;
+ 
+ 	if (skb_rtable(oldskb)->rt_flags & (RTCF_BROADCAST | RTCF_MULTICAST))
+ 		return;
+@@ -124,10 +143,10 @@
+ 
+ 	skb_reserve(nskb, LL_MAX_HEADER);
+ 	niph = nf_reject_iphdr_put(nskb, oldskb, IPPROTO_TCP,
+-				   ip4_dst_hoplimit(skb_dst(nskb)));
++				   READ_ONCE(net->ipv4.sysctl_ip_default_ttl));
+ 	nf_reject_ip_tcphdr_put(nskb, oldskb, oth);
+ 
+-	if (ip_route_me_harder(net, nskb->sk, nskb, RTN_UNSPEC))
++	if (ip_route_me_harder(net, sk, nskb, RTN_UNSPEC))
+ 		goto free_nskb;
+ 
+ 	niph = ip_hdr(nskb);
+@@ -170,17 +189,23 @@
+ void nf_send_unreach(struct sk_buff *skb_in, int code, int hook)
+ {
+ 	struct iphdr *iph = ip_hdr(skb_in);
++	int dataoff = ip_hdrlen(skb_in);
+ 	u8 proto = iph->protocol;
+ 
+ 	if (iph->frag_off & htons(IP_OFFSET))
+ 		return;
++		
++	if ((hook == NF_INET_PRE_ROUTING) &&
++	    nf_reject_fill_skb_dst(skb_in) < 0)
++		return;
+ 
+-	if (skb_csum_unnecessary(skb_in) || !nf_reject_verify_csum(proto)) {
++	if (skb_csum_unnecessary(skb_in) ||
++	    !nf_reject_verify_csum(skb_in, dataoff, proto)) {
+ 		icmp_send(skb_in, ICMP_DEST_UNREACH, code, 0);
+ 		return;
+ 	}
+ 
+-	if (nf_ip_checksum(skb_in, hook, ip_hdrlen(skb_in), proto) == 0)
++	if (nf_ip_checksum(skb_in, hook, dataoff, proto) == 0)
+ 		icmp_send(skb_in, ICMP_DEST_UNREACH, code, 0);
+ }
+ EXPORT_SYMBOL_GPL(nf_send_unreach);
+diff -u -r a/net/ipv4/netfilter/nft_reject_ipv4.c b/net/ipv4/netfilter/nft_reject_ipv4.c
+--- a/net/ipv4/netfilter/nft_reject_ipv4.c	2023-08-30 22:27:28.000000000 +0800
++++ b/net/ipv4/netfilter/nft_reject_ipv4.c	2024-09-28 10:26:31.611055014 +0800
+@@ -27,7 +27,8 @@
+ 		nf_send_unreach(pkt->skb, priv->icmp_code, nft_hook(pkt));
+ 		break;
+ 	case NFT_REJECT_TCP_RST:
+-		nf_send_reset(nft_net(pkt), pkt->skb, nft_hook(pkt));
++		nf_send_reset(nft_net(pkt), pkt->xt.state->sk, pkt->skb,
++			      nft_hook(pkt));
+ 		break;
+ 	default:
+ 		break;
+diff -u -r a/net/ipv4/proc.c b/net/ipv4/proc.c
+--- a/net/ipv4/proc.c	2024-09-28 07:39:07.736357000 +0800
++++ b/net/ipv4/proc.c	2024-09-28 10:40:51.953084303 +0800
+@@ -379,7 +379,7 @@
+ 
+ 	seq_printf(seq, "\nIp: %d %d",
+ 		   IPV4_DEVCONF_ALL(net, FORWARDING) ? 1 : 2,
+-		   net->ipv4.sysctl_ip_default_ttl);
++		   READ_ONCE(net->ipv4.sysctl_ip_default_ttl));
+ 
+ 	BUILD_BUG_ON(offsetof(struct ipstats_mib, mibs) != 0);
+ 	snmp_get_cpu_field64_batch(buff64, snmp4_ipstats_list,
+diff -u -r a/net/ipv6/netfilter/ip6t_REJECT.c b/net/ipv6/netfilter/ip6t_REJECT.c
+--- a/net/ipv6/netfilter/ip6t_REJECT.c	2023-08-30 22:27:28.000000000 +0800
++++ b/net/ipv6/netfilter/ip6t_REJECT.c	2024-09-28 10:27:14.214548323 +0800
+@@ -61,7 +61,7 @@
+ 		/* Do nothing */
+ 		break;
+ 	case IP6T_TCP_RESET:
+-		nf_send_reset6(net, skb, xt_hooknum(par));
++		nf_send_reset6(net, par->state->sk, skb, xt_hooknum(par));
+ 		break;
+ 	case IP6T_ICMP6_POLICY_FAIL:
+ 		nf_send_unreach6(net, skb, ICMPV6_POLICY_FAIL, xt_hooknum(par));
+diff -u -r a/net/ipv6/netfilter/nf_reject_ipv6.c b/net/ipv6/netfilter/nf_reject_ipv6.c
+--- a/net/ipv6/netfilter/nf_reject_ipv6.c	2023-08-30 22:27:28.000000000 +0800
++++ b/net/ipv6/netfilter/nf_reject_ipv6.c	2024-09-28 10:38:09.617530480 +0800
+@@ -126,7 +126,21 @@
+ }
+ EXPORT_SYMBOL_GPL(nf_reject_ip6_tcphdr_put);
+ 
+-void nf_send_reset6(struct net *net, struct sk_buff *oldskb, int hook)
++static int nf_reject6_fill_skb_dst(struct sk_buff *skb_in)
++{
++	struct dst_entry *dst = NULL;
++	struct flowi fl;
++	memset(&fl, 0, sizeof(struct flowi));
++	fl.u.ip6.daddr = ipv6_hdr(skb_in)->saddr;
++	nf_ip6_route(dev_net(skb_in->dev), &dst, &fl, false);
++	if (!dst)
++		return -1;
++	skb_dst_set(skb_in, dst);
++	return 0;
++}
++
++void nf_send_reset6(struct net *net, struct sock *sk, struct sk_buff *oldskb,
++		    int hook)
+ {
+ 	struct net_device *br_indev __maybe_unused;
+ 	struct sk_buff *nskb;
+@@ -154,6 +168,14 @@
+ 	fl6.daddr = oip6h->saddr;
+ 	fl6.fl6_sport = otcph->dest;
+ 	fl6.fl6_dport = otcph->source;
++	
++	if (hook == NF_INET_PRE_ROUTING) {
++		nf_ip6_route(net, &dst, flowi6_to_flowi(&fl6), false);
++		if (!dst)
++			return;
++		skb_dst_set(oldskb, dst);
++	}
++
+ 	fl6.flowi6_oif = l3mdev_master_ifindex(skb_dst(oldskb)->dev);
+ 	fl6.flowi6_mark = IP6_REPLY_MARK(net, oldskb->mark);
+ 	security_skb_classify_flow(oldskb, flowi6_to_flowi(&fl6));
+@@ -210,7 +232,7 @@
+ 		dev_queue_xmit(nskb);
+ 	} else
+ #endif
+-		ip6_local_out(net, nskb->sk, nskb);
++		ip6_local_out(net, sk, nskb);
+ }
+ EXPORT_SYMBOL_GPL(nf_send_reset6);
+ 
+@@ -230,7 +252,7 @@
+ 	if (thoff < 0 || thoff >= skb->len || (fo & htons(~0x7)) != 0)
+ 		return false;
+ 
+-	if (!nf_reject_verify_csum(proto))
++	if (!nf_reject_verify_csum(skb, thoff, proto))
+ 		return true;
+ 
+ 	return nf_ip6_checksum(skb, hook, thoff, proto) == 0;
+@@ -244,6 +266,10 @@
+ 
+ 	if (hooknum == NF_INET_LOCAL_OUT && skb_in->dev == NULL)
+ 		skb_in->dev = net->loopback_dev;
++		
++	if ((hooknum == NF_INET_PRE_ROUTING) &&
++	    nf_reject6_fill_skb_dst(skb_in) < 0)
++		return;
+ 
+ 	icmpv6_send(skb_in, ICMPV6_DEST_UNREACH, code, 0);
+ }
+diff -u -r a/net/ipv6/netfilter/nft_reject_ipv6.c b/net/ipv6/netfilter/nft_reject_ipv6.c
+--- a/net/ipv6/netfilter/nft_reject_ipv6.c	2023-08-30 22:27:28.000000000 +0800
++++ b/net/ipv6/netfilter/nft_reject_ipv6.c	2024-09-28 10:28:49.281122031 +0800
+@@ -28,7 +28,8 @@
+ 				 nft_hook(pkt));
+ 		break;
+ 	case NFT_REJECT_TCP_RST:
+-		nf_send_reset6(nft_net(pkt), pkt->skb, nft_hook(pkt));
++		nf_send_reset6(nft_net(pkt), pkt->xt.state->sk, pkt->skb,
++			       nft_hook(pkt));
+ 		break;
+ 	default:
+ 		break;
+diff -u -r a/net/netfilter/nf_synproxy_core.c b/net/netfilter/nf_synproxy_core.c
+--- a/net/netfilter/nf_synproxy_core.c	2023-08-30 22:27:28.000000000 +0800
++++ b/net/netfilter/nf_synproxy_core.c	2024-09-28 10:44:34.284010823 +0800
+@@ -428,7 +428,7 @@
+ 	iph->tos	= 0;
+ 	iph->id		= 0;
+ 	iph->frag_off	= htons(IP_DF);
+-	iph->ttl	= net->ipv4.sysctl_ip_default_ttl;
++	iph->ttl	= READ_ONCE(net->ipv4.sysctl_ip_default_ttl);
+ 	iph->protocol	= IPPROTO_TCP;
+ 	iph->check	= 0;
+ 	iph->saddr	= saddr;
+diff -u -r a/net/netfilter/nft_reject.c b/net/netfilter/nft_reject.c
+--- a/net/netfilter/nft_reject.c	2023-08-30 22:27:28.000000000 +0800
++++ b/net/netfilter/nft_reject.c	2024-09-28 10:06:14.015639210 +0800
+@@ -30,7 +30,8 @@
+ 	return nft_chain_validate_hooks(ctx->chain,
+ 					(1 << NF_INET_LOCAL_IN) |
+ 					(1 << NF_INET_FORWARD) |
+-					(1 << NF_INET_LOCAL_OUT));
++					(1 << NF_INET_LOCAL_OUT) |
++					(1 << NF_INET_PRE_ROUTING));
+ }
+ EXPORT_SYMBOL_GPL(nft_reject_validate);
+ 
+diff -u -r a/net/netfilter/nft_reject_inet.c b/net/netfilter/nft_reject_inet.c
+--- a/net/netfilter/nft_reject_inet.c	2023-08-30 22:27:28.000000000 +0800
++++ b/net/netfilter/nft_reject_inet.c	2024-09-28 10:29:32.782782845 +0800
+@@ -28,7 +28,8 @@
+ 					nft_hook(pkt));
+ 			break;
+ 		case NFT_REJECT_TCP_RST:
+-			nf_send_reset(nft_net(pkt), pkt->skb, nft_hook(pkt));
++			nf_send_reset(nft_net(pkt), pkt->xt.state->sk,
++				      pkt->skb, nft_hook(pkt));
+ 			break;
+ 		case NFT_REJECT_ICMPX_UNREACH:
+ 			nf_send_unreach(pkt->skb,
+@@ -44,7 +45,8 @@
+ 					 priv->icmp_code, nft_hook(pkt));
+ 			break;
+ 		case NFT_REJECT_TCP_RST:
+-			nf_send_reset6(nft_net(pkt), pkt->skb, nft_hook(pkt));
++			nf_send_reset6(nft_net(pkt), pkt->xt.state->sk,
++				       pkt->skb, nft_hook(pkt));
+ 			break;
+ 		case NFT_REJECT_ICMPX_UNREACH:
+ 			nf_send_unreach6(nft_net(pkt), pkt->skb,
+@@ -114,6 +116,19 @@
+ 	return -1;
+ }
+ 
++static int nft_reject_inet_validate(const struct nft_ctx *ctx,
++				    const struct nft_expr *expr,
++				    const struct nft_data **data)
++{
++	return nft_chain_validate_hooks(ctx->chain,
++					(1 << NF_INET_LOCAL_IN) |
++					(1 << NF_INET_FORWARD) |
++					(1 << NF_INET_LOCAL_OUT) |
++					(1 << NF_INET_PRE_ROUTING)); 
++					 
++}
++
++
+ static struct nft_expr_type nft_reject_inet_type;
+ static const struct nft_expr_ops nft_reject_inet_ops = {
+ 	.type		= &nft_reject_inet_type,
+@@ -121,7 +136,7 @@
+ 	.eval		= nft_reject_inet_eval,
+ 	.init		= nft_reject_inet_init,
+ 	.dump		= nft_reject_inet_dump,
+-	.validate	= nft_reject_validate,
++	.validate	= nft_reject_inet_validate,
+ };
+ 
+ static struct nft_expr_type nft_reject_inet_type __read_mostly = {

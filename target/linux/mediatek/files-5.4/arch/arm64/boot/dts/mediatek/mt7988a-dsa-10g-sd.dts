@@ -1,0 +1,258 @@
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+/*
+ * Copyright (C) 2021 MediaTek Inc.
+ * Author: Sam.Shih <sam.shih@mediatek.com>
+ */
+
+/dts-v1/;
+#include "mt7988.dtsi"
+
+/ {
+	model = "MediaTek MT7988A DSA 10G SD RFB";
+	compatible = "mediatek,mt7988a-dsa-10g-sd",
+		     /* Reserve this for DVFS if creating new dts */
+		     "mediatek,mt7988";
+	chosen {
+		bootargs = "console=ttyS0,115200n1 loglevel=8  \
+			    earlycon=uart8250,mmio32,0x11000000 \
+			    root=PARTLABEL=rootfs rootwait \
+			    rootfstype=squashfs,f2fs pci=pcie_bus_perf";
+	};
+
+	memory {
+		reg = <0 0x40000000 0 0x10000000>;
+	};
+
+	wsys_adie: wsys_adie@0 {
+	// fpga cases need to manual change adie_id / sku_type for dvt only
+		compatible = "mediatek,rebb-mt7988-adie";
+		adie_id = <7976>;
+		sku_type = <3000>;
+	};
+
+	reg_3p3v: regulator-3p3v {
+		compatible = "regulator-fixed";
+		regulator-name = "fixed-3.3V";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-boot-on;
+		regulator-always-on;
+	};
+};
+
+&fan {
+	pwms = <&pwm 0 50000 0>;
+	status = "okay";
+};
+
+&pwm {
+	status = "okay";
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&spi1 {
+	pinctrl-names = "default";
+	/* pin shared with snfi */
+	pinctrl-0 = <&spic_pins>;
+	status = "disabled";
+};
+
+&pcie0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie0_pins>;
+	status = "okay";
+};
+
+&pcie1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie1_pins>;
+	status = "okay";
+};
+
+&pcie2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie2_pins>;
+	status = "disabled";
+};
+
+&pcie3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie3_pins>;
+	status = "okay";
+};
+
+&pio {
+	pcie0_pins: pcie0-pins {
+		mux {
+			function = "pcie";
+			groups = "pcie_2l_0_pereset", "pcie_clk_req_n0_0",
+				 "pcie_wake_n0_0";
+		};
+	};
+
+	pcie1_pins: pcie1-pins {
+		mux {
+			function = "pcie";
+			groups = "pcie_2l_1_pereset", "pcie_clk_req_n1",
+				 "pcie_wake_n1_0";
+		};
+	};
+
+	pcie2_pins: pcie2-pins {
+		mux {
+			function = "pcie";
+			groups = "pcie_1l_0_pereset", "pcie_clk_req_n2_0",
+				 "pcie_wake_n2_0";
+		};
+	};
+
+	pcie3_pins: pcie3-pins {
+		mux {
+			function = "pcie";
+			groups = "pcie_1l_1_pereset", "pcie_clk_req_n3",
+				 "pcie_wake_n3_0";
+		};
+	};
+
+	spic_pins: spi1-pins {
+		mux {
+			function = "spi";
+			groups = "spi1_1";
+		};
+	};
+
+	mmc0_pins_default: mmc0-pins-default {
+		mux {
+			function = "flash";
+			groups = "emmc_45";
+		};
+	};
+
+	mmc0_pins_uhs: mmc0-pins-uhs {
+		mux {
+			function = "flash";
+			groups = "emmc_45";
+		};
+	};
+};
+
+&watchdog {
+	status = "disabled";
+};
+
+&eth {
+	status = "okay";
+
+	gmac0: mac@0 {
+		compatible = "mediatek,eth-mac";
+		reg = <0>;
+		phy-mode = "10gbase-kr";
+
+		fixed-link {
+			speed = <2500>;
+			full-duplex;
+			pause;
+		};
+	};
+
+	gmac1: mac@1 {
+		compatible = "mediatek,eth-mac";
+		reg = <1>;
+		phy-mode = "10gbase-kr";
+		phy-handle = <&phy0>;
+	};
+
+	gmac2: mac@2 {
+		compatible = "mediatek,eth-mac";
+		reg = <2>;
+		phy-mode = "10gbase-kr";
+		phy-handle = <&phy1>;
+	};
+
+	mdio: mdio-bus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		phy0: ethernet-phy@0 {
+			reg = <0>;
+			compatible = "ethernet-phy-ieee802.3-c45";
+			reset-gpios = <&pio 71 1>;
+			reset-assert-us = <1000000>;
+			reset-deassert-us = <1000000>;
+		};
+
+		phy1: ethernet-phy@8 {
+			reg = <8>;
+			compatible = "ethernet-phy-ieee802.3-c45";
+			reset-gpios = <&pio 72 1>;
+			reset-assert-us = <1000000>;
+			reset-deassert-us = <1000000>;
+		};
+
+		switch@0 {
+			compatible = "mediatek,mt7988";
+			reg = <31>;
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				port@0 {
+					reg = <0>;
+					label = "lan0";
+				};
+
+				port@1 {
+					reg = <1>;
+					label = "lan1";
+				};
+
+				port@2 {
+					reg = <2>;
+					label = "lan2";
+				};
+
+				port@3 {
+					reg = <3>;
+					label = "lan3";
+				};
+
+				port@6 {
+					reg = <6>;
+					label = "cpu";
+					ethernet = <&gmac0>;
+					phy-mode = "10gbase-kr";
+
+					fixed-link {
+						speed = <10000>;
+						full-duplex;
+						pause;
+					};
+				};
+			};
+		};
+	};
+};
+
+&hnat {
+	mtketh-wan = "eth1";
+	mtketh-lan = "lan";
+	mtketh-lan2 = "eth2";
+	mtketh-max-gmac = <3>;
+	status = "okay";
+};
+
+&mmc0 {
+	pinctrl-names = "default", "state_uhs";
+	pinctrl-0 = <&mmc0_pins_default>;
+	pinctrl-1 = <&mmc0_pins_uhs>;
+	bus-width = <4>;
+	max-frequency = <52000000>;
+	cap-sd-highspeed;
+	vmmc-supply = <&reg_3p3v>;
+	vqmmc-supply = <&reg_3p3v>;
+	no-mmc;
+	no-sdio;
+	status = "okay";
+};

@@ -1,0 +1,155 @@
+#!/usr/bin/env lua
+-- Copyright (C) 2022 ImmortalWrt.org
+
+local json = require "luci.jsonc"
+local fs   = require "nixio.fs"
+local util = require "luci.util"
+local sys  = require "luci.sys"
+
+string.trim = util.trim
+
+local function readfile(path)
+	local s = fs.readfile(path)
+	return s and (s:gsub("^%s+", ""):gsub("%s+$", ""))
+end
+
+local methods = {
+	getSystemFeatures = {
+		call = function()
+			local boardinfo = util.ubus("system", "board") or {}
+			local features  = {
+				hasIPV6           = fs.access("/proc/net/ipv6_route"),
+				-- disable FLOWOFFLOADING for mt798x
+				hasFLOWOFFLOADING = false,
+				hasFASTCLASSIFIER = fs.access("/lib/modules/" .. boardinfo.kernel .. "/fast-classifier.ko"),
+				hasSHORTCUTFECM   = fs.access("/lib/modules/" .. boardinfo.kernel .. "/shortcut-fe-cm.ko"),
+				hasMEDIATEKHNAT   = fs.access("/lib/modules/" .. boardinfo.kernel .. "/mtkhnat.ko"),
+				hasXTFULLCONENAT  = fs.access("/lib/modules/" .. boardinfo.kernel .. "/xt_FULLCONENAT.ko"),
+				hasTCPCCA         = readfile("/proc/sys/net/ipv4/tcp_available_congestion_control")
+			}
+			print(json.stringify(features))
+		end
+	},
+	getFastPathStat = {
+		call = function()
+			local fptype
+			if fs.access("/sys/module/xt_FLOWOFFLOAD/refcnt") and
+			(readfile("/sys/module/xt_FLOWOFFLOAD/refcnt") or "0") ~= "0" then
+				fptype = "Flow offloading"
+			elseif fs.stat("/sys/module/fast_classifier", "type") == "dir" then
+				fptype = "Fast classifier"
+			elseif fs.stat("/sys/module/shortcut_fe_cm", "type") == "dir" then
+				fptype = "Shortcut-FE CM"
+			elseif fs.stat("/sys/kernel/debug/hnat", "type") == "dir" then
+				local ethernet_hnat = readfile("/sys/kernel/debug/hnat/hook_toggle")
+				ethernet_hnat = (ethernet_hnat ~= "enabled") and " / Ethernet HNAT Disabled" or ""
+
+				local wireless_hnat = (sys.call("grep -q 'WHNAT=1' '/etc/wireless/mediatek/'*_card*.dat") ~= 0) and " / Wireless HNAT Disabled" or ""
+				if (ethernet_hnat == "") or (wireless_hnat == "") then
+					fptype = "MediaTek HNAT" .. ethernet_hnat .. wireless_hnat
+				end
+			end
+			print(json.stringify({ type = fptype }))
+		end
+	},
+	getFullConeStat = {
+		call = function()
+			local fctype
+			if fs.access("/sys/module/xt_FULLCONENAT/refcnt") and
+			(readfile("/sys/module/xt_FULLCONENAT/refcnt") or "0") ~= "0" then
+				fctype = "xt_FULLCONENAT"
+			elseif  fs.access("/proc/sys/net/netfilter/nf_conntrack_nat_mode") and
+				(readfile("/proc/sys/net/netfilter/nf_conntrack_nat_mode") or "0") ~= "0" then
+				fctype = "Boardcom Fullcone"
+			end
+			print(json.stringify({ type = fctype }))
+		end
+	},
+	getTCPCCAStat = {
+		call = function()
+			local ccatype = readfile("/proc/sys/net/ipv4/tcp_congestion_control")
+			ccatype = ccatype and ccatype:upper() or nil
+			print(json.stringify({ type = ccatype }))
+		end
+	},
+	getMTKPPEStat = {
+		call = function()
+			local ppe_stat = {}
+			local ppe_path = "/sys/kernel/debug/hnat/hnat_stats"
+			local fd = io.open(ppe_path, 'r')
+		
+			if fd then
+				for line in fd:lines() do
+					local i = string.find(line, "=")
+					if i then
+						ppe_stat[string.sub(line,1,i-1)] = string.sub(line,i+1)
+					end
+				end
+				fd:close()
+			end
+
+			print(json.stringify(ppe_stat))
+		end
+	}
+}
+
+local function parseInput()
+	local parse = json.new()
+	local done, err
+
+	while true do
+		local chunk = io.read(4096)
+		if not chunk then
+			break
+		elseif not done and not err then
+			done, err = parse:parse(chunk)
+		end
+	end
+
+	if not done then
+		print(json.stringify({ error = err or "Incomplete input" }))
+		os.exit(1)
+	end
+
+	return parse:get()
+end
+
+local function validateArgs(func, uargs)
+	local method = methods[func]
+	if not method then
+		print(json.stringify({ error = "Method not found" }))
+		os.exit(1)
+	end
+
+	if type(uargs) ~= "table" then
+		print(json.stringify({ error = "Invalid arguments" }))
+		os.exit(1)
+	end
+
+	uargs.ubus_rpc_session = nil
+
+	local k, v
+	local margs = method.args or {}
+	for k, v in pairs(uargs) do
+		if margs[k] == nil or
+		   (v ~= nil and type(v) ~= type(margs[k]))
+		then
+			print(json.stringify({ error = "Invalid arguments" }))
+			os.exit(1)
+		end
+	end
+
+	return method
+end
+
+if arg[1] == "list" then
+	local _, method, rv = nil, nil, {}
+	for _, method in pairs(methods) do rv[_] = method.args or {} end
+	print((json.stringify(rv):gsub(":%[%]", ":{}")))
+elseif arg[1] == "call" then
+	local args = parseInput()
+	local method = validateArgs(arg[2], args)
+	local result, code = method.call(args)
+	print((json.stringify(result):gsub("^%[%]$", "{}")))
+	os.exit(code or 0)
+end

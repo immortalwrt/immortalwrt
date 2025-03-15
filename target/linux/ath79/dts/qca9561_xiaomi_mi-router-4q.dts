@@ -89,30 +89,10 @@
 				read-only;
 			};
 
-			partition@60000 {
+			art: partition@60000 {
 				label = "art";
 				reg = <0x60000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_art_0: macaddr@0 {
-						compatible = "mac-base";
-						reg = <0x0 0x6>;
-						#nvmem-cell-cells = <1>;
-					};
-
-					macaddr_art_6: macaddr@6 {
-						reg = <0x6 0x6>;
-					};
-
-					cal_art_1000: calibration@1000 {
-						reg = <0x1000 0x440>;
-					};
-				};
 			};
 
 			partition@70000 {
@@ -140,20 +120,19 @@
 	status = "okay";
 
 	phy-handle = <&swphy4>;
-	nvmem-cells = <&macaddr_art_0 0>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&art 0x0>;
 };
 
 &eth1 {
 	status = "okay";
 
-	nvmem-cells = <&macaddr_art_6>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&art 0x6>;
 };
 
 &wmac {
 	status = "okay";
 
-	nvmem-cells = <&macaddr_art_0 1>, <&cal_art_1000>;
-	nvmem-cell-names = "mac-address", "calibration";
+	mtd-cal-data = <&art 0x1000>;
+	mtd-mac-address = <&art 0x0>;
+	mtd-mac-address-increment = <1>;
 };

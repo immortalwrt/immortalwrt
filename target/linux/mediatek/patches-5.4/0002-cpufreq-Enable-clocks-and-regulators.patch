@@ -1,0 +1,88 @@
+diff --git a/drivers/cpufreq/mediatek-cpufreq.c b/drivers/cpufreq/mediatek-cpufreq.c
+index 03bb7b5..010a947 100644
+--- a/drivers/cpufreq/mediatek-cpufreq.c
++++ b/drivers/cpufreq/mediatek-cpufreq.c
+@@ -351,6 +351,12 @@ static int mtk_cpu_dvfs_info_init(struct mtk_cpu_dvfs_info *info, int cpu)
+ 		goto out_free_resources;
+ 	}
+ 
++	ret = regulator_enable(proc_reg);
++	if (ret) {
++		dev_warn(cpu_dev, "cpu%d: failed to enable vproc\n", cpu);
++		goto out_free_resources;
++	}
++
+ 	/* Both presence and absence of sram regulator are valid cases. */
+ 	sram_reg = regulator_get_exclusive(cpu_dev, "sram");
+ 
+@@ -368,13 +374,21 @@ static int mtk_cpu_dvfs_info_init(struct mtk_cpu_dvfs_info *info, int cpu)
+ 		goto out_free_resources;
+ 	}
+ 
++	ret = clk_prepare_enable(cpu_clk);
++	if (ret)
++		goto out_free_opp_table;
++
++	ret = clk_prepare_enable(inter_clk);
++	if (ret)
++		goto out_disable_mux_clock;
++
+ 	/* Search a safe voltage for intermediate frequency. */
+ 	rate = clk_get_rate(inter_clk);
+ 	opp = dev_pm_opp_find_freq_ceil(cpu_dev, &rate);
+ 	if (IS_ERR(opp)) {
+ 		pr_err("failed to get intermediate opp for cpu%d\n", cpu);
+ 		ret = PTR_ERR(opp);
+-		goto out_free_opp_table;
++		goto out_disable_inter_clock;
+ 	}
+ 	info->intermediate_voltage = dev_pm_opp_get_voltage(opp);
+ 	dev_pm_opp_put(opp);
+@@ -393,10 +407,23 @@ static int mtk_cpu_dvfs_info_init(struct mtk_cpu_dvfs_info *info, int cpu)
+ 
+ 	return 0;
+ 
++out_disable_inter_clock:
++	if(!IS_ERR(inter_clk))
++		clk_disable_unprepare(inter_clk);
++
++out_disable_mux_clock:
++	if(!IS_ERR(cpu_clk))
++		clk_disable_unprepare(cpu_clk);
++
+ out_free_opp_table:
+ 	dev_pm_opp_of_cpumask_remove_table(&info->cpus);
+ 
+ out_free_resources:
++	if (!IS_ERR(proc_reg)) {
++		if (regulator_is_enabled(proc_reg))
++			regulator_disable(proc_reg);
++	}
++
+ 	if (!IS_ERR(proc_reg))
+ 		regulator_put(proc_reg);
+ 	if (!IS_ERR(sram_reg))
+@@ -411,14 +438,20 @@ out_free_resources:
+ 
+ static void mtk_cpu_dvfs_info_release(struct mtk_cpu_dvfs_info *info)
+ {
+-	if (!IS_ERR(info->proc_reg))
++	if (!IS_ERR(info->proc_reg)){
++		regulator_disable(info->proc_reg);
+ 		regulator_put(info->proc_reg);
++	}
+ 	if (!IS_ERR(info->sram_reg))
+ 		regulator_put(info->sram_reg);
+-	if (!IS_ERR(info->cpu_clk))
++	if (!IS_ERR(info->cpu_clk)){
++		clk_disable_unprepare(info->cpu_clk);
+ 		clk_put(info->cpu_clk);
+-	if (!IS_ERR(info->inter_clk))
++	}
++	if (!IS_ERR(info->inter_clk)){
++		clk_disable_unprepare(info->inter_clk);
+ 		clk_put(info->inter_clk);
++	}
+ 
+ 	dev_pm_opp_of_cpumask_remove_table(&info->cpus);
+ }

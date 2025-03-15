@@ -1,0 +1,438 @@
+--- a/drivers/net/usb/qmi_wwan.c	2024-10-09 23:41:43.552792000 +0800
++++ b/drivers/net/usb/qmi_wwan.c	2024-10-21 00:06:04.645533920 +0800
+@@ -576,6 +576,7 @@
+ 	eth_zero_addr(eth_hdr(skb)->h_source);
+ fix_dest:
+ 	memcpy(eth_hdr(skb)->h_dest, dev->net->dev_addr, ETH_ALEN);
++	memcpy(eth_hdr(skb)->h_source, default_modem_addr, ETH_ALEN);
+ 	return 1;
+ }
+ 
+@@ -885,6 +886,28 @@
+ 	return ret;
+ }
+ 
++static struct sk_buff *qmi_wwan_tx_fixup(struct usbnet *dev, struct sk_buff *skb, gfp_t flags) {
++    if ((dev->driver_info->flags & FLAG_NOARP) == 0)
++        return skb;
++
++    // Skip Ethernet header from message
++    if (dev->net->hard_header_len == 0)
++        return skb;
++    else
++        skb_reset_mac_header(skb);
++
++
++    if (skb_pull(skb, ETH_HLEN)) {
++        return skb;
++    } else {
++        dev_err(&dev->intf->dev,  "Packet Dropped ");
++    }
++
++    // Filter the packet out, release it
++    dev_kfree_skb_any(skb);
++    return NULL;
++}
++
+ static const struct driver_info	qmi_wwan_info = {
+ 	.description	= "WWAN/QMI device",
+ 	.flags		= FLAG_WWAN | FLAG_SEND_ZLP,
+@@ -892,6 +915,7 @@
+ 	.unbind		= qmi_wwan_unbind,
+ 	.manage_power	= qmi_wwan_manage_power,
+ 	.rx_fixup       = qmi_wwan_rx_fixup,
++	.tx_fixup       = qmi_wwan_tx_fixup, 
+ };
+ 
+ static const struct driver_info	qmi_wwan_info_quirk_dtr = {
+@@ -901,6 +925,7 @@
+ 	.unbind		= qmi_wwan_unbind,
+ 	.manage_power	= qmi_wwan_manage_power,
+ 	.rx_fixup       = qmi_wwan_rx_fixup,
++	.tx_fixup       = qmi_wwan_tx_fixup, 
+ 	.data           = QMI_WWAN_QUIRK_DTR,
+ };
+ 
+--- a/net/netfilter/nft_counter.c	2023-08-30 22:27:28.000000000 +0800
++++ b/net/netfilter/nft_counter.c	2024-09-23 08:18:34.386516407 +0800
+@@ -13,7 +13,27 @@
+ #include <linux/netfilter.h>
+ #include <linux/netfilter/nf_tables.h>
+ #include <net/netfilter/nf_tables.h>
+-
++#include <net/netfilter/nf_conntrack.h>
++#include <net/netfilter/nf_conntrack_acct.h>
++static struct hnat_desc {
++	u32 entry : 14;
++ 	#if defined(CONFIG_MEDIATEK_NETSYS_RX_V2)
++ 	u32 fill : 4;
++ 	#endif
++ 	u32 crsn : 5;
++ 	u32 sport : 4;
++ 	u32 alg : 1;
++ 	u32 iface : 8;
++ 	u32 ppe : 1;
++ 	u32 filled : 3;
++ 	u32 magic_tag_protect : 16;
++ 	u32 wdmaid : 8;
++ 	u32 rxid : 2;
++ 	u32 wcid : 10;
++ 	u32 bssid : 6;
++ } __packed;
++#define HIT_BIND_KEEPALIVE_DUP_OLD_HDR 0x15
++#define skb_hnat_reason(skb) (((struct hnat_desc *)(skb->head))->crsn)
+ struct nft_counter {
+ 	s64		bytes;
+ 	s64		packets;
+@@ -30,7 +50,25 @@
+ 				       const struct nft_pktinfo *pkt)
+ {
+ 	struct nft_counter *this_cpu;
++	struct nf_conn *ct;
++	struct nf_conn_acct *acct;
++	struct nf_conn_counter *conn_counter;
++	enum ip_conntrack_info ctinfo;
+ 	seqcount_t *myseq;
++	s64 bytes = 0;
++	s64 packets = 0;
++	
++	if (unlikely(skb_hnat_reason(pkt->skb) == HIT_BIND_KEEPALIVE_DUP_OLD_HDR)){
++		ct = nf_ct_get(pkt->skb, &ctinfo);
++		if (ct) {
++ 			acct = nf_conn_acct_find(ct);
++ 			if (acct) {
++ 			conn_counter = acct->counter;			
++ 			bytes = atomic64_read(&conn_counter[CTINFO2DIR(ctinfo)].diff_bytes); 		   	    
++ 			packets = atomic64_read(&conn_counter[CTINFO2DIR(ctinfo)].diff_packets);
++		  	}
++ 		}
++ 	}
+ 
+ 	local_bh_disable();
+ 	this_cpu = this_cpu_ptr(priv->counter);
+@@ -40,6 +78,8 @@
+ 
+ 	this_cpu->bytes += pkt->skb->len;
+ 	this_cpu->packets++;
++	this_cpu->bytes += bytes;
++	this_cpu->packets += packets;
+ 
+ 	write_seqcount_end(myseq);
+ 	local_bh_enable();
+--- a/include/net/netfilter/nf_flow_table.h	2024-09-13 16:35:08.862364500 +0800
++++ b/include/net/netfilter/nf_flow_table.h	2024-09-14 10:28:23.716107006 +0800
+@@ -109,6 +109,7 @@
+ 	u16 vlan_id;
+ 	u16 pppoe_sid;
+ 	u16 dsa_port;
++	u32 skb_hash;
+ };
+ 
+ #define NF_FLOW_TIMEOUT (30 * HZ)
+--- a/drivers/net/bonding/bond_main.c	2024-09-13 16:35:08.772364500 +0800
++++ b/drivers/net/bonding/bond_main.c	2024-09-14 11:18:53.735860267 +0800
+@@ -80,7 +80,10 @@
+ #include <net/bonding.h>
+ #include <net/bond_3ad.h>
+ #include <net/bond_alb.h>
+-
++#if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
++#include <linux/netfilter.h>
++#include <net/netfilter/nf_flow_table.h>
++#endif
+ #include "bonding_priv.h"
+ 
+ /*---------------------------- Module parameters ----------------------------*/
+@@ -4370,6 +4373,35 @@
+ 		 BOND_ABI_VERSION);
+ }
+ 
++#if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
++static int bond_dev_flow_offload_check(struct flow_offload_hw_path *path)
++{
++	struct net_device *master_dev = path->dev;
++	struct net_device *slave_dev[10];
++	struct list_head *iter;
++	int i = 0;
++	netdev_for_each_lower_dev(master_dev, slave_dev[i], iter) {
++		/* Check the link status of the slave device */
++	if (!(slave_dev[i]->flags & IFF_UP) ||
++		!netif_carrier_ok(slave_dev[i]))
++		continue;
++			i++;
++	if (i >= ARRAY_SIZE(slave_dev))
++			break;
++	}
++	if (i > 0) {
++		i = ((path->skb_hash) >> 1) % i;
++			if (i >= 0 && i < ARRAY_SIZE(slave_dev)) {
++			/* Choose a subordinate device by hash index */
++			path->dev = slave_dev[i];
++			}
++	}	
++	if (path->dev->netdev_ops->ndo_flow_offload_check)
++		return path->dev->netdev_ops->ndo_flow_offload_check(path);
++	return 0;
++}
++#endif /* CONFIG_NF_FLOW_TABLE */
++
+ static const struct ethtool_ops bond_ethtool_ops = {
+ 	.get_drvinfo		= bond_ethtool_get_drvinfo,
+ 	.get_link		= ethtool_op_get_link,
+@@ -4401,6 +4433,9 @@
+ 	.ndo_del_slave		= bond_release,
+ 	.ndo_fix_features	= bond_fix_features,
+ 	.ndo_features_check	= passthru_features_check,
++#if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
++	.ndo_flow_offload_check = bond_dev_flow_offload_check,
++#endif
+ };
+ 
+ static const struct device_type bond_type = {
+--- a/net/dsa/tag_mtk.c
++++ b/net/dsa/tag_mtk.c
+@@ -25,6 +25,13 @@ static struct sk_buff *mtk_tag_xmit(stru
+ 	u8 xmit_tpid;
+ 	u8 *mtk_tag;
+ 
++	/* The Ethernet switch we are interfaced with needs packets to be at
++	 * least 64 bytes (including FCS) otherwise their padding might be
++	 * corrupted. With tags enabled, we need to make sure that packets are
++	 * at least 68 bytes (including FCS and tag).
++	 */
++	 
++
+ 	/* Build the special tag after the MAC Source Address. If VLAN header
+ 	 * is present, it's required that VLAN header and special tag is
+ 	 * being combined. Only in this way we can allow the switch can parse
+--- a/drivers/net/macvlan.c	2023-08-30 22:27:28.000000000 +0800
++++ b/drivers/net/macvlan.c	2024-09-12 19:15:11.653886551 +0800
+@@ -33,6 +33,11 @@
+ #include <linux/netpoll.h>
+ #include <linux/phy.h>
+ 
++#if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
++#include <linux/netfilter.h>
++#include <net/netfilter/nf_flow_table.h>
++#endif
++
+ #define MACVLAN_HASH_BITS	8
+ #define MACVLAN_HASH_SIZE	(1<<MACVLAN_HASH_BITS)
+ #define MACVLAN_BC_QUEUE_LEN	1000
+@@ -1126,6 +1131,19 @@
+ 	return vlan->lowerdev->ifindex;
+ }
+ 
++#if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
++static int macvlan_dev_flow_offload_check(struct flow_offload_hw_path *path)
++{
++	struct net_device *dev = path->dev;
++	struct macvlan_dev *vlan = netdev_priv(dev);
++	path->dev = vlan->lowerdev;
++	
++	if (path->dev->netdev_ops->ndo_flow_offload_check)
++		return path->dev->netdev_ops->ndo_flow_offload_check(path);
++	return 0;
++}
++#endif /* CONFIG_NF_FLOW_TABLE */
++
+ static const struct ethtool_ops macvlan_ethtool_ops = {
+ 	.get_link		= ethtool_op_get_link,
+ 	.get_link_ksettings	= macvlan_ethtool_get_link_ksettings,
+@@ -1160,6 +1178,9 @@
+ 	.ndo_get_iflink		= macvlan_dev_get_iflink,
+ 	.ndo_features_check	= passthru_features_check,
+ 	.ndo_change_proto_down  = dev_change_proto_down_generic,
++#if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
++	.ndo_flow_offload_check = macvlan_dev_flow_offload_check,
++#endif
+ };
+ 
+ void macvlan_common_setup(struct net_device *dev)
+--- a/include/net/netfilter/nf_conntrack_acct.h	2024-01-04 22:35:10.790631711 +0800
++++ b/include/net/netfilter/nf_conntrack_acct.h	2024-01-06 00:57:34.678787219 +0800
+@@ -14,6 +14,8 @@
+ struct nf_conn_counter {
+ 	atomic64_t packets;
+ 	atomic64_t bytes;
++	atomic64_t diff_packets;
++	atomic64_t diff_bytes;
+ };
+ 
+ struct nf_conn_acct {
+
+--- a/net/ipv4/netfilter/ip_tables.c	2024-01-01 02:04:02.972938000 +0800
++++ b/net/ipv4/netfilter/ip_tables.c	2024-01-06 01:01:49.216454646 +0800
+@@ -27,6 +27,8 @@
+ #include <linux/netfilter_ipv4/ip_tables.h>
+ #include <net/netfilter/nf_log.h>
+ #include "../../netfilter/xt_repldata.h"
++#include <net/netfilter/nf_conntrack.h>
++#include <net/netfilter/nf_conntrack_acct.h>
+ 
+ MODULE_LICENSE("GPL");
+ MODULE_AUTHOR("Netfilter Core Team <coreteam@netfilter.org>");
+@@ -273,6 +275,25 @@
+ 	return true;
+ }
+ 
++static struct hnat_desc {
++	u32 entry : 14;
++	#if defined(CONFIG_MEDIATEK_NETSYS_RX_V2)
++	u32 fill : 4;
++	#endif
++	u32 crsn : 5;
++	u32 sport : 4;
++	u32 alg : 1;
++	u32 iface : 8;
++	u32 ppe : 1;
++	u32 filled : 3;
++	u32 magic_tag_protect : 16;
++	u32 wdmaid : 8;
++	u32 rxid : 2;
++	u32 wcid : 10;
++	u32 bssid : 6;
++} __packed;
++#define HIT_BIND_KEEPALIVE_DUP_OLD_HDR 0x15
++#define skb_hnat_reason(skb) (((struct hnat_desc *)(skb->head))->crsn)
+ /* Returns one of the generic firewall policies, like NF_ACCEPT. */
+ unsigned int
+ ipt_do_table(struct sk_buff *skb,
+@@ -291,7 +312,12 @@
+ 	const struct xt_table_info *private;
+ 	struct xt_action_param acpar;
+ 	unsigned int addend;
+-
++	
++	struct nf_conn *ct;
++	struct nf_conn_acct *acct;
++	struct nf_conn_counter *conn_counter;
++	enum ip_conntrack_info ctinfo;
++	
+ 	/* Initialization */
+ 	WARN_ON(!(table->valid_hooks & (1 << hook)));
+ 	local_bh_disable();
+@@ -302,9 +328,22 @@
+ 	e = get_entry(table_base, private->hook_entry[hook]);
+ 	if (ipt_handle_default_rule(e, &verdict)) {
+ 		struct xt_counters *counter;
+-
+ 		counter = xt_get_this_cpu_counter(&e->counters);
+ 		ADD_COUNTER(*counter, skb->len, 1);
++		
++		if (unlikely(skb_hnat_reason(skb) == HIT_BIND_KEEPALIVE_DUP_OLD_HDR)){
++		ct = nf_ct_get(skb, &ctinfo);
++		if (ct) {
++			acct = nf_conn_acct_find(ct);
++			if (acct) {
++			conn_counter = acct->counter;			
++			ADD_COUNTER(*counter, 		   	    
++ atomic64_read(&conn_counter[CTINFO2DIR(ctinfo)].diff_bytes),atomic64_read(&conn_counter[CTINFO2DIR(ctinfo)].diff_packets));
++				  }
++			}
++		}
++
++			
+ 		local_bh_enable();
+ 		return verdict;
+ 	}
+@@ -360,6 +399,17 @@
+ 
+ 		counter = xt_get_this_cpu_counter(&e->counters);
+ 		ADD_COUNTER(*counter, skb->len, 1);
++		if (unlikely(skb_hnat_reason(skb) == HIT_BIND_KEEPALIVE_DUP_OLD_HDR)){
++		ct = nf_ct_get(skb, &ctinfo);
++		if (ct) {
++			acct = nf_conn_acct_find(ct);
++			if (acct) {
++			conn_counter = acct->counter;			
++			ADD_COUNTER(*counter, 		   	    
++ atomic64_read(&conn_counter[CTINFO2DIR(ctinfo)].diff_bytes),atomic64_read(&conn_counter[CTINFO2DIR(ctinfo)].diff_packets));
++				  }
++			}
++		}
+ 
+ 		t = ipt_get_target_c(e);
+ 		WARN_ON(!t->u.kernel.target);
+
+--- a/net/ipv6/netfilter/ip6_tables.c	2023-08-30 22:27:28.000000000 +0800
++++ b/net/ipv6/netfilter/ip6_tables.c	2024-01-06 01:03:01.874087644 +0800
+@@ -31,6 +31,8 @@
+ #include <linux/netfilter/x_tables.h>
+ #include <net/netfilter/nf_log.h>
+ #include "../../netfilter/xt_repldata.h"
++#include <net/netfilter/nf_conntrack.h>
++#include <net/netfilter/nf_conntrack_acct.h>
+ 
+ MODULE_LICENSE("GPL");
+ MODULE_AUTHOR("Netfilter Core Team <coreteam@netfilter.org>");
+@@ -245,6 +247,25 @@
+ 	return (void *)entry + entry->next_offset;
+ }
+ 
++static struct hnat_desc {
++	u32 entry : 14;
++	#if defined(CONFIG_MEDIATEK_NETSYS_RX_V2)
++	u32 fill : 4;
++	#endif
++	u32 crsn : 5;
++	u32 sport : 4;
++	u32 alg : 1;
++	u32 iface : 8;
++	u32 ppe : 1;
++	u32 filled : 3;
++	u32 magic_tag_protect : 16;
++	u32 wdmaid : 8;
++	u32 rxid : 2;
++	u32 wcid : 10;
++	u32 bssid : 6;
++} __packed;
++#define HIT_BIND_KEEPALIVE_DUP_OLD_HDR 0x15
++#define skb_hnat_reason(skb) (((struct hnat_desc *)(skb->head))->crsn)
+ /* Returns one of the generic firewall policies, like NF_ACCEPT. */
+ unsigned int
+ ip6t_do_table(struct sk_buff *skb,
+@@ -262,7 +283,12 @@
+ 	const struct xt_table_info *private;
+ 	struct xt_action_param acpar;
+ 	unsigned int addend;
+-
++	
++	struct nf_conn *ct;
++	struct nf_conn_acct *acct;
++	struct nf_conn_counter *conn_counter;
++	enum ip_conntrack_info ctinfo;
++	
+ 	/* Initialization */
+ 	stackidx = 0;
+ 	indev = state->in ? state->in->name : nulldevname;
+@@ -285,6 +311,7 @@
+ 	cpu        = smp_processor_id();
+ 	table_base = private->entries;
+ 	jumpstack  = (struct ip6t_entry **)private->jumpstack[cpu];
++	
+ 
+ 	/* Switch to alternate jumpstack if we're being invoked via TEE.
+ 	 * TEE issues XT_CONTINUE verdict on original skb so we must not
+@@ -321,7 +348,20 @@
+ 
+ 		counter = xt_get_this_cpu_counter(&e->counters);
+ 		ADD_COUNTER(*counter, skb->len, 1);
++		
++		if (unlikely(skb_hnat_reason(skb) == HIT_BIND_KEEPALIVE_DUP_OLD_HDR)){
++		ct = nf_ct_get(skb, &ctinfo);
++		if (ct) {
++			acct = nf_conn_acct_find(ct);
++			if (acct) {
++			conn_counter = acct->counter;			
++			ADD_COUNTER(*counter, 		   	    
++ atomic64_read(&conn_counter[CTINFO2DIR(ctinfo)].diff_bytes),atomic64_read(&conn_counter[CTINFO2DIR(ctinfo)].diff_packets));
++				  }
++			}
++		}
+ 
++			
+ 		t = ip6t_get_target_c(e);
+ 		WARN_ON(!t->u.kernel.target);
+ 
+

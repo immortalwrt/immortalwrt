@@ -1,0 +1,91 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: LuCi Chinese Translation\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Pootle 2.0.6\n"
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:64
+msgid "Comment"
+msgstr "编号"
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:28
+msgid "Download speed (Mbit/s)"
+msgstr "下载速度 (Mbit/s)"
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:18
+#: applications/luci-app-eqos/root/usr/share/luci/menu.d/luci-app-eqos.json:3
+msgid "EQoS"
+msgstr "网速控制"
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:24
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:43
+msgid "Enable"
+msgstr "启用"
+
+msgid "SMART_HWQOS"
+msgstr "智能硬件QOS"
+
+msgid "Enabling fair queue will automatically perform hardware offloading for every local host"
+msgstr "启用硬件公平队列，局域网的每台设备将拥有相同的转发优先级，保证设备最低网速(仅对dhcp获得ip地址的设备生效,不兼容固定限速)"
+
+msgid "IPV6Enable"
+msgstr "同时作用IPV6"
+
+msgid "Load balance"
+msgstr "负载均衡"
+
+msgid "Please set a different gateway hop for each network interface before filling in the network interface name. Fill in PPPOE-WAN for dialing and eth1 for DHCP. Leaving it blank to disable it.Please use commas as interface name separators. Example: pppoe-wan,eth1"
+msgstr "请先为每个网络接口设置不同的网关跃点后，再填写网络接口名。拨号填写pppoe-wan，DHCP则填写eth1。留空则不启用.请使用逗号作为接口名分隔符.例子：pppoe-wan, eth1"
+
+#: applications/luci-app-eqos/root/usr/share/rpcd/acl.d/luci-app-eqos.json:3
+msgid "Grant UCI access for luci-app-eqos"
+msgstr "授予 luci-app-eqos 访问 UCI 配置的权限"
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:46
+msgid "IPV4 address"
+msgstr "IPV4 地址"
+
+msgid "IPV6 host"
+msgstr "IPV6 主机"
+
+
+msgid "Total download bandwidth."
+msgstr "总下载带宽。"
+
+msgid "InterfaceName(start from 0)"
+msgstr "分流接口序号(从0开始,留空则负载均衡)"
+
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:19
+msgid "Network speed control service.(Compatiable with Mediatek HNAT)"
+msgstr "网速控制服务(未设置限速主机可正常使用硬件加速)。"
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:38
+msgid "Speed limit and route choose based on IP address(Auto use hardware QOS)"
+msgstr "基于 IP 分流限速(自动启用硬件QOS.速度设置为0则取消限速)"
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:29
+msgid "Total download bandwidth."
+msgstr "总下载带宽。"
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:34
+msgid "Total upload bandwidth."
+msgstr "总上传带宽。"
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:33
+msgid "Upload speed (Mbit/s)"
+msgstr "上传速度 (Mbit/s)"
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:56
+msgid "Download speed (kbit/s)"
+msgstr "下载速度 (kbit/s)"
+
+#: applications/luci-app-eqos/htdocs/luci-static/resources/view/eqos.js:60
+msgid "Upload speed (kbit/s)"
+msgstr "上传速度 (kbit/s)"
+

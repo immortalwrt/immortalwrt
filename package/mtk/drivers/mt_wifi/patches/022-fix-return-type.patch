@@ -1,0 +1,11 @@
+--- a/mt_wifi/embedded/mcu/andes_mt.c  2022-11-27 21:58:55.000000000 +0800
++++ b/mt_wifi/embedded/mcu/andes_mt.c 2024-05-07 12:56:43.337033430 +0800
+@@ -1359,7 +1359,7 @@ VOID ExtEventPhyIcsUnSolicitDataHandler(
+	msg_len = pIcsEvent->u4DataLen * sizeof(UINT32) + sizeof(FW_BIN_LOG_HDR_T);
+
+	if (os_alloc_mem(pAd, (UCHAR **)&buffer, msg_len) != NDIS_STATUS_SUCCESS)
+-		return NDIS_STATUS_FAILURE;
++		return;
+	log_hdr = (P_FW_BIN_LOG_HDR_T)buffer;
+
+	/* prepare ICS header */

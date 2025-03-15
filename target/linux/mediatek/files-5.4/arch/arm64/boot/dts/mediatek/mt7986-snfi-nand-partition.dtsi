@@ -1,0 +1,44 @@
+/ {
+	nmbm_snfi {
+		compatible = "generic,nmbm";
+
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		lower-mtd-device = <&snand>;
+		forced-create;
+		empty-page-ecc-protected;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "BL2";
+				reg = <0x00000 0x0100000>;
+				read-only;
+			};
+
+			partition@100000 {
+				label = "u-boot-env";
+				reg = <0x0100000 0x0080000>;
+			};
+
+			factory: partition@180000 {
+				label = "Factory";
+				reg = <0x180000 0x0200000>;
+			};
+
+			partition@380000 {
+				label = "FIP";
+				reg = <0x380000 0x0200000>;
+			};
+
+			partition@580000 {
+				label = "ubi";
+				reg = <0x580000 0x4000000>;
+			};
+		};
+	};
+};

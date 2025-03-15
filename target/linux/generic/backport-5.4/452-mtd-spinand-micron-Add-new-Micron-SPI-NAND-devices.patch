@@ -1,0 +1,59 @@
+From a15335a17f4abf48ed9739c3b119232f9392cb60 Mon Sep 17 00:00:00 2001
+From: Shivamurthy Shastri <sshivamurthy@micron.com>
+Date: Wed, 11 Mar 2020 18:57:32 +0100
+Subject: [PATCH] mtd: spinand: micron: Add new Micron SPI NAND devices
+
+Add device table for M79A and M78A series Micron SPI NAND devices.
+
+Signed-off-by: Shivamurthy Shastri <sshivamurthy@micron.com>
+Reviewed-by: Boris Brezillon <boris.brezillon@collabora.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20200311175735.2007-4-sshivamurthy@micron.com
+---
+ drivers/mtd/nand/spi/micron.c | 33 +++++++++++++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
+
+diff --git a/drivers/mtd/nand/spi/micron.c b/drivers/mtd/nand/spi/micron.c
+index 4727933c894bc8..26925714a9fbac 100644
+--- a/drivers/mtd/nand/spi/micron.c
++++ b/drivers/mtd/nand/spi/micron.c
+@@ -102,6 +102,39 @@ static const struct spinand_info micron_spinand_table[] = {
+ 		     0,
+ 		     SPINAND_ECCINFO(&micron_8_ooblayout,
+ 				     micron_8_ecc_get_status)),
++	/* M79A 2Gb 1.8V */
++	SPINAND_INFO("MT29F2G01ABBGD",
++		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0x25),
++		     NAND_MEMORG(1, 2048, 128, 64, 2048, 40, 2, 1, 1),
++		     NAND_ECCREQ(8, 512),
++		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
++					      &write_cache_variants,
++					      &update_cache_variants),
++		     0,
++		     SPINAND_ECCINFO(&micron_8_ooblayout,
++				     micron_8_ecc_get_status)),
++	/* M78A 1Gb 3.3V */
++	SPINAND_INFO("MT29F1G01ABAFD",
++		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0x14),
++		     NAND_MEMORG(1, 2048, 128, 64, 1024, 20, 1, 1, 1),
++		     NAND_ECCREQ(8, 512),
++		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
++					      &write_cache_variants,
++					      &update_cache_variants),
++		     0,
++		     SPINAND_ECCINFO(&micron_8_ooblayout,
++				     micron_8_ecc_get_status)),
++	/* M78A 1Gb 1.8V */
++	SPINAND_INFO("MT29F1G01ABAFD",
++		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0x15),
++		     NAND_MEMORG(1, 2048, 128, 64, 1024, 20, 1, 1, 1),
++		     NAND_ECCREQ(8, 512),
++		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
++					      &write_cache_variants,
++					      &update_cache_variants),
++		     0,
++		     SPINAND_ECCINFO(&micron_8_ooblayout,
++				     micron_8_ecc_get_status)),
+ };
+ 
+ static const struct spinand_manufacturer_ops micron_spinand_manuf_ops = {

@@ -1,7 +1,6 @@
 #include "danube.dtsi"
 
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "arcadyan,arv752dpw22", "lantiq,xway", "lantiq,danube";
@@ -18,6 +17,7 @@
 		led-upgrade = &power_red;
 
 		led-dsl = &internet_red;
+		led-usb = &umts;
 		led-wifi = &wifi;
 	};
 
@@ -55,8 +55,7 @@
 	leds {
 		compatible = "gpio-leds";
 		power_blue: power1 {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:power";
 			gpios = <&gpio 3 GPIO_ACTIVE_LOW>;
 		};
 		internet_red: internet {
@@ -68,8 +67,7 @@
 			gpios = <&gpio 5 GPIO_ACTIVE_LOW>;
 		};
 		power_red: power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_RED>;
+			label = "red:power";
 			gpios = <&gpio 6 GPIO_ACTIVE_LOW>;
 			default-state = "keep";
 		};
@@ -80,9 +78,6 @@
 		umts: umts {
 			label = "red:umts";
 			gpios = <&gpiomm 3 GPIO_ACTIVE_LOW>;
-			trigger-sources = <&ehci_port1>,
-					  <&ehci_port2>, <&uhci_port2>;
-			linux,default-trigger = "usbport";
 		};
 		wifi: wifi {
 			label = "red:wifi";
@@ -134,7 +129,7 @@
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 
-		gpios = <&gpiomm 0 GPIO_ACTIVE_HIGH>;
+		gpio = <&gpiomm 0 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 	};
 };
@@ -174,8 +169,7 @@
 
 &gsw {
 	phy-mode = "mii";
-	nvmem-cells = <&macaddr_boardconfig_16>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&boardconfig 0x16>;
 };
 
 &localbus {
@@ -210,16 +204,6 @@
 				label = "board_config";
 				reg = <0x7f0000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_boardconfig_16: macaddr@16 {
-						reg = <0x16 0x6>;
-					};
-				};
 			};
 		};
 	};
@@ -248,40 +232,15 @@
 		0x7800 0 0 2 &icu0 135
 		0x7800 0 0 3 &icu0 135
 	>;
-	reset-gpios = <&gpio 21 GPIO_ACTIVE_LOW>;
+	gpio-reset = <&gpio 21 GPIO_ACTIVE_HIGH>;
 	req-mask = <0x3>;
 
 	wifi@1814,3592 {
 		compatible = "pci1814,3592";
 		reg = <0x7000 0 0 0 0>;
 		ralink,mtd-eeprom = <&boardconfig 0x410>;
-		ralink,eeprom-swap;
-		nvmem-cells = <&macaddr_boardconfig_16>;
-		nvmem-cell-names = "mac-address";
-	};
-
-	usb@0f,0 {
-		#address-cells = <1>;
-		#size-cells = <0>;
-		compatible = "pci1106,3038";
-		reg = <0x7800 0 0 0 0>; /* 0000:00:0f.0: UHCI Host Controller */
-
-		uhci_port2: port@2 {
-			reg = <2>;
-			#trigger-source-cells = <0>;
-		};
-	};
-
-	usb@0f,2 {
-		#address-cells = <1>;
-		#size-cells = <0>;
-		compatible = "pci1106,3038";
-		reg = <0x7a00 0 0 0 0>; /* 0000:00:0f.2: EHCI Host Controller*/
-
-		ehci_port2: port@2 {
-			reg = <2>;
-			#trigger-source-cells = <0>;
-		};
+		ralink,mtd-eeprom-swap;
+		mtd-mac-address = <&boardconfig 0x16>;
 	};
 };
 

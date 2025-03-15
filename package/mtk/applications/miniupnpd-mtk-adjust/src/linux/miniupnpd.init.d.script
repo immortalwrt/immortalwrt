@@ -1,0 +1,66 @@
+#!/bin/sh
+# $Id: miniupnpd.init.d.script,v 1.5 2023/01/21 12:08:40 nanard Exp $
+# MiniUPnP project
+# author: Thomas Bernard
+# website: http://miniupnp.free.fr/ or https://miniupnp.tuxfamily.org/
+
+### BEGIN INIT INFO
+# Provides:          miniupnpd
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: MiniUPnPd port-forwarding daemon
+### END INIT INFO
+
+set -e
+
+ETCPATH=/etc/miniupnpd
+MINIUPNPD=/usr/sbin/miniupnpd
+ARGS="-f $ETCPATH/miniupnpd.conf"
+
+if [ -f $ETCPATH/nft_init.sh ] ; then
+IPTABLES_CREATE=$ETCPATH/nft_init.sh
+IPTABLES_REMOVE=$ETCPATH/nft_removeall.sh
+elif [ -f $ETCPATH/ip6tables_init.sh ] ; then
+IPTABLES_CREATE="($ETCPATH/iptables_init.sh ; $ETCPATH/ip6tables_init.sh)"
+IPTABLES_REMOVE="($ETCPATH/iptables_removeall.sh ; $ETCPATH/iptables_removeall.sh)"
+else
+IPTABLES_CREATE=$ETCPATH/iptables_init.sh
+IPTABLES_REMOVE=$ETCPATH/iptables_removeall.sh
+fi
+
+test -f $MINIUPNPD || exit 0
+
+. /lib/lsb/init-functions
+
+case "$1" in
+  start)
+	log_daemon_msg "Starting miniupnpd" "miniupnpd"
+	eval $IPTABLES_CREATE > /dev/null 2>&1
+	start-stop-daemon --start --quiet --pidfile /var/run/miniupnpd.pid --startas $MINIUPNPD -- $ARGS $LSBNAMES
+	log_end_msg $?
+	;;
+  stop)
+	log_daemon_msg "Stopping miniupnpd" "miniupnpd"
+	start-stop-daemon --stop --quiet --pidfile /var/run/miniupnpd.pid
+	log_end_msg $?
+	eval $IPTABLES_REMOVE > /dev/null 2>&1
+	;;
+  restart|reload|force-reload)
+	log_daemon_msg "Restarting miniupnpd" "miniupnpd"
+	start-stop-daemon --stop --retry 5 --quiet --pidfile /var/run/miniupnpd.pid
+	eval $IPTABLES_REMOVE > /dev/null 2>&1
+	eval $IPTABLES_CREATE > /dev/null 2>&1
+	start-stop-daemon --start --quiet --pidfile /var/run/miniupnpd.pid --startas $MINIUPNPD -- $ARGS $LSBNAMES
+	log_end_msg $?
+	;;
+  status)
+	status_of_proc $MINIUPNPD miniupnpd
+	;;
+  *)
+	log_action_msg "Usage: /etc/init.d/miniupnpd {start|stop|restart|reload|force-reload}"
+	exit 2
+	;;
+esac
+exit 0

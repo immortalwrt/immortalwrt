@@ -2,11 +2,10 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "gnubee,gb-pc1", "mediatek,mt7621-soc";
-	model = "GnuBee GB-PC1";
+	model = "GB-PC1";
 
 	aliases {
 		led-boot = &led_system;
@@ -29,8 +28,7 @@
 		compatible = "gpio-leds";
 
 		power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio 6 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "default-on";
 		};
@@ -73,20 +71,10 @@
 				read-only;
 			};
 
-			partition@40000 {
+			factory: partition@40000 {
 				label = "factory";
 				reg = <0x40000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_factory_e000: macaddr@e000 {
-						reg = <0xe000 0x6>;
-					};
-				};
 			};
 
 			partition@50000 {
@@ -103,21 +91,7 @@
 };
 
 &gmac0 {
-	nvmem-cells = <&macaddr_factory_e000>;
-	nvmem-cell-names = "mac-address";
-};
-
-&gmac1 {
-	status = "okay";
-	label = "ethblue";
-	phy-handle = <&ethphy4>;
-
-	nvmem-cells = <&macaddr_factory_e000>;
-	nvmem-cell-names = "mac-address";
-};
-
-&ethphy4 {
-	/delete-property/ interrupts;
+	mtd-mac-address = <&factory 0xe000>;
 };
 
 &switch0 {
@@ -125,6 +99,11 @@
 		port@0 {
 			status = "okay";
 			label = "ethblack";
+		};
+
+		port@4 {
+			status = "okay";
+			label = "ethblue";
 		};
 	};
 };

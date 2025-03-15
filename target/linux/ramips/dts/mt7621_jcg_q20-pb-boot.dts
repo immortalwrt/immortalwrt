@@ -1,0 +1,61 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+#include "mt7621_jcg_q20.dtsi"
+
+/ {
+	compatible = "jcg,q20-pb-boot", "mediatek,mt7621-soc";
+	model = "JCG Q20 (pb-boot)";
+};
+
+&nand {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		partition@0 {
+			label = "Bootloader";
+			reg = <0x0 0x80000>;
+		};
+
+		partition@80000 {
+			label = "Nvram";
+			reg = <0x80000 0x40000>;
+			read-only;
+		};
+
+		partition@c0000 {
+			label = "Bdata";
+			reg = <0xc0000 0x40000>;
+			read-only;
+		};
+
+		factory: partition@100000 {
+			label = "Factory";
+			reg = <0x100000 0x80000>;
+			read-only;
+		};
+
+		partition@180000 {
+			label = "crash";
+			reg = <0x180000 0x40000>;
+			read-only;
+		};
+
+		partition@1c0000 {
+			label = "crash_log";
+			reg = <0x1c0000 0x40000>;
+			read-only;
+		};
+
+		partition@200000 {
+			label = "kernel";
+			reg = <0x200000 0x400000>;
+		};
+
+		partition@600000 {
+			label = "ubi";
+			reg = <0x600000 0x7980000>;
+		};
+	};
+};

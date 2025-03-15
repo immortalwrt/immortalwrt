@@ -1,0 +1,11 @@
+diff -urN a/drivers/net/wireless/Makefile b/drivers/net/wireless/Makefile
+--- a/drivers/net/wireless/Makefile	2020-05-08 12:16:50.030922777 +0800
++++ b/drivers/net/wireless/Makefile	2020-05-08 12:16:55.718755223 +0800
+@@ -12,6 +12,7 @@
+ obj-$(CONFIG_WLAN_VENDOR_INTERSIL) += intersil/
+ obj-$(CONFIG_WLAN_VENDOR_MARVELL) += marvell/
+ obj-$(CONFIG_WLAN_VENDOR_MEDIATEK) += mediatek/
++obj-y += wifi_utility/
+ obj-$(CONFIG_WLAN_VENDOR_RALINK) += ralink/
+ obj-$(CONFIG_WLAN_VENDOR_REALTEK) += realtek/
+ obj-$(CONFIG_WLAN_VENDOR_RSI) += rsi/

@@ -10,6 +10,12 @@
 		label-mac-device = &eth0;
 	};
 
+	extosc: ref {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <40000000>;
+	};
+
 	keys {
 		compatible = "gpio-keys";
 
@@ -21,14 +27,22 @@
 	};
 };
 
+&pll {
+	clocks = <&extosc>;
+};
+
 &pcie {
 	status = "okay";
 
 	wifi: wifi@0,0 {
 		reg = <0x0000 0 0 0 0>;
+		qca,no-eeprom;
 	};
 };
 
 &eth0 {
 	status = "okay";
+
+	mtd-mac-address = <&art 0x0>;
 };
+

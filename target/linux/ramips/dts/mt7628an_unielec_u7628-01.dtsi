@@ -9,7 +9,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "unielec,u7628-01", "mediatek,mt7628an-soc";
@@ -39,20 +38,17 @@
 		compatible = "gpio-leds";
 
 		led_power: power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio 44 GPIO_ACTIVE_LOW>;
 		};
 
 		wlan {
-			function = LED_FUNCTION_WLAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:wlan";
 			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
 		};
 
 		wan {
-			function = LED_FUNCTION_WAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:wan";
 			gpios = <&gpio 43 GPIO_ACTIVE_LOW>;
 		};
 
@@ -77,8 +73,7 @@
 		};
 
 		usb {
-			function = LED_FUNCTION_USB;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:usb";
 			gpios = <&gpio 37 GPIO_ACTIVE_LOW>;
 			trigger-sources = <&ohci_port1>, <&ehci_port1>;
 			linux,default-trigger = "usbport";
@@ -90,11 +85,12 @@
 	status = "okay";
 };
 
+&ethernet {
+	mtd-mac-address = <&factory 0x28>;
+};
+
 &wmac {
 	status = "okay";
-
-	nvmem-cells = <&eeprom_factory_0>;
-	nvmem-cell-names = "eeprom";
 };
 
 &state_default {

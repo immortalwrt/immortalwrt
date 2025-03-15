@@ -1,7 +1,6 @@
 #include "vr9.dtsi"
 
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 #include <dt-bindings/mips/lantiq_rcu_gphy.h>
 
 / {
@@ -63,8 +62,7 @@
 		};
 
 		power_green: power {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:power";
 			gpios = <&gpio 14 GPIO_ACTIVE_LOW>;
 			default-state = "keep";
 		};
@@ -80,15 +78,12 @@
 		};
 
 		wifi: wifi {
-			function = LED_FUNCTION_WLAN;
-			color = <LED_COLOR_ID_GREEN>;
+			label = "green:wlan";
 			gpios = <&gpio 20 GPIO_ACTIVE_LOW>;
-			linux,default-trigger = "phy0tpt";
 		};
 
 		power_red: power2 {
-			function = LED_FUNCTION_POWER;
-			color = <LED_COLOR_ID_RED>;
+			label = "red:power";
 			gpios = <&gpio 28 GPIO_ACTIVE_LOW>;
 		};
 
@@ -106,14 +101,84 @@
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 
-		gpios = <&gpio 47 GPIO_ACTIVE_HIGH>;
+		gpio = <&gpio 47 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 	};
 };
 
 &eth0 {
-	nvmem-cells = <&macaddr_boardconfig_16 0>;
-	nvmem-cell-names = "mac-address";
+	pinctrl-0 = <&mdio_pins>,
+		    <&gphy0_led0_pins>,
+		    <&gphy1_led0_pins>, <&gphy1_led1_pins>;
+	pinctrl-names = "default";
+
+	interface@0 {
+		compatible = "lantiq,xrx200-pdi";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0>;
+		mtd-mac-address = <&boardconfig 0x16>;
+		lantiq,switch;
+
+		ethernet@0 {
+			compatible = "lantiq,xrx200-pdi-port";
+			reg = <0>;
+			phy-mode = "mii";
+			phy-handle = <&phy1>;
+		};
+		ethernet@2 {
+			compatible = "lantiq,xrx200-pdi-port";
+			reg = <2>;
+			phy-mode = "mii";
+			phy-handle = <&phy11>;
+		};
+		ethernet@3 {
+			compatible = "lantiq,xrx200-pdi-port";
+			reg = <3>;
+			phy-mode = "mii";
+			phy-handle = <&phy12>;
+		};
+		ethernet@4 {
+			compatible = "lantiq,xrx200-pdi-port";
+			reg = <4>;
+			phy-mode = "mii";
+			phy-handle = <&phy13>;
+		};
+		ethernet@5 {
+			compatible = "lantiq,xrx200-pdi-port";
+			reg = <5>;
+			phy-mode = "mii";
+			phy-handle = <&phy14>;
+		};
+	};
+
+	mdio {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "lantiq,xrx200-mdio";
+
+		phy1: ethernet-phy@1 {
+			reg = <0x1>;
+			compatible = "ethernet-phy-ieee802.3-c22";
+		};
+
+		phy11: ethernet-phy@11 {
+			reg = <0x11>;
+			compatible = "lantiq,phy22f", "ethernet-phy-ieee802.3-c22";
+		};
+		phy12: ethernet-phy@12 {
+			reg = <0x12>;
+			compatible = "lantiq,phy22f", "ethernet-phy-ieee802.3-c22";
+		};
+		phy13: ethernet-phy@13 {
+			reg = <0x13>;
+			compatible = "lantiq,phy22f", "ethernet-phy-ieee802.3-c22";
+		};
+		phy14: ethernet-phy@14 {
+			reg = <0x14>;
+			compatible = "lantiq,phy22f", "ethernet-phy-ieee802.3-c22";
+		};
+	};
 };
 
 &gphy0 {
@@ -138,67 +203,6 @@
 	};
 };
 
-&gswip {
-	pinctrl-0 = <&mdio_pins>,
-		    <&gphy0_led0_pins>,
-		    <&gphy1_led0_pins>, <&gphy1_led1_pins>;
-	pinctrl-names = "default";
-};
-
-&gswip_mdio {
-	phy1: ethernet-phy@1 {
-		reg = <0x1>;
-	};
-	phy11: ethernet-phy@11 {
-		reg = <0x11>;
-	};
-	phy12: ethernet-phy@12 {
-		reg = <0x12>;
-	};
-	phy13: ethernet-phy@13 {
-		reg = <0x13>;
-	};
-	phy14: ethernet-phy@14 {
-		reg = <0x14>;
-	};
-};
-
-&gswip_ports {
-	port@0 {
-		reg = <0>;
-		label = "wan";
-		phy-mode = "mii";
-		phy-handle = <&phy1>;
-
-		nvmem-cells = <&macaddr_boardconfig_16 2>;
-		nvmem-cell-names = "mac-address";
-	};
-	port@2 {
-		reg = <2>;
-		label = "lan2";
-		phy-mode = "internal";
-		phy-handle = <&phy11>;
-	};
-	port@3 {
-		reg = <3>;
-		label = "lan1";
-		phy-mode = "internal";
-		phy-handle = <&phy12>;
-	};
-	port@4 {
-		reg = <4>;
-		label = "lan4";
-		phy-mode = "internal";
-		phy-handle = <&phy13>;
-	};
-	port@5 {
-		reg = <5>;
-		label = "lan3";
-		phy-mode = "internal";
-		phy-handle = <&phy14>;
-	};
-};
-
 &localbus {
 	flash@0 {
 		compatible = "lantiq,nor";
@@ -214,18 +218,6 @@
 				label = "board_config";
 				reg = <0xfe0000 0x20000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_boardconfig_16: macaddr@16 {
-						compatible = "mac-base";
-						reg = <0x16 0x6>;
-						#nvmem-cell-cells = <1>;
-					};
-				};
 			};
 		};
 	};
@@ -233,15 +225,15 @@
 
 &pci0 {
 	status = "okay";
-	reset-gpios = <&gpio 21 GPIO_ACTIVE_LOW>;
+	gpio-reset = <&gpio 21 GPIO_ACTIVE_HIGH>;
 
 	wifi@1814,3592 {
 		compatible = "pci1814,3592";
 		reg = <0x7000 0 0 0 0>;
 		ralink,mtd-eeprom = <&boardconfig 0x410>;
-		ralink,eeprom-swap;
-		nvmem-cells = <&macaddr_boardconfig_16 1>;
-		nvmem-cell-names = "mac-address";
+		ralink,mtd-eeprom-swap;
+		mtd-mac-address = <&boardconfig 0x16>;
+		mtd-mac-address-increment = <1>;
 	};
 };
 

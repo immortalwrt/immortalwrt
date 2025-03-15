@@ -2,7 +2,6 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-#include <dt-bindings/leds/common.h>
 
 / {
 	compatible = "phicomm,k2p", "mediatek,mt7621-soc";
@@ -19,20 +18,17 @@
 		compatible = "gpio-leds";
 
 		stat_r {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_RED>;
+			label = "red:status";
 			gpios = <&gpio 13 GPIO_ACTIVE_HIGH>;
 		};
 
 		stat_y {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_YELLOW>;
+			label = "yellow:status";
 			gpios = <&gpio 14 GPIO_ACTIVE_LOW>;
 		};
 
 		led_blue: stat_b {
-			function = LED_FUNCTION_STATUS;
-			color = <LED_COLOR_ID_BLUE>;
+			label = "blue:status";
 			gpios = <&gpio 15 GPIO_ACTIVE_LOW>;
 		};
 	};
@@ -54,7 +50,7 @@
 	flash@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
-		spi-max-frequency = <50000000>;
+		spi-max-frequency = <10000000>;
 
 		partitions {
 			compatible = "fixed-partitions";
@@ -73,32 +69,10 @@
 				read-only;
 			};
 
-			partition@40000 {
+			factory: partition@40000 {
 				label = "factory";
 				reg = <0x40000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_factory_0: eeprom@0 {
-						reg = <0x0 0x4da8>;
-					};
-
-					macaddr_factory_4: macaddr@4 {
-						reg = <0x4 0x6>;
-					};
-
-					macaddr_factory_e000: macaddr@e000 {
-						reg = <0xe000 0x6>;
-					};
-
-					macaddr_factory_e006: macaddr@e006 {
-						reg = <0xe006 0x6>;
-					};
-				};
 			};
 
 			partition@50000 {
@@ -121,33 +95,14 @@
 };
 
 &pcie0 {
-	wifi@0,0 {
-		compatible = "mediatek,mt76";
+	mt76@0,0 {
 		reg = <0x0000 0 0 0 0>;
-
-		/* 5 GHz (phy1) does not take the address from calibration data,
-		   but setting it manually here works */
-		nvmem-cells = <&eeprom_factory_0>, <&macaddr_factory_4>;
-		nvmem-cell-names = "eeprom", "mac-address";
+		mediatek,mtd-eeprom = <&factory 0x0>;
 	};
 };
 
 &gmac0 {
-	nvmem-cells = <&macaddr_factory_e000>;
-	nvmem-cell-names = "mac-address";
-};
-
-&gmac1 {
-	status = "okay";
-	label = "wan";
-	phy-handle = <&ethphy4>;
-
-	nvmem-cells = <&macaddr_factory_e006>;
-	nvmem-cell-names = "mac-address";
-};
-
-&ethphy4 {
-	/delete-property/ interrupts;
+	mtd-mac-address = <&factory 0xe000>;
 };
 
 &switch0 {
@@ -170,6 +125,12 @@
 		port@3 {
 			status = "okay";
 			label = "lan4";
+		};
+
+		port@4 {
+			status = "okay";
+			label = "wan";
+			mtd-mac-address = <&factory 0xe006>;
 		};
 	};
 };

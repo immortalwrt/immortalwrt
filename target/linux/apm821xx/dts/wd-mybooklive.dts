@@ -6,7 +6,6 @@
 
 /dts-v1/;
 
-#include <dt-bindings/leds/common.h>
 #include "apm82181.dtsi"
 
 / {
@@ -15,65 +14,37 @@
 
 	aliases {
 		serial0 = &UART0;
+		led-boot = &status;
+		led-failsafe = &status;
+		led-running = &status;
+		led-upgrade = &status;
 	};
 };
 
 &POB0 {
 	ebc {
 		nor_flash@0,0 {
-		        status = "okay";
-		        compatible = "jedec-flash"; /* "microchip,sst39vf040 */
-		        bank-width = <1>;
-		        reg = <0x00000000 0x00000000 0x00080000>;
+			status = "okay";
+			compatible = "amd,s29gl512n", "jedec-probe", "cfi-flash", "mtd-rom";
+			bank-width = <1>;
+			reg = <0x00000000 0x00000000 0x00080000>;
 			#address-cells = <1>;
 			#size-cells = <1>;
 
-			partitions {
-				compatible = "fixed-partitions";
-				#address-cells = <1>;
-				#size-cells = <1>;
+			partition@0 {
+				/* Part of bootrom - Don't use it without a jump */
+				label = "free";
+				reg = <0x00000000 0x0001e000>;
+			};
 
-				partition@0 {
-					/* Part of bootrom - Don't use it without a jump */
-					label = "free";
-					reg = <0x00000000 0x0001e000>;
-					read-only;
-				};
+			partition@1e000 {
+				label = "env";
+				reg = <0x0001e000 0x00002000>;
+			};
 
-				partition@1e000 {
-					compatible = "fixed-partitions";
-					reg = <0x0001e000 0x00002000>;
-					label = "u-boot-env";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					partition@0 {
-						compatible = "u-boot,env-redundant-bool";
-						reg = <0x00000000 0x00001000>;
-						label = "u-boot-env-1";
-
-						ethaddr {
-						};
-					};
-
-/*
- * Causes the following warning: * sysfs: cannot create duplicate filename '/bus/nvmem/devices/u-boot-env0'
- *
- *					partition@1000 {
- *						compatible = "u-boot,env-redundant-bool";
- *						reg = <0x00001000 0x00001000>;
- *						label = "u-boot-env-2";
- *
- *					};
- */
-				};
-
-
-				partition@20000 {
-					label = "uboot";
-					reg = <0x00020000 0x00050000>;
-					read-only;
-				};
+			partition@20000 {
+				label = "uboot";
+				reg = <0x00020000 0x00050000>;
 			};
 		};
 	};
@@ -115,26 +86,19 @@
 	leds {
 		compatible = "gpio-leds";
 
-		/* There's just one tri-color LED with three separate pins.
-		 * One pin for each color (red, green and blue). Each has
-		 * a different meaning.
-		 */
-		led-0 {
-			color = <LED_COLOR_ID_RED>;
-			function = LED_FUNCTION_FAULT;
+		failsafe: power-red {
+			label = "mbl:red:power";
 			gpios = <&GPIO1 4 GPIO_ACTIVE_HIGH>;
-			panic-indicator;
+			linux,default-trigger = "panic";
 		};
 
-		led-1 {
-			color = <LED_COLOR_ID_GREEN>;
-			function = LED_FUNCTION_POWER;
+		status: power-green {
+			label = "mbl:green:power";
 			gpios = <&GPIO1 5 GPIO_ACTIVE_HIGH>;
 		};
 
-		led-2 {
-			color = <LED_COLOR_ID_BLUE>;
-			function = LED_FUNCTION_DISK;
+		power-blue {
+			label = "mbl:blue:power";
 			gpios = <&GPIO1 6 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "disk-activity";
 		};
@@ -145,7 +109,7 @@
 		poll-interval = <60>;	/* 3 * 20 = 60ms */
 		autorepeat;
 
-		button-restart {
+		reset-button {
 			label = "Reset button";
 			linux,code = <KEY_RESTART>;
 			gpios = <&GPIO2 2 GPIO_ACTIVE_LOW>;
@@ -161,28 +125,6 @@
 		regulator-boot-on; /* uboot sets this */
 		enable-active-high;
 	};
-
-	sata1pwr: sata1-regulator {
-		compatible = "regulator-fixed";
-		regulator-name = "Power Drive Port 1";
-		gpios = <&GPIO1 3 GPIO_ACTIVE_HIGH>;
-		regulator-min-microvolt = <12000000>;
-		regulator-max-microvolt = <12000000>;
-		regulator-boot-on;   /* uboot sets this */
-		regulator-always-on; /* needed to read OS from HDD */
-		enable-active-high;
-	};
-
-	sata0pwr: sata0-regulator {
-		compatible = "regulator-fixed";
-		regulator-name = "Power Drive Port 0";
-		gpios = <&GPIO1 7 GPIO_ACTIVE_HIGH>;
-		regulator-min-microvolt = <12000000>;
-		regulator-max-microvolt = <12000000>;
-		regulator-boot-on;   /* uboot sets this */
-		regulator-always-on; /* needed to read OS from HDD */
-		enable-active-high;
-	};
 };
 
 &EMAC0 {
@@ -191,7 +133,6 @@
 	phy-map = <0x2>;
 	phy-address = <0x1>;
 	phy-handle = <&phy>;
-	phy-mode = "rgmii-id";
 
 	mdio {
 		#address-cells = <1>;

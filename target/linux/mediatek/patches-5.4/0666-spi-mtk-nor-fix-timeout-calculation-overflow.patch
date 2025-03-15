@@ -1,0 +1,179 @@
+From patchwork Tue Sep 22 11:49:02 2020
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Chuanhong Guo <gch981213@gmail.com>
+X-Patchwork-Id: 11792387
+Return-Path: 
+ <SRS0=i66O=C7=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
+Received: from mail.kernel.org (pdx-korg-mail-1.web.codeaurora.org
+ [172.30.200.123])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 21EB0618
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Tue, 22 Sep 2020 11:51:33 +0000 (UTC)
+Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPS id E15FF221EB
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Tue, 22 Sep 2020 11:51:32 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=lists.infradead.org
+ header.i=@lists.infradead.org header.b="KBg/skkC";
+	dkim=fail reason="signature verification failed" (2048-bit key)
+ header.d=gmail.com header.i=@gmail.com header.b="Gtqp4rrT"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E15FF221EB
+Authentication-Results: mail.kernel.org;
+ dmarc=fail (p=none dis=none) header.from=gmail.com
+Authentication-Results: mail.kernel.org;
+ spf=none
+ smtp.mailfrom=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=merlin.20170209; h=Sender:Content-Transfer-Encoding:
+	Content-Type:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:MIME-Version:Message-Id:Date:Subject:To:From:
+	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
+	:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=Xg61WV47qNPjINdHDPnF6T3q8GN8f9evwhTMdYR0Zqs=; b=KBg/skkCvnF7/8AlleTay0p/H2
+	hC4Lzo+slWhX5/eepUEXzhTr5ORf4Dx9gD65UEuordKQKFpg6Y9ApoGaYtmBJ0vABdAZt+oVG4sFf
+	K3z3CYV6EZ5qvwsZt53Xm3YsHojgu+Lnc/MGgGWBRjCtTP7gshm480pZ0w6ADgHvrym5hNajUF6+5
+	zMm5Wwq34jxUApGU7k5FAPsvO5ctYCuhECq/mLB6tplCVh3/+XLdSiHMUlY17fh+xs732kgaDotuQ
+	QYgXtDmMB1pVKCq5cf3Bcuz7Ww47vLSx4rBxtdB/vpp2w9SdrU6K8Q7DuJ3+XrGfbMhKtBU5ektA8
+	GxEUUaKw==;
+Received: from localhost ([::1] helo=merlin.infradead.org)
+	by merlin.infradead.org with esmtp (Exim 4.92.3 #3 (Red Hat Linux))
+	id 1kKgo2-0000Ze-Fb; Tue, 22 Sep 2020 11:50:00 +0000
+Received: from mail-pg1-x543.google.com ([2607:f8b0:4864:20::543])
+ by merlin.infradead.org with esmtps (Exim 4.92.3 #3 (Red Hat Linux))
+ id 1kKgnr-0000Vv-6z; Tue, 22 Sep 2020 11:49:49 +0000
+Received: by mail-pg1-x543.google.com with SMTP id o25so6798387pgm.0;
+ Tue, 22 Sep 2020 04:49:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=EJwpKrbgqo/Jc/SWHvyAGB9CrpkZ5L1Hzq9tInFHTYk=;
+ b=Gtqp4rrTgM1+bYxfUQXe+lfPcgHRW6GccdN42Iszl6ozMbezvftl1BUcKE22S6eFW3
+ Vs+lcKZN9Eh9C53YAAd0cuZYhJ2GqlfGNLA/9SyB7s/gIwHqO9Cuu17YpB9dAFfEUxoS
+ 825uUcTeRe6BTagZAh2/MBluiMY3TszRi94MbOftxUg+wSqp0wMAPe9RN0gAEc/l2xgK
+ 8PhXbZv3uItI4QqoKYiz93vrF/zYhj+oGTI44g2li2fpAgCNL7lXCpSE2C9NsEe+YqTw
+ aO5A3W8t4jvp8oCJEvr/MWY1ZZLd1fVJ17W3aGXoDi/7EUcAvX9G5Ee7U68UXGMtty/d
+ z5Nw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=EJwpKrbgqo/Jc/SWHvyAGB9CrpkZ5L1Hzq9tInFHTYk=;
+ b=XhcpP16zYyJr/qCT9JbO3fn8RyfI44xJL3hvgNrlcr4ljkEZ4TF6OfyhjdEZYeeA3C
+ kLlWuAqrSn6mweuhS2LZ0BV5QL/YYaVO4wP4B/y3j+tNbnW3JNM0NtEY19pOtaM4vYK/
+ tPuNxld5RvJWxQ9BLs8hH6y7j/ob6oDug170P5YkwK6Wa/FLCi2bw92/vldhdnFP/Nny
+ 1bbiWRVls1Ra/Q3z90tGViMkBdlcff6MI9DR5M6a1HTQN7kN9rLDCMGs3r9XVComY07N
+ ECbrZbL+iJwuRuT43RAUxE72X/Pn0WYD20unzITf8bta92usNDRgEuxc1bLyL+uHxgUk
+ YQKA==
+X-Gm-Message-State: AOAM531Xr1Bg4uwupCAPpH4eBWVrXGALjIWa+5AVNZ8w6ltS4BGgWv6b
+ e4g6ycKnUp/KalpJhOMi90o=
+X-Google-Smtp-Source: 
+ ABdhPJx36OliaaLkiX3ZeZNNWgd/qSKiRor2X0eeHScDrjMSi5bTiEzAfX5j7hkQgqz8ZUT0qqLRNA==
+X-Received: by 2002:a63:1863:: with SMTP id 35mr3131307pgy.413.1600775385014;
+ Tue, 22 Sep 2020 04:49:45 -0700 (PDT)
+Received: from guoguo-omen.lan ([156.96.148.94])
+ by smtp.gmail.com with ESMTPSA id r4sm2223750pjf.4.2020.09.22.04.49.42
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 22 Sep 2020 04:49:44 -0700 (PDT)
+From: Chuanhong Guo <gch981213@gmail.com>
+To: linux-spi@vger.kernel.org
+Subject: [PATCH v2] spi: spi-mtk-nor: fix timeout calculation overflow
+Date: Tue, 22 Sep 2020 19:49:02 +0800
+Message-Id: <20200922114905.2942859-1-gch981213@gmail.com>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20200922_074948_345420_69207EBE 
+X-CRM114-Status: GOOD (  12.60  )
+X-Spam-Score: 2.6 (++)
+X-Spam-Report: SpamAssassin version 3.4.4 on merlin.infradead.org summary:
+ Content analysis details:   (2.6 points)
+ pts rule name              description
+ ---- ----------------------
+ --------------------------------------------------
+ 2.6 RCVD_IN_SBL            RBL: Received via a relay in Spamhaus SBL
+ [156.96.148.94 listed in zen.spamhaus.org]
+ -0.0 RCVD_IN_DNSWL_NONE     RBL: Sender listed at https://www.dnswl.org/,
+ no trust [2607:f8b0:4864:20:0:0:0:543 listed in]
+ [list.dnswl.org]
+ 0.0 FREEMAIL_FROM          Sender email is commonly abused enduser mail
+ provider [gch981213[at]gmail.com]
+ 0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+ in digit [gch981213[at]gmail.com]
+ -0.0 SPF_PASS               SPF: sender matches SPF record
+ 0.0 SPF_HELO_NONE          SPF: HELO does not publish an SPF Record
+ -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+ -0.1 DKIM_VALID_AU          Message has a valid DKIM or DK signature from
+ author's domain
+ -0.1 DKIM_VALID_EF          Message has a valid DKIM or DK signature from
+ envelope-from domain
+ 0.1 DKIM_SIGNED            Message has a DKIM or DK signature,
+ not necessarily
+ valid
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.29
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+ Mark Brown <broonie@kernel.org>, linux-mediatek@lists.infradead.org,
+ bayi.cheng@mediatek.com, Matthias Brugger <matthias.bgg@gmail.com>,
+ Chuanhong Guo <gch981213@gmail.com>, linux-arm-kernel@lists.infradead.org
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+
+CLK_TO_US macro is used to calculate potential transfer time for various
+timeout handling. However it overflows on transfer bigger than 512 bytes
+because it first did (len * 8 * 1000000).
+This controller typically operates at 45MHz. This patch did 2 things:
+1. calculate clock / 1000000 first
+2. add a 4M transfer size cap so that the final timeout in DMA reading
+   doesn't overflow
+
+Fixes: 881d1ee9fe81f ("spi: add support for mediatek spi-nor controller")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
+---
+
+Change since v1: fix transfer size cap to 4M
+
+ drivers/spi/spi-mtk-nor.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/spi/spi-mtk-nor.c b/drivers/spi/spi-mtk-nor.c
+index 6e6ca2b8e6c82..62f5ff2779884 100644
+--- a/drivers/spi/spi-mtk-nor.c
++++ b/drivers/spi/spi-mtk-nor.c
+@@ -89,7 +89,7 @@
+ // Buffered page program can do one 128-byte transfer
+ #define MTK_NOR_PP_SIZE			128
+ 
+-#define CLK_TO_US(sp, clkcnt)		((clkcnt) * 1000000 / sp->spi_freq)
++#define CLK_TO_US(sp, clkcnt)		DIV_ROUND_UP(clkcnt, sp->spi_freq / 1000000)
+ 
+ struct mtk_nor {
+ 	struct spi_controller *ctlr;
+@@ -177,6 +177,10 @@ static int mtk_nor_adjust_op_size(struct spi_mem *mem, struct spi_mem_op *op)
+ 	if ((op->addr.nbytes == 3) || (op->addr.nbytes == 4)) {
+ 		if ((op->data.dir == SPI_MEM_DATA_IN) &&
+ 		    mtk_nor_match_read(op)) {
++			// limit size to prevent timeout calculation overflow
++			if (op->data.nbytes > 0x400000)
++				op->data.nbytes = 0x400000;
++
+ 			if ((op->addr.val & MTK_NOR_DMA_ALIGN_MASK) ||
+ 			    (op->data.nbytes < MTK_NOR_DMA_ALIGN))
+ 				op->data.nbytes = 1;

@@ -1,0 +1,62 @@
+From d9ded8eaeed518314ef1920a792aaba8ae13d79c Mon Sep 17 00:00:00 2001
+From: Yu Zhao <yuzhao@google.com>
+Date: Tue, 29 Sep 2020 14:14:00 -0600
+Subject: [PATCH] FROMLIST: include/linux/cgroup.h: export cgroup_mutex
+
+cgroup_mutex is needed to synchronize with memcg creations.
+
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
+(am from https://lore.kernel.org/patchwork/patch/1432179/)
+
+BUG=b:123039911
+TEST=Built
+
+Change-Id: Idb2aade14d795d4a6b90a65baa3e1747b89ab8cf
+Reviewed-on: https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/2951284
+Reviewed-by: Sean Paul <seanpaul@chromium.org>
+Reviewed-by: Yu Zhao <yuzhao@chromium.org>
+Commit-Queue: Yu Zhao <yuzhao@chromium.org>
+Tested-by: Yu Zhao <yuzhao@chromium.org>
+---
+ include/linux/cgroup.h | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+--- a/include/linux/cgroup.h
++++ b/include/linux/cgroup.h
+@@ -427,6 +427,18 @@ static inline void cgroup_put(struct cgr
+ 	css_put(&cgrp->self);
+ }
+ 
++extern struct mutex cgroup_mutex;
++
++static inline void cgroup_lock(void)
++{
++	mutex_lock(&cgroup_mutex);
++}
++
++static inline void cgroup_unlock(void)
++{
++	mutex_unlock(&cgroup_mutex);
++}
++
+ /**
+  * task_css_set_check - obtain a task's css_set with extra access conditions
+  * @task: the task to obtain css_set for
+@@ -441,7 +453,6 @@ static inline void cgroup_put(struct cgr
+  * as locks used during the cgroup_subsys::attach() methods.
+  */
+ #ifdef CONFIG_PROVE_RCU
+-extern struct mutex cgroup_mutex;
+ extern spinlock_t css_set_lock;
+ #define task_css_set_check(task, __c)					\
+ 	rcu_dereference_check((task)->cgroups,				\
+@@ -704,6 +715,8 @@ struct cgroup;
+ 
+ static inline void css_get(struct cgroup_subsys_state *css) {}
+ static inline void css_put(struct cgroup_subsys_state *css) {}
++static inline void cgroup_lock(void) {}
++static inline void cgroup_unlock(void) {}
+ static inline int cgroup_attach_task_all(struct task_struct *from,
+ 					 struct task_struct *t) { return 0; }
+ static inline int cgroupstats_build(struct cgroupstats *stats,

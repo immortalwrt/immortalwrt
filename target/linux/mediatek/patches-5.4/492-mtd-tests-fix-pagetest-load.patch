@@ -1,0 +1,42 @@
+--- a/drivers/mtd/tests/pagetest.c	2022-11-28 16:08:26.978090509 +0800
++++ b/drivers/mtd/tests/pagetest.c	2022-11-28 16:10:04.351026850 +0800
+@@ -25,6 +25,10 @@ static int dev = -EINVAL;
+ module_param(dev, int, S_IRUGO);
+ MODULE_PARM_DESC(dev, "MTD device number to use");
+ 
++static int count = 10000;
++module_param(count, int, 0444);
++MODULE_PARM_DESC(count, "Number of operations to do (default is 10000)");
++
+ static struct mtd_info *mtd;
+ static unsigned char *twopages;
+ static unsigned char *writebuf;
+@@ -331,7 +335,7 @@ static int __init mtd_pagetest_init(void
+ 		return -EINVAL;
+ 	}
+ 
+-	pr_info("MTD device: %d\n", dev);
++	pr_info("MTD device: %d count:%d\n", dev, count);
+ 
+ 	mtd = get_mtd_device(NULL, dev);
+ 	if (IS_ERR(mtd)) {
+@@ -376,6 +380,7 @@ static int __init mtd_pagetest_init(void
+ 	if (err)
+ 		goto out;
+ 
++LOOP:
+ 	/* Erase all eraseblocks */
+ 	pr_info("erasing whole device\n");
+ 	err = mtdtest_erase_good_eraseblocks(mtd, bbt, 0, ebcnt);
+@@ -435,7 +440,10 @@ static int __init mtd_pagetest_init(void
+ 	if (err)
+ 		goto out;
+ 
+-	pr_info("finished with %d errors\n", errcnt);
++	pr_info("finished with %d errors count:%d\n", errcnt, count);
++	
++	if (count-- > 0)
++		goto LOOP;
+ out:
+ 
+ 	kfree(bbt);

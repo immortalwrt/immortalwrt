@@ -1,0 +1,47 @@
+drivers: spi: backport PM improvement for SPI framework
+
+Fix PM improvement for SPI framework.
+As to set_cs takes effect immediately, power spi
+is needed when setup spi.
+
+(cherry picked from commit d948e6ca189985495a21cd622c31e30e72b6b688)
+Link: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/spi/spi.c?h=v5.16-rc4&id=d948e6ca189985495a21cd622c31e30e72b6b688
+(cherry picked from commit 57a9460705f105e1d79d1410c5cfe285beda8986)
+Link: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/spi/spi.c?h=v5.16-rc4&id=57a9460705f105e1d79d1410c5cfe285beda8986
+
+--- a/drivers/spi/spi.c
++++ b/drivers/spi/spi.c
+@@ -3170,7 +3170,29 @@ int spi_setup(struct spi_device *spi)
+ 	if (spi->controller->setup)
+ 		status = spi->controller->setup(spi);
+ 
+-	spi_set_cs(spi, false);
++	if (spi->controller->auto_runtime_pm && spi->controller->set_cs) {
++		status = pm_runtime_get_sync(spi->controller->dev.parent);
++		if (status < 0) {
++			pm_runtime_put_noidle(spi->controller->dev.parent);
++			dev_err(&spi->controller->dev, "Failed to power device: %d\n",
++				status);
++			return status;
++		}
++
++		/*
++		 * We do not want to return positive value from pm_runtime_get,
++		 * there are many instances of devices calling spi_setup() and
++		 * checking for a non-zero return value instead of a negative
++		 * return value.
++		 */
++		status = 0;
++
++		spi_set_cs(spi, false);
++		pm_runtime_mark_last_busy(spi->controller->dev.parent);
++		pm_runtime_put_autosuspend(spi->controller->dev.parent);
++	} else {
++		spi_set_cs(spi, false);
++	}
+ 
+ 	if (spi->rt && !spi->controller->rt) {
+ 		spi->controller->rt = true;
+-- 
+2.18.0
+

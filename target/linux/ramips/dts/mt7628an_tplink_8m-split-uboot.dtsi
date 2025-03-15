@@ -52,22 +52,10 @@
 				read-only;
 			};
 
-			partition@7d0000 {
+			rom: partition@7d0000 {
 				label = "rom";
 				reg = <0x7d0000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					macaddr_rom_f100: macaddr@f100 {
-						compatible = "mac-base";
-						reg = <0xf100 0x6>;
-						#nvmem-cell-cells = <1>;
-					};
-				};
 			};
 
 			partition@7e0000 {
@@ -75,24 +63,10 @@
 				reg = <0x7e0000 0x10000>;
 			};
 
-			partition@7f0000 {
+			radio: partition@7f0000 {
 				label = "radio";
 				reg = <0x7f0000 0x10000>;
 				read-only;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_radio_0: eeprom@0 {
-						reg = <0x0 0x400>;
-					};
-
-					eeprom_radio_8000: eeprom@8000 {
-						reg = <0x8000 0x200>;
-					};
-				};
 			};
 		};
 	};
@@ -100,14 +74,12 @@
 
 &wmac {
 	status = "okay";
-
-	nvmem-cells = <&eeprom_radio_0>, <&macaddr_rom_f100 0>;
-	nvmem-cell-names = "eeprom", "mac-address";
+	mtd-mac-address = <&rom 0xf100>;
+	mediatek,mtd-eeprom = <&radio 0x0>;
 };
 
 &ethernet {
-	nvmem-cells = <&macaddr_rom_f100 0>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&rom 0xf100>;
 };
 
 &esw {

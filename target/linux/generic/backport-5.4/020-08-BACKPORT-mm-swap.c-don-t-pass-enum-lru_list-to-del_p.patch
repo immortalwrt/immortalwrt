@@ -1,0 +1,227 @@
+From f9aa82051ae34c6907d10d3cf40d44988ae7f1f3 Mon Sep 17 00:00:00 2001
+From: Yu Zhao <yuzhao@google.com>
+Date: Fri, 2 Oct 2020 01:43:39 -0600
+Subject: [PATCH] BACKPORT: mm/swap.c: don't pass "enum lru_list" to
+ del_page_from_lru_list()
+
+The parameter is redundant in the sense that it can be potentially
+extracted from the "struct page" parameter by page_lru(). We need to
+make sure that existing PageActive() or PageUnevictable() remains
+until the function returns. A few places don't conform, and simple
+reordering fixes them.
+
+This patch may have left page_off_lru() seemingly odd, and we'll take
+care of it in the next patch.
+
+Link: https://lore.kernel.org/linux-mm/20201207220949.830352-6-yuzhao@google.com/
+Link: https://lkml.kernel.org/r/20210122220600.906146-6-yuzhao@google.com
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+Cc: Alex Shi <alex.shi@linux.alibaba.com>
+Cc: Hugh Dickins <hughd@google.com>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Roman Gushchin <guro@fb.com>
+Cc: Vladimir Davydov <vdavydov.dev@gmail.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+(cherry picked from commit 46ae6b2cc2a47904a368d238425531ea91f3a2a5)
+
+BUG=b:123039911
+TEST=Built
+
+Change-Id: Iaf7a9c8c71da7d41c40f566ef9be8ac33c4e012d
+Reviewed-on: https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/2940115
+Tested-by: Yu Zhao <yuzhao@chromium.org>
+Reviewed-by: Sonny Rao <sonnyrao@chromium.org>
+Commit-Queue: Yu Zhao <yuzhao@chromium.org>
+---
+ include/linux/mm_inline.h |  5 +++--
+ mm/compaction.c           |  2 +-
+ mm/memcontrol.c           |  2 +-
+ mm/mlock.c                |  2 +-
+ mm/swap.c                 | 24 ++++++++++--------------
+ mm/vmscan.c               |  9 +++------
+ 6 files changed, 19 insertions(+), 25 deletions(-)
+
+--- a/include/linux/mm_inline.h
++++ b/include/linux/mm_inline.h
+@@ -123,9 +123,10 @@ static __always_inline void add_page_to_
+ }
+ 
+ static __always_inline void del_page_from_lru_list(struct page *page,
+-				struct lruvec *lruvec, enum lru_list lru)
++				struct lruvec *lruvec)
+ {
+ 	list_del(&page->lru);
+-	update_lru_size(lruvec, lru, page_zonenum(page), -hpage_nr_pages(page));
++	update_lru_size(lruvec, page_lru(page), page_zonenum(page),
++			-hpage_nr_pages(page));
+ }
+ #endif
+--- a/mm/compaction.c
++++ b/mm/compaction.c
+@@ -984,7 +984,7 @@ isolate_migratepages_block(struct compac
+ 		VM_BUG_ON_PAGE(PageCompound(page), page);
+ 
+ 		/* Successfully isolated */
+-		del_page_from_lru_list(page, lruvec, page_lru(page));
++		del_page_from_lru_list(page, lruvec);
+ 		inc_node_page_state(page,
+ 				NR_ISOLATED_ANON + page_is_file_cache(page));
+ 
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -2741,7 +2741,7 @@ static void lock_page_lru(struct page *p
+ 
+ 		lruvec = mem_cgroup_page_lruvec(page, pgdat);
+ 		ClearPageLRU(page);
+-		del_page_from_lru_list(page, lruvec, page_lru(page));
++		del_page_from_lru_list(page, lruvec);
+ 		*isolated = 1;
+ 	} else
+ 		*isolated = 0;
+--- a/mm/mlock.c
++++ b/mm/mlock.c
+@@ -115,7 +115,7 @@ static bool __munlock_isolate_lru_page(s
+ 		if (getpage)
+ 			get_page(page);
+ 		ClearPageLRU(page);
+-		del_page_from_lru_list(page, lruvec, page_lru(page));
++		del_page_from_lru_list(page, lruvec);
+ 		return true;
+ 	}
+ 
+--- a/mm/swap.c
++++ b/mm/swap.c
+@@ -68,7 +68,8 @@ static void __page_cache_release(struct
+ 		lruvec = mem_cgroup_page_lruvec(page, pgdat);
+ 		VM_BUG_ON_PAGE(!PageLRU(page), page);
+ 		__ClearPageLRU(page);
+-		del_page_from_lru_list(page, lruvec, page_off_lru(page));
++		del_page_from_lru_list(page, lruvec);
++		page_off_lru(page);
+ 		spin_unlock_irqrestore(&pgdat->lru_lock, flags);
+ 	}
+ 	__ClearPageWaiters(page);
+@@ -222,7 +223,7 @@ static void pagevec_move_tail_fn(struct
+ 	int *pgmoved = arg;
+ 
+ 	if (PageLRU(page) && !PageUnevictable(page)) {
+-		del_page_from_lru_list(page, lruvec, page_lru(page));
++		del_page_from_lru_list(page, lruvec);
+ 		ClearPageActive(page);
+ 		add_page_to_lru_list_tail(page, lruvec);
+ 		(*pgmoved)++;
+@@ -277,9 +278,8 @@ static void __activate_page(struct page
+ {
+ 	if (PageLRU(page) && !PageActive(page) && !PageUnevictable(page)) {
+ 		int file = page_is_file_cache(page);
+-		int lru = page_lru_base_type(page);
+ 
+-		del_page_from_lru_list(page, lruvec, lru);
++		del_page_from_lru_list(page, lruvec);
+ 		SetPageActive(page);
+ 		add_page_to_lru_list(page, lruvec);
+ 		trace_mm_lru_activate(page);
+@@ -495,7 +495,7 @@ void lru_cache_add_active_or_unevictable
+ static void lru_deactivate_file_fn(struct page *page, struct lruvec *lruvec,
+ 			      void *arg)
+ {
+-	int lru, file;
++	int file;
+ 	bool active;
+ 
+ 	if (!PageLRU(page))
+@@ -510,9 +510,8 @@ static void lru_deactivate_file_fn(struc
+ 
+ 	active = PageActive(page);
+ 	file = page_is_file_cache(page);
+-	lru = page_lru_base_type(page);
+ 
+-	del_page_from_lru_list(page, lruvec, lru + active);
++	del_page_from_lru_list(page, lruvec);
+ 	ClearPageActive(page);
+ 	ClearPageReferenced(page);
+ 
+@@ -543,9 +542,8 @@ static void lru_deactivate_fn(struct pag
+ {
+ 	if (PageLRU(page) && PageActive(page) && !PageUnevictable(page)) {
+ 		int file = page_is_file_cache(page);
+-		int lru = page_lru_base_type(page);
+ 
+-		del_page_from_lru_list(page, lruvec, lru + LRU_ACTIVE);
++		del_page_from_lru_list(page, lruvec);
+ 		ClearPageActive(page);
+ 		ClearPageReferenced(page);
+ 		add_page_to_lru_list(page, lruvec);
+@@ -560,10 +558,7 @@ static void lru_lazyfree_fn(struct page
+ {
+ 	if (PageLRU(page) && PageAnon(page) && PageSwapBacked(page) &&
+ 	    !PageSwapCache(page) && !PageUnevictable(page)) {
+-		bool active = PageActive(page);
+-
+-		del_page_from_lru_list(page, lruvec,
+-				       LRU_INACTIVE_ANON + active);
++		del_page_from_lru_list(page, lruvec);
+ 		ClearPageActive(page);
+ 		ClearPageReferenced(page);
+ 		/*
+@@ -825,7 +820,8 @@ void release_pages(struct page **pages,
+ 			lruvec = mem_cgroup_page_lruvec(page, locked_pgdat);
+ 			VM_BUG_ON_PAGE(!PageLRU(page), page);
+ 			__ClearPageLRU(page);
+-			del_page_from_lru_list(page, lruvec, page_off_lru(page));
++			del_page_from_lru_list(page, lruvec);
++			page_off_lru(page);
+ 		}
+ 
+ 		__ClearPageWaiters(page);
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -1807,10 +1807,9 @@ int isolate_lru_page(struct page *page)
+ 		spin_lock_irq(&pgdat->lru_lock);
+ 		lruvec = mem_cgroup_page_lruvec(page, pgdat);
+ 		if (PageLRU(page)) {
+-			int lru = page_lru(page);
+ 			get_page(page);
+ 			ClearPageLRU(page);
+-			del_page_from_lru_list(page, lruvec, lru);
++			del_page_from_lru_list(page, lruvec);
+ 			ret = 0;
+ 		}
+ 		spin_unlock_irq(&pgdat->lru_lock);
+@@ -1882,7 +1881,6 @@ static unsigned noinline_for_stack move_
+ 	int nr_moved = 0;
+ 	LIST_HEAD(pages_to_free);
+ 	struct page *page;
+-	enum lru_list lru;
+ 
+ 	while (!list_empty(list)) {
+ 		page = lru_to_page(list);
+@@ -1897,13 +1895,12 @@ static unsigned noinline_for_stack move_
+ 		lruvec = mem_cgroup_page_lruvec(page, pgdat);
+ 
+ 		SetPageLRU(page);
+-		lru = page_lru(page);
+ 		add_page_to_lru_list(page, lruvec);
+ 
+ 		if (put_page_testzero(page)) {
+ 			__ClearPageLRU(page);
++			del_page_from_lru_list(page, lruvec);
+ 			__ClearPageActive(page);
+-			del_page_from_lru_list(page, lruvec, lru);
+ 
+ 			if (unlikely(PageCompound(page))) {
+ 				spin_unlock_irq(&pgdat->lru_lock);
+@@ -4380,8 +4377,8 @@ void check_move_unevictable_pages(struct
+ 
+ 		if (page_evictable(page)) {
+ 			VM_BUG_ON_PAGE(PageActive(page), page);
++			del_page_from_lru_list(page, lruvec);
+ 			ClearPageUnevictable(page);
+-			del_page_from_lru_list(page, lruvec, LRU_UNEVICTABLE);
+ 			add_page_to_lru_list(page, lruvec);
+ 			pgrescued++;
+ 		}

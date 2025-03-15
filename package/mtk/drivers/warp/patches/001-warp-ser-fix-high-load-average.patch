@@ -1,0 +1,12 @@
+diff -rupw warp/warp_ser.c warp-new/warp_ser.c
+--- warp/warp_ser.c	2022-04-25 17:09:39.000000000 +0800
++++ warp-new/warp_ser.c	2022-10-23 01:33:00.447263140 +0800
+@@ -287,7 +287,7 @@ wed_ser_task(void *data)
+ 
+ 	while (!kthread_should_stop()) {
+ 		wed_ser_detect(wed);
+-		msleep(ser_ctrl->period_time);
++		msleep_interruptible(ser_ctrl->period_time);
+ 	}
+ 	warp_dbg(WARP_DBG_OFF, "%s(): wed_ser exist, wed->irq=%d!\n", __func__,
+ 		 wed->irq);

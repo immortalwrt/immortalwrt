@@ -1,0 +1,216 @@
+MiniUPnP project.
+(c) 2006-2024 Thomas Bernard
+Homepage : http://miniupnp.free.fr/
+Mirror: https://miniupnp.tuxfamily.org/
+github: https://github.com/miniupnp/miniupnp
+
+If you find some outdated information in this documentation, please fix
+or report the issue on https://github.com/miniupnp/miniupnp or the web
+forum https://miniupnp.tuxfamily.org/
+
+================================ *BSD/pf =================================
+To Build and Install :
+
+- first use ./configure
+  For more details about options :
+  > ./configure -h
+  then edit config.h to fine tune to your preferences.
+- use BSD make to compile.
+- add "rdr-anchor miniupnpd" or/and "anchor miniupnpd" lines to /etc/pf.conf
+  (Since OpenBSD 4.7, rdr-anchor lines are no longer used and should be
+  removed, leaving only the anchor lines).
+- some FreeBSD users reported that it is also necessary for them
+  to explicitly allow udp traffic on 239.0.0.0/8 by adding the two following
+  lines to /etc/pf.conf :
+   pass out on $int_if from any to 239.0.0.0/8 keep state
+   pass in on $int_if from any to 239.0.0.0/8 keep state
+- don't forget to " pfctl -f /etc/pf.conf "
+- you can check your modifications are taken into account with
+  "pfctl -s nat" and "pfctl -s rule". Look for the "rdr-anchor miniupnpd"
+  (if applicable) and/or "anchor miniupnpd" lines.
+- OpenBSD users may need to add a multicast_host= line to /etc/rc.conf.local
+  see $man 8 netstart
+- install as root using :
+  # make install
+  or
+  # PREFIX=/usr/local make install
+- run as root : The daemon needs rights to modify pf rules.
+
+=========================== *BSD,*Solaris/ipf =============================
+
+configure tries to detect wether ipf or pf should be
+used. If it fails, you can use ./configure --firewall=ipf
+Installation steps are allmost the same as with pf.
+
+*Solaris users would be interested in reading informations from :
+http://blogs.sun.com/avalon/category/IPFilter
+
+============================= Mac OS X/ipfw ===============================
+
+- To enable non standard compilation options,
+  > ./configure -h
+- use either 'bsdmake -f Makefile.bsd' (if available) or 'make' to build
+
+============================== Mac OS X/pf ================================
+
+Starting with Mac OS X 10.7 Lion, pf replaced ipfw as the OS X firewall.
+also bsdmake is not available anymore.
+Make sure you have installed the Xcode commande line tools (from the
+Xcode Preferences menu or using 'xcode-select --install' command)
+
+You need to download xnu sources : https://opensource.apple.com/tarballs/xnu/
+- If version of xnu >= 4570,
+  > ./configure
+  Then edit config.h, adding line "#define PFVAR_NEW_STYLE" to it.
+> INCLUDES="-I.../xnu/bsd -I.../xnu/libkern" make
+
+============================ Linux/netfilter ==============================
+To Build and install :
+
+- make sure you have libiptc available on your system :
+  if you are using debian, "apt-get install iptables-dev"
+  Some versions of the iptables-dev package don't include the
+  necessary files : read "how to get libiptc with its headers on debian" below.
+  In anycase, libiptc is available in iptables sources packages
+  from http://netfilter.org
+- edit and run netfilter/iptables_init.sh shell script.
+  This script must allways be run before the daemon
+  to set up initial rules and chains.
+- Build and edit the config.h file
+  > ./configure
+  > vi config.h
+- Build the daemon
+  > make
+  If not using iptables from your system,
+  > ./configure --iptablespath=/path/to/iptables-1.4.1
+  > make
+- install as root using :
+  > make install
+- A miniupnpd script should be installed to /etc/init.d
+  and the configuration files to /etc/miniupnpd
+- anytime, you can use the netfilter/iptables_flush.sh
+  script to flush all rules added by the daemon.
+- after killing the daemon, you can get back to
+  iptables initial state by running the netfilter/iptables_removeall.sh
+  script. Don't forget to edit the script to your convenience.
+
+NOTE: a /etc/init.d/miniupnpd script will be installed.
+  If it suits you, you can use is with start, stop or restart argument.
+  # /etc/init.d/miniupnpd restart
+
+
+How to get libiptc with its headers on debian :
+(Note: that should be useless now that netfilter/tiny_nf_nat.h is included)
+- Use apt-get to get sources :
+  > apt-get source iptables
+  you should then have an iptables-x.x.x/ directory.
+- configure and compile :
+  > cd iptables-x.x.x/
+  > ./configure --enable-static
+  > make
+- it is now possible to compile miniupnpd using the following command :
+  > ./configure --iptablespath=/path/to/iptables-x.x.x
+  > make
+
+======================== Linux/netfilter nftables =========================
+
+install the required development libraries. For debian :
+ > apt-get install libnftnl-dev libmnl-dev
+
+To build :
+ > ./configure --firewall=nftables
+ > make
+
+see :
+https://miniupnp.tuxfamily.org/forum/viewtopic.php?p=4370
+https://github.com/miniupnp/miniupnp/pull/114
+
+=========================== Configuration =============================
+The configuration file is either installed to /etc/miniupnpd.conf (BSD)
+or /etc/miniupnpd/miniupnpd.conf (Linux)
+Almost all options are also available through command line switches.
+
+A basic configuration would set :
+ext_ifname :   WAN network interface (interface connected to the internet)
+listening_ip : LAN network interface (network where to supply NAT traversal)
+enable_pcp_pmp=yes
+enable_upnp=yes
+and the permission rules (see below).
+
+Historically, LAN had to be specified by IP/mask, such as
+listening_ip=192.168.0.1/24
+but if you compiled with IPv6 support, you need to specify an interface name :
+listening_ip=eth0
+The current code assumes there is only one IPv4 address assigned to LAN
+interfaces. That is not the case with some CARP setup, there is then a risk
+the wrong mask would be picked. You can force the mask when using interface
+names :
+listening_ip=eth0/24
+
+Some users want to use miniupnpd on a NAT router which is connected to the
+internet through another NAT router (NAT behind NAT). This kind of setup is
+strongly discouraged. miniupnpd will refuses to launch when detecting a
+private (RFC1918) "WAN" IP address. The ext_ip option sould be added :
+ext_ifname=eth1  # "WAN" network interface, whose IP could be 192.168.1.22
+ext_ip=80.1.2.3  # Real public IP address
+listening_ip=eth0
+Please note that miniupnpd doesn't redirect any port on the other NAT router.
+UPNP requests forwarding is not implemented.
+It is however possible to use STUN. See the ext_perform_stun / ext_stun_host
+ / ext_stun_port options.
+
+it is also possible to set a different interface for IPv6 WAN
+ext_ifname=eth0
+ext_ifname6=sit0
+
+miniupnpd supports some kind of security check for allowing or disallowing
+redirection to be made. The UPnP permission rules are read from the
+miniupnpd.conf configuration file.
+When a new redirection is requested, permission rules are evaluated in
+top-down order and the first permission rule matched gives the response :
+redirection allowed or denied. If no rule is matching, the redirection is
+allowed, so it is a good practice to have a "catch all" deny permission
+rule at the end of your permission ruleset.
+Sample permission ruleset :
+allow 4662-4672 192.168.1.34/32 4662-4672
+deny 0-65535 192.168.1.34/32 0-65535
+allow 1024-65535 192.168.1.0/24 1024-65535
+deny 0-65535 0.0.0.0/0 0-65535
+With this ruleset, redirections are allowed only for host on the subnet
+192.168.1.0/255.255.255.0 for the ports 1024 or above. There is an exception
+for the host 192.168.1.34 for which only redirections from/to port 4662 to
+4672 are allowed.
+
+You can generate the uuid for your UPnP device with the uuidgen available
+under linux. The following following OpenBSD package is also providing
+a "uuid" tool :
+http://www.openbsd.org/4.0_packages/i386/uuid-1.5.0.tgz-long.html
+An web based uuid generator is also available :
+http://kruithof.xs4all.nl/uuid/uuidgen
+
+On linux systems, one could also use the command
+'cat /proc/sys/kernel/random/uuid' to generate an uuid.
+
+More simple, use the genuuid makefile target :
+> make genuuid
+This target is needed by the "install" target, so it is done automatically
+during install.
+
+To stop the daemon use :
+  # kill `cat /var/run/miniupnpd.pid`
+or if your linux system use /etc/init.d/
+  # /etc/init.d/miniupnpd stop
+
+
+* Signals :
+miniupnpd handles the following signals :
+SIGUSR1: Send public IP address change notification
+SIGUSR2: Handle special actions in Tomato Firmware version
+         Or rewrite the lease_file
+SIGINT:  Close gracefully
+SIGTERM: Close gracefully
+SIGPIPE: Ignore
+
+There is code to detect change in network interfaces bsd/ifacewatcher.c and
+linux/ifacewatcher.c, but if that code doesn't work for you, you may want to
+send SIGUSR1 to miniupnpd if your public IP address changed.

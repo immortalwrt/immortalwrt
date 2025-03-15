@@ -8,13 +8,11 @@
 };
 
 &gmac0 {
-	nvmem-cells = <&macaddr_factory_fff4>;
-	nvmem-cell-names = "mac-address";
+	mtd-mac-address = <&factory 0xfff4>;
 };
 
-&gmac1 {
-	nvmem-cells = <&macaddr_factory_fffa>;
-	nvmem-cell-names = "mac-address";
+&wan {
+	mtd-mac-address = <&factory 0xfffa>;
 };
 
 &partitions {
@@ -50,28 +48,6 @@
 };
 
 &wifi {
-	nvmem-cells = <&eeprom_factory_0>, <&macaddr_factory_4 (-1)>;
-	nvmem-cell-names = "eeprom", "mac-address";
-};
-
-&factory {
-	nvmem-layout {
-		compatible = "fixed-layout";
-		#address-cells = <1>;
-		#size-cells = <1>;
-
-		macaddr_factory_4: macaddr@4 {
-			compatible = "mac-base";
-			reg = <0x4 0x6>;
-			#nvmem-cell-cells = <1>;
-		};
-
-		macaddr_factory_fff4: macaddr@fff4 {
-			reg = <0xfff4 0x6>;
-		};
-
-		macaddr_factory_fffa: macaddr@fffa {
-			reg = <0xfffa 0x6>;
-		};
-	};
+	mtd-mac-address = <&factory 0x4>;
+	mtd-mac-address-increment = <(-1)>;
 };

@@ -1,0 +1,13 @@
+--- a/mt_wifi/embedded/common/cmm_info.c	2023-12-02 23:18:03.276254405 +0800
++++ b/mt_wifi/embedded/common/cmm_info.c	2023-12-02 23:17:35.322785698 +0800
+@@ -7126,7 +7126,9 @@ VOID RTMPIoctlGetMacTableStaInfo(
+ 			else
+ 				need_send = FALSE;
+ 		}
+-		if (IS_ENTRY_CLIENT(pEntry) && (pEntry->Sst == SST_ASSOC) && (need_send == TRUE)) {
++		if ((IS_ENTRY_CLIENT(pEntry) || IS_ENTRY_PEER_AP(pEntry))
++			&& (pEntry->Sst == SST_ASSOC)
++			&& (need_send == TRUE)) {
+ 			pDst = &pMacTab->Entry[pMacTab->Num];
+ 			pDst->ApIdx = pEntry->func_tb_idx;
+ 			COPY_MAC_ADDR(pDst->Addr, &pEntry->Addr);
