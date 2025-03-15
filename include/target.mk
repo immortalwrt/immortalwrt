@@ -176,16 +176,16 @@ ifneq ($(TARGET_BUILD)$(if $(DUMP),,1),)
 endif
 
 GENERIC_PLATFORM_DIR := $(TOPDIR)/target/linux/generic
-GENERIC_BACKPORT_DIR := $(GENERIC_PLATFORM_DIR)/backport$(if $(wildcard $(GENERIC_PLATFORM_DIR)/backport-$(KERNEL_PATCHVER)),-$(KERNEL_PATCHVER))
-GENERIC_PATCH_DIR := $(GENERIC_PLATFORM_DIR)/pending$(if $(wildcard $(GENERIC_PLATFORM_DIR)/pending-$(KERNEL_PATCHVER)),-$(KERNEL_PATCHVER))
-GENERIC_HACK_DIR := $(GENERIC_PLATFORM_DIR)/hack$(if $(wildcard $(GENERIC_PLATFORM_DIR)/hack-$(KERNEL_PATCHVER)),-$(KERNEL_PATCHVER))
-GENERIC_FILES_DIR := $(foreach dir,$(wildcard $(GENERIC_PLATFORM_DIR)/files $(GENERIC_PLATFORM_DIR)/files-$(KERNEL_PATCHVER)),"$(dir)")
+GENERIC_BACKPORT_DIR ?= $(GENERIC_PLATFORM_DIR)/backport$(if $(wildcard $(GENERIC_PLATFORM_DIR)/backport-$(KERNEL_PATCHVER)),-$(KERNEL_PATCHVER))
+GENERIC_PATCH_DIR ?= $(GENERIC_PLATFORM_DIR)/pending$(if $(wildcard $(GENERIC_PLATFORM_DIR)/pending-$(KERNEL_PATCHVER)),-$(KERNEL_PATCHVER))
+GENERIC_HACK_DIR ?= $(GENERIC_PLATFORM_DIR)/hack$(if $(wildcard $(GENERIC_PLATFORM_DIR)/hack-$(KERNEL_PATCHVER)),-$(KERNEL_PATCHVER))
+GENERIC_FILES_DIR ?= $(foreach dir,$(wildcard $(GENERIC_PLATFORM_DIR)/files $(GENERIC_PLATFORM_DIR)/files-$(KERNEL_PATCHVER)),"$(dir)")
 
 __config_name_list = $(1)/config-$(KERNEL_PATCHVER) $(1)/config-default
 __config_list = $(firstword $(wildcard $(call __config_name_list,$(1))))
 find_kernel_config=$(if $(__config_list),$(__config_list),$(lastword $(__config_name_list)))
 
-GENERIC_LINUX_CONFIG = $(call find_kernel_config,$(GENERIC_PLATFORM_DIR))
+GENERIC_LINUX_CONFIG ?= $(call find_kernel_config,$(GENERIC_PLATFORM_DIR))$(CONFIG_FILE_SUFFIX) 
 LINUX_TARGET_CONFIG = $(call find_kernel_config,$(PLATFORM_DIR))
 ifneq ($(PLATFORM_DIR),$(PLATFORM_SUBDIR))
   LINUX_SUBTARGET_CONFIG = $(call find_kernel_config,$(PLATFORM_SUBDIR))
@@ -282,6 +282,7 @@ ifeq ($(DUMP),1)
     CPU_TYPE ?= generic
     CPU_CFLAGS_generic = -mcpu=generic
     CPU_CFLAGS_cortex-a53 = -mcpu=cortex-a53
+    CPU_CFLAGS_cortex-a73 = -mcpu=cortex-a73+crypto
   endif
   ifeq ($(ARCH),arc)
     CPU_TYPE ?= arc700

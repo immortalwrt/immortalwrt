@@ -2,6 +2,7 @@
 #
 # Copyright (C) 2006-2020 OpenWrt.org
 
+
 override TARGET_BUILD=
 include $(INCLUDE_DIR)/prereq.mk
 include $(INCLUDE_DIR)/kernel.mk
@@ -175,13 +176,17 @@ endif
 
 # Disable noisy checks by default as in upstream
 DTC_WARN_FLAGS := \
-  -Wno-interrupt_provider \
-  -Wno-unique_unit_address \
   -Wno-unit_address_vs_reg \
+  -Wno-simple_bus_reg \
+  -Wno-unit_address_format \
+  -Wno-pci_bridge \
+  -Wno-pci_device_bus_num \
+  -Wno-pci_device_reg \
   -Wno-avoid_unnecessary_addr_size \
   -Wno-alias_paths \
   -Wno-graph_child_address \
-  -Wno-simple_bus_reg
+  -Wno-graph_port \
+  -Wno-unique_unit_address
 
 DTC_FLAGS += $(DTC_WARN_FLAGS)
 DTCO_FLAGS += $(DTC_WARN_FLAGS)

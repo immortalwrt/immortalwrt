@@ -1,0 +1,228 @@
+diff -u -r a/api/wext.h b/api/wext.h
+--- a/api/wext.h	2023-06-26 03:58:09.000000000 +0800
++++ b/api/wext.h	2024-09-22 23:32:30.698447416 +0800
+@@ -677,7 +677,7 @@
+  */
+ struct	iw_param
+ {
+-  int32_t		value;		/* The value of the parameter itself */
++  uint64_t		value;		/* The value of the parameter itself */
+   uint8_t		fixed;		/* Hardware should not use auto select */
+   uint8_t		disabled;	/* Disable the feature */
+   uint16_t		flags;		/* Various specifc flags (if any) */
+@@ -987,6 +987,8 @@
+ 	/* Old Frequency (backward compat - moved lower ) */
+ 	uint16_t		old_num_channels;
+ 	uint8_t		old_num_frequency;
++	
++	uint8_t		scan_capa; 	/* IW_SCAN_CAPA_* bit field */
+ 
+ 	/* Wireless event capability bitmasks */
+ 	uint32_t		event_capa[6];
+@@ -1013,7 +1015,7 @@
+ 
+ 	/* Rates */
+ 	uint8_t		num_bitrates;	/* Number of entries in the list */
+-	int32_t		bitrate[IW_MAX_BITRATES];	/* list, in bps */
++	uint64_t		bitrate[IW_MAX_BITRATES];	/* list, in bps */
+ 
+ 	/* RTS threshold */
+ 	int32_t		min_rts;	/* Minimal RTS threshold */
+diff -u -r a/devices.txt b/devices.txt
+--- a/devices.txt	2023-06-26 03:58:09.000000000 +0800
++++ b/devices.txt	2024-09-22 23:33:42.870929802 +0800
+@@ -185,6 +185,8 @@
+ 0x14c3 0x7628 0x14c3 0x0004    0      0  "MediaTek" "MT76x8"
+ 0x14c3 0x7650 0x14c3 0x7650    0      0  "MediaTek" "MT7610E"
+ 0x14c3 0x7662 0x14c3 0x7662    0      0  "MediaTek" "MT76x2E"
++0x14c3 0x7986 0x14c3 0x7986    0      0  "MediaTek" "MT7986"
++0x14c3 0x7981 0x14c3 0x7981    0      0  "MediaTek" "MT7981"
+ 0x14c3 0x7915 0x14c3 0x7915    0      0  "MediaTek" "MT7915E"
+ 0x14e4 0xaa52 0x14e4 0xaa52    0      0  "Broadcom" "BCM43602"
+ 0x02d0 0xa9a6 0x0000 0x0000    0      0  "Cypress"  "CYW43455"
+diff -u -r a/Makefile b/Makefile
+--- a/Makefile	2023-06-26 03:58:09.000000000 +0800
++++ b/Makefile	2024-09-20 21:16:45.926991219 +0800
+@@ -32,6 +32,11 @@
+ 	IWINFO_LIB_OBJ += iwinfo_madwifi.o
+ endif
+ 
++ifneq ($(filter mtk,$(IWINFO_BACKENDS)),)
++	IWINFO_CFLAGS  += -DUSE_MTK
++	IWINFO_LIB_OBJ += iwinfo_mtk.o iwinfo_mtk_rate.o
++endif
++
+ ifneq ($(filter nl80211,$(IWINFO_BACKENDS)),)
+ 	IWINFO_CFLAGS      += -DUSE_NL80211
+ 	IWINFO_CLI_LDFLAGS += -lnl-tiny
+--- a/include/iwinfo.h
++++ b/include/iwinfo.h
+@@ -313,6 +313,7 @@ extern const struct iwinfo_ops wext_ops;
+ extern const struct iwinfo_ops madwifi_ops;
+ extern const struct iwinfo_ops nl80211_ops;
+ extern const struct iwinfo_ops wl_ops;
++extern const struct iwinfo_ops mtk_ops;
+ 
+ #include "iwinfo/utils.h"
+ 
+--- a/iwinfo_lib.c
++++ b/iwinfo_lib.c
+@@ -347,6 +347,9 @@ static const struct iwinfo_ops *backends
+ #ifdef USE_WEXT
+ 	&wext_ops,
+ #endif
++#ifdef USE_MTK
++	&mtk_ops,
++#endif
+ };
+ 
+ const char * iwinfo_type(const char *ifname)
+--- a/include/iwinfo/lua.h
++++ b/include/iwinfo/lua.h
+@@ -41,6 +41,9 @@
+ #define IWINFO_NL80211_META	"iwinfo.nl80211"
+ #endif
+ 
++#ifdef USE_MTK
++#define IWINFO_MTK_META	"iwinfo.mtk"
++#endif
+ 
+ #define LUA_REG(type,op) \
+ 	{ #op, iwinfo_L_##type##_##op }
+--- a/iwinfo_lua.c
++++ b/iwinfo_lua.c
+@@ -775,6 +775,35 @@ LUA_WRAP_STRUCT_OP(nl80211,mbssid_suppor
+ LUA_WRAP_STRUCT_OP(nl80211,hardware_id)
+ #endif
+ 
++#ifdef USE_MTK
++LUA_WRAP_INT_OP(mtk,channel)
++LUA_WRAP_INT_OP(mtk,frequency)
++LUA_WRAP_INT_OP(mtk,frequency_offset)
++LUA_WRAP_INT_OP(mtk,txpower)
++LUA_WRAP_INT_OP(mtk,txpower_offset)
++LUA_WRAP_INT_OP(mtk,bitrate)
++LUA_WRAP_INT_OP(mtk,signal)
++LUA_WRAP_INT_OP(mtk,noise)
++LUA_WRAP_INT_OP(mtk,quality)
++LUA_WRAP_INT_OP(mtk,quality_max)
++LUA_WRAP_STRING_OP(mtk,ssid)
++LUA_WRAP_STRING_OP(mtk,bssid)
++LUA_WRAP_STRING_OP(mtk,country)
++LUA_WRAP_STRING_OP(mtk,hardware_name)
++LUA_WRAP_STRING_OP(mtk,phyname)
++LUA_WRAP_STRUCT_OP(mtk,mode)
++LUA_WRAP_STRUCT_OP(mtk,assoclist)
++LUA_WRAP_STRUCT_OP(mtk,txpwrlist)
++LUA_WRAP_STRUCT_OP(mtk,scanlist)
++LUA_WRAP_STRUCT_OP(mtk,freqlist)
++LUA_WRAP_STRUCT_OP(mtk,countrylist)
++LUA_WRAP_STRUCT_OP(mtk,hwmodelist)
++LUA_WRAP_STRUCT_OP(mtk,htmodelist)
++LUA_WRAP_STRUCT_OP(mtk,encryption)
++LUA_WRAP_STRUCT_OP(mtk,mbssid_support)
++LUA_WRAP_STRUCT_OP(mtk,hardware_id)
++#endif
++
+ /* Wext */
+ #ifdef USE_WEXT
+ LUA_WRAP_INT_OP(wext,channel)
+@@ -904,6 +933,38 @@ static const luaL_reg R_nl80211[] = {
+ };
+ #endif
+ 
++#ifdef USE_MTK
++static const luaL_reg R_mtk[] = {
++	LUA_REG(mtk,channel),
++	LUA_REG(mtk,frequency),
++	LUA_REG(mtk,frequency_offset),
++	LUA_REG(mtk,txpower),
++	LUA_REG(mtk,txpower_offset),
++	LUA_REG(mtk,bitrate),
++	LUA_REG(mtk,signal),
++	LUA_REG(mtk,noise),
++	LUA_REG(mtk,quality),
++	LUA_REG(mtk,quality_max),
++	LUA_REG(mtk,mode),
++	LUA_REG(mtk,ssid),
++	LUA_REG(mtk,bssid),
++	LUA_REG(mtk,country),
++	LUA_REG(mtk,assoclist),
++	LUA_REG(mtk,txpwrlist),
++	LUA_REG(mtk,scanlist),
++	LUA_REG(mtk,freqlist),
++	LUA_REG(mtk,countrylist),
++	LUA_REG(mtk,hwmodelist),
++	LUA_REG(mtk,htmodelist),
++	LUA_REG(mtk,encryption),
++	LUA_REG(mtk,mbssid_support),
++	LUA_REG(mtk,hardware_id),
++	LUA_REG(mtk,hardware_name),
++	LUA_REG(mtk,phyname),
++	{ NULL, NULL }
++};
++#endif
++
+ /* Wext table */
+ #ifdef USE_WEXT
+ static const luaL_reg R_wext[] = {
+@@ -975,6 +1036,15 @@ LUALIB_API int luaopen_iwinfo(lua_State
+ 	lua_setfield(L, -2, "nl80211");
+ #endif
+ 
++#ifdef USE_MTK
++	luaL_newmetatable(L, IWINFO_MTK_META);
++	luaL_register(L, NULL, R_common);
++	luaL_register(L, NULL, R_mtk);
++	lua_pushvalue(L, -1);
++	lua_setfield(L, -2, "__index");
++	lua_setfield(L, -2, "mtk");
++#endif
++
+ #ifdef USE_WEXT
+ 	luaL_newmetatable(L, IWINFO_WEXT_META);
+ 	luaL_register(L, NULL, R_common);
+--- a/iwinfo_utils.c
++++ b/iwinfo_utils.c
+@@ -176,6 +176,7 @@ int iwinfo_hardware_id_from_mtd(struct i
+ {
+ 	FILE *mtd;
+ 	uint16_t *bc;
++	uint16_t ident;
+ 
+ 	int fd, off;
+ 	unsigned int len;
+@@ -188,7 +189,7 @@ int iwinfo_hardware_id_from_mtd(struct i
+ 	{
+ 		if (fscanf(mtd, "mtd%d: %x %*x %127s", &off, &len, buf) < 3 ||
+ 		    (strcmp(buf, "\"boardconfig\"") && strcmp(buf, "\"EEPROM\"") &&
+-		     strcmp(buf, "\"factory\"")))
++		     strcmp(buf, "\"factory\"") && strcmp(buf, "\"Factory\"")))
+ 		{
+ 			off = -1;
+ 			continue;
+@@ -207,6 +208,24 @@ int iwinfo_hardware_id_from_mtd(struct i
+ 	if ((fd = open(buf, O_RDONLY)) < 0)
+ 		return -1;
+ 
++	if (read(fd, &ident, sizeof(ident)) != -1)
++	{
++		if (ident == 0x7981 || ident == 0x7986
++			|| ident == 0x8179 || ident == 0x8679)
++		{
++			if ((ident & 0xff) == 0x79)
++				id->device_id = (ident >> 8) | (ident & 0x00ff) << 8;
++			else
++				id->device_id = ident;
++			id->vendor_id = 0x14c3;
++			id->subsystem_vendor_id = 0x14c3;
++			id->subsystem_device_id = id->device_id;
++			close(fd);
++			return 0;
++		}
++	}
++	lseek(fd, 0, SEEK_SET);
++
+ 	bc = mmap(NULL, len, PROT_READ, MAP_PRIVATE|MAP_LOCKED, fd, 0);
+ 
+ 	if ((void *)bc != MAP_FAILED)
