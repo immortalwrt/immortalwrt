@@ -1,6 +1,5 @@
-diff -u -r a/api/wext.h b/api/wext.h
---- a/api/wext.h	2023-06-26 03:58:09.000000000 +0800
-+++ b/api/wext.h	2024-09-22 23:32:30.698447416 +0800
+--- a/api/wext.h
++++ b/api/wext.h
 @@ -677,7 +677,7 @@
   */
  struct	iw_param
@@ -28,21 +27,21 @@ diff -u -r a/api/wext.h b/api/wext.h
  
  	/* RTS threshold */
  	int32_t		min_rts;	/* Minimal RTS threshold */
-diff -u -r a/devices.txt b/devices.txt
---- a/devices.txt	2023-06-26 03:58:09.000000000 +0800
-+++ b/devices.txt	2024-09-22 23:33:42.870929802 +0800
-@@ -185,6 +185,8 @@
+
+--- a/devices.txt
++++ b/devices.txt
+@@ -188,6 +188,8 @@
  0x14c3 0x7628 0x14c3 0x0004    0      0  "MediaTek" "MT76x8"
  0x14c3 0x7650 0x14c3 0x7650    0      0  "MediaTek" "MT7610E"
  0x14c3 0x7662 0x14c3 0x7662    0      0  "MediaTek" "MT76x2E"
 +0x14c3 0x7986 0x14c3 0x7986    0      0  "MediaTek" "MT7986"
 +0x14c3 0x7981 0x14c3 0x7981    0      0  "MediaTek" "MT7981"
  0x14c3 0x7915 0x14c3 0x7915    0      0  "MediaTek" "MT7915E"
- 0x14e4 0xaa52 0x14e4 0xaa52    0      0  "Broadcom" "BCM43602"
- 0x02d0 0xa9a6 0x0000 0x0000    0      0  "Cypress"  "CYW43455"
-diff -u -r a/Makefile b/Makefile
---- a/Makefile	2023-06-26 03:58:09.000000000 +0800
-+++ b/Makefile	2024-09-20 21:16:45.926991219 +0800
+ 0x14c3 0x7906 0x14c3 0x7906    0      0  "MediaTek" "MT7916AN"
+ 0x14c3 0x7925 0x1a3b 0x6002    0      0  "MediaTek" "MT7925E"
+
+--- a/Makefile
++++ b/Makefile
 @@ -32,6 +32,11 @@
  	IWINFO_LIB_OBJ += iwinfo_madwifi.o
  endif
@@ -55,19 +54,21 @@ diff -u -r a/Makefile b/Makefile
  ifneq ($(filter nl80211,$(IWINFO_BACKENDS)),)
  	IWINFO_CFLAGS      += -DUSE_NL80211
  	IWINFO_CLI_LDFLAGS += -lnl-tiny
+
 --- a/include/iwinfo.h
 +++ b/include/iwinfo.h
-@@ -313,6 +313,7 @@ extern const struct iwinfo_ops wext_ops;
+@@ -429,6 +429,8 @@
  extern const struct iwinfo_ops madwifi_ops;
  extern const struct iwinfo_ops nl80211_ops;
  extern const struct iwinfo_ops wl_ops;
 +extern const struct iwinfo_ops mtk_ops;
++
  
  #include "iwinfo/utils.h"
- 
+
 --- a/iwinfo_lib.c
 +++ b/iwinfo_lib.c
-@@ -347,6 +347,9 @@ static const struct iwinfo_ops *backends
+@@ -401,6 +401,9 @@
  #ifdef USE_WEXT
  	&wext_ops,
  #endif
@@ -77,21 +78,24 @@ diff -u -r a/Makefile b/Makefile
  };
  
  const char * iwinfo_type(const char *ifname)
+
 --- a/include/iwinfo/lua.h
 +++ b/include/iwinfo/lua.h
-@@ -41,6 +41,9 @@
+@@ -41,6 +41,10 @@
  #define IWINFO_NL80211_META	"iwinfo.nl80211"
  #endif
  
 +#ifdef USE_MTK
 +#define IWINFO_MTK_META	"iwinfo.mtk"
 +#endif
++
  
  #define LUA_REG(type,op) \
  	{ #op, iwinfo_L_##type##_##op }
+
 --- a/iwinfo_lua.c
 +++ b/iwinfo_lua.c
-@@ -775,6 +775,35 @@ LUA_WRAP_STRUCT_OP(nl80211,mbssid_suppor
+@@ -788,6 +788,35 @@
  LUA_WRAP_STRUCT_OP(nl80211,hardware_id)
  #endif
  
@@ -127,7 +131,7 @@ diff -u -r a/Makefile b/Makefile
  /* Wext */
  #ifdef USE_WEXT
  LUA_WRAP_INT_OP(wext,channel)
-@@ -904,6 +933,38 @@ static const luaL_reg R_nl80211[] = {
+@@ -917,6 +946,38 @@
  };
  #endif
  
@@ -166,7 +170,7 @@ diff -u -r a/Makefile b/Makefile
  /* Wext table */
  #ifdef USE_WEXT
  static const luaL_reg R_wext[] = {
-@@ -975,6 +1036,15 @@ LUALIB_API int luaopen_iwinfo(lua_State
+@@ -988,6 +1049,15 @@
  	lua_setfield(L, -2, "nl80211");
  #endif
  
@@ -182,9 +186,10 @@ diff -u -r a/Makefile b/Makefile
  #ifdef USE_WEXT
  	luaL_newmetatable(L, IWINFO_WEXT_META);
  	luaL_register(L, NULL, R_common);
+
 --- a/iwinfo_utils.c
 +++ b/iwinfo_utils.c
-@@ -176,6 +176,7 @@ int iwinfo_hardware_id_from_mtd(struct i
+@@ -340,6 +340,7 @@
  {
  	FILE *mtd;
  	uint16_t *bc;
@@ -192,7 +197,7 @@ diff -u -r a/Makefile b/Makefile
  
  	int fd, off;
  	unsigned int len;
-@@ -188,7 +189,7 @@ int iwinfo_hardware_id_from_mtd(struct i
+@@ -352,7 +353,7 @@
  	{
  		if (fscanf(mtd, "mtd%d: %x %*x %127s", &off, &len, buf) < 3 ||
  		    (strcmp(buf, "\"boardconfig\"") && strcmp(buf, "\"EEPROM\"") &&
@@ -201,7 +206,7 @@ diff -u -r a/Makefile b/Makefile
  		{
  			off = -1;
  			continue;
-@@ -207,6 +208,24 @@ int iwinfo_hardware_id_from_mtd(struct i
+@@ -371,6 +372,24 @@
  	if ((fd = open(buf, O_RDONLY)) < 0)
  		return -1;
  
