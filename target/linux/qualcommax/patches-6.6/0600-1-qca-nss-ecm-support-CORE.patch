@@ -142,7 +142,7 @@
  #endif
 --- a/include/net/route.h
 +++ b/include/net/route.h
-@@ -237,6 +237,11 @@ struct rtable *rt_dst_alloc(struct net_d
+@@ -238,6 +238,11 @@ struct rtable *rt_dst_alloc(struct net_d
  			    unsigned int flags, u16 type, bool noxfrm);
  struct rtable *rt_dst_clone(struct net_device *dev, struct rtable *rt);
  
