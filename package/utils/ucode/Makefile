@@ -155,7 +155,7 @@ $(eval $(call UcodeModule, \
 	The math plugin provides access to various <math.h> procedures.))
 
 $(eval $(call UcodeModule, \
-	nl80211, NL80211_SUPPORT, +libnl-tiny +libubox +kmod-mac80211, \
+	nl80211, NL80211_SUPPORT, +libnl-tiny +libubox, \
 	The nl80211 plugin provides access to the Linux wireless 802.11 netlink API.))
 
 $(eval $(call UcodeModule, \
