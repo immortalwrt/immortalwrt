@@ -1,0 +1,41 @@
+--- a/cli.c
++++ b/cli.c
+@@ -202,7 +202,7 @@ static void
+ print_usage(void)
+ {
+ 	printf("swconfig list\n");
+-	printf("swconfig dev <dev> [port <port>|vlan <vlan>] (help|set <key> <value>|get <key>|load <config>|show)\n");
++	printf("swconfig dev <dev> [port <port>|vlan <vlan>] (help|set <key> <value>|get <key>|load <config>|show all)\n");
+ 	exit(1);
+ }
+ 
+@@ -247,6 +247,7 @@ int main(int argc, char **argv)
+ 	char *ckey = NULL;
+ 	char *cvalue = NULL;
+ 	char *csegment = NULL;
++	int show_all = 0;
+ 
+ 	if((argc == 2) && !strcmp(argv[1], "list")) {
+ 		swlib_list();
+@@ -290,6 +291,8 @@ int main(int argc, char **argv)
+ 				csegment = argv[++i];
+ 			cmd = CMD_PORTMAP;
+ 		} else if (!strcmp(arg, "show")) {
++			if (i + 1 < argc && !strcmp(argv[++i], "all"))
++				show_all = 1;
+ 			cmd = CMD_SHOW;
+ 		} else {
+ 			print_usage();
+@@ -375,8 +378,10 @@ int main(int argc, char **argv)
+ 			show_global(dev);
+ 			for (i=0; i < dev->ports; i++)
+ 				show_port(dev, i);
+-			for (i=0; i < dev->vlans; i++)
+-				show_vlan(dev, i, true);
++			if (show_all) {
++				for (i=0; i < dev->vlans; i++)
++					show_vlan(dev, i, true);
++			}
+ 		}
+ 		break;
+ 	}

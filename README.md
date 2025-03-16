@@ -58,7 +58,19 @@ To build your own firmware you need a GNU/Linux, BSD or macOS system (case sensi
   2. Run `cd immortalwrt-mt798x-24.10` to enter source directory.
   3. Run `./scripts/feeds update -a` to obtain all the latest package definitions defined in feeds.conf / feeds.conf.default
   4. Run `./scripts/feeds install -a` to install symlinks for all obtained packages into package/feeds/
-  5. Run `make menuconfig` to select your preferred configuration for the toolchain, target system & firmware packages.
+  5. Copy the configuration file for your device from the `defconfig` directory to the project root directory and rename it `.config`
+     
+     ```
+     # MT7981
+     cp -f defconfig/mt7981-ax3000.config .config
+
+     # MT7986
+     cp -f defconfig/mt7986-ax6000.config .config
+     
+     # MT7981 USB OFFLOAD GSW device (rax3000m)
+     cp -f defconfig/mt7981-ax3000-gsw-usboffload.config .config
+     ```
+     
   6. Run `make` to build your firmware. This will download all sources, build the cross-compile toolchain and then cross-compile the GNU/Linux kernel & all chosen applications for your target system.
 
   ### Related Repositories
