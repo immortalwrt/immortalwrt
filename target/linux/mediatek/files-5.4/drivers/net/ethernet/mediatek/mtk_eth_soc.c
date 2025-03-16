@@ -3758,12 +3758,23 @@ static int mtk_probe(struct platform_device *pdev)
 	if (!ext_init){
 	for_each_child_of_node(pdev->dev.of_node, mac_np) {
 		unsigned int ext_phy_reg = 0;
-		int err = -1;
+		int err= -1;
+		int ext_reset_pin =-1;
 		err = of_property_read_u32_index(mac_np, "ext-phy-reg", 0, &ext_phy_reg);
 		
 		if (err >= 0){
 			dev_info(&pdev->dev, "Ext-phy reg : %d\n", ext_phy_reg);
-			mtk_soc_extphy_init(eth, ext_phy_reg);
+			err = mtk_soc_extphy_init(eth, ext_phy_reg);
+			ext_reset_pin = of_get_named_gpio(mac_np, "ext-phy-reset-gpios", 0);
+			if ((ext_reset_pin >= 0) && (err != 1)){
+				dev_info(&pdev->dev, "Init Failed.Reset Ext-phy gpio : %d\n", ext_reset_pin);
+				gpio_direction_output(ext_reset_pin, 0);
+				msleep(300);
+				gpio_set_value(ext_reset_pin, 1);
+				msleep(500);
+				err = mtk_soc_extphy_init(eth, ext_phy_reg);
+				}
+			dev_info(&pdev->dev, "Init RTL8221 Result : %d\n", err);
 		}	
 	}
         ext_init = 1;

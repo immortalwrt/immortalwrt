@@ -169,11 +169,9 @@ static int rtl822x_init(struct mtk_eth *eth, int addr)
 
 	msleep(500);
 	
-	dev_info(eth->dev, "RTL822x init success!\n");
+	dev_info(eth->dev, "RTL822x first init success!\n");
 
-	Rtl8226b_phy_init((HANDLE){eth, addr}, NULL, 1);
-
-	return 0;
+	return Rtl8226b_phy_init((HANDLE){eth, addr}, NULL, 1);
 }
 
 static struct mtk_extphy_id extphy_tbl[] = {
@@ -230,26 +228,21 @@ int mtk_soc_extphy_init(struct mtk_eth *eth, int addr)
 	int i;
 	u32 phy_id;
 	struct mtk_extphy_id *extphy;
+	int init_result = 0;
 
 	for (i = 0; i < ARRAY_SIZE(extphy_tbl); i++)
 	{
 		extphy = &extphy_tbl[i];
 		if (extphy->is_c45)
-		{	
+		{
 			phy_id = get_cl45_phy_id(eth, addr);
-		
 		}
-		else
-		{	
+		else{
 			phy_id = get_cl22_phy_id(eth, addr);
-			
 		}
-
-		if (phy_id_is_match(phy_id, extphy))
-			{extphy->init(eth, addr);}
-		
-	 	
+		if (phy_id_is_match(phy_id, extphy)){
+			init_result = extphy->init(eth, addr);
+		}
 	}
-
-	return 0;
+	return init_result;
 }
