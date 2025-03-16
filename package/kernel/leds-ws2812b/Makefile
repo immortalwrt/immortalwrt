@@ -20,7 +20,7 @@ define KernelPackage/leds-ws2812b
   FILES:= \
 	$(PKG_BUILD_DIR)/leds-ws2812b.ko
   AUTOLOAD:=$(call AutoProbe,leds-ws2812b,1)
-  endef
+endef
 
 define KernelPackage/leds-ws2812b/description
   LED support for driving WS2812B (NeoPixel) using SPI MOSI.

@@ -17,7 +17,6 @@
 #include <linux/property.h>
 #include <linux/spi/spi.h>
 #include <linux/mutex.h>
-#include <linux/version.h>
 
 #define WS2812B_BYTES_PER_COLOR 3
 #define WS2812B_NUM_COLORS 3
@@ -117,17 +116,14 @@ static int ws2812b_probe(struct spi_device *spi)
 	priv->data_len =
 		num_leds * WS2812B_BYTES_PER_COLOR * WS2812B_NUM_COLORS +
 		WS2812B_RESET_LEN;
-	priv->data_buf = devm_kzalloc(dev, priv->data_len, GFP_KERNEL);
+	priv->data_buf = kzalloc(priv->data_len, GFP_KERNEL);
 	if (!priv->data_buf)
 		return -ENOMEM;
 
 	for (i = 0; i < num_leds * WS2812B_NUM_COLORS; i++)
 		ws2812b_set_byte(priv, i, 0);
 
-	ret = devm_mutex_init(dev, &priv->mutex);
-	if (ret)
-		return ret;
-
+	mutex_init(&priv->mutex);
 	priv->num_leds = num_leds;
 	priv->spi = spi;
 
@@ -149,12 +145,13 @@ static int ws2812b_probe(struct spi_device *spi)
 		if (ret) {
 			dev_err(dev, "failed to obtain numerical LED index for %s",
 				fwnode_get_name(led_node));
-			return ret;
+			goto ERR_UNREG_LEDS;
 		}
 		if (cascade >= num_leds) {
 			dev_err(dev, "LED index of %s is larger than the number of LEDs.",
 				fwnode_get_name(led_node));
-			return -EINVAL;
+			ret = -EINVAL;
+			goto ERR_UNREG_LEDS;
 		}
 
 		cnt = fwnode_property_count_u32(led_node, "color-index");
@@ -180,17 +177,36 @@ static int ws2812b_probe(struct spi_device *spi)
 
 		priv->leds[cur_led].cascade = cascade;
 
-		ret = devm_led_classdev_multicolor_register_ext(
+		ret = led_classdev_multicolor_register_ext(
 			dev, &priv->leds[cur_led].mc_cdev, &init_data);
 		if (ret) {
 			dev_err(dev, "registration of %s failed.",
 				fwnode_get_name(led_node));
-			return ret;
+			goto ERR_UNREG_LEDS;
 		}
 		cur_led++;
 	}
 
 	spi_set_drvdata(spi, priv);
+
+	return 0;
+ERR_UNREG_LEDS:
+	for (; cur_led >= 0; cur_led--)
+		led_classdev_multicolor_unregister(&priv->leds[cur_led].mc_cdev);
+	mutex_destroy(&priv->mutex);
+	kfree(priv->data_buf);
+	return ret;
+}
+
+static int ws2812b_remove(struct spi_device *spi)
+{
+	struct ws2812b_priv *priv = spi_get_drvdata(spi);
+	int cur_led;
+
+	for (cur_led = priv->num_leds - 1; cur_led >= 0; cur_led--)
+		led_classdev_multicolor_unregister(&priv->leds[cur_led].mc_cdev);
+	kfree(priv->data_buf);
+	mutex_destroy(&priv->mutex);
 
 	return 0;
 }
@@ -209,6 +225,7 @@ MODULE_DEVICE_TABLE(of, ws2812b_dt_ids);
 
 static struct spi_driver ws2812b_driver = {
 	.probe		= ws2812b_probe,
+	.remove		= ws2812b_remove,
 	.id_table	= ws2812b_spi_ids,
 	.driver = {
 		.name		= KBUILD_MODNAME,
