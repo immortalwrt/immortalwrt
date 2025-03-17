@@ -511,6 +511,23 @@ define Device/netcore_n60
 endef
 TARGET_DEVICES += netcore_n60
 
+define Device/netcore_n60-pro
+  DEVICE_VENDOR := Netcore
+  DEVICE_MODEL := N60 PRO
+  DEVICE_DTS := mt7986a-netcore-n60-pro
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := netcore,n60-pro
+  DEVICE_PACKAGES := kmod-usb3 kmod-mt7986-firmware mt7986-wo-firmware
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += netcore_n60-pro
+
 define Device/glinet_gl-mt6000
    DEVICE_VENDOR := GL.iNet
    DEVICE_MODEL := GL-MT6000
@@ -547,3 +564,21 @@ define Device/tplink_tl-xdr6088
     $(call Device/tplink_tl-common)
 endef
 TARGET_DEVICES += tplink_tl-xdr6088
+
+define Device/zyxel_ex5700
+     DEVICE_VENDOR := Zyxel
+     DEVICE_MODEL := EX5700
+     DEVICE_DTS := mt7986a-zyxel-ex5700
+     SUPPORTED_DEVICES := zyxel,ex5700
+     DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+     DEVICE_PACKAGES := $(MT7986_USB_PKGS)
+     UBINIZE_OPTS := -E 5
+     BLOCKSIZE := 256k
+     PAGESIZE := 4096
+     IMAGE_SIZE := 65536k
+     KERNEL_IN_UBI := 1
+     IMAGES += factory.bin
+     IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+     IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+ endef
+ TARGET_DEVICES += zyxel_ex5700

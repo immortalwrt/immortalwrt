@@ -5,6 +5,7 @@
 # See /LICENSE for more information.
 #
 
+
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ethtool
