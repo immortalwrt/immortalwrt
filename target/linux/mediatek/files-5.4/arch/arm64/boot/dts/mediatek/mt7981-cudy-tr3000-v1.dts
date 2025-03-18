@@ -105,9 +105,6 @@
 		reg = <0>;
 		phy-mode = "2500base-x";
 
-		ext-phy-reg = <1>;
-		ext-phy-reset-gpios = <&pio 39 0>;
-
 		fixed-link {
 			speed = <2500>;
 			full-duplex;
@@ -132,6 +129,17 @@
 			reg = <0>;
 			nvmem-cells = <&phy_calibration>;
 			nvmem-cell-names = "phy-cal-data";
+		};
+
+		phy1: phy@1 {
+			compatible = "ethernet-phy-ieee802.3-c45";
+			reg = <1>;
+			reset-assert-us = <100000>;
+			reset-deassert-us = <100000>;
+			reset-gpios = <&pio 39 GPIO_ACTIVE_LOW>;
+			interrupts = <38 IRQ_TYPE_LEVEL_LOW>;
+			interrupt-parent = <&pio>;
+			realtek,aldps-enable;
 		};
 
 	};
