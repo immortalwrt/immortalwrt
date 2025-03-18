@@ -1,0 +1,26 @@
+From 356236126da7877ab115c65f8cb21215443beb2f Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Thu, 30 Jan 2025 22:07:12 +0000
+Subject: [PATCH] rockchip: sdram: Limit usable ram_top to max 4G
+
+U-Boot only works correctly when it uses RAM below the 4G address
+boundary on Rockchip SoCs. Limit usable gd->ram_top to max 4G.
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+Reviewed-by: Kever Yang <kever.yang@rock-chips.com>
+---
+ arch/arm/mach-rockchip/sdram.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+--- a/arch/arm/mach-rockchip/sdram.c
++++ b/arch/arm/mach-rockchip/sdram.c
+@@ -487,7 +487,8 @@ int dram_init(void)
+ 
+ phys_addr_t board_get_usable_ram_top(phys_size_t total_size)
+ {
+-	unsigned long top = CFG_SYS_SDRAM_BASE + SDRAM_MAX_SIZE;
++	/* Make sure U-Boot only uses the space below the 4G address boundary */
++	u64 top = min_t(u64, CFG_SYS_SDRAM_BASE + SDRAM_MAX_SIZE, SZ_4G);
+ 
+ 	return (gd->ram_top > top) ? top : gd->ram_top;
+ }
