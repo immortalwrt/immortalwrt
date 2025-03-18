@@ -1,0 +1,311 @@
+From 2dca4de7282d3003f3703f707d773f4dbbc0f28e Mon Sep 17 00:00:00 2001
+From: Sam Shih <sam.shih@mediatek.com>
+Date: Fri, 2 Jun 2023 13:06:27 +0800
+Subject: [PATCH] 
+ [networking][999-2701-v5.8-net-phy-add-concept-of-shared-storage-for-PHYs.patch]
+
+---
+ drivers/net/phy/mdio_bus.c   |   1 +
+ drivers/net/phy/phy_device.c | 138 +++++++++++++++++++++++++++++++++++
+ include/linux/phy.h          |  89 ++++++++++++++++++++++
+ 3 files changed, 228 insertions(+)
+
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index fdf8221f4..d9f2cee33 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -404,6 +404,7 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
+ 	}
+ 
+ 	mutex_init(&bus->mdio_lock);
++	mutex_init(&bus->shared_lock);
+ 
+ 	/* de-assert bus level PHY GPIO reset */
+ 	gpiod = devm_gpiod_get_optional(&bus->dev, "reset", GPIOD_OUT_LOW);
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 0349801df..99f265a1c 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1447,6 +1447,144 @@ bool phy_driver_is_genphy_10g(struct phy_device *phydev)
+ }
+ EXPORT_SYMBOL_GPL(phy_driver_is_genphy_10g);
+ 
++/**
++ * phy_package_join - join a common PHY group
++ * @phydev: target phy_device struct
++ * @addr: cookie and PHY address for global register access
++ * @priv_size: if non-zero allocate this amount of bytes for private data
++ *
++ * This joins a PHY group and provides a shared storage for all phydevs in
++ * this group. This is intended to be used for packages which contain
++ * more than one PHY, for example a quad PHY transceiver.
++ *
++ * The addr parameter serves as a cookie which has to have the same value
++ * for all members of one group and as a PHY address to access generic
++ * registers of a PHY package. Usually, one of the PHY addresses of the
++ * different PHYs in the package provides access to these global registers.
++ * The address which is given here, will be used in the phy_package_read()
++ * and phy_package_write() convenience functions. If your PHY doesn't have
++ * global registers you can just pick any of the PHY addresses.
++ *
++ * This will set the shared pointer of the phydev to the shared storage.
++ * If this is the first call for a this cookie the shared storage will be
++ * allocated. If priv_size is non-zero, the given amount of bytes are
++ * allocated for the priv member.
++ *
++ * Returns < 1 on error, 0 on success. Esp. calling phy_package_join()
++ * with the same cookie but a different priv_size is an error.
++ */
++int phy_package_join(struct phy_device *phydev, int addr, size_t priv_size)
++{
++	struct mii_bus *bus = phydev->mdio.bus;
++	struct phy_package_shared *shared;
++	int ret;
++
++	if (addr < 0 || addr >= PHY_MAX_ADDR)
++		return -EINVAL;
++
++	mutex_lock(&bus->shared_lock);
++	shared = bus->shared[addr];
++	if (!shared) {
++		ret = -ENOMEM;
++		shared = kzalloc(sizeof(*shared), GFP_KERNEL);
++		if (!shared)
++			goto err_unlock;
++		if (priv_size) {
++			shared->priv = kzalloc(priv_size, GFP_KERNEL);
++			if (!shared->priv)
++				goto err_free;
++			shared->priv_size = priv_size;
++		}
++		shared->addr = addr;
++		refcount_set(&shared->refcnt, 1);
++		bus->shared[addr] = shared;
++	} else {
++		ret = -EINVAL;
++		if (priv_size && priv_size != shared->priv_size)
++			goto err_unlock;
++		refcount_inc(&shared->refcnt);
++	}
++	mutex_unlock(&bus->shared_lock);
++
++	phydev->shared = shared;
++
++	return 0;
++
++err_free:
++	kfree(shared);
++err_unlock:
++	mutex_unlock(&bus->shared_lock);
++	return ret;
++}
++EXPORT_SYMBOL_GPL(phy_package_join);
++
++/**
++ * phy_package_leave - leave a common PHY group
++ * @phydev: target phy_device struct
++ *
++ * This leaves a PHY group created by phy_package_join(). If this phydev
++ * was the last user of the shared data between the group, this data is
++ * freed. Resets the phydev->shared pointer to NULL.
++ */
++void phy_package_leave(struct phy_device *phydev)
++{
++	struct phy_package_shared *shared = phydev->shared;
++	struct mii_bus *bus = phydev->mdio.bus;
++
++	if (!shared)
++		return;
++
++	if (refcount_dec_and_mutex_lock(&shared->refcnt, &bus->shared_lock)) {
++		bus->shared[shared->addr] = NULL;
++		mutex_unlock(&bus->shared_lock);
++		kfree(shared->priv);
++		kfree(shared);
++	}
++
++	phydev->shared = NULL;
++}
++EXPORT_SYMBOL_GPL(phy_package_leave);
++
++static void devm_phy_package_leave(struct device *dev, void *res)
++{
++	phy_package_leave(*(struct phy_device **)res);
++}
++
++/**
++ * devm_phy_package_join - resource managed phy_package_join()
++ * @dev: device that is registering this PHY package
++ * @phydev: target phy_device struct
++ * @addr: cookie and PHY address for global register access
++ * @priv_size: if non-zero allocate this amount of bytes for private data
++ *
++ * Managed phy_package_join(). Shared storage fetched by this function,
++ * phy_package_leave() is automatically called on driver detach. See
++ * phy_package_join() for more information.
++ */
++int devm_phy_package_join(struct device *dev, struct phy_device *phydev,
++			  int addr, size_t priv_size)
++{
++	struct phy_device **ptr;
++	int ret;
++
++	ptr = devres_alloc(devm_phy_package_leave, sizeof(*ptr),
++			   GFP_KERNEL);
++	if (!ptr)
++		return -ENOMEM;
++
++	ret = phy_package_join(phydev, addr, priv_size);
++
++	if (!ret) {
++		*ptr = phydev;
++		devres_add(dev, ptr);
++	} else {
++		devres_free(ptr);
++	}
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(devm_phy_package_join);
++
+ /**
+  * phy_detach - detach a PHY device from its network device
+  * @phydev: target phy_device struct
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 107dcbea4..d26dba255 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -22,6 +22,7 @@
+ #include <linux/workqueue.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/iopoll.h>
++#include <linux/refcount.h>
+ 
+ #include <linux/atomic.h>
+ 
+@@ -211,6 +212,28 @@ struct sfp_bus;
+ struct sfp_upstream_ops;
+ struct sk_buff;
+ 
++/* Represents a shared structure between different phydev's in the same
++ * package, for example a quad PHY. See phy_package_join() and
++ * phy_package_leave().
++ */
++struct phy_package_shared {
++	int addr;
++	refcount_t refcnt;
++	unsigned long flags;
++	size_t priv_size;
++
++	/* private data pointer */
++	/* note that this pointer is shared between different phydevs and
++	 * the user has to take care of appropriate locking. It is allocated
++	 * and freed automatically by phy_package_join() and
++	 * phy_package_leave().
++	 */
++	void *priv;
++};
++
++/* used as bit number in atomic bitops */
++#define PHY_SHARED_F_INIT_DONE 0
++
+ /*
+  * The Bus class for PHYs.  Devices which provide access to
+  * PHYs should register using this structure
+@@ -258,6 +281,12 @@ struct mii_bus {
+ 	int reset_delay_us;
+ 	/* RESET GPIO descriptor pointer */
+ 	struct gpio_desc *reset_gpiod;
++
++	/* protect access to the shared element */
++	struct mutex shared_lock;
++
++	/* shared state across different PHYs */
++	struct phy_package_shared *shared[PHY_MAX_ADDR];
+ };
+ #define to_mii_bus(d) container_of(d, struct mii_bus, dev)
+ 
+@@ -437,6 +466,10 @@ struct phy_device {
+ 	/* For use by PHYs to maintain extra state */
+ 	void *priv;
+ 
++	/* shared data pointer */
++	/* For use by PHYs inside the same package that need a shared state. */
++	struct phy_package_shared *shared;
++
+ 	/* Interrupt and Polling infrastructure */
+ 	struct delayed_work state_queue;
+ 
+@@ -1242,6 +1275,10 @@ int phy_ethtool_get_link_ksettings(struct net_device *ndev,
+ int phy_ethtool_set_link_ksettings(struct net_device *ndev,
+ 				   const struct ethtool_link_ksettings *cmd);
+ int phy_ethtool_nway_reset(struct net_device *ndev);
++int phy_package_join(struct phy_device *phydev, int addr, size_t priv_size);
++void phy_package_leave(struct phy_device *phydev);
++int devm_phy_package_join(struct device *dev, struct phy_device *phydev,
++			  int addr, size_t priv_size);
+ 
+ #if IS_ENABLED(CONFIG_PHYLIB)
+ int __init mdio_bus_init(void);
+@@ -1294,6 +1331,58 @@ static inline int phy_ethtool_get_stats(struct phy_device *phydev,
+ 	return 0;
+ }
+ 
++static inline int phy_package_read(struct phy_device *phydev, u32 regnum)
++{
++	struct phy_package_shared *shared = phydev->shared;
++
++	if (!shared)
++		return -EIO;
++
++	return mdiobus_read(phydev->mdio.bus, shared->addr, regnum);
++}
++
++static inline int __phy_package_read(struct phy_device *phydev, u32 regnum)
++{
++	struct phy_package_shared *shared = phydev->shared;
++
++	if (!shared)
++		return -EIO;
++
++	return __mdiobus_read(phydev->mdio.bus, shared->addr, regnum);
++}
++
++static inline int phy_package_write(struct phy_device *phydev,
++				    u32 regnum, u16 val)
++{
++	struct phy_package_shared *shared = phydev->shared;
++
++	if (!shared)
++		return -EIO;
++
++	return mdiobus_write(phydev->mdio.bus, shared->addr, regnum, val);
++}
++
++static inline int __phy_package_write(struct phy_device *phydev,
++				      u32 regnum, u16 val)
++{
++	struct phy_package_shared *shared = phydev->shared;
++
++	if (!shared)
++		return -EIO;
++
++	return __mdiobus_write(phydev->mdio.bus, shared->addr, regnum, val);
++}
++
++static inline bool phy_package_init_once(struct phy_device *phydev)
++{
++	struct phy_package_shared *shared = phydev->shared;
++
++	if (!shared)
++		return false;
++
++	return !test_and_set_bit(PHY_SHARED_F_INIT_DONE, &shared->flags);
++}
++
+ extern struct bus_type mdio_bus_type;
+ 
+ struct mdio_board_info {
+-- 
+2.34.1
+

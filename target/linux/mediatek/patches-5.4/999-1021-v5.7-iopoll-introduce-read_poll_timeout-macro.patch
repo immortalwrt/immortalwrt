@@ -1,0 +1,176 @@
+From bc97a676615bd0ec66bb2a2a42c939455bf5bed6 Mon Sep 17 00:00:00 2001
+From: Sam Shih <sam.shih@mediatek.com>
+Date: Fri, 2 Jun 2023 13:06:27 +0800
+Subject: [PATCH] 
+ [networking][999-2700-v5.7-iopoll-introduce-read_poll_timeout-macro.patch]
+
+---
+ drivers/net/phy/phy_device.c | 16 +++++----------
+ include/linux/iopoll.h       | 40 +++++++++++++++++++++++++++++-------
+ include/linux/phy.h          | 27 ++++++++++++++++++++++++
+ 3 files changed, 65 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 76a68bb02..0349801df 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1056,18 +1056,12 @@ EXPORT_SYMBOL(phy_disconnect);
+ static int phy_poll_reset(struct phy_device *phydev)
+ {
+ 	/* Poll until the reset bit clears (50ms per retry == 0.6 sec) */
+-	unsigned int retries = 12;
+-	int ret;
+-
+-	do {
+-		msleep(50);
+-		ret = phy_read(phydev, MII_BMCR);
+-		if (ret < 0)
+-			return ret;
+-	} while (ret & BMCR_RESET && --retries);
+-	if (ret & BMCR_RESET)
+-		return -ETIMEDOUT;
++	int ret, val;
+ 
++	ret = phy_read_poll_timeout(phydev, MII_BMCR, val, !(val & BMCR_RESET),
++				    50000, 600000, true);
++	if (ret)
++		return ret;
+ 	/* Some chips (smsc911x) may still need up to another 1ms after the
+ 	 * BMCR_RESET bit is cleared before they are usable.
+ 	 */
+diff --git a/include/linux/iopoll.h b/include/linux/iopoll.h
+index 35e15dfd4..cb20c733b 100644
+--- a/include/linux/iopoll.h
++++ b/include/linux/iopoll.h
+@@ -14,36 +14,41 @@
+ #include <linux/io.h>
+ 
+ /**
+- * readx_poll_timeout - Periodically poll an address until a condition is met or a timeout occurs
+- * @op: accessor function (takes @addr as its only argument)
+- * @addr: Address to poll
++ * read_poll_timeout - Periodically poll an address until a condition is
++ *			met or a timeout occurs
++ * @op: accessor function (takes @args as its arguments)
+  * @val: Variable to read the value into
+  * @cond: Break condition (usually involving @val)
+  * @sleep_us: Maximum time to sleep between reads in us (0
+  *            tight-loops).  Should be less than ~20ms since usleep_range
+  *            is used (see Documentation/timers/timers-howto.rst).
+  * @timeout_us: Timeout in us, 0 means never timeout
++ * @sleep_before_read: if it is true, sleep @sleep_us before read.
++ * @args: arguments for @op poll
+  *
+  * Returns 0 on success and -ETIMEDOUT upon a timeout. In either
+- * case, the last read value at @addr is stored in @val. Must not
++ * case, the last read value at @args is stored in @val. Must not
+  * be called from atomic context if sleep_us or timeout_us are used.
+  *
+  * When available, you'll probably want to use one of the specialized
+  * macros defined below rather than this macro directly.
+  */
+-#define readx_poll_timeout(op, addr, val, cond, sleep_us, timeout_us)	\
++#define read_poll_timeout(op, val, cond, sleep_us, timeout_us, \
++				sleep_before_read, args...) \
+ ({ \
+ 	u64 __timeout_us = (timeout_us); \
+ 	unsigned long __sleep_us = (sleep_us); \
+ 	ktime_t __timeout = ktime_add_us(ktime_get(), __timeout_us); \
+ 	might_sleep_if((__sleep_us) != 0); \
++	if (sleep_before_read && __sleep_us) \
++		usleep_range((__sleep_us >> 2) + 1, __sleep_us); \
+ 	for (;;) { \
+-		(val) = op(addr); \
++		(val) = op(args); \
+ 		if (cond) \
+ 			break; \
+ 		if (__timeout_us && \
+ 		    ktime_compare(ktime_get(), __timeout) > 0) { \
+-			(val) = op(addr); \
++			(val) = op(args); \
+ 			break; \
+ 		} \
+ 		if (__sleep_us) \
+@@ -52,6 +57,27 @@
+ 	(cond) ? 0 : -ETIMEDOUT; \
+ })
+ 
++/**
++ * readx_poll_timeout - Periodically poll an address until a condition is met or a timeout occurs
++ * @op: accessor function (takes @addr as its only argument)
++ * @addr: Address to poll
++ * @val: Variable to read the value into
++ * @cond: Break condition (usually involving @val)
++ * @sleep_us: Maximum time to sleep between reads in us (0
++ *            tight-loops).  Should be less than ~20ms since usleep_range
++ *            is used (see Documentation/timers/timers-howto.rst).
++ * @timeout_us: Timeout in us, 0 means never timeout
++ *
++ * Returns 0 on success and -ETIMEDOUT upon a timeout. In either
++ * case, the last read value at @addr is stored in @val. Must not
++ * be called from atomic context if sleep_us or timeout_us are used.
++ *
++ * When available, you'll probably want to use one of the specialized
++ * macros defined below rather than this macro directly.
++ */
++#define readx_poll_timeout(op, addr, val, cond, sleep_us, timeout_us)	\
++	read_poll_timeout(op, val, cond, sleep_us, timeout_us, false, addr)
++
+ /**
+  * readx_poll_timeout_atomic - Periodically poll an address until a condition is met or a timeout occurs
+  * @op: accessor function (takes @addr as its only argument)
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index a1070d60e..107dcbea4 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -21,6 +21,7 @@
+ #include <linux/timer.h>
+ #include <linux/workqueue.h>
+ #include <linux/mod_devicetable.h>
++#include <linux/iopoll.h>
+ 
+ #include <linux/atomic.h>
+ 
+@@ -714,6 +715,19 @@ static inline int phy_read(struct phy_device *phydev, u32 regnum)
+ 	return mdiobus_read(phydev->mdio.bus, phydev->mdio.addr, regnum);
+ }
+ 
++#define phy_read_poll_timeout(phydev, regnum, val, cond, sleep_us, \
++				timeout_us, sleep_before_read) \
++({ \
++	int __ret = read_poll_timeout(phy_read, val, (cond) || val < 0, \
++		sleep_us, timeout_us, sleep_before_read, phydev, regnum); \
++	if (val <  0) \
++		__ret = val; \
++	if (__ret) \
++		phydev_err(phydev, "%s failed: %d\n", __func__, __ret); \
++	__ret; \
++})
++
++
+ /**
+  * __phy_read - convenience function for reading a given PHY register
+  * @phydev: the phy_device struct
+@@ -766,6 +780,19 @@ static inline int __phy_write(struct phy_device *phydev, u32 regnum, u16 val)
+  */
+ int phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum);
+ 
++#define phy_read_mmd_poll_timeout(phydev, devaddr, regnum, val, cond, \
++				  sleep_us, timeout_us, sleep_before_read) \
++({ \
++	int __ret = read_poll_timeout(phy_read_mmd, val, (cond) || val < 0, \
++				  sleep_us, timeout_us, sleep_before_read, \
++				  phydev, devaddr, regnum); \
++	if (val <  0) \
++		__ret = val; \
++	if (__ret) \
++		phydev_err(phydev, "%s failed: %d\n", __func__, __ret); \
++	__ret; \
++})
++
+ /**
+  * __phy_read_mmd - Convenience function for reading a register
+  * from an MMD on a given PHY.
+-- 
+2.34.1
+

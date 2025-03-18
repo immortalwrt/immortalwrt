@@ -1,0 +1,80 @@
+From 6afacf5f918314789d95739311978b596ea46384 Mon Sep 17 00:00:00 2001
+From: Bo-Cun Chen <bc-bocun.chen@mediatek.com>
+Date: Tue, 19 Nov 2024 11:53:53 +0800
+Subject: [PATCH] net: phy: add genphy_c45_pma_suspend/resume
+
+---
+ drivers/net/phy/phy-c45.c | 43 +++++++++++++++++++++++++++++++++++++++
+ include/linux/phy.h       |  2 ++
+ 2 files changed, 45 insertions(+)
+
+diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+index bceb0dc..797946c 100644
+--- a/drivers/net/phy/phy-c45.c
++++ b/drivers/net/phy/phy-c45.c
+@@ -8,6 +8,49 @@
+ #include <linux/mii.h>
+ #include <linux/phy.h>
+ 
++/**
++ * genphy_c45_pma_can_sleep - checks if the PMA have sleep support
++ * @phydev: target phy_device struct
++ */
++static bool genphy_c45_pma_can_sleep(struct phy_device *phydev)
++{
++	int stat1;
++
++	stat1 = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_STAT1);
++	if (stat1 < 0)
++		return false;
++
++	return !!(stat1 & MDIO_STAT1_LPOWERABLE);
++}
++
++/**
++ * genphy_c45_pma_resume - wakes up the PMA module
++ * @phydev: target phy_device struct
++ */
++int genphy_c45_pma_resume(struct phy_device *phydev)
++{
++	if (!genphy_c45_pma_can_sleep(phydev))
++		return -EOPNOTSUPP;
++
++	return phy_clear_bits_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_CTRL1,
++				  MDIO_CTRL1_LPOWER);
++}
++EXPORT_SYMBOL_GPL(genphy_c45_pma_resume);
++
++/**
++ * genphy_c45_pma_suspend - suspends the PMA module
++ * @phydev: target phy_device struct
++ */
++int genphy_c45_pma_suspend(struct phy_device *phydev)
++{
++	if (!genphy_c45_pma_can_sleep(phydev))
++		return -EOPNOTSUPP;
++
++	return phy_set_bits_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_CTRL1,
++				MDIO_CTRL1_LPOWER);
++}
++EXPORT_SYMBOL_GPL(genphy_c45_pma_suspend);
++
+ /**
+  * genphy_c45_setup_forced - configures a forced speed
+  * @phydev: target phy_device struct
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 83bd00b..fb21ddb 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1232,6 +1232,8 @@ int genphy_c45_read_mdix(struct phy_device *phydev);
+ int genphy_c45_pma_read_abilities(struct phy_device *phydev);
+ int genphy_c45_read_status(struct phy_device *phydev);
+ int genphy_c45_config_aneg(struct phy_device *phydev);
++int genphy_c45_pma_resume(struct phy_device *phydev);
++int genphy_c45_pma_suspend(struct phy_device *phydev);
+ 
+ /* The gen10g_* functions are the old Clause 45 stub */
+ int gen10g_config_aneg(struct phy_device *phydev);
+-- 
+2.45.2
+

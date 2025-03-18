@@ -1,0 +1,55 @@
+From 3fc10755d5f6a5618519f2b5b3a68febfc5984b0 Mon Sep 17 00:00:00 2001
+From: Sam Shih <sam.shih@mediatek.com>
+Date: Fri, 2 Jun 2023 13:06:27 +0800
+Subject: [PATCH] 
+ [networking][999-2702-v5.9-net-phy-add-support-for-a-common-probe-between-shared-PHYs.patch]
+
+---
+ include/linux/phy.h | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
+
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index d26dba255..4f2c105f5 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -232,7 +232,8 @@ struct phy_package_shared {
+ };
+ 
+ /* used as bit number in atomic bitops */
+-#define PHY_SHARED_F_INIT_DONE 0
++#define PHY_SHARED_F_INIT_DONE  0
++#define PHY_SHARED_F_PROBE_DONE 1
+ 
+ /*
+  * The Bus class for PHYs.  Devices which provide access to
+@@ -1373,14 +1374,25 @@ static inline int __phy_package_write(struct phy_device *phydev,
+ 	return __mdiobus_write(phydev->mdio.bus, shared->addr, regnum, val);
+ }
+ 
+-static inline bool phy_package_init_once(struct phy_device *phydev)
++static inline bool __phy_package_set_once(struct phy_device *phydev,
++					  unsigned int b)
+ {
+ 	struct phy_package_shared *shared = phydev->shared;
+ 
+ 	if (!shared)
+ 		return false;
+ 
+-	return !test_and_set_bit(PHY_SHARED_F_INIT_DONE, &shared->flags);
++	return !test_and_set_bit(b, &shared->flags);
++}
++
++static inline bool phy_package_init_once(struct phy_device *phydev)
++{
++	return __phy_package_set_once(phydev, PHY_SHARED_F_INIT_DONE);
++}
++
++static inline bool phy_package_probe_once(struct phy_device *phydev)
++{
++	return __phy_package_set_once(phydev, PHY_SHARED_F_PROBE_DONE);
+ }
+ 
+ extern struct bus_type mdio_bus_type;
+-- 
+2.34.1
+
