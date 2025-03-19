@@ -1,0 +1,413 @@
+diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
+index 8406412..96d9e1f 100644
+--- a/drivers/net/phy/phy-core.c
++++ b/drivers/net/phy/phy-core.c
+@@ -62,6 +62,27 @@ const char *phy_duplex_to_str(unsigned int duplex)
+ }
+ EXPORT_SYMBOL_GPL(phy_duplex_to_str);
+ 
++/**
++ * phy_rate_matching_to_str - Return a string describing the rate matching
++ *
++ * @rate_matching: Type of rate matching to describe
++ */
++const char *phy_rate_matching_to_str(int rate_matching)
++{
++	switch (rate_matching) {
++	case RATE_MATCH_NONE:
++		return "none";
++	case RATE_MATCH_PAUSE:
++		return "pause";
++	case RATE_MATCH_CRS:
++		return "crs";
++	case RATE_MATCH_OPEN_LOOP:
++		return "open-loop";
++	}
++	return "Unsupported (update phy-core.c)";
++}
++EXPORT_SYMBOL_GPL(phy_rate_matching_to_str);
++
+ /* A mapping of all SUPPORTED settings to speed/duplex.  This table
+  * must be grouped by speed and sorted in descending match priority
+  * - iow, descending speed. */
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index e223f0d..6f2e4c7 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -106,6 +106,33 @@ void phy_print_status(struct phy_device *phydev)
+ }
+ EXPORT_SYMBOL(phy_print_status);
+ 
++/**
++ * phy_get_rate_matching - determine if rate matching is supported
++ * @phydev: The phy device to return rate matching for
++ * @iface: The interface mode to use
++ *
++ * This determines the type of rate matching (if any) that @phy supports
++ * using @iface. @iface may be %PHY_INTERFACE_MODE_NA to determine if any
++ * interface supports rate matching.
++ *
++ * Return: The type of rate matching @phy supports for @iface, or
++ *         %RATE_MATCH_NONE.
++ */
++int phy_get_rate_matching(struct phy_device *phydev,
++			  phy_interface_t iface)
++{
++	int ret = RATE_MATCH_NONE;
++
++	if (phydev->drv->get_rate_matching) {
++		mutex_lock(&phydev->lock);
++		ret = phydev->drv->get_rate_matching(phydev, iface);
++		mutex_unlock(&phydev->lock);
++	}
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(phy_get_rate_matching);
++
+ /**
+  * phy_clear_interrupt - Ack the phy device's interrupt
+  * @phydev: the phy_device struct
+@@ -380,6 +407,7 @@ void phy_ethtool_ksettings_get(struct phy_device *phydev,
+ 
+ 	cmd->base.speed = phydev->speed;
+ 	cmd->base.duplex = phydev->duplex;
++	cmd->base.rate_matching = phydev->rate_matching;
+ 	if (phydev->interface == PHY_INTERFACE_MODE_MOCA)
+ 		cmd->base.port = PORT_BNC;
+ 	else
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 6b63b98..949e3b8 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -155,6 +155,64 @@ static const char *phylink_an_mode_str(unsigned int mode)
+ 	return mode < ARRAY_SIZE(modestr) ? modestr[mode] : "unknown";
+ }
+ 
++/**
++ * phylink_interface_max_speed() - get the maximum speed of a phy interface
++ * @interface: phy interface mode defined by &typedef phy_interface_t
++ *
++ * Determine the maximum speed of a phy interface. This is intended to help
++ * determine the correct speed to pass to the MAC when the phy is performing
++ * rate matching.
++ *
++ * Return: The maximum speed of @interface
++ */
++static int phylink_interface_max_speed(phy_interface_t interface)
++{
++	switch (interface) {
++	case PHY_INTERFACE_MODE_RMII:
++	case PHY_INTERFACE_MODE_SMII:
++	case PHY_INTERFACE_MODE_REVMII:
++	case PHY_INTERFACE_MODE_MII:
++		return SPEED_100;
++
++	case PHY_INTERFACE_MODE_TBI:
++	case PHY_INTERFACE_MODE_MOCA:
++	case PHY_INTERFACE_MODE_RTBI:
++	case PHY_INTERFACE_MODE_1000BASEX:
++	case PHY_INTERFACE_MODE_TRGMII:
++	case PHY_INTERFACE_MODE_RGMII_TXID:
++	case PHY_INTERFACE_MODE_RGMII_RXID:
++	case PHY_INTERFACE_MODE_RGMII_ID:
++	case PHY_INTERFACE_MODE_RGMII:
++	case PHY_INTERFACE_MODE_QSGMII:
++	case PHY_INTERFACE_MODE_SGMII:
++	case PHY_INTERFACE_MODE_GMII:
++		return SPEED_1000;
++
++	case PHY_INTERFACE_MODE_2500BASEX:
++		return SPEED_2500;
++
++	case PHY_INTERFACE_MODE_5GBASER:
++		return SPEED_5000;
++
++	case PHY_INTERFACE_MODE_XGMII:
++	case PHY_INTERFACE_MODE_RXAUI:
++	case PHY_INTERFACE_MODE_XAUI:
++	case PHY_INTERFACE_MODE_10GKR:
++	case PHY_INTERFACE_MODE_USXGMII:
++		return SPEED_10000;
++
++	case PHY_INTERFACE_MODE_INTERNAL:
++	case PHY_INTERFACE_MODE_NA:
++	case PHY_INTERFACE_MODE_MAX:
++		/* No idea! Garbage in, unknown out */
++		return SPEED_UNKNOWN;
++	}
++
++	/* If we get here, someone forgot to add an interface mode above */
++	WARN_ON_ONCE(1);
++	return SPEED_UNKNOWN;
++}
++
+ static int phylink_validate_mac_and_pcs(struct phylink *pl,
+ 					unsigned long *supported,
+ 					struct phylink_link_state *state)
+@@ -402,11 +460,12 @@ static void phylink_mac_config(struct phylink *pl,
+ 			       const struct phylink_link_state *state)
+ {
+ 	phylink_dbg(pl,
+-		    "%s: mode=%s/%s/%s/%s adv=%*pb pause=%02x link=%u an=%u\n",
++		    "%s: mode=%s/%s/%s/%s/%s adv=%*pb pause=%02x link=%u an=%u\n",
+ 		    __func__, phylink_an_mode_str(pl->cur_link_an_mode),
+ 		    phy_modes(state->interface),
+ 		    phy_speed_to_str(state->speed),
+ 		    phy_duplex_to_str(state->duplex),
++		    phy_rate_matching_to_str(state->rate_matching),
+ 		    __ETHTOOL_LINK_MODE_MASK_NBITS, state->advertising,
+ 		    state->pause, state->link, state->an_enabled);
+ 
+@@ -499,6 +558,7 @@ static void phylink_mac_pcs_get_state(struct phylink *pl,
+ 	linkmode_zero(state->lp_advertising);
+ 	state->interface = pl->link_config.interface;
+ 	state->an_enabled = pl->link_config.an_enabled;
++	state->rate_matching = pl->link_config.rate_matching;
+ 	if (state->an_enabled) {
+ 		state->speed = SPEED_UNKNOWN;
+ 		state->duplex = DUPLEX_UNKNOWN;
+@@ -614,9 +674,32 @@ static void phylink_link_up(struct phylink *pl,
+ {
+ 	struct net_device *ndev = pl->netdev;
+ 	int speed, duplex;
++	bool rx_pause;
+ 
+ 	speed = link_state.speed;
+ 	duplex = link_state.duplex;
++	rx_pause = !!(link_state.pause & MLO_PAUSE_RX);
++
++	switch (link_state.rate_matching) {
++	case RATE_MATCH_PAUSE:
++		/* The PHY is doing rate matchion from the media rate (in
++		 * the link_state) to the interface speed, and will send
++		 * pause frames to the MAC to limit its transmission speed.
++		 */
++		speed = phylink_interface_max_speed(link_state.interface);
++		duplex = DUPLEX_FULL;
++		rx_pause = true;
++		break;
++
++	case RATE_MATCH_CRS:
++		/* The PHY is doing rate matchion from the media rate (in
++		 * the link_state) to the interface speed, and will cause
++		 * collisions to the MAC to limit its transmission speed.
++		 */
++		speed = phylink_interface_max_speed(link_state.interface);
++		duplex = DUPLEX_HALF;
++		break;
++	}
+ 
+ 	pl->cur_interface = link_state.interface;
+ 
+@@ -626,8 +709,7 @@ static void phylink_link_up(struct phylink *pl,
+ 
+ 	pl->mac_ops->mac_link_up(pl->config, pl->phydev, pl->cur_link_an_mode,
+ 				 pl->cur_interface, speed, duplex,
+-				 !!(link_state.pause & MLO_PAUSE_TX),
+-				 !!(link_state.pause & MLO_PAUSE_RX));
++				 !!(link_state.pause & MLO_PAUSE_TX), rx_pause);
+ 
+ 	if (ndev)
+ 		netif_carrier_on(ndev);
+@@ -719,6 +801,17 @@ static void phylink_resolve(struct work_struct *w)
+ 				}
+ 				link_state.interface = pl->phy_state.interface;
+ 
++				/* If we are doing rate matching, then the
++				 * link speed/duplex comes from the PHY
++				 */
++				if (pl->phy_state.rate_matching) {
++					link_state.rate_matching =
++						pl->phy_state.rate_matching;
++					link_state.speed = pl->phy_state.speed;
++					link_state.duplex =
++						pl->phy_state.duplex;
++				}
++
+ 				/* If we have a PHY, we need to update with
+ 				 * the PHY flow control bits.
+ 				 */
+@@ -935,6 +1028,7 @@ static void phylink_phy_change(struct phy_device *phydev, bool up,
+ 	mutex_lock(&pl->state_mutex);
+ 	pl->phy_state.speed = phydev->speed;
+ 	pl->phy_state.duplex = phydev->duplex;
++	pl->phy_state.rate_matching = phydev->rate_matching;
+ 	pl->phy_state.pause = MLO_PAUSE_NONE;
+ 	if (phydev->pause)
+ 		pl->phy_state.pause |= MLO_PAUSE_SYM;
+@@ -946,10 +1040,11 @@ static void phylink_phy_change(struct phy_device *phydev, bool up,
+ 
+ 	phylink_run_resolve(pl);
+ 
+-	phylink_dbg(pl, "phy link %s %s/%s/%s\n", up ? "up" : "down",
++	phylink_dbg(pl, "phy link %s %s/%s/%s/%s\n", up ? "up" : "down",
+ 		    phy_modes(phydev->interface),
+ 		    phy_speed_to_str(phydev->speed),
+-		    phy_duplex_to_str(phydev->duplex));
++		    phy_duplex_to_str(phydev->duplex),
++		    phy_rate_matching_to_str(phydev->rate_matching));
+ }
+ 
+ static int phylink_bringup_phy(struct phylink *pl, struct phy_device *phy,
+@@ -971,6 +1066,12 @@ static int phylink_bringup_phy(struct phylink *pl, struct phy_device *phy,
+ 	memset(&config, 0, sizeof(config));
+ 	linkmode_copy(supported, phy->supported);
+ 	linkmode_copy(config.advertising, phy->advertising);
++
++	/* Check whether we would use rate matching for the proposed interface
++	 * mode.
++	 */
++	config.rate_matching = phy_get_rate_matching(phy, interface);
++
+ 	config.interface = interface;
+ 
+ 	ret = phylink_validate(pl, supported, &config);
+@@ -988,6 +1089,7 @@ static int phylink_bringup_phy(struct phylink *pl, struct phy_device *phy,
+ 	mutex_lock(&pl->state_mutex);
+ 	pl->phydev = phy;
+ 	pl->phy_state.interface = interface;
++	pl->phy_state.rate_matching = RATE_MATCH_NONE;
+ 	linkmode_copy(pl->supported, supported);
+ 	linkmode_copy(pl->link_config.advertising, config.advertising);
+ 
+@@ -1348,8 +1450,10 @@ static void phylink_get_ksettings(const struct phylink_link_state *state,
+ {
+ 	phylink_merge_link_mode(kset->link_modes.advertising, state->advertising);
+ 	linkmode_copy(kset->link_modes.lp_advertising, state->lp_advertising);
+-	kset->base.speed = state->speed;
+-	kset->base.duplex = state->duplex;
++	if (kset->base.rate_matching == RATE_MATCH_NONE) {
++		kset->base.speed = state->speed;
++		kset->base.duplex = state->duplex;
++	}
+ 	kset->base.autoneg = state->an_enabled ? AUTONEG_ENABLE :
+ 				AUTONEG_DISABLE;
+ }
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 4f2c105..df9fb90 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -423,6 +423,8 @@ struct phy_device {
+ 	/* Interrupts are enabled */
+ 	unsigned interrupts:1;
+ 
++	int rate_matching;
++
+ 	enum phy_state state;
+ 
+ 	u32 dev_flags;
+@@ -544,6 +546,18 @@ struct phy_driver {
+ 	 */
+ 	int (*get_features)(struct phy_device *phydev);
+ 
++	/**
++	 * @get_rate_matching: Get the supported type of rate matching for a
++	 * particular phy interface. This is used by phy consumers to determine
++	 * whether to advertise lower-speed modes for that interface. It is
++	 * assumed that if a rate matching mode is supported on an interface,
++	 * then that interface's rate can be adapted to all slower link speeds
++	 * supported by the phy. If the interface is not supported, this should
++	 * return %RATE_MATCH_NONE.
++	 */
++	int (*get_rate_matching)(struct phy_device *phydev,
++				   phy_interface_t iface);
++
+ 	/* PHY Power Management */
+ 	int (*suspend)(struct phy_device *phydev);
+ 	int (*resume)(struct phy_device *phydev);
+@@ -704,6 +718,7 @@ struct phy_fixup {
+ 
+ const char *phy_speed_to_str(int speed);
+ const char *phy_duplex_to_str(unsigned int duplex);
++const char *phy_rate_matching_to_str(int rate_matching);
+ 
+ /* A structure for mapping a particular speed and duplex
+  * combination to a particular SUPPORTED and ADVERTISED value
+@@ -1242,6 +1257,8 @@ int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd);
+ void phy_request_interrupt(struct phy_device *phydev);
+ void phy_free_interrupt(struct phy_device *phydev);
+ void phy_print_status(struct phy_device *phydev);
++int phy_get_rate_matching(struct phy_device *phydev,
++			    phy_interface_t iface);
+ int phy_set_max_speed(struct phy_device *phydev, u32 max_speed);
+ void phy_remove_link_mode(struct phy_device *phydev, u32 link_mode);
+ void phy_advertise_supported(struct phy_device *phydev);
+diff --git a/include/linux/phylink.h b/include/linux/phylink.h
+index 48ff9fe..e1c022f 100644
+--- a/include/linux/phylink.h
++++ b/include/linux/phylink.h
+@@ -38,6 +38,10 @@ static inline bool phylink_autoneg_inband(unsigned int mode)
+  * @speed: link speed, one of the SPEED_* constants.
+  * @duplex: link duplex mode, one of DUPLEX_* constants.
+  * @pause: link pause state, described by MLO_PAUSE_* constants.
++ * @rate_matching: rate matching being performed, one of the RATE_MATCH_*
++ *   constants. If rate matching is taking place, then the speed/duplex of
++ *   the medium link mode (@speed and @duplex) and the speed/duplex of the phy
++ *   interface mode (@interface) are different.
+  * @link: true if the link is up.
+  * @an_enabled: true if autonegotiation is enabled/desired.
+  * @an_complete: true if autonegotiation has completed.
+@@ -49,6 +53,7 @@ struct phylink_link_state {
+ 	int speed;
+ 	int duplex;
+ 	int pause;
++	int rate_matching;
+ 	unsigned int link:1;
+ 	unsigned int an_enabled:1;
+ 	unsigned int an_complete:1;
+diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+index 8d465e5..ce41d2f 100644
+--- a/include/uapi/linux/ethtool.h
++++ b/include/uapi/linux/ethtool.h
+@@ -1643,6 +1643,20 @@ static inline int ethtool_validate_duplex(__u8 duplex)
+ 	return 0;
+ }
+ 
++/* These are used to throttle the rate of data on the phy interface when the
++ * native speed of the interface is higher than the link speed. These should
++ * not be used for phy interfaces which natively support multiple speeds (e.g.
++ * MII or SGMII).
++ */
++/* No rate matching performed. */
++#define RATE_MATCH_NONE		0
++/* The phy sends pause frames to throttle the MAC. */
++#define RATE_MATCH_PAUSE	1
++/* The phy asserts CRS to prevent the MAC from transmitting. */
++#define RATE_MATCH_CRS		2
++/* The MAC is programmed with a sufficiently-large IPG. */
++#define RATE_MATCH_OPEN_LOOP	3
++
+ /* Which connector port. */
+ #define PORT_TP			0x00
+ #define PORT_AUI		0x01
+@@ -1832,6 +1846,7 @@ enum ethtool_reset_flags {
+  *	autonegotiation; 0 if unknown or not applicable.  Read-only.
+  * @transceiver: Used to distinguish different possible PHY types,
+  *	reported consistently by PHYLIB.  Read-only.
++ * @rate_matching: Rate adaptation performed by the PHY
+  *
+  * If autonegotiation is disabled, the speed and @duplex represent the
+  * fixed link mode and are writable if the driver supports multiple
+@@ -1879,7 +1894,8 @@ struct ethtool_link_settings {
+ 	__u8	eth_tp_mdix_ctrl;
+ 	__s8	link_mode_masks_nwords;
+ 	__u8	transceiver;
+-	__u8	reserved1[3];
++	__u8	reserved1[2];
++	__u8	rate_matching;
+ 	__u32	reserved[7];
+ 	__u32	link_mode_masks[0];
+ 	/* layout of link_mode_masks fields:
+diff --git a/net/core/ethtool.c b/net/core/ethtool.c
+index 9ae38c3..41a8b1d 100644
+--- a/net/core/ethtool.c
++++ b/net/core/ethtool.c
+@@ -656,6 +656,7 @@ static int ethtool_get_link_ksettings(struct net_device *dev,
+ 	link_ksettings.base.cmd = ETHTOOL_GLINKSETTINGS;
+ 	link_ksettings.base.link_mode_masks_nwords
+ 		= __ETHTOOL_LINK_MODE_MASK_NU32;
++	link_ksettings.base.rate_matching = RATE_MATCH_NONE;
+ 
+ 	return store_link_ksettings_for_user(useraddr, &link_ksettings);
+ }

@@ -1,0 +1,500 @@
+From 318f81610f630a026fd5ca0d4da7e34df25df663 Mon Sep 17 00:00:00 2001
+From: Sam Shih <sam.shih@mediatek.com>
+Date: Fri, 2 Jun 2023 13:06:02 +0800
+Subject: [PATCH] 
+ [backport-networking-drivers][999-1711-net-phy-add-phylink-pcs-decode-helper.patch]
+
+---
+ drivers/net/phy/Makefile   |   3 +-
+ drivers/net/phy/linkmode.c |  95 +++++++++++++++++++
+ drivers/net/phy/phylink.c  | 188 +++++++++++++++++++++++++++++++++++++
+ include/linux/linkmode.h   |   6 ++
+ include/linux/mii.h        |  39 ++++++++
+ include/linux/phylink.h    |  30 ++++++
+ include/uapi/linux/mdio.h  |  26 +++++
+ include/uapi/linux/mii.h   |  17 ++++
+ 8 files changed, 403 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/net/phy/linkmode.c
+
+diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+index 8ea612a85..437ff2a2c 100644
+--- a/drivers/net/phy/Makefile
++++ b/drivers/net/phy/Makefile
+@@ -1,7 +1,8 @@
+ # SPDX-License-Identifier: GPL-2.0
+ # Makefile for Linux PHY drivers and MDIO bus drivers
+ 
+-libphy-y			:= phy.o phy-c45.o phy-core.o phy_device.o
++libphy-y			:= phy.o phy-c45.o phy-core.o phy_device.o \
++				   linkmode.o
+ mdio-bus-y			+= mdio_bus.o mdio_device.o
+ 
+ ifdef CONFIG_MDIO_DEVICE
+diff --git a/drivers/net/phy/linkmode.c b/drivers/net/phy/linkmode.c
+new file mode 100644
+index 000000000..a5a347bca
+--- /dev/null
++++ b/drivers/net/phy/linkmode.c
+@@ -0,0 +1,95 @@
++// SPDX-License-Identifier: GPL-2.0+
++#include <linux/linkmode.h>
++
++/**
++ * linkmode_resolve_pause - resolve the allowable pause modes
++ * @local_adv: local advertisement in ethtool format
++ * @partner_adv: partner advertisement in ethtool format
++ * @tx_pause: pointer to bool to indicate whether transmit pause should be
++ * enabled.
++ * @rx_pause: pointer to bool to indicate whether receive pause should be
++ * enabled.
++ *
++ * Flow control is resolved according to our and the link partners
++ * advertisements using the following drawn from the 802.3 specs:
++ *  Local device  Link partner
++ *  Pause AsymDir Pause AsymDir Result
++ *    0     X       0     X     Disabled
++ *    0     1       1     0     Disabled
++ *    0     1       1     1     TX
++ *    1     0       0     X     Disabled
++ *    1     X       1     X     TX+RX
++ *    1     1       0     1     RX
++ */
++void linkmode_resolve_pause(unsigned long *local_adv,
++			    unsigned long *partner_adv,
++			    bool *tx_pause, bool *rx_pause)
++{
++	__ETHTOOL_DECLARE_LINK_MODE_MASK(m);
++
++	linkmode_and(m, local_adv, partner_adv);
++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT, m)) {
++		*tx_pause = true;
++		*rx_pause = true;
++	} else if (linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, m)) {
++		*tx_pause = linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
++					      partner_adv);
++		*rx_pause = linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
++					      local_adv);
++	} else {
++		*tx_pause = false;
++		*rx_pause = false;
++	}
++}
++EXPORT_SYMBOL_GPL(linkmode_resolve_pause);
++
++/**
++ * linkmode_set_pause - set the pause mode advertisement
++ * @advertisement: advertisement in ethtool format
++ * @tx: boolean from ethtool struct ethtool_pauseparam tx_pause member
++ * @rx: boolean from ethtool struct ethtool_pauseparam rx_pause member
++ *
++ * Configure the advertised Pause and Asym_Pause bits according to the
++ * capabilities of provided in @tx and @rx.
++ *
++ * We convert as follows:
++ *  tx rx  Pause AsymDir
++ *  0  0   0     0
++ *  0  1   1     1
++ *  1  0   0     1
++ *  1  1   1     0
++ *
++ * Note: this translation from ethtool tx/rx notation to the advertisement
++ * is actually very problematical. Here are some examples:
++ *
++ * For tx=0 rx=1, meaning transmit is unsupported, receive is supported:
++ *
++ *  Local device  Link partner
++ *  Pause AsymDir Pause AsymDir Result
++ *    1     1       1     0     TX + RX - but we have no TX support.
++ *    1     1       0     1	Only this gives RX only
++ *
++ * For tx=1 rx=1, meaning we have the capability to transmit and receive
++ * pause frames:
++ *
++ *  Local device  Link partner
++ *  Pause AsymDir Pause AsymDir Result
++ *    1     0       0     1     Disabled - but since we do support tx and rx,
++ *				this should resolve to RX only.
++ *
++ * Hence, asking for:
++ *  rx=1 tx=0 gives Pause+AsymDir advertisement, but we may end up
++ *            resolving to tx+rx pause or only rx pause depending on
++ *            the partners advertisement.
++ *  rx=0 tx=1 gives AsymDir only, which will only give tx pause if
++ *            the partners advertisement allows it.
++ *  rx=1 tx=1 gives Pause only, which will only allow tx+rx pause
++ *            if the other end also advertises Pause.
++ */
++void linkmode_set_pause(unsigned long *advertisement, bool tx, bool rx)
++{
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_Pause_BIT, advertisement, rx);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, advertisement,
++			 rx ^ tx);
++}
++EXPORT_SYMBOL_GPL(linkmode_set_pause);
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 9c76517ea..6b63b9839 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -2185,4 +2185,192 @@ void phylink_helper_basex_speed(struct phylink_link_state *state)
+ }
+ EXPORT_SYMBOL_GPL(phylink_helper_basex_speed);
+ 
++static void phylink_decode_c37_word(struct phylink_link_state *state,
++				    uint16_t config_reg, int speed)
++{
++	bool tx_pause, rx_pause;
++	int fd_bit;
++
++	if (speed == SPEED_2500)
++		fd_bit = ETHTOOL_LINK_MODE_2500baseX_Full_BIT;
++	else
++		fd_bit = ETHTOOL_LINK_MODE_1000baseX_Full_BIT;
++
++	mii_lpa_mod_linkmode_x(state->lp_advertising, config_reg, fd_bit);
++
++	if (linkmode_test_bit(fd_bit, state->advertising) &&
++	    linkmode_test_bit(fd_bit, state->lp_advertising)) {
++		state->speed = speed;
++		state->duplex = DUPLEX_FULL;
++	} else {
++		/* negotiation failure */
++		state->link = false;
++	}
++
++	linkmode_resolve_pause(state->advertising, state->lp_advertising,
++			       &tx_pause, &rx_pause);
++
++	if (tx_pause)
++		state->pause |= MLO_PAUSE_TX;
++	if (rx_pause)
++		state->pause |= MLO_PAUSE_RX;
++}
++
++static void phylink_decode_sgmii_word(struct phylink_link_state *state,
++				      uint16_t config_reg)
++{
++	if (!(config_reg & LPA_SGMII_LINK)) {
++		state->link = false;
++		return;
++	}
++
++	switch (config_reg & LPA_SGMII_SPD_MASK) {
++	case LPA_SGMII_10:
++		state->speed = SPEED_10;
++		break;
++	case LPA_SGMII_100:
++		state->speed = SPEED_100;
++		break;
++	case LPA_SGMII_1000:
++		state->speed = SPEED_1000;
++		break;
++	default:
++		state->link = false;
++		return;
++	}
++	if (config_reg & LPA_SGMII_FULL_DUPLEX)
++		state->duplex = DUPLEX_FULL;
++	else
++		state->duplex = DUPLEX_HALF;
++}
++
++/**
++ * phylink_decode_usxgmii_word() - decode the USXGMII word from a MAC PCS
++ * @state: a pointer to a struct phylink_link_state.
++ * @lpa: a 16 bit value which stores the USXGMII auto-negotiation word
++ *
++ * Helper for MAC PCS supporting the USXGMII protocol and the auto-negotiation
++ * code word.  Decode the USXGMII code word and populate the corresponding fields
++ * (speed, duplex) into the phylink_link_state structure.
++ */
++void phylink_decode_usxgmii_word(struct phylink_link_state *state,
++				 uint16_t lpa)
++{
++	switch (lpa & MDIO_USXGMII_SPD_MASK) {
++	case MDIO_USXGMII_10:
++		state->speed = SPEED_10;
++		break;
++	case MDIO_USXGMII_100:
++		state->speed = SPEED_100;
++		break;
++	case MDIO_USXGMII_1000:
++		state->speed = SPEED_1000;
++		break;
++	case MDIO_USXGMII_2500:
++		state->speed = SPEED_2500;
++		break;
++	case MDIO_USXGMII_5000:
++		state->speed = SPEED_5000;
++		break;
++	case MDIO_USXGMII_10G:
++		state->speed = SPEED_10000;
++		break;
++	default:
++		state->link = false;
++		return;
++	}
++
++	if (lpa & MDIO_USXGMII_FULL_DUPLEX)
++		state->duplex = DUPLEX_FULL;
++	else
++		state->duplex = DUPLEX_HALF;
++}
++EXPORT_SYMBOL_GPL(phylink_decode_usxgmii_word);
++
++/**
++ * phylink_mii_c22_pcs_decode_state() - Decode MAC PCS state from MII registers
++ * @state: a pointer to a &struct phylink_link_state.
++ * @bmsr: The value of the %MII_BMSR register
++ * @lpa: The value of the %MII_LPA register
++ *
++ * Helper for MAC PCS supporting the 802.3 clause 22 register set for
++ * clause 37 negotiation and/or SGMII control.
++ *
++ * Parse the Clause 37 or Cisco SGMII link partner negotiation word into
++ * the phylink @state structure. This is suitable to be used for implementing
++ * the mac_pcs_get_state() member of the struct phylink_mac_ops structure if
++ * accessing @bmsr and @lpa cannot be done with MDIO directly.
++ */
++void phylink_mii_c22_pcs_decode_state(struct phylink_link_state *state,
++				      u16 bmsr, u16 lpa)
++{
++	state->link = !!(bmsr & BMSR_LSTATUS);
++	state->an_complete = !!(bmsr & BMSR_ANEGCOMPLETE);
++	/* If there is no link or autonegotiation is disabled, the LP advertisement
++	 * data is not meaningful, so don't go any further.
++	 */
++	if (!state->link || !state->an_enabled)
++		return;
++
++	switch (state->interface) {
++	case PHY_INTERFACE_MODE_1000BASEX:
++		phylink_decode_c37_word(state, lpa, SPEED_1000);
++		break;
++
++	case PHY_INTERFACE_MODE_2500BASEX:
++		phylink_decode_c37_word(state, lpa, SPEED_2500);
++		break;
++
++	case PHY_INTERFACE_MODE_SGMII:
++	case PHY_INTERFACE_MODE_QSGMII:
++		phylink_decode_sgmii_word(state, lpa);
++		break;
++
++	default:
++		state->link = false;
++		break;
++	}
++}
++EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_decode_state);
++
++/**
++ * phylink_mii_c22_pcs_encode_advertisement() - configure the clause 37 PCS
++ *	advertisement
++ * @interface: the PHY interface mode being configured
++ * @advertising: the ethtool advertisement mask
++ *
++ * Helper for MAC PCS supporting the 802.3 clause 22 register set for
++ * clause 37 negotiation and/or SGMII control.
++ *
++ * Encode the clause 37 PCS advertisement as specified by @interface and
++ * @advertising.
++ *
++ * Return: The new value for @adv, or ``-EINVAL`` if it should not be changed.
++ */
++int phylink_mii_c22_pcs_encode_advertisement(phy_interface_t interface,
++					     const unsigned long *advertising)
++{
++	u16 adv;
++
++	switch (interface) {
++	case PHY_INTERFACE_MODE_1000BASEX:
++	case PHY_INTERFACE_MODE_2500BASEX:
++		adv = ADVERTISE_1000XFULL;
++		if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
++				      advertising))
++			adv |= ADVERTISE_1000XPAUSE;
++		if (linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
++				      advertising))
++			adv |= ADVERTISE_1000XPSE_ASYM;
++		return adv;
++	case PHY_INTERFACE_MODE_SGMII:
++	case PHY_INTERFACE_MODE_QSGMII:
++		return 0x0001;
++	default:
++		/* Nothing to do for other modes */
++		return -EINVAL;
++	}
++}
++EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_encode_advertisement);
++
+ MODULE_LICENSE("GPL v2");
+diff --git a/include/linux/linkmode.h b/include/linux/linkmode.h
+index a99c58866..d38da4e89 100644
+--- a/include/linux/linkmode.h
++++ b/include/linux/linkmode.h
+@@ -82,4 +82,10 @@ static inline int linkmode_equal(const unsigned long *src1,
+ 	return bitmap_equal(src1, src2, __ETHTOOL_LINK_MODE_MASK_NBITS);
+ }
+ 
++void linkmode_resolve_pause(unsigned long *local_adv,
++			    unsigned long *partner_adv,
++			    bool *tx_pause, bool *rx_pause);
++
++void linkmode_set_pause(unsigned long *advertisement, bool tx, bool rx);
++
+ #endif /* __LINKMODE_H */
+diff --git a/include/linux/mii.h b/include/linux/mii.h
+index 4ce8901a1..54b7f64b0 100644
+--- a/include/linux/mii.h
++++ b/include/linux/mii.h
+@@ -485,6 +485,45 @@ static inline u32 linkmode_adv_to_lcl_adv_t(unsigned long *advertising)
+ 	return lcl_adv;
+ }
+ 
++/**
++ * mii_lpa_mod_linkmode_x - decode the link partner's config_reg to linkmodes
++ * @linkmodes: link modes array
++ * @lpa: config_reg word from link partner
++ * @fd_bit: link mode for 1000XFULL bit
++ */
++static inline void mii_lpa_mod_linkmode_x(unsigned long *linkmodes, u16 lpa,
++					 int fd_bit)
++{
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, linkmodes,
++			 lpa & LPA_LPACK);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_Pause_BIT, linkmodes,
++			 lpa & LPA_1000XPAUSE);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, linkmodes,
++			 lpa & LPA_1000XPAUSE_ASYM);
++	linkmode_mod_bit(fd_bit, linkmodes,
++			 lpa & LPA_1000XFULL);
++}
++
++/**
++ * linkmode_adv_to_mii_adv_x - encode a linkmode to config_reg
++ * @linkmodes: linkmodes
++ * @fd_bit: full duplex bit
++ */
++static inline u16 linkmode_adv_to_mii_adv_x(unsigned long *linkmodes,
++					    int fd_bit)
++{
++	u16 adv = 0;
++
++	if (linkmode_test_bit(fd_bit, linkmodes))
++		adv |= ADVERTISE_1000XFULL;
++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT, linkmodes))
++		adv |= ADVERTISE_1000XPAUSE;
++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, linkmodes))
++		adv |= ADVERTISE_1000XPSE_ASYM;
++
++	return adv;
++}
++
+ /**
+  * mii_advertise_flowctrl - get flow control advertisement flags
+  * @cap: Flow control capabilities (FLOW_CTRL_RX, FLOW_CTRL_TX or both)
+diff --git a/include/linux/phylink.h b/include/linux/phylink.h
+index ba0f09d02..48ff9fead 100644
+--- a/include/linux/phylink.h
++++ b/include/linux/phylink.h
+@@ -490,4 +490,34 @@ int phylink_mii_ioctl(struct phylink *, struct ifreq *, int);
+ void phylink_set_port_modes(unsigned long *bits);
+ void phylink_helper_basex_speed(struct phylink_link_state *state);
+ 
++/**
++ * phylink_get_link_timer_ns - return the PCS link timer value
++ * @interface: link &typedef phy_interface_t mode
++ *
++ * Return the PCS link timer setting in nanoseconds for the PHY @interface
++ * mode, or -EINVAL if not appropriate.
++ */
++static inline int phylink_get_link_timer_ns(phy_interface_t interface)
++{
++	switch (interface) {
++	case PHY_INTERFACE_MODE_SGMII:
++	case PHY_INTERFACE_MODE_QSGMII:
++	case PHY_INTERFACE_MODE_USXGMII:
++		return 1600000;
++
++	case PHY_INTERFACE_MODE_1000BASEX:
++	case PHY_INTERFACE_MODE_2500BASEX:
++		return 10000000;
++
++	default:
++		return -EINVAL;
++	}
++}
++
++void phylink_mii_c22_pcs_decode_state(struct phylink_link_state *state,
++				      u16 bmsr, u16 lpa);
++int phylink_mii_c22_pcs_encode_advertisement(phy_interface_t interface,
++					     const unsigned long *advertising);
++void phylink_decode_usxgmii_word(struct phylink_link_state *state,
++				 uint16_t lpa);
+ #endif
+diff --git a/include/uapi/linux/mdio.h b/include/uapi/linux/mdio.h
+index 4bcb41c71..3f302e252 100644
+--- a/include/uapi/linux/mdio.h
++++ b/include/uapi/linux/mdio.h
+@@ -324,4 +324,30 @@ static inline __u16 mdio_phy_id_c45(int prtad, int devad)
+ 	return MDIO_PHY_ID_C45 | (prtad << 5) | devad;
+ }
+ 
++/* UsxgmiiChannelInfo[15:0] for USXGMII in-band auto-negotiation.*/
++#define MDIO_USXGMII_EEE_CLK_STP	0x0080	/* EEE clock stop supported */
++#define MDIO_USXGMII_EEE		0x0100	/* EEE supported */
++#define MDIO_USXGMII_SPD_MASK		0x0e00	/* USXGMII speed mask */
++#define MDIO_USXGMII_FULL_DUPLEX	0x1000	/* USXGMII full duplex */
++#define MDIO_USXGMII_DPX_SPD_MASK	0x1e00	/* USXGMII duplex and speed bits */
++#define MDIO_USXGMII_10			0x0000	/* 10Mbps */
++#define MDIO_USXGMII_10HALF		0x0000	/* 10Mbps half-duplex */
++#define MDIO_USXGMII_10FULL		0x1000	/* 10Mbps full-duplex */
++#define MDIO_USXGMII_100		0x0200	/* 100Mbps */
++#define MDIO_USXGMII_100HALF		0x0200	/* 100Mbps half-duplex */
++#define MDIO_USXGMII_100FULL		0x1200	/* 100Mbps full-duplex */
++#define MDIO_USXGMII_1000		0x0400	/* 1000Mbps */
++#define MDIO_USXGMII_1000HALF		0x0400	/* 1000Mbps half-duplex */
++#define MDIO_USXGMII_1000FULL		0x1400	/* 1000Mbps full-duplex */
++#define MDIO_USXGMII_10G		0x0600	/* 10Gbps */
++#define MDIO_USXGMII_10GHALF		0x0600	/* 10Gbps half-duplex */
++#define MDIO_USXGMII_10GFULL		0x1600	/* 10Gbps full-duplex */
++#define MDIO_USXGMII_2500		0x0800	/* 2500Mbps */
++#define MDIO_USXGMII_2500HALF		0x0800	/* 2500Mbps half-duplex */
++#define MDIO_USXGMII_2500FULL		0x1800	/* 2500Mbps full-duplex */
++#define MDIO_USXGMII_5000		0x0a00	/* 5000Mbps */
++#define MDIO_USXGMII_5000HALF		0x0a00	/* 5000Mbps half-duplex */
++#define MDIO_USXGMII_5000FULL		0x1a00	/* 5000Mbps full-duplex */
++#define MDIO_USXGMII_LINK		0x8000	/* PHY link with copper-side partner */
++
+ #endif /* _UAPI__LINUX_MDIO_H__ */
+diff --git a/include/uapi/linux/mii.h b/include/uapi/linux/mii.h
+index 51b48e4be..90f9b4e1b 100644
+--- a/include/uapi/linux/mii.h
++++ b/include/uapi/linux/mii.h
+@@ -131,6 +131,23 @@
+ #define NWAYTEST_LOOPBACK	0x0100	/* Enable loopback for N-way   */
+ #define NWAYTEST_RESV2		0xfe00	/* Unused...                   */
+ 
++/* MAC and PHY tx_config_Reg[15:0] for SGMII in-band auto-negotiation.*/
++#define ADVERTISE_SGMII		0x0001	/* MAC can do SGMII            */
++#define LPA_SGMII		0x0001	/* PHY can do SGMII            */
++#define LPA_SGMII_SPD_MASK	0x0c00	/* SGMII speed mask            */
++#define LPA_SGMII_FULL_DUPLEX	0x1000	/* SGMII full duplex           */
++#define LPA_SGMII_DPX_SPD_MASK	0x1C00	/* SGMII duplex and speed bits */
++#define LPA_SGMII_10		0x0000	/* 10Mbps                      */
++#define LPA_SGMII_10HALF	0x0000	/* Can do 10mbps half-duplex   */
++#define LPA_SGMII_10FULL	0x1000	/* Can do 10mbps full-duplex   */
++#define LPA_SGMII_100		0x0400	/* 100Mbps                     */
++#define LPA_SGMII_100HALF	0x0400	/* Can do 100mbps half-duplex  */
++#define LPA_SGMII_100FULL	0x1400	/* Can do 100mbps full-duplex  */
++#define LPA_SGMII_1000		0x0800	/* 1000Mbps                    */
++#define LPA_SGMII_1000HALF	0x0800	/* Can do 1000mbps half-duplex */
++#define LPA_SGMII_1000FULL	0x1800	/* Can do 1000mbps full-duplex */
++#define LPA_SGMII_LINK		0x8000	/* PHY link with copper-side partner */
++
+ /* 1000BASE-T Control register */
+ #define ADVERTISE_1000FULL	0x0200  /* Advertise 1000BASE-T full duplex */
+ #define ADVERTISE_1000HALF	0x0100  /* Advertise 1000BASE-T half duplex */
+-- 
+2.34.1
+

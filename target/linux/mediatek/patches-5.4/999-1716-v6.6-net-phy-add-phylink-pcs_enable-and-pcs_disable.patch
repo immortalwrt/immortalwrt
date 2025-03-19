@@ -1,0 +1,109 @@
+From d3fd7b4ccaf867811a777cf7aecaaa9f32d94331 Mon Sep 17 00:00:00 2001
+From: Bo-Cun Chen <bc-bocun.chen@mediatek.com>
+Date: Mon, 13 May 2024 17:05:16 +0800
+Subject: [PATCH] 999-1716-v6.6-net-phy-add-phylink-pcs_enable-and-pcs_disable
+
+---
+ drivers/net/phy/phylink.c | 26 +++++++++++++++++++++++++-
+ include/linux/phylink.h   |  2 ++
+ 2 files changed, 27 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 9b9bb17..1d79f59 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -32,6 +32,10 @@
+ enum {
+ 	PHYLINK_DISABLE_STOPPED,
+ 	PHYLINK_DISABLE_LINK,
++
++	PCS_STATE_DOWN = 0,
++	PCS_STATE_STARTING,
++	PCS_STATE_STARTED,
+ };
+ 
+ /**
+@@ -69,6 +73,7 @@ struct phylink {
+ 	struct mutex state_mutex;
+ 	struct phylink_link_state phy_state;
+ 	struct work_struct resolve;
++	unsigned int pcs_state;
+ 
+ 	bool mac_link_dropped;
+ 	bool using_mac_select_pcs;
+@@ -520,11 +525,20 @@ static void phylink_major_config(struct phylink *pl, bool restart,
+ 	/* If we have a new PCS, switch to the new PCS after preparing the MAC
+ 	 * for the change.
+ 	 */
+-	if (pcs_changed)
++	if (pcs_changed) {
++		if (pl->pcs && pl->pcs->ops->pcs_disable)
++			pl->pcs->ops->pcs_disable(pl->pcs);
++
+ 		pl->pcs = pcs;
++	}
+ 
+ 	phylink_mac_config(pl, state);
+ 
++	if (pl->pcs_state == PCS_STATE_STARTING || pcs_changed) {
++		if (pl->pcs && pl->pcs->ops->pcs_enable)
++			err = pl->pcs->ops->pcs_enable(pl->pcs);
++	}
++
+ 	if (pl->pcs) {
+ 		err = pl->pcs->ops->pcs_config(pl->pcs, pl->cur_link_an_mode,
+ 					       state->interface,
+@@ -1022,6 +1036,7 @@ struct phylink *phylink_create(struct phylink_config *config,
+ 	pl->link_config.speed = SPEED_UNKNOWN;
+ 	pl->link_config.duplex = DUPLEX_UNKNOWN;
+ 	pl->link_config.an_enabled = true;
++	pl->pcs_state = PCS_STATE_DOWN;
+ 	pl->mac_ops = mac_ops;
+ 	__set_bit(PHYLINK_DISABLE_STOPPED, &pl->phylink_disable_state);
+ 	timer_setup(&pl->link_poll, phylink_fixed_poll, 0);
+@@ -1370,6 +1385,8 @@ void phylink_start(struct phylink *pl)
+ 	if (pl->netdev)
+ 		netif_carrier_off(pl->netdev);
+ 
++	pl->pcs_state = PCS_STATE_STARTING;
++
+ 	/* Apply the link configuration to the MAC when starting. This allows
+ 	 * a fixed-link to start with the correct parameters, and also
+ 	 * ensures that we set the appropriate advertisement for Serdes links.
+@@ -1381,6 +1398,8 @@ void phylink_start(struct phylink *pl)
+ 	phylink_resolve_flow(pl, &pl->link_config);
+ 	phylink_mac_initial_config(pl, true);
+ 
++	pl->pcs_state = PCS_STATE_STARTED;
++
+ 	clear_bit(PHYLINK_DISABLE_STOPPED, &pl->phylink_disable_state);
+ 	phylink_run_resolve(pl);
+ 
+@@ -1442,6 +1461,11 @@ void phylink_stop(struct phylink *pl)
+ 	}
+ 
+ 	phylink_run_resolve_and_disable(pl, PHYLINK_DISABLE_STOPPED);
++
++	pl->pcs_state = PCS_STATE_DOWN;
++
++	if (pl->pcs && pl->pcs->ops->pcs_disable)
++		pl->pcs->ops->pcs_disable(pl->pcs);
+ }
+ EXPORT_SYMBOL_GPL(phylink_stop);
+ 
+diff --git a/include/linux/phylink.h b/include/linux/phylink.h
+index e1c022f..fae9794 100644
+--- a/include/linux/phylink.h
++++ b/include/linux/phylink.h
+@@ -349,6 +349,8 @@ struct phylink_pcs {
+ struct phylink_pcs_ops {
+ 	int (*pcs_validate)(struct phylink_pcs *pcs, unsigned long *supported,
+ 			    const struct phylink_link_state *state);
++	int (*pcs_enable)(struct phylink_pcs *pcs);
++	void (*pcs_disable)(struct phylink_pcs *pcs);
+ 	void (*pcs_get_state)(struct phylink_pcs *pcs,
+ 			      struct phylink_link_state *state);
+ 	int (*pcs_config)(struct phylink_pcs *pcs, unsigned int mode,
+-- 
+2.18.0
+

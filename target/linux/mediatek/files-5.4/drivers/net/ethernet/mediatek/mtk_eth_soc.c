@@ -1,4 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0-only
 /*
  *
  *   Copyright (C) 2009-2016 John Crispin <blogic@openwrt.org>
@@ -32,6 +31,9 @@
 #endif
 static struct mtk_eth *sg_eth;
 static int mtk_msg_level = -1;
+static int mt7981_gpio_reset = -1;
+static int mt7981_ext_reg = -1;
+
 atomic_t reset_lock = ATOMIC_INIT(0);
 atomic_t force = ATOMIC_INIT(0);
 
@@ -2694,6 +2696,19 @@ static int mtk_open(struct net_device *dev)
 	}
 
 	mtk_gdm_config(eth, mac->id, MTK_GDMA_TO_PDMA);
+#if defined(CONFIG_MEDIATEK_NETSYS_RX_V2)
+	if(0)
+#else
+	if (mt7981_gpio_reset >=0)
+#endif
+                       {
+				printk("7981 8221 restart inital");
+                                gpio_direction_output(mt7981_gpio_reset, 0);
+                                msleep(300);
+                                gpio_set_value(mt7981_gpio_reset, 1);
+                                msleep(500);
+				mtk_soc_extphy_init(eth, mt7981_ext_reg);
+                        }
 
 	return 0;
 }
@@ -3647,7 +3662,9 @@ static int mtk_probe(struct platform_device *pdev)
 			}
 			
 		ext_reset_pin = of_get_named_gpio(mac_np, "ext-phy-reset-gpios", 0);
-		if (ext_reset_pin >= 0){
+		if (ext_reset_pin >= 0)
+		{
+			mt7981_gpio_reset = ext_reset_pin;
 			dev_info(&pdev->dev, "Ext-phy gpio : %d\n", ext_reset_pin);
 			ret = devm_gpio_request(&pdev->dev, ext_reset_pin, "mt753x-reset");
 			if (!ret)
@@ -3763,6 +3780,7 @@ static int mtk_probe(struct platform_device *pdev)
 		err = of_property_read_u32_index(mac_np, "ext-phy-reg", 0, &ext_phy_reg);
 		
 		if (err >= 0){
+			mt7981_ext_reg = ext_phy_reg;
 			dev_info(&pdev->dev, "Ext-phy reg : %d\n", ext_phy_reg);
 			err = mtk_soc_extphy_init(eth, ext_phy_reg);
 			ext_reset_pin = of_get_named_gpio(mac_np, "ext-phy-reset-gpios", 0);

@@ -1,0 +1,88 @@
+From 4df7f1c284d2c63bc78c2a517e510a8d250dd4c4 Mon Sep 17 00:00:00 2001
+From: Sam Shih <sam.shih@mediatek.com>
+Date: Fri, 2 Jun 2023 13:06:01 +0800
+Subject: [PATCH] 
+ [backport-networking-drivers][999-1708-net-phy-add-5GBASER.patch]
+
+---
+ drivers/net/phy/marvell10g.c | 4 ++++
+ drivers/net/phy/phylink.c    | 4 ++++
+ drivers/net/phy/sfp-bus.c    | 3 +++
+ include/linux/phy.h          | 3 +++
+ 4 files changed, 14 insertions(+)
+
+diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
+index 512f27b0b..1e4631761 100644
+--- a/drivers/net/phy/marvell10g.c
++++ b/drivers/net/phy/marvell10g.c
+@@ -386,6 +386,7 @@ static void mv3310_update_interface(struct phy_device *phydev)
+ {
+ 	if ((phydev->interface == PHY_INTERFACE_MODE_SGMII ||
+ 	     phydev->interface == PHY_INTERFACE_MODE_2500BASEX ||
++	     phydev->interface == PHY_INTERFACE_MODE_5GBASER ||
+ 	     phydev->interface == PHY_INTERFACE_MODE_10GKR) && phydev->link) {
+ 		/* The PHY automatically switches its serdes interface (and
+ 		 * active PHYXS instance) between Cisco SGMII, 10GBase-KR and
+@@ -397,6 +398,9 @@ static void mv3310_update_interface(struct phy_device *phydev)
+ 		case SPEED_10000:
+ 			phydev->interface = PHY_INTERFACE_MODE_10GKR;
+ 			break;
++		case SPEED_5000:
++			phydev->interface = PHY_INTERFACE_MODE_5GBASER;
++			break;
+ 		case SPEED_2500:
+ 			phydev->interface = PHY_INTERFACE_MODE_2500BASEX;
+ 			break;
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index b3f25a939..f360d9225 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -299,6 +299,10 @@ static int phylink_parse_mode(struct phylink *pl, struct fwnode_handle *fwnode)
+ 			phylink_set(pl->supported, 2500baseX_Full);
+ 			break;
+ 
++		case PHY_INTERFACE_MODE_5GBASER:
++			phylink_set(pl->supported, 5000baseT_Full);
++			break;
++
+ 		case PHY_INTERFACE_MODE_10GKR:
+ 			phylink_set(pl->supported, 10baseT_Half);
+ 			phylink_set(pl->supported, 10baseT_Full);
+diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
+index 42f0441f2..a2f451c31 100644
+--- a/drivers/net/phy/sfp-bus.c
++++ b/drivers/net/phy/sfp-bus.c
+@@ -389,6 +389,9 @@ phy_interface_t sfp_select_interface(struct sfp_bus *bus,
+ 	    phylink_test(link_modes, 10000baseT_Full))
+ 		return PHY_INTERFACE_MODE_10GKR;
+ 
++	if (phylink_test(link_modes, 5000baseT_Full))
++		return PHY_INTERFACE_MODE_5GBASER;
++
+ 	if (phylink_test(link_modes, 2500baseX_Full))
+ 		return PHY_INTERFACE_MODE_2500BASEX;
+ 
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 19444cd96..a1070d60e 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -97,6 +97,7 @@ typedef enum {
+ 	PHY_INTERFACE_MODE_TRGMII,
+ 	PHY_INTERFACE_MODE_1000BASEX,
+ 	PHY_INTERFACE_MODE_2500BASEX,
++	PHY_INTERFACE_MODE_5GBASER,
+ 	PHY_INTERFACE_MODE_RXAUI,
+ 	PHY_INTERFACE_MODE_XAUI,
+ 	/* 10GBASE-KR, XFI, SFI - single lane 10G Serdes */
+@@ -171,6 +172,8 @@ static inline const char *phy_modes(phy_interface_t interface)
+ 		return "1000base-x";
+ 	case PHY_INTERFACE_MODE_2500BASEX:
+ 		return "2500base-x";
++	case PHY_INTERFACE_MODE_5GBASER:
++		return "5gbase-r";
+ 	case PHY_INTERFACE_MODE_RXAUI:
+ 		return "rxaui";
+ 	case PHY_INTERFACE_MODE_XAUI:
+-- 
+2.34.1
+

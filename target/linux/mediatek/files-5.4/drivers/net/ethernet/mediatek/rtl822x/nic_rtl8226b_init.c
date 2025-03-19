@@ -1036,7 +1036,11 @@ Rtl8226b_phy_init(
 
     // Polling PHY Status
     status = Rtl8226b_wait_for_bit(hDevice, MMD_VEND2, 0xA420, 0x3, 1, 100);
+#if defined(CONFIG_MEDIATEK_NETSYS_RX_V2)
     if (status != SUCCESS)
+#else
+    if (1)
+#endif
         goto exit;
 
     // MMD 31.0xA436[15:0] = 0x801E
@@ -1631,12 +1635,13 @@ Rtl8226b_phy_init(
 
 
         // PHYRST & Restart Nway
-        status = MmdPhyWrite(hDevice, MMD_VEND2, 0xA400, 0x9200);
+        //status = MmdPhyWrite(hDevice, MMD_VEND2, 0xA400, 0x9200);
         if (status != SUCCESS)
             goto exit;
     }
 
 exit:
+    MmdPhyWrite(hDevice, MMD_VEND2, 0xA400, 0x9200);
     return status;
 }
 
