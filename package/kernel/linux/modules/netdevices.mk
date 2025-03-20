@@ -1205,7 +1205,7 @@ define KernelPackage/ice
   TITLE:=Intel(R) Ethernet Controller E810 Series support
   DEPENDS:=@PCI_SUPPORT +kmod-ptp
   KCONFIG:=CONFIG_ICE \
-    CONFIG_ICE_HWTS=n \
+    CONFIG_ICE_HWTS=y \
     CONFIG_ICE_SWITCHDEV=y
   FILES:=$(LINUX_DIR)/drivers/net/ethernet/intel/ice/ice.ko
   AUTOLOAD:=$(call AutoProbe,ice)
@@ -1238,25 +1238,6 @@ define KernelPackage/iavf/description
 endef
 
 $(eval $(call KernelPackage,iavf))
-
-
-define KernelPackage/ice
-  SUBMENU:=$(NETWORK_DEVICES_MENU)
-  TITLE:=Intel(R) Ethernet Controller E810 Series support
-  DEPENDS:=@PCI_SUPPORT +kmod-ptp @!TARGET_apm821xx
-  KCONFIG:=\
-	CONFIG_ICE \
-	CONFIG_ICE_HWTS=y \
-	CONFIG_ICE_SWITCHDEV=y
-  FILES:=$(LINUX_DIR)/drivers/net/ethernet/intel/ice/ice.ko
-  AUTOLOAD:=$(call AutoProbe,ice)
-endef
-
-define KernelPackage/ice/description
-  Kernel modules for Intel(R) Ethernet Controller E810 Series
-endef
-
-$(eval $(call KernelPackage,ice))
 
 
 define KernelPackage/b44
