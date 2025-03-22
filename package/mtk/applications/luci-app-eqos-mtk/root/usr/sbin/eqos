@@ -72,10 +72,10 @@ iptables_stop() {
 		for i in $(seq 32 63); do
 		echo 1 0 0 0 0 4 4 > /sys/kernel/debug/hnat/qdma_txq$i
 		done	
-		echo 0 wrr 10000000 > /sys/kernel/debug/hnat/qdma_sch0
-		echo 0 wrr 10000000 > /sys/kernel/debug/hnat/qdma_sch1
-		echo 0 wrr 10000000 > /sys/kernel/debug/hnat/qdma_sch2
-		echo 0 wrr 10000000 > /sys/kernel/debug/hnat/qdma_sch3
+		echo 0 wrr 25000000 > /sys/kernel/debug/hnat/qdma_sch0
+		echo 0 wrr 25000000 > /sys/kernel/debug/hnat/qdma_sch1
+		echo 0 wrr 25000000 > /sys/kernel/debug/hnat/qdma_sch2
+		echo 0 wrr 25000000 > /sys/kernel/debug/hnat/qdma_sch3
 }
 
 iptables_start_prepare() {
@@ -95,8 +95,8 @@ iptables_start_inital() {
 		iptables -t mangle -D FORWARD  -j eqos
 		iptables -t mangle -A FORWARD  -j eqos	
 		echo 1 > /sys/kernel/debug/hnat/qos_toggle
-		echo 0 wrr 10000000 > /sys/kernel/debug/hnat/qdma_sch0
-		echo 0 wrr 10000000 > /sys/kernel/debug/hnat/qdma_sch1
+		echo 0 wrr 25000000 > /sys/kernel/debug/hnat/qdma_sch0
+		echo 0 wrr 25000000 > /sys/kernel/debug/hnat/qdma_sch1
 		echo 0 0 0 0 0 0 0 > /sys/kernel/debug/hnat/qdma_txq0
 		echo 1 0 0 0 0 0 0 > /sys/kernel/debug/hnat/qdma_txq32
 		echo "11 5" >/sys/kernel/debug/hnat/hnat_setting
