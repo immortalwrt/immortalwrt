@@ -27,10 +27,10 @@ mediatek_setup_interfaces()
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" wan
 		;;
 	*360,t7*)
-		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 eth1" wan
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" wan
 		;;
 	*cetron,ct3003*)
-		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 eth1" wan
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" wan
 		;;
 	*clt,r30b1* |\
 	h3c,nx30pro |\
@@ -42,7 +42,7 @@ mediatek_setup_interfaces()
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" wan
 		;;
 	*jcg,q30*)
-		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 eth1" wan
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" wan
 		;;
 	*rax3000m-emmc-usboffload |\
 	*rax3000m-usboffload)
@@ -62,7 +62,7 @@ mediatek_setup_interfaces()
 	*xe3000* |\
 	cudy,tr3000-v1 |\
 	*mt2500*)
-		ucidef_set_interfaces_lan_wan lan "eth0"
+		ucidef_set_interfaces_lan_wan eth1 "eth0"
 		;;
 	*zr-3020*)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" wan

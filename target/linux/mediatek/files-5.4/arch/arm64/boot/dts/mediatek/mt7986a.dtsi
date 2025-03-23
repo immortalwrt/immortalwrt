@@ -521,7 +521,7 @@
 		resets = <&ethsys 0>;
 		reset-names = "mtketh";
 		status = "disabled";
-		ext-devices-prefix = "usb", "wwan","rmnet","eth1","eth2","eth3","eth4";
+		ext-devices-prefix = "usb", "wwan","rmnet","eth2","eth3","eth4";
 	};
 
 	sgmiisys0: syscon@10060000 {

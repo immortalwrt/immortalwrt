@@ -34,6 +34,8 @@ static int mtk_msg_level = -1;
 static int mt7981_gpio_reset = -1;
 static int mt7981_ext_reg = -1;
 
+atomic_t eth1_in_br = ATOMIC_INIT(0);
+EXPORT_SYMBOL(eth1_in_br);
 atomic_t reset_lock = ATOMIC_INIT(0);
 atomic_t force = ATOMIC_INIT(0);
 
@@ -1414,7 +1416,11 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
 				      0 : RX_DMA_GET_SPORT(trxd.rxd4) - 1;
 		}
 		
-		if (mac == 4) mac = 0;	
+		if (mac == 4){ 
+		mac = atomic_read(&eth1_in_br);
+		// printk_ratelimited(KERN_WARNING "mac is %d",mac);
+		}
+	
  
 		if (unlikely(mac < 0 || mac >= MTK_MAC_COUNT ||
 			     !eth->netdev[mac]))

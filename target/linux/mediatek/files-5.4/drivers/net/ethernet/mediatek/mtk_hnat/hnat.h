@@ -867,11 +867,11 @@ enum FoeIpAct {
 #define NR_WDMA1_PORT 9
 #define LAN_DEV_NAME hnat_priv->lan
 #define IS_WAN(dev)                                                            \
-	((!strncmp(dev->name, "eth0", 4))   || (!strncmp(dev->name, "wan", 3)) \
-	|| (!strncmp(dev->name, "lan", 3))	|| IS_BOND(dev) )
+	((!strncmp(dev->name, "eth0", 4))   || (!strncmp(dev->name, "eth1", 3)) \
+	|| (!strncmp(dev->name, "lan", 3))	|| IS_BOND(dev) || (!strncmp(dev->name, "wan", 3)) )
 #define IS_LAN(dev)                                                            \
-	((!strncmp(dev->name, "eth0", 4))   || (!strncmp(dev->name, "wan", 3)) \
-	|| (!strncmp(dev->name, "lan", 3))	|| IS_BOND(dev) )
+	((!strncmp(dev->name, "eth0", 4))   || (!strncmp(dev->name, "eth1", 3)) \
+	|| (!strncmp(dev->name, "lan", 3))	|| IS_BOND(dev) || (!strncmp(dev->name, "wan", 3)) )
 #define IS_BR(dev) (!strncmp(dev->name, "br", 2))
 #define IS_BOND(dev) (!strncmp(dev->name, "bond", 4))
 #define IS_MACVLAN(dev) (!strncmp(dev->name, "macvlan", 7))
@@ -879,7 +879,8 @@ enum FoeIpAct {
 	((hnat_priv->data->whnat &&						\
 	 (get_wifi_hook_if_index_from_dev(dev) != 0)) ? 1 : 0)
 #define IS_EXT(dev) ((get_index_from_dev(dev) != 0) ? 1 : 0)
-#define IS_PPD(dev) (!strcmp(dev->name, hnat_priv->ppd))
+#define IS_PPD(dev)                                                            \
+        ((!strncmp(dev->name, "eth0", 4))   || (!strncmp(dev->name, "eth1", 3)))
 #define IS_IPV4_HNAPT(x) (((x)->bfib1.pkt_type == IPV4_HNAPT) ? 1 : 0)
 #define IS_IPV4_HNAT(x) (((x)->bfib1.pkt_type == IPV4_HNAT) ? 1 : 0)
 #define IS_IPV4_GRP(x) (IS_IPV4_HNAPT(x) | IS_IPV4_HNAT(x))

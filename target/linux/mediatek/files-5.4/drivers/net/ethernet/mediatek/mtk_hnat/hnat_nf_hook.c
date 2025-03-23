@@ -33,6 +33,10 @@
 #include "../mtk_eth_soc.h"
 #include "../mtk_eth_reset.h"
 
+extern atomic_t eth1_in_br;
+struct net_device *br_dev;
+struct net_device *eth1_dev;
+
 #define do_ge2ext_fast(dev, skb)                                               \
 	((IS_LAN(dev) || IS_WAN(dev) || IS_PPD(dev)) && \
 	 skb_hnat_is_hashed(skb) && \
@@ -338,7 +342,7 @@ int nf_hnat_netdevice_event(struct notifier_block *unused, unsigned long event,
 	struct net_device *dev;
 
 	dev = netdev_notifier_info_to_dev(ptr);
-
+	
 	switch (event) {
 	case NETDEV_UP:
 		if (!hnat_priv->guest_en) {
@@ -379,8 +383,6 @@ int nf_hnat_netdevice_event(struct notifier_block *unused, unsigned long event,
 
 		break;
 	case NETDEV_REGISTER:
-		if (IS_PPD(dev) && !hnat_priv->g_ppdev)
-			hnat_priv->g_ppdev = dev_get_by_name(&init_net, hnat_priv->ppd);
 		if (IS_WAN(dev) && !hnat_priv->g_wandev)
 			hnat_priv->g_wandev = dev_get_by_name(&init_net, hnat_priv->wan);
 
@@ -390,6 +392,31 @@ int nf_hnat_netdevice_event(struct notifier_block *unused, unsigned long event,
 		hnat_warm_init();
 		break;
 	default:
+		br_dev = dev_get_by_name(&init_net, "br-lan");
+        	eth1_dev = dev_get_by_name(&init_net, "eth1");
+
+        	atomic_set(&eth1_in_br, 0);
+                if (br_dev && eth1_dev) {
+                        struct net_device *dev;
+                        struct list_head *pos;
+                        netdev_for_each_lower_dev(br_dev, dev, pos) {
+                                if (dev == eth1_dev) {
+                                atomic_set(&eth1_in_br, 1);
+                                break;
+                                }
+                        }
+                }
+        	if (1)
+                {
+                        if (atomic_read(&eth1_in_br))
+                        {printk ("eth1 in br-lan");
+                        hnat_priv->g_ppdev = dev_get_by_name(&init_net, "eth1");                        }
+                        else
+                        {printk ("eth0 in br-lan");
+                        hnat_priv->g_ppdev = dev_get_by_name(&init_net, "eth0");
+                        }
+                }
+
 		break;
 	}
 
@@ -525,6 +552,7 @@ unsigned int do_hnat_ext_to_ge(struct sk_buff *skb, const struct net_device *in,
 			__func__, ntohs(skb->vlan_proto), skb->vlan_tci,
 			in->name, hnat_priv->g_ppdev->name);
 		skb->dev = hnat_priv->g_ppdev;
+		//printk_ratelimited(KERN_WARNING "dev name is %s",skb->dev->name);
 		dev_queue_xmit(skb);
 		trace_printk("%s: called from %s successfully\n", __func__, func);
 		return 0;
@@ -540,7 +568,7 @@ unsigned int do_hnat_ext_to_ge2(struct sk_buff *skb, const char *func)
 	struct net_device *dev;
 	struct foe_entry *entry;
 	
-	trace_printk("%s: vlan_prot=0x%x, vlan_tci=%x\n", __func__,
+	trace_printk( "%s: vlan_prot=0x%x, vlan_tci=%x\n", __func__,
 		     ntohs(skb->vlan_proto), skb->vlan_tci);
 
 	dev = get_dev_from_index(skb->vlan_tci & VLAN_VID_MASK);
@@ -699,12 +727,12 @@ static inline void hnat_set_iif(const struct nf_hook_state *state,
 {
 	if (IS_WHNAT(state->in) && FROM_WED(skb)) {
 		return;
+	} else if (IS_EXT(state->in)) {
+                skb_hnat_iface(skb) = FOE_MAGIC_EXT;
 	} else if (IS_LAN(state->in)) {
 		skb_hnat_iface(skb) = FOE_MAGIC_GE_LAN;
 	} else if (IS_PPD(state->in)) {
 		skb_hnat_iface(skb) = FOE_MAGIC_GE_PPD;
-	} else if (IS_EXT(state->in)) {
-		skb_hnat_iface(skb) = FOE_MAGIC_EXT;
 	} else if (IS_WAN(state->in)) {
 		skb_hnat_iface(skb) = FOE_MAGIC_GE_WAN;
 	} else if (!IS_BR(state->in)) {
@@ -1113,8 +1141,8 @@ mtk_hnat_ipv4_nf_pre_routing(void *priv, struct sk_buff *skb,
 			return NF_STOLEN;
 		return NF_ACCEPT;
 	}
-	
 
+	
 	/* packets form ge -> external device
 	 * For standalone wan interface
 	 */
@@ -1198,13 +1226,14 @@ mtk_hnat_br_nf_local_in(void *priv, struct sk_buff *skb,
 		if (do_ext2ge_fast_learn(state->in, skb) && (!qos_toggle ||
 		    (qos_toggle && eth_hdr(skb)->h_proto != HQOS_MAGIC_TAG))) {
 			if (!do_hnat_ext_to_ge2(skb, __func__))
-			{
-				return NF_STOLEN;}
+			{	return NF_STOLEN;
+			}
 			goto drop;
 		}
 
 		/* packets form ge -> external device */
 		if (do_ge2ext_fast(state->in, skb)) {
+
 			if (!do_hnat_ge_to_ext(skb, __func__))
 				return NF_STOLEN;
 			goto drop;
@@ -2318,8 +2347,7 @@ static unsigned int mtk_hnat_nf_post_routing(
 		return 0;
 
 	if (!IS_WHNAT(out) && IS_EXT(out))
-		return 0;
-
+               return 0;
 
  
 	trace_printk("[%s] case hit, %x-->%s, reason=%x\n", __func__,

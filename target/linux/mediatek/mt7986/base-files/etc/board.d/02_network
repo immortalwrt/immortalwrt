@@ -23,7 +23,7 @@ mediatek_setup_interfaces()
 		ucidef_set_interfaces_lan_wan "eth1 lan1 lan2 lan3" wan
 		;;
 	bananapi,bpi-r3mini*)
-		ucidef_set_interfaces_lan_wan "eth0" wan
+		ucidef_set_interfaces_lan_wan "eth0" eth1
 		;;
 	netcore,n60 |\
 	ruijie,rg-x60-pro*)

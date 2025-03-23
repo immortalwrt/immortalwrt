@@ -202,7 +202,6 @@
 	};
 
 	gmac1: mac@1 { 
-		label = "wan";
 		compatible = "mediatek,eth-mac";
 		reg = <1>;
 		phy-mode = "2500base-x";
