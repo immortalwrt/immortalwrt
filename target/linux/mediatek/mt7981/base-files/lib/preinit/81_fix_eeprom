@@ -1,0 +1,15 @@
+. /lib/functions/caldata.sh
+
+preinit_fix_eeprom() {
+	case $(board_name) in
+	huasifei,wh3000-emmc)
+		mmc_part=$(find_mmc_part factory)
+		FIRMWARE="MT7981_iPAiLNA_EEPROM.bin"
+		[ ! -e /lib/firmware/"$FIRMWARE" ] && \
+			export FIRMWARE="$FIRMWARE" && \
+			caldata_extract_mmc "factory" 0x0 0x1000
+		;;
+	esac
+}
+
+boot_hook_add preinit_main preinit_fix_eeprom
