@@ -168,6 +168,11 @@ mediatek_setup_macs()
 		local wifi_mac=$(mmc_get_mac_binary "factory" 0x4)
 		lan_mac="$(macaddr_add $wifi_mac 2)"
 		wan_mac="$(macaddr_add $wifi_mac 3)"
+		sed -i '/MacAddress=$wifi_mac/d' /etc/wireless/mediatek/mt7981.dbdc.b0.dat
+                echo "MacAddress=$wifi_mac" >> /etc/wireless/mediatek/mt7981.dbdc.b0.dat
+                wifi_mac="$(macaddr_add $wifi_mac 1)"
+                sed -i '/MacAddress=$wifi_mac/d' /etc/wireless/mediatek/mt7981.dbdc.b1.dat
+                echo "MacAddress=$wifi_mac" >> /etc/wireless/mediatek/mt7981.dbdc.b1.dat
 		;;
 	*zr-3020*)
 		wan_mac=$(mtd_get_mac_ascii config2 wanmac)
