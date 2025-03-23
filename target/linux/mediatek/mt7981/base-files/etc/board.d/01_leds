@@ -43,6 +43,9 @@ h3c,nx30pro)
 	ucidef_set_led_default "green" "GREEN" "nx30pro:green" "1"
 	ucidef_set_led_default "red" "RED" "nx30pro:red" "0"
 	;;
+huasifei,wh3000-emmc)
+	ucidef_set_led_netdev "wan" "WAN" "red:wan" "eth1"
+	;;
 konka,komi-a31)
         ucidef_set_led_netdev "blue" "BLUE" "blue:status" "wan" "link"
 	;;

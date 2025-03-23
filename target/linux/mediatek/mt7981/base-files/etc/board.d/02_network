@@ -64,6 +64,9 @@ mediatek_setup_interfaces()
 	*mt2500*)
 		ucidef_set_interfaces_lan_wan eth1 "eth0"
 		;;
+	huasifei,wh3000-emmc)
+		ucidef_set_interfaces_lan_wan eth0 eth1
+		;;
 	*zr-3020*)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" wan
 		;;
@@ -160,6 +163,11 @@ mediatek_setup_macs()
 	glinet,x3000-emmc)
 		wan_mac=$(get_mac_binary /dev/mmcblk0p3 0x0a)
 		lan_mac=$(macaddr_add "$wan_mac" 1)
+		;;
+	huasifei,wh3000-emmc)
+		local wifi_mac=$(mmc_get_mac_binary "factory" 0x4)
+		lan_mac="$(macaddr_add $wifi_mac 2)"
+		wan_mac="$(macaddr_add $wifi_mac 3)"
 		;;
 	*zr-3020*)
 		wan_mac=$(mtd_get_mac_ascii config2 wanmac)
