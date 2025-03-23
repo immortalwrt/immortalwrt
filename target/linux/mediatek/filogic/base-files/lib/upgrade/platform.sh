@@ -72,6 +72,7 @@ platform_do_upgrade() {
 	konka,komi-a31|\
 	mediatek,mt7981-rfb|\
 	netcore,n60|\
+	netcore,n60-pro|\
 	nokia,ea0326gmp|\
 	qihoo,360t7|\
 	tplink,tl-xdr4288|\
