@@ -338,7 +338,7 @@ delete_redirect_and_filter_rules(unsigned short eport, int proto)
 		// Delete Forward Rule
 		LIST_FOREACH(p, &head_filter, entry) {
 			if (p->dport == iport && p->daddr == iaddr && p->proto == proto
- 			    && p->type == RULE_FILTER) { {
+ 			    && p->type == RULE_FILTER)  {
 				r = rule_del_handle(p);
 				/* Todo: send bulk request */
 				nft_send_rule(r, NFT_MSG_DELRULE, RULE_CHAIN_FILTER);
