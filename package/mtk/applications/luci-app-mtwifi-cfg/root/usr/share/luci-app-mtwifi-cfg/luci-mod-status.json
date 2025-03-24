@@ -24,7 +24,7 @@
 	},
 
 	"admin/status/routes": {
-		"title": "Routinh",
+		"title": "Routing",
 		"order": 3,
 		"action": {
 			"type": "view",
