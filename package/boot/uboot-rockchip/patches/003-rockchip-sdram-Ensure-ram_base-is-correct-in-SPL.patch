@@ -1,0 +1,31 @@
+From d5fc369a598d0e84dbcfe08e80d676cdd0a54a78 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Thu, 30 Jan 2025 22:07:13 +0000
+Subject: [PATCH] rockchip: sdram: Ensure ram_base is correct in SPL
+
+Most Rockchip SoCs use 0x0 as DRAM base address, however some SoCs use
+0x60000000 and RK3576 use 0x40000000 as DRAM base address.
+
+CFG_SYS_SDRAM_BASE is defined with correct address for each SoC and
+U-Boot proper use this to set correct gd->ram_base in setup_dest_addr().
+
+SPL never assign any value to gd->ram_base and instead use the default,
+0x0. Set correct gd->ram_base in dram_init() to ensure its correctness
+in SPL.
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+Reviewed-by: Kever Yang <kever.yang@rock-chips.com>
+---
+ arch/arm/mach-rockchip/sdram.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/arch/arm/mach-rockchip/sdram.c
++++ b/arch/arm/mach-rockchip/sdram.c
+@@ -478,6 +478,7 @@ int dram_init(void)
+ 		debug("Cannot get DRAM size: %d\n", ret);
+ 		return ret;
+ 	}
++	gd->ram_base = ram.base;
+ 	gd->ram_size = ram.size;
+ 	debug("SDRAM base=%lx, size=%lx\n",
+ 	      (unsigned long)ram.base, (unsigned long)ram.size);
