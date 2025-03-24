@@ -319,7 +319,7 @@ delete_redirect_and_filter_rules(unsigned short eport, int proto)
 
 	refresh_nft_cache_redirect();
 
-	// Delete Redirect Rule
+	// Delete Redirect Rule  eport => iaddr:iport
 	LIST_FOREACH(p, &head_redirect, entry) {
 		if (p->dport == eport && p->proto == proto &&
 		    (p->type == RULE_NAT && p->nat_type == NFT_NAT_DNAT)) {
@@ -337,8 +337,8 @@ delete_redirect_and_filter_rules(unsigned short eport, int proto)
 		refresh_nft_cache_filter();
 		// Delete Forward Rule
 		LIST_FOREACH(p, &head_filter, entry) {
-			if (p->nat_port == iport &&
-				p->nat_addr == iaddr && p->type == RULE_FILTER) {
+			if (p->dport == iport && p->daddr == iaddr && p->proto == proto
+ 			    && p->type == RULE_FILTER) { {
 				r = rule_del_handle(p);
 				/* Todo: send bulk request */
 				nft_send_rule(r, NFT_MSG_DELRULE, RULE_CHAIN_FILTER);

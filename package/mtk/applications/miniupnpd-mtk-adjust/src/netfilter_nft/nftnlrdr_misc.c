@@ -283,6 +283,9 @@ parse_rule_nat(struct nftnl_expr *e, rule_t *r)
 	r->family = nftnl_expr_get_u32(e, NFTNL_EXPR_NAT_FAMILY);
 	addr_min_reg = nftnl_expr_get_u32(e, NFTNL_EXPR_NAT_REG_ADDR_MIN);
 	addr_max_reg = nftnl_expr_get_u32(e, NFTNL_EXPR_NAT_REG_ADDR_MAX);
+	/* see expr_add_nat() :
+ 	 * NFTNL_EXPR_NAT_REG_PROTO_MIN/NFTNL_EXPR_NAT_REG_PROTO_MAX is used
+ 	 * for destination port */
 	proto_min_reg = nftnl_expr_get_u32(e, NFTNL_EXPR_NAT_REG_PROTO_MIN);
 	proto_max_reg = nftnl_expr_get_u32(e, NFTNL_EXPR_NAT_REG_PROTO_MAX);
 
@@ -300,10 +303,10 @@ parse_rule_nat(struct nftnl_expr *e, rule_t *r)
 	}
 	reg_val_ptr = get_reg_val_ptr(r, addr_min_reg);
 	if (reg_val_ptr != NULL) {
+		/* destination address */
 		r->nat_addr = (in_addr_t)*reg_val_ptr;
-		if (proto_min_reg == NFT_REG_1) {
-			r->nat_port = proto_min_val;
-		}
+		/* destination port */
+ 		r->nat_port = proto_min_val;
 	} else {
 		syslog(LOG_ERR, "%s: invalid addr_min_reg %u", "parse_rule_nat", addr_min_reg);
 	}
