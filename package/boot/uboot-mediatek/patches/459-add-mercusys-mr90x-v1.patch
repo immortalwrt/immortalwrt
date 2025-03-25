@@ -296,10 +296,10 @@
 +bootcmd=run check_buttons ; run boot_production ; run boot_recovery
 +bootconf=config-1
 +bootdelay=0
-+bootfile=openwrt-mediatek-filogic-mercusys_mr90x-v1-ubi-initramfs-recovery.itb
-+bootfile_bl2=openwrt-mediatek-filogic-mercusys_mr90x-v1-ubi-preloader.bin
-+bootfile_fip=openwrt-mediatek-filogic-mercusys_mr90x-v1-ubi-bl31-uboot.fip
-+bootfile_upg=openwrt-mediatek-filogic-mercusys_mr90x-v1-ubi-squashfs-sysupgrade.itb
++bootfile=immortalwrt-mediatek-filogic-mercusys_mr90x-v1-ubi-initramfs-recovery.itb
++bootfile_bl2=immortalwrt-mediatek-filogic-mercusys_mr90x-v1-ubi-preloader.bin
++bootfile_fip=immortalwrt-mediatek-filogic-mercusys_mr90x-v1-ubi-bl31-uboot.fip
++bootfile_upg=immortalwrt-mediatek-filogic-mercusys_mr90x-v1-ubi-squashfs-sysupgrade.itb
 +bootmenu_confirm_return=askenv - Press ENTER to return to menu ; bootmenu 60
 +bootmenu_default=0
 +bootmenu_delay=0
