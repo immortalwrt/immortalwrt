@@ -376,8 +376,8 @@ Signed-off-by: Enrico Mioso <mrkiko.rs@gmail.com>
 +loadaddr=0x46000000
 +bootcmd=run boot_nor
 +bootdelay=0
-+bootfile=openwrt-mediatek-filogic-gatonetworks_gdsp-initramfs-kernel.bin
-+bootfile_upg=openwrt-mediatek-filogic-gatonetworks_gdsp-squashfs-sysupgrade.bin
++bootfile=immortalwrt-mediatek-filogic-gatonetworks_gdsp-initramfs-kernel.bin
++bootfile_upg=immortalwrt-mediatek-filogic-gatonetworks_gdsp-squashfs-sysupgrade.bin
 +bootmenu_confirm_return=askenv - Press ENTER to return to menu ; bootmenu 60
 +bootmenu_default=0
 +bootmenu_delay=0

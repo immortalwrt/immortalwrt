@@ -254,9 +254,9 @@
 +serverip=192.168.1.254
 +loadaddr=0x46000000
 +bootdelay=3
-+bootfile_bl2=openwrt-mediatek-filogic-glinet_gl-x3000-preloader.bin
-+bootfile_fip=openwrt-mediatek-filogic-glinet_gl-x3000-bl31-uboot.fip
-+bootfile_firmware=openwrt-mediatek-filogic-glinet_gl-x3000-squashfs-factory.bin
++bootfile_bl2=immortalwrt-mediatek-filogic-glinet_gl-x3000-preloader.bin
++bootfile_fip=immortalwrt-mediatek-filogic-glinet_gl-x3000-bl31-uboot.fip
++bootfile_firmware=immortalwrt-mediatek-filogic-glinet_gl-x3000-squashfs-factory.bin
 +bootmenu_confirm_return=askenv - Press ENTER to return to menu ; bootmenu 60
 +bootmenu_title=      *** U-Boot Boot Menu for GL-iNet GL-X3000 ***
 +bootmenu_0=Startup system (Default).=run boot_system
