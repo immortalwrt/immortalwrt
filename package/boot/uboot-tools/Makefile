@@ -22,19 +22,6 @@ PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/uboot-tools
-	SECTION:=utils
-	CATEGORY:=Utilities
-	SUBMENU:=Boot Loaders
-	TITLE:=U-Boot bootloader Tools
-	URL:=http://www.denx.de/wiki/U-Boot
-endef
-
-define Package/uboot-tools/description
-	U-Boot tools are a collection of utilities designed
-	to work with the U-Boot bootloader,
-endef
-
 define Package/dumpimage
 	SECTION:=utils
 	CATEGORY:=Utilities
@@ -72,19 +59,26 @@ define Package/uboot-envtools/conffiles
 endef
 
 define Build/Configure
-	$(MAKE) -C $(PKG_BUILD_DIR) tools-only_defconfig
-	$(MAKE) -C $(PKG_BUILD_DIR) syncconfig
+	$(call Build/Compile/Default,tools-only_defconfig)
+	$(call Build/Compile/Default,syncconfig)
 	$(SED) 's/CONFIG_TOOLS_LIBCRYPTO=y/# CONFIG_TOOLS_LIBCRYPTO is not set/' $(PKG_BUILD_DIR)/.config
 endef
 
 MAKE_FLAGS += \
 	ARCH="sandbox" \
 	TARGET_CFLAGS="$(TARGET_CFLAGS)" \
-	TARGET_LDFLAGS="$(TARGET_LDFLAGS)"
+	TARGET_LDFLAGS="$(TARGET_LDFLAGS)" \
+	NO_PYTHON=1
 
 define Build/Compile
+
+ifneq ($(CONFIG_PACKAGE_uboot-envtools),)
 	$(call Build/Compile/Default,envtools)
+endif
+ifneq ($(CONFIG_PACKAGE_dumpimage),)
 	$(call Build/Compile/Default,cross_tools)
+endif
+
 endef
 
 define Package/dumpimage/install
