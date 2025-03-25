@@ -20,7 +20,7 @@ esac
 case "$DISTRIB_TARGET" in
 ipq40xx/*)
 	if [ -e "$IEEE_PATH/phy0/hwmon0/temp1_input" ]; then
-		mt76_temp="$(awk -F ': ' '{print $2}' "$IEEE_PATH"/phy0/hwmon0/temp1_input 2>"/dev/null")°C"
+		mt76_temp="$(cat "$IEEE_PATH"/phy0/hwmon0/temp1_input 2>"/dev/null" | awk -F ': ' '{print $2}')°C"
 	fi
 	[ -z "$mt76_temp" ] || wifi_temp="${wifi_temp:+$wifi_temp }$mt76_temp"
 	;;

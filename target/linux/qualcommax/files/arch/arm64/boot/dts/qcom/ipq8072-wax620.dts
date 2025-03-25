@@ -117,6 +117,10 @@
 	};
 };
 
+&edma {
+	status = "okay";
+};
+
 &switch {
 	status = "okay";
 
@@ -156,12 +160,10 @@
 
 	pinctrl-0 = <&mdio_pins>;
 	pinctrl-names = "default";
-	reset-gpios = <&tlmm 37 GPIO_ACTIVE_LOW>;
+	reset-gpios = <&tlmm 44 GPIO_ACTIVE_LOW>;
 
 	qca8081_28: ethernet-phy@28 {
 		reg = <28>;
-		reset-deassert-us = <10000>;
-		reset-gpios = <&tlmm 44 GPIO_ACTIVE_LOW>;
 	};
 };
 
@@ -190,8 +192,4 @@
 	status = "okay";
 	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "Netgear-WAX620";
-};
-
-&edma {
-	status = "okay";
 };

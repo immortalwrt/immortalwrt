@@ -274,6 +274,10 @@
 	};
 };
 
+&edma {
+	status = "okay";
+};
+
 &dp5 {
 	status = "okay";
 	phy-handle = <&qca8075_4>;
@@ -284,8 +288,4 @@
 	status = "okay";
 	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "Edimax-CAX1800";
-};
-
-&edma {
-	status = "okay";
 };

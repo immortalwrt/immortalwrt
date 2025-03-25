@@ -258,10 +258,8 @@
 	};
 };
 
-&wifi {
+&edma {
 	status = "okay";
-	qcom,ath11k-fw-memory-mode = <1>;
-	qcom,ath11k-calibration-variant = "Linksys-MR7350";
 };
 
 &dp1 {
@@ -294,8 +292,10 @@
 	label = "wan";
 };
 
-&edma {
+&wifi {
 	status = "okay";
+	qcom,ath11k-fw-memory-mode = <1>;
+	qcom,ath11k-calibration-variant = "Linksys-MR7350";
 };
 
 &cpu_opp_table {

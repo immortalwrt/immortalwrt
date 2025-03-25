@@ -443,6 +443,10 @@
 	};
 };
 
+&edma {
+	status = "okay";
+};
+
 &dp1 {
 	status = "okay";
 	phy-handle = <&qca8075_0>;
@@ -501,8 +505,4 @@
 	status = "okay";
 	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "Linksys-MX5300";
-};
-
-&edma {
-	status = "okay";
 };

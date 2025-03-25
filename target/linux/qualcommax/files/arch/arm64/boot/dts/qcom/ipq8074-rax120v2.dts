@@ -239,6 +239,10 @@
 	};
 };
 
+&edma {
+	status = "okay";
+};
+
 &dp1 {
 	status = "okay";
 	phy-handle = <&qca8075_0>;
@@ -497,8 +501,4 @@
 	status = "okay";
 	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "Netgear-RAX120v2";
-};
-
-&edma {
-	status = "okay";
 };

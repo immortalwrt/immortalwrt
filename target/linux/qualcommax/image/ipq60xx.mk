@@ -62,6 +62,7 @@ define Device/linksys_mr7350
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
 	IMAGE_SIZE := 75776k
+	IMAGES += factory.bin
 	IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | append-ubi | linksys-image type=MR7350
 	DEVICE_PACKAGES := ipq-wifi-linksys_mr7350 kmod-leds-pca963x kmod-usb-ledtrig-usbport
 endef
@@ -136,32 +137,6 @@ define Device/cmiot_ax18
 	DEVICE_PACKAGES := ipq-wifi-cmiot_ax18
 endef
 TARGET_DEVICES += cmiot_ax18
-
-define Device/glinet_gl-ax1800
-	$(call Device/FitImage)
-	$(call Device/UbiFit)
-	DEVICE_VENDOR := GL-iNet
-	DEVICE_MODEL := GL-AX1800
-	BLOCKSIZE := 128k
-	PAGESIZE := 2048
-	SOC := ipq6000
-	DEVICE_DTS_CONFIG := config@cp03-c1
-	DEVICE_PACKAGES := ipq-wifi-glinet_gl-ax1800
-endef
-TARGET_DEVICES += glinet_gl-ax1800
-
-define Device/glinet_gl-axt1800
-	$(call Device/FitImage)
-	$(call Device/UbiFit)
-	DEVICE_VENDOR := GL-iNet
-	DEVICE_MODEL := GL-AXT1800
-	BLOCKSIZE := 128k
-	PAGESIZE := 2048
-	SOC := ipq6000
-	DEVICE_DTS_CONFIG := config@cp03-c1
-	DEVICE_PACKAGES := ipq-wifi-glinet_gl-axt1800
-endef
-TARGET_DEVICES += glinet_gl-axt1800
 
 define Device/redmi_ax5
 	$(call Device/FitImage)

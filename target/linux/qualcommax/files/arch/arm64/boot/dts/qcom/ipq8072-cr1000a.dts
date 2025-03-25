@@ -18,7 +18,6 @@
 
 	aliases {
 		serial0 = &blsp1_uart5;
-		sdhc1 = &sdhc_1;
 
 		ethernet4 = &dp5;
 		ethernet5 = &dp6;
@@ -130,15 +129,6 @@
 		function = "blsp2_i2c";
 		drive-strength = <8>;
 		bias-disable;
-	};
-
-	button_pins: button_pins {
-		mux {
-			pins = "gpio42", "gpio44";
-			function = "gpio";
-			drive-strength = <0x08>;
-			bias-pull-up;
-		};
 	};
 };
 

@@ -1,6 +1,3 @@
-diff --git a/package/boot/u-boot-tools/patches/0001-tools-disable-kwbimage.patch b/package/boot/u-boot-tools/patches/0001-tools-disable-kwbimage.patch
-new file mode 100644
-index 0000000000..69a42ec383
 --- /dev/null
 +++ b/package/boot/u-boot-tools/patches/0001-tools-disable-kwbimage.patch
 @@ -0,0 +1,25 @@
@@ -29,4 +26,3 @@ index 0000000000..69a42ec383
 + 			lib/md5.o \
 + 			lpc32xximage.o \
 + 			mxsimage.o \
-

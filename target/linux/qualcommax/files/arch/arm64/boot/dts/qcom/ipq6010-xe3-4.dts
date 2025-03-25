@@ -6,7 +6,6 @@
 #include "ipq6018-common.dtsi"
 #include "ipq6018-ess.dtsi"
 #include "ipq6018-nss.dtsi"
-#include "ipq6018-fixed-smps.dtsi"
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
@@ -17,8 +16,6 @@
 	compatible = "cambiumnetworks,xe3-4", "qcom,ipq6018";
 
 	aliases {
-		sdhc2 = &sdhc_1;
-
 		serial0 = &blsp1_uart3;
 
 		led-boot = &led_status_amber;
@@ -155,7 +152,7 @@
 	};
 };
 
-&sdhc_1 {
+&sdhc {
 	status = "okay";
 
 	pinctrl-0 = <&sd_pins>;
@@ -163,6 +160,10 @@
 	cd-gpios = <&tlmm 62 GPIO_ACTIVE_LOW>;
 	vqmmc-supply = <&reg_sd_vmmc>;
 	bus-width = <4>;
+};
+
+&edma {
+	status = "okay";
 };
 
 &switch {
@@ -413,8 +414,4 @@
 	qcom,ath11k-calibration-variant = "CambiumNetworks-XE34";
 	nvmem-cell-names = "mac-address";
 	nvmem-cells = <&eth2addr>;
-};
-
-&edma {
-	status = "okay";
 };

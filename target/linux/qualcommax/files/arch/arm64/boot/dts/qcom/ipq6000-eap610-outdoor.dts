@@ -62,12 +62,6 @@
 	};
 };
 
-&blsp1_uart3 {
-	pinctrl-0 = <&serial_3_pins>;
-	pinctrl-names = "default";
-	status = "okay";
-};
-
 &tlmm {
 	mdio_pins: mdio-pins {
 		mdc {
@@ -95,7 +89,6 @@
 
 &dp5 {
 	status = "okay";
-	phy-mode = "sgmii";
 	phy-handle = <&rtl8211f_4>;
 	label = "lan";
 };
@@ -108,8 +101,6 @@
 	pinctrl-0 = <&mdio_pins>;
 	pinctrl-names = "default";
 	reset-gpios = <&tlmm 77 GPIO_ACTIVE_LOW>;
-	reset-delay-us = <10000>;
-	reset-post-delay-us = <50000>;
 	status = "okay";
 
 	rtl8211f_4: ethernet-phy@4 {

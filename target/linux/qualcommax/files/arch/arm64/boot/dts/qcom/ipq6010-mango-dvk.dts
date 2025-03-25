@@ -213,6 +213,10 @@
 	nvmem-cell-names = "mac-address";
 };
 
+&edma {
+	status = "okay";
+};
+
 &mdio {
 	status = "okay";
 
@@ -245,12 +249,12 @@
 	};
 };
 
-&sdhc_1 {
+&sdhc {
 	status = "okay";
 
 	pinctrl-0 = <&sd_pins>;
 	pinctrl-names = "default";
-	vqmmc-supply = <&ipq6018_l2>;
+	bus-width = <4>;
 	cd-gpios = <&tlmm 62 GPIO_ACTIVE_LOW>;
 };
 
@@ -313,8 +317,4 @@
 	status = "okay";
 	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "8devices-Mango";
-};
-
-&edma {
-	status = "okay";
 };

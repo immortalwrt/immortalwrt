@@ -13,7 +13,7 @@
 	};
 };
 
-&sdhc_1 {
+&sdhc {
 	status = "okay";
 
 	/delete-property/ mmc-hs400-1_8v;

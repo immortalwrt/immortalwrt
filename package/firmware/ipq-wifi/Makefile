@@ -80,8 +80,6 @@ ALLWIFIBOARDS:= \
 	zte_mf287plus \
 	zyxel_nbg7815 \
 	cmiot_ax18 \
-	glinet_gl-ax1800 \
-	glinet_gl-axt1800 \
 	jdcloud_re-ss-01 \
 	jdcloud_re-cs-02 \
 	jdcloud_re-cs-03 \
@@ -237,8 +235,6 @@ $(eval $(call generate-ipq-wifi-package,zte_mf287,ZTE MF287))
 $(eval $(call generate-ipq-wifi-package,zte_mf287plus,ZTE MF287Plus))
 $(eval $(call generate-ipq-wifi-package,zyxel_nbg7815,Zyxel NBG7815))
 $(eval $(call generate-ipq-wifi-package,cmiot_ax18,CMIOT AX18))
-$(eval $(call generate-ipq-wifi-package,glinet_gl-ax1800,GL.iNet GL-AX1800))
-$(eval $(call generate-ipq-wifi-package,glinet_gl-axt1800,GL.iNet GL-AXT1800))
 $(eval $(call generate-ipq-wifi-package,jdcloud_re-ss-01,JDCloud RE-SS-01))
 $(eval $(call generate-ipq-wifi-package,jdcloud_re-cs-02,JDCloud RE-CS-02))
 $(eval $(call generate-ipq-wifi-package,jdcloud_re-cs-03,JDCloud RE-CS-03))

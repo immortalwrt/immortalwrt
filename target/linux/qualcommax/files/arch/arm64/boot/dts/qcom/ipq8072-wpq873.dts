@@ -351,6 +351,10 @@
 	};
 };
 
+&edma {
+	status = "okay";
+};
+
 &dp2 {
 	status = "okay";
 	phy-handle = <&qca8075_1>;
@@ -405,8 +409,4 @@
 	status = "okay";
 	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "Compex-WPQ873";
-};
-
-&edma {
-	status = "okay";
 };

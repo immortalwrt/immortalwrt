@@ -148,6 +148,10 @@
 	};
 };
 
+&edma {
+	status = "okay";
+};
+
 &switch {
 	status = "okay";
 
@@ -245,8 +249,4 @@
 	status = "okay";
 	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "Netgear-WAX630";
-};
-
-&edma {
-	status = "okay";
 };

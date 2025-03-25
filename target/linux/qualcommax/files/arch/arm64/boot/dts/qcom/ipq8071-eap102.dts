@@ -27,10 +27,10 @@
 	status = "okay";
 
 	flash@0 {
+		compatible = "jedec,spi-nor";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		reg = <0>;
-		compatible = "jedec,spi-nor";
 		spi-max-frequency = <50000000>;
 
 		partitions {

@@ -188,6 +188,10 @@
 	};
 };
 
+&edma {
+	status = "okay";
+};
+
 /* Dummy LAN port */
 &dp1 {
 	status = "disabled";
@@ -300,8 +304,4 @@
 			reg = <2>;
 		};
 	};
-};
-
-&edma {
-	status = "okay";
 };

@@ -416,6 +416,10 @@
 	};
 };
 
+&edma {
+	status = "okay";
+};
+
 &dp1 {
 	status = "okay";
 	phy-mode = "qsgmii";
@@ -463,8 +467,4 @@
 	status = "okay";
 	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "QNAP-301w";
-};
-
-&edma {
-	status = "okay";
 };

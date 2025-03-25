@@ -256,6 +256,10 @@
 	};
 };
 
+&edma {
+	status = "okay";
+};
+
 &dp2 {
 	status = "okay";
 	phy-handle = <&qca8075_1>;
@@ -286,8 +290,4 @@
 	label = "lan3";
 	nvmem-cells = <&macaddr_dp5>;
 	nvmem-cell-names = "mac-address";
-};
-
-&edma {
-	status = "okay";
 };

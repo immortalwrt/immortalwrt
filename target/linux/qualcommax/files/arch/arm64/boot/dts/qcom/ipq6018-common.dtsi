@@ -6,6 +6,10 @@
 	pinctrl-names = "default";
 };
 
+&rpm {
+	status = "disabled";
+};
+
 &crypto {
 	status = "okay";
 };

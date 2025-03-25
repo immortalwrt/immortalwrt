@@ -56,16 +56,22 @@
 
 		led_status_red: status-red {
 			label = "red:status";
+			color = <LED_COLOR_ID_RED>;
+			function = LED_FUNCTION_STATUS;
 			gpios = <&tlmm 71 GPIO_ACTIVE_HIGH>;
 		};
 
 		led_status_orange: status-orange {
 			label = "orange:status";
+			color = <LED_COLOR_ID_ORANGE>;
+			function = LED_FUNCTION_STATUS;
 			gpios = <&tlmm 72 GPIO_ACTIVE_HIGH>;
 		};
 
 		led_status_green: status-green {
 			label = "green:status";
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_STATUS;
 			gpios = <&tlmm 73 GPIO_ACTIVE_HIGH>;
 		};
 	};
@@ -169,10 +175,8 @@
 	};
 };
 
-&wifi {
+&edma {
 	status = "okay";
-	qcom,ath11k-fw-memory-mode = <1>;
-	qcom,ath11k-calibration-variant = "Qihoo-360V6";
 };
 
 &dp1 {
@@ -199,8 +203,10 @@
 	label = "wan";
 };
 
-&edma {
+&wifi {
 	status = "okay";
+	qcom,ath11k-fw-memory-mode = <1>;
+	qcom,ath11k-calibration-variant = "Qihoo-360V6";
 };
 
 &cpu_opp_table {

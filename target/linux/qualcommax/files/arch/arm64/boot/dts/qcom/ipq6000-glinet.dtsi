@@ -4,7 +4,6 @@
 #include "ipq6018-common.dtsi"
 #include "ipq6018-ess.dtsi"
 #include "ipq6018-nss.dtsi"
-#include "ipq6018-fixed-smps.dtsi"
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
@@ -12,12 +11,13 @@
 
 / {
 	aliases {
+		led-boot = &led_run;
+		led-failsafe = &led_run;
+		led-running = &led_run;
+		led-upgrade = &led_run;
 		serial0 = &blsp1_uart3;
-
-		led-boot = &led_system_white;
-		led-failsafe = &led_system_white;
-		led-running = &led_system_white;
-		led-upgrade = &led_system_white;
+		serial1 = &blsp1_uart4;
+		serial2 = &blsp1_uart5;
 	};
 
 	chosen {
@@ -28,39 +28,48 @@
 	keys {
 		compatible = "gpio-keys";
 
-		reset {
-			label = "reset";
-			gpios = <&tlmm 18 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_RESTART>;
-		};
-
 		switch {
 			label = "switch";
-			gpios = <&tlmm 9 GPIO_ACTIVE_HIGH>;
-			linux,code = <KEY_WPS_BUTTON>;
+			linux,code = <BTN_0>;
+			linux,input-type = <EV_SW>;
+			gpios = <&tlmm 9 GPIO_ACTIVE_LOW>;
+		};
+
+		reset {
+			label = "reset";
+			linux,code = <KEY_RESTART>;
+			gpios = <&tlmm 18 GPIO_ACTIVE_LOW>;
 		};
 	};
 
 	leds {
 		compatible = "gpio-leds";
 
-		led_system_white: system-white {
-			label = "white:system";
-			gpios = <&tlmm 35 GPIO_ACTIVE_HIGH>;
-			color = <LED_COLOR_ID_WHITE>;
+		led_run: run {
+			label = "blue:run";
+			color = <LED_COLOR_ID_BLUE>;
+			gpios = <&tlmm 37 GPIO_ACTIVE_HIGH>;
 		};
 
-		led_system_blue: system-blue {
-			label = "blue:system";
-			gpios = <&tlmm 37 GPIO_ACTIVE_HIGH>;
-			color = <LED_COLOR_ID_BLUE>;
+		system {
+			label = "white:system";
+			color = <LED_COLOR_ID_WHITE>;
+			gpios = <&tlmm 35 GPIO_ACTIVE_HIGH>;
 		};
+	};
+
+	reg_usb_vbus: regulator-usb-vbus {
+		compatible = "regulator-fixed";
+		regulator-name = "usb_vbus";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		gpios = <&tlmm 0 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		regulator-boot-on;
 	};
 };
 
 &tlmm {
-	gpio-reserved-ranges = <20 1>;
-
 	mdio_pins: mdio-pins {
 		mdc {
 			pins = "gpio64";
@@ -75,68 +84,35 @@
 			drive-strength = <8>;
 			bias-pull-up;
 		};
-
-		mux_2 {
-			pins = "gpio74";
-			function = "gpio";
-			bias-pull-up;
-		};
 	};
 
-	usb_power_pins: usb-power-pins {
+	tluart_pins: tluart-pins {
 		mux {
-			pins = "gpio0";
-			function = "gpio";
-			bias-pull-up;
-			output-high;
-		};
-	};
-
-	spi_1_pins: spi-1-pins {
-		mux {
-			pins = "gpio38", "gpio39", "gpio40", "gpio41";
-			function = "blsp0_spi";
+			pins = "gpio75", "gpio76";
+			function = "blsp3_uart";
 			drive-strength = <8>;
-			bias-pull-down;
+			bias-disable;
 		};
 	};
 
-	i2c_1_pins: i2c-1-pins {
+	hsuart_pins: hsuart-pins {
 		mux {
-			pins = "gpio42", "gpio43";
-			function = "blsp2_i2c";
+			pins = "gpio57", "gpio58";
+			function = "blsp4_uart";
 			drive-strength = <8>;
-			bias-pull-down;
+			bias-disable;
 		};
 	};
 };
 
-&blsp1_spi1 {
-	status = "okay";
-
-	pinctrl-0 = <&spi_1_pins>;
-	pinctrl-names = "default";
-	cs-select = <0>;
-
-	m25p80@0 {
-		#address-cells = <1>;
-		#size-cells = <1>;
-		reg = <0>;
-		compatible = "n25q128a11";
-		linux,modalias = "m25p80", "n25q128a11";
-		spi-max-frequency = <50000000>;
-		use-default-sizes;
-	};
-};
-
-&blsp1_i2c3 {
-	pinctrl-0 = <&i2c_1_pins>;
+&blsp1_uart4 {
+	pinctrl-0 = <&tluart_pins>;
 	pinctrl-names = "default";
 	status = "okay";
 };
 
-&usb3 {
-	pinctrl-0 = <&usb_power_pins>;
+&blsp1_uart5 {
+	pinctrl-0 = <&hsuart_pins>;
 	pinctrl-names = "default";
 	status = "okay";
 };
@@ -149,18 +125,170 @@
 		nand-ecc-strength = <4>;
 		nand-ecc-step-size = <512>;
 		nand-bus-width = <8>;
+		#address-cells = <1>;
+		#size-cells = <1>;
 
-		partitions {
-			compatible = "qcom,smem-part";
+		partitions: partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "0:sbl1";
+				reg = <0x0000000 0x0180000>;
+				read-only;
+			};
+
+			partition@180000 {
+				label = "0:mibib";
+				reg = <0x0180000 0x0100000>;
+				read-only;
+			};
+
+			partition@280000 {
+				label = "0:qsee";
+				reg = <0x0280000 0x0380000>;
+				read-only;
+			};
+
+			partition@600000 {
+				label = "0:devcfg";
+				reg = <0x0600000 0x0080000>;
+				read-only;
+			};
+
+			partition@680000 {
+				label = "0:rpm";
+				reg = <0x0680000 0x0080000>;
+				read-only;
+			};
+
+			partition@700000 {
+				label = "0:cdt";
+				reg = <0x0700000 0x0080000>;
+				read-only;
+			};
+
+			partition@780000 {
+				label = "0:appsblenv";
+				reg = <0x0780000 0x0080000>;
+			};
+
+			partition@800000 {
+				label = "0:appsbl";
+				reg = <0x0800000 0x0180000>;
+				read-only;
+			};
+
+			partition@980000 {
+				label = "0:art";
+				reg = <0x0980000 0x0080000>;
+				read-only;
+
+				nvmem-layout {
+					compatible = "fixed-layout";
+					#address-cells = <1>;
+					#size-cells = <1>;
+
+					macaddr_wan: macaddr@0 {
+						reg = <0x0 0x6>;
+					};
+
+					macaddr_lan: macaddr@6 {
+						reg = <0x6 0x6>;
+					};
+				};
+			};
+
+			/* rootfs defined in variant dts */
+
+			partition@7d00000 {
+				label = "0:ethphyfw";
+				reg = <0x7d00000 0x0080000>;
+				read-only;
+			};
+		};
+	};
+};
+
+&qusb_phy_0 {
+	vdd-supply = <&reg_usb_vbus>;
+	status = "okay";
+};
+
+&mdio {
+	status = "okay";
+
+	pinctrl-0 = <&mdio_pins>;
+	pinctrl-names = "default";
+	reset-gpios = <&tlmm 74 GPIO_ACTIVE_LOW>;
+
+	ethernet-phy-package@0 {
+		compatible = "qcom,qca8075-package";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0>;
+
+		qca8075_0: ethernet-phy@0 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <0>;
+		};
+
+		qca8075_1: ethernet-phy@1 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <1>;
+		};
+
+		qca8075_2: ethernet-phy@2 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <2>;
+		};
+
+		qca8075_3: ethernet-phy@3 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <3>;
+		};
+
+		qca8075_4: ethernet-phy@4 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <4>;
+		};
+	};
+};
+
+&switch {
+	status = "okay";
+
+	switch_mac_mode = <MAC_MODE_PSGMII>;
+
+	qcom,port_phyinfo {
+		port@1 {
+			port_id = <1>;
+			phy_address = <0>;
+		};
+
+		port@2 {
+			port_id = <2>;
+			phy_address = <1>;
+		};
+
+		port@3 {
+			port_id = <3>;
+			phy_address = <2>;
+		};
+
+		port@4 {
+			port_id = <4>;
+			phy_address = <3>;
+		};
+
+		port@5 {
+			port_id = <5>;
+			phy_address = <4>;
 		};
 	};
 };
 
 &edma {
 	status = "okay";
-};
-
-&cpu_opp_table {
-	/delete-node/ opp-1608000000;
-	/delete-node/ opp-1800000000;
 };
