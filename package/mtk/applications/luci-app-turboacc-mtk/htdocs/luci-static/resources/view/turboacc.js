@@ -158,13 +158,6 @@ return view.extend({
 			]);
 		}
 
-		/* Mark user edited */
-		s = m.section(form.NamedSection, 'global', 'turboacc');
-		o = s.option(form.HiddenValue, 'set');
-		o.load = (/* ... */) => { return 1 };
-		o.readonly = true;
-		o.rmempty = false;
-
 		s = m.section(form.NamedSection, 'config', 'turboacc');
 
 		o = s.option(form.ListValue, 'fastpath', _('Fastpath engine'),
@@ -226,10 +219,9 @@ return view.extend({
 		o.rmempty = false;
 		o.depends('fastpath_mh_eth_hnat', '1');
 		
-		o = s.option(form.Flag, 'fastpath_mh_eth_hnat_macvlan', _('Enable ethernet HNAT for MACVLAN WAN device'),
-			_('Enable hardware offloading for macvlan.'));
-		o.default = o.disabled;
-		o.rmempty = false;
+		o = s.option(form.Value, 'fastpath_mh_eth_hnat_ap', _('Enable AP Mode'),
+			_('Fill in ip to enable AP Mode(reboot needed)'));
+		o.optional = true;
 		o.depends('fastpath_mh_eth_hnat', '1');
 		
 		o = s.option(form.Value, 'fastpath_mh_eth_hnat_bind_rate', _('HNAT bind rate threshold (pps)'),
@@ -260,7 +252,7 @@ return view.extend({
 			o.value(i);
 		o.default = 'cubic';
 		o.rmempty = false;
-
+        
 		return m.render();
 	}
 });

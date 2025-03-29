@@ -306,7 +306,9 @@ parse_rule_nat(struct nftnl_expr *e, rule_t *r)
 		/* destination address */
 		r->nat_addr = (in_addr_t)*reg_val_ptr;
 		/* destination port */
+		if (proto_min_reg == NFT_REG_1 || proto_min_reg == NFT_REG_2) {
  		r->nat_port = proto_min_val;
+		}
 	} else {
 		syslog(LOG_ERR, "%s: invalid addr_min_reg %u", "parse_rule_nat", addr_min_reg);
 	}

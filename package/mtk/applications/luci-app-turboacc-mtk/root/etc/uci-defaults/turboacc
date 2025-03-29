@@ -1,16 +1,5 @@
 #!/bin/sh
 
-[ "$(uci -q get "turboacc.global.set")" -eq "1" ] && exit 0
-
-cat <<-EOF > "/etc/config/turboacc"
-
-config turboacc 'global'
-	option set '0'
-
-config turboacc 'config'
-	option tcpcca 'cubic'
-
-EOF
 
 kernel_ver="$(uname -r)"
 
@@ -42,8 +31,7 @@ uci -q commit "turboacc"
 uci -q batch <<-EOF >"/dev/null"
 	delete ucitrack.@turboacc[-1]
 	add ucitrack turboacc
-	set ucitrack.@turboacc[-1].init=turboacc
-	commit ucitrack
 EOF
 
+rm -f /tmp/luci-indexcache
 exit 0

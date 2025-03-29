@@ -120,19 +120,19 @@
 		};
 
 		cpu_trip_hot: hot {
-			temperature = <80000>;
+			temperature = <55000>;
 			hysteresis = <2000>;
 			type = "hot";
 		};
 
 		cpu_trip_active: active {
-			temperature = <60000>;
+			temperature = <40000>;
 			hysteresis = <2000>;
 			type = "active";
 		};
 
 		cpu_trip_passive: passive {
-			temperature = <40000>;
+			temperature = <30000>;
 			hysteresis = <2000>;
 			type = "passive";
 		};

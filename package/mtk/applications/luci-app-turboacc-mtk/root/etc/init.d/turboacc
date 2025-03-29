@@ -4,8 +4,8 @@
 
 START=90
 STOP=10
-
-start() {
+USE_PROCD=1
+start_service() {
 	config_load "turboacc"
 
 	local fastpath
@@ -50,7 +50,7 @@ start() {
 		echo "$fastpath_mh_eth_hnat" > "$hnat_path/hook_toggle"
 
 		if [ "$fastpath_mh_eth_hnat" -eq "1" ]; then
-			local fastpath_mh_eth_hnat_v6 fastpath_mh_eth_hnat_macvlan fastpath_mh_eth_hnat_bind_rate
+			local fastpath_mh_eth_hnat_v6 fastpath_mh_eth_hnat_ap fastpath_mh_eth_hnat_bind_rate
 
 			config_get_bool "fastpath_mh_eth_hnat_v6" "config" "fastpath_mh_eth_hnat_v6" "1"
 			echo "8 $fastpath_mh_eth_hnat_v6" > "$hnat_path/hnat_setting"
@@ -58,14 +58,13 @@ start() {
 			config_get "fastpath_mh_eth_hnat_bind_rate" "config" "fastpath_mh_eth_hnat_bind_rate" "30"
 			echo "11 $fastpath_mh_eth_hnat_bind_rate" > "$hnat_path/hnat_setting"
 
-			config_get_bool "fastpath_mh_eth_hnat_macvlan" "config" "fastpath_mh_eth_hnat_macvlan" "0"
-			echo "12 $fastpath_mh_eth_hnat_macvlan" > "$hnat_path/hnat_setting"
+			config_get "fastpath_mh_eth_hnat_ap" "config" "fastpath_mh_eth_hnat_ap" ""
 		fi
 		;;
 	esac
 
 	local fullcone
-	config_get "fullcone" "config" "fullcone" "0"
+	config_get "fullcone" "config" "fullcone" "2"
 	echo "$fullcone" > /proc/sys/net/netfilter/nf_conntrack_nat_mode
 
 	local tcpcca
@@ -74,4 +73,55 @@ start() {
 
 	uci -q commit "firewall"
 	/etc/init.d/firewall restart >"/dev/null" 2>&1
+	available_interfaces=""
+for iface in eth0 eth1 wan; do
+    if ifconfig $iface 2>&1 | grep -qv "error fetching interface information"; then
+        echo "$iface interface detected."
+        available_interfaces="$available_interfaces $iface"
+    else
+        echo "$iface interface not found."
+    fi
+done
+
+    if echo "$fastpath_mh_eth_hnat_ap" | grep -qE '^([0-9]{1,3}\.){3}[0-9]{1,3}$'; then
+    echo "Valid IPv4 address detected: $fastpath_mh_eth_hnat_ap"
+    uci delete network.wan
+    uci delete network.wwan
+    uci delete network.wan6
+
+    current_ports=$(uci get network.@device[0].ports)
+    echo "Current bridge ports: $current_ports"
+
+    new_ports="$current_ports"
+    for port in $available_interfaces; do
+        if echo "$current_ports" | grep -qw "$port"; then
+            echo "Port $port is already part of the bridge"
+        else
+            echo "Adding port $port to the bridge"
+            new_ports="$new_ports $port"
+        fi
+    done
+
+    uci set network.@device[0].ports="$new_ports"
+    uci set dhcp.lan.ignore=1
+    uci set network.lan.ipaddr="$fastpath_mh_eth_hnat_ap"
+    uci set wireless.wifinet1.network='lan'
+    uci set wireless.wifinet2.network='lan'
+    echo "Committing changes"
+    uci commit
+else
+    echo "Invalid IPv4 address: $fastpath_mh_eth_hnat_ap"
+fi
+}
+
+reload_service() {
+        start
+}
+
+stop_service() {
+        stop
+}
+
+service_triggers() {
+        procd_add_reload_trigger "turboacc"
 }
