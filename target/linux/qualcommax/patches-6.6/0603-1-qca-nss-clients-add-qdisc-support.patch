@@ -341,7 +341,7 @@
  
  struct Qdisc *qdisc_lookup_rcu(struct net_device *dev, u32 handle)
  {
-@@ -2399,4 +2400,26 @@ static int __init pktsched_init(void)
+@@ -2405,4 +2406,26 @@ static int __init pktsched_init(void)
  	return 0;
  }
  

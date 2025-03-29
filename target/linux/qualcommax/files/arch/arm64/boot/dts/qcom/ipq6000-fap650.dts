@@ -327,8 +327,3 @@
 	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "Yuncore-FAP650";
 };
-
-&cpu_opp_table {
-	/delete-node/ opp-1608000000;
-	/delete-node/ opp-1800000000;
-};

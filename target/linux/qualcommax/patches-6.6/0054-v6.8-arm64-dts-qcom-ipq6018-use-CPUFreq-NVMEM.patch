@@ -60,14 +60,14 @@ Signed-off-by: Bjorn Andersson <andersson@kernel.org>
  		opp-1608000000 {
  			opp-hz = /bits/ 64 <1608000000>;
  			opp-microvolt = <987500>;
-+			opp-supported-hw = <0xf>;
++			opp-supported-hw = <0x1>;
  			clock-latency-ns = <200000>;
  		};
  
  		opp-1800000000 {
  			opp-hz = /bits/ 64 <1800000000>;
  			opp-microvolt = <1062500>;
-+			opp-supported-hw = <0xf>;
++			opp-supported-hw = <0x1>;
  			clock-latency-ns = <200000>;
  		};
  	};
