@@ -211,16 +211,11 @@
 	};
 
 	gmac1: mac@1 {
-		compatible = "mediatek,eth-mac";
-		reg = <1>;
-		phy-mode = "gmii";
-		fixed-link {
-			speed = <1000>;
-			phy-handle = <&phy0>;
-			full-duplex;
-			pause;
-		};
-	};
+                compatible = "mediatek,eth-mac";
+                reg = <1>;
+                phy-mode = "gmii";
+                phy-handle = <&phy0>;
+        };
 
 	mdio: mdio-bus {
 		#address-cells = <1>;

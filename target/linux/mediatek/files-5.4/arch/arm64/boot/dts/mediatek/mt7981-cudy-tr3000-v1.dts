@@ -125,12 +125,7 @@
 		compatible = "mediatek,eth-mac";
 		reg = <1>;
 		phy-mode = "gmii";
-		fixed-link {
-			speed = <1000>;
-			phy-handle = <&phy0>;
-			full-duplex;
-			pause;
-		};
+		phy-handle = <&phy0>;
 	};
 
 	mdio: mdio-bus {

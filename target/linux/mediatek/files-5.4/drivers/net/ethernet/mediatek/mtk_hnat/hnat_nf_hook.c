@@ -408,11 +408,9 @@ int nf_hnat_netdevice_event(struct notifier_block *unused, unsigned long event,
                 }
         	if (1)
                 {
-                        if (atomic_read(&eth1_in_br))
-                        {printk ("eth1 in br-lan");
+                        if (atomic_read(&eth1_in_br)){
                         hnat_priv->g_ppdev = dev_get_by_name(&init_net, "eth1");                        }
-                        else
-                        {printk ("eth0 in br-lan");
+                        else{
                         hnat_priv->g_ppdev = dev_get_by_name(&init_net, "eth0");
                         }
                 }

@@ -1,0 +1,7 @@
+--- a/drivers/net/phy/Makefile
++++ b/drivers/net/phy/Makefile
+@@ -119,3 +119,4 @@ obj-$(CONFIG_AIR_EN8811H_PHY)   += air_e
+ obj-$(CONFIG_MT753X_GSW)        += mtk/mt753x/
+ obj-$(CONFIG_RTL8367S_GSW)	+= rtk/
+ 
++obj-$(CONFIG_MEDIATEK_GE_PHY)	+= mtk-phy-lib.o
