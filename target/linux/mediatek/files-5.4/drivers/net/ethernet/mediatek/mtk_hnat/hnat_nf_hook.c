@@ -34,8 +34,10 @@
 #include "../mtk_eth_reset.h"
 
 extern atomic_t eth1_in_br;
+atomic_t eth0_in_br;
 struct net_device *br_dev;
 struct net_device *eth1_dev;
+struct net_device *eth0_dev;
 
 #define do_ge2ext_fast(dev, skb)                                               \
 	((IS_LAN(dev) || IS_WAN(dev) || IS_PPD(dev)) && \
@@ -349,7 +351,39 @@ int nf_hnat_netdevice_event(struct notifier_block *unused, unsigned long event,
 			if (!strcmp(dev->name, "ra1") || !strcmp(dev->name, "rax1"))
 				break;
 		}
-
+		
+		br_dev = __dev_get_by_name(&init_net, "br-lan");
+                eth1_dev = __dev_get_by_name(&init_net, "eth1");
+		eth0_dev = __dev_get_by_name(&init_net, "eth0");
+                atomic_set(&eth1_in_br, 0);
+		atomic_set(&eth0_in_br, 0);
+                if (br_dev && eth1_dev) {
+                        struct net_device *dev;
+                        struct list_head *pos;
+                        netdev_for_each_lower_dev(br_dev, dev, pos) {
+                                if (dev == eth1_dev) {
+                                atomic_set(&eth1_in_br, 1);
+                                break;
+                                }
+                        }
+                }
+		 if (br_dev && eth0_dev) {
+                        struct net_device *dev;
+                        struct list_head *pos;
+                        netdev_for_each_lower_dev(br_dev, dev, pos) {
+                                if (dev == eth0_dev) {
+                                atomic_set(&eth0_in_br, 1);
+                                break;
+                                }
+                        }
+                }
+		if (atomic_read(&eth1_in_br)){
+                        printk("eth1 in br-lan");
+			hnat_priv->g_ppdev = __dev_get_by_name(&init_net, "eth1");                        }
+                else if (atomic_read(&eth0_in_br)){
+		    printk("eth0 in br-lan");
+                    hnat_priv->g_ppdev = __dev_get_by_name(&init_net, "eth0");
+                    }
 		gmac_ppe_fwd_enable(dev);
 
 		extif_set_dev(dev, 1);
@@ -374,7 +408,6 @@ int nf_hnat_netdevice_event(struct notifier_block *unused, unsigned long event,
 	case NETDEV_UNREGISTER:
 		if (hnat_priv->g_ppdev == dev) {
 			hnat_priv->g_ppdev = NULL;
-			dev_put(dev);
 		}
 		if (hnat_priv->g_wandev == dev) {
 			hnat_priv->g_wandev = NULL;
@@ -392,29 +425,6 @@ int nf_hnat_netdevice_event(struct notifier_block *unused, unsigned long event,
 		hnat_warm_init();
 		break;
 	default:
-		br_dev = dev_get_by_name(&init_net, "br-lan");
-        	eth1_dev = dev_get_by_name(&init_net, "eth1");
-
-        	atomic_set(&eth1_in_br, 0);
-                if (br_dev && eth1_dev) {
-                        struct net_device *dev;
-                        struct list_head *pos;
-                        netdev_for_each_lower_dev(br_dev, dev, pos) {
-                                if (dev == eth1_dev) {
-                                atomic_set(&eth1_in_br, 1);
-                                break;
-                                }
-                        }
-                }
-        	if (1)
-                {
-                        if (atomic_read(&eth1_in_br)){
-                        hnat_priv->g_ppdev = dev_get_by_name(&init_net, "eth1");                        }
-                        else{
-                        hnat_priv->g_ppdev = dev_get_by_name(&init_net, "eth0");
-                        }
-                }
-
 		break;
 	}
 
@@ -817,7 +827,7 @@ unsigned int do_hnat_mape_w2l_fast(struct sk_buff *skb, const struct net_device 
 		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), VLAN_CFI_MASK | (in->ifindex & VLAN_VID_MASK));
 
 		if (!hnat_priv->g_ppdev)
-			hnat_priv->g_ppdev = dev_get_by_name(&init_net, hnat_priv->ppd);
+			hnat_priv->g_ppdev = __dev_get_by_name(&init_net, hnat_priv->ppd);
 
 		skb->dev = hnat_priv->g_ppdev;
 		skb->protocol = htons(ETH_P_IP);
@@ -1209,7 +1219,7 @@ mtk_hnat_br_nf_local_in(void *priv, struct sk_buff *skb,
 	    !is_multicast_ether_addr(eth_hdr(skb)->h_dest)) {
  		
 		if (!hnat_priv->g_ppdev)
-			hnat_priv->g_ppdev = dev_get_by_name(&init_net, hnat_priv->ppd);
+			hnat_priv->g_ppdev = __dev_get_by_name(&init_net, hnat_priv->ppd);
 
 		if (!do_hnat_ext_to_ge(skb, state->in, __func__))
 			return NF_STOLEN;
