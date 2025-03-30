@@ -67,9 +67,7 @@ To build your own firmware you need a GNU/Linux, BSD or macOS system (case sensi
      # MT7986
      cp -f defconfig/mt7986-ax6000.config .config
      
-     # MT7981 USB OFFLOAD GSW device (rax3000m)
-     cp -f defconfig/mt7981-ax3000-gsw-usboffload.config .config
-     ```
+     rax3000m如果想要正常使用usb加速，需要将eth1放入br-lan内
      
   6. Run `make` to build your firmware. This will download all sources, build the cross-compile toolchain and then cross-compile the GNU/Linux kernel & all chosen applications for your target system.
 
