@@ -67,7 +67,7 @@ To build your own firmware you need a GNU/Linux, BSD or macOS system (case sensi
      # MT7986
      cp -f defconfig/mt7986-ax6000.config .config
      
-     rax3000m如果想要正常使用usb加速，需要将eth1放入br-lan内
+     rax3000m，xr30这种有多个lan口的设备如果想要正常使用usb加速，需要将将eth1从wan里删除加入br-lan作为lan使用
      
   6. Run `make` to build your firmware. This will download all sources, build the cross-compile toolchain and then cross-compile the GNU/Linux kernel & all chosen applications for your target system.
 
