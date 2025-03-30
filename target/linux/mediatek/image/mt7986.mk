@@ -517,7 +517,8 @@ define Device/netcore_n60-pro
   DEVICE_DTS := mt7986a-netcore-n60-pro
   DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
   SUPPORTED_DEVICES := netcore,n60-pro
-  DEVICE_PACKAGES := kmod-usb3 kmod-mt7986-firmware mt7986-wo-firmware
+  DEVICE_PACKAGES := $(MT7986_USB_PKGS) f2fsck losetup mkf2fs kmod-fs-f2fs kmod-mmc \
+        luci-app-ksmbd luci-i18n-ksmbd-zh-cn ksmbd-utils
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
   PAGESIZE := 2048

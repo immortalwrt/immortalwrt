@@ -16,10 +16,10 @@
 	};
 
 	aliases {
-		led-boot = &led_status_red;
-		led-failsafe = &led_status_red;
-		led-running = &led_status_blue;
-		led-upgrade = &led_status_blue;
+		led-boot = &led_power;
+ 		led-failsafe = &led_power;
+ 		led-running = &led_power;
+ 		led-upgrade = &led_power;
 	};
 
 	memory {
@@ -45,15 +45,36 @@
 	leds {
 		compatible = "gpio-leds";
 
-		led_status_red: status_red {
-			label = "red:status";
-			gpios = <&pio 29 GPIO_ACTIVE_LOW>;
-		};
-
-		led_status_blue: status_blue {
-			label = "blue:status";
-			gpios = <&pio 32 GPIO_ACTIVE_LOW>;
-		};
+		led-0 {
+ 			color = <LED_COLOR_ID_BLUE>;
+ 			function = LED_FUNCTION_WLAN;
+ 			gpios = <&pio 1 GPIO_ACTIVE_LOW>;
+ 			linux,default-trigger = "phy1tpt";
+ 		};
+ 
+ 		led_power: led-1 {
+ 			color = <LED_COLOR_ID_BLUE>;
+ 			function = LED_FUNCTION_POWER;
+ 			gpios = <&pio 29 GPIO_ACTIVE_LOW>;
+ 		};
+ 
+ 		led-2 {
+ 			color = <LED_COLOR_ID_BLUE>;
+ 			function = LED_FUNCTION_USB;
+ 			gpios = <&pio 30 GPIO_ACTIVE_LOW>;
+ 		};
+ 
+ 		led-3 {
+ 			color = <LED_COLOR_ID_BLUE>;
+ 			function = LED_FUNCTION_WPS;
+ 			gpios = <&pio 31 GPIO_ACTIVE_LOW>;
+ 		};
+ 
+ 		led-4 {
+ 			color = <LED_COLOR_ID_BLUE>;
+ 			function = LED_FUNCTION_WAN;
+ 			gpios = <&pio 32 GPIO_ACTIVE_LOW>;
+ 		};
 	};
 
 	nmbm_spim_nand {
