@@ -160,7 +160,7 @@
 					"uniphy0_port_4_rst";
 			mdio-bus = <&mdio>;
 
-			switch_cpu_bmp = <ESS_PORT0>; 
+			switch_cpu_bmp = <ESS_PORT0>;
 			switch_inner_bmp = <(ESS_PORT6 | ESS_PORT7)>;
 			switch_mac_mode = <MAC_MODE_DISABLED>;
 			switch_mac_mode1 = <MAC_MODE_DISABLED>;

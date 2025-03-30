@@ -78,7 +78,7 @@ TARGET_DEVICES += linksys_mr7350
 define Device/linksys_mr7500
 	$(call Device/linksys_mr)
 	DEVICE_MODEL := MR7500
-	SOC := ipq6018
+	SOC := ipq6010
 	NAND_SIZE := 512m
 	IMAGE_SIZE := 147456k
 	DEVICE_PACKAGES += ipq-wifi-linksys_mr7500 \
