@@ -46,6 +46,8 @@ h3c,nx30pro)
 huasifei,wh3000-emmc)
 	ucidef_set_led_netdev "wan" "WAN" "red:wan" "eth1"
 	;;
+*e-life,etr631-t* |\
+*e-life,etr635-u* |\
 konka,komi-a31)
         ucidef_set_led_netdev "blue" "BLUE" "blue:status" "wan" "link"
 	;;
@@ -54,6 +56,14 @@ nradio,wt9103)
 	ucidef_set_led_netdev "wifi" "WIFI" "hc:blue:wifi" "rax0" "link"
 	ucidef_set_led_netdev "5g" "5G" "hc:blue:cmode5" "wan" "tx rx"
 	ucidef_set_led_netdev "lan" "LAN" "hc:blue:cmode4" "br-lan" "tx rx"
+	;;
+*newland,nl-wr8103*)
+	ucidef_set_led_default "red" "RED" "red:status" "0"
+	ucidef_set_led_default "green" "GREEN" "green:status" "1"
+	ucidef_set_led_default "blue" "BLUE" "blue:status" "0"
+	;;
+*newland,nl-wr9103*)
+        ucidef_set_led_netdev "green" "GREEN" "green:status" "wan" "link"
 	;;
 esac
 

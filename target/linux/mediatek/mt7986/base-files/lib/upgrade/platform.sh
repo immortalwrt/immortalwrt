@@ -182,11 +182,12 @@ platform_check_image() {
 	bananapi,bpi-r3mini* |\
 	netcore,n60|\
 	netcore,n60-pro |\
-	ruijie,rg-x60-pro*|\
+	ruijie,rg-x60-pro* |\
+	xiaomi,redmi-router-ax6000-512rom |\
 	*snand* |\
-	glinet,gl-mt6000|\
-	jdcloud,re-cp-03|\
-	tplink,tl-xdr608*|\
+	glinet,gl-mt6000 |\
+	jdcloud,re-cp-03 |\
+	tplink,tl-xdr608* |\
 	zyxel,ex5700 |\
 	*emmc*)
 		# tar magic `ustar`

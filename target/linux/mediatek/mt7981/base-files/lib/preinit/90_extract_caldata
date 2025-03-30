@@ -16,7 +16,9 @@ caldata_validate() {
 
 do_extract_caldata() {
 	case $(board_name) in
-	cmcc,rax3000m-em|\
+	cmcc,xr30-emmc |\
+        sl,3000-emmc |\
+	cmcc,rax3000m-emmc|\
 	huasifei,wh3000-emmc)
 		FIRMWARE=MT7981_iPAiLNA_EEPROM.bin
 		caldata_validate && exit 0

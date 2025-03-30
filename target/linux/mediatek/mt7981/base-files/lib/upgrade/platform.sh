@@ -189,7 +189,7 @@ platform_do_upgrade() {
 	case "$board" in
 	xiaomi,mi-router-wr30u-112m|\
 	xiaomi,mi-router-ax3000t|\
-	*cudy* |\
+	cudy* |\
 	*mt3000* |\
 	glinet,x3000-emmc |\
 	*xe3000* |\
@@ -200,6 +200,13 @@ platform_do_upgrade() {
 	*cetron,ct3003* |\
 	*clt,r30b1* |\
 	*imou,lc-hx3001* |\
+	*e-life,etr631-t* |\
+	*e-life,etr635-u* |\
+	cmcc,rax3000me |\
+	cmcc,xr30 |\
+	*kst,wf3000a* |\
+	*newland,nl-wr8103* |\
+	*newland,nl-wr9103* |\
 	*jcg,q30* |\
 	nradio,wt9103 |\
 	cmcc,a10 |\
@@ -212,6 +219,9 @@ platform_do_upgrade() {
 		;;
 	huasifei,wh3000-emmc|\
 	cmcc,rax3000m-emmc |\
+	cmcc,xr30-emmc |\
+	*sl,3000* |\
+        *sl,3000-emmc* |\
 	*emmc*)
 		CI_KERNPART="kernel"
 		CI_ROOTPART="rootfs"
@@ -236,7 +246,7 @@ platform_check_image() {
 	[ "$#" -gt 1 ] && return 1
 
 	case "$board" in
-	*cudy* |\
+	cudy* |\
 	*mt3000* |\
 	glinet,x3000-emmc |\
 	*xe3000* |\
@@ -250,6 +260,15 @@ platform_check_image() {
 	*cetron,ct3003* |\
 	*clt,r30b1* |\
 	*imou,lc-hx3001* |\
+	*e-life,etr631-t* |\
+        *e-life,etr635-u* |\
+        cmcc,rax3000me |\
+        cmcc,xr30 |\
+        *kst,wf3000a* |\
+        *newland,nl-wr8103* |\
+        *newland,nl-wr9103* |\
+	*sl,3000* |\
+        *sl,3000-emmc* |\
 	*jcg,q30* |\
 	cmcc,a10 |\
 	cmcc,rax3000m* |\
