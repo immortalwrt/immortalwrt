@@ -19,6 +19,7 @@ case "$FIRMWARE" in
 	glinet,gl-ax1800|\
 	glinet,gl-axt1800|\
 	linksys,mr7350|\
+	linksys,mr7500|\
 	netgear,wax214|\
 	qihoo,360v6|\
 	redmi,ax5|\
@@ -45,6 +46,9 @@ case "$FIRMWARE" in
 	case "$board" in
 	cambiumnetworks,xe3-4)
 		caldata_extract "0:ART" 0x26800 0x20000
+		;;
+	linksys,mr7500)
+		caldata_extract "0:art" 0x26800 0x20000
 		;;
 	jdcloud,re-cs-02)
 		caldata_extract_mmc "0:ART" 0x26800 0x20000
