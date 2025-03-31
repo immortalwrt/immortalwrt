@@ -32,7 +32,7 @@
  {
  	struct ath11k *ar = hw->priv;
  	struct ath11k_vif *arvif = ath11k_vif_to_arvif(vif);
-@@ -6845,7 +6845,7 @@ static int ath11k_mac_setup_vdev_create_
+@@ -6840,7 +6840,7 @@ static int ath11k_mac_setup_vdev_create_
  	return 0;
  }
  
@@ -41,7 +41,7 @@
  					     struct ieee80211_vif *vif)
  {
  	struct ath11k *ar = hw->priv;
-@@ -6855,7 +6855,7 @@ static int ath11k_mac_op_update_vif_offl
+@@ -6850,7 +6850,7 @@ static int ath11k_mac_op_update_vif_offl
  	int ret;
  
  	if (ab->nss.enabled && vif->type == NL80211_IFTYPE_AP_VLAN)
@@ -50,7 +50,7 @@
  
  	param_id = WMI_VDEV_PARAM_TX_ENCAP_TYPE;
  	if (ath11k_frame_mode != ATH11K_HW_TXRX_ETHERNET ||
-@@ -6894,8 +6894,6 @@ static int ath11k_mac_op_update_vif_offl
+@@ -6889,8 +6889,6 @@ static int ath11k_mac_op_update_vif_offl
  			    arvif->vdev_id, ret);
  		vif->offload_flags &= ~IEEE80211_OFFLOAD_DECAP_ENABLED;
  	}
@@ -59,7 +59,7 @@
  }
  
  static bool ath11k_mac_vif_ap_active_any(struct ath11k_base *ab)
-@@ -7226,8 +7224,7 @@ static int ath11k_mac_op_add_interface(s
+@@ -7221,8 +7219,7 @@ static int ath11k_mac_op_add_interface(s
  		goto err_vdev_del;
  	}
  

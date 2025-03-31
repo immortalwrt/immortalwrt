@@ -20,7 +20,7 @@
  			      struct ieee80211_sta *sta, bool enabled);
 --- a/net/mac80211/cfg.c
 +++ b/net/mac80211/cfg.c
-@@ -2767,7 +2767,7 @@ static int ieee80211_change_bss(struct w
+@@ -2727,7 +2727,7 @@ static int ieee80211_change_bss(struct w
  	struct ieee80211_sub_if_data *sdata = IEEE80211_DEV_TO_SUB_IF(dev);
  	struct ieee80211_link_data *link;
  	struct ieee80211_supported_band *sband;
