@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_DISTNAME:=u-boot
 PKG_VERSION:=2025.01
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_DISTNAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:= \
@@ -22,24 +22,10 @@ PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/uboot-tools
-	SECTION:=utils
-	CATEGORY:=Utilities
-	SUBMENU:=Boot Loaders
-	TITLE:=U-Boot bootloader Tools
-	URL:=http://www.denx.de/wiki/U-Boot
-endef
-
-define Package/uboot-tools/description
-	U-Boot tools are a collection of utilities designed
-	to work with the U-Boot bootloader,
-endef
-
 define Package/dumpimage
 	SECTION:=utils
 	CATEGORY:=Utilities
 	SUBMENU:=Boot Loaders
-	DEPENDS := +libopenssl
 	TITLE:=dumpimage lists and extracts data from U-Boot images.
 	URL:=http://www.denx.de/wiki/U-Boot
 endef
@@ -49,6 +35,18 @@ define Package/dumpimage/description
 	If -l is specified, dumpimage lists the components in
 	image.Otherwise, dumpimage extracts the component at
 	position to outfile.
+endef
+
+define Package/fit-check-sign
+	SECTION:=utils
+	CATEGORY:=Utilities
+	SUBMENU:=Boot Loaders
+	TITLE:=verify uImage.FIT
+	URL:=http://www.denx.de/wiki/U-Boot
+endef
+
+define Package/fit-check-sign/description
+	fit_check_sign validates uImage.FIT hashes and signatures
 endef
 
 define Package/uboot-envtools
@@ -72,24 +70,37 @@ define Package/uboot-envtools/conffiles
 endef
 
 define Build/Configure
-	$(MAKE) -C $(PKG_BUILD_DIR) tools-only_defconfig
-	$(MAKE) -C $(PKG_BUILD_DIR) syncconfig
+	$(call Build/Compile/Default,tools-only_defconfig)
+	$(call Build/Compile/Default,syncconfig)
 	$(SED) 's/CONFIG_TOOLS_LIBCRYPTO=y/# CONFIG_TOOLS_LIBCRYPTO is not set/' $(PKG_BUILD_DIR)/.config
+	$(SED) 's/CONFIG_TOOLS_KWBIMAGE=y/# CONFIG_TOOLS_KWBIMAGE is not set/' $(PKG_BUILD_DIR)/.config
 endef
 
 MAKE_FLAGS += \
 	ARCH="sandbox" \
 	TARGET_CFLAGS="$(TARGET_CFLAGS)" \
-	TARGET_LDFLAGS="$(TARGET_LDFLAGS)"
+	TARGET_LDFLAGS="$(TARGET_LDFLAGS)" \
+	NO_PYTHON=1
 
 define Build/Compile
+
+ifneq ($(CONFIG_PACKAGE_uboot-envtools),)
 	$(call Build/Compile/Default,envtools)
+endif
+ifneq ($(CONFIG_PACKAGE_dumpimage)$(CONFIG_PACKAGE_fit-check-sign),)
 	$(call Build/Compile/Default,cross_tools)
+endif
+
 endef
 
 define Package/dumpimage/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/tools/dumpimage $(1)/usr/bin
+endef
+
+define Package/fit-check-sign/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/tools/fit_check_sign $(1)/usr/bin
 endef
 
 define Package/uboot-envtools/install
@@ -115,4 +126,5 @@ define Package/uboot-envtools/install
 endef
 
 $(eval $(call BuildPackage,dumpimage))
+$(eval $(call BuildPackage,fit-check-sign))
 $(eval $(call BuildPackage,uboot-envtools))

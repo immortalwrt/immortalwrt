@@ -17,6 +17,10 @@ boot() {
 	linksys,mx8500)
 		mtd resetbc s_env || true
 	;;
+	netgear,wax620|\
+	netgear,wax630)
+		fw_setenv boot_count 0
+	;;
 	redmi,ax6-stock|\
 	xiaomi,ax3600-stock)
 		# OTA handling should not be used. Reset it just in case.

@@ -445,7 +445,7 @@ config KERNEL_DEBUG_INFO
 
 config KERNEL_DEBUG_INFO_BTF
 	bool "Enable additional BTF type information"
-	default y if (TARGET_armsr || TARGET_bcm27xx || TARGET_ipq806x_chromium || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_rockchip || TARGET_sunxi || TARGET_x86_64) && BUILDBOT
+	default y if (TARGET_armsr || TARGET_bcm27xx || TARGET_ipq806x_chromium || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_qualcommax_ipq60xx || TARGET_rockchip || TARGET_sunxi || TARGET_x86_64) && BUILDBOT
 	depends on !HOST_OS_MACOS
 	depends on KERNEL_DEBUG_INFO && !KERNEL_DEBUG_INFO_REDUCED
 	select DWARVES
@@ -473,7 +473,7 @@ config KERNEL_MODULE_ALLOW_BTF_MISMATCH
 
 config KERNEL_DEBUG_INFO_REDUCED
 	bool "Reduce debugging information"
-	default y if !(TARGET_armsr || TARGET_bcm27xx || TARGET_ipq806x_chromium || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_rockchip || TARGET_sunxi || TARGET_x86_64) || !BUILDBOT
+	default y if !(TARGET_armsr || TARGET_bcm27xx || TARGET_ipq806x_chromium || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_qualcommax_ipq60xx || TARGET_rockchip || TARGET_sunxi || TARGET_x86_64) || !BUILDBOT
 	depends on KERNEL_DEBUG_INFO
 	help
 	  If you say Y here gcc is instructed to generate less debugging

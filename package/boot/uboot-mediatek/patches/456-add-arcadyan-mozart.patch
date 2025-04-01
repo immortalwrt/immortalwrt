@@ -126,10 +126,10 @@
 +bootconf=config-1
 +bootconf_extra=
 +bootdelay=0
-+bootfile=openwrt-mediatek-filogic-arcadyan_mozart-initramfs.itb
-+bootfile_bl2=openwrt-mediatek-filogic-arcadyan_mozart-emmc-preloader.bin
-+bootfile_fip=openwrt-mediatek-filogic-arcadyan_mozart-emmc-bl31-uboot.fip
-+bootfile_upg=openwrt-mediatek-filogic-arcadyan_mozart-squashfs-sysupgrade.itb
++bootfile=immortalwrt-mediatek-filogic-arcadyan_mozart-initramfs.itb
++bootfile_bl2=immortalwrt-mediatek-filogic-arcadyan_mozart-emmc-preloader.bin
++bootfile_fip=immortalwrt-mediatek-filogic-arcadyan_mozart-emmc-bl31-uboot.fip
++bootfile_upg=immortalwrt-mediatek-filogic-arcadyan_mozart-squashfs-sysupgrade.itb
 +bootled_pwr=blue:status
 +bootled_rec=red:status
 +bootmenu_confirm_return=askenv - Press ENTER to return to menu ; bootmenu 60

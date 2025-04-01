@@ -726,6 +726,18 @@ define U-Boot/mt7986_netcore_n60
   DEPENDS:=+trusted-firmware-a-mt7986-spim-nand-ddr3
 endef
 
+define U-Boot/mt7986_netcore_n60-pro
+  NAME:=Netcore N60 Pro
+  BUILD_SUBTARGET:=filogic
+  BUILD_DEVICES:=netcore_n60-pro
+  UBOOT_CONFIG:=mt7986_netcore_n60-pro
+  UBOOT_IMAGE:=u-boot.fip
+  BL2_BOOTDEV:=spim-nand
+  BL2_SOC:=mt7986
+  BL2_DDRTYPE:=ddr4
+  DEPENDS:=+trusted-firmware-a-mt7986-spim-nand-ddr4
+endef
+
 define U-Boot/mt7986_tplink_tl-xdr4288
   NAME:=TP-LINK TL-XDR4288
   BUILD_SUBTARGET:=filogic
@@ -808,6 +820,18 @@ define U-Boot/mt7988_arcadyan_mozart
   BL2_SOC:=mt7988
   BL2_DDRTYPE:=comb
   DEPENDS:=+trusted-firmware-a-mt7988-emmc-comb
+endef
+
+define U-Boot/mt7988_asus_zenwifi-bt8
+  NAME:=Asus ZenWiFi BT8
+  BUILD_SUBTARGET:=filogic
+  BUILD_DEVICES:=asus_zenwifi-bt8-ubootmod
+  UBOOT_CONFIG:=mt7988a_asus_zenwifi-bt8
+  UBOOT_IMAGE:=u-boot.fip
+  BL2_BOOTDEV:=spim-nand-ubi
+  BL2_SOC:=mt7988
+  BL2_DDRTYPE:=ddr4
+  DEPENDS:=+trusted-firmware-a-mt7988-spim-nand-ubi-ddr4
 endef
 
 define U-Boot/mt7988_bananapi_bpi-r4-emmc
@@ -1004,6 +1028,7 @@ UBOOT_TARGETS := \
 	mt7986_jdcloud_re-cp-03 \
 	mt7986_mercusys_mr90x-v1 \
 	mt7986_netcore_n60 \
+	mt7986_netcore_n60-pro \
 	mt7986_tplink_tl-xdr4288 \
 	mt7986_tplink_tl-xdr6086 \
 	mt7986_tplink_tl-xdr6088 \
@@ -1012,6 +1037,7 @@ UBOOT_TARGETS := \
 	mt7986_zyxel_ex5601-t0 \
 	mt7986_rfb \
 	mt7988_arcadyan_mozart \
+	mt7988_asus_zenwifi-bt8 \
 	mt7988_bananapi_bpi-r4-emmc \
 	mt7988_bananapi_bpi-r4-sdmmc \
 	mt7988_bananapi_bpi-r4-snand \
