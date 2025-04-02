@@ -74,7 +74,7 @@ Signed-off-by: Tamizh Chelvam Raja <quic_tamizhr@quicinc.com>
  	if (len > size)
 --- a/drivers/net/wireless/ath/ath11k/dp.c
 +++ b/drivers/net/wireless/ath/ath11k/dp.c
-@@ -1171,8 +1171,10 @@ int ath11k_dp_alloc(struct ath11k_base *
+@@ -1158,8 +1158,10 @@ int ath11k_dp_alloc(struct ath11k_base *
  
  	INIT_LIST_HEAD(&dp->reo_cmd_list);
  	INIT_LIST_HEAD(&dp->reo_cmd_cache_flush_list);
@@ -87,15 +87,15 @@ Signed-off-by: Tamizh Chelvam Raja <quic_tamizhr@quicinc.com>
  
 --- a/drivers/net/wireless/ath/ath11k/dp.h
 +++ b/drivers/net/wireless/ath/ath11k/dp.h
-@@ -24,6 +24,7 @@ struct dp_rx_tid {
- 	u32 *vaddr;
+@@ -23,6 +23,7 @@ struct dp_rx_tid {
+ 	u8 tid;
  	dma_addr_t paddr;
  	u32 size;
 +	u32 pending_desc_size;
  	u32 ba_win_sz;
  	bool active;
  
-@@ -53,6 +54,14 @@ struct dp_reo_cache_flush_elem {
+@@ -55,6 +56,14 @@ struct dp_reo_cache_flush_elem {
  	unsigned long ts;
  };
  
@@ -110,7 +110,7 @@ Signed-off-by: Tamizh Chelvam Raja <quic_tamizhr@quicinc.com>
  struct dp_reo_cmd {
  	struct list_head list;
  	struct dp_rx_tid data;
-@@ -297,6 +306,12 @@ struct ath11k_dp {
+@@ -299,6 +308,12 @@ struct ath11k_dp {
  	 * - reo_cmd_cache_flush_count
  	 */
  	spinlock_t reo_cmd_lock;
@@ -173,11 +173,11 @@ Signed-off-by: Tamizh Chelvam Raja <quic_tamizhr@quicinc.com>
 +				 list) {
 +		list_del(&cmd_queue->list);
 +		rx_tid = &cmd_queue->data;
-+		if (rx_tid->vaddr) {
++		if (rx_tid->vaddr_unaligned) {
 +			dma_unmap_single(ab->dev, rx_tid->paddr,
 +					 rx_tid->size, DMA_BIDIRECTIONAL);
-+			kfree(rx_tid->vaddr);
-+			rx_tid->vaddr = NULL;
++			kfree(rx_tid->vaddr_unaligned);
++			rx_tid->vaddr_unaligned = NULL;
 +		}
 +		kfree(cmd_queue);
 +	}
@@ -235,10 +235,10 @@ Signed-off-by: Tamizh Chelvam Raja <quic_tamizhr@quicinc.com>
 -	if (ret) {
 -		ath11k_err(ab, "failed to send HAL_REO_CMD_FLUSH_CACHE cmd, tid %d (%d)\n",
 -			   rx_tid->tid, ret);
--		dma_unmap_single(ab->dev, rx_tid->paddr, rx_tid->size,
--				 DMA_BIDIRECTIONAL);
--		kfree(rx_tid->vaddr);
--		rx_tid->vaddr = NULL;
+-		dma_free_noncoherent(ab->dev, rx_tid->unaligned_size,
+-				     rx_tid->vaddr_unaligned,
+-				     rx_tid->paddr_unaligned, DMA_BIDIRECTIONAL);
+-		rx_tid->vaddr_unaligned = NULL;
 -	}
 +
 +exit:
@@ -275,7 +275,7 @@ Signed-off-by: Tamizh Chelvam Raja <quic_tamizhr@quicinc.com>
 +				update_rx_tid->active = true;
 +				break;
 +			}
-+			update_rx_tid->vaddr = NULL;
++			update_rx_tid->vaddr_unaligned = NULL;
 +			update_rx_tid->paddr = 0;
 +			update_rx_tid->size = 0;
 +			update_rx_tid->pending_desc_size = 0;
@@ -314,7 +314,7 @@ Signed-off-by: Tamizh Chelvam Raja <quic_tamizhr@quicinc.com>
  		}
  	}
  	spin_unlock_bh(&dp->reo_cmd_lock);
-@@ -820,34 +897,48 @@ free_desc:
+@@ -820,36 +897,50 @@ free_desc:
  void ath11k_peer_rx_tid_delete(struct ath11k *ar,
  			       struct ath11k_peer *peer, u8 tid)
  {
@@ -353,9 +353,9 @@ Signed-off-by: Tamizh Chelvam Raja <quic_tamizhr@quicinc.com>
 -		if (ret != -ESHUTDOWN)
 -			ath11k_err(ar->ab, "failed to send HAL_REO_CMD_UPDATE_RX_QUEUE cmd, tid %d (%d)\n",
 -				   tid, ret);
--		dma_unmap_single(ar->ab->dev, rx_tid->paddr, rx_tid->size,
--				 DMA_BIDIRECTIONAL);
--		kfree(rx_tid->vaddr);
+-		dma_free_noncoherent(ar->ab->dev, rx_tid->unaligned_size,
+-				     rx_tid->vaddr_unaligned,
+-				     rx_tid->paddr_unaligned, DMA_BIDIRECTIONAL);
 +	list_for_each_entry_safe(elem, tmp, &dp->reo_cmd_update_rx_queue_list,
 +				 list) {
 +		rx_tid = &elem->data;
@@ -366,9 +366,11 @@ Signed-off-by: Tamizh Chelvam Raja <quic_tamizhr@quicinc.com>
 +			elem->reo_cmd_update_rx_queue_resend_flag = true;
 +			break;
 +		}
- 		rx_tid->vaddr = NULL;
+ 		rx_tid->vaddr_unaligned = NULL;
 +		rx_tid->paddr = 0;
++		rx_tid->paddr_unaligned = 0;
 +		rx_tid->size = 0;
++		rx_tid->unaligned_size = 0;
 +		rx_tid->pending_desc_size = 0;
 +
 +		list_del(&elem->list);
@@ -377,7 +379,9 @@ Signed-off-by: Tamizh Chelvam Raja <quic_tamizhr@quicinc.com>
 +	spin_unlock_bh(&dp->reo_cmd_update_queue_lock);
  
 -	rx_tid->paddr = 0;
+-	rx_tid->paddr_unaligned = 0;
 -	rx_tid->size = 0;
+-	rx_tid->unaligned_size = 0;
 +	return;
  }
  

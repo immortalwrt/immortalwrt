@@ -175,7 +175,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  		u32 data_pos;
 --- a/drivers/net/wireless/ath/ath11k/dp.h
 +++ b/drivers/net/wireless/ath/ath11k/dp.h
-@@ -208,8 +208,9 @@ struct ath11k_pdev_dp {
+@@ -210,8 +210,9 @@ struct ath11k_pdev_dp {
  #define DP_WBM_RELEASE_RING_SIZE	64
  #define DP_TCL_DATA_RING_SIZE		512
  #define DP_TCL_DATA_RING_SIZE_WCN6750	2048
@@ -186,7 +186,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  #define DP_TCL_CMD_RING_SIZE		32
  #define DP_TCL_STATUS_RING_SIZE		32
  #define DP_REO_DST_RING_MAX		4
-@@ -222,9 +223,9 @@ struct ath11k_pdev_dp {
+@@ -224,9 +225,9 @@ struct ath11k_pdev_dp {
  #define DP_RXDMA_BUF_RING_SIZE		4096
  #define DP_RXDMA_REFILL_RING_SIZE	2048
  #define DP_RXDMA_ERR_DST_RING_SIZE	1024

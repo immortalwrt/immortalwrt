@@ -227,7 +227,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  
  	if (ret) {
  		ath11k_warn(ab, "failed to set default routing %d peer :%pM vdev_id :%d\n",
-@@ -135,6 +140,18 @@ static int ath11k_dp_srng_calculate_msi_
+@@ -133,6 +138,18 @@ static int ath11k_dp_srng_calculate_msi_
  {
  	const u8 *grp_mask;
  
@@ -246,7 +246,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  	switch (type) {
  	case HAL_WBM2SW_RELEASE:
  		if (ring_num == DP_RX_RELEASE_RING_NUM) {
-@@ -848,14 +865,16 @@ int ath11k_dp_service_srng(struct ath11k
+@@ -835,14 +852,16 @@ int ath11k_dp_service_srng(struct ath11k
  	int work_done = 0;
  	int i, j;
  	int tot_work_done = 0;
@@ -268,7 +268,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  		work_done = ath11k_dp_process_rx_err(ab, napi, budget);
  		budget -= work_done;
  		tot_work_done += work_done;
-@@ -863,7 +882,7 @@ int ath11k_dp_service_srng(struct ath11k
+@@ -850,7 +869,7 @@ int ath11k_dp_service_srng(struct ath11k
  			goto done;
  	}
  
@@ -277,7 +277,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  		work_done = ath11k_dp_rx_process_wbm_err(ab,
  							 napi,
  							 budget);
-@@ -874,7 +893,7 @@ int ath11k_dp_service_srng(struct ath11k
+@@ -861,7 +880,7 @@ int ath11k_dp_service_srng(struct ath11k
  			goto done;
  	}
  
@@ -286,7 +286,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  		i =  fls(ab->hw_params.ring_mask->rx[grp_id]) - 1;
  		work_done = ath11k_dp_process_rx(ab, i, napi,
  						 budget);
-@@ -908,7 +927,7 @@ int ath11k_dp_service_srng(struct ath11k
+@@ -895,7 +914,7 @@ int ath11k_dp_service_srng(struct ath11k
  	if (ab->hw_params.ring_mask->reo_status[grp_id])
  		ath11k_dp_process_reo_status(ab);
  
@@ -297,7 +297,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  
 --- a/drivers/net/wireless/ath/ath11k/dp.h
 +++ b/drivers/net/wireless/ath/ath11k/dp.h
-@@ -196,6 +196,7 @@ struct ath11k_pdev_dp {
+@@ -198,6 +198,7 @@ struct ath11k_pdev_dp {
  #define DP_AVG_MSDUS_PER_MPDU 4
  
  #define DP_RX_HASH_ENABLE	1 /* Enable hash based Rx steering */
@@ -357,7 +357,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  
  	if (ar->ab->hw_params.rxdma1_enable) {
  		rx_ring = &dp->rxdma_mon_buf_ring;
-@@ -2062,7 +2065,7 @@ int ath11k_dp_rx_crypto_mic_len(struct a
+@@ -2053,7 +2056,7 @@ int ath11k_dp_rx_crypto_mic_len(struct a
  	return 0;
  }
  
@@ -366,7 +366,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  					 enum hal_encrypt_type enctype)
  {
  	switch (enctype) {
-@@ -2090,7 +2093,7 @@ static int ath11k_dp_rx_crypto_param_len
+@@ -2081,7 +2084,7 @@ static int ath11k_dp_rx_crypto_param_len
  	return 0;
  }
  
@@ -375,7 +375,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  				       enum hal_encrypt_type enctype)
  {
  	switch (enctype) {
-@@ -2826,6 +2829,22 @@ static void ath11k_dp_rx_process_receive
+@@ -2817,6 +2820,22 @@ static void ath11k_dp_rx_process_receive
  	}
  }
  
@@ -398,7 +398,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
  			 struct napi_struct *napi, int budget)
  {
-@@ -3125,7 +3144,8 @@ static void ath11k_dp_rx_update_user_sta
+@@ -3116,7 +3135,8 @@ static void ath11k_dp_rx_update_user_sta
  	peer = ath11k_peer_find_by_ast(ar->ab, user_stats->ast_index);
  
  	if (peer == NULL) {
@@ -408,7 +408,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  			    user_stats->ast_index);
  		return;
  	}
-@@ -3133,6 +3153,13 @@ static void ath11k_dp_rx_update_user_sta
+@@ -3124,6 +3144,13 @@ static void ath11k_dp_rx_update_user_sta
  	arsta = (struct ath11k_sta *)peer->sta->drv_priv;
  	rx_stats = arsta->rx_stats;
  
@@ -422,7 +422,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  	if (!rx_stats)
  		return;
  
-@@ -3209,8 +3236,10 @@ static void ath11k_dp_rx_update_peer_mu_
+@@ -3200,8 +3227,10 @@ static void ath11k_dp_rx_update_peer_mu_
  {
  	u32 num_users, i;
  
@@ -434,7 +434,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  
  	num_users = ppdu_info->num_users;
  	if (num_users > HAL_MAX_UL_MU_USERS)
-@@ -5677,7 +5706,7 @@ int ath11k_dp_rx_process_mon_status(stru
+@@ -5668,7 +5697,7 @@ int ath11k_dp_rx_process_mon_status(stru
  	struct sk_buff *skb;
  	struct sk_buff_head skb_list;
  	struct ath11k_peer *peer;
@@ -443,7 +443,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  	int num_buffs_reaped = 0;
  	u32 rx_buf_sz;
  	u16 log_type;
-@@ -5748,6 +5777,7 @@ int ath11k_dp_rx_process_mon_status(stru
+@@ -5739,6 +5768,7 @@ int ath11k_dp_rx_process_mon_status(stru
  			if (ppdu_info->reception_type == HAL_RX_RECEPTION_TYPE_SU) {
  				arsta = (struct ath11k_sta *)peer->sta->drv_priv;
  				ath11k_dp_rx_update_peer_su_stats(arsta, ppdu_info);

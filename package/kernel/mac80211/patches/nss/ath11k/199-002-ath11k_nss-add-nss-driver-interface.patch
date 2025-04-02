@@ -2816,7 +2816,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -993,6 +993,29 @@ unlock_exit:
+@@ -994,6 +994,29 @@ unlock_exit:
  	spin_unlock_bh(&ab->base_lock);
  }
  
