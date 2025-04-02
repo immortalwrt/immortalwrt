@@ -120,7 +120,7 @@
  			    &fops_peer_ps_state);
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -1724,8 +1724,10 @@ ath11k_update_per_peer_tx_stats(struct a
+@@ -1715,8 +1715,10 @@ ath11k_update_per_peer_tx_stats(struct a
  		peer_stats->mu_pos   = mu_pos;
  		peer_stats->ru_tones = arsta->txrate.he_ru_alloc;
  
@@ -131,7 +131,7 @@
  	}
  
  	usr_stats->rate_stats_updated = true;
-@@ -2171,7 +2173,9 @@ void ath11k_dp_htt_htc_t2h_msg_handler(s
+@@ -2162,7 +2164,9 @@ void ath11k_dp_htt_htc_t2h_msg_handler(s
  		ath11k_htt_pull_ppdu_stats(ab, skb);
  		break;
  	case HTT_T2H_MSG_TYPE_EXT_STATS_CONF:

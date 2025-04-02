@@ -381,7 +381,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  	WMI_STA_PS_PARAM_TX_WAKE_THRESHOLD = 1,
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -1122,12 +1122,13 @@ err_mem_free:
+@@ -1113,12 +1113,13 @@ int ath11k_peer_rx_tid_setup(struct ath1
  	return ret;
  }
  
@@ -397,7 +397,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  	int ret;
  
  	ret = ath11k_peer_rx_tid_setup(ar, params->sta->addr, vdev_id,
-@@ -1139,13 +1140,13 @@ int ath11k_dp_rx_ampdu_start(struct ath1
+@@ -1130,13 +1131,13 @@ int ath11k_dp_rx_ampdu_start(struct ath1
  	return ret;
  }
  

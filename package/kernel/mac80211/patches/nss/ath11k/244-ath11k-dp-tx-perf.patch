@@ -50,7 +50,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  };
 --- a/drivers/net/wireless/ath/ath11k/dp.c
 +++ b/drivers/net/wireless/ath/ath11k/dp.c
-@@ -372,7 +372,7 @@ void ath11k_dp_stop_shadow_timers(struct
+@@ -359,7 +359,7 @@ void ath11k_dp_stop_shadow_timers(struct
  	if (!ab->hw_params.supports_shadow_regs)
  		return;
  
@@ -59,7 +59,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  		ath11k_dp_shadow_stop_timer(ab, &ab->dp.tx_ring_timer[i]);
  
  	ath11k_dp_shadow_stop_timer(ab, &ab->dp.reo_cmd_timer);
-@@ -441,7 +441,7 @@ static void ath11k_dp_srng_common_cleanu
+@@ -428,7 +428,7 @@ static void ath11k_dp_srng_common_cleanu
  	ath11k_dp_srng_cleanup(ab, &dp->wbm_desc_rel_ring);
  	ath11k_dp_srng_cleanup(ab, &dp->tcl_cmd_ring);
  	ath11k_dp_srng_cleanup(ab, &dp->tcl_status_ring);
@@ -68,7 +68,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  		ath11k_dp_srng_cleanup(ab, &dp->tx_ring[i].tcl_data_ring);
  		ath11k_dp_srng_cleanup(ab, &dp->tx_ring[i].tcl_comp_ring);
  	}
-@@ -477,6 +477,11 @@ static int ath11k_dp_srng_common_setup(s
+@@ -464,6 +464,11 @@ static int ath11k_dp_srng_common_setup(s
  		goto err;
  	}
  
@@ -80,7 +80,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  	ret = ath11k_dp_srng_setup(ab, &dp->tcl_status_ring, HAL_TCL_STATUS,
  				   0, 0, DP_TCL_STATUS_RING_SIZE);
  	if (ret) {
-@@ -484,7 +489,7 @@ static int ath11k_dp_srng_common_setup(s
+@@ -471,7 +476,7 @@ static int ath11k_dp_srng_common_setup(s
  		goto err;
  	}
  
@@ -89,7 +89,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  		tcl_num = ab->hw_params.hal_params->tcl2wbm_rbm_map[i].tcl_ring_num;
  		wbm_num = ab->hw_params.hal_params->tcl2wbm_rbm_map[i].wbm_ring_num;
  
-@@ -507,7 +512,7 @@ static int ath11k_dp_srng_common_setup(s
+@@ -494,7 +499,7 @@ static int ath11k_dp_srng_common_setup(s
  		}
  
  		srng = &ab->hal.srng_list[dp->tx_ring[i].tcl_data_ring.ring_id];
@@ -98,7 +98,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  
  		ath11k_dp_shadow_init_timer(ab, &dp->tx_ring_timer[i],
  					    ATH11K_SHADOW_DP_TIMER_INTERVAL,
-@@ -1121,7 +1126,7 @@ void ath11k_dp_free(struct ath11k_base *
+@@ -1108,7 +1113,7 @@ void ath11k_dp_free(struct ath11k_base *
  
  	ath11k_dp_reo_cmd_list_cleanup(ab);
  
@@ -107,7 +107,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  		spin_lock_bh(&dp->tx_ring[i].tx_idr_lock);
  		idr_for_each(&dp->tx_ring[i].txbuf_idr,
  			     ath11k_dp_tx_pending_cleanup, ab);
-@@ -1172,7 +1177,7 @@ int ath11k_dp_alloc(struct ath11k_base *
+@@ -1159,7 +1164,7 @@ int ath11k_dp_alloc(struct ath11k_base *
  
  	size = sizeof(struct hal_wbm_release_ring) * DP_TX_COMP_RING_SIZE;
  
