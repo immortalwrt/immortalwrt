@@ -14,6 +14,8 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include "ipq6018-mp5496.dtsi"
+
 &soc {
 	apc_apm: apm@b111000 {
 		compatible = "qcom,ipq807x-apm";
@@ -56,7 +58,7 @@
 			apc_vreg: regulator {
 				regulator-name = "apc_corner";
 				regulator-min-microvolt = <1>;
-				regulator-max-microvolt = <6>;
+				regulator-max-microvolt = <8>;
 				qcom,cpr-fuse-corners = <4>;
 				qcom,cpr-fuse-combos = <8>;
 				qcom,cpr-corners = <8>;

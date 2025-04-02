@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
-#include "ipq6018-mp5496.dtsi"
 #include "ipq6018-cpr-regulator.dtsi"
 
 &rpm {

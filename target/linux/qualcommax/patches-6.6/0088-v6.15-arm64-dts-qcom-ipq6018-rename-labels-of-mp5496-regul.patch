@@ -16,8 +16,8 @@ Signed-off-by: Bjorn Andersson <andersson@kernel.org>
 
 --- a/arch/arm64/boot/dts/qcom/ipq6018-mp5496.dtsi
 +++ b/arch/arm64/boot/dts/qcom/ipq6018-mp5496.dtsi
-@@ -7,26 +7,26 @@
- #include "ipq6018.dtsi"
+@@ -5,26 +5,26 @@
+  */
  
  &cpu0 {
 -	cpu-supply = <&ipq6018_s2>;
