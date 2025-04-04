@@ -7,7 +7,7 @@ CPUFREQ_PATH="/sys/devices/system/cpu/cpufreq"
 THERMAL_PATH="/sys/class/thermal"
 
 cpu_arch="$(awk -F ': ' '/model name/ {print $2}' "$CPUINFO_PATH" | head -n1)"
-[ -n "${cpu_arch}" ] || cpu_arch="?"
+[ -n "${cpu_arch}" ] || cpu_arch="General Processor"
 
 case "$DISTRIB_TARGET" in
 "x86"/*)
