@@ -58,6 +58,7 @@
  			gpios = <&pio 29 GPIO_ACTIVE_LOW>;
  		};
  
+
  		led-2 {
  			color = <LED_COLOR_ID_BLUE>;
  			function = LED_FUNCTION_USB;
@@ -94,7 +95,6 @@
 			partition@0 {
 				label = "BL2";
 				reg = <0x00000 0x0100000>;
-				read-only;
 			};
 
 			partition@100000 {
@@ -163,12 +163,11 @@
 		reg = <1>;
 		label = "wan";
 		phy-mode = "2500base-x";
-
 		fixed-link {
-			speed = <2500>;
-			full-duplex;
-			pause;
-		};
+                        speed = <2500>;
+                        full-duplex;
+                        pause;
+                };
 	};
 
 	mdio: mdio-bus {
@@ -184,13 +183,13 @@
 		reset-gpios = <&pio 6 GPIO_ACTIVE_LOW>;
 		reset-assert-us = <50000>;
 		reset-deassert-us = <20000>;
-		mxl,led-config = <0x0 0x0 0x0 0x3f0>;
+		mxl,led-config = <0x0 0x12 0x18 0x17>;
 	};
 
 	phy6: phy@6 {
 		compatible = "ethernet-phy-id67c9.de0a";
 		reg = <6>;
-		mxl,led-config = <0x0 0x0 0x0 0x3f0>;
+		mxl,led-config = <0x0 0x12 0x18 0x17>;
 	};
 
 	switch: switch@0 {
@@ -229,10 +228,10 @@
 			label = "lan1";
 			phy-mode = "2500base-x";
 			fixed-link {
-				speed = <2500>;
-				full-duplex;
-				pause;
-			};
+                        	speed = <2500>;
+                        	full-duplex;
+                        	pause;
+                	};
 		};
 
 		port@6 {

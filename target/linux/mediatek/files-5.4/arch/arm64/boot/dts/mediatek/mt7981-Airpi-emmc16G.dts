@@ -1,0 +1,33 @@
+/dts-v1/;
+
+#include "mt7981-Airpi-emmc16G.dtsi"
+
+/ {
+	model = "Aripi-EMMC16G";
+
+	aliases {
+		led-boot = &led_sys_red;
+		led-failsafe = &led_sys_red;
+		led-running = &led_sys_white;
+		led-upgrade = &led_sys_white;
+	};
+
+	gpio_export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+	};
+
+	gpio-leds {
+		compatible = "gpio-leds";
+
+		led_sys_red: led-0 {
+			gpios = <&pio 11 GPIO_ACTIVE_LOW>;
+		};
+
+		led_sys_white: led-1 {
+			gpios = <&pio 10 GPIO_ACTIVE_LOW>;
+		};
+	};
+};
+
+

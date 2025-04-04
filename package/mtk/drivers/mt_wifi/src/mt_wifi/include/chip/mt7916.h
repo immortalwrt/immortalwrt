@@ -1,0 +1,116 @@
+#ifndef __MT7916_H__
+#define __MT7916_H__
+
+struct _RTMP_ADAPTER;
+struct _RTMP_CHIP_DBG;
+
+#define DEFAULT_RID 0
+
+#define MT7916_BIN_FILE_NAME_E1 "WIFI_RAM_CODE_MT7916.bin"
+#define MT7916_WA_BIN_FILE_NAME "7916_WACPU_RAM_CODE_release.bin"
+#define MT7916_ROM_PATCH_BIN_FILE_NAME_E1 "mt7916_patch_e1_hdr.bin"
+
+#define MT7916_ROM_PATCH_START_ADDRESS	0x900000
+
+#define MT7916_MT_WTBL_SIZE         544
+#define MAX_INBAND_WTBL_NUM         150
+
+#define WTBL_MASK_UPDATE_MAX_RETRY	64000
+
+#ifdef DOT11_HE_AX
+#ifdef WIFI_TWT_SUPPORT
+#define MT7916_TWT_HW_AGRT_MAX_NUM TWT_HW_AGRT_MAX_NUM
+#define MT7916_TWT_HW_BTWT_MAX_NUM TWT_HW_BTWT_MAX_NUM
+#define MT7916_TWT_HW_GRP_MAX_NUM  TWT_HW_GRP_MAX_NUM
+#define MT7916_TWT_SP_DURATION_MIN_NUM TWT_MIN_SP_DURATION
+#endif /* WIFI_TWT_SUPPORT */
+#endif /* DOT11_HE_AX */
+
+#ifdef SKU_AX7800
+#define MT7916_EEPROM_DEFAULT_FILE_PATH "/lib/firmware/MT7916_ePAeLNA_EEPROM_AX7800.bin"
+#else
+#define MT7916_EEPROM_DEFAULT_FILE_PATH                     "/lib/firmware/MT7916_EEPROM.bin"
+#endif
+/* rxv dara word */
+#define E1_RXV_PACKET_HEADER_DW_NUM    2
+#define E1_RXV_ENTRY_HEADER_DW_NUM    2
+#define E1_CMN_RXV1_DW_NUM    18
+#define E1_CMN_RXV2_DW_NUM    26
+#define E1_USR_RXV1_DW_NUM    2
+#define E1_USR_RXV2_DW_NUM    4
+
+
+/*
+ * Used for DNL + TSSI Calibration happen in MP-Line state
+ * 3 Channel for G-band L/M/H channel
+ * 16 Channel for A-band L/H channel
+ */
+extern UINT16 MT7916_DNL_CAL_GBAND_BW20_FREQ[];
+extern UINT16 MT7916_DNL_CAL_ABAND_BW20_FREQ[];
+extern UINT16 MT7916_DNL_CAL_BW20_FREQ[];
+
+extern UINT16 MT7916_DNL_CAL_GBAND_BW20_CH[];
+extern UINT16 MT7916_DNL_CAL_ABAND_BW20_CH[];
+extern UINT16 MT7916_DNL_CAL_BW20_CH[];
+
+extern UINT16 MT7916_DNL_CAL_GBAND_BW20_SIZE;
+extern UINT16 MT7916_DNL_CAL_ABAND_BW20_SIZE;
+extern UINT16 MT7916_DNL_CAL_BW20_FREQ_SIZE;
+
+extern UINT16 MT7916_DNL_CAL_GBAND_BW20_CH_SIZE;
+extern UINT16 MT7916_DNL_CAL_ABAND_BW20_CH_SIZE;
+extern UINT16 MT7916_DNL_CAL_B20_CH_SIZE;
+
+void mt7916_init(struct _RTMP_ADAPTER *pAd);
+VOID mt7916_chip_dbg_init(struct _RTMP_CHIP_DBG *dbg_ops);
+INT mt7916AsicArchOpsInit(struct _RTMP_ADAPTER *pAd);
+VOID mt790A_hif_ctrl_chip_pcie1_init(VOID *hif_chip);
+VOID mt7906_hif_ctrl_chip_init(VOID *hif_chip);
+UINT32 MT7916_get_rid_value(VOID);
+
+
+#ifdef PRE_CAL_MT7916_SUPPORT
+
+#ifdef RTMP_FLASH_SUPPORT
+#define PRECAL_INDICATION_BYTE 0x19A
+
+#define CAL_PRE_CAL_SIZE_OFFSET  4096	/* DW0 : 0xE00 ~ 0xE03 Used for save total pre-cal size
+										*  DW1 : reserved
+										*  DW2 : reserved
+										*  DW3 : reserved
+										*/
+#define CAL_FLASH_OFFSET         (4096+16)  /* 0xE10 ~ 0x5780 Used for save Group calibration data */
+#else
+#define CAL_FLASH_OFFSET         0
+#endif
+
+extern UINT16 MT7916_PER_CH_A5_BW20_BW160_FREQ[];
+extern UINT16 MT7916_PER_CH_A5_BW20_BW160[];
+extern UINT16 MT7916_PER_CH_A6_BW20_BW160_FREQ[];
+extern UINT16 MT7916_PER_CH_A6_BW20_BW160[];
+extern UINT16 MT7916_PER_CH_G_BW20_FREQ[];
+extern UINT16 MT7916_PER_CH_G_BW20[];
+
+extern UINT16 MT7916_PER_CH_A5_BW20_BW160_FREQ_SIZE;
+extern UINT16 MT7916_PER_CH_A6_BW20_BW160_FREQ_SIZE;
+extern UINT16 MT7916_PER_CH_G_BW20_FREQ_SIZE;
+extern UINT16 MT7916_PER_CH_A5_BW20_BW160_SIZE;
+extern UINT16 MT7916_PER_CH_A6_BW20_BW160_SIZE;
+extern UINT16 MT7916_PER_CH_G_BW20_SIZE;
+
+extern UINT16 MT7916_PER_CH_A5_BW20[];
+extern UINT16 MT7916_PER_CH_A5_BW160[];
+extern UINT16 MT7916_PER_CH_A6_BW20[];
+extern UINT16 MT7916_PER_CH_A6_BW160[];
+extern UINT16 MT7916_PER_CH_G_BW20[];
+extern UINT16 MT7916_PER_CH_A5_BW20_SIZE;
+extern UINT16 MT7916_PER_CH_A6_BW20_SIZE;
+
+
+#endif /*PRE_CAL_MT7916_SUPPORT*/
+
+
+
+
+#endif /* __MT7916_H__ */
+

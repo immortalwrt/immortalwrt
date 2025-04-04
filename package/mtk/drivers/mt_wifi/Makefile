@@ -20,7 +20,6 @@ endif
 endif
 
 PKG_BUILD_DEPENDS:=warp
-PKG_SOURCE:=mt798x-7.6.6.1-src.tar.xz
 PKG_VERSION:=7.6.6.1-$(PKG_SUFFIX)
 
 PKG_BUILD_PARALLEL:=1

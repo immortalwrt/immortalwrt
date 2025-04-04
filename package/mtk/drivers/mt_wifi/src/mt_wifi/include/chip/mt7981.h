@@ -1,0 +1,138 @@
+#ifndef __MT7981_H__
+#define __MT7981_H__
+
+struct _RTMP_ADAPTER;
+struct _RTMP_CHIP_DBG;
+
+#define DEFAULT_RID 0
+
+#define MT7981_BIN_FILE_NAME_E1 "WIFI_RAM_CODE_MT7981.bin"
+#define MT7981_WA_BIN_FILE_NAME "7981_WACPU_RAM_CODE_release.bin"
+#define MT7981_ROM_PATCH_BIN_FILE_NAME_E1 "mt7981_patch_e1_hdr.bin"
+
+#define MT7981_ROM_PATCH_START_ADDRESS	0x900000
+
+#define CONNINFRA_SKU_DECISION_ADDRESS  0x18050000
+enum {
+	ENUM_ONE_ADIE_DBDC		= 0x7,
+	ENUM_ONE_ADIE_SINGLE_BAND	= 0xa,
+	ENUM_DUAL_ADIE			= 0xf,
+};
+
+#define MT7981_MT_WTBL_SIZE         544
+#define MT7981_MT_WTBL_SIZE_LIMIT	288
+#define MAX_INBAND_WTBL_NUM         150
+
+#define WTBL_MASK_UPDATE_MAX_RETRY	64000
+
+#ifdef DOT11_HE_AX
+#ifdef WIFI_TWT_SUPPORT
+#ifdef DYNAMIC_TWT_NODE_SUPPORT
+#define MT7981_TWT_HW_AGRT_MAX_NUM 100
+#else
+#define MT7981_TWT_HW_AGRT_MAX_NUM TWT_HW_AGRT_MAX_NUM
+#endif /* DYNAMIC_TWT_NODE_SUPPORT */
+#define MT7981_TWT_HW_BTWT_MAX_NUM TWT_HW_BTWT_MAX_NUM
+#define MT7981_TWT_HW_GRP_MAX_NUM  TWT_HW_GRP_MAX_NUM
+#define MT7981_TWT_SP_DURATION_MIN_NUM TWT_MIN_SP_DURATION
+#endif /* WIFI_TWT_SUPPORT */
+#endif /* DOT11_HE_AX */
+
+#define MT7976_TYPE_C 0xc
+
+#define MT7981_EEPROM_BIN_FILE_IPA		"/lib/firmware/MT7981_iPAiLNA_EEPROM.bin"
+#define MT7981_EEPROM_BIN_FILE_EPA		"/lib/firmware/MT7981_ePAeLNA_EEPROM.bin"
+
+/* rxv dara word */
+#define E1_RXV_PACKET_HEADER_DW_NUM    2
+#define E1_RXV_ENTRY_HEADER_DW_NUM    2
+#define E1_CMN_RXV1_DW_NUM    18
+#define E1_CMN_RXV2_DW_NUM    26
+#define E1_USR_RXV1_DW_NUM    2
+#define E1_USR_RXV2_DW_NUM    4
+
+#ifdef DATA_TXPWR_CTRL
+#define DATA_TXPOWER_MAX_BW_NUM 4
+#define DATA_TXPOWER_MAX_MCS_NUM 12
+#endif
+
+/* CONNSYS efuse settings */
+#define EFS_CONNSYS_FW						0x11F20284
+#define MAX_STA_NUM_MASK					BITS(0, 1)
+#define MAX_STA_NUM_OFFSET					0
+#define MAX_BAND1_PATH_MASK					BITS(2, 3)
+#define MAX_BAND1_PATH_OFFSET				2
+#define MAX_RU_NUM_MASK						BITS(4, 5)
+#define MAX_RU_NUM_OFFSET					4
+
+/*
+ * Used for DNL + TSSI Calibration happen in MP-Line state
+ * 3 Channel for G-band L/M/H channel
+ * 16 Channel for A-band L/H channel
+ */
+extern UINT16 MT7981_DNL_CAL_GBAND_BW20_FREQ[];
+extern UINT16 MT7981_DNL_CAL_ABAND_BW20_FREQ[];
+extern UINT16 MT7981_DNL_CAL_BW20_FREQ[];
+
+extern UINT16 MT7981_DNL_CAL_GBAND_BW20_CH[];
+extern UINT16 MT7981_DNL_CAL_ABAND_BW20_CH[];
+extern UINT16 MT7981_DNL_CAL_BW20_CH[];
+
+extern UINT16 MT7981_DNL_CAL_GBAND_BW20_SIZE;
+extern UINT16 MT7981_DNL_CAL_ABAND_BW20_SIZE;
+extern UINT16 MT7981_DNL_CAL_BW20_FREQ_SIZE;
+
+extern UINT16 MT7981_DNL_CAL_GBAND_BW20_CH_SIZE;
+extern UINT16 MT7981_DNL_CAL_ABAND_BW20_CH_SIZE;
+extern UINT16 MT7981_DNL_CAL_B20_CH_SIZE;
+
+void mt7981_init(struct _RTMP_ADAPTER *pAd);
+VOID mt7981_chip_dbg_init(struct _RTMP_CHIP_DBG *dbg_ops);
+INT mt7981AsicArchOpsInit(struct _RTMP_ADAPTER *pAd);
+VOID mt7981_hif_ctrl_chip_pcie1_init(VOID *hif_chip);
+VOID mt7981_hif_ctrl_chip_init(VOID *hif_chip);
+UINT32 MT7981_get_rid_value(VOID);
+
+
+#ifdef PRE_CAL_MT7981_SUPPORT
+
+#ifdef RTMP_FLASH_SUPPORT
+#define PRECAL_INDICATION_BYTE 0x19A
+
+#define CAL_PRE_CAL_SIZE_OFFSET  4096	/* DW0 : 0xE00 ~ 0xE03 Used for save total pre-cal size
+										*  DW1 : reserved
+										*  DW2 : reserved
+										*  DW3 : reserved
+										*/
+#define CAL_FLASH_OFFSET         (4096+16)  /* 0xE10 ~ 0x5780 Used for save Group calibration data */
+#else
+#define CAL_FLASH_OFFSET         0
+#endif
+
+extern UINT16 MT7981_PER_CH_A5_BW20_BW160_FREQ[];
+extern UINT16 MT7981_PER_CH_A5_BW20_BW160[];
+extern UINT16 MT7981_PER_CH_A6_BW20_BW160_FREQ[];
+extern UINT16 MT7981_PER_CH_A6_BW20_BW160[];
+extern UINT16 MT7981_PER_CH_G_BW20_FREQ[];
+extern UINT16 MT7981_PER_CH_G_BW20[];
+
+extern UINT16 MT7981_PER_CH_A5_BW20_BW160_FREQ_SIZE;
+extern UINT16 MT7981_PER_CH_A6_BW20_BW160_FREQ_SIZE;
+extern UINT16 MT7981_PER_CH_G_BW20_FREQ_SIZE;
+extern UINT16 MT7981_PER_CH_A5_BW20_BW160_SIZE;
+extern UINT16 MT7981_PER_CH_A6_BW20_BW160_SIZE;
+extern UINT16 MT7981_PER_CH_G_BW20_SIZE;
+
+extern UINT16 MT7981_PER_CH_A5_BW20[];
+extern UINT16 MT7981_PER_CH_A5_BW160[];
+extern UINT16 MT7981_PER_CH_A6_BW20[];
+extern UINT16 MT7981_PER_CH_A6_BW160[];
+extern UINT16 MT7981_PER_CH_G_BW20[];
+extern UINT16 MT7981_PER_CH_A5_BW20_SIZE;
+extern UINT16 MT7981_PER_CH_A6_BW20_SIZE;
+
+#endif /*PRE_CAL_MT7981_SUPPORT*/
+
+
+#endif /* __MT7981_H__ */
+
