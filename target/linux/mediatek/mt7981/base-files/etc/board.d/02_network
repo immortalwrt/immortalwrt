@@ -62,9 +62,11 @@ mediatek_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0:lan:3" "1:lan:2" "2:lan:1" "6u@eth0"
 		;;
-	abt,asr3000 |\
-	*rax3000m*)
+	abt,asr3000)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" wan
+		;;
+	*rax3000m*)
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" "eth1"
 		;;
 	*nokia,ea0326gmp*)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" wan
