@@ -633,7 +633,6 @@ unsigned int do_hnat_ge_to_ext(struct sk_buff *skb, const char *func)
 	struct foe_entry *entry;
 	struct net_device *dev;
 
- 	 
 	entry = &hnat_priv->foe_table_cpu[skb_hnat_ppe(skb)][skb_hnat_entry(skb)];
 
 	if (IS_IPV4_GRP(entry))
@@ -649,7 +648,6 @@ unsigned int do_hnat_ge_to_ext(struct sk_buff *skb, const char *func)
 	}
 
 	skb->dev = dev;
-
 	if (IS_HQOS_MODE && eth_hdr(skb)->h_proto == HQOS_MAGIC_TAG) {
 		skb = skb_unshare(skb, GFP_ATOMIC);
 		if (!skb)
@@ -733,12 +731,12 @@ static inline void hnat_set_iif(const struct nf_hook_state *state,
 {
 	if (IS_WHNAT(state->in) && FROM_WED(skb)) {
 		return;
-	} else if (IS_EXT(state->in)) {
-                skb_hnat_iface(skb) = FOE_MAGIC_EXT;
 	} else if (IS_LAN(state->in)) {
 		skb_hnat_iface(skb) = FOE_MAGIC_GE_LAN;
 	} else if (IS_PPD(state->in)) {
 		skb_hnat_iface(skb) = FOE_MAGIC_GE_PPD;
+	} else if (IS_EXT(state->in)) {
+		skb_hnat_iface(skb) = FOE_MAGIC_EXT;
 	} else if (IS_WAN(state->in)) {
 		skb_hnat_iface(skb) = FOE_MAGIC_GE_WAN;
 	} else if (!IS_BR(state->in)) {
@@ -1042,8 +1040,8 @@ mtk_hnat_ipv6_nf_pre_routing(void *priv, struct sk_buff *skb,
 		goto drop;
 
 	if (!IS_WHNAT(state->in) && IS_EXT(state->in) && IS_SPACE_AVAILABLE_HEAD(skb)) {
-		skb_hnat_alg(skb) = 0;
-		skb_hnat_magic_tag(skb) = HNAT_MAGIC_TAG;
+		hnat_set_head_frags(state, skb, 0, hnat_set_alg);
+ 		hnat_set_head_frags(state, skb, HNAT_MAGIC_TAG, hnat_set_tag);
 	}
 
 	if (!is_magic_tag_valid(skb))
@@ -1117,8 +1115,8 @@ mtk_hnat_ipv4_nf_pre_routing(void *priv, struct sk_buff *skb,
 		
 
 	if (!IS_WHNAT(state->in) && IS_EXT(state->in) && IS_SPACE_AVAILABLE_HEAD(skb)) {
-		skb_hnat_alg(skb) = 0;
-		skb_hnat_magic_tag(skb) = HNAT_MAGIC_TAG;
+		hnat_set_head_frags(state, skb, 0, hnat_set_alg);
+ 		hnat_set_head_frags(state, skb, HNAT_MAGIC_TAG, hnat_set_tag);
 	}
 
 	if (!is_magic_tag_valid(skb))
@@ -1180,8 +1178,8 @@ mtk_hnat_br_nf_local_in(void *priv, struct sk_buff *skb,
 		goto drop;
 	
 	if (!IS_WHNAT(state->in) && IS_EXT(state->in) && IS_SPACE_AVAILABLE_HEAD(skb)) {
-		skb_hnat_alg(skb) = 0;
-		skb_hnat_magic_tag(skb) = HNAT_MAGIC_TAG;
+		hnat_set_head_frags(state, skb, 0, hnat_set_alg);
+ 		hnat_set_head_frags(state, skb, HNAT_MAGIC_TAG, hnat_set_tag);
 	}
 
 	if (!is_magic_tag_valid(skb))
@@ -1849,8 +1847,8 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 				entry.ipv4_hnapt.vlan1 = 2;
 		}
 
-		trace_printk("learn of lan or wan(iif=%x) --> %s(ext)\n",
-			     skb_hnat_iface(skb), dev->name);
+		trace_printk("learn of lan or wan(iif=%x) --> %s(ext),dev->ifindex%x\n",
+			     skb_hnat_iface(skb), dev->name,dev->ifindex);
 		/* To CPU then stolen by pre-routing hant hook of LAN/WAN
 		 * Current setting is PDMA RX.
 		 */
@@ -2352,8 +2350,8 @@ static unsigned int mtk_hnat_nf_post_routing(
 	if (!IS_LAN(out) && !IS_WAN(out) && !IS_EXT(out))
 		return 0;
 
-	if (!IS_WHNAT(out) && IS_EXT(out))
-               return 0;
+	//if (!IS_WHNAT(out) && IS_EXT(out))
+          //     return 0;
 
  
 	trace_printk("[%s] case hit, %x-->%s, reason=%x\n", __func__,

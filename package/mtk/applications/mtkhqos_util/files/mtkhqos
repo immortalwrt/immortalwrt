@@ -83,7 +83,7 @@ if [ "$hqos" -eq 0 ]; then
 	done
 
 	echo 1 > $hqos_path/hook_toggle
-	echo 1 > $hqos_path/qos_toggle
+	echo 0 > $hqos_path/qos_toggle
 
 	exit 0
 fi
@@ -153,4 +153,4 @@ config_foreach setup_queue queue
 
 # enable hooks
 echo 1 > $hqos_path/hook_toggle
-echo 1 > $hqos_path/qos_toggle
+echo 0 > $hqos_path/qos_toggle
