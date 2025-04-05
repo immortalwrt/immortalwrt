@@ -1509,8 +1509,8 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
 		skb_hnat_magic_tag(skb) = HNAT_MAGIC_TAG;
 
 		if (skb_hnat_reason(skb) == HIT_BIND_FORCE_TO_CPU) {
-			trace_printk("[%s] reason=0x%x(force to CPU) from WAN to Ext\n",
-				     __func__, skb_hnat_reason(skb));
+			//printk_ratelimited(KERN_WARNING "[%s] reason=0x%x(force to CPU) from WAN to Ext\n",
+			//	     __func__, skb_hnat_reason(skb));
 			skb->pkt_type = PACKET_HOST; 
 		}
 

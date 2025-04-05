@@ -867,10 +867,10 @@ enum FoeIpAct {
 #define NR_WDMA1_PORT 9
 #define LAN_DEV_NAME hnat_priv->lan
 #define IS_WAN(dev)                                                            \
-	((!strncmp(dev->name, "eth0", 4))   || (!strncmp(dev->name, "eth1", 3)) \
+	((!strncmp(dev->name, "eth0", 4))   || (!strncmp(dev->name, "eth1", 4)) \
 	|| (!strncmp(dev->name, "lan", 3))	|| IS_BOND(dev) || (!strncmp(dev->name, "wan", 3)) )
 #define IS_LAN(dev)                                                            \
-	((!strncmp(dev->name, "eth0", 4))   || (!strncmp(dev->name, "eth1", 3)) \
+	((!strncmp(dev->name, "eth0", 4))   || (!strncmp(dev->name, "eth1", 4)) \
 	|| (!strncmp(dev->name, "lan", 3))	|| IS_BOND(dev) || (!strncmp(dev->name, "wan", 3)) )
 #define IS_BR(dev) (!strncmp(dev->name, "br", 2))
 #define IS_BOND(dev) (!strncmp(dev->name, "bond", 4))

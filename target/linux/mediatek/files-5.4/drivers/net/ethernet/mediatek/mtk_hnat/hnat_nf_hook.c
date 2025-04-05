@@ -2349,10 +2349,6 @@ static unsigned int mtk_hnat_nf_post_routing(
 	
 	if (!IS_LAN(out) && !IS_WAN(out) && !IS_EXT(out))
 		return 0;
-
-	if (!IS_WHNAT(out) && IS_EXT(out))
-               return 0;
-
  
 	trace_printk("[%s] case hit, %x-->%s, reason=%x\n", __func__,
 		     skb_hnat_iface(skb), out->name, skb_hnat_reason(skb));
