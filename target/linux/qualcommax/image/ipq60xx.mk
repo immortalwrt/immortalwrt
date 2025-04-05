@@ -6,7 +6,7 @@ define Build/wax610-netgear-tar
 	md5sum $@.tmp/nand-ipq6018-apps.img | cut -c 1-32 > $@.tmp/nand-ipq6018-apps.md5sum
 	echo "WAX610" > $@.tmp/metadata.txt
 	echo "WAX610-610Y_V99.9.9.9" > $@.tmp/version
- 	tar -C $@.tmp/ -cf $@ .
+	tar -C $@.tmp/ -cf $@ .
 	rm -rf $@.tmp
 endef
 
