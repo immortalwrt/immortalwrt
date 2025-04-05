@@ -21,6 +21,8 @@ case "$FIRMWARE" in
 	linksys,mr7350|\
 	linksys,mr7500|\
 	netgear,wax214|\
+	netgear,wax610|\
+	netgear,wax610y|\
 	qihoo,360v6|\
 	redmi,ax5|\
 	xiaomi,ax1800|\

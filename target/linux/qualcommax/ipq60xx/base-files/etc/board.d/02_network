@@ -27,10 +27,6 @@ ipq60xx_setup_interfaces()
 	yuncore,fap650)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" "wan"
 		;;
-	netgear,wax214|\
-	tplink,eap610-outdoor)
-		ucidef_set_interface_lan "lan" "dhcp"
-		;;
 	cmiot,ax18|\
 	jdcloud,re-ss-01|\
 	jdcloud,re-cs-07|\
@@ -40,6 +36,12 @@ ipq60xx_setup_interfaces()
 	zn,m2|\
 	qihoo,360v6)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" "wan"
+		;;
+	netgear,wax214|\
+	netgear,wax610|\
+	netgear,wax610y|\
+	tplink,eap610-outdoor)
+		ucidef_set_interface_lan "lan" "dhcp"
 		;;
 	*)
 		echo "Unsupported hardware. Network interfaces not initialized"
