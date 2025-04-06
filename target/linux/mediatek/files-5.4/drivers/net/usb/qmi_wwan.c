@@ -570,7 +570,7 @@
  static int qmi_wwan_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
  {
 	 struct qmi_wwan_state *info = (void *)&dev->data;
-	 bool rawip = info->flags & QMI_WWAN_FLAG_RAWIP;
+	 bool rawip = 0;
 	 __be16 proto;
  
 	 /* This check is no longer done by usbnet */
