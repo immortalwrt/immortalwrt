@@ -32,6 +32,24 @@
 			regulator-always-on;
 	};
 
+        reg_5v: regulator-5v {
+                compatible = "regulator-fixed";
+                regulator-name = "fixed-5V";
+                regulator-min-microvolt = <5000000>;
+                regulator-max-microvolt = <5000000>;
+                regulator-boot-on;
+                regulator-always-on;
+        };
+
+        usb_vbus: regulator-usb-vbus {
+                compatible = "regulator-fixed";
+                regulator-name = "usb_vbus";
+                regulator-min-microvolt = <5000000>;
+                regulator-max-microvolt = <5000000>;
+                gpios = <&pio 20 GPIO_ACTIVE_LOW>;
+                regulator-boot-on;
+        };
+
 	sound {
 		compatible = "mediatek,mt7986-wm8960-machine";
 		mediatek,platform = <&afe>;
@@ -194,6 +212,15 @@
 	status = "okay";
 };
 
+/* Add usb pin control  */
+&xhci {
+        pinctrl-names = "default";
+        pinctrl-0 = <&usb_ngff_pins>;
+        vusb33-supply = <&reg_3p3v>;
+        vbus-supply = <&usb_vbus>;
+        status = "okay";
+};
+
 &mmc0 {
         pinctrl-names = "default", "state_uhs";
         pinctrl-0 = <&mmc0_pins_default>;
@@ -227,6 +254,42 @@
 };
 
 &pio {
+
+/* Define usb_ngff_pins SPI1_CS --> GPIO 32 */
+
+        usb_ngff_pins: usb-ngff-pins {
+                ngff-gnss-off {
+                        pins = "GPIO_6";
+                        drive-strength = <8>;
+                        mediatek,pull-up-adv = <1>;
+                };
+                ngff-pe-rst {
+                        pins = "GPIO_7";
+                        drive-strength = <8>;
+                        mediatek,pull-up-adv = <1>;
+                };
+                ngff-wwan-off {
+                        pins = "GPIO_8";
+                        drive-strength = <8>;
+                        mediatek,pull-up-adv = <1>;
+                };
+                ngff-pwr-off {
+                        pins = "GPIO_9";
+                        drive-strength = <8>;
+                        mediatek,pull-up-adv = <1>;
+                };
+                ngff-rst {
+                        pins = "GPIO_10";
+                        drive-strength = <8>;
+                        mediatek,pull-up-adv = <1>;
+                };
+                ngff-coex {
+                        pins = "SPI1_CS";
+                        drive-strength = <8>;
+                        mediatek,pull-up-adv = <1>;
+                };
+        };
+
         mmc0_pins_default: mmc0-pins-50-to-61-default {
                 mux {
                         function = "flash";
