@@ -1305,6 +1305,19 @@ endef
 
 $(eval $(call KernelPackage,usb-net-qmi-wwan))
 
+define KernelPackage/usb-net-qmi-wwan-quectel-bpi
+  TITLE:=QMI WWAN driver
+  KCONFIG:=CONFIG_USB_NET_QMI_WWAN
+  FILES:= $(LINUX_DIR)/drivers/$(USBNET_DIR)/qmi_wwan_q.ko
+  AUTOLOAD:=$(call AutoProbe,qmi_wwan_q)
+  $(call AddDepends/usb-net,+kmod-usb-wdm)
+endef
+
+define KernelPackage/usb-net-qmi-wwan-quectel-bpi/description
+ QMI WWAN driver for Quectel bpi version
+endef
+
+$(eval $(call KernelPackage,usb-net-qmi-wwan-quectel-bpi))
 
 define KernelPackage/usb-net-rtl8150
   TITLE:=Kernel module for USB-to-Ethernet Realtek convertors

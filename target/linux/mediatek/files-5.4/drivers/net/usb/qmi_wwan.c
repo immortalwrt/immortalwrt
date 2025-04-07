@@ -849,6 +849,7 @@
 	 }
 	 dev->net->netdev_ops = &qmi_wwan_netdev_ops;
 	 dev->net->sysfs_groups[0] = &qmi_wwan_sysfs_attr_group;
+	 dev->rx_urb_size = 32*1024;
  err:
 	 return status;
  }

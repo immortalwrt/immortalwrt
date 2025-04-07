@@ -41,15 +41,6 @@
                 regulator-always-on;
         };
 
-        usb_vbus: regulator-usb-vbus {
-                compatible = "regulator-fixed";
-                regulator-name = "usb_vbus";
-                regulator-min-microvolt = <5000000>;
-                regulator-max-microvolt = <5000000>;
-                gpios = <&pio 20 GPIO_ACTIVE_LOW>;
-                regulator-boot-on;
-        };
-
 	sound {
 		compatible = "mediatek,mt7986-wm8960-machine";
 		mediatek,platform = <&afe>;
@@ -216,8 +207,6 @@
 &xhci {
         pinctrl-names = "default";
         pinctrl-0 = <&usb_ngff_pins>;
-        vusb33-supply = <&reg_3p3v>;
-        vbus-supply = <&usb_vbus>;
         status = "okay";
 };
 

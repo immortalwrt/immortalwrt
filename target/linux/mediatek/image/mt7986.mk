@@ -8,7 +8,8 @@ MT7986_USB_PKGS := automount blkid blockdev fdisk \
 MT7986_WWAN_PKGS := wwan uqmi modemmanager \
     luci-proto-modemmanager luci-proto-qmi \
     kmod-usb-net-cdc-ether kmod-usb-net-cdc-mbim kmod-usb-net-cdc-ncm \
-    kmod-usb-serial-option kmod-usb-serial-qualcomm
+    kmod-usb-serial-option kmod-usb-serial-qualcomm \
+    kmod-usb-net-qmi-wwan-quectel-bpi  kmod-usb-net-qmi-wwan
 
 define Device/mt7986a-ax6000-spim-nor-rfb
   DEVICE_VENDOR := MediaTek
