@@ -435,6 +435,18 @@ define U-Boot/mt7981_livinet_zr-3020
   DEPENDS:=+trusted-firmware-a-mt7981-spim-nand-ddr3
 endef
 
+define U-Boot/mt7981_netis_nx31
+  NAME:=netis NX31
+  BUILD_SUBTARGET:=filogic
+  BUILD_DEVICES:=netis_nx31
+  UBOOT_CONFIG:=mt7981_netis_nx31
+  UBOOT_IMAGE:=u-boot.fip
+  BL2_BOOTDEV:=spim-nand
+  BL2_SOC:=mt7981
+  BL2_DDRTYPE:=ddr3
+  DEPENDS:=+trusted-firmware-a-mt7981-spim-nand-ddr3
+endef
+
 define U-Boot/mt7981_nokia_ea0326gmp
   NAME:=Nokia EA0326GMP
   BUILD_SUBTARGET:=filogic
@@ -1006,6 +1018,7 @@ UBOOT_TARGETS := \
 	mt7981_konka_komi-a31-emmc \
 	mt7981_konka_komi-a31-nor \
 	mt7981_livinet_zr-3020 \
+	mt7981_netis_nx31 \
 	mt7981_nokia_ea0326gmp \
 	mt7981_openwrt_one-snand \
 	mt7981_openwrt_one-nor \
