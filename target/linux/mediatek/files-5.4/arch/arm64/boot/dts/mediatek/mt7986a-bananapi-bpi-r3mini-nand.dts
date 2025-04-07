@@ -195,6 +195,7 @@
 			reset-deassert-us = <20000>;
 			phy-mode = "2500base-x";
 			full-duplex;
+			airoha,polarity = <3>;
 			pause;
 		};
 
@@ -208,6 +209,7 @@
 			reset-deassert-us = <20000>;
 			phy-mode = "2500base-x";
 			full-duplex;
+			airoha,polarity = <3>;
 			pause;
 		};
 	};
