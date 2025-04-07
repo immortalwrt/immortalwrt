@@ -244,7 +244,9 @@ $(eval $(call KernelPackage,phy-realtek))
 define KernelPackage/phy-air-en8811h
    SUBMENU:=$(NETWORK_DEVICES_MENU)
    TITLE:=Airoha EN8811H PHY Driver
-   KCONFIG:=CONFIG_AIR_EN8811H_PHY
+   KCONFIG:= \
+	CONFIG_AIROHA_EN8811H_PHY=y \
+	CONFIG_AIROHA_EN8811H_PHY_DEBUGFS=y
    DEPENDS:=+kmod-libphy
    FILES:=$(LINUX_DIR)/drivers/net/phy/air_en8811h.ko
    AUTOLOAD:=$(call AutoLoad,20,air_en8811h,1)

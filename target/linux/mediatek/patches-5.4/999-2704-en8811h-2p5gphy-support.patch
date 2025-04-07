@@ -1,0 +1,44 @@
+From b5aa08e6dd4e06ffd3fb4de2ffc6af1e3da0bce4 Mon Sep 17 00:00:00 2001
+From: Sam Shih <sam.shih@mediatek.com>
+Date: Fri, 2 Jun 2023 13:06:00 +0800
+Subject: [PATCH] 
+ [backport-networking-drivers][999-1703-en8811h-2p5gphy-support.patch]
+
+---
+ drivers/net/phy/Kconfig       |  11 +
+ drivers/net/phy/Makefile      |   2 +
+ 2 files changed, 13 insertions(+)
+
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index 170dd00cd..5eeccfee2 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -345,6 +345,17 @@ config SFP
+ 	depends on HWMON || HWMON=n
+ 	select MDIO_I2C
+ 
++config AIROHA_EN8811H_PHY
++	tristate "Drivers for Airoha EN8811H 2.5G Gigabit PHY"
++	---help---
++	  Currently supports the Airoha EN8811H PHY.
++
++config AIROHA_EN8811H_PHY_DEBUGFS
++	bool "EN8811H debugfs support"
++	depends on AIROHA_EN8811H_PHY
++	---help---
++	  Enable creation of debugfs files for the EN8811H drivers.
++
+ config ADIN_PHY
+ 	tristate "Analog Devices Industrial Ethernet PHYs"
+ 	help
+diff -urN a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+--- a/drivers/net/phy/Makefile	2022-03-26 16:28:57.619384439 +0800
++++ b/drivers/net/phy/Makefile	2022-03-26 16:31:40.893705848 +0800
+@@ -111,6 +111,8 @@
+ obj-$(CONFIG_TERANETICS_PHY)	+= teranetics.o
+ obj-$(CONFIG_VITESSE_PHY)	+= vitesse.o
+ obj-$(CONFIG_XILINX_GMII2RGMII) += xilinx_gmii2rgmii.o
++air_en8811h-y := air_en8811h_main.o air_en8811h_api.o
++obj-$(CONFIG_AIROHA_EN8811H_PHY)       += air_en8811h.o
+ obj-$(CONFIG_MT753X_GSW)        += mtk/mt753x/
+ obj-$(CONFIG_RTL8367S_GSW)	+= rtk/

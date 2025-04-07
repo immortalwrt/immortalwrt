@@ -1305,6 +1305,7 @@ endef
 
 $(eval $(call KernelPackage,usb-net-qmi-wwan))
 
+
 define KernelPackage/usb-net-qmi-wwan-quectel-bpi
   TITLE:=QMI WWAN driver
   KCONFIG:=CONFIG_USB_NET_QMI_WWAN
@@ -1314,7 +1315,7 @@ define KernelPackage/usb-net-qmi-wwan-quectel-bpi
 endef
 
 define KernelPackage/usb-net-qmi-wwan-quectel-bpi/description
- QMI WWAN driver for Quectel bpi version
+  QMI WWAN driver for Quectel bpi version
 endef
 
 $(eval $(call KernelPackage,usb-net-qmi-wwan-quectel-bpi))
