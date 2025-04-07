@@ -246,6 +246,7 @@
 			phy-mode = "2500base-x";
 			full-duplex;
 			pause;
+			airoha,polarity = <1>;
 		};
 
 		phy15: phy@15 {
@@ -259,6 +260,7 @@
 			phy-mode = "2500base-x";
 			full-duplex;
 			pause;
+			airoha,polarity = <1>;
 		};
 	};
 };
