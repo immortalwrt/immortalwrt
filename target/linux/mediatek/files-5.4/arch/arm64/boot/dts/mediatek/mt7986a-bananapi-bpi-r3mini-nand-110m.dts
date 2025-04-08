@@ -147,31 +147,41 @@
 		#size-cells = <0>;
 
 		phy14: phy@14 {
-			/* EN8811H PHY ID */
 			compatible = "ethernet-phy-id03a2.a411";
-			/* PHY Address */
 			reg = <14>;
-			reset-gpios = <&pio 49 1>;     /* GPIO49 */
+			pinctrl-names = "default";
+			pinctrl-0 = <&en8811_pwr_a>;
+
+			airoha,polarity = <3>;
+
+			interrupt-parent = <&pio>;
+			interrupts = <48 IRQ_TYPE_LEVEL_HIGH>;
+			reset-gpios = <&pio 49 1>;
 			reset-assert-us = <10000>;
 			reset-deassert-us = <20000>;
+
 			phy-mode = "2500base-x";
 			full-duplex;
 			pause;
-			airoha,polarity = <3>;
 		};
 
 		phy15: phy@15 {
-			/* EN8811H PHY ID */
 			compatible = "ethernet-phy-id03a2.a411";
-			/* PHY Address */
 			reg = <15>;
-			reset-gpios = <&pio 47 1>;     /* GPIO47 */
+			pinctrl-names = "default";
+			pinctrl-0 = <&en8811_pwr_b>;
+
+			airoha,polarity = <3>;
+
+			interrupt-parent = <&pio>;
+			interrupts = <46 IRQ_TYPE_LEVEL_HIGH>;
+			reset-gpios = <&pio 47 1>;
 			reset-assert-us = <10000>;
 			reset-deassert-us = <20000>;
+
 			phy-mode = "2500base-x";
 			full-duplex;
 			pause;
-			airoha,polarity = <3>;
 		};
 	};
 };
