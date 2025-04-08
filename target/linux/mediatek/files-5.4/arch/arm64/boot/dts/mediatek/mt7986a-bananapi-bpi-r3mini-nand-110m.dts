@@ -304,6 +304,21 @@
                 };
         };
 
+	 en8811_pwr_a: en8811-pwr-a {
+                pins = "GPIO_11";
+                drive-strength = <8>;
+                mediatek,pull-down-adv = <1>;
+                output-low;
+        };
+
+        en8811_pwr_b: en8811-pwr-b {
+                pins = "GPIO_12";
+                drive-strength = <8>;
+                mediatek,pull-down-adv = <1>;
+                output-low;
+        };
+
+
         mmc0_pins_default: mmc0-pins-50-to-61-default {
                 mux {
                         function = "flash";
