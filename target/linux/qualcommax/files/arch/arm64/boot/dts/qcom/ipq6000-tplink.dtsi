@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
-/dts-v1/;
-
 #include "ipq6018.dtsi"
 #include "ipq6018-ess.dtsi"
 #include "ipq6018-nss.dtsi"
@@ -13,20 +11,17 @@
 #include <dt-bindings/leds/common.h>
 
 / {
-	model = "TP-Link EAP610-Outdoor";
-	compatible = "tplink,eap610-outdoor", "qcom,ipq6018";
-
 	aliases {
 		serial0 = &blsp1_uart3;
 		led-boot = &led_sys_green;
-		led-failsafe = &led_sys_amber;
+		led-failsafe = &led_sys_green;
 		led-running = &led_sys_green;
-		led-upgrade = &led_sys_amber;
+		led-upgrade = &led_sys_green;
 	};
 
 	chosen {
 		stdout-path = "serial0:115200n8";
-		bootargs-append = " ubi.block=0,rootfs root=/dev/ubiblock0_1";
+		bootargs-append = " root=/dev/ubiblock0_1";
 	};
 
 	keys {
@@ -42,23 +37,11 @@
 	leds {
 		compatible = "gpio-leds";
 
-		led_sys_amber: sys-amber {
-			function = "system";
-			color = <LED_COLOR_ID_AMBER>;
-			gpios = <&tlmm 35 GPIO_ACTIVE_HIGH>;
-		};
-
 		led_sys_green: sys-green {
-			function = "system";
 			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_STATUS;
 			gpios = <&tlmm 37 GPIO_ACTIVE_HIGH>;
 		};
-	};
-
-	gpio-restart {
-		compatible = "gpio-restart";
-		gpios = <&tlmm 61 GPIO_ACTIVE_LOW>;
-		open-source;
 	};
 };
 
@@ -78,13 +61,6 @@
 			bias-pull-up;
 		};
 	};
-
-	led_enable {
-		gpio-hog;
-		output-high;
-		gpios = <36 GPIO_ACTIVE_HIGH>;
-		line-name = "enable-leds";
-	};
 };
 
 &dp5 {
@@ -98,13 +74,17 @@
 };
 
 &mdio {
+	status = "okay";
 	pinctrl-0 = <&mdio_pins>;
 	pinctrl-names = "default";
 	reset-gpios = <&tlmm 77 GPIO_ACTIVE_LOW>;
-	status = "okay";
 
 	rtl8211f_4: ethernet-phy@4 {
+		compatible = "ethernet-phy-id001c.c916";
 		reg = <4>;
+
+		realtek,clkout-disable;
+		realtek,aldps-enable;
 	};
 };
 
@@ -114,30 +94,10 @@
 	status = "okay";
 
 	qcom,port_phyinfo {
-		port@4 {
+		port@5 {
 			port_id = <5>;
 			phy_address = <4>;
+			port_mac_sel = "QGMAC_PORT";
 		};
 	};
-};
-
-&qpic_bam {
-	status = "okay";
-};
-
-&qpic_nand {
-	status = "okay";
-
-	nand@0 {
-		reg = <0>;
-		nand-ecc-strength = <4>;
-		nand-ecc-step-size = <512>;
-		nand-bus-width = <8>;
-	};
-};
-
-&wifi {
-	status = "okay";
-	ieee80211-freq-limit = <2402000 5835000>;
-	qcom,ath11k-calibration-variant = "TP-Link-EAP610-Outdoor";
 };

@@ -137,7 +137,7 @@ platform_do_upgrade() {
 		fw_setenv auto_recovery yes
 		nand_do_upgrade "$1"
 		;;
-	tplink,eap610-outdoor|\
+	tplink,eap610od|\
 	tplink,eap623od-hd-v1)
 		tplink_do_upgrade "$1"
 		;;

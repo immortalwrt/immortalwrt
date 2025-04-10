@@ -45,7 +45,8 @@ case "$board" in
 		[ "$PHYNBR" = "0" ] && macaddr_add $label_mac 2 > /sys${DEVPATH}/macaddress
 		[ "$PHYNBR" = "1" ] && macaddr_add $label_mac 3 > /sys${DEVPATH}/macaddress
 		;;
-	tplink,eap610-outdoor)
+	tplink,eap610od|\
+	tplink,eap623od-hd-v1)
 		label_mac=$(get_mac_binary /tmp/factory_data/default-mac 0)
 		[ "$PHYNBR" = "0" ] && macaddr_add $label_mac 1 > /sys${DEVPATH}/macaddress
 		[ "$PHYNBR" = "1" ] && macaddr_add $label_mac 2 > /sys${DEVPATH}/macaddress

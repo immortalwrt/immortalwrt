@@ -1,0 +1,52 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+/dts-v1/;
+
+#include "ipq6000-tplink.dtsi"
+
+/ {
+	model = "TP-Link EAP610-Outdoor";
+	compatible = "tplink,eap610od", "qcom,ipq6018";
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_sys_amber: sys-amber {
+			color = <LED_COLOR_ID_AMBER>;
+			function = LED_FUNCTION_STATUS;
+			gpios = <&tlmm 35 GPIO_ACTIVE_HIGH>;
+		};
+	};
+
+	gpio-restart {
+		compatible = "gpio-restart";
+		gpios = <&tlmm 61 GPIO_ACTIVE_LOW>;
+		open-source;
+	};
+};
+
+&tlmm {
+	led_enable {
+		gpio-hog;
+		output-high;
+		gpios = <36 GPIO_ACTIVE_HIGH>;
+		line-name = "enable-leds";
+	};
+};
+
+&qpic_nand {
+	status = "okay";
+
+	nand@0 {
+		reg = <0>;
+		nand-ecc-strength = <4>;
+		nand-ecc-step-size = <512>;
+		nand-bus-width = <8>;
+	};
+};
+
+&wifi {
+	status = "okay";
+	qcom,ath11k-fw-memory-mode = <1>;
+	qcom,ath11k-calibration-variant = "TP-Link-EAP610-Outdoor";
+};

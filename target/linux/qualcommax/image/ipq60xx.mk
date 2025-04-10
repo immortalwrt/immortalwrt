@@ -149,7 +149,7 @@ define Device/qihoo_360v6
 endef
 TARGET_DEVICES += qihoo_360v6
 
-define Device/tplink_eap610-outdoor
+define Device/tplink_eap610od
 	$(call Device/FitImage)
 	$(call Device/UbiFit)
 	DEVICE_VENDOR := TP-Link
@@ -157,7 +157,7 @@ define Device/tplink_eap610-outdoor
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
 	SOC := ipq6000
-	DEVICE_PACKAGES := ipq-wifi-tplink_eap610-outdoor
+	DEVICE_PACKAGES := ipq-wifi-tplink_eap610od kmod-phy-realtek
 	IMAGES += web-ui-factory.bin
 	IMAGE/web-ui-factory.bin := append-ubi | tplink-image-2022
 	TPLINK_SUPPORT_STRING := SupportList:\r\n \
@@ -165,7 +165,7 @@ define Device/tplink_eap610-outdoor
 		EAP610-Outdoor(TP-Link|JP|AX1800-D):1.0\r\n \
 		EAP610-Outdoor(TP-Link|CA|AX1800-D):1.0
 endef
-TARGET_DEVICES += tplink_eap610-outdoor
+TARGET_DEVICES += tplink_eap610od
 
 define Device/tplink_eap623od-hd-v1
 	$(call Device/FitImage)
@@ -175,7 +175,7 @@ define Device/tplink_eap623od-hd-v1
 	DEVICE_VARIANT := v1
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
-	SOC := ipq6018
+	SOC := ipq6000
 	DEVICE_PACKAGES := ipq-wifi-tplink_eap623od-hd-v1 kmod-phy-realtek
 	IMAGES += web-ui-factory.bin
 	IMAGE/web-ui-factory.bin := append-ubi | tplink-image-2022
