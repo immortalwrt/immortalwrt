@@ -1,0 +1,38 @@
+name: 🌀 Daily Sync with Upstream
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Chạy mỗi ngày lúc 2h sáng UTC (~9h sáng VN)
+  workflow_dispatch:     # Cho phép chạy tay nếu cần
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout your repository
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false  # Không dùng token mặc định
+          fetch-depth: 0              # Lấy toàn bộ lịch sử
+
+      - name: 🔧 Set up Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: 🔄 Add upstream and fetch
+        run: |
+          git remote add upstream https://github.com/immortalwrt/immortalwrt.git
+          git fetch upstream
+
+      - name: 🔀 Merge upstream changes
+        run: |
+          git checkout master
+          git merge upstream/master --allow-unrelated-histories --no-edit || echo "Nothing to merge"
+
+      - name: 🚀 Push changes to your fork
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: master
