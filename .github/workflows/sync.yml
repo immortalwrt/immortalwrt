@@ -13,8 +13,8 @@ jobs:
       - name: 📥 Checkout your repository
         uses: actions/checkout@v3
         with:
-          persist-credentials: false  # Không dùng token mặc định
-          fetch-depth: 0              # Lấy toàn bộ lịch sử
+          persist-credentials: false
+          fetch-depth: 0
 
       - name: 🔧 Set up Git
         run: |
@@ -24,15 +24,13 @@ jobs:
       - name: 🔄 Add upstream and fetch
         run: |
           git remote add upstream https://github.com/immortalwrt/immortalwrt.git
-          git fetch upstream
+          git fetch upstream --no-tags
 
-      - name: 🚀 Push changes to your fork
+      - name: 🔀 Merge upstream changes
         run: |
-         git push origin master
+          git checkout master
+          git merge upstream/master --allow-unrelated-histories --no-edit || echo "Nothing to merge"
 
-
-      - name: 🚀 Push changes to your fork
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: master
+      - name: 🚀 Push changes to your fork (only master branch)
+        run: |
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/Doanduy09/Immortalwrt.git master
