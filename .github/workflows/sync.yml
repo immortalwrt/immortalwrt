@@ -26,10 +26,10 @@ jobs:
           git remote add upstream https://github.com/immortalwrt/immortalwrt.git
           git fetch upstream
 
-      - name: 🔀 Merge upstream changes
+      - name: 🚀 Push changes to your fork
         run: |
-          git checkout master
-          git merge upstream/master --allow-unrelated-histories --no-edit || echo "Nothing to merge"
+         git push origin master
+
 
       - name: 🚀 Push changes to your fork
         uses: ad-m/github-push-action@v0.6.0
