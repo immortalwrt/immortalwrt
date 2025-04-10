@@ -6,9 +6,9 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/firmware/qca-wireless.git
-PKG_SOURCE_DATE:=2025-04-01
-PKG_SOURCE_VERSION:=c220fac7fdb35628ba53ff53ed36cf883a401161
-PKG_MIRROR_HASH:=26338b4f165eb2e90273cd61ed26715b99e496ccf738167e22ff9213ca42c973
+PKG_SOURCE_DATE:=2025-04-08
+PKG_SOURCE_VERSION:=9591c9b7578af3548c35bb80cd6c37978669f7c9
+PKG_MIRROR_HASH:=b5c0024a0c0ebeb61ad6bc037f897685d161f1578aca5a1366dd33603661338b
 PKG_FLAGS:=nonshared
 
 include $(INCLUDE_DIR)/package.mk
@@ -68,6 +68,7 @@ ALLWIFIBOARDS:= \
 	spectrum_sax1v1k \
 	tplink_eap610-outdoor \
 	tplink_eap620hd-v1 \
+	tplink_eap623od-hd-v1 \
 	tplink_eap660hd-v1 \
 	wallys_dr40x9 \
 	xiaomi_ax3600 \
@@ -216,6 +217,7 @@ $(eval $(call generate-ipq-wifi-package,skspruce_wia3300-20,SKSpruce WIA3300-20)
 $(eval $(call generate-ipq-wifi-package,spectrum_sax1v1k,Spectrum SAX1V1K))
 $(eval $(call generate-ipq-wifi-package,tplink_eap610-outdoor,TPLink EAP610-Outdoor))
 $(eval $(call generate-ipq-wifi-package,tplink_eap620hd-v1,TP-Link EAP620 HD v1))
+$(eval $(call generate-ipq-wifi-package,tplink_eap623od-hd-v1,TP-Link EAP623-Outdoor HD v1))
 $(eval $(call generate-ipq-wifi-package,tplink_eap660hd-v1,TP-Link EAP660 HD v1))
 $(eval $(call generate-ipq-wifi-package,wallys_dr40x9,Wallys DR40X9))
 $(eval $(call generate-ipq-wifi-package,xiaomi_ax3600,Xiaomi AX3600))
