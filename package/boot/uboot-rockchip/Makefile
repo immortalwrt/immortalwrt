@@ -139,6 +139,12 @@ define U-Boot/rockpro64-rk3399
     pine64_rockpro64
 endef
 
+define U-Boot/rp-king3399-rk3399
+  $(U-Boot/rk3399/Default)
+  NAME:=Rongpin King3399
+  BUILD_DEVICES:= \
+    rongpin_king3399
+endef
 
 # RK3568 boards
 
@@ -227,6 +233,7 @@ UBOOT_TARGETS := \
   nanopi-r4s-enterprise-rk3399 \
   rock-pi-4-rk3399 \
   rockpro64-rk3399 \
+  rp-king3399-rk3399 \
   nanopi-r2c-rk3328 \
   nanopi-r2c-plus-rk3328 \
   nanopi-r2s-rk3328 \
