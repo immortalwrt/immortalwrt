@@ -9,7 +9,7 @@ are tad overkill for calculating flow hashes, and take a lot of cpu time too.
  
 -	hash = siphash(flow_keys_hash_start(keys),
 -		       flow_keys_hash_length(keys), keyval);
-+	hash = jhash(flow_keys_hash_start(keys), flow_keys_hash_length(keys), *(u32*)keyval);
++	hash = siphash(flow_keys_hash_start(keys), flow_keys_hash_length(keys), keyval);
  	if (!hash)
  		hash = 1;
  
