@@ -130,6 +130,17 @@ define Device/friendlyarm_nanopi-r4s-enterprise
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r4s-enterprise
 
+define Device/rongpin_king3399
+  DEVICE_VENDOR := Rongpin
+  DEVICE_MODEL := King3399
+  SOC := rk3399
+  UBOOT_DEVICE_NAME := rp-king3399-rk3399
+  BOOT_FLOW := pine64-bin
+  DEVICE_PACKAGES := kmod-r8168 kmod-brcmfmac wpad-openssl \
+	brcmfmac-firmware-4356-sdio brcmfmac-nvram-4356-sdio
+endef
+TARGET_DEVICES += rongpin_king3399
+
 define Device/friendlyarm_nanopi-r5c
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R5C
