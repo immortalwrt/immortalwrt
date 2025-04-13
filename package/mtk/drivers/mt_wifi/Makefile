@@ -328,13 +328,16 @@ if [ "$$(CONFIG_MTK_WIFI_FW_BIN_LOAD)" = "y" ]; then \
 		./files/$$(MT7986_FW_DIR)/mt7986_patch_e1_hdr.bin \
 		./files/$$(MT7986_FW_DIR)/mt7986_patch_e1_hdr_mt7975.bin \
 		./files/$$(MT7986_FW_DIR)/7986_WACPU_RAM_CODE_release.bin $(1)/lib/firmware/; \
+		if [ "$$(CONFIG_MTK_MT7986_NEW_FW)" = "y" ]; then \
+		if [ "$$(CONFIG_MTK_WIFI_SKU_TYPE)" = "AX4200" ] ; then \
+			$(INSTALL_BIN) ./files/$$(MT7986_FW_DIR)/MT7986_ePAeLNA_EEPROM_ONEADIE_DBDC.bin \
+			$(1)/lib/firmware/; \
+		fi; \
+		else \
 		if [ "$$(CONFIG_MTK_WIFI_SKU_TYPE)" = "AX6000" -o "$$(CONFIG_MTK_WIFI_SKU_TYPE)" = "AX8400" ] ; then \
 			$(INSTALL_BIN) ./files/mt7986-default-eeprom/MT7986_iPAiLNA_EEPROM_AX6000.bin ./files/mt7986-default-eeprom/MT7986_ePAeLNA_EEPROM_AX6000.bin \
 			$(1)/lib/firmware/; \
 		fi; \
-		if [ "$$(CONFIG_MTK_WIFI_SKU_TYPE)" = "AX4200" ] ; then \
-			$(INSTALL_BIN) ./files/$$(MT7986_FW_DIR)/MT7986_ePAeLNA_EEPROM_ONEADIE_DBDC.bin \
-			$(1)/lib/firmware/; \
 		fi; \
 	fi; \
 	if [ "$$(CONFIG_MTK_CHIP_MT7916)" = "y" ] ; then \
