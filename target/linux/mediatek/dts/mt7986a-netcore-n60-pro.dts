@@ -13,11 +13,11 @@
 
 	aliases {
 		serial0 = &uart0;
-		label-mac-device = &gmac0;
 		led-boot = &led_power;
 		led-failsafe = &led_power;
 		led-running = &led_power;
 		led-upgrade = &led_power;
+		label-mac-device = &gmac0;
 	};
 
 	chosen {
@@ -112,7 +112,7 @@
 		reg = <0>;
 		phy-mode = "2500base-x";
 
-		nvmem-cells = <&macaddr_factory_1fef20 0>;
+		nvmem-cells = <&macaddr_factory_1fef20>;
 		nvmem-cell-names = "mac-address";
 
 		fixed-link {
@@ -128,7 +128,7 @@
 		phy-handle = <&phy6>;
 		phy-mode = "2500base-x";
 
-		nvmem-cells = <&macaddr_factory_1fef26 0>;
+		nvmem-cells = <&macaddr_factory_1fef26>;
 		nvmem-cell-names = "mac-address";
 	};
 
@@ -273,15 +273,11 @@
 					};
 
 					macaddr_factory_1fef20: macaddr@1fef20 {
-						compatible = "mac-base";
 						reg = <0x1fef20 0x6>;
-						#nvmem-cell-cells = <1>;
 					};
 
 					macaddr_factory_1fef26: macaddr@1fef26 {
-						compatible = "mac-base";
 						reg = <0x1fef26 0x6>;
-						#nvmem-cell-cells = <1>;
 					};
 				};
 			};
@@ -343,13 +339,13 @@
 	};
 };
 
-&trng {
-	status = "okay";
-};
-
 &ssusb {
 	vusb33-supply = <&reg_3p3v>;
 	vbus-supply = <&reg_5v>;
+	status = "okay";
+};
+
+&trng {
 	status = "okay";
 };
 
