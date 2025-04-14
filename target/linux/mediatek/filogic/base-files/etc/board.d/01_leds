@@ -51,7 +51,6 @@ glinet,gl-xe3000)
 	;;
 huasifei,wh3000-emmc)
 	ucidef_set_led_netdev "wan" "WAN" "red:wan" "eth1"
-	ucidef_set_led_netdev "wlan" "WLAN" "white:wlan" "phy1-ap0"
 	;;
 imou,lc-hx3001|\
 nokia,ea0326gmp)
@@ -79,6 +78,9 @@ netcore,n60-pro)
 	;;
 netgear,wax220)
 	ucidef_set_led_netdev "eth0" "LAN" "green:lan" "eth0"
+	;;
+netis,nx31)
+	ucidef_set_led_netdev "wan" "wan" "blue:wan" "eth1" "link tx rx"
 	;;
 openembed,som7981)
 	ucidef_set_led_netdev "lanact" "LANACT" "amber:lan" "eth1" "rx tx"
