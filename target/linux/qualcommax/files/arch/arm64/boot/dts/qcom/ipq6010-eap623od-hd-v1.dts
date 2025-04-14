@@ -2,7 +2,7 @@
 
 /dts-v1/;
 
-#include "ipq6000-tplink.dtsi"
+#include "ipq6010-tplink.dtsi"
 
 / {
 	model = "TP-Link EAP623-Outdoor HD V1.0";
@@ -11,9 +11,9 @@
 	leds {
 		compatible = "gpio-leds";
 
-		led_sys_wlan: sys-wlan {
+		led_sys_yellow: sys-yellow {
 			color = <LED_COLOR_ID_YELLOW>;
-			function = LED_FUNCTION_WLAN;
+			function = LED_FUNCTION_STATUS;
 			gpios = <&tlmm 32 GPIO_ACTIVE_HIGH>;
 		};
 	};

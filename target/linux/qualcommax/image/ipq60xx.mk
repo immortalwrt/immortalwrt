@@ -156,7 +156,7 @@ define Device/tplink_eap610od
 	DEVICE_MODEL := EAP610-Outdoor
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
-	SOC := ipq6000
+	SOC := ipq6010
 	DEVICE_PACKAGES := ipq-wifi-tplink_eap610od kmod-phy-realtek
 	IMAGES += web-ui-factory.bin
 	IMAGE/web-ui-factory.bin := append-ubi | tplink-image-2022
@@ -175,7 +175,7 @@ define Device/tplink_eap623od-hd-v1
 	DEVICE_VARIANT := v1
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
-	SOC := ipq6000
+	SOC := ipq6010
 	DEVICE_PACKAGES := ipq-wifi-tplink_eap623od-hd-v1 kmod-phy-realtek
 	IMAGES += web-ui-factory.bin
 	IMAGE/web-ui-factory.bin := append-ubi | tplink-image-2022

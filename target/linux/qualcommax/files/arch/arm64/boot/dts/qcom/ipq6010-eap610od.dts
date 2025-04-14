@@ -2,7 +2,7 @@
 
 /dts-v1/;
 
-#include "ipq6000-tplink.dtsi"
+#include "ipq6010-tplink.dtsi"
 
 / {
 	model = "TP-Link EAP610-Outdoor";

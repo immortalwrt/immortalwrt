@@ -9,3 +9,5 @@ uci -q batch << EOF
   set smp_affinity.general.enable_log='1'
   commit smp_affinity
 EOF
+
+exit 0
