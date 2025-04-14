@@ -21,27 +21,14 @@ define KernelPackage/r8127
   DEPENDS:=@PCI_SUPPORT +kmod-libphy
   FILES:=$(PKG_BUILD_DIR)/src/r8127.ko
   AUTOLOAD:=$(call AutoProbe,r8127)
-  PROVIDES:=kmod-r8169
-  VARIANT:=regular
+  PROVIDES:=kmod-r8169 kmod-r8127-rss
 endef
-
-define KernelPackage/r8127-rss
-$(call KernelPackage/r8127)
-  CONFLICTS:=kmod-r8127
-  TITLE+= (RSS)
-  VARIANT:=rss
-endef
-
-ifeq ($(BUILD_VARIANT),rss)
-  PKG_MAKE_FLAGS += ENABLE_RSS_SUPPORT=y
-endif
 
 define Build/Compile
 	+$(KERNEL_MAKE) $(PKG_JOBS) \
-		$(PKG_MAKE_FLAGS) \
 		M="$(PKG_BUILD_DIR)/src" \
+		ENABLE_RSS_SUPPORT=y \
 		modules
 endef
 
 $(eval $(call KernelPackage,r8127))
-$(eval $(call KernelPackage,r8127-rss))
