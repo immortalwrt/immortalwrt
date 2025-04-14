@@ -663,7 +663,7 @@
  static inline const void *choose_neigh_daddr(const struct in6_addr *p,
  					     struct sk_buff *skb,
  					     const void *daddr)
-@@ -3876,6 +3879,10 @@ int ip6_route_add(struct fib6_config *cf
+@@ -3910,6 +3913,10 @@ int ip6_route_add(struct fib6_config *cf
  		return PTR_ERR(rt);
  
  	err = __ip6_ins_rt(rt, &cfg->fc_nlinfo, extack);
@@ -674,7 +674,7 @@
  	fib6_info_release(rt);
  
  	return err;
-@@ -3897,6 +3904,9 @@ static int __ip6_del_rt(struct fib6_info
+@@ -3931,6 +3938,9 @@ static int __ip6_del_rt(struct fib6_info
  	err = fib6_del(rt, info);
  	spin_unlock_bh(&table->tb6_lock);
  
@@ -684,7 +684,7 @@
  out:
  	fib6_info_release(rt);
  	return err;
-@@ -6359,6 +6369,20 @@ static int ip6_route_dev_notify(struct n
+@@ -6393,6 +6403,20 @@ static int ip6_route_dev_notify(struct n
  	return NOTIFY_OK;
  }
  

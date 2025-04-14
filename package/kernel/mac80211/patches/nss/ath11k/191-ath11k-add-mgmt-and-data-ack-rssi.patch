@@ -1,6 +1,6 @@
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -10214,6 +10214,8 @@ static int __ath11k_mac_register(struct
+@@ -10215,6 +10215,8 @@ static int __ath11k_mac_register(struct
  		wiphy_ext_feature_set(ar->hw->wiphy,
  				      NL80211_EXT_FEATURE_ACK_SIGNAL_SUPPORT);
  

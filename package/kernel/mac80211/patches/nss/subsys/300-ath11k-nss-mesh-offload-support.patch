@@ -340,7 +340,7 @@ Signed-off-by: Gautham Kumar Senthilkumaran <quic_gauthamk@quicinc.com>
  
 --- a/net/mac80211/driver-ops.c
 +++ b/net/mac80211/driver-ops.c
-@@ -622,3 +622,23 @@ int drv_change_sta_links(struct ieee8021
+@@ -623,3 +623,23 @@ int drv_change_sta_links(struct ieee8021
  
  	return 0;
  }

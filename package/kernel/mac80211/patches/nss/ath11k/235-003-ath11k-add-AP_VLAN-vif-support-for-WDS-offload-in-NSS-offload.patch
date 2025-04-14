@@ -214,7 +214,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  		ieee80211_queue_work(ar->hw, &arsta->set_4addr_wk);
  		arsta->use_4addr_set = true;
  	}
-@@ -6527,6 +6651,9 @@ static int ath11k_mac_op_update_vif_offl
+@@ -6528,6 +6652,9 @@ static int ath11k_mac_op_update_vif_offl
  	u32 param_id, param_value;
  	int ret;
  
@@ -224,7 +224,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  	param_id = WMI_VDEV_PARAM_TX_ENCAP_TYPE;
  	if (ath11k_frame_mode != ATH11K_HW_TXRX_ETHERNET ||
  	    (vif->type != NL80211_IFTYPE_STATION &&
-@@ -6757,7 +6884,8 @@ static int ath11k_mac_op_add_interface(s
+@@ -6758,7 +6885,8 @@ static int ath11k_mac_op_add_interface(s
  		goto err;
  	}
  
@@ -234,7 +234,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  		ath11k_warn(ab, "failed to create vdev %u, reached max vdev limit %d\n",
  			    ar->num_created_vdevs, TARGET_NUM_VDEVS(ab));
  		ret = -EBUSY;
-@@ -6770,6 +6898,28 @@ static int ath11k_mac_op_add_interface(s
+@@ -6771,6 +6899,28 @@ static int ath11k_mac_op_add_interface(s
  	arvif->vif = vif;
  
  	INIT_LIST_HEAD(&arvif->list);
@@ -263,7 +263,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  	INIT_WORK(&arvif->bcn_tx_work, ath11k_mac_bcn_tx_work);
  	INIT_DELAYED_WORK(&arvif->connection_loss_work,
  			  ath11k_mac_vif_sta_connection_loss_work);
-@@ -6802,6 +6952,7 @@ static int ath11k_mac_op_add_interface(s
+@@ -6803,6 +6953,7 @@ static int ath11k_mac_op_add_interface(s
  		fallthrough;
  	case NL80211_IFTYPE_AP:
  		arvif->vdev_type = WMI_VDEV_TYPE_AP;
@@ -271,7 +271,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  		if (vif->p2p)
  			arvif->vdev_subtype = WMI_VDEV_SUBTYPE_P2P_GO;
  		break;
-@@ -7037,14 +7188,31 @@ static void ath11k_mac_op_remove_interfa
+@@ -7038,14 +7189,31 @@ static void ath11k_mac_op_remove_interfa
  	struct ath11k *ar = hw->priv;
  	struct ath11k_vif *arvif = ath11k_vif_to_arvif(vif);
  	struct ath11k_base *ab = ar->ab;
@@ -305,7 +305,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  	ath11k_dbg(ab, ATH11K_DBG_MAC, "remove interface (vdev %d)\n",
  		   arvif->vdev_id);
  
-@@ -7061,6 +7229,14 @@ static void ath11k_mac_op_remove_interfa
+@@ -7062,6 +7230,14 @@ static void ath11k_mac_op_remove_interfa
  		if (ret)
  			ath11k_warn(ab, "failed to submit AP self-peer removal on vdev %d: %d\n",
  				    arvif->vdev_id, ret);
@@ -320,7 +320,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  	}
  
  	ret = ath11k_mac_vdev_delete(ar, arvif);
-@@ -7102,8 +7278,7 @@ err_vdev_del:
+@@ -7103,8 +7279,7 @@ err_vdev_del:
  	/* Recalc txpower for remaining vdev */
  	ath11k_mac_txpower_recalc(ar);
  
@@ -330,7 +330,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  	mutex_unlock(&ar->conf_mutex);
  }
  
-@@ -7163,16 +7338,17 @@ static int ath11k_mac_op_ampdu_action(st
+@@ -7164,16 +7339,17 @@ static int ath11k_mac_op_ampdu_action(st
  				      struct ieee80211_ampdu_params *params)
  {
  	struct ath11k *ar = hw->priv;
@@ -350,7 +350,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  		break;
  	case IEEE80211_AMPDU_TX_START:
  	case IEEE80211_AMPDU_TX_STOP_CONT:
-@@ -9100,6 +9276,7 @@ static void ath11k_mac_op_sta_statistics
+@@ -9101,6 +9277,7 @@ static void ath11k_mac_op_sta_statistics
  {
  	struct ath11k_sta *arsta = ath11k_sta_to_arsta(sta);
  	struct ath11k *ar = arsta->arvif->ar;
@@ -358,7 +358,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  	s8 signal;
  	bool db2dbm = test_bit(WMI_TLV_SERVICE_HW_DB2DBM_CONVERSION_SUPPORT,
  			       ar->ab->wmi_ab.svc_map);
-@@ -9159,7 +9336,8 @@ static void ath11k_mac_op_sta_statistics
+@@ -9160,7 +9337,8 @@ static void ath11k_mac_op_sta_statistics
  
  	sinfo->filled |= BIT_ULL(NL80211_STA_INFO_SIGNAL_AVG);
  

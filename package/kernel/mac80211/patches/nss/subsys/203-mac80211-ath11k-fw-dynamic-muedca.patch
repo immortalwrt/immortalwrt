@@ -129,7 +129,7 @@ Signed-off-by: Muna Sinada <msinada@codeaurora.org>
 +EXPORT_SYMBOL(ieee80211_update_muedca_params);
 --- a/net/mac80211/trace.h
 +++ b/net/mac80211/trace.h
-@@ -3140,6 +3140,26 @@ TRACE_EVENT(stop_queue,
+@@ -3143,6 +3143,26 @@ TRACE_EVENT(stop_queue,
  	)
  );
  
