@@ -16,7 +16,8 @@ led_set() {
 
 boot() {
 	case "$(board_name)" in
-	lunzn,fastrhino-r68s)
+	lunzn,fastrhino-r68s|\
+	ezpro,mrkaio-m68s)
 		led_set "stmmac-0:01:amber:lan" "trigger" "netdev"
 		led_set "stmmac-0:01:amber:lan" "device_name" "eth0"
 		led_set "stmmac-0:01:amber:lan" "link_10 link_100 link_1000" "0"
