@@ -1,0 +1,33 @@
+#!/bin/sh /etc/rc.common
+
+START=30
+
+led_set() {
+	local path="/sys/class/leds/$1"
+	local params="$2"
+	local value="$3"
+
+	[ -d "$path" ] || return 1
+
+	for param in $params; do
+		echo "$value" > "$path/$param"
+	done
+}
+
+boot() {
+	case "$(board_name)" in
+	friendlyarm,nanopi-r3s|\
+	friendlyarm,nanopi-r4s)
+		led_set "enp1s0-1::lan" "link_10 link_100 link_1000" "1"
+		led_set "enp1s0-1::lan" "rx tx" "0"
+		led_set "enp1s0-2::lan" "link_10 link_100 link_1000" "0"
+		led_set "enp1s0-2::lan" "rx tx" "1"
+		;;
+	huake,guangmiao-g4c)
+                led_set "enp1s0-0::lan" "link_10 link_100 link_1000" "1"
+                led_set "enp1s0-0::lan" "rx tx" "0"
+                led_set "enp1s0-1::lan" "link_10 link_100 link_1000" "0"
+                led_set "enp1s0-1::lan" "rx tx" "1"
+		;;
+	esac
+}
