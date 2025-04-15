@@ -100,5 +100,15 @@ boot() {
 		led_set "stmmac-1:01:green:lan" "link_10 link_100 link_1000" "1"
 		led_set "stmmac-1:01:green:lan" "rx tx" "0"
 		;;
+	radxa,rock3a)
+		led_set "stmmac-1:01:amber:lan" "trigger" "netdev"
+		led_set "stmmac-1:01:amber:lan" "device_name" "eth0"
+		led_set "stmmac-1:01:amber:lan" "link_10 link_100 link_1000" "0"
+		led_set "stmmac-1:01:amber:lan" "rx tx" "1"
+		led_set "stmmac-1:01:green:lan" "trigger" "netdev"
+		led_set "stmmac-1:01:green:lan" "device_name" "eth0"
+		led_set "stmmac-1:01:green:lan" "link_10 link_100 link_1000" "1"
+		led_set "stmmac-1:01:green:lan" "rx tx" "0"
+		;;
 	esac
 }
