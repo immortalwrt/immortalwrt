@@ -282,10 +282,10 @@
 +bootcmd=run check_buttons ; if pstore check ; then run boot_recovery ; else run boot_ubi ; fi
 +bootconf=config-1
 +bootdelay=0
-+bootfile=openwrt-mediatek-filogic-netis_nx31-initramfs-recovery.itb
-+bootfile_bl2=openwrt-mediatek-filogic-netis_nx31-preloader.bin
-+bootfile_fip=openwrt-mediatek-filogic-netis_nx31-bl31-uboot.fip
-+bootfile_upg=openwrt-mediatek-filogic-netis_nx31-squashfs-sysupgrade.itb
++bootfile=immortalwrt-mediatek-filogic-netis_nx31-initramfs-recovery.itb
++bootfile_bl2=immortalwrt-mediatek-filogic-netis_nx31-preloader.bin
++bootfile_fip=immortalwrt-mediatek-filogic-netis_nx31-bl31-uboot.fip
++bootfile_upg=immortalwrt-mediatek-filogic-netis_nx31-squashfs-sysupgrade.itb
 +bootled_status=blue:status
 +bootmenu_confirm_return=askenv - Press ENTER to return to menu ; bootmenu 60
 +bootmenu_default=0
