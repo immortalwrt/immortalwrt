@@ -388,25 +388,29 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  &pcie3x2 {
 --- a/arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts
-@@ -273,6 +273,10 @@
- 		     &gmac1m1_rgmii_clk
- 		     &gmac1m1_clkinout
- 		     &gmac1m1_rgmii_bus>;
-+	snps,reset-gpio = <&gpio3 RK_PB0 GPIO_ACTIVE_LOW>;
-+	snps,reset-active-low;
-+	/* Reset time is 20ms, 100ms for rtl8211f */
-+	snps,reset-delays-us = <0 20000 100000>;
- 	status = "okay";
- };
- 
-@@ -588,9 +592,7 @@
- 		reg = <0x0>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&eth_phy_rst>;
--		reset-assert-us = <20000>;
--		reset-deassert-us = <100000>;
--		reset-gpios = <&gpio3 RK_PB0 GPIO_ACTIVE_LOW>;
-+		realtek,led-data = <0x6d60>;
+@@ -591,6 +591,25 @@
+ 		reset-assert-us = <20000>;
+ 		reset-deassert-us = <100000>;
+ 		reset-gpios = <&gpio3 RK_PB0 GPIO_ACTIVE_LOW>;
++
++		leds {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			led@1 {
++				reg = <1>;
++				color = <LED_COLOR_ID_AMBER>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++
++			led@2 {
++				reg = <2>;
++				color = <LED_COLOR_ID_GREEN>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++		};
  	};
  };
  
