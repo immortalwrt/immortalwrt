@@ -65,7 +65,8 @@ boot() {
 		led_set "enp1s0-2::lan" "link_10 link_100 link_1000" "0"
 		led_set "enp1s0-2::lan" "rx tx" "1"
 		;;
-	friendlyarm,nanopi-r5s)
+	friendlyarm,nanopi-r5s|\
+	friendlyarm,nanopi-r6s)
 		led_set "stmmac-0:01:amber:lan" "trigger" "netdev"
 		led_set "stmmac-0:01:amber:lan" "device_name" "eth0"
 		led_set "stmmac-0:01:amber:lan" "link_10 link_100 link_1000" "1"
