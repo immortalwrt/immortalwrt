@@ -320,15 +320,33 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  &pinctrl {
 --- a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dts
-@@ -78,6 +78,7 @@
+@@ -78,6 +78,25 @@
  		reg = <1>;
  		pinctrl-0 = <&eth_phy0_reset_pin>;
  		pinctrl-names = "default";
-+		realtek,led-data = <0x6d60>;
++
++		leds {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			led@1 {
++				reg = <1>;
++				color = <LED_COLOR_ID_AMBER>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++
++			led@2 {
++				reg = <2>;
++				color = <LED_COLOR_ID_GREEN>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++		};
  	};
  };
  
-@@ -85,6 +86,19 @@
+@@ -85,6 +104,19 @@
  	num-lanes = <1>;
  	reset-gpios = <&gpio0 RK_PB6 GPIO_ACTIVE_HIGH>;
  	status = "okay";
@@ -348,7 +366,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  };
  
  &pcie30phy {
-@@ -97,6 +111,19 @@
+@@ -97,6 +129,19 @@
  	reset-gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
  	vpcie3v3-supply = <&vcc3v3_pcie>;
  	status = "okay";
