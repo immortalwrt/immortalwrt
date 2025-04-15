@@ -209,23 +209,59 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	phy-handle = <&rgmii_phy1>;
  	phy-mode = "rgmii-id";
  	pinctrl-names = "default";
-@@ -76,6 +78,7 @@
+@@ -76,6 +78,25 @@
  		reg = <0x1>;
  		pinctrl-0 = <&eth_phy0_reset_pin>;
  		pinctrl-names = "default";
-+		realtek,led-data = <0x6d60>;
++
++		leds {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			led@1 {
++				reg = <1>;
++				color = <LED_COLOR_ID_GREEN>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++
++			led@2 {
++				reg = <2>;
++				color = <LED_COLOR_ID_AMBER>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++		};
  	};
  };
  
-@@ -85,6 +88,7 @@
+@@ -85,6 +106,25 @@
  		reg = <0x1>;
  		pinctrl-0 = <&eth_phy1_reset_pin>;
  		pinctrl-names = "default";
-+		realtek,led-data = <0x6d60>;
++
++		leds {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			led@1 {
++				reg = <1>;
++				color = <LED_COLOR_ID_GREEN>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++
++			led@2 {
++				reg = <2>;
++				color = <LED_COLOR_ID_AMBER>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++		};
  	};
  };
  
-@@ -106,6 +110,14 @@
+@@ -106,6 +146,14 @@
  	vccio3-supply = <&vcc_3v3>;
  };
  
