@@ -16,7 +16,20 @@ led_set() {
 
 boot() {
 	case "$(board_name)" in
-	friendlyarm,nanopi-r3s|\
+	friendlyarm,nanopi-r3s)
+		led_set "enp1s0-1::lan" "link_10 link_100 link_1000" "1"
+		led_set "enp1s0-1::lan" "rx tx" "0"
+		led_set "enp1s0-2::lan" "link_10 link_100 link_1000" "0"
+		led_set "enp1s0-2::lan" "rx tx" "1"
+		led_set "stmmac-0:01:amber:wan" "trigger" "netdev"
+		led_set "stmmac-0:01:amber:wan" "device_name" "eth0"
+		led_set "stmmac-0:01:amber:wan" "link_10 link_100 link_1000" "0"
+		led_set "stmmac-0:01:amber:wan" "rx tx" "1"
+		led_set "stmmac-0:01:green:wan" "trigger" "netdev"
+		led_set "stmmac-0:01:green:wan" "device_name" "eth0"
+		led_set "stmmac-0:01:green:wan" "link_10 link_100 link_1000" "1"
+		led_set "stmmac-0:01:green:wan" "rx tx" "0"
+		;;
 	friendlyarm,nanopi-r4s)
 		led_set "enp1s0-1::lan" "link_10 link_100 link_1000" "1"
 		led_set "enp1s0-1::lan" "rx tx" "0"
