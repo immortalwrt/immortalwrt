@@ -50,7 +50,8 @@ define Device/cyber_cyber3588-aib
   SOC := rk3588
   BOOT_FLOW := pine64-img
   DEVICE_PACKAGES := kmod-ata-ahci-dwc kmod-r8125 kmod-mt7921e wpad-openssl \
-        kmod-usb-net-cdc-mbim kmod-usb-net-qmi-wwan kmod-usb-serial-option uqmi
+	kmod-hwmon-pwmfan kmod-usb-net-cdc-mbim kmod-usb-net-qmi-wwan \
+	kmod-usb-serial-option uqmi
 endef
 TARGET_DEVICES += cyber_cyber3588-aib
 
