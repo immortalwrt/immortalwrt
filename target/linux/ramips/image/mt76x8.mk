@@ -322,6 +322,15 @@ define Device/hiwifi_hc5861b
 endef
 TARGET_DEVICES += hiwifi_hc5861b
 
+define Device/huasifei_shf283
+   IMAGE_SIZE := 16064k
+   DEVICE_VENDOR := Huasifei
+   DEVICE_MODEL := SHF283
+   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-net-cdc-mbim \
+	kmod-usb-net-qmi-wwan kmod-usb-net-rndis kmod-usb-serial-option uqmi
+endef
+TARGET_DEVICES += huasifei_shf283
+
 define Device/iptime_a3
   IMAGE_SIZE := 7936k
   UIMAGE_NAME := a3
