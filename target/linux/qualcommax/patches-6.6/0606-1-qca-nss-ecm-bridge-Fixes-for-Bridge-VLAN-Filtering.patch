@@ -32,20 +32,19 @@ Signed-off-by: Vishnu Vardhan Bantanahal <quic_vishvard@quicinc.com>
 
 --- a/include/linux/if_bridge.h
 +++ b/include/linux/if_bridge.h
-@@ -128,6 +128,12 @@ int br_vlan_get_info_rcu(const struct ne
+@@ -128,6 +128,11 @@ int br_vlan_get_info_rcu(const struct ne
  bool br_mst_enabled(const struct net_device *dev);
  int br_mst_get_info(const struct net_device *dev, u16 msti, unsigned long *vids);
  int br_mst_get_state(const struct net_device *dev, u16 msti, u8 *state);
 +
 +extern struct net_device *br_fdb_find_vid_by_mac(struct net_device *dev, u8 *mac, u16 *vid);
-+extern int br_vlan_get_tag_skb(const struct sk_buff *skb, u16 *vid);
 +extern int br_dev_is_vlan_filter_enabled(struct net_device *dev);
 +extern int br_vlan_update_stats(struct net_device* dev, u32 vid, u64 rx_bytes, u64 rx_packets, u64 tx_bytes, u64 tx_packets);
 +extern int br_vlan_get_info_rcu(const struct net_device *dev, u16 vid, struct bridge_vlan_info *p_vinfo);
  #else
  static inline bool br_vlan_enabled(const struct net_device *dev)
  {
-@@ -149,8 +155,27 @@ static inline int br_vlan_get_pvid_rcu(c
+@@ -149,8 +154,22 @@ static inline int br_vlan_get_pvid_rcu(c
  	return -EINVAL;
  }
  
@@ -61,12 +60,7 @@ Signed-off-by: Vishnu Vardhan Bantanahal <quic_vishvard@quicinc.com>
 +	return NULL;
 +}
 +
-+static inline int br_vlan_get_tag_skb(const struct sk_buff *skb, u16 *vid)
-+{
-+	return -EINVAL;
-+}
-+
-+static inline int br_dev_is_vlan_filter_enabled(const struct net_device *dev)
++static inline int br_dev_is_vlan_filter_enabled(struct net_device *dev)
 +{
 +	return -EINVAL;
 +}
@@ -138,21 +132,10 @@ Signed-off-by: Vishnu Vardhan Bantanahal <quic_vishvard@quicinc.com>
  					const struct net_bridge *br)
 --- a/net/bridge/br_vlan.c
 +++ b/net/bridge/br_vlan.c
-@@ -933,8 +933,190 @@ int br_vlan_get_proto(const struct net_d
+@@ -933,8 +933,179 @@ int br_vlan_get_proto(const struct net_d
  }
  EXPORT_SYMBOL_GPL(br_vlan_get_proto);
  
-+/*
-+ * br_vlan_get_tag_skb()
-+ * 	Returns VLAN tag is its found valid in skb.
-+ */
-+int br_vlan_get_tag_skb(const struct sk_buff *skb, u16 *vid)
-+{
-+	return br_vlan_get_tag(skb, vid);
-+
-+}
-+EXPORT_SYMBOL_GPL(br_vlan_get_tag_skb);
-+
 +/*
 + * br_dev_is_vlan_filter_enabled()
 + * 	Caller should ensure to hold rcu_lock()
@@ -330,7 +313,7 @@ Signed-off-by: Vishnu Vardhan Bantanahal <quic_vishvard@quicinc.com>
  {
  	struct switchdev_attr attr = {
  		.orig_dev = br->dev,
-@@ -1068,7 +1250,7 @@ static bool vlan_default_pvid(struct net
+@@ -1068,7 +1239,7 @@ static bool vlan_default_pvid(struct net
  	return false;
  }
  

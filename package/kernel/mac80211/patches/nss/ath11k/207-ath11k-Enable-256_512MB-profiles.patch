@@ -136,22 +136,6 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  ATH11K_TRACING=
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -17,7 +17,6 @@
- #include <linux/average.h>
- #include <linux/firmware.h>
- 
--#include "fw.h"
- #include "qmi.h"
- #include "htc.h"
- #include "wmi.h"
-@@ -34,6 +33,7 @@
- #include "wow.h"
- #include "rx_desc.h"
- #include "nss.h"
-+#include "fw.h"
- 
- #define SM(_v, _f) (((_v) << _f##_LSB) & _f##_MASK)
- 
 @@ -938,6 +938,11 @@ struct ath11k_msi_config {
  	u16 hw_rev;
  };

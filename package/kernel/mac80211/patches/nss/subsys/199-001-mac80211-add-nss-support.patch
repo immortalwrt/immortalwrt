@@ -134,19 +134,10 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
 -
 +	void (*nss_bss_info_changed)(struct ieee80211_hw *hw,
 +				     struct ieee80211_vif *vif,
-+				     u32 changed);
++				     u64 changed);
  	int (*start_ap)(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
  			struct ieee80211_bss_conf *link_conf);
  	void (*stop_ap)(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
-@@ -4790,7 +4825,7 @@ struct ieee80211_ops {
- 	int (*reset_tid_config)(struct ieee80211_hw *hw,
- 				struct ieee80211_vif *vif,
- 				struct ieee80211_sta *sta, u8 tids);
--	void (*update_vif_offload)(struct ieee80211_hw *hw,
-+	int (*update_vif_offload)(struct ieee80211_hw *hw,
- 				   struct ieee80211_vif *vif);
- 	void (*sta_set_4addr)(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
- 			      struct ieee80211_sta *sta, bool enabled);
 --- a/net/mac80211/debugfs.c
 +++ b/net/mac80211/debugfs.c
 @@ -509,6 +509,7 @@ static const char *hw_flag_names[] = {
@@ -325,7 +316,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  	struct ieee80211_link_data *link;
  	struct ieee80211_supported_band *sband;
 -	u64 changed = 0;
-+	u32 changed = 0, nss_changed = 0;
++	u64 changed = 0, nss_changed = 0;
  
  	link = ieee80211_link_or_deflink(sdata, params->link_id, true);
  	if (IS_ERR(link))
@@ -356,7 +347,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
 +static inline void drv_nss_bss_info_changed(struct ieee80211_local *local,
 +					struct ieee80211_sub_if_data *sdata,
 +					struct ieee80211_bss_conf *info,
-+					u32 changed)
++					u64 changed)
 +{
 +	might_sleep();
 +
@@ -394,7 +385,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
 +	TP_PROTO(struct ieee80211_local *local,
 +		 struct ieee80211_sub_if_data *sdata,
 +		 struct ieee80211_bss_conf *info,
-+		 u32 changed),
++		 u64 changed),
 +
 +	TP_ARGS(local, sdata, info, changed),
 +

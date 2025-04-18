@@ -339,8 +339,6 @@ Signed-off-by: Tamizh Chelvam Raja <quic_tamizhr@quicinc.com>
 +	elem->peer_id = peer->peer_id;
 +	elem->tid = tid;
 +	memcpy(&elem->data, rx_tid, sizeof(*rx_tid));
-+	spin_lock_bh(&dp->reo_cmd_update_queue_lock);
-+	list_add_tail(&elem->list, &dp->reo_cmd_update_rx_queue_list);
  
 -	cmd.flag = HAL_REO_CMD_FLG_NEED_STATUS;
 -	cmd.addr_lo = lower_32_bits(rx_tid->paddr);
@@ -356,6 +354,9 @@ Signed-off-by: Tamizh Chelvam Raja <quic_tamizhr@quicinc.com>
 -		dma_free_noncoherent(ar->ab->dev, rx_tid->unaligned_size,
 -				     rx_tid->vaddr_unaligned,
 -				     rx_tid->paddr_unaligned, DMA_BIDIRECTIONAL);
++	spin_lock_bh(&dp->reo_cmd_update_queue_lock);
++	list_add_tail(&elem->list, &dp->reo_cmd_update_rx_queue_list);
++
 +	list_for_each_entry_safe(elem, tmp, &dp->reo_cmd_update_rx_queue_list,
 +				 list) {
 +		rx_tid = &elem->data;
@@ -367,11 +368,11 @@ Signed-off-by: Tamizh Chelvam Raja <quic_tamizhr@quicinc.com>
 +			break;
 +		}
  		rx_tid->vaddr_unaligned = NULL;
++
 +		rx_tid->paddr = 0;
-+		rx_tid->paddr_unaligned = 0;
 +		rx_tid->size = 0;
-+		rx_tid->unaligned_size = 0;
 +		rx_tid->pending_desc_size = 0;
++		rx_tid->unaligned_size = 0;
 +
 +		list_del(&elem->list);
 +		kfree(elem);
@@ -382,7 +383,6 @@ Signed-off-by: Tamizh Chelvam Raja <quic_tamizhr@quicinc.com>
 -	rx_tid->paddr_unaligned = 0;
 -	rx_tid->size = 0;
 -	rx_tid->unaligned_size = 0;
-+	return;
  }
  
  static int ath11k_dp_rx_link_desc_return(struct ath11k_base *ab,

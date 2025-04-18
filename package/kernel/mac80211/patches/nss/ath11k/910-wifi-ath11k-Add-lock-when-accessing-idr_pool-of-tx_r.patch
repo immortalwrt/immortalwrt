@@ -45,7 +45,7 @@ Signed-off-by: Aishwarya R <quic_aisr@quicinc.com>
  		ath11k_warn(ab, "tx completion for unknown msdu_id %d\n",
 @@ -401,12 +405,14 @@ ath11k_dp_tx_htt_tx_complete_buf(struct
  	u32 msdu_id = ts->msdu_id;
- 	u8 flags = 0;
+ 	u8 flags;
  
 +	spin_lock_bh(&tx_ring->tx_idr_lock);
  	if (msdu_id < DP_TX_IDR_SIZE &&
@@ -58,7 +58,7 @@ Signed-off-by: Aishwarya R <quic_aisr@quicinc.com>
  
  	if (unlikely(!msdu)) {
  		ath11k_warn(ab, "htt tx completion for unknown msdu_id %d\n",
-@@ -898,12 +904,14 @@ void ath11k_dp_tx_completion_handler(str
+@@ -892,12 +898,14 @@ void ath11k_dp_tx_completion_handler(str
  			continue;
  		}
  

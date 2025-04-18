@@ -226,18 +226,12 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
  
  	if (unlikely(!msdu)) {
  		ath11k_warn(ab, "tx completion for unknown msdu_id %d\n",
-@@ -400,16 +407,20 @@ ath11k_dp_tx_htt_tx_complete_buf(struct
- 				 struct ath11k_dp_htt_wbm_tx_status *ts)
- {
- 	struct ieee80211_tx_status status = { 0 };
--	struct sk_buff *msdu;
-+	struct sk_buff *msdu = NULL;
- 	struct ieee80211_tx_info *info;
+@@ -405,11 +412,15 @@ ath11k_dp_tx_htt_tx_complete_buf(struct
  	struct ath11k_skb_cb *skb_cb;
  	struct ath11k *ar;
  	struct ath11k_peer *peer;
 +	u32 msdu_id = ts->msdu_id;
- 	u8 flags = 0;
+ 	u8 flags;
  
 -	spin_lock(&tx_ring->tx_idr_lock);
 -	msdu = idr_remove(&tx_ring->txbuf_idr, ts->msdu_id);
@@ -251,7 +245,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
  
  	if (unlikely(!msdu)) {
  		ath11k_warn(ab, "htt tx completion for unknown msdu_id %d\n",
-@@ -878,6 +889,7 @@ void ath11k_dp_tx_completion_handler(str
+@@ -872,6 +883,7 @@ void ath11k_dp_tx_completion_handler(str
  	}
  
  	while (count--) {
@@ -259,7 +253,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
  		tx_status = &tx_ring->tx_status[i++];
  
  		desc_id = FIELD_GET(BUFFER_ADDR_INFO1_SW_COOKIE,
-@@ -896,17 +908,19 @@ void ath11k_dp_tx_completion_handler(str
+@@ -890,17 +902,19 @@ void ath11k_dp_tx_completion_handler(str
  			continue;
  		}
  

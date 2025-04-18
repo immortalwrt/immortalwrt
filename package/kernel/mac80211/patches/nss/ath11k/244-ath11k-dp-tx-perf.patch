@@ -255,15 +255,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  }
  
  static void
-@@ -395,6 +405,7 @@ ath11k_dp_tx_htt_tx_complete_buf(struct
- 	struct ath11k_skb_cb *skb_cb;
- 	struct ath11k *ar;
- 	struct ath11k_peer *peer;
-+	u8 flags = 0;
- 
- 	spin_lock(&tx_ring->tx_idr_lock);
- 	msdu = idr_remove(&tx_ring->txbuf_idr, ts->msdu_id);
-@@ -413,10 +424,30 @@ ath11k_dp_tx_htt_tx_complete_buf(struct
+@@ -413,12 +423,25 @@ ath11k_dp_tx_htt_tx_complete_buf(struct
  
  	if (atomic_dec_and_test(&ar->dp.num_tx_pending))
  		wake_up(&ar->dp.tx_empty_waitq);
@@ -271,8 +263,9 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  
  	dma_unmap_single(ab->dev, skb_cb->paddr, msdu->len, DMA_TO_DEVICE);
  
+-	if (!skb_cb->vif) {
+-		ieee80211_free_txskb(ar->hw, msdu);
 +	flags = skb_cb->flags;
-+
 +	/* Free skb here if stats is disabled */
 +	if (ab->stats_disable && !(flags & ATH11K_SKB_TX_STATUS)) {
 +		if (msdu->destructor) {
@@ -284,26 +277,14 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
 +			skb_shinfo(msdu)->frag_list = NULL;
 +		}
 +		dev_kfree_skb(msdu);
-+ 		return;
-+	}
-+
-+	if (unlikely(!skb_cb->vif)) {
-+		dev_kfree_skb_any(msdu);
 +		return;
 +	}
-+
- 	if (!skb_cb->vif) {
- 		ieee80211_free_txskb(ar->hw, msdu);
++	if (unlikely(!skb_cb->vif)) {
++		dev_kfree_skb_any(msdu);
  		return;
-@@ -636,6 +667,7 @@ static void ath11k_dp_tx_complete_msdu(s
- 	struct ath11k_peer *peer;
- 	struct ath11k_sta *arsta;
- 	struct rate_info rate;
-+	u8 flags = 0;
+ 	}
  
- 	if (WARN_ON_ONCE(ts->buf_rel_source != HAL_WBM_REL_SRC_MODULE_TQM)) {
- 		/* Must not happen */
-@@ -646,6 +678,20 @@ static void ath11k_dp_tx_complete_msdu(s
+@@ -646,6 +669,20 @@ static void ath11k_dp_tx_complete_msdu(s
  
  	dma_unmap_single(ab->dev, skb_cb->paddr, msdu->len, DMA_TO_DEVICE);
  
@@ -324,7 +305,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  	if (unlikely(!rcu_access_pointer(ab->pdevs_active[ar->pdev_idx]))) {
  		ieee80211_free_txskb(ar->hw, msdu);
  		return;
-@@ -704,7 +750,7 @@ static void ath11k_dp_tx_complete_msdu(s
+@@ -704,7 +741,7 @@ static void ath11k_dp_tx_complete_msdu(s
  
  	spin_lock_bh(&ab->base_lock);
  	peer = ath11k_peer_find_by_id(ab, ts->peer_id);
@@ -333,7 +314,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  		ath11k_dbg(ab, ATH11K_DBG_DATA,
  			   "dp_tx: failed to find the peer with peer_id %d\n",
  			    ts->peer_id);
-@@ -760,19 +806,36 @@ static inline void ath11k_dp_tx_status_p
+@@ -760,19 +797,36 @@ static inline void ath11k_dp_tx_status_p
  		ts->rate_stats = 0;
  }
  
@@ -364,15 +345,16 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  	struct hal_tx_status ts = { 0 };
  	struct dp_tx_ring *tx_ring = &dp->tx_ring[ring_id];
  	int valid_entries;
- 	u32 *desc;
+-	u32 *desc;
 -	u32 msdu_id;
++	struct hal_wbm_release_ring *desc;
 +	u32 msdu_id, desc_id;
  	u8 mac_id;
 +	struct hal_wbm_release_ring *tx_status;
  
  	spin_lock_bh(&status_ring->lock);
  
-@@ -787,33 +850,27 @@ void ath11k_dp_tx_completion_handler(str
+@@ -787,33 +841,28 @@ void ath11k_dp_tx_completion_handler(str
  
  	ath11k_hal_srng_dst_invalidate_entry(ab, status_ring, valid_entries);
  
@@ -384,7 +366,8 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
 -		tx_ring->tx_status_head =
 -			ATH11K_TX_COMPL_NEXT(tx_ring->tx_status_head);
 -	}
-+	while ((desc = ath11k_hal_srng_dst_get_next_cache_entry(ab, status_ring))) {
++	while ((desc = (struct hal_wbm_release_ring *)
++		ath11k_hal_srng_dst_get_next_cache_entry(ab, status_ring))) {
 +		if (!ath11k_dp_tx_completion_valid((struct hal_wbm_release_ring *)desc))
 +			continue;
  
@@ -420,7 +403,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  		ath11k_dp_tx_status_parse(ab, tx_status, &ts);
  
  		desc_id = FIELD_GET(BUFFER_ADDR_INFO1_SW_COOKIE,
-@@ -846,7 +903,6 @@ void ath11k_dp_tx_completion_handler(str
+@@ -846,7 +895,6 @@ void ath11k_dp_tx_completion_handler(str
  			wake_up(&ar->dp.tx_empty_waitq);
  
  		ath11k_dp_tx_complete_msdu(ar, msdu, &ts);
@@ -454,7 +437,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  		ieee80211_free_txskb(ar->hw, skb);
  		return;
  	}
-@@ -7461,7 +7471,7 @@ err_vdev_del:
+@@ -7458,7 +7468,7 @@ err_vdev_del:
  	idr_for_each(&ar->txmgmt_idr,
  		     ath11k_mac_vif_txmgmt_idr_remove, vif);
  

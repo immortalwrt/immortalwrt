@@ -3026,3 +3026,11 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  };
  
  struct ath11k_soc_dp_stats {
+@@ -941,6 +943,7 @@ struct ath11k_base {
+ 	struct ath11k_htc htc;
+ 
+ 	struct ath11k_dp dp;
++	struct ath11k_soc_nss nss;
+ 
+ 	void __iomem *mem;
+ 	void __iomem *mem_ce;

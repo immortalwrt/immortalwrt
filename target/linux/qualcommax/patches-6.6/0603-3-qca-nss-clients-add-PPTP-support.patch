@@ -101,7 +101,7 @@
  /* Returns >0 if the device is a multilink PPP netdevice, 0 if not or < 0 if
   * the device is not PPP.
   */
-@@ -3897,6 +3933,7 @@ EXPORT_SYMBOL(ppp_unregister_channel);
+@@ -3976,6 +4012,7 @@ EXPORT_SYMBOL(ppp_unregister_channel);
  EXPORT_SYMBOL(ppp_channel_index);
  EXPORT_SYMBOL(ppp_unit_number);
  EXPORT_SYMBOL(ppp_dev_name);
@@ -111,7 +111,7 @@
  EXPORT_SYMBOL(ppp_output_wakeup);
 --- a/include/linux/ppp_channel.h
 +++ b/include/linux/ppp_channel.h
-@@ -84,6 +84,9 @@ extern void ppp_unregister_channel(struc
+@@ -129,6 +129,9 @@ extern void ppp_unregister_channel(struc
  /* Get the channel number for a channel */
  extern int ppp_channel_index(struct ppp_channel *);
  
@@ -121,7 +121,7 @@
  /* Get the unit number associated with a channel, or -1 if none */
  extern int ppp_unit_number(struct ppp_channel *);
  
-@@ -116,6 +119,7 @@ extern int ppp_hold_channels(struct net_
+@@ -161,6 +164,7 @@ extern int ppp_hold_channels(struct net_
  /* Test if ppp xmit lock is locked */
  extern bool ppp_is_xmit_locked(struct net_device *dev);
  

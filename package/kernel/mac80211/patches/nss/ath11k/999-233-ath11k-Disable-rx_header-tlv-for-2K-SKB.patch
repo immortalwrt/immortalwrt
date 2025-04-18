@@ -501,7 +501,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  
 --- a/drivers/net/wireless/ath/ath11k/dp_tx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_tx.c
-@@ -1287,6 +1287,8 @@ int ath11k_dp_tx_htt_rx_filter_setup(str
+@@ -1281,6 +1281,8 @@ int ath11k_dp_tx_htt_rx_filter_setup(str
  				 !!(params.flags & HAL_SRNG_FLAGS_MSI_SWAP));
  	cmd->info0 |= FIELD_PREP(HTT_RX_RING_SELECTION_CFG_CMD_INFO0_PS,
  				 !!(params.flags & HAL_SRNG_FLAGS_DATA_TLV_SWAP));
@@ -510,7 +510,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  
  	cmd->info1 = FIELD_PREP(HTT_RX_RING_SELECTION_CFG_CMD_INFO1_BUF_SIZE,
  				rx_buf_size);
-@@ -1296,6 +1298,26 @@ int ath11k_dp_tx_htt_rx_filter_setup(str
+@@ -1290,6 +1292,26 @@ int ath11k_dp_tx_htt_rx_filter_setup(str
  	cmd->pkt_type_en_flags3 = tlv_filter->pkt_filter_flags3;
  	cmd->rx_filter_tlv = tlv_filter->rx_filter;
  
@@ -537,7 +537,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  	ret = ath11k_htc_send(&ab->htc, ab->dp.eid, skb);
  	if (ret)
  		goto err_free;
-@@ -1374,6 +1396,7 @@ int ath11k_dp_tx_htt_monitor_mode_ring_c
+@@ -1368,6 +1390,7 @@ int ath11k_dp_tx_htt_monitor_mode_ring_c
  	}
  
  	ring_id = dp->rxdma_mon_buf_ring.refill_buf_ring.ring_id;
@@ -819,7 +819,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  
  static void ath11k_hw_wcn6855_reo_setup(struct ath11k_base *ab)
  {
-@@ -988,6 +1196,13 @@ const struct ath11k_hw_ops ipq8074_ops =
+@@ -989,6 +1197,13 @@ const struct ath11k_hw_ops ipq8074_ops =
  	.rx_desc_mpdu_start_addr2 = ath11k_hw_ipq8074_rx_desc_mpdu_start_addr2,
  	.get_ring_selector = ath11k_hw_ipq8074_get_tcl_ring_selector,
  	.rx_desc_get_hal_mpdu_len = ath11k_hw_ipq8074_rx_desc_get_hal_mpdu_len,
@@ -833,7 +833,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  };
  
  const struct ath11k_hw_ops ipq6018_ops = {
-@@ -1029,6 +1244,13 @@ const struct ath11k_hw_ops ipq6018_ops =
+@@ -1031,6 +1246,13 @@ const struct ath11k_hw_ops ipq6018_ops =
  	.rx_desc_mpdu_start_addr2 = ath11k_hw_ipq8074_rx_desc_mpdu_start_addr2,
  	.get_ring_selector = ath11k_hw_ipq8074_get_tcl_ring_selector,
  	.rx_desc_get_hal_mpdu_len = ath11k_hw_ipq8074_rx_desc_get_hal_mpdu_len,
@@ -847,7 +847,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  };
  
  const struct ath11k_hw_ops qca6390_ops = {
-@@ -1071,6 +1293,13 @@ const struct ath11k_hw_ops qca6390_ops =
+@@ -1073,6 +1295,13 @@ const struct ath11k_hw_ops qca6390_ops =
  	.rx_desc_mpdu_start_addr2 = ath11k_hw_ipq8074_rx_desc_mpdu_start_addr2,
  	.get_ring_selector = ath11k_hw_ipq8074_get_tcl_ring_selector,
  	.rx_desc_get_hal_mpdu_len = ath11k_hw_ipq8074_rx_desc_get_hal_mpdu_len,
@@ -861,7 +861,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  };
  
  const struct ath11k_hw_ops qcn9074_ops = {
-@@ -1108,10 +1337,17 @@ const struct ath11k_hw_ops qcn9074_ops =
+@@ -1111,10 +1340,17 @@ const struct ath11k_hw_ops qcn9074_ops =
  	.rx_desc_get_msdu_payload = ath11k_hw_qcn9074_rx_desc_get_msdu_payload,
  	.reo_setup = ath11k_hw_ipq8074_reo_setup,
  	.mpdu_info_get_peerid = ath11k_hw_qcn9074_mpdu_info_get_peerid,
