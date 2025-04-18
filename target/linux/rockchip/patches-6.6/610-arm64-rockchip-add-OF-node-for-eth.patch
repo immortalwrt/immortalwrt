@@ -104,15 +104,33 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  &pinctrl {
 --- a/arch/arm64/boot/dts/rockchip/rk3566-nanopi-r3s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3566-nanopi-r3s.dts
-@@ -414,6 +414,7 @@
- 		interrupts = <RK_PC3 IRQ_TYPE_LEVEL_LOW>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&eth_phy_reset_pin>;
-+		realtek,led-data = <0xae00>;
+@@ -417,6 +417,25 @@
  		reset-assert-us = <20000>;
  		reset-deassert-us = <100000>;
  		reset-gpios = <&gpio4 RK_PC2 GPIO_ACTIVE_LOW>;
-@@ -425,6 +426,18 @@
++
++		leds {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			led@1 {
++				reg = <1>;
++				color = <LED_COLOR_ID_AMBER>;
++				function = LED_FUNCTION_WAN;
++				default-state = "keep";
++			};
++
++			led@2 {
++				reg = <2>;
++				color = <LED_COLOR_ID_GREEN>;
++				function = LED_FUNCTION_WAN;
++				default-state = "keep";
++			};
++		};
+ 	};
+ };
+ 
+@@ -425,6 +444,18 @@
  	pinctrl-0 = <&pcie_reset_h>;
  	reset-gpios = <&gpio4 RK_PC6 GPIO_ACTIVE_HIGH>;
  	status = "okay";
@@ -191,23 +209,59 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	phy-handle = <&rgmii_phy1>;
  	phy-mode = "rgmii-id";
  	pinctrl-names = "default";
-@@ -76,6 +78,7 @@
+@@ -76,6 +78,25 @@
  		reg = <0x1>;
  		pinctrl-0 = <&eth_phy0_reset_pin>;
  		pinctrl-names = "default";
-+		realtek,led-data = <0x6d60>;
++
++		leds {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			led@1 {
++				reg = <1>;
++				color = <LED_COLOR_ID_GREEN>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++
++			led@2 {
++				reg = <2>;
++				color = <LED_COLOR_ID_AMBER>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++		};
  	};
  };
  
-@@ -85,6 +88,7 @@
+@@ -85,6 +106,25 @@
  		reg = <0x1>;
  		pinctrl-0 = <&eth_phy1_reset_pin>;
  		pinctrl-names = "default";
-+		realtek,led-data = <0x6d60>;
++
++		leds {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			led@1 {
++				reg = <1>;
++				color = <LED_COLOR_ID_GREEN>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++
++			led@2 {
++				reg = <2>;
++				color = <LED_COLOR_ID_AMBER>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++		};
  	};
  };
  
-@@ -106,6 +110,14 @@
+@@ -106,6 +146,14 @@
  	vccio3-supply = <&vcc_3v3>;
  };
  
@@ -266,15 +320,33 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  &pinctrl {
 --- a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dts
-@@ -78,6 +78,7 @@
+@@ -78,6 +78,25 @@
  		reg = <1>;
  		pinctrl-0 = <&eth_phy0_reset_pin>;
  		pinctrl-names = "default";
-+		realtek,led-data = <0x6d60>;
++
++		leds {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			led@1 {
++				reg = <1>;
++				color = <LED_COLOR_ID_AMBER>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++
++			led@2 {
++				reg = <2>;
++				color = <LED_COLOR_ID_GREEN>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++		};
  	};
  };
  
-@@ -85,6 +86,19 @@
+@@ -85,6 +104,19 @@
  	num-lanes = <1>;
  	reset-gpios = <&gpio0 RK_PB6 GPIO_ACTIVE_HIGH>;
  	status = "okay";
@@ -294,7 +366,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  };
  
  &pcie30phy {
-@@ -97,6 +111,19 @@
+@@ -97,6 +129,19 @@
  	reset-gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
  	vpcie3v3-supply = <&vcc3v3_pcie>;
  	status = "okay";
@@ -316,25 +388,29 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  &pcie3x2 {
 --- a/arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts
-@@ -273,6 +273,10 @@
- 		     &gmac1m1_rgmii_clk
- 		     &gmac1m1_clkinout
- 		     &gmac1m1_rgmii_bus>;
-+	snps,reset-gpio = <&gpio3 RK_PB0 GPIO_ACTIVE_LOW>;
-+	snps,reset-active-low;
-+	/* Reset time is 20ms, 100ms for rtl8211f */
-+	snps,reset-delays-us = <0 20000 100000>;
- 	status = "okay";
- };
- 
-@@ -588,9 +592,7 @@
- 		reg = <0x0>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&eth_phy_rst>;
--		reset-assert-us = <20000>;
--		reset-deassert-us = <100000>;
--		reset-gpios = <&gpio3 RK_PB0 GPIO_ACTIVE_LOW>;
-+		realtek,led-data = <0x6d60>;
+@@ -591,6 +591,25 @@
+ 		reset-assert-us = <20000>;
+ 		reset-deassert-us = <100000>;
+ 		reset-gpios = <&gpio3 RK_PB0 GPIO_ACTIVE_LOW>;
++
++		leds {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			led@1 {
++				reg = <1>;
++				color = <LED_COLOR_ID_AMBER>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++
++			led@2 {
++				reg = <2>;
++				color = <LED_COLOR_ID_GREEN>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++		};
  	};
  };
  
