@@ -8,7 +8,7 @@
  #include <linux/tcp.h>
  #include <linux/interrupt.h>
  #include <linux/dma-mapping.h>
-@@ -5344,12 +5345,16 @@ static int rtl_init_one(struct pci_dev *
+@@ -5350,12 +5351,16 @@ static int rtl_init_one(struct pci_dev *
  	int jumbo_max, region, rc;
  	enum mac_version chipset;
  	struct net_device *dev;

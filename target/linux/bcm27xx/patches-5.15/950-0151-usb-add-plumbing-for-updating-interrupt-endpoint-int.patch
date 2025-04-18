@@ -70,7 +70,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.org>
   * @dev: the device whose endpoint is being disabled
 --- a/include/linux/usb.h
 +++ b/include/linux/usb.h
-@@ -1850,6 +1850,8 @@ extern int usb_clear_halt(struct usb_dev
+@@ -1849,6 +1849,8 @@ extern int usb_clear_halt(struct usb_dev
  extern int usb_reset_configuration(struct usb_device *dev);
  extern int usb_set_interface(struct usb_device *dev, int ifnum, int alternate);
  extern void usb_reset_endpoint(struct usb_device *dev, unsigned int epaddr);
@@ -90,10 +90,10 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.org>
 +		 */
 +	void	(*fixup_endpoint)(struct usb_hcd *hcd, struct usb_device *udev,
 +				  struct usb_host_endpoint *ep, int interval);
- 		/* Returns the hardware-chosen device address */
- 	int	(*address_device)(struct usb_hcd *, struct usb_device *udev);
- 		/* prepares the hardware to send commands to the device */
-@@ -449,6 +454,8 @@ extern void usb_hcd_unmap_urb_setup_for_
+ 		/* Set the hardware-chosen device address */
+ 	int	(*address_device)(struct usb_hcd *, struct usb_device *udev,
+ 				  unsigned int timeout_ms);
+@@ -450,6 +455,8 @@ extern void usb_hcd_unmap_urb_setup_for_
  extern void usb_hcd_unmap_urb_for_dma(struct usb_hcd *, struct urb *);
  extern void usb_hcd_flush_endpoint(struct usb_device *udev,
  		struct usb_host_endpoint *ep);

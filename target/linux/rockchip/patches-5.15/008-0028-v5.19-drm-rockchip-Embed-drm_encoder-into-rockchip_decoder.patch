@@ -166,7 +166,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-3-s.h
  
  #define GRF_SOC_CON9		0x6224
  #define DP_SEL_VOP_LIT		BIT(12)
-@@ -1025,7 +1031,7 @@ static int cdn_dp_bind(struct device *de
+@@ -1018,7 +1024,7 @@ static int cdn_dp_bind(struct device *de
  
  	INIT_WORK(&dp->event_work, cdn_dp_pd_event_work);
  
@@ -175,7 +175,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20220422072841.2206452-3-s.h
  
  	encoder->possible_crtcs = drm_of_find_possible_crtcs(drm_dev,
  							     dev->of_node);
-@@ -1090,7 +1096,7 @@ err_free_encoder:
+@@ -1083,7 +1089,7 @@ err_free_encoder:
  static void cdn_dp_unbind(struct device *dev, struct device *master, void *data)
  {
  	struct cdn_dp_device *dp = dev_get_drvdata(dev);

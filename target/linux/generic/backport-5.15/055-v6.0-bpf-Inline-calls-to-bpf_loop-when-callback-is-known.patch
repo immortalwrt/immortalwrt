@@ -175,7 +175,7 @@ Signed-off-by: Alexei Starovoitov <ast@kernel.org>
  enum {
  	REASON_BOUNDS	= -1,
  	REASON_TYPE	= -2,
-@@ -13399,6 +13430,142 @@ patch_call_imm:
+@@ -13402,6 +13433,142 @@ patch_call_imm:
  	return 0;
  }
  
@@ -318,7 +318,7 @@ Signed-off-by: Alexei Starovoitov <ast@kernel.org>
  static void free_states(struct bpf_verifier_env *env)
  {
  	struct bpf_verifier_state_list *sl, *sln;
-@@ -14140,6 +14307,9 @@ skip_full_check:
+@@ -14143,6 +14310,9 @@ skip_full_check:
  		ret = check_max_stack_depth(env);
  
  	/* instruction rewrites happen after this point */
