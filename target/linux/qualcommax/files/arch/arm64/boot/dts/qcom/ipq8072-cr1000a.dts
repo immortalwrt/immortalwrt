@@ -56,7 +56,7 @@
 	};
 
 	fan5646 {
-		status = "ok";
+		status = "okay";
 		compatible = "fsi,leds-fan5646";
 		linux-name = "white";
 		rgb-name = "rgb";
@@ -88,7 +88,7 @@
 };
 
 &blsp1_spi5 {
-	status = "ok";
+	status = "okay";
 	pinctrl-0 = <&spi_4_pins>;
 	pinctrl-names = "default";
 

@@ -1,20 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
-/ {
-	nss_dummy_reg: nss-regulator {
-		compatible = "regulator-fixed";
-		regulator-name = "nss-reg";
-		regulator-min-microvolt = <848000>;
-		regulator-max-microvolt = <848000>;
-		regulator-always-on;
-		regulator-boot-on;
-	};
-};
-
 &soc {
 	nss-common {
 		compatible = "qcom,nss-common";
-		reg = <0x01868010 0x1000>;
+		reg = <0x01868010 0x01>;
 		reg-names = "nss-misc-reset";
 		memory-region = <&nss_region>;
 	};
@@ -86,7 +75,9 @@
 		#size-cells = <1>;
 		qcom,max-contexts = <64>;
 		qcom,max-context-size = <144>;
+		status = "okay";
 		ranges;
+
 		ce5_node {
 			compatible = "qcom,ce5";
 			reg-names = "crypto_pbase", "bam_base";
@@ -114,24 +105,10 @@
 			qcom,aes256-cbc-sha256-hmac;
 			qcom,aes128-ctr-sha256-hmac;
 			qcom,aes256-ctr-sha256-hmac;
+
 			engine0 {
 				qcom,ee = <2 3>;
 			};
 		};
 	};
-
-	nss-macsec0 {
-		compatible = "qcom,nss-macsec";
-		mdiobus = <&mdio>;
-		phy_addr = <0x18>;
-		phy_access_mode = <0x00>;
-	};
-
-	nss-macsec1 {
-		compatible = "qcom,nss-macsec";
-		mdiobus = <&mdio>;
-		phy_addr = <0x1c>;
-		phy_access_mode = <0x00>;
-	};
-
 };

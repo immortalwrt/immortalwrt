@@ -181,6 +181,7 @@
 		#size-cells = <1>;
 		qcom,max-contexts = <64>;
 		qcom,max-context-size = <32>;
+		status = "okay";
 		ranges;
 
 		eip197_node {
@@ -205,9 +206,9 @@
 			qcom,md5-hash;
 			qcom,sha160-hash;
 			qcom,sha224-hash;
+			qcom,sha256-hash;
 			qcom,sha384-hash;
 			qcom,sha512-hash;
-			qcom,sha256-hash;
 			qcom,md5-hmac;
 			qcom,sha160-hmac;
 			qcom,sha224-hmac;

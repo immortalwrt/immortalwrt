@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2013-2017, The Linux Foundation. All rights reserved.
  *
- * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+ * Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -24,7 +24,7 @@
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/cpu.h>
-#include <linux/module.h>
+#include <linux/version.h>
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/mm.h>
@@ -43,9 +43,6 @@
 #include <linux/prefetch.h>
 #include <linux/if.h>
 
-#ifndef CONFIG_SKB_RECYCLE_SIZE
-#define CONFIG_SKB_RECYCLE_SIZE 2304
-#endif
 #define SKB_RECYCLE_SIZE	CONFIG_SKB_RECYCLE_SIZE
 #define SKB_RECYCLE_MIN_SIZE	SKB_RECYCLE_SIZE
 #define SKB_RECYCLE_MAX_SIZE	SKB_RECYCLE_SIZE
@@ -73,6 +70,19 @@ struct global_recycler {
 	u8 tail;		/* tail of the circular list */
 	spinlock_t lock;
 };
+#endif
+
+#ifdef CONFIG_SMP
+static __always_inline int get_cpu_index(void)
+{
+	int cpu_index = smp_processor_id();
+	return cpu_index;
+}
+#else
+int get_cpu_index(void)
+{
+	return 0;
+}
 #endif
 
 static __always_inline void zero_struct(void *v, int size)
@@ -162,8 +172,10 @@ static inline bool consume_skb_can_recycle(const struct sk_buff *skb,
 	if (unlikely(skb_pfmemalloc(skb)))
 		return false;
 
+#ifdef CONFIG_SKB_EXTENSIONS
 	if (skb->active_extensions)
 		return false;
+#endif
 
 	return true;
 }
