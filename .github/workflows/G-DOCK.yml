@@ -1,3 +1,4 @@
+# Copyright (c) 2023
 name: G-DOCK
 
 on:
@@ -34,16 +35,16 @@ env:
   UPLOAD_WETRANSFER: true
   UPLOAD_RELEASE: true
   TZ: Asia/Ho_Chi_Minh
-  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   custom_99: 99-network-custom.sh
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@main
+        uses: actions/checkout@v3
 
       - name: Initialization environment
         env:
@@ -51,8 +52,14 @@ jobs:
         run: |
           sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
           sudo -E apt-get -qq update
-          sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc-s1 libc6-dev-i386 subversion flex uglifyjs git-core gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler
-          sudo -E apt-get -qq install -y cmake libreadline-dev python2.7 python3 python3-pip python3-ply haveged lrzsz scons antlr3 gperf intltool mkisofs rsync ecj fastjar file g++ java-propose-classpath libncursesw5-dev python python3-distutils python3-setuptools swig time xsltproc
+          sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git \
+            libncurses5-dev libz-dev patch unzip zlib1g-dev libc6-dev-i386 subversion flex \
+            uglifyjs git-core gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev \
+            texinfo libreadline-dev libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf \
+            automake libtool autopoint ccache curl wget vim nano python2.7 python3 python3-pip \
+            python3-distutils python3-setuptools swig time xsltproc device-tree-compiler scons \
+            antlr3 gperf intltool mkisofs rsync ecj fastjar file g++ java-propose-classpath \
+            libncursesw5-dev haveged lrzsz
           sudo -E apt-get -qq autoremove --purge
           sudo -E apt-get -qq clean
           sudo timedatectl set-timezone "$TZ"
@@ -88,12 +95,7 @@ jobs:
       - name: Load custom configuration
         run: |
           [ -e files ] && mv files openwrt/files
-          if [ -e $CONFIG_FILE ]; then
-            mv $CONFIG_FILE openwrt/.config
-          else
-            echo "❌ ERROR: $CONFIG_FILE not found!"
-            exit 1
-          fi
+          [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
           chmod +x $DIY_P2_SH && sed -i -e 's/\r$//' $GITHUB_WORKSPACE/$DIY_P2_SH
           mkdir -p openwrt/files/etc/uci-defaults
           mv $custom_99 openwrt/files/etc/uci-defaults/99-custom
@@ -105,7 +107,6 @@ jobs:
         if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
 
       - name: Download package
-        id: package
         run: |
           cd openwrt
           make defconfig
@@ -127,16 +128,16 @@ jobs:
       - name: If Error
         if: steps.compile.outcome == 'failure'
         run: |
-          cat openwrt/.config || echo "No .config found"
+          cat openwrt/.config || true
           echo '================================================================'
-          cd openwrt && make -j $(($(nproc)+1)) V=s
+          cd openwrt && make -j $(($(nproc)+1)) V=s || true
 
       - name: Check space usage
         if: (!cancelled())
         run: df -hT
 
       - name: Upload bin directory
-        uses: actions/upload-artifact@main
+        uses: actions/upload-artifact@v3
         if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
         with:
           name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
@@ -151,14 +152,14 @@ jobs:
             cd "$target_dir"
             rm -rf packages
             echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-            echo "status=success"  >> $GITHUB_OUTPUT
+            echo "status=success" >> $GITHUB_OUTPUT
           else
-            echo "Firmware output directory not found!"
+            echo "⚠️ Firmware output directory not found!"
             exit 1
           fi
 
       - name: Upload firmware directory
-        uses: actions/upload-artifact@main
+        uses: actions/upload-artifact@v3
         if: steps.organize.outputs.status == 'success' && !cancelled()
         with:
           name: DOANDUY-${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
