@@ -271,6 +271,7 @@ define Device/pine64_rockpro64
   DEVICE_MODEL := RockPro64
   SOC := rk3399
   BOOT_FLOW := pine64-bin
+  SUPPORTED_DEVICES += pine64,rockpro64-v2.1
 endef
 TARGET_DEVICES += pine64_rockpro64
 
