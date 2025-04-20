@@ -37,7 +37,6 @@ extern atomic_t eth1_in_br;
 struct net_device *br_dev;
 struct net_device *eth1_dev;
 
-
 #define do_ge2ext_fast(dev, skb)                                               \
 	((IS_LAN(dev) || IS_WAN(dev) || IS_PPD(dev)) && \
 	 skb_hnat_is_hashed(skb) && \
@@ -120,7 +119,7 @@ static inline struct net_device *get_dev_from_index(int index)
 static inline struct net_device *get_wandev_from_index(int index)
 {
 	if (!hnat_priv->g_wandev)
-		hnat_priv->g_wandev = dev_get_by_name(&init_net, hnat_priv->wan);
+		hnat_priv->g_wandev = __dev_get_by_name(&init_net, hnat_priv->wan);
 
 	if (hnat_priv->g_wandev && hnat_priv->g_wandev->ifindex == index)
 		return hnat_priv->g_wandev;
@@ -414,7 +413,7 @@ int nf_hnat_netdevice_event(struct notifier_block *unused, unsigned long event,
 	case NETDEV_REGISTER:
 		ppd_dev_setting();
 		if (IS_WAN(dev) && !hnat_priv->g_wandev)
-			hnat_priv->g_wandev = dev_get_by_name(&init_net, hnat_priv->wan);
+			hnat_priv->g_wandev = __dev_get_by_name(&init_net, hnat_priv->wan);
 
 		break;
 	case MTK_FE_RESET_NAT_DONE:

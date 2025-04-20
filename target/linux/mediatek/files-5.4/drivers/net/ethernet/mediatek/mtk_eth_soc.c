@@ -1416,12 +1416,9 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
 				      0 : RX_DMA_GET_SPORT(trxd.rxd4) - 1;
 		}
 		
-		if (mac == 4){ 
+		if (mac == 4) 
 		mac = atomic_read(&eth1_in_br);
-		// printk_ratelimited(KERN_WARNING "mac is %d",mac);
-		}
-	
- 
+
 		if (unlikely(mac < 0 || mac >= MTK_MAC_COUNT ||
 			     !eth->netdev[mac]))
 			goto release_desc;
@@ -2749,7 +2746,7 @@ static int mtk_stop(struct net_device *dev)
 	int i;
 	u32 val = 0;
 	struct device_node *phy_node;
-
+	
 	mtk_gdm_config(eth, mac->id, MTK_GDMA_DROP_ALL);
 	netif_tx_disable(dev);
 

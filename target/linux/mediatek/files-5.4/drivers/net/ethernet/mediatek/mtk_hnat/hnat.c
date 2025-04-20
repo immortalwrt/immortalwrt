@@ -383,7 +383,7 @@ static int hnat_hw_init(u32 ppe_id)
 		cr_set_field(hnat_priv->ppe_base[ppe_id] + PPE_MIB_CAH_CTRL, MIB_CAH_EN, 1);
 	}
 
-	hnat_priv->g_wandev = dev_get_by_name(&init_net, hnat_priv->wan);
+	hnat_priv->g_wandev = __dev_get_by_name(&init_net, hnat_priv->wan);
 
 	dev_info(hnat_priv->dev, "PPE%d hwnat start\n", ppe_id);
 	
@@ -698,7 +698,7 @@ static int hnat_probe(struct platform_device *pdev)
 	if (err < 0)
 		return -EINVAL;
 
-	strncpy(hnat_priv->lan, "wan", IFNAMSIZ);
+	strncpy(hnat_priv->wan, "eth0", IFNAMSIZ);
 	dev_info(&pdev->dev, "wan = %s\n", hnat_priv->wan);
 
 	err = of_property_read_string(np, "mtketh-lan", &name);
