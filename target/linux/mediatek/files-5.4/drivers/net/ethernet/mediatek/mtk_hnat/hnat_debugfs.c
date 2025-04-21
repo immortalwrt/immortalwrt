@@ -26,7 +26,7 @@ typedef int (*debugfs_write_func)(int par1);
 int debug_level;
 int dbg_cpu_reason;
 int hook_toggle;
-int mape_toggle;
+int mape_toggle = 0;
 int qos_toggle;
 unsigned int dbg_cpu_reason_cnt[MAX_CRSN_NUM];
 
