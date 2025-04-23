@@ -154,7 +154,7 @@
 &switch {
 	status = "okay";
 
-	switch_lan_bmp = <(ESS_PORT3 | ESS_PORT4 | ESS_PORT5)>;
+	switch_lan_bmp = <ESS_PORT5>;
 	switch_wan_bmp = <ESS_PORT6>;
 	switch_mac_mode = <MAC_MODE_PSGMII>;
 	switch_mac_mode1 = <MAC_MODE_10GBASE_R>;
@@ -169,6 +169,7 @@
 		port@6 {
 			port_id = <6>;
 			phy_address = <0x8>;
+                        ethernet-phy-ieee802.3-c45;
 		};
 	};
 };
