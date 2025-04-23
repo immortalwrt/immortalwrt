@@ -93,16 +93,16 @@ Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
  }
 --- a/arch/arm/mach-rockchip/rk3568/rk3568.c
 +++ b/arch/arm/mach-rockchip/rk3568/rk3568.c
-@@ -6,6 +6,7 @@
- #include <dm.h>
+@@ -9,6 +9,7 @@
+ #include <misc.h>
  #include <asm/armv8/mmu.h>
  #include <asm/arch-rockchip/bootrom.h>
 +#include <asm/arch-rockchip/boot_mode.h>
  #include <asm/arch-rockchip/grf_rk3568.h>
  #include <asm/arch-rockchip/hardware.h>
  #include <dt-bindings/clock/rk3568-cru.h>
-@@ -139,3 +140,26 @@ int arch_cpu_init(void)
- #endif
+@@ -200,3 +201,26 @@ int checkboard(void)
+ 
  	return 0;
  }
 +

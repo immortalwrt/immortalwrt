@@ -27,7 +27,7 @@ define KernelPackage/usb-net-rtl8152-vendor
   DEPENDS:=+kmod-usb-core
   CONFLICTS:=kmod-usb-net-rtl8152
   FILES:=$(PKG_BUILD_DIR)/r8152.ko
-  AUTOLOAD:=$(call AutoProbe,r8152)
+  AUTOLOAD:=$(call AutoProbe,r8152,1)
 endef
 
 define KernelPackage/usb-net-rtl8152-vendor/description
