@@ -9,11 +9,9 @@ kernel should retry probe later
  drivers/char/hw_random/rockchip-rng.c | 7 +++----
  1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/char/hw_random/rockchip-rng.c b/drivers/char/hw_random/rockchip-rng.c
-index 47712631e..54e7268d5 100644
 --- a/drivers/char/hw_random/rockchip-rng.c
 +++ b/drivers/char/hw_random/rockchip-rng.c
-@@ -503,10 +503,9 @@ static int rk_rng_probe(struct platform_device *pdev)
+@@ -499,10 +499,9 @@ static int rk_rng_probe(struct platform_
  		rk_rng->mem += rk_rng->soc_data->default_offset;
  
  	rk_rng->clk_num = devm_clk_bulk_get_all(&pdev->dev, &rk_rng->clk_bulks);
@@ -27,6 +25,3 @@ index 47712631e..54e7268d5 100644
  
  	platform_set_drvdata(pdev, rk_rng);
  
--- 
-2.46.0
-
