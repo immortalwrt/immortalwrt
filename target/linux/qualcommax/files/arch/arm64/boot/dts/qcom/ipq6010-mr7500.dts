@@ -71,7 +71,7 @@
 			linux,default-trigger = "usbport";
 		};
 
-		led_system_red: red {
+		led_system_red: system-red {
 			color = <LED_COLOR_ID_RED>;
 			function = LED_FUNCTION_INDICATOR;
 			pwms = <&pwm 2 1250000>;
@@ -79,14 +79,14 @@
 			panic-indicator;
 		};
 
-		led_system_green: green {
+		led_system_green: system-green {
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_INDICATOR;
 			pwms = <&pwm 3 1250000>;
 			max-brightness = <255>;
 		};
 
-		led_system_blue: blue {
+		led_system_blue: system-blue {
 			color = <LED_COLOR_ID_BLUE>;
 			function = LED_FUNCTION_POWER;
 			pwms = <&pwm 0 1250000>;

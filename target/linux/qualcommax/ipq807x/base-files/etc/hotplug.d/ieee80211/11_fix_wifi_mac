@@ -52,6 +52,7 @@ case "$board" in
 		[ "$PHYNBR" = "1" ] && macaddr_add $label_mac -31 > /sys${DEVPATH}/macaddress
 		[ "$PHYNBR" = "2" ] && macaddr_add $label_mac  33 > /sys${DEVPATH}/macaddress
 		;;
+	tplink,deco-x80-5g|\
 	tplink,eap620hd-v1|\
 	tplink,eap660hd-v1)
 		label_mac=$(get_mac_binary /tmp/factory_data/default-mac 0)

@@ -30,6 +30,7 @@ case "$FIRMWARE" in
 	qnap,301w|\
 	redmi,ax6|\
 	redmi,ax6-stock|\
+	tplink,deco-x80-5g|\
 	xiaomi,ax3600|\
 	xiaomi,ax3600-stock|\
 	xiaomi,ax9000|\
@@ -53,13 +54,6 @@ case "$FIRMWARE" in
 	spectrum,sax1v1k|\
 	verizon,cr1000a)
 		caldata_extract_mmc "0:ART" 0x1000 0x20000
-		;;
-	tplink,deco-x80-5g)
-		caldata_extract "0:art" 0x1000 0x20000
-		label_mac=$(get_mac_binary /tmp/factory_data/default-mac 0)
-		ath11k_patch_mac $(macaddr_add $label_mac -1) 0
-		ath11k_patch_mac $(macaddr_add $label_mac -2) 1
-		ath11k_set_macflag
 		;;
 	tplink,eap620hd-v1|\
 	tplink,eap660hd-v1)

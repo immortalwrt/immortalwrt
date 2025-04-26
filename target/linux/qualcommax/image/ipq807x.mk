@@ -391,7 +391,6 @@ define Device/spectrum_sax1v1k
 endef
 TARGET_DEVICES += spectrum_sax1v1k
 
-
 define Device/tplink_deco-x80-5g
 	$(call Device/FitImage)
 	$(call Device/UbiFit)
@@ -401,8 +400,7 @@ define Device/tplink_deco-x80-5g
 	PAGESIZE := 2048
 	DEVICE_DTS_CONFIG := config@hk01.c5
 	SOC := ipq8074
-	DEVICE_PACKAGES := kmod-hwmon-gpiofan ipq-wifi-tplink_deco-x80-5g \
-	 	 kmod-usb-serial-option kmod-usb-net-qmi-wwan
+	DEVICE_PACKAGES := kmod-hwmon-gpiofan ipq-wifi-tplink_deco-x80-5g kmod-usb-serial-option kmod-usb-net-qmi-wwan
 endef
 TARGET_DEVICES += tplink_deco-x80-5g
 

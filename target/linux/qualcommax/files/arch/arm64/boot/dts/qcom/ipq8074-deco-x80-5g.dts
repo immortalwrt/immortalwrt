@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/* Copyright (c) 2022, Robert Marko <robimarko@gmail.com>
-altered by Jonathan Brophy <professor_jonny@hotmail.com>
-to suit the TP-Link Deco X80-5G target */
 
 /dts-v1/;
 
 #include "ipq8074.dtsi"
-#include "ipq8074-hk-cpu.dtsi"
 #include "ipq8074-ess.dtsi"
+#include "ipq8074-nss.dtsi"
+#include "ipq8074-common.dtsi"
+#include "ipq8074-hk-cpu.dtsi"
+
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
@@ -18,7 +18,7 @@ to suit the TP-Link Deco X80-5G target */
 
 	aliases {
 		 serial0 = &blsp1_uart5;
- 	};
+	};
 
 	chosen {
 		stdout-path = "serial0:115200n8";
@@ -52,8 +52,6 @@ to suit the TP-Link Deco X80-5G target */
 
 	gpio_keys {
 		compatible = "gpio-keys";
-		pinctrl-0 = <&button_pins>;
-		pinctrl-names = "default";
 
 		reset_button {
 			label = "reset";
@@ -64,26 +62,24 @@ to suit the TP-Link Deco X80-5G target */
 
 	leds {
 		compatible = "gpio-leds";
-		pinctrl-0 = <&led_pins>;
-		pinctrl-names = "default";
 		/*note the LED's defined here are not individual they are a single combined RGB element used for status functions.
 		To mimic the OEM default behaviour green and red are switched on from boot to indicate yellow (power on).*/
 
-		led_system_green: green {
+		led_system_green: system-green {
 			gpios = <&tlmm 50 GPIO_ACTIVE_HIGH>;
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_STATUS;
 			default-state = "on";
 		};
 
-		led_system_red: red {
+		led_system_red: system-red {
 			gpios = <&tlmm 51 GPIO_ACTIVE_HIGH>;
 			color = <LED_COLOR_ID_RED>;
 			function = LED_FUNCTION_STATUS;
 			default-state = "on";
 		};
 
-		led_system_blue: blue {
+		led_system_blue: system-blue {
 			gpios = <&tlmm 52 GPIO_ACTIVE_HIGH>;
 			color = <LED_COLOR_ID_BLUE>;
 			function = LED_FUNCTION_STATUS;
@@ -294,13 +290,6 @@ to suit the TP-Link Deco X80-5G target */
 
 
 &tlmm {
-	button_pins: button-state {
-		pins = "gpio27";
-		function = "gpio";
-		drive-strength = <2>;
-		bias-pull-up;
-	};
-
 	fan_pins: fan-state {
 		pins = "gpio40", "gpio41", "gpio42";
 		function = "gpio";
@@ -322,13 +311,6 @@ to suit the TP-Link Deco X80-5G target */
 		bias-disable;
 	};
 
-	led_pins: led-state {
-		pins = "gpio50", "gpio51", "gpio52";
-		function = "gpio";
-		drive-strength = <8>;
-		bias-disable;
-	};
-
 	mdio_pins: mdio-pins {
 		mdc {
 			pins = "gpio68";
@@ -346,26 +328,6 @@ to suit the TP-Link Deco X80-5G target */
 	};
 };
 
-&blsp1_uart5 {
-	status = "okay";
-};
-
-&cryptobam {
-	status = "okay";
-};
-
-&crypto {
-	status = "okay";
-};
-
-&prng {
-	status = "okay";
-};
-
-&qpic_bam {
-	status = "okay";
-};
-
 &qpic_nand {
 	status = "okay";
 
@@ -380,18 +342,6 @@ to suit the TP-Link Deco X80-5G target */
 
 		};
 	};
-};
-
-&qusb_phy_0 {
-	status = "okay";
-};
-
-&ssphy_0 {
-	status = "okay";
-};
-
-&usb_0 {
-	status = "okay";
 };
 
 &mdio {
@@ -454,5 +404,6 @@ to suit the TP-Link Deco X80-5G target */
 
 &wifi {
 	status = "okay";
+	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "tplink_deco-x80-5g";
 };
