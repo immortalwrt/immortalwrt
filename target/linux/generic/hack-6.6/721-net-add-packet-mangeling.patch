@@ -164,4 +164,4 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
 +
  	skb_reset_mac_header(skb);
  
- 	eth = eth_skb_pull_mac(skb);
+ 	eth = (struct ethhdr *)skb->data;

@@ -108,7 +108,9 @@ ramips_setup_interfaces()
 			"2:lan:2" "3:lan:1" "4:wan" "6@eth0"
 		;;
 	duzun,dm06|\
-	glinet,gl-mt300n-v2)
+	glinet,gl-mt300n-v2|\
+	teltonika,rut200|\
+	teltonika,rut241)
 		ucidef_add_switch "switch0" \
 			"1:lan" "0:wan" "6@eth0"
 		;;
@@ -217,6 +219,10 @@ ramips_setup_interfaces()
 	xiaomi,mi-router-4c)
 		ucidef_add_switch "switch0" \
 			"4:lan:1" "2:lan:2" "1:wan" "6@eth0"
+		;;
+	xiaomi,miwifi-3a)
+		ucidef_add_switch "switch0" \
+			"0:wan" "2:lan:1" "4:lan:2" "6@eth0"
 		;;
 	xiaomi,miwifi-3c)
 		ucidef_add_switch "switch0" \
