@@ -116,8 +116,8 @@
 
 	nss_crypto: qcom,nss_crypto {
 		compatible = "qcom,nss-crypto";
-		#address-cells = <1>;
-		#size-cells = <1>;
+		#address-cells = <2>;
+		#size-cells = <2>;
 		qcom,max-contexts = <64>;
 		qcom,max-context-size = <32>;
 		status = "okay";
@@ -126,7 +126,7 @@
 		eip197_node {
 			compatible = "qcom,eip197";
 			reg-names = "crypto_pbase";
-			reg = <0x39800000 0x7ffff>;
+			reg = <0x0 0x39800000 0x0 0x7ffff>;
 			clocks = <&gcc GCC_NSS_CRYPTO_CLK>, <&gcc GCC_NSSNOC_CRYPTO_CLK>, <&gcc GCC_CRYPTO_PPE_CLK>;
 			clock-names = "crypto_clk", "crypto_nocclk", "crypto_ppeclk";
 			clock-frequency = /bits/ 64 <300000000 300000000 300000000>;

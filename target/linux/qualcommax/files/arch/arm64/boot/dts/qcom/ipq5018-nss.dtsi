@@ -1,16 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
-/ {
-	nss_dummy_reg: nss-regulator {
-		compatible = "regulator-fixed";
-		regulator-name = "nss-reg";
-		regulator-min-microvolt = <848000>;
-		regulator-max-microvolt = <848000>;
-		regulator-always-on;
-		regulator-boot-on;
-	};
-};
-
 &soc {
 	nss-common {
 		compatible = "qcom,nss-common";
@@ -77,9 +66,8 @@
 		qcom,portid-enabled;
 		qcom,wlan-dataplane-offload-enabled;
 		qcom,pvxlan-enabled;
+		qcom,rmnet_rx-enabled;
 		qcom,udp-st-enabled;
-		mx-supply = <&nss_dummy_reg>;
-		npu-supply = <&nss_dummy_reg>;
 	};
 
 	nss_crypto: qcom,nss_crypto {
@@ -123,19 +111,5 @@
 				qcom,ee = <2 3>;
 			};
 		};
-	};
-
-	nss-macsec0 {
-		compatible = "qcom,nss-macsec";
-		mdiobus = <&mdio>;
-		phy_addr = <0x18>;
-		phy_access_mode = <0x00>;
-	};
-
-	nss-macsec1 {
-		compatible = "qcom,nss-macsec";
-		mdiobus = <&mdio>;
-		phy_addr = <0x1c>;
-		phy_access_mode = <0x00>;
 	};
 };
