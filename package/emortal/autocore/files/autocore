@@ -19,9 +19,6 @@ start() {
 		echo "$rfc" > "$fileRfc"
 	done
 
-	uci set network.@globals[0].packet_steering="1"
-	uci commit network
-
 	for i in $(ip address | awk -F ': ' '/eth[0-9]+/ {print $2}' | grep -v '@' | xargs)
 	do
 		ethtool -K "$i" rx-checksum on

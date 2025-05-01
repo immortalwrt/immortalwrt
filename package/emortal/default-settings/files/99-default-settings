@@ -1,5 +1,7 @@
 #!/bin/sh
 
+. /etc/openwrt_release
+
 uci -q get system.@imm_init[0] > "/dev/null" || uci -q add system imm_init > "/dev/null"
 
 if ! uci -q get system.@imm_init[0].lang > "/dev/null"; then
@@ -16,5 +18,22 @@ sed -i "/log-facility/d" "/etc/dnsmasq.conf"
 echo "log-facility=/dev/null" >> "/etc/dnsmasq.conf"
 
 ln -sf "/sbin/ip" "/usr/bin/ip"
+
+case "$DISTRIB_TARGET" in
+"bcm4908"/*|\
+"bcm53xx"/*|\
+"ramips/mt7621"|\
+"x86"/*)
+	if ! uci -q get system.@imm_init[0].packet_steering > "/dev/null"; then
+	uci -q batch <<-EOF
+		set network.globals="globals"
+		set network.@globals[0].packet_steering="1"
+		commit network
+
+		set system.@imm_init[0].packet_steering="1"
+		commit system
+	EOF
+	;;
+esac
 
 exit 0
