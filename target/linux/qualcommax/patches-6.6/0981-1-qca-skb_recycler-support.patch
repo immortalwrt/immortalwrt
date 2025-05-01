@@ -583,19 +583,6 @@
  }
  
  static int
-@@ -5884,11 +6112,11 @@ void skb_scrub_packet(struct sk_buff *sk
- 	skb->offload_fwd_mark = 0;
- 	skb->offload_l3_fwd_mark = 0;
- #endif
--	ipvs_reset(skb);
- 
- 	if (!xnet)
- 		return;
- 
-+	ipvs_reset(skb);
- 	skb->mark = 0;
- 	skb_clear_tstamp(skb);
- }
 @@ -6393,6 +6621,8 @@ static int pskb_carve_inside_header(stru
  	if (skb_pfmemalloc(skb))
  		gfp_mask |= __GFP_MEMALLOC;
