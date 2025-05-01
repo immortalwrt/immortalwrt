@@ -29,7 +29,7 @@ CONFIG_MODEMMANAGER_WITH_QMI=y
 CONFIG_MODEMMANAGER_WITH_QRTR=y
 CONFIG_PACKAGE_adb=y
 CONFIG_PACKAGE_adb-enablemodem=y
-CONFIG_PACKAGE_adguardhome=y
+# CONFIG_PACKAGE_adguardhome is not set
 CONFIG_PACKAGE_atinout=y
 CONFIG_PACKAGE_autocore=y
 CONFIG_PACKAGE_automount=y
@@ -265,7 +265,7 @@ CONFIG_PACKAGE_lua-bit32=y
 CONFIG_PACKAGE_luaposix=y
 CONFIG_PACKAGE_luci=y
 CONFIG_PACKAGE_luci-app-3ginfo-lite=y
-CONFIG_PACKAGE_luci-app-adguardhome=y
+# CONFIG_PACKAGE_luci-app-adguardhome is not set
 CONFIG_PACKAGE_luci-app-advanced-reboot=y
 CONFIG_PACKAGE_luci-app-atcommands=y
 CONFIG_PACKAGE_luci-app-cpu-status=y
