@@ -445,7 +445,7 @@ config KERNEL_DEBUG_INFO
 
 config KERNEL_DEBUG_INFO_BTF
 	bool "Enable additional BTF type information"
-	default y if (TARGET_armsr || TARGET_bcm27xx || TARGET_ipq806x_chromium || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_qualcommax_ipq60xx || TARGET_rockchip || TARGET_sunxi || TARGET_x86_64) && BUILDBOT
+	default y if (TARGET_armsr || TARGET_bcm27xx_bcm2709 || TARGET_bcm27xx_bcm2710 || TARGET_bcm27xx_bcm2711 || TARGET_bcm27xx_bcm2712 || TARGET_ipq806x_chromium || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_qualcommax_ipq60xx || TARGET_rockchip || TARGET_sunxi || TARGET_x86_64) && BUILDBOT
 	depends on !HOST_OS_MACOS
 	depends on KERNEL_DEBUG_INFO && !KERNEL_DEBUG_INFO_REDUCED
 	select DWARVES
@@ -473,7 +473,7 @@ config KERNEL_MODULE_ALLOW_BTF_MISMATCH
 
 config KERNEL_DEBUG_INFO_REDUCED
 	bool "Reduce debugging information"
-	default y if !(TARGET_armsr || TARGET_bcm27xx || TARGET_ipq806x_chromium || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_qualcommax_ipq60xx || TARGET_rockchip || TARGET_sunxi || TARGET_x86_64) || !BUILDBOT
+	default y if !(TARGET_armsr || TARGET_bcm27xx_bcm2709 || TARGET_bcm27xx_bcm2710 || TARGET_bcm27xx_bcm2711 || TARGET_bcm27xx_bcm2712 || TARGET_ipq806x_chromium || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_qualcommax_ipq60xx || TARGET_rockchip || TARGET_sunxi || TARGET_x86_64) || !BUILDBOT
 	depends on KERNEL_DEBUG_INFO
 	help
 	  If you say Y here gcc is instructed to generate less debugging
@@ -570,7 +570,7 @@ config KERNEL_BPF_EVENTS
 
 config KERNEL_PROBE_EVENTS_BTF_ARGS
 	bool "Support BTF function arguments for probe events"
-	depends on KERNEL_DEBUG_INFO_BTF && KERNEL_KPROBE_EVENTS && LINUX_6_6
+	depends on KERNEL_DEBUG_INFO_BTF && KERNEL_KPROBE_EVENTS
 
 config KERNEL_BPF_KPROBE_OVERRIDE
 	bool
@@ -624,6 +624,10 @@ choice
 
 	config KERNEL_TRANSPARENT_HUGEPAGE_MADVISE
 		bool "madvise"
+
+	config KERNEL_TRANSPARENT_HUGEPAGE_NEVER
+		bool "never"
+		depends on !LINUX_6_6
 endchoice
 
 config KERNEL_HUGETLBFS
@@ -753,6 +757,11 @@ config KERNEL_SLABINFO
 	select KERNEL_SLUB_DEBUG
 	select KERNEL_SLUB_DEBUG_ON
 	bool "Enable /proc slab debug info"
+
+config KERNEL_STACKDEPOT_MAX_FRAMES
+	int
+	default 64
+	depends on KERNEL_SLUB_DEBUG
 
 config KERNEL_PROC_PAGE_MONITOR
 	bool "Enable /proc page monitoring"
