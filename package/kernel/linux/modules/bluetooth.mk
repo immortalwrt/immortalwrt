@@ -41,6 +41,7 @@ define KernelPackage/hci-uart
   DEPENDS:=+kmod-bluetooth +kmod-btbcm
   KCONFIG:= \
 	CONFIG_BT_HCIUART \
+	CONFIG_BT_HCIUART_AML=n \
 	CONFIG_BT_HCIUART_BCM=y \
 	CONFIG_BT_HCIUART_INTEL=n \
 	CONFIG_BT_HCIUART_H4 \
