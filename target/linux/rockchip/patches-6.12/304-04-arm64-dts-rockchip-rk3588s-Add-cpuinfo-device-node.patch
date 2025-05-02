@@ -11,8 +11,8 @@ Change-Id: I050cc7f6398500e705b27c588948201e571817ea
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
-@@ -348,6 +348,12 @@
- 		};
+@@ -352,6 +352,12 @@
+ 		cache-unified;
  	};
  
 +	cpuinfo {

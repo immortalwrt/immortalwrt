@@ -94,7 +94,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  {
 --- a/drivers/clk/rockchip/clk.h
 +++ b/drivers/clk/rockchip/clk.h
-@@ -972,6 +972,9 @@ struct rockchip_clk_branch {
+@@ -1024,6 +1024,9 @@ struct rockchip_clk_branch {
  
  struct rockchip_clk_provider *rockchip_clk_init(struct device_node *np,
  			void __iomem *base, unsigned long nr_clks);

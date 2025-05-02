@@ -16,7 +16,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
-@@ -145,6 +145,11 @@
+@@ -146,6 +146,11 @@
  	status = "disabled";
  };
  
@@ -28,7 +28,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  &gmac2io {
  	assigned-clocks = <&cru SCLK_MAC2IO>, <&cru SCLK_MAC2IO_EXT>;
  	assigned-clock-parents = <&gmac_clk>, <&gmac_clk>;
-@@ -210,6 +215,7 @@
+@@ -211,6 +216,7 @@
  				regulator-name = "vdd_log";
  				regulator-always-on;
  				regulator-boot-on;
@@ -36,7 +36,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  				regulator-min-microvolt = <712500>;
  				regulator-max-microvolt = <1450000>;
  				regulator-ramp-delay = <12500>;
-@@ -224,6 +230,7 @@
+@@ -225,6 +231,7 @@
  				regulator-name = "vdd_arm";
  				regulator-always-on;
  				regulator-boot-on;
@@ -46,7 +46,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  				regulator-ramp-delay = <12500>;
 --- a/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus.dts
-@@ -111,6 +111,11 @@
+@@ -112,6 +112,11 @@
  	status = "disabled";
  };
  
@@ -58,7 +58,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  &gmac2io {
  	assigned-clocks = <&cru SCLK_MAC2IO>, <&cru SCLK_MAC2IO_EXT>;
  	assigned-clock-parents = <&gmac_clk>, <&gmac_clk>;
-@@ -170,6 +175,7 @@
+@@ -171,6 +176,7 @@
  				regulator-name = "vdd_log";
  				regulator-always-on;
  				regulator-boot-on;
@@ -66,7 +66,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  				regulator-min-microvolt = <712500>;
  				regulator-max-microvolt = <1450000>;
  				regulator-ramp-delay = <12500>;
-@@ -184,6 +190,7 @@
+@@ -185,6 +191,7 @@
  				regulator-name = "vdd_arm";
  				regulator-always-on;
  				regulator-boot-on;
@@ -100,7 +100,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  	/delete-property/ rx_delay;
 --- a/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
-@@ -134,6 +134,64 @@
+@@ -135,6 +135,64 @@
  	cpu-supply = <&vdd_arm>;
  };
  
@@ -165,7 +165,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  &emmc {
  	bus-width = <8>;
  	cap-mmc-highspeed;
-@@ -206,6 +264,7 @@
+@@ -207,6 +265,7 @@
  		regulators {
  			vdd_logic: DCDC_REG1 {
  				regulator-name = "vdd_logic";
@@ -173,7 +173,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  				regulator-min-microvolt = <712500>;
  				regulator-max-microvolt = <1450000>;
  				regulator-always-on;
-@@ -218,6 +277,7 @@
+@@ -219,6 +278,7 @@
  
  			vdd_arm: DCDC_REG2 {
  				regulator-name = "vdd_arm";
@@ -183,7 +183,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  				regulator-always-on;
 --- a/arch/arm64/boot/dts/rockchip/rk3328-rock-pi-e.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-rock-pi-e.dts
-@@ -133,6 +133,11 @@
+@@ -135,6 +135,11 @@
  	cpu-supply = <&vdd_arm>;
  };
  
@@ -195,7 +195,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  &emmc {
  	bus-width = <8>;
  	cap-mmc-highspeed;
-@@ -213,6 +218,7 @@
+@@ -268,6 +273,7 @@
  				regulator-name = "vdd_log";
  				regulator-always-on;
  				regulator-boot-on;
@@ -203,7 +203,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  				regulator-min-microvolt = <712500>;
  				regulator-max-microvolt = <1450000>;
  				regulator-ramp-delay = <12500>;
-@@ -227,6 +233,7 @@
+@@ -282,6 +288,7 @@
  				regulator-name = "vdd_arm";
  				regulator-always-on;
  				regulator-boot-on;

@@ -10,9 +10,9 @@ Signed-off-by: Huang, Tao <huangtao@rock-chips.com>
  arch/arm64/boot/dts/rockchip/rk3399.dtsi         | 3 +++
  2 files changed, 9 insertions(+)
 
---- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -173,6 +173,12 @@
+--- a/arch/arm64/boot/dts/rockchip/rk3399-base.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399-base.dtsi
+@@ -243,6 +243,12 @@
  		};
  	};
  

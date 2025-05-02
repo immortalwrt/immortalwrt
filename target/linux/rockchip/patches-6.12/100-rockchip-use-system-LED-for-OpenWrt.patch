@@ -61,8 +61,8 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  #include <dt-bindings/gpio/gpio.h>
  #include "rk3328.dtsi"
  
-@@ -16,6 +17,11 @@
- 	aliases {
+@@ -17,6 +18,11 @@
+ 		ethernet0 = &gmac2io;
  		ethernet1 = &rtl8153;
  		mmc0 = &sdmmc;
 +
@@ -73,7 +73,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  
  	chosen {
-@@ -48,19 +54,22 @@
+@@ -49,19 +55,22 @@
  		pinctrl-names = "default";
  
  		lan_led: led-0 {
@@ -101,8 +101,8 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  
 --- a/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus.dts
-@@ -17,6 +17,11 @@
- 	aliases {
+@@ -18,6 +18,11 @@
+ 		ethernet0 = &gmac2io;
  		ethernet1 = &rtl8153;
  		mmc0 = &sdmmc;
 +
@@ -113,7 +113,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  
  	chosen {
-@@ -41,11 +46,10 @@
+@@ -42,11 +47,10 @@
  			gpios = <&gpio2 RK_PB7 GPIO_ACTIVE_HIGH>;
  		};
  
@@ -128,8 +128,8 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  		led-2 {
 --- a/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-roc-cc.dts
-@@ -13,6 +13,11 @@
- 	aliases {
+@@ -14,6 +14,11 @@
+ 		ethernet0 = &gmac2io;
  		mmc0 = &sdmmc;
  		mmc1 = &emmc;
 +
@@ -140,7 +140,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  
  	chosen {
-@@ -93,9 +98,7 @@
+@@ -94,9 +99,7 @@
  
  		power_led: led-0 {
  			label = "firefly:blue:power";
@@ -152,8 +152,8 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  		user_led: led-1 {
 --- a/arch/arm64/boot/dts/rockchip/rk3328-rock-pi-e.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-rock-pi-e.dts
-@@ -23,6 +23,11 @@
- 	aliases {
+@@ -25,6 +25,11 @@
+ 		ethernet1 = &gmac2phy;
  		mmc0 = &sdmmc;
  		mmc1 = &emmc;
 +
@@ -164,7 +164,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  
  	chosen {
-@@ -55,10 +60,9 @@
+@@ -57,10 +62,9 @@
  		pinctrl-0 = <&led_pin>;
  		pinctrl-names = "default";
  
@@ -212,7 +212,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 --- a/arch/arm64/boot/dts/rockchip/rk3399-rock-4c-plus.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3399-rock-4c-plus.dts
 @@ -17,6 +17,10 @@
- 	aliases {
+ 		ethernet0 = &gmac;
  		mmc0 = &sdhci;
  		mmc1 = &sdmmc;
 +		led-boot = &led_blue;
@@ -237,8 +237,8 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  
 --- a/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4.dtsi
-@@ -14,6 +14,10 @@
- 	aliases {
+@@ -13,6 +13,10 @@
+ 		ethernet0 = &gmac;
  		mmc0 = &sdhci;
  		mmc1 = &sdmmc;
 +		led-boot = &led_blue;
@@ -248,7 +248,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  
  	chosen {
-@@ -33,11 +37,10 @@
+@@ -32,11 +36,10 @@
  		pinctrl-0 = <&user_led2>;
  
  		/* USER_LED2 */
@@ -483,7 +483,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  		};
  	};
  
-@@ -490,7 +497,11 @@
+@@ -487,7 +494,11 @@
  
  &pinctrl {
  	leds {
@@ -582,10 +582,10 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  		};
 --- a/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-plus.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-plus.dts
-@@ -20,6 +20,11 @@
+@@ -19,6 +19,11 @@
+ 	aliases {
  		mmc0 = &sdhci;
  		mmc1 = &sdmmc;
- 		serial2 = &uart2;
 +
 +		led-boot = &status_led;
 +		led-failsafe = &status_led;
@@ -594,7 +594,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  
  	chosen {
-@@ -78,7 +83,7 @@
+@@ -77,7 +82,7 @@
  		pinctrl-names = "default";
  		pinctrl-0 = <&blue_led_pin>;
  
@@ -634,8 +634,8 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dts
 @@ -16,6 +16,11 @@
  	aliases {
+ 		ethernet0 = &gmac1;
  		mmc0 = &sdmmc;
- 		serial2 = &uart2;
 +
 +		led-boot = &status_led;
 +		led-failsafe = &status_led;
@@ -646,7 +646,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	chosen {
 @@ -41,10 +46,9 @@
  		pinctrl-names = "default";
- 		pinctrl-0 =<&leds_gpio>;
+ 		pinctrl-0 = <&leds_gpio>;
  
 -		led-1 {
 +		status_led: led-1 {
@@ -658,8 +658,8 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  
 --- a/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
-@@ -14,6 +14,11 @@
- 	aliases {
+@@ -15,6 +15,11 @@
+ 		ethernet0 = &gmac1;
  		mmc0 = &sdhci;
  		mmc1 = &sdmmc;
 +
@@ -670,7 +670,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  
  	analog-sound {
-@@ -39,11 +44,10 @@
+@@ -40,11 +45,10 @@
  		pinctrl-names = "default";
  		pinctrl-0 = <&io_led>;
  

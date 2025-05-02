@@ -32,7 +32,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +};
 --- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
-@@ -409,9 +409,11 @@
+@@ -410,9 +410,11 @@
  	#size-cells = <0>;
  
  	/* Second port is for USB 3.0 */
@@ -48,7 +48,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  
 --- a/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus.dts
-@@ -362,9 +362,11 @@
+@@ -363,9 +363,11 @@
  	#size-cells = <0>;
  
  	/* Second port is for USB 3.0 */
@@ -201,7 +201,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	phy-handle = <&rgmii_phy0>;
  	phy-mode = "rgmii-id";
  	pinctrl-names = "default";
-@@ -53,6 +54,7 @@
+@@ -47,6 +48,7 @@
  	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>;
  	assigned-clock-rates = <0>, <125000000>;
  	clock_in_out = "output";
@@ -209,10 +209,10 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	phy-handle = <&rgmii_phy1>;
  	phy-mode = "rgmii-id";
  	pinctrl-names = "default";
-@@ -76,6 +78,25 @@
- 		reg = <0x1>;
- 		pinctrl-0 = <&eth_phy0_reset_pin>;
- 		pinctrl-names = "default";
+@@ -67,6 +69,25 @@
+ 		reset-assert-us = <20000>;
+ 		reset-deassert-us = <100000>;
+ 		reset-gpios = <&gpio1 RK_PB0 GPIO_ACTIVE_LOW>;
 +
 +		leds {
 +			#address-cells = <1>;
@@ -235,10 +235,10 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  };
  
-@@ -85,6 +106,25 @@
- 		reg = <0x1>;
- 		pinctrl-0 = <&eth_phy1_reset_pin>;
- 		pinctrl-names = "default";
+@@ -79,6 +100,25 @@
+ 		reset-assert-us = <20000>;
+ 		reset-deassert-us = <100000>;
+ 		reset-gpios = <&gpio1 RK_PB1 GPIO_ACTIVE_LOW>;
 +
 +		leds {
 +			#address-cells = <1>;
@@ -261,7 +261,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  };
  
-@@ -106,6 +146,14 @@
+@@ -100,6 +140,14 @@
  	vccio3-supply = <&vcc_3v3>;
  };
  
@@ -458,7 +458,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  &pcie30phy {
 --- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
-@@ -510,6 +510,20 @@
+@@ -508,6 +508,20 @@
  	pinctrl-names = "default";
  	pinctrl-0 = <&pcie2_0_rst>;
  	status = "okay";
@@ -479,7 +479,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  };
  
  &pcie2x1l1 {
-@@ -526,6 +540,20 @@
+@@ -524,6 +538,20 @@
  	pinctrl-names = "default";
  	pinctrl-0 = <&pcie2_2_rst>;
  	status = "okay";

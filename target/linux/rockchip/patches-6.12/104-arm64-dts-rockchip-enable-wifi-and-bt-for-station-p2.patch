@@ -18,7 +18,7 @@
  	hdmi-con {
  		compatible = "hdmi-connector";
  		type = "a";
-@@ -506,6 +517,26 @@
+@@ -503,6 +514,26 @@
  		};
  	};
  
@@ -45,7 +45,7 @@
  	usb {
  		vcc5v0_host_en: vcc5v0-host-en {
  			rockchip,pins = <0 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
-@@ -577,6 +608,22 @@
+@@ -574,6 +605,22 @@
  	status = "okay";
  };
  
@@ -68,7 +68,7 @@
  &tsadc {
  	status = "okay";
  };
-@@ -585,6 +632,26 @@
+@@ -582,6 +629,26 @@
  	status = "okay";
  };
  

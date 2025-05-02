@@ -24,7 +24,7 @@ Signed-off-by: Tao Huang <huangtao@rock-chips.com>
  /*
   * In case the boot CPU is hotpluggable, we record its initial state and
   * current state separately. Certain system registers may contain different
-@@ -237,6 +243,9 @@ static int c_show(struct seq_file *m, vo
+@@ -254,6 +260,9 @@ static int c_show(struct seq_file *m, vo
  		seq_printf(m, "CPU revision\t: %d\n\n", MIDR_REVISION(midr));
  	}
  

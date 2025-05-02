@@ -15,7 +15,7 @@ Signed-off-by: jensen <jensenhuang@friendlyarm.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
-@@ -1633,6 +1633,7 @@
+@@ -1749,6 +1749,7 @@
  		snps,mixed-burst;
  		snps,mtl-rx-config = <&gmac1_mtl_rx_setup>;
  		snps,mtl-tx-config = <&gmac1_mtl_tx_setup>;
@@ -25,7 +25,7 @@ Signed-off-by: jensen <jensenhuang@friendlyarm.com>
  
 --- a/arch/arm64/boot/dts/rockchip/rk3588-extra.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-extra.dtsi
-@@ -309,6 +309,7 @@
+@@ -344,6 +344,7 @@
  		snps,mixed-burst;
  		snps,mtl-rx-config = <&gmac0_mtl_rx_setup>;
  		snps,mtl-tx-config = <&gmac0_mtl_tx_setup>;
@@ -35,10 +35,10 @@ Signed-off-by: jensen <jensenhuang@friendlyarm.com>
  
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7572,7 +7572,7 @@ int stmmac_dvr_probe(struct device *devi
- #ifdef STMMAC_VLAN_TAG_USED
- 	/* Both mac100 and gmac support receive VLAN tag detection */
- 	ndev->features |= NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_HW_VLAN_STAG_RX;
+@@ -7692,7 +7692,7 @@ int stmmac_dvr_probe(struct device *devi
+ 		ndev->hw_features |= NETIF_F_HW_VLAN_CTAG_RX;
+ 		priv->hw->hw_vlan_en = true;
+ 	}
 -	if (priv->dma_cap.vlhash) {
 +	if (priv->plat->vlhash_en && priv->dma_cap.vlhash) {
  		ndev->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
@@ -58,7 +58,7 @@ Signed-off-by: jensen <jensenhuang@friendlyarm.com>
  	plat->axi = stmmac_axi_setup(pdev);
 --- a/include/linux/stmmac.h
 +++ b/include/linux/stmmac.h
-@@ -299,6 +299,7 @@ struct plat_stmmacenet_data {
+@@ -262,6 +262,7 @@ struct plat_stmmacenet_data {
  	int rss_en;
  	int mac_port_sel_speed;
  	int has_xgmac;
