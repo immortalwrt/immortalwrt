@@ -113,3 +113,18 @@
 		};
 	};
 };
+
+&wifi0 {
+	// IPQ5018
+	nss-radio-priority = <0>;
+};
+
+&wifi1 {
+	// QCN6102 5G
+	nss-radio-priority = <1>;
+}
+
+&wifi2 {
+	// QCN6122 5G/6G
+	nss-radio-priority = <1>;
+};
