@@ -101,7 +101,7 @@ Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
  #include <asm/arch-rockchip/grf_rk3568.h>
  #include <asm/arch-rockchip/hardware.h>
  #include <dt-bindings/clock/rk3568-cru.h>
-@@ -200,3 +201,26 @@ int checkboard(void)
+@@ -200,3 +201,17 @@ int checkboard(void)
  
  	return 0;
  }
@@ -115,15 +115,6 @@ Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
 +void spl_board_init(void)
 +{
 +	led_setup();
-+
-+#if (CONFIG_IS_ENABLED(DM_REGULATOR))
-+	/*
-+	 * Turning the eMMC and SPI back on (if disabled via the Qseven
-+	 * BIOS_ENABLE) signal is done through a always-on regulator).
-+	 */
-+	if (regulators_enable_boot_on(false))
-+		debug("%s: Cannot enable boot on regulator\n", __func__);
-+#endif
 +
 +	setup_boot_mode();
 +}

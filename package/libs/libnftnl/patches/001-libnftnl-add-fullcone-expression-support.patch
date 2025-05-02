@@ -66,9 +66,9 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
  		      expr/socket.c	\
 --- /dev/null
 +++ b/src/expr/fullcone.c
-@@ -0,0 +1,172 @@
+@@ -0,0 +1,174 @@
 +/*
-+ * (C) 2022 wongsyrone
++ * (C) 2022-2025 wongsyrone
 + *
 + * This program is free software; you can redistribute it and/or modify
 + * it under the terms of the GNU General Public License as published
@@ -111,6 +111,8 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
 +	case NFTNL_EXPR_FULLCONE_REG_PROTO_MAX:
 +		memcpy(&fullcone->sreg_proto_max, data, data_len);
 +		break;
++	default:
++		return -1;
 +	}
 +	return 0;
 +}

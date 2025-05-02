@@ -11,6 +11,7 @@ FEATURES:=squashfs ext4 vdi vmdk vhdx pcmcia targz fpu boot-part rootfs-part
 SUBTARGETS:=64 generic legacy geode
 
 KERNEL_PATCHVER:=6.6
+KERNEL_TESTING_PATCHVER:=6.12
 
 KERNELNAME:=bzImage
 
