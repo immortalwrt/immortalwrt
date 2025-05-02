@@ -132,7 +132,7 @@ Signed-off-by: Vishnu Vardhan Bantanahal <quic_vishvard@quicinc.com>
  					const struct net_bridge *br)
 --- a/net/bridge/br_vlan.c
 +++ b/net/bridge/br_vlan.c
-@@ -933,8 +933,179 @@ int br_vlan_get_proto(const struct net_d
+@@ -935,8 +935,179 @@ int br_vlan_get_proto(const struct net_d
  }
  EXPORT_SYMBOL_GPL(br_vlan_get_proto);
  
@@ -313,7 +313,7 @@ Signed-off-by: Vishnu Vardhan Bantanahal <quic_vishvard@quicinc.com>
  {
  	struct switchdev_attr attr = {
  		.orig_dev = br->dev,
-@@ -1068,7 +1239,7 @@ static bool vlan_default_pvid(struct net
+@@ -1070,7 +1241,7 @@ static bool vlan_default_pvid(struct net
  	return false;
  }
  
