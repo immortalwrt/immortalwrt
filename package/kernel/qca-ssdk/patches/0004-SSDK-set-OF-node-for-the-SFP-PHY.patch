@@ -23,7 +23,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
 
 --- a/include/hsl/phy/hsl_phy.h
 +++ b/include/hsl/phy/hsl_phy.h
-@@ -584,6 +584,7 @@ typedef struct {
+@@ -588,6 +588,7 @@ typedef struct {
  	a_bool_t port_link_status[SW_MAX_NR_PORT];
  	a_uint32_t port_mode[SW_MAX_NR_PORT];
  	a_uint32_t combo_phy_type[SW_MAX_NR_PORT];
@@ -31,7 +31,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  } phy_info_t;
  /*qca808x_end*/
  #define MALIBU5PORT_PHY         0x004DD0B1
-@@ -1038,3 +1039,8 @@ hsl_phydev_eee_update(a_uint32_t dev_id,
+@@ -1085,3 +1086,8 @@ hsl_phydev_eee_update(a_uint32_t dev_id,
  #endif				/* __cplusplus */
  #endif				/* _HSL_PHY_H_ */
  /*qca808x_end*/
@@ -42,8 +42,8 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
 +hsl_port_node_set(a_uint32_t dev_id, a_uint32_t port_id, struct device_node *port_node);
 --- a/src/hsl/phy/hsl_phy.c
 +++ b/src/hsl/phy/hsl_phy.c
-@@ -3433,3 +3433,17 @@ hsl_phy_modify_debug(a_uint32_t dev_id,
- 	return rv;
+@@ -3738,3 +3738,17 @@ hsl_phy_modify_soc(a_uint32_t dev_id, a_
+ 	return hsl_modify_soc(dev_id, IS_I2C_PHY_ADDR(phy_addr), soc_reg, mask, val);
  }
  /*qca808x_end*/
 +

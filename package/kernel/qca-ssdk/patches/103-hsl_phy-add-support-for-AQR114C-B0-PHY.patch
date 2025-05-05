@@ -13,7 +13,7 @@ Signed-off-by: Paweł Owoc <frut3k7@gmail.com>
 
 --- a/include/hsl/phy/hsl_phy.h
 +++ b/include/hsl/phy/hsl_phy.h
-@@ -613,6 +613,7 @@ typedef struct {
+@@ -617,6 +617,7 @@ typedef struct {
  #define AQUANTIA_PHY_113C_B0    0x31c31C12
  #define AQUANTIA_PHY_113C_B1    0x31c31C13
  #define AQUANTIA_PHY_112C       0x03a1b792
@@ -23,7 +23,7 @@ Signed-off-by: Paweł Owoc <frut3k7@gmail.com>
  #define PHY_805XV2              0x004DD082
 --- a/src/hsl/phy/hsl_phy.c
 +++ b/src/hsl/phy/hsl_phy.c
-@@ -271,6 +271,7 @@ phy_type_t hsl_phytype_get_by_phyid(a_ui
+@@ -280,6 +280,7 @@ phy_type_t hsl_phytype_get_by_phyid(a_ui
  		case AQUANTIA_PHY_113C_B0:
  		case AQUANTIA_PHY_113C_B1:
  		case AQUANTIA_PHY_112C:

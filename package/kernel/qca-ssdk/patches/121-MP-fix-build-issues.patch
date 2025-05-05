@@ -17,7 +17,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
 
 --- a/config
 +++ b/config
-@@ -374,6 +374,7 @@ ifneq (, $(filter MPPE APPE HPPE CPPE AL
+@@ -379,6 +379,7 @@ ifneq (, $(filter MPPE APPE HPPE CPPE AL
  endif
  
  ifneq (, $(filter MP, $(CHIP_TYPE)))
@@ -25,7 +25,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
  	IN_UNIPHY=TRUE
  endif
  
-@@ -436,35 +437,6 @@ endif
+@@ -441,35 +442,6 @@ endif
  # SDK Features According To Specfic Switch  #
  #############################################
  ifeq (MP, $(CHIP_TYPE))

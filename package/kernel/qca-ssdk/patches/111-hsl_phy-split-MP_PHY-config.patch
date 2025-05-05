@@ -30,11 +30,10 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
  else ifeq (APPE, $(CHIP_TYPE))
 --- a/make/linux_opt.mk
 +++ b/make/linux_opt.mk
-@@ -183,6 +183,11 @@ endif
- ifeq (TRUE, $(IN_QCA808X_PHY))
-   MODULE_CFLAG += -DIN_QCA808X_PHY
+@@ -188,6 +188,10 @@ ifeq (TRUE, $(IN_QCA81XX_PHY))
+   MODULE_CFLAG += -DIN_QCA81XX_PHY
  endif
-+
+ 
 +ifeq (TRUE, $(IN_MP_PHY))
 +  MODULE_CFLAG += -DIN_MP_PHY
 +endif
@@ -103,7 +102,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
  #include "mpge_phy.h"
  #endif
  #ifdef IN_MALIBU_PHY
-@@ -94,7 +94,7 @@ phy_driver_instance_t ssdk_phy_driver[]
+@@ -98,7 +98,7 @@ phy_driver_instance_t ssdk_phy_driver[]
  	#else
  	{SFP_PHY_CHIP, {0}, NULL, NULL, NULL},
  	#endif
