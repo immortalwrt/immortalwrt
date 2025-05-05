@@ -122,7 +122,7 @@
 &wifi1 {
 	// QCN6102 5G
 	nss-radio-priority = <1>;
-}
+};
 
 &wifi2 {
 	// QCN6122 5G/6G
