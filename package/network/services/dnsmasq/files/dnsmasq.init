@@ -1277,7 +1277,7 @@ dnsmasq_start()
 	config_get dns_port "$cfg" port 53
 	if [ "$dns_redirect" = 1 ]; then
 		nft add table inet dnsmasq
-		nft add chain inet dnsmasq prerouting "{ type nat hook prerouting priority -105; policy accept; }"
+		nft add chain inet dnsmasq prerouting "{ type nat hook prerouting priority -95; policy accept; }"
 		nft add rule inet dnsmasq prerouting "meta nfproto { ipv4, ipv6 } udp dport 53 counter redirect to :$dns_port comment \"DNSMASQ HIJACK\""
 	fi
 }
