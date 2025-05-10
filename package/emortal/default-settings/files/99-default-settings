@@ -33,6 +33,7 @@ case "$DISTRIB_TARGET" in
 		set system.@imm_init[0].packet_steering="1"
 		commit system
 	EOF
+	fi
 	;;
 esac
 
