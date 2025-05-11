@@ -933,7 +933,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  extern const struct ath11k_hw_ops ipq8074_ops;
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -6539,6 +6539,7 @@ static int ath11k_mac_config_mon_status_
+@@ -6541,6 +6541,7 @@ static int ath11k_mac_config_mon_status_
  			tlv_filter.rx_filter = ath11k_debugfs_rx_filter(ar);
  	}
  

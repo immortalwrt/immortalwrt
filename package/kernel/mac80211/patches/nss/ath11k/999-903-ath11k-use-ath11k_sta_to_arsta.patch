@@ -59,7 +59,7 @@
  			} else {
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -4455,7 +4455,7 @@ static int ath11k_mac_op_set_key(struct
+@@ -4457,7 +4457,7 @@ static int ath11k_mac_op_set_key(struct
  	mutex_lock(&ar->conf_mutex);
  	if (sta) {
  		peer_addr = sta->addr;
