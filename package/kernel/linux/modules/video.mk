@@ -129,7 +129,7 @@ define KernelPackage/fb
 	CONFIG_VT_HW_CONSOLE_BINDING=y
   FILES:=$(LINUX_DIR)/drivers/video/fbdev/core/fb.ko \
 	$(LINUX_DIR)/lib/fonts/font.ko \
-	$(LINUX_DIR)/drivers/video/fbdev/core/fb_io_fops.ko
+	$(LINUX_DIR)/drivers/video/fbdev/core/fb_io_fops.ko@lt6.8
   AUTOLOAD:=$(call AutoLoad,06,fb font)
 endef
 
@@ -465,6 +465,23 @@ define KernelPackage/drm-suballoc-helper/description
 endef
 
 $(eval $(call KernelPackage,drm-suballoc-helper))
+
+define KernelPackage/drm-vram-helper
+  SUBMENU:=$(VIDEO_MENU)
+  HIDDEN:=1
+  TITLE:=DRM helpers for VRAM memory management
+  DEPENDS:=@DISPLAY_SUPPORT \
+    +kmod-drm-kms-helper +kmod-drm-ttm-helper
+  KCONFIG:=CONFIG_DRM_VRAM_HELPER
+  FILES:=$(LINUX_DIR)/drivers/gpu/drm/drm_vram_helper.ko
+  AUTOLOAD:=$(call AutoProbe,drm_vram_helper)
+endef
+
+define KernelPackage/drm-vram-helper/description
+  DRM helpers for VRAM memory management.
+endef
+
+$(eval $(call KernelPackage,drm-vram-helper))
 
 define KernelPackage/drm-amdgpu
   SUBMENU:=$(VIDEO_MENU)
