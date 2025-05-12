@@ -11,6 +11,9 @@ abt,asr3000)
 	ucidef_set_led_netdev "wlan2g" "WLAN2G" "green:wlan-2ghz" "phy0-ap0"
 	ucidef_set_led_netdev "wlan5g" "WLAN5G" "green:wlan-5ghz" "phy1-ap0"
 	;;
+asus,rt-ax52)
+	ucidef_set_led_netdev "wan" "wan" "blue:wan" "wan" "link tx rx"
+	;;
 bananapi,bpi-r3-mini)
 	ucidef_set_led_netdev "lan1" "LAN" "mdio-bus:0e:green:lan" "eth0" "link_2500 link_1000 tx rx"
 	ucidef_set_led_netdev "lan2" "LAN" "mdio-bus:0e:yellow:lan" "eth0" "link_2500 link_100 tx rx"
@@ -32,7 +35,8 @@ confiabits,mt7981)
 	ucidef_set_led_netdev "lan3" "lan3" "blue:lan-3" "lan3" "link tx rx"
 	ucidef_set_led_netdev "wan" "wan" "blue:wan" "wan" "link tx rx"
 	;;
-cudy,re3000-v1)
+cudy,re3000-v1|\
+wavlink,wl-wn573hx3)
 	ucidef_set_led_netdev "lan" "lan" "green:lan" "eth0" "link tx rx"
 	;;
 cudy,wr3000-v1)
@@ -63,6 +67,12 @@ livinet,zr-3020-ubootmod)
 	ucidef_set_led_netdev "internet" "INTERNET" "blue:internet" "wan"
 	ucidef_set_led_netdev "wlan2g" "WLAN2G" "blue:wlan2g" "phy0-ap0"
 	ucidef_set_led_netdev "wlan5g" "WLAN5G" "blue:wlan5g" "phy1-ap0"
+	;;
+mercusys,mr80x-v3)
+	ucidef_set_led_netdev "lan1" "lan-1" "green:lan-1" "lan1" "link tx rx"
+	ucidef_set_led_netdev "lan2" "lan-2" "green:lan-2" "lan2" "link tx rx"
+	ucidef_set_led_netdev "lan3" "lan-3" "green:lan-3" "lan3" "link tx rx"
+	ucidef_set_led_netdev "wan" "wan" "green:wan" "wan" "link tx rx"
 	;;
 mercusys,mr90x-v1|\
 mercusys,mr90x-v1-ubi)
@@ -99,6 +109,13 @@ routerich,ax3000-ubootmod)
 	ucidef_set_led_netdev "lan-3" "lan-3" "blue:lan-3" "lan3" "link tx rx"
 	ucidef_set_led_netdev "wan" "wan" "blue:wan" "wan" "link tx rx"
 	ucidef_set_led_netdev "wan-off" "wan-off" "red:wan" "wan" "link"
+	;;
+routerich,ax3000-v1)
+	ucidef_set_led_netdev "lan-1" "lan-1" "blue:lan-1" "lan1" "link tx rx"
+	ucidef_set_led_netdev "lan-2" "lan-2" "blue:lan-2" "lan2" "link tx rx"
+	ucidef_set_led_netdev "lan-3" "lan-3" "blue:lan-3" "lan3" "link tx rx"
+	ucidef_set_led_netdev "wan" "wan" "blue:wan" "eth1" "link tx rx"
+	ucidef_set_led_netdev "wan-off" "wan-off" "red:wan" "eth1" "link"
 	;;
 smartrg,sdg-8733|\
 smartrg,sdg-8734)
