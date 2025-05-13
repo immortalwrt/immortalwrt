@@ -126,7 +126,7 @@ Then run normal make or cmake etc.
   *      library/aria.c
   *      library/timing.c
   *      include/mbedtls/bn_mul.h
-@@ -2462,6 +2463,21 @@
+@@ -2526,6 +2527,21 @@
  #define MBEDTLS_AESNI_C
  
  /**
@@ -378,7 +378,7 @@ Then run normal make or cmake etc.
  	     blowfish.o \
 --- a/library/version_features.c
 +++ b/library/version_features.c
-@@ -624,6 +624,9 @@ static const char * const features[] = {
+@@ -630,6 +630,9 @@ static const char * const features[] = {
  #if defined(MBEDTLS_AESNI_C)
      "MBEDTLS_AESNI_C",
  #endif /* MBEDTLS_AESNI_C */
