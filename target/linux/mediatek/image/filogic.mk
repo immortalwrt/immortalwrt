@@ -966,7 +966,7 @@ define Device/gatonetworks_gdsp
   IMAGE_SIZE := 32768k
   DEVICE_PACKAGES := fitblk kmod-mt7915e kmod-mt7981-firmware \
     kmod-usb-net-qmi-wwan kmod-usb-serial-option kmod-usb3 \
-    mt7981-wo-firmware -kmod-phy-aquantia
+    mt7981-wo-firmware -kmod-phy-aquantia automount
   ARTIFACTS := preloader.bin bl31-uboot.fip
   ARTIFACT/preloader.bin := mt7981-bl2 nor-ddr3
   ARTIFACT/bl31-uboot.fip := mt7981-bl31-uboot gatonetworks_gdsp
@@ -980,15 +980,31 @@ TARGET_DEVICES += gatonetworks_gdsp
 define Device/glinet_gl-mt2500
   DEVICE_VENDOR := GL.iNet
   DEVICE_MODEL := GL-MT2500
-  DEVICE_DTS := mt7981b-glinet-gl-mt2500
+  DEVICE_VARIANT := MaxLinear PHY
+  DEVICE_DTS := mt7981b-glinet-gl-mt2500-v1
   DEVICE_DTS_DIR := ../dts
   DEVICE_DTS_LOADADDR := 0x47000000
-  DEVICE_PACKAGES :=-wpad-openssl f2fsck mkf2fs kmod-usb3 automount
-  SUPPORTED_DEVICES += glinet,mt2500-emmc
+  DEVICE_PACKAGES := -wpad-openssl e2fsprogs f2fsck mkf2fs kmod-usb3 automount
+  SUPPORTED_DEVICES += glinet,mt2500-emmc glinet,gl-mt2500-airoha
   IMAGES := sysupgrade.bin
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-gl-metadata
 endef
 TARGET_DEVICES += glinet_gl-mt2500
+
+define Device/glinet_gl-mt2500-airoha
+  DEVICE_VENDOR := GL.iNet
+  DEVICE_MODEL := GL-MT2500
+  DEVICE_VARIANT := Airoha PHY
+  DEVICE_DTS := mt7981b-glinet-gl-mt2500-v2
+  DEVICE_DTS_DIR := ../dts
+  DEVICE_DTS_LOADADDR := 0x47000000
+  DEVICE_PACKAGES := -wpad-openssl e2fsprogs f2fsck mkf2fs kmod-usb3 \
+	kmod-phy-airoha-en8811h airoha-en8811h-firmware automount
+  SUPPORTED_DEVICES += glinet,mt2500-emmc glinet,gl-mt2500
+  IMAGES := sysupgrade.bin
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-gl-metadata
+endef
+TARGET_DEVICES += glinet_gl-mt2500-airoha
 
 define Device/glinet_gl-mt3000
   DEVICE_VENDOR := GL.iNet
@@ -1333,7 +1349,7 @@ define Device/mediatek_mt7981-rfb
 	mt7981-rfb-mxl-2p5g-phy-eth1 \
 	mt7981-rfb-mxl-2p5g-phy-swp5
   DEVICE_DTS_DIR := $(DTS_DIR)/
-  DEVICE_DTC_FLAGS := --pad 4096
+  
   DEVICE_DTS_LOADADDR := 0x43f00000
   DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware kmod-usb3 e2fsprogs f2fsck mkf2fs mt7981-wo-firmware
   KERNEL_LOADADDR := 0x44000000
@@ -1811,7 +1827,8 @@ define Device/tplink_archer-ax80-v1
   DEVICE_MODEL := Archer AX80V1
   DEVICE_DTS := mt7986a-tplink-archer-ax80-v1
   DEVICE_DTS_DIR := ../dts
-  DEVICE_PACKAGES := kmod-leds-lp5523 kmod-usb3 kmod-mt7915e kmod-mt7986-firmware mt7986-wo-firmware
+  DEVICE_PACKAGES := kmod-leds-lp5523 kmod-usb3 kmod-mt7915e \
+	kmod-mt7986-firmware mt7986-wo-firmware automount
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
   PAGESIZE := 2048
