@@ -459,7 +459,7 @@ Signed-off-by: Gautham Kumar Senthilkumaran <quic_gauthamk@quicinc.com>
  		} else
  			spin_unlock_bh(&mpath->state_lock);
  	}
-@@ -699,15 +721,6 @@ static void hwmp_preq_frame_process(stru
+@@ -701,15 +723,6 @@ static void hwmp_preq_frame_process(stru
  	}
  }
  
@@ -475,7 +475,7 @@ Signed-off-by: Gautham Kumar Senthilkumaran <quic_gauthamk@quicinc.com>
  static void hwmp_prep_frame_process(struct ieee80211_sub_if_data *sdata,
  				    struct ieee80211_mgmt *mgmt,
  				    const u8 *prep_elem, u32 metric)
-@@ -1351,3 +1364,274 @@ void mesh_path_tx_root_frame(struct ieee
+@@ -1353,3 +1366,274 @@ void mesh_path_tx_root_frame(struct ieee
  		return;
  	}
  }

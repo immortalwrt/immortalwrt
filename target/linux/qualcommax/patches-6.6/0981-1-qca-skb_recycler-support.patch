@@ -10,7 +10,7 @@
  	CPUHP_LUSTRE_CFS_DEAD,
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -988,6 +988,20 @@ struct sk_buff {
+@@ -991,6 +991,20 @@ struct sk_buff {
  #if IS_ENABLED(CONFIG_IP_SCTP)
  	__u8			csum_not_inet:1;
  #endif
@@ -31,7 +31,7 @@
  
  #if defined(CONFIG_NET_SCHED) || defined(CONFIG_NET_XGRESS)
  	__u16			tc_index;	/* traffic control index */
-@@ -1059,6 +1073,10 @@ struct sk_buff {
+@@ -1062,6 +1076,10 @@ struct sk_buff {
  	/* only useable after checking ->active_extensions != 0 */
  	struct skb_ext		*extensions;
  #endif
@@ -42,7 +42,7 @@
  };
  
  /* if you move pkt_type around you also must adapt those constants */
-@@ -1244,7 +1262,7 @@ static inline void kfree_skb_list(struct
+@@ -1247,7 +1265,7 @@ static inline void kfree_skb_list(struct
  	kfree_skb_list_reason(segs, SKB_DROP_REASON_NOT_SPECIFIED);
  }
  
@@ -51,7 +51,7 @@
  void consume_skb(struct sk_buff *skb);
  #else
  static inline void consume_skb(struct sk_buff *skb)
-@@ -1253,9 +1271,13 @@ static inline void consume_skb(struct sk
+@@ -1256,9 +1274,13 @@ static inline void consume_skb(struct sk
  }
  #endif
  
@@ -65,7 +65,7 @@
  
  void kfree_skb_partial(struct sk_buff *skb, bool head_stolen);
  bool skb_try_coalesce(struct sk_buff *to, struct sk_buff *from,
-@@ -1378,6 +1400,7 @@ static inline int skb_pad(struct sk_buff
+@@ -1381,6 +1403,7 @@ static inline int skb_pad(struct sk_buff
  	return __skb_pad(skb, pad, true);
  }
  #define dev_kfree_skb(a)	consume_skb(a)
@@ -73,7 +73,7 @@
  
  int skb_append_pagefrags(struct sk_buff *skb, struct page *page,
  			 int offset, size_t size, size_t max_frags);
-@@ -3235,6 +3258,9 @@ static inline void *netdev_alloc_frag_al
+@@ -3238,6 +3261,9 @@ static inline void *netdev_alloc_frag_al
  struct sk_buff *__netdev_alloc_skb(struct net_device *dev, unsigned int length,
  				   gfp_t gfp_mask);
  

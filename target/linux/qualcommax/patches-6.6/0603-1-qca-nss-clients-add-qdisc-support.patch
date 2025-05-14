@@ -443,7 +443,7 @@
  #endif
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -762,6 +762,7 @@ typedef unsigned char *sk_buff_data_t;
+@@ -767,6 +767,7 @@ enum skb_tstamp_type {
   *	@offload_fwd_mark: Packet was L2-forwarded in hardware
   *	@offload_l3_fwd_mark: Packet was L3-forwarded in hardware
   *	@tc_skip_classify: do not classify packet. set by IFB device
@@ -451,7 +451,7 @@
   *	@tc_at_ingress: used within tc_classify to distinguish in/egress
   *	@redirected: packet was redirected by packet classifier
   *	@from_ingress: packet was redirected from the ingress path
-@@ -940,6 +941,9 @@ struct sk_buff {
+@@ -943,6 +944,9 @@ struct sk_buff {
  	__u8			tc_at_ingress:1;	/* See TC_AT_INGRESS_MASK */
  	__u8			tc_skip_classify:1;
  #endif
