@@ -41,17 +41,16 @@
 
 &pcie0 {
 	status = "okay";
-
 	perst-gpios = <&tlmm 52 GPIO_ACTIVE_HIGH>;
 
 	pcie@0 {
 		wifi0: wifi@0,0 {
 			status = "okay";
-
 			compatible = "qcom,ath10k";
+			qcom,ath10k-fw-memory-mode = <1>;
+			qcom,ath10k-calibration-variant = "Xiaomi-AX3600";
 			reg = <0x00010000 0 0 0 0>;
 
-			qcom,ath10k-calibration-variant = "Xiaomi-AX3600";
 			nvmem-cell-names = "calibration";
 			nvmem-cells = <&caldata_qca9889>;
 		};

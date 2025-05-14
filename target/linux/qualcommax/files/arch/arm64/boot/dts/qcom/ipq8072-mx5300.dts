@@ -479,22 +479,16 @@
 
 &pcie1 {
 	status = "okay";
-
 	perst-gpios = <&tlmm 58 GPIO_ACTIVE_LOW>;
 
-	bridge@0,0 {
-		reg = <0x00000000 0 0 0 0>;
-		#address-cells = <3>;
-		#size-cells = <2>;
-		ranges;
-
-		wifi@1,0 {
+	pcie@0 {
+		wifi@0,0 {
 			status = "okay";
-
 			compatible = "qcom,ath10k";
+			qcom,ath10k-fw-memory-mode = <1>;
+			qcom,ath10k-calibration-variant = "Linksys-MX5300";
 			reg = <0x00010000 0 0 0 0>;
 
-			qcom,ath10k-calibration-variant = "Linksys-MX5300";
 			nvmem-cell-names = "pre-calibration";
 			nvmem-cells = <&caldata_qca9984>;
 		};

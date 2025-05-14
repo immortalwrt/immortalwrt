@@ -381,28 +381,12 @@
 
 &pcie0 {
 	status = "okay";
-
 	perst-gpios = <&tlmm 58 GPIO_ACTIVE_LOW>;
-
-	bridge@0,0 {
-		reg = <0x00020000 0 0 0 0>;
-		#address-cells = <3>;
-		#size-cells = <2>;
-		ranges;
-	};
 };
 
 &pcie1 {
 	status = "okay";
-
 	perst-gpios = <&tlmm 62 GPIO_ACTIVE_HIGH>;
-
-	bridge@0,0 {
-		reg = <0x00010000 0 0 0 0>;
-		#address-cells = <3>;
-		#size-cells = <2>;
-		ranges;
-	};
 };
 
 &wifi {
