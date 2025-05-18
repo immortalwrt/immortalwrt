@@ -37,11 +37,29 @@
 	leds {
 		compatible = "gpio-leds";
 
+		led_sys_yellow: sys-yellow {
+			color = <LED_COLOR_ID_YELLOW>;
+			function = LED_FUNCTION_STATUS;
+			gpios = <&tlmm 32 GPIO_ACTIVE_HIGH>;
+		};
+
+		led_sys_amber: sys-amber {
+			color = <LED_COLOR_ID_AMBER>;
+			function = LED_FUNCTION_STATUS;
+			gpios = <&tlmm 35 GPIO_ACTIVE_HIGH>;
+		};
+
 		led_sys_green: sys-green {
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_STATUS;
 			gpios = <&tlmm 37 GPIO_ACTIVE_HIGH>;
 		};
+	};
+
+	gpio-restart {
+		compatible = "gpio-restart";
+		gpios = <&tlmm 61 GPIO_ACTIVE_LOW>;
+		open-source;
 	};
 };
 
@@ -61,6 +79,19 @@
 			bias-pull-up;
 		};
 	};
+
+	phy_reset_pin: phy-reset-pin {
+		pins = "gpio77";
+		function = "gpio";
+		bias-pull-up;
+	};
+
+	led_enable {
+		gpio-hog;
+		output-high;
+		gpios = <36 GPIO_ACTIVE_HIGH>;
+		line-name = "enable-leds";
+	};
 };
 
 &dp5 {
@@ -75,7 +106,7 @@
 
 &mdio {
 	status = "okay";
-	pinctrl-0 = <&mdio_pins>;
+	pinctrl-0 = <&mdio_pins>, <&phy_reset_pin>;
 	pinctrl-names = "default";
 	reset-gpios = <&tlmm 77 GPIO_ACTIVE_LOW>;
 
@@ -98,6 +129,21 @@
 			port_id = <5>;
 			phy_address = <4>;
 			port_mac_sel = "QGMAC_PORT";
+		};
+	};
+};
+
+&qpic_nand {
+	status = "okay";
+
+	nand@0 {
+		reg = <0>;
+		nand-ecc-strength = <4>;
+		nand-ecc-step-size = <512>;
+		nand-bus-width = <8>;
+
+		partitions {
+			compatible = "qcom,smem-part";
 		};
 	};
 };

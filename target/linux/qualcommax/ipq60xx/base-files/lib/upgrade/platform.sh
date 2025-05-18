@@ -138,7 +138,8 @@ platform_do_upgrade() {
 		nand_do_upgrade "$1"
 		;;
 	tplink,eap610od|\
-	tplink,eap623od-hd-v1)
+	tplink,eap623od-hd-v1|\
+	tplink,eap625od-hd-v1)
 		tplink_do_upgrade "$1"
 		;;
 	yuncore,fap650)
