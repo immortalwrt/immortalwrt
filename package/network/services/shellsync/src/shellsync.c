@@ -17,7 +17,7 @@ int sync_wait(int nproc)
 {
     int flags;
     int value;
-    sem_t *block; 
+    sem_t *block;
     sem_t *count;
     struct timespec ts;
 

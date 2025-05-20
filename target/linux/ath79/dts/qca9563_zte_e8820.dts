@@ -93,7 +93,7 @@
 &eth0 {
 	nvmem-cells = <&macaddr_art_0 0>;
 	nvmem-cell-names = "mac-address";
-	
+
 	phy-handle = <&phy0>;
 	phy-mode = "sgmii";
 	pll-data = <0x03000101 0x00000101 0x00001919>;
