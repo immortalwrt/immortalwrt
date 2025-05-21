@@ -26,7 +26,7 @@
 			compatible = "qcom,ess-switch-ipq807x";
 			reg = <0x3a000000 0x1000000>;
 			switch_access_mode = "local bus";
-			switch_cpu_bmp = <ESS_PORT0>; 
+			switch_cpu_bmp = <ESS_PORT0>;
 			switch_inner_bmp = <ESS_PORT7>;
 			clocks = <&gcc GCC_CMN_12GPLL_AHB_CLK>,
 				 <&gcc GCC_CMN_12GPLL_SYS_CLK>,

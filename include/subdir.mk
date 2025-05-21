@@ -76,7 +76,7 @@ define subdir
 			$(if $(BUILD_LOG),@mkdir -p $(BUILD_LOG_DIR)/$(1)/$(bd)/$(filter-out __default,$(variant)))
 			$(if $($(1)/autoremove),$(call rebuild_check,$(1)/$(bd),$(target),,$(filter-out __default,$(variant)),$($(1)/$(bd)/variants)))
 			$(call log_make,$(1)/$(bd),$(target),,$(filter-out __default,$(variant)),$($(1)/$(bd)/variants)) \
-				|| $(call ERROR,$(1),   ERROR: $(1)/$(bd) failed to build$(if $(filter-out __default,$(variant)), (build variant: $(variant))).,$(findstring $(bd),$($(1)/builddirs-ignore-$(target)))) 
+				|| $(call ERROR,$(1),   ERROR: $(1)/$(bd) failed to build$(if $(filter-out __default,$(variant)), (build variant: $(variant))).,$(findstring $(bd),$($(1)/builddirs-ignore-$(target))))
         )
       $(if $(PREREQ_ONLY)$(DUMP_TARGET_DB),,
         # aliases

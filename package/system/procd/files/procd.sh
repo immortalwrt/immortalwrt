@@ -188,7 +188,7 @@ _procd_add_jail() {
 	json_add_string name "$1"
 
 	shift
-	
+
 	for a in $@; do
 		case $a in
 		log)	json_add_boolean "log" "1";;

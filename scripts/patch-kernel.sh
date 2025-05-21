@@ -18,25 +18,25 @@ if [ ! -d "${patchdir}" ] ; then
     echo "Aborting.  '${patchdir}' is not a directory."
     exit 1
 fi
-    
-for i in ${patchdir}/${patchpattern} ; do 
+
+for i in ${patchdir}/${patchpattern} ; do
     case "$i" in
 	*.gz)
-	type="gzip"; uncomp="gunzip -dc"; ;; 
+	type="gzip"; uncomp="gunzip -dc"; ;;
 	*.bz)
-	type="bzip"; uncomp="bunzip -dc"; ;; 
+	type="bzip"; uncomp="bunzip -dc"; ;;
 	*.bz2)
-	type="bzip2"; uncomp="bunzip2 -dc"; ;; 
+	type="bzip2"; uncomp="bunzip2 -dc"; ;;
 	*.zip)
-	type="zip"; uncomp="unzip -d"; ;; 
+	type="zip"; uncomp="unzip -d"; ;;
 	*.Z)
-	type="compress"; uncomp="uncompress -c"; ;; 
+	type="compress"; uncomp="uncompress -c"; ;;
 	*)
-	type="plaintext"; uncomp="cat"; ;; 
+	type="plaintext"; uncomp="cat"; ;;
     esac
-    [ -d "${i}" ] && echo "Ignoring subdirectory ${i}" && continue	
+    [ -d "${i}" ] && echo "Ignoring subdirectory ${i}" && continue
     echo ""
-    echo "Applying ${i} using ${type}: " 
+    echo "Applying ${i} using ${type}: "
     ${uncomp} ${i} | ${PATCH:-patch} -f -p1 -d ${targetdir}
     if [ $? != 0 ] ; then
         echo "Patch failed!  Please fix $i!"

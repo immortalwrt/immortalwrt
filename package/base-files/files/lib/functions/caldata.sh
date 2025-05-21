@@ -201,7 +201,7 @@ ath11k_remove_regdomain() {
 
 	regdomain=$(hexdump -v -n 2 -s 0x34 -e '1/1 "%02x"' $target)
 	caldata_patch_data "0000" 0x34 0xa "$target"
-	
+
 	for offset in 0x450 0x458 0x500 0x5a8; do
 		regdomain_data=$(hexdump -v -n 2 -s $offset -e '1/1 "%02x"' $target)
 
