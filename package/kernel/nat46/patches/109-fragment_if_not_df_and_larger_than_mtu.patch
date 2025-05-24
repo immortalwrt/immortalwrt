@@ -14,7 +14,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
 
 --- a/nat46/modules/nat46-core.c
 +++ b/nat46/modules/nat46-core.c
-@@ -2343,10 +2343,11 @@ int nat46_ipv4_input(struct sk_buff *old
+@@ -2356,10 +2356,11 @@ int nat46_ipv4_input(struct sk_buff *old
      }
      hdr4 = ip_hdr(old_skb);
      check_for_l4 = 1;

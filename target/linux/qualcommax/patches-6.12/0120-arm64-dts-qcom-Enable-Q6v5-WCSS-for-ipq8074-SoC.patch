@@ -16,7 +16,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
 
 --- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
 +++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-@@ -142,6 +142,32 @@
+@@ -150,6 +150,32 @@
  		};
  	};
  
@@ -49,7 +49,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  	soc: soc@0 {
  		#address-cells = <1>;
  		#size-cells = <1>;
-@@ -415,6 +441,11 @@
+@@ -423,6 +449,11 @@
  			reg = <0x01937000 0x21000>;
  		};
  
@@ -61,7 +61,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  		spmi_bus: spmi@200f000 {
  			compatible = "qcom,spmi-pmic-arb";
  			reg = <0x0200f000 0x001000>,
-@@ -994,6 +1025,56 @@
+@@ -1002,6 +1033,56 @@
  				ranges;
  			};
  		};

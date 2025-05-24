@@ -10,7 +10,7 @@ Change-Id: I2119fbe54d630c3ed39535f1cb1b8a0d9d3199b4
 Signed-off-by: Pavithra R <pavir@codeaurora.org>
 --- a/nat46/modules/nat46-core.c
 +++ b/nat46/modules/nat46-core.c
-@@ -1928,7 +1928,9 @@ int nat46_ipv6_input(struct sk_buff *old
+@@ -1936,7 +1936,9 @@ int nat46_ipv6_input(struct sk_buff *old
            memcpy(&hdr6.saddr, &ip6h_inner->daddr, 16);
            memcpy(&hdr6.daddr, &ip6h_inner->saddr, 16);
            if (!pairs_xlate_v6_to_v4_outer(nat46, &apair, &hdr6, proto, &v4saddr, &v4daddr)) {
@@ -21,7 +21,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
              goto done;
            }
            v4saddr = apair->local.v4_pref;
-@@ -2436,7 +2438,9 @@ int nat46_ipv4_input(struct sk_buff *old
+@@ -2449,7 +2451,9 @@ int nat46_ipv4_input(struct sk_buff *old
    }
  
    if(!pairs_xlate_v4_to_v6_outer(nat46, &apair, hdr4, having_l4 ? &sport : NULL, having_l4 ? &dport : NULL, v6saddr, v6daddr)) {

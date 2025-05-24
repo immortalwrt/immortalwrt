@@ -14,7 +14,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
 
 --- a/nat46/modules/nat46-core.c
 +++ b/nat46/modules/nat46-core.c
-@@ -1847,6 +1847,11 @@ int nat46_ipv6_input(struct sk_buff *old
+@@ -1855,6 +1855,11 @@ int nat46_ipv6_input(struct sk_buff *old
    int l3_infrag_payload_len = ntohs(ip6h->payload_len);
    int check_for_l4 = 0;
  
@@ -26,7 +26,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
    nat46debug(4, "nat46_ipv6_input packet");
  
    if(ip6_input_not_interested(nat46, ip6h, old_skb)) {
-@@ -2353,6 +2358,11 @@ int nat46_ipv4_input(struct sk_buff *old
+@@ -2366,6 +2371,11 @@ int nat46_ipv4_input(struct sk_buff *old
  
    char v6saddr[16], v6daddr[16];
  

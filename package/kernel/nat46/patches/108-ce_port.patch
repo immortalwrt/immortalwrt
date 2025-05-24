@@ -16,13 +16,13 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
 +++ b/nat46/modules/nat46-core.c
 @@ -31,6 +31,7 @@
  
- static uint16_t xlate_pkt_in_err_v4_to_v6(nat46_instance_t *nat46, struct iphdr *iph,
- 			struct sk_buff *old_skb, uint16_t *sport, uint16_t *dport);
+ #include "nat46-glue.h"
+ #include "nat46-core.h"
 +static DEFINE_SPINLOCK(port_id_lock);
+ #include "nat46-module.h"
  
- void
- nat46debug_dump(nat46_instance_t *nat46, int level, void *addr, int len)
-@@ -2236,6 +2237,73 @@ static uint16_t xlate_pkt_in_err_v4_to_v
+ static void
+@@ -2249,6 +2250,73 @@ static uint16_t xlate_pkt_in_err_v4_to_v
  	return 1;
  }
  
@@ -96,7 +96,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
  int nat46_ipv4_input(struct sk_buff *old_skb) {
    nat46_instance_t *nat46 = get_nat46_instance(old_skb);
    nat46_xlate_rulepair_t apair;
-@@ -2368,9 +2436,34 @@ int nat46_ipv4_input(struct sk_buff *old
+@@ -2381,9 +2449,34 @@ int nat46_ipv4_input(struct sk_buff *old
  
    if (add_frag_header) {
      struct frag_hdr *fh = (struct frag_hdr*)(hdr6 + 1);

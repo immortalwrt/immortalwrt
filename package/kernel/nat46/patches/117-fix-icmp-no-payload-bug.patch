@@ -21,7 +21,7 @@ Change-Id: Ifd9802afb50771de39b4c6fb734d36b0801613ec
 Signed-off-by: Pavithra R <pavir@codeaurora.org>
 --- a/nat46/modules/nat46-core.c
 +++ b/nat46/modules/nat46-core.c
-@@ -2266,9 +2266,8 @@ static uint16_t xlate_pkt_in_err_v4_to_v
+@@ -2279,9 +2279,8 @@ static uint16_t xlate_pkt_in_err_v4_to_v
  		memmove(((char *)iiph + IPV6HDRSIZE), (iiph + 1),
  		ntohs(iph->tot_len) - 2 * IPV4HDRSIZE - sizeof(struct icmphdr));
  		memcpy(iiph, &ip6h, IPV6HDRSIZE);

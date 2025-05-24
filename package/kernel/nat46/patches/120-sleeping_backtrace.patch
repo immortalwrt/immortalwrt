@@ -18,7 +18,7 @@ Date:   Tue Sep 6 11:11:20 2022 -0700
  
 -static DEFINE_MUTEX(ref_lock);
 +static DEFINE_SPINLOCK(ref_lock);
- int is_valid_nat46(nat46_instance_t *nat46) {
+ static int is_valid_nat46(nat46_instance_t *nat46) {
    return (nat46 && (nat46->sig == NAT46_SIGNATURE));
  }
 @@ -47,28 +47,27 @@ nat46_instance_t *alloc_nat46_instance(i

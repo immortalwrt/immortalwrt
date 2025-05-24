@@ -16,7 +16,7 @@ Signed-off-by: Bjorn Andersson <andersson@kernel.org>
 
 --- a/arch/arm64/boot/dts/qcom/ipq6018-mp5496.dtsi
 +++ b/arch/arm64/boot/dts/qcom/ipq6018-mp5496.dtsi
-@@ -31,5 +31,14 @@
+@@ -29,5 +29,14 @@
  			regulator-max-microvolt = <1062500>;
  			regulator-always-on;
  		};

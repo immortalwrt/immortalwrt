@@ -21,7 +21,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
  #include <linux/radix-tree.h>
  #include "nat46-core.h"
  #include "nat46-module.h"
-@@ -40,16 +41,40 @@ static u8 netdev_count = 0;
+@@ -48,16 +49,40 @@ static u8 netdev_count = 0;
  
  static int nat46_netdev_up(struct net_device *dev);
  static int nat46_netdev_down(struct net_device *dev);
@@ -63,7 +63,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
  static int nat46_netdev_up(struct net_device *dev)
  {
  	netif_start_queue(dev);
-@@ -65,9 +90,14 @@ static int nat46_netdev_down(struct net_
+@@ -73,9 +98,14 @@ static int nat46_netdev_down(struct net_
  static netdev_tx_t nat46_netdev_xmit(struct sk_buff *skb, struct net_device *dev)
  {
  	int ret = 0;
@@ -80,7 +80,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
  	if(ETH_P_IP == ntohs(skb->protocol)) {
  		ret = nat46_ipv4_input(skb);
  	}
-@@ -81,22 +111,39 @@ static netdev_tx_t nat46_netdev_xmit(str
+@@ -89,22 +119,39 @@ static netdev_tx_t nat46_netdev_xmit(str
  }
  
  void nat46_netdev_count_xmit(struct sk_buff *skb, struct net_device *dev) {
@@ -126,7 +126,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
  void *netdev_nat46_instance(struct net_device *dev) {
  	nat46_netdev_priv_t *priv = netdev_priv(dev);
  	return priv->nat46;
-@@ -120,6 +167,7 @@ static void nat46_netdev_setup(struct ne
+@@ -128,6 +175,7 @@ static void nat46_netdev_setup(struct ne
  	priv->nat46 = nat46;
  
  	dev->netdev_ops = &nat46_netdev_ops;

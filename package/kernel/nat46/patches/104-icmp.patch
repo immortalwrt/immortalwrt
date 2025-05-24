@@ -20,18 +20,8 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
 
 --- a/nat46/modules/nat46-core.c
 +++ b/nat46/modules/nat46-core.c
-@@ -29,6 +29,9 @@
- #include "nat46-core.h"
- #include "nat46-module.h"
- 
-+static uint16_t xlate_pkt_in_err_v4_to_v6(nat46_instance_t *nat46, struct iphdr *iph,
-+			struct sk_buff *old_skb, uint16_t *sport, uint16_t *dport);
-+
- void
- nat46debug_dump(nat46_instance_t *nat46, int level, void *addr, int len)
- {
-@@ -885,6 +888,14 @@ void *get_next_header_ptr6(void *pv6, in
-   return ret;
+@@ -885,6 +885,14 @@ static void *add_offset(void *ptr, u16 o
+   return (((char *)ptr)+offset);
  }
  
 +void fill_v6hdr_from_v4hdr(struct iphdr *iph, struct ipv6hdr *ip6h) {
@@ -42,10 +32,10 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
 +  ip6h->hop_limit = iph->ttl;
 +}
 +
- void fill_v4hdr_from_v6hdr(struct iphdr * iph, struct ipv6hdr *ip6h, __u32 v4saddr, __u32 v4daddr, __u16 id, __u16 frag_off, __u16 proto, int l3_payload_len) {
-   uint32_t ver_class_flow = ntohl(*(__be32 *)ip6h);
-   iph->ttl = ip6h->hop_limit;
-@@ -1212,10 +1223,14 @@ static void nat46_fixup_icmp6_paramprob(
+ 
+ /* FIXME: traverse the headers properly */
+ static void *get_next_header_ptr6(void *pv6, int v6_len) {
+@@ -1228,10 +1236,14 @@ static void nat46_fixup_icmp6_paramprob(
                            16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, -1 };
    u32 *pptr6 = icmp6_parameter_ptr(icmp6h);
    u8 *pptr4 = icmp_parameter_ptr((struct icmphdr *)icmp6h);
@@ -61,7 +51,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
      case 0:
        if(*pptr6 < sizeof(ptr6_4)/sizeof(ptr6_4[0])) {
          new_pptr = ptr6_4[*pptr6];
-@@ -1224,27 +1239,21 @@ static void nat46_fixup_icmp6_paramprob(
+@@ -1240,27 +1252,21 @@ static void nat46_fixup_icmp6_paramprob(
            *pptr4 = 0xff & new_pptr;
            update_icmp6_type_code(nat46, icmp6h, 12, 0);
            len = xlate_payload6_to4(nat46, (icmp6h + 1), get_next_header_ptr6((icmp6h + 1), len), len, &icmp6h->icmp6_cksum, ptailTruncSize);
@@ -96,7 +86,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
  /* Fixup ICMP6->ICMP before IP header translation, according to http://tools.ietf.org/html/rfc6145 */
  
  static void nat46_fixup_icmp6(nat46_instance_t *nat46, struct ipv6hdr *ip6h, struct icmp6hdr *icmp6h, struct sk_buff *old_skb, int *ptailTruncSize) {
-@@ -1299,17 +1308,19 @@ int ip6_input_not_interested(nat46_insta
+@@ -1315,17 +1321,19 @@ static int ip6_input_not_interested(nat4
    return 0;
  }
  
@@ -119,7 +109,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
    /*
     * Set the Type to 4, and adjust the
     * ICMP checksum both to take the type/code change into account
-@@ -1352,27 +1363,33 @@ static uint16_t nat46_fixup_icmp_paramet
+@@ -1368,27 +1376,33 @@ static uint16_t nat46_fixup_icmp_paramet
     */
    static int ptr4_6[] = { 0, 1, 4, 4, -1, -1, -1, -1, 7, 6, -1, -1, 8, 8, 8, 8, 24, 24, 24, 24, -1 };
    u8 *icmp_pptr = icmp_parameter_ptr(icmph);
@@ -160,7 +150,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
    /*
     *    Translate the Code as
     *    described below, set the Type to 1, and adjust the ICMP
-@@ -1435,16 +1452,21 @@ static uint16_t nat46_fixup_icmp_dest_un
+@@ -1451,16 +1465,21 @@ static uint16_t nat46_fixup_icmp_dest_un
  
    u16 *pmtu = ((u16 *)icmph) + 3; /* IPv4-compatible MTU value is 16 bit */
  
@@ -184,7 +174,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
      case 3:
        icmph->code = 4;
        break;
-@@ -1494,13 +1516,15 @@ static uint16_t nat46_fixup_icmp_dest_un
+@@ -1510,13 +1529,15 @@ static uint16_t nat46_fixup_icmp_dest_un
        break;
      default:
        iph->protocol = NEXTHDR_NONE;
@@ -203,7 +193,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
    struct icmphdr *icmph = (struct icmphdr *)(iph+1);
    uint16_t ret = 0;
  
-@@ -1509,22 +1533,22 @@ static uint16_t nat46_fixup_icmp(nat46_i
+@@ -1525,22 +1546,22 @@ static uint16_t nat46_fixup_icmp(nat46_i
    switch(icmph->type) {
      case ICMP_ECHO:
        icmph->type = ICMPV6_ECHO_REQUEST;
@@ -231,7 +221,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
        break;
      default:
        /* Silently drop. */
-@@ -1544,11 +1568,13 @@ int pairs_xlate_v6_to_v4_outer(nat46_ins
+@@ -1560,11 +1581,13 @@ static int pairs_xlate_v6_to_v4_outer(na
  
      if(-1 == xlate_dst) {
        if (xlate_v6_to_v4(nat46, &apair->local, &ip6h->daddr, pv4daddr)) {
@@ -245,7 +235,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
          xlate_src = ipair;
        }
      }
-@@ -1659,6 +1685,7 @@ int nat46_ipv6_input(struct sk_buff *old
+@@ -1675,6 +1698,7 @@ int nat46_ipv6_input(struct sk_buff *old
    }
  
    if(!pairs_xlate_v6_to_v4_outer(nat46, ip6h, proto, &v4saddr, &v4daddr)) {
@@ -253,7 +243,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
      goto done;
    }
  
-@@ -1821,11 +1848,13 @@ int pairs_xlate_v4_to_v6_outer(nat46_ins
+@@ -1842,11 +1866,13 @@ static int pairs_xlate_v4_to_v6_outer(na
  
      if(-1 == xlate_src) {
        if(xlate_v4_to_v6(nat46, &apair->local, &hdr4->saddr, v6saddr, sport)) {
@@ -267,7 +257,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
          xlate_dst = ipair;
        }
      }
-@@ -1854,10 +1883,145 @@ int xlate_4_to_6(struct net_device *dev,
+@@ -1875,10 +1901,145 @@ int xlate_4_to_6(struct net_device *dev,
  }
  EXPORT_SYMBOL(xlate_4_to_6);
  
@@ -414,7 +404,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
  
    int err = 0;
    uint8_t tclass = 0;
-@@ -1879,7 +2043,7 @@ int nat46_ipv4_input(struct sk_buff *old
+@@ -1900,7 +2061,7 @@ int nat46_ipv4_input(struct sk_buff *old
    }
    nat46debug(1, "nat46_ipv4_input packet");
    nat46debug(5, "nat46_ipv4_input protocol: %d, len: %d, flags: %02x", hdr4->protocol, old_skb->len, IPCB(old_skb)->flags);
@@ -423,17 +413,17 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
      check_for_l4 = 1;
    } else if (IPPROTO_ICMP == hdr4->protocol) {
      /*
-@@ -1916,9 +2080,10 @@ int nat46_ipv4_input(struct sk_buff *old
+@@ -1937,9 +2098,10 @@ int nat46_ipv4_input(struct sk_buff *old
  	break;
  	}
        case IPPROTO_ICMP:
 -	sport = dport = nat46_fixup_icmp(nat46, hdr4, old_skb);
 -	having_l4 = 1;
 -	break;
-+        ret = nat46_fixup_icmp(nat46, hdr4, old_skb, &sport, &dport);
-+        nat46debug(3, "ICMP translated to dest port %d, and src port %d.", ntohs(dport), ntohs(sport));
-+        having_l4 = 1;
-+        break;
++       ret = nat46_fixup_icmp(nat46, hdr4, old_skb, &sport, &dport);
++       nat46debug(3, "ICMP translated to dest port %d, and src port %d.", ntohs(dport), ntohs(sport));
++       having_l4 = 1;
++       break;
        default:
  	break;
      }

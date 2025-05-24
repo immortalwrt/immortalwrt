@@ -14,7 +14,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
 
 --- a/nat46/modules/nat46-core.c
 +++ b/nat46/modules/nat46-core.c
-@@ -1996,6 +1996,27 @@ done:
+@@ -2004,6 +2004,27 @@ done:
  
  
  
@@ -39,10 +39,10 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
 +}
 +EXPORT_SYMBOL(nat46_get_info);
 +
- void ip6_update_csum(struct sk_buff * skb, struct ipv6hdr * ip6hdr, int do_atomic_frag)
+ static void ip6_update_csum(struct sk_buff * skb, struct ipv6hdr * ip6hdr, int do_atomic_frag)
  {
    u32 sum1=0;
-@@ -2254,6 +2275,11 @@ int nat46_ipv4_input(struct sk_buff *old
+@@ -2267,6 +2288,11 @@ int nat46_ipv4_input(struct sk_buff *old
      }
      hdr4 = ip_hdr(old_skb);
      check_for_l4 = 1;

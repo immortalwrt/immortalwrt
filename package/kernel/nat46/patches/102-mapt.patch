@@ -13,7 +13,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
 
 --- a/nat46/modules/nat46-core.c
 +++ b/nat46/modules/nat46-core.c
-@@ -1497,7 +1497,6 @@ static uint16_t nat46_fixup_icmp_dest_un
+@@ -1513,7 +1513,6 @@ static uint16_t nat46_fixup_icmp_dest_un
    return 0;
  }
  
@@ -21,7 +21,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
  /* Fixup ICMP->ICMP6 before IP header translation, according to http://tools.ietf.org/html/rfc6145 */
  
  static uint16_t nat46_fixup_icmp(nat46_instance_t *nat46, struct iphdr *iph, struct sk_buff *old_skb) {
-@@ -1579,6 +1578,10 @@ int pairs_xlate_v6_to_v4_outer(nat46_ins
+@@ -1595,6 +1594,10 @@ static int pairs_xlate_v6_to_v4_outer(na
    return ( (xlate_src >= 0) && (xlate_dst >= 0) );
  }
  
@@ -32,7 +32,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
  
  int nat46_ipv6_input(struct sk_buff *old_skb) {
    struct ipv6hdr *ip6h = ipv6_hdr(old_skb);
-@@ -1733,6 +1736,10 @@ int nat46_ipv6_input(struct sk_buff *old
+@@ -1749,6 +1752,10 @@ int nat46_ipv6_input(struct sk_buff *old
  
    nat46debug(5, "about to send v4 packet, flags: %02x",  IPCB(new_skb)->flags);
    nat46_netdev_count_xmit(new_skb, old_skb->dev);
@@ -43,7 +43,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
    netif_rx(new_skb);
  
    /* TBD: should copy be released here? */
-@@ -1841,6 +1848,10 @@ int pairs_xlate_v4_to_v6_outer(nat46_ins
+@@ -1862,6 +1869,10 @@ static int pairs_xlate_v4_to_v6_outer(na
    return 0;
  }
  
@@ -54,7 +54,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
  
  int nat46_ipv4_input(struct sk_buff *old_skb) {
    nat46_instance_t *nat46 = get_nat46_instance(old_skb);
-@@ -1981,6 +1992,10 @@ int nat46_ipv4_input(struct sk_buff *old
+@@ -2002,6 +2013,10 @@ int nat46_ipv4_input(struct sk_buff *old
  
    nat46debug(5, "about to send v6 packet, flags: %02x",  IP6CB(new_skb)->flags);
    nat46_netdev_count_xmit(new_skb, old_skb->dev);
@@ -65,7 +65,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
    netif_rx(new_skb);
  
  done:
-@@ -1988,4 +2003,22 @@ done:
+@@ -2009,4 +2024,22 @@ done:
    return err;
  }
  
@@ -129,7 +129,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
  #endif
 --- a/nat46/modules/nat46-netdev.c
 +++ b/nat46/modules/nat46-netdev.c
-@@ -24,10 +24,12 @@
+@@ -24,6 +24,7 @@
  #include <net/ip6_route.h>
  #include <net/ipv6.h>
  #include <linux/version.h>
@@ -137,12 +137,15 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
  #include "nat46-core.h"
  #include "nat46-module.h"
  
+@@ -36,6 +37,7 @@
+ #endif
+ 
  #define NETDEV_DEFAULT_NAME "nat46."
 +static RADIX_TREE(netdev_tree, GFP_ATOMIC);
  
  typedef struct {
    u32 sig;
-@@ -83,6 +85,18 @@ void nat46_netdev_count_xmit(struct sk_b
+@@ -91,6 +93,18 @@ void nat46_netdev_count_xmit(struct sk_b
  	dev->stats.tx_bytes += skb->len;
  }
  
@@ -161,7 +164,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
  void *netdev_nat46_instance(struct net_device *dev) {
  	nat46_netdev_priv_t *priv = netdev_priv(dev);
  	return priv->nat46;
-@@ -160,6 +174,11 @@ int nat46_netdev_create(struct net *net,
+@@ -174,6 +188,11 @@ static int nat46_netdev_create(struct ne
  	printk("nat46: netdevice nat46 '%s' created successfully.\n", devname);
  	kfree(devname);
  
@@ -173,7 +176,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
  	return 0;
  
  err_register_dev:
-@@ -176,10 +195,24 @@ void nat46_netdev_destroy(struct net_dev
+@@ -190,10 +209,24 @@ static void nat46_netdev_destroy(struct
  	netif_stop_queue(dev);
  	netdev_nat46_set_instance(dev, NULL);
  	unregister_netdev(dev);
