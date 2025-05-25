@@ -37,7 +37,7 @@ Signed-off-by: David Wu <david.wu@rock-chips.com>
  
  static const char * const rk_clocks[] = {
 -	"aclk_mac", "pclk_mac", "mac_clk_tx", "clk_mac_speed",
-+	"aclk_mac", "pclk_mac", "pclk_xpcs", "mac_clk_tx", "clk_mac_speed",
++	"aclk_mac", "pclk_mac", "pclk_xpcs", "clk_xpcs_eee", "mac_clk_tx", "clk_mac_speed",
  };
  
  static const char * const rk_rmii_clocks[] = {

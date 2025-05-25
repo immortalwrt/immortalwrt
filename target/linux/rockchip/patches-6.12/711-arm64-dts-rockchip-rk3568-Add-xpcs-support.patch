@@ -45,13 +45,13 @@ Signed-off-by: David Wu <david.wu@rock-chips.com>
  			 <&cru ACLK_GMAC1>, <&cru PCLK_GMAC1>,
 -			 <&cru SCLK_GMAC1_RX_TX>, <&cru CLK_GMAC1_PTP_REF>;
 +			 <&cru SCLK_GMAC1_RX_TX>, <&cru CLK_GMAC1_PTP_REF>,
-+			 <&cru PCLK_XPCS>;
++			 <&cru PCLK_XPCS>, <&cru CLK_XPCS_EEE>;
  		clock-names = "stmmaceth", "mac_clk_rx",
  			      "mac_clk_tx", "clk_mac_refout",
  			      "aclk_mac", "pclk_mac",
 -			      "clk_mac_speed", "ptp_ref";
 +			      "clk_mac_speed", "ptp_ref",
-+			      "pclk_xpcs";
++			      "pclk_xpcs", "clk_xpcs_eee";
  		resets = <&cru SRST_A_GMAC1>;
  		reset-names = "stmmaceth";
  		rockchip,grf = <&grf>;
