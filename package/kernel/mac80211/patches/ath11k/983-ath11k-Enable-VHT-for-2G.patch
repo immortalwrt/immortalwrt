@@ -12,7 +12,7 @@
  		} else if (sta->deflink.ht_cap.ht_supported &&
  			   !ath11k_peer_assoc_h_ht_masked(ht_mcs_mask)) {
  			if (sta->deflink.bandwidth == IEEE80211_STA_RX_BW_40)
-@@ -5490,6 +5490,9 @@ static void ath11k_mac_setup_ht_vht_cap(
+@@ -5493,6 +5493,9 @@ static void ath11k_mac_setup_ht_vht_cap(
  			*ht_cap_info = ht_cap;
  		band->ht_cap = ath11k_create_ht_cap(ar, ht_cap,
  						    rate_cap_rx_chainmask);
