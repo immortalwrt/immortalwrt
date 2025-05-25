@@ -18,7 +18,7 @@ Signed-off-by: Yangyu Chen <cyy@cyyself.name>
 
 --- a/drivers/net/phy/realtek/realtek_main.c
 +++ b/drivers/net/phy/realtek/realtek_main.c
-@@ -86,6 +86,12 @@
+@@ -133,6 +133,12 @@
  #define RTL8221B_PHYCR1_ALDPS_EN		BIT(2)
  #define RTL8221B_PHYCR1_ALDPS_XTAL_OFF_EN	BIT(12)
  
@@ -31,7 +31,7 @@ Signed-off-by: Yangyu Chen <cyy@cyyself.name>
  #define RTL8366RB_POWER_SAVE			0x15
  #define RTL8366RB_POWER_SAVE_ON			BIT(12)
  
-@@ -838,6 +844,45 @@ static int rtl822x_probe(struct phy_devi
+@@ -1036,6 +1042,45 @@ static int rtl822x_probe(struct phy_devi
  	return 0;
  }
  
@@ -77,7 +77,7 @@ Signed-off-by: Yangyu Chen <cyy@cyyself.name>
  static int rtl822xb_config_init(struct phy_device *phydev)
  {
  	bool has_2500, has_sgmii;
-@@ -928,7 +973,7 @@ static int rtl822xb_config_init(struct p
+@@ -1126,7 +1171,7 @@ static int rtl822xb_config_init(struct p
  	if (ret < 0)
  		return ret;
  

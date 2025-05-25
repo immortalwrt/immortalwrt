@@ -237,6 +237,7 @@
 };
 
 &combphy0 {
+	rockchip,sgmii-mac-sel = <0>;
 	status = "okay";
 };
 
@@ -368,7 +369,11 @@
 	sgmii_phy: ethernet-phy@0 {
 		compatible = "ethernet-phy-ieee802.3-c22";
 		reg = <0>;
+		max-speed = <1000>;
 		motorcomm,led-data = <0xe004 0x0000 0x2600 0x0070 0x000a>;
+		eee-broken-10gt;
+		eee-broken-10gkx4;
+		eee-broken-10gkr;
 	};
 };
 
@@ -454,7 +459,8 @@
 
 &sdhci {
 	bus-width = <8>;
-	max-frequency = <200000000>;
+	cap-mmc-highspeed;
+	max-frequency = <52000000>;
 	non-removable;
 	pinctrl-names = "default";
 	pinctrl-0 = <&emmc_bus8 &emmc_clk &emmc_cmd>;
