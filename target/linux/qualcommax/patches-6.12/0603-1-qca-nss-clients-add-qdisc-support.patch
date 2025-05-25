@@ -421,7 +421,7 @@
  /* Reset all TX qdiscs greater than index of a device.  */
  static inline void qdisc_reset_all_tx_gt(struct net_device *dev, unsigned int i)
  {
-@@ -1356,4 +1393,9 @@ static inline void qdisc_synchronize(con
+@@ -1371,4 +1408,9 @@ static inline void qdisc_synchronize(con
  		msleep(1);
  }
  
