@@ -309,13 +309,13 @@ define Device/meraki_mr18
   DEVICE_VENDOR := Meraki
   DEVICE_MODEL := MR18
   DEVICE_PACKAGES := kmod-leds-uleds kmod-spi-gpio nu801
-  KERNEL_SIZE := 8m
   BLOCKSIZE := 128k
   PAGESIZE := 2048
   LOADER_TYPE := bin
   LZMA_TEXT_START := 0x82800000
   KERNEL := kernel-bin | append-dtb | lzma | loader-kernel | meraki-header MR18
   KERNEL_INITRAMFS := $$(KERNEL)
+  KERNEL_SIZE := 8m
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   SUPPORTED_DEVICES += mr18
 endef
