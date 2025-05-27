@@ -153,14 +153,7 @@
 			"ath11k/IPQ5018/hw1.0/m3_fw.mdt",
 			"ath11k/QCN6122/hw1.0/m3_fw.mdt";
 
-	/* The QCN6102 radio should map to UPD ID 2. Without       */
-	/* bootargs, the firmware will expect it to be on UPD ID 3 */
-	boot-args = <
-			/*       type:	*/	0x1	/* PCIE0	*/
-			/*     length:	*/	4
-			/*     UPD ID:	*/	2
-			/* reset GPIO:	*/	15
-			/*   reserved:	*/	0 0>;
+	boot-args = <0x1 4 2 15 0 0>; /* type, length, UPD ID, reset GPIO, reserved */
 
 	// IPQ5018
 	q6_wcss_pd1: pd-1 {

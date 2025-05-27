@@ -125,8 +125,6 @@
 		nand-ecc-strength = <4>;
 		nand-ecc-step-size = <512>;
 		nand-bus-width = <8>;
-		#address-cells = <1>;
-		#size-cells = <1>;
 
 		partitions: partitions {
 			compatible = "fixed-partitions";
@@ -199,8 +197,6 @@
 					};
 				};
 			};
-
-			/* rootfs defined in variant dts */
 
 			partition@7d00000 {
 				label = "0:ethphyfw";

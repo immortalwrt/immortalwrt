@@ -23,8 +23,8 @@
 	};
 
 	chosen {
-		bootargs-append = " root=/dev/ubiblock0_1 swiotlb=1 coherent_pool=2M";
 		stdout-path = "serial0:115200n8";
+		bootargs-append = " root=/dev/ubiblock0_1";
 	};
 
 	keys {
@@ -223,9 +223,6 @@
 	nand@0 {
 		compatible = "spi-nand";
 		reg = <0>;
-		#address-cells = <1>;
-		#size-cells = <1>;
-
 		nand-ecc-engine = <&qpic_nand>;
 		nand-bus-width = <8>;
 
@@ -334,12 +331,6 @@
 			"ath11k/QCN6122/hw1.0/m3_fw.mdt";
 
 	/* B3000 currently doesn't support passing bootargs */
-	/*boot-args = <					*/
-			/*       type:	0x1  PCIE0	*/
-			/*     length:	4		*/
-			/*      PD id:	3		*/
-			/* reset GPIO:	15		*/
-			/*   reserved:	0 0>;		*/
 
 	// IPQ5018
 	q6_wcss_pd1: pd-1 {

@@ -325,13 +325,7 @@
 					"IPQ5018/hw1.0/m3_fw.mdt",
 					"QCN6122/hw1.0/m3_fw.mdt";
 
-
-//	boot-args =
-//			</*       type: */ 0x1 /* PCIE0 */
-//		     /*     length: */ 4
-//		     /*      PD id: */ 3
-//		     /* reset GPIO: */ 15
-//		     /*   reserved: */ 0 0>;
+	boot-args = <0x1 4 3 15 0 0>; /* type, length, UPD ID, reset GPIO, reserved */
 
 	// IPQ5018
 	q6_wcss_pd1: pd-1 {

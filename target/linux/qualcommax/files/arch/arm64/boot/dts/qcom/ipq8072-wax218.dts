@@ -173,9 +173,10 @@
 
 					nvmem-layout {
 						compatible = "u-boot,env";
+						#address-cells = <1>;
+						#size-cells = <1>;
 
-						macaddr_ubootenv_ethaddr: ethaddr {
-						};
+						macaddr_ubootenv_ethaddr: ethaddr {};
 					};
 				};
 			};

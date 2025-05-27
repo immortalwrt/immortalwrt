@@ -28,7 +28,7 @@
 
 	chosen {
 		stdout-path = "serial0:115200n8";
-		bootargs-append = " root=/dev/ubiblock0_0 rootfstype=squashfs ro";
+		bootargs-append = " root=/dev/ubiblock0_0";
 	};
 
 	gpio-export {
@@ -79,16 +79,6 @@
 &qpic_nand {
 	status = "okay";
 
-	/*
-	 * Bootloader will find the NAND DT node by the compatible and
-	 * then "fixup" it by adding the partitions from the SMEM table
-	 * using the legacy bindings thus making it impossible for us
-	 * to change the partition table or utilize NVMEM for calibration.
-	 * So add a dummy partitions node that bootloader will populate
-	 * and set it as disabled so the kernel ignores it instead of
-	 * printing warnings due to the broken way bootloader adds the
-	 * partitions.
-	 */
 	partitions {
 		status = "disabled";
 	};
@@ -98,9 +88,6 @@
 		nand-ecc-strength = <4>;
 		nand-ecc-step-size = <512>;
 		nand-bus-width = <8>;
-
-		#address-cells = <1>;
-		#size-cells = <1>;
 
 		partitions {
 			compatible = "fixed-partitions";

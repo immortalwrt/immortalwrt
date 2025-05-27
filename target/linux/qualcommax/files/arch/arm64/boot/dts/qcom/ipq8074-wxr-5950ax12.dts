@@ -185,9 +185,10 @@
 
 					nvmem-layout {
 						compatible = "u-boot,env";
+						#address-cells = <1>;
+						#size-cells = <1>;
 
-						macaddr_appsblenv_ethaddr: ethaddr {
-						};
+						macaddr_appsblenv_ethaddr: ethaddr {};
 					};
 				};
 			};
@@ -197,18 +198,9 @@
 
 &mdio {
 	status = "okay";
+
 	pinctrl-0 = <&mdio_pins>;
 	pinctrl-names = "default";
-	/*
-	 * RESET pins of phy chips
-	 *
-	 * WXR-5950AX12 has 2x RESET pins for QCA8075 and AQR113C.
-	 * The pin of QCA8075 is for the chip and not phys in the chip, the
-	 * pin of AQR113C is for 2x chips. So both pins are not appropriate
-	 * to declare them as reset-gpios in phy nodes.
-	 * Multiple entries in reset-gpios of mdio may not be supported, but
-	 * leave the following as-is to show that the those reset pin exists.
-	 */
 	reset-gpios = <&tlmm 37 GPIO_ACTIVE_LOW>, <&tlmm 63 GPIO_ACTIVE_LOW>;
 
 	aqr113c_1: ethernet-phy@0 {

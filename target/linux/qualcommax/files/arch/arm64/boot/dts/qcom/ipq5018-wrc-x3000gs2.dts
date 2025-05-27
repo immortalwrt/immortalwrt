@@ -24,8 +24,8 @@
 	};
 
 	chosen {
-		bootargs-append = " root=/dev/ubiblock0_1 coherent_pool=2M";
 		stdout-path = "serial0:115200n8";
+		bootargs-append = " root=/dev/ubiblock0_1";
 	};
 
 	keys {
@@ -160,9 +160,9 @@
 
 	flash@0 {
 		compatible = "spi-nand";
-		reg = <0>;
 		#address-cells = <1>;
 		#size-cells = <1>;
+		reg = <0>;
 
 		nand-ecc-engine = <&qpic_nand>;
 
@@ -186,6 +186,8 @@
 
 					nvmem-layout {
 						compatible = "u-boot,env";
+						#address-cells = <1>;
+						#size-cells = <1>;
 
 						macaddr_appsblenv_ethaddr: ethaddr {
 							compatible = "mac-base";
@@ -409,7 +411,7 @@
 			"ath11k/IPQ5018/hw1.0/m3_fw.mdt",
 			"ath11k/QCN6122/hw1.0/m3_fw.mdt";
 
-	boot-args = <0x2 4 2 18 0 0>; /* pcie:1, len:4, updid:2, reset:gpio18 */
+	boot-args = <0x2 4 2 18 0 0>; /* type, length, UPD ID, reset GPIO, reserved */
 
 	q6_wcss_pd1: pd-1 {
 		firmware-name = "ath11k/IPQ5018/hw1.0/q6_fw.mdt";

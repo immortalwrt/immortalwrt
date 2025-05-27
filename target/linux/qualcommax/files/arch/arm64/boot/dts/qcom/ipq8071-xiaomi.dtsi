@@ -59,16 +59,6 @@
 &qpic_nand {
 	status = "okay";
 
-	/*
-	 * Bootloader will find the NAND DT node by the compatible and
-	 * then "fixup" it by adding the partitions from the SMEM table
-	 * using the legacy bindings thus making it impossible for us
-	 * to change the partition table or utilize NVMEM for calibration.
-	 * So add a dummy partitions node that bootloader will populate
-	 * and set it as disabled so the kernel ignores it instead of
-	 * printing warnings due to the broken way bootloader adds the
-	 * partitions.
-	 */
 	partitions {
 		status = "disabled";
 	};
@@ -169,20 +159,15 @@
 			};
 
 			partition@900000 {
-				/* This is crash + crash_syslog parts combined */
 				label = "pstore";
 				reg = <0x900000 0x100000>;
 			};
 
-			/* Make the first rootfs a dedicated ubi partition for kernel */
 			partition@a00000 {
 				label = "ubi_kernel";
 				reg = <0xa00000 0x23c0000>;
 			};
 
-			/* Place the real rootfs in the original second rootfs and
-			 * expand it to the end of the nand
-			 */
 			rootfs: partition@2dc0000 {
 				label = "rootfs";
 				reg = <0x2dc0000 0xd240000>;
