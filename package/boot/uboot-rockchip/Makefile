@@ -398,6 +398,13 @@ define U-Boot/rock5a-rk3588s
     radxa_rock-5a
 endef
 
+define U-Boot/radxa-e52c-rk3588s
+  $(U-Boot/rk3588/Default)
+  NAME:=E52C
+  BUILD_DEVICES:= \
+    radxa_e52c
+endef
+
 UBOOT_TARGETS := \
   guangmiao-g4c-rk3399 \
   nanopc-t4-rk3399 \
@@ -442,6 +449,7 @@ UBOOT_TARGETS := \
   nanopi-r6c-rk3588s \
   nanopi-r6s-rk3588s \
   orangepi-5-rk3588s \
+  radxa-e52c-rk3588s \
   rock5a-rk3588s
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
