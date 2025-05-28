@@ -1,7 +1,7 @@
-From c1aa34cd568bc7b86b82353034070c32b6ebe6db Mon Sep 17 00:00:00 2001
+From 0890faebd0155f57ef34fb1e766fd3ed8a127595 Mon Sep 17 00:00:00 2001
 From: Linus Walleij <linus.walleij@linaro.org>
 Date: Mon, 11 Mar 2019 15:44:29 +0100
-Subject: [PATCH] ARM: dts: Augment DIR-685 partition table for OpenWrt
+Subject: [PATCH 2/2] ARM: dts: Augment DIR-685 partition table for OpenWrt
 
 Rename the firmware partition so that the firmware MTD
 splitter will do its job, drop the rootfs arguments as
