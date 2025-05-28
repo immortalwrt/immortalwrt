@@ -1102,6 +1102,7 @@ define Device/dlink_dap-13xx
   IMAGES += factory.bin
   IMAGE/factory.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | \
 	append-rootfs | pad-rootfs | check-size | mkdapimg2 0xE0000
+  DEFAULT := n
 endef
 
 define Device/dlink_dap-1330-a1
