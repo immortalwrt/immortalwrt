@@ -67,15 +67,13 @@
 
 	flash@0 {
 		compatible = "jedec,spi-nor";
+		spi-max-frequency = <50000000>;
 		#address-cells = <1>;
 		#size-cells = <1>;
 		reg = <0>;
-		spi-max-frequency = <50000000>;
 
 		partitions {
 			compatible = "fixed-partitions";
-			#address-cells = <1>;
-			#size-cells = <1>;
 
 			partition@0 {
 				label = "0:sbl1";
@@ -179,8 +177,6 @@
 
 				nvmem-layout {
 					compatible = "u-boot,env";
-					#address-cells = <1>;
-					#size-cells = <1>;
 
 					macaddr_lan: ethaddr {
 						#nvmem-cell-cells = <1>;
@@ -201,8 +197,6 @@
 
 				nvmem-layout {
 					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
 
 					aqr_fw: aqr-fw@0 {
 						/* Skip the QCOM MBN Header of 40 bytes */
@@ -383,6 +377,7 @@
 
 &blsp1_i2c2 {
 	status = "okay";
+
 	pinctrl-0 = <&i2c_0_pins>;
 	pinctrl-names = "default";
 

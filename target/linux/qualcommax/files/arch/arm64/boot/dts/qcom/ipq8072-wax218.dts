@@ -152,7 +152,10 @@
 	status = "okay";
 
 	nand@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
 		reg = <0>;
+
 		nand-ecc-strength = <4>;
 		nand-ecc-step-size = <512>;
 		nand-bus-width = <8>;
@@ -164,8 +167,6 @@
 				compatible = "fixed-partitions";
 				label = "0:appsblenv";
 				read-only;
-				#address-cells = <1>;
-				#size-cells = <1>;
 
 				partition@0 {
 					label = "env-data";
@@ -173,8 +174,6 @@
 
 					nvmem-layout {
 						compatible = "u-boot,env";
-						#address-cells = <1>;
-						#size-cells = <1>;
 
 						macaddr_ubootenv_ethaddr: ethaddr {};
 					};

@@ -106,6 +106,7 @@
 
 &mdio {
 	status = "okay";
+
 	pinctrl-0 = <&mdio_pins>, <&phy_reset_pin>;
 	pinctrl-names = "default";
 	reset-gpios = <&tlmm 77 GPIO_ACTIVE_LOW>;
@@ -137,7 +138,10 @@
 	status = "okay";
 
 	nand@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
 		reg = <0>;
+
 		nand-ecc-strength = <4>;
 		nand-ecc-step-size = <512>;
 		nand-bus-width = <8>;

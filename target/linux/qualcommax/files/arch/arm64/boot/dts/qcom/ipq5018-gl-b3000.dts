@@ -108,6 +108,7 @@
 
 &mdio1 {
 	status = "okay";
+
 	pinctrl-0 = <&mdio1_pins>;
 	pinctrl-names = "default";
 	reset-gpios = <&tlmm 39 GPIO_ACTIVE_LOW>;
@@ -191,6 +192,7 @@
 
 &blsp1_uart1 {
 	status = "okay";
+
 	pinctrl-0 = <&serial_0_pins>;
 	pinctrl-names = "default";
 };
@@ -222,8 +224,13 @@
 
 	nand@0 {
 		compatible = "spi-nand";
+		#address-cells = <1>;
+		#size-cells = <1>;
 		reg = <0>;
+
 		nand-ecc-engine = <&qpic_nand>;
+		nand-ecc-strength = <4>;
+		nand-ecc-step-size = <512>;
 		nand-bus-width = <8>;
 
 		partitions {
@@ -233,13 +240,9 @@
 				compatible = "fixed-partitions";
 				label = "0:ART";
 				read-only;
-				#address-cells = <1>;
-				#size-cells = <1>;
 
 				nvmem-layout {
 					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
 
 					macaddr_dp2: macaddr@0 {
 						compatible = "mac-base";

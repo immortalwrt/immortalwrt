@@ -224,21 +224,20 @@
 
 &blsp1_spi1 {
 	status = "okay";
+
 	pinctrl-0 = <&spi_0_pins>;
 	pinctrl-names = "default";
 
 	flash@0 {
 		compatible = "micron,n25q128a11", "jedec,spi-nor";
 		linux,modalias = "m25p80", "mx30uf2g18ac", "n25q128a11";
+		spi-max-frequency = <50000000>;
 		#address-cells = <1>;
 		#size-cells = <1>;
 		reg = <0>;
-		spi-max-frequency = <50000000>;
 
 		partitions {
 			compatible = "fixed-partitions";
-			#address-cells = <1>;
-			#size-cells = <1>;
 
 			partition@0 {
 				label = "0:SBL1";
@@ -318,8 +317,6 @@
 
 				nvmem-layout {
 					compatible = "u-boot,env";
-					#address-cells = <1>;
-					#size-cells = <1>;
 
 					ethaddr: ethaddr {
 						#nvmem-cell-cells = <0>;
@@ -364,15 +361,16 @@
 	status = "okay";
 
 	nand@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
 		reg = <0>;
+
 		nand-ecc-strength = <4>;
 		nand-ecc-step-size = <512>;
 		nand-bus-width = <8>;
 
 		partitions {
 			compatible = "fixed-partitions";
-			#address-cells = <1>;
-			#size-cells = <1>;
 
 			partition@0 {
 				label = "rootfs";

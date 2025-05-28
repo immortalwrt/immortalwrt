@@ -89,6 +89,7 @@
 
 &blsp1_spi5 {
 	status = "okay";
+
 	pinctrl-0 = <&spi_4_pins>;
 	pinctrl-names = "default";
 
@@ -134,6 +135,7 @@
 
 &mdio {
 	status = "okay";
+
 	pinctrl-0 = <&mdio_pins>;
 	pinctrl-names = "default";
 	reset-gpios = <&tlmm 37 GPIO_ACTIVE_LOW>;

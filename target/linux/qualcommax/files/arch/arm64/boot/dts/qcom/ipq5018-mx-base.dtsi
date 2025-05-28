@@ -126,14 +126,17 @@
 
 	nand@0 {
 		compatible = "spi-nand";
+		#address-cells = <1>;
+		#size-cells = <1>;
 		reg = <0>;
+
 		nand-ecc-engine = <&qpic_nand>;
+		nand-ecc-strength = <4>;
+		nand-ecc-step-size = <512>;
 		nand-bus-width = <8>;
 
 		partitions {
 			compatible = "fixed-partitions";
-			#address-cells = <1>;
-			#size-cells = <1>;
 
 			partition@0 {
 				label = "0:SBL1";
@@ -205,8 +208,6 @@
 
 				nvmem-layout {
 					compatible = "ascii-eq-delim-env";
-					#address-cells = <1>;
-					#size-cells = <1>;
 
 					hw_mac_addr: hw_mac_addr {
 						compatible = "mac-base";
