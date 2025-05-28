@@ -815,6 +815,7 @@ define Device/linksys_e1700
   DEVICE_VENDOR := Linksys
   DEVICE_MODEL := E1700
   SUPPORTED_DEVICES += e1700
+  DEFAULT := n
 endef
 TARGET_DEVICES += linksys_e1700
 
@@ -1630,6 +1631,7 @@ define Device/zyxel_keenetic-lite-iii-a
   IMAGES += factory.bin
   IMAGE/factory.bin := $$(sysupgrade_bin) | pad-to 64k | check-size | \
 		zyimage -d 2102018 -v "ZyXEL Keenetic Lite III"
+  DEFAULT := n
 endef
 TARGET_DEVICES += zyxel_keenetic-lite-iii-a
 
