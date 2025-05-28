@@ -84,7 +84,7 @@ ipq807x_setup_macs()
 
 	case "$board" in
 	aliyun,ap8220)
-		wan_mac=$(cat /dev/mtd12 | awk -F '\t' '/product.mac/{print $2}')
+		wan_mac=$(cat $(find_mtd_part product_info) | awk -F '\t' '/product.mac/{print $2}')
 		lan_mac=$(macaddr_add $wan_mac 1)
 		label_mac=$wan_mac
 		;;
@@ -113,7 +113,7 @@ ipq807x_setup_macs()
 		label_mac=$wan_mac
 		;;
 	verizon,cr1000a)
-		wan_mac=$(mmc_get_mac_ascii "0:APPSBLENV" baseMAC)
+		wan_mac=$(mmc_get_mac_ascii 0:APPSBLENV baseMAC)
 		lan_mac=$(macaddr_add "$wan_mac" 1)
 		label_mac=$wan_mac
 		;;

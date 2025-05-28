@@ -522,6 +522,7 @@ config KERNEL_DEBUG_VIRTUAL
 
 config KERNEL_DYNAMIC_DEBUG
 	bool "Compile the kernel with dynamic printk"
+	default y if TARGET_qualcommax
 	select KERNEL_DEBUG_FS
 	help
 	  Compiles debug level messages into the kernel, which would not

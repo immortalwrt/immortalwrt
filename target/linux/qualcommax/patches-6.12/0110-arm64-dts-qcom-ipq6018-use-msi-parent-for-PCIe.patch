@@ -1,0 +1,21 @@
+--- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+@@ -749,7 +749,7 @@
+ 			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
+ 			ranges = <0 0 0 0xb00a000 0 0xffd>;
+ 
+-			v2m@0 {
++			gic_v2m0: v2m@0 {
+ 				compatible = "arm,gic-v2m-frame";
+ 				msi-controller;
+ 				reg = <0x0 0x0 0x0 0xffd>;
+@@ -911,8 +911,7 @@
+ 			ranges = <0x81000000 0x0 0x00000000 0x0 0x20200000 0x0 0x10000>,
+ 				 <0x82000000 0x0 0x20220000 0x0 0x20220000 0x0 0xfde0000>;
+ 
+-			interrupts = <GIC_SPI 52 IRQ_TYPE_LEVEL_HIGH>;
+-			interrupt-names = "msi";
++			msi-parent = <&gic_v2m0>;
+ 
+ 			#interrupt-cells = <1>;
+ 			interrupt-map-mask = <0 0 0 0x7>;

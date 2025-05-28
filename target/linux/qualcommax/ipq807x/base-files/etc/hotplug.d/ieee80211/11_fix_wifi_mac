@@ -11,7 +11,7 @@ board=$(board_name)
 
 case "$board" in
 	aliyun,ap8220)
-		label_mac=$(cat /dev/mtd12 | awk -F '\t' '/product.mac/{print $2}')
+		label_mac=$(cat $(find_mtd_part product_info) | awk -F '\t' '/product.mac/{print $2}')
 		[ "$PHYNBR" = "0" ] && macaddr_add $label_mac 2 > /sys${DEVPATH}/macaddress
 		[ "$PHYNBR" = "1" ] && macaddr_add $label_mac 3 > /sys${DEVPATH}/macaddress
 		;;
@@ -60,7 +60,7 @@ case "$board" in
 		[ "$PHYNBR" = "1" ] && macaddr_add $label_mac 2 > /sys${DEVPATH}/macaddress
 		;;
 	verizon,cr1000a)
-		label_mac=$(mmc_get_mac_ascii "0:APPSBLENV" baseMAC)
+		label_mac=$(mmc_get_mac_ascii 0:APPSBLENV baseMAC)
 		[ "$PHYNBR" = "0" ] && macaddr_add $label_mac 2 > /sys${DEVPATH}/macaddress
 		[ "$PHYNBR" = "1" ] && macaddr_add $label_mac 3 > /sys${DEVPATH}/macaddress
 		[ "$PHYNBR" = "2" ] && macaddr_add $label_mac 4 > /sys${DEVPATH}/macaddress

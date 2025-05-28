@@ -397,7 +397,7 @@ static void skb_recycler_free_skb(struct sk_buff_head *list)
 		skbuff_debugobj_activate(skb);
 		next = skb->next;
 		__skb_unlink(skb, list);
-		skb_release_data(skb, SKB_CONSUMED);
+		skb_release_data(skb, SKB_CONSUMED, false);
 		kfree_skbmem(skb);
 		/*
 		 * Update the skb->sum for next due to skb_link operation

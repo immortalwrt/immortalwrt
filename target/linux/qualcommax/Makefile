@@ -16,14 +16,23 @@ DEFAULT_PACKAGES += \
 	kmod-dsa kmod-dsa-qca8k kmod-fs-ext4 kmod-fs-f2fs kmod-gpio-button-hotplug kmod-leds-gpio \
 	kmod-ath11k kmod-ath11k-ahb kmod-ath11k-pci kmod-phy-aquantia kmod-phy-marvell kmod-phy-qca83xx \
 	kmod-usb3 kmod-usb-dwc3 kmod-usb-dwc3-qcom kmod-qca-nss-dp \
-	kmod-qca-nss-ecm kmod-qca-nss-drv \
+	kmod-qca-nss-drv kmod-qca-nss-ecm kmod-qca-nss-crypto \
 	kmod-qca-nss-drv-bridge-mgr \
+	kmod-qca-nss-drv-eogremgr \
+	kmod-qca-nss-drv-gre \
 	kmod-qca-nss-drv-igs \
 	kmod-qca-nss-drv-l2tpv2 \
 	kmod-qca-nss-drv-lag-mgr \
+	kmod-qca-nss-drv-map-t \
+	kmod-qca-nss-drv-match \
+	kmod-qca-nss-drv-mirror \
 	kmod-qca-nss-drv-pppoe \
 	kmod-qca-nss-drv-pptp \
 	kmod-qca-nss-drv-qdisc \
+	kmod-qca-nss-drv-tun6rd \
+	kmod-qca-nss-drv-tunipip6 \
 	kmod-qca-nss-drv-vlan-mgr \
+	kmod-qca-nss-drv-vxlanmgr \
+	kmod-qca-nss-drv-wifi-meshmgr \
 
 $(eval $(call BuildTarget))
