@@ -42,11 +42,12 @@
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-edgeble-neu6a-io.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-edgeble-neu6b-io.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-evb1-v10.dtb
-@@ -112,5 +120,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-or
+@@ -112,5 +120,8 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-or
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588-rock-5b.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-indiedroid-nova.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-khadas-edge2.dtb
 +dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-nanopi-r6c.dtb
++dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-radxa-e52c.dtb
 +dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-nanopi-r6s.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-rock-5a.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-orangepi-5.dtb
