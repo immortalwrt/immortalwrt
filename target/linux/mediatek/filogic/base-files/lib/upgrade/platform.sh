@@ -71,6 +71,7 @@ platform_do_upgrade() {
 	bananapi,bpi-r3|\
 	bananapi,bpi-r3-mini|\
 	bananapi,bpi-r4|\
+	bananapi,bpi-r4-2g5|\
 	bananapi,bpi-r4-poe|\
 	cetron,ct3003-ubootmod|\
 	cmcc,a10-ubootmod|\
@@ -94,6 +95,7 @@ platform_do_upgrade() {
 	netcore,n60-pro|\
 	qihoo,360t7|\
 	routerich,ax3000-ubootmod|\
+	snr,snr-cpe-ax2|\
 	tplink,tl-xdr4288|\
 	tplink,tl-xdr6086|\
 	tplink,tl-xdr6088|\
@@ -208,6 +210,7 @@ platform_check_image() {
 	bananapi,bpi-r3|\
 	bananapi,bpi-r3-mini|\
 	bananapi,bpi-r4|\
+	bananapi,bpi-r4-2g5|\
 	bananapi,bpi-r4-poe|\
 	cetron,ct3003-ubootmod|\
 	cmcc,a10-ubootmod|\
@@ -287,6 +290,7 @@ platform_copy_config() {
 	bananapi,bpi-r3|\
 	bananapi,bpi-r3-mini|\
 	bananapi,bpi-r4|\
+	bananapi,bpi-r4-2g5|\
 	bananapi,bpi-r4-poe|\
 	cmcc,rax3000m|\
 	cmcc,rax3000me)
