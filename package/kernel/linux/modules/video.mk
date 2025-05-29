@@ -372,7 +372,8 @@ $(eval $(call KernelPackage,drm-exec))
 define KernelPackage/drm-gem-shmem-helper
   SUBMENU:=$(VIDEO_MENU)
   TITLE:=GEM shmem helper functions
-  DEPENDS:=@DISPLAY_SUPPORT +kmod-drm
+  DEPENDS:=@DISPLAY_SUPPORT +kmod-drm +!LINUX_6_6:kmod-drm-kms-helper \
+	+!LINUX_6_6:kmod-fb-sys-fops +!LINUX_6_6:kmod-fb-sys-ram
   KCONFIG:=CONFIG_DRM_GEM_SHMEM_HELPER
   FILES:=$(LINUX_DIR)/drivers/gpu/drm/drm_shmem_helper.ko
   AUTOLOAD:=$(call AutoProbe,drm_shmem_helper)
@@ -702,7 +703,7 @@ $(eval $(call KernelPackage,drm-panfrost))
 define KernelPackage/drm-panthor
   SUBMENU:=$(VIDEO_MENU)
   TITLE:=DRM support for ARM Mali CSF-based GPUs
-  DEPENDS:=@LINUX_6_12 @TARGET_rockchip +kmod-drm +kmod-drm-exec \
+  DEPENDS:=@TARGET_rockchip +kmod-drm +kmod-drm-exec \
 	+kmod-drm-gem-shmem-helper +panthor-firmware
   KCONFIG:= \
 	CONFIG_DRM_GPUVM \
