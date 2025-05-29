@@ -952,6 +952,7 @@ define Device/netgear_wn3100rp-v2
   DEVICE_VENDOR := NETGEAR
   DEVICE_MODEL := WN3100RP
   DEVICE_VARIANT := v2
+  DEFAULT := n
 endef
 TARGET_DEVICES += netgear_wn3100rp-v2
 
