@@ -1,0 +1,60 @@
+From 6363738ddf830c23fb41ea1c945b055180b6c356 Mon Sep 17 00:00:00 2001
+From: Ram Chandra Jangir <quic_rjangir@quicinc.com>
+Date: Mon, 7 Apr 2014 16:51:59 -0700
+Subject: [PATCH 451/500] mtd: ubi: add a ubi forced detach ioctl
+
+When running ubi rootfs upgrade on nand based OpenWrt device after
+pivot_root init process is still "hooked" on the old file system.
+Thus, the old file system can not be umounted. If the filesystem is
+mounted it can not be upgraded with using for example ubiupdatevol
+or removed with ubirmvol. Forcing umount would allow to run the
+before mentioned commands.
+
+Change-Id: I431c5957aea1b2f1f7cc7645ff7a1ae5b22e6d35
+Signed-off-by: Ram Chandra Jangir <quic_rjangir@quicinc.com>
+---
+ drivers/mtd/ubi/cdev.c      | 8 ++++++--
+ include/uapi/mtd/ubi-user.h | 1 +
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+--- a/drivers/mtd/ubi/cdev.c
++++ b/drivers/mtd/ubi/cdev.c
+@@ -1003,7 +1003,7 @@ static long ubi_cdev_ioctl(struct file *
+ static long ctrl_cdev_ioctl(struct file *file, unsigned int cmd,
+ 			    unsigned long arg)
+ {
+-	int err = 0;
++	int err = 0, force = 0;
+ 	void __user *argp = (void __user *)arg;
+ 
+ 	if (!capable(CAP_SYS_RESOURCE))
+@@ -1054,6 +1054,10 @@ static long ctrl_cdev_ioctl(struct file
+ 	}
+ 
+ 	/* Detach an MTD device command */
++	case UBI_IOCFDET:
++		force = 1;
++		/* fallthrough */
++		break;
+ 	case UBI_IOCDET:
+ 	{
+ 		int ubi_num;
+@@ -1066,7 +1070,7 @@ static long ctrl_cdev_ioctl(struct file
+ 		}
+ 
+ 		mutex_lock(&ubi_devices_mutex);
+-		err = ubi_detach_mtd_dev(ubi_num, 0);
++		err = ubi_detach_mtd_dev(ubi_num, force);
+ 		mutex_unlock(&ubi_devices_mutex);
+ 		break;
+ 	}
+--- a/include/uapi/mtd/ubi-user.h
++++ b/include/uapi/mtd/ubi-user.h
+@@ -184,6 +184,7 @@
+ #define UBI_IOCATT _IOW(UBI_CTRL_IOC_MAGIC, 64, struct ubi_attach_req)
+ /* Detach an MTD device */
+ #define UBI_IOCDET _IOW(UBI_CTRL_IOC_MAGIC, 65, __s32)
++#define UBI_IOCFDET _IOW(UBI_CTRL_IOC_MAGIC, 99, __s32)
+ 
+ /* ioctl commands of UBI volume character devices */
+ 

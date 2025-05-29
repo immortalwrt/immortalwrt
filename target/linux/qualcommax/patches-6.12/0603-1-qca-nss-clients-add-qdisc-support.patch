@@ -336,7 +336,7 @@
  }
  
 +/* QCA NSS Qdisc Support - Start */
-+bool tcf_destroy(struct tcf_proto *tp, bool force)
++static bool tcf_destroy(struct tcf_proto *tp, bool force)
 +{
 +	tp->ops->destroy(tp, force, NULL);
 +	module_put(tp->ops->owner);
@@ -451,3 +451,13 @@
  	__u8			remcsum_offload:1;
  	__u8			csum_complete_sw:1;
  	__u8			csum_level:2;
+--- a/include/linux/timer_types.h
++++ b/include/linux/timer_types.h
+@@ -14,6 +14,7 @@ struct timer_list {
+ 	unsigned long		expires;
+ 	void			(*function)(struct timer_list *);
+ 	u32			flags;
++	unsigned long		cust_data;
+ 
+ #ifdef CONFIG_LOCKDEP
+ 	struct lockdep_map	lockdep_map;
