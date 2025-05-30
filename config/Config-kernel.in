@@ -502,12 +502,10 @@ config KERNEL_FRAME_WARN
 # kernel configurations and lead to devices that dont have working console
 config KERNEL_DEBUG_LL_UART_NONE
 	bool
-	default n
 	depends on arm
 
 config KERNEL_DEBUG_LL
 	bool
-	default n
 	depends on arm
 	select KERNEL_DEBUG_LL_UART_NONE
 	help
@@ -522,7 +520,6 @@ config KERNEL_DEBUG_VIRTUAL
 
 config KERNEL_DYNAMIC_DEBUG
 	bool "Compile the kernel with dynamic printk"
-	default y if TARGET_qualcommax
 	select KERNEL_DEBUG_FS
 	help
 	  Compiles debug level messages into the kernel, which would not
@@ -576,7 +573,6 @@ config KERNEL_PROBE_EVENTS_BTF_ARGS
 config KERNEL_BPF_KPROBE_OVERRIDE
 	bool
 	depends on KERNEL_KPROBES
-	default n
 
 config KERNEL_BPF_STREAM_PARSER
 	bool "Allow a TCP stream parser to be used with BPF_MAP_TYPE_SOCKMAP"
@@ -899,7 +895,6 @@ if KERNEL_CGROUPS
 		bool "Legacy cgroup v1 cpusets controller"
 		depends on KERNEL_CPUSETS
 		depends on !LINUX_6_6
-		default n
 		help
 		  Legacy cgroup v1 cpusets controller which has been deprecated by
 		  cgroup v2 implementation. The v1 is there for legacy applications
@@ -1001,7 +996,6 @@ if KERNEL_CGROUPS
 	
 	config KERNEL_MEMCG_V1
 		bool "Legacy cgroup v1 memory controller"
-		default n
 		depends on KERNEL_MEMCG
 		depends on !LINUX_6_6
 		help
