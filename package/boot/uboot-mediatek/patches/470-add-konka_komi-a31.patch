@@ -382,13 +382,13 @@
 +			label = "mesh";
 +			linux,code = <BTN_9>;
 +			linux,input-type = <EV_SW>;
-+			gpios = <&gpio 0 GPIO_ACTIVE_LOW>;
++			gpios = <&pio 0 GPIO_ACTIVE_LOW>;
 +		};
 +
 +		button-reset {
 +			label = "reset";
 +			linux,code = <KEY_RESTART>;
-+			gpios = <&gpio 1 GPIO_ACTIVE_LOW>;
++			gpios = <&pio 1 GPIO_ACTIVE_LOW>;
 +		};
 +	};
 +
@@ -397,19 +397,19 @@
 +
 +		green_led: led-0 {
 +			label = "green:status";
-+			gpios = <&gpio 8 GPIO_ACTIVE_LOW>;
++			gpios = <&pio 8 GPIO_ACTIVE_LOW>;
 +			default-state = "off";
 +		};
 +
 +		led-1 {
 +			label = "blue:status";
-+			gpios = <&gpio 13 GPIO_ACTIVE_LOW>;
++			gpios = <&pio 13 GPIO_ACTIVE_LOW>;
 +			default-state = "off";
 +		};
 +
 +		red_led: led-2 {
 +			label = "red:status";
-+			gpios = <&gpio 34 GPIO_ACTIVE_HIGH>;
++			gpios = <&pio 34 GPIO_ACTIVE_HIGH>;
 +			default-state = "on";
 +		};
 +	};
@@ -420,7 +420,7 @@
 +	mediatek,gmac-id = <0>;
 +	phy-mode = "2500base-x";
 +	mediatek,switch = "mt7531";
-+	reset-gpios = <&gpio 39 GPIO_ACTIVE_HIGH>;
++	reset-gpios = <&pio 39 GPIO_ACTIVE_HIGH>;
 +
 +	fixed-link {
 +		speed = <2500>;
@@ -428,7 +428,7 @@
 +	};
 +};
 +
-+&pinctrl {
++&pio {
 +	spi_flash_pins: spi0-pins-func-1 {
 +		mux {
 +			function = "flash";
@@ -540,7 +540,7 @@
 +	status = "okay";
 +};
 +
-+&pinctrl {
++&pio {
 +	mmc0_pins_default: mmc0default {
 +		mux {
 +			function = "flash";
@@ -578,7 +578,7 @@
 +/dts-v1/;
 +#include "mt7981-konka-komi-a31.dts"
 +
-+&pinctrl {
++&pio {
 +	spi2_flash_pins: spi2-spi2-pins {
 +		mux {
 +			function = "spi";
