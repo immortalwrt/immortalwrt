@@ -140,13 +140,13 @@
 +		button-reset {
 +			label = "reset";
 +			linux,code = <KEY_RESTART>;
-+			gpios = <&gpio 1 GPIO_ACTIVE_LOW>;
++			gpios = <&pio 1 GPIO_ACTIVE_LOW>;
 +		};
 +
 +		button-wps {
 +			label = "wps";
 +			linux,code = <KEY_WPS_BUTTON>;
-+			gpios = <&gpio 0 GPIO_ACTIVE_LOW>;
++			gpios = <&pio 0 GPIO_ACTIVE_LOW>;
 +		};
 +	};
 +
@@ -155,49 +155,49 @@
 +
 +		led-0 {
 +			label = "red:d8";
-+			gpios = <&gpio 6 GPIO_ACTIVE_LOW>;
++			gpios = <&pio 6 GPIO_ACTIVE_LOW>;
 +			default-state = "off";
 +		};
 +
 +		led-1 {
 +			label = "blue:internet";
-+			gpios = <&gpio 7 GPIO_ACTIVE_LOW>;
++			gpios = <&pio 7 GPIO_ACTIVE_LOW>;
 +			default-state = "off";
 +		};
 +
 +		running_led: led-2 {
 +			label = "blue:running";
-+			gpios = <&gpio 9 GPIO_ACTIVE_LOW>;
++			gpios = <&pio 9 GPIO_ACTIVE_LOW>;
 +			default-state = "off";
 +		};
 +
 +		upgrade_led: led-3 {
 +			label = "green:upgrade";
-+			gpios = <&gpio 10 GPIO_ACTIVE_LOW>;
++			gpios = <&pio 10 GPIO_ACTIVE_LOW>;
 +			default-state = "off";
 +		};
 +
 +		boot_led: led-4 {
 +			label = "red:boot";
-+			gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
++			gpios = <&pio 11 GPIO_ACTIVE_LOW>;
 +			default-state = "on";
 +		};
 +
 +		led-5 {
 +			label = "blue:d7";
-+			gpios = <&gpio 12 GPIO_ACTIVE_LOW>;
++			gpios = <&pio 12 GPIO_ACTIVE_LOW>;
 +			default-state = "off";
 +		};
 +
 +		led-6 {
 +			label = "blue:wlan2g";
-+			gpios = <&gpio 34 GPIO_ACTIVE_LOW>;
++			gpios = <&pio 34 GPIO_ACTIVE_LOW>;
 +			default-state = "off";
 +		};
 +
 +		led-7 {
 +			label = "blue:wlan5g";
-+			gpios = <&gpio 35 GPIO_ACTIVE_LOW>;
++			gpios = <&pio 35 GPIO_ACTIVE_LOW>;
 +			default-state = "off";
 +		};
 +	};
@@ -208,7 +208,7 @@
 +	mediatek,gmac-id = <0>;
 +	phy-mode = "2500base-x";
 +	mediatek,switch = "mt7531";
-+	reset-gpios = <&gpio 39 GPIO_ACTIVE_HIGH>;
++	reset-gpios = <&pio 39 GPIO_ACTIVE_HIGH>;
 +
 +	fixed-link {
 +		speed = <2500>;
@@ -216,7 +216,7 @@
 +	};
 +};
 +
-+&pinctrl {
++&pio {
 +	spi_flash_pins: spi0-pins-func-1 {
 +		mux {
 +			function = "flash";
