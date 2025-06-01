@@ -201,7 +201,7 @@
  void fib_del_ifaddr(struct in_ifaddr *, struct in_ifaddr *);
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -2292,4 +2292,6 @@ void br_do_suppress_nd(struct sk_buff *s
+@@ -2293,4 +2293,6 @@ void br_do_suppress_nd(struct sk_buff *s
  		       u16 vid, struct net_bridge_port *p, struct nd_msg *msg);
  struct nd_msg *br_is_nd_neigh_msg(struct sk_buff *skb, struct nd_msg *m);
  bool br_is_neigh_suppress_enabled(const struct net_bridge_port *p, u16 vid);
@@ -635,7 +635,7 @@
  }
 --- a/net/ipv4/fib_trie.c
 +++ b/net/ipv4/fib_trie.c
-@@ -1212,6 +1212,9 @@ static bool fib_valid_key_len(u32 key, u
+@@ -1196,6 +1196,9 @@ static int fib_insert_alias(struct trie
  static void fib_remove_alias(struct trie *t, struct key_vector *tp,
  			     struct key_vector *l, struct fib_alias *old);
  
@@ -645,7 +645,7 @@
  /* Caller must hold RTNL. */
  int fib_table_insert(struct net *net, struct fib_table *tb,
  		     struct fib_config *cfg, struct netlink_ext_ack *extack)
-@@ -1405,6 +1408,9 @@ int fib_table_insert(struct net *net, st
+@@ -1386,6 +1389,9 @@ int fib_table_insert(struct net *net, st
  	rtmsg_fib(RTM_NEWROUTE, htonl(key), new_fa, plen, new_fa->tb_id,
  		  &cfg->fc_nlinfo, nlflags);
  succeeded:
@@ -655,7 +655,7 @@
  	return 0;
  
  out_remove_new_fa:
-@@ -1776,6 +1782,9 @@ int fib_table_delete(struct net *net, st
+@@ -1754,6 +1760,9 @@ int fib_table_delete(struct net *net, st
  	if (fa_to_delete->fa_state & FA_S_ACCESSED)
  		rt_cache_flush(cfg->fc_nlinfo.nl_net);
  
@@ -665,7 +665,7 @@
  	fib_release_info(fa_to_delete->fa_info);
  	alias_free_mem_rcu(fa_to_delete);
  	return 0;
-@@ -2408,6 +2417,20 @@ void __init fib_trie_init(void)
+@@ -2386,6 +2395,20 @@ void __init fib_trie_init(void)
  					   0, SLAB_PANIC | SLAB_ACCOUNT, NULL);
  }
  
@@ -760,7 +760,7 @@
  	}
  #undef N
  	return "UNKNOWN_NETDEV_EVENT";
-@@ -12049,7 +12050,7 @@ static void __init net_dev_struct_check(
+@@ -12053,7 +12054,7 @@ static void __init net_dev_struct_check(
  #ifdef CONFIG_NET_XGRESS
  	CACHELINE_ASSERT_GROUP_MEMBER(struct net_device, net_device_read_tx, tcx_egress);
  #endif
@@ -769,7 +769,7 @@
  
  	/* TXRX read-mostly hotpath */
  	CACHELINE_ASSERT_GROUP_MEMBER(struct net_device, net_device_read_txrx, lstats);
-@@ -12058,7 +12059,7 @@ static void __init net_dev_struct_check(
+@@ -12062,7 +12063,7 @@ static void __init net_dev_struct_check(
  	CACHELINE_ASSERT_GROUP_MEMBER(struct net_device, net_device_read_txrx, hard_header_len);
  	CACHELINE_ASSERT_GROUP_MEMBER(struct net_device, net_device_read_txrx, features);
  	CACHELINE_ASSERT_GROUP_MEMBER(struct net_device, net_device_read_txrx, ip6_ptr);
@@ -778,7 +778,7 @@
  
  	/* RX read-mostly hotpath */
  	CACHELINE_ASSERT_GROUP_MEMBER(struct net_device, net_device_read_rx, ptype_specific);
-@@ -12078,7 +12079,7 @@ static void __init net_dev_struct_check(
+@@ -12082,7 +12083,7 @@ static void __init net_dev_struct_check(
  #ifdef CONFIG_NET_XGRESS
  	CACHELINE_ASSERT_GROUP_MEMBER(struct net_device, net_device_read_rx, tcx_ingress);
  #endif
@@ -922,7 +922,7 @@
  	NF_SYSCTL_CT_PROTO_TCP_IGNORE_INVALID_RST,
  	NF_SYSCTL_CT_PROTO_TCP_MAX_RETRANS,
  	NF_SYSCTL_CT_PROTO_TIMEOUT_UDP,
-@@ -832,6 +833,14 @@ static struct ctl_table nf_ct_sysctl_tab
+@@ -836,6 +837,14 @@ static struct ctl_table nf_ct_sysctl_tab
  		.extra1 	= SYSCTL_ZERO,
  		.extra2 	= SYSCTL_ONE,
  	},
@@ -937,7 +937,7 @@
  	[NF_SYSCTL_CT_PROTO_TCP_IGNORE_INVALID_RST] = {
  		.procname	= "nf_conntrack_tcp_ignore_invalid_rst",
  		.maxlen		= sizeof(u8),
-@@ -1031,6 +1040,7 @@ static void nf_conntrack_standalone_init
+@@ -1037,6 +1046,7 @@ static void nf_conntrack_standalone_init
  
  	XASSIGN(LOOSE, &tn->tcp_loose);
  	XASSIGN(LIBERAL, &tn->tcp_be_liberal);
@@ -947,7 +947,7 @@
  #undef XASSIGN
 --- a/net/ipv4/ip_gre.c
 +++ b/net/ipv4/ip_gre.c
-@@ -685,6 +685,8 @@ static netdev_tx_t ipgre_xmit(struct sk_
+@@ -689,6 +689,8 @@ static netdev_tx_t ipgre_xmit(struct sk_
  					      tunnel->parms.o_flags)))
  		goto free_skb;
  
@@ -956,7 +956,7 @@
  	__gre_xmit(skb, dev, tnl_params, skb->protocol);
  	return NETDEV_TX_OK;
  
-@@ -769,6 +771,8 @@ static netdev_tx_t gre_tap_xmit(struct s
+@@ -773,6 +775,8 @@ static netdev_tx_t gre_tap_xmit(struct s
  	if (skb_cow_head(skb, dev->needed_headroom))
  		goto free_skb;
  
@@ -965,7 +965,7 @@
  	__gre_xmit(skb, dev, &tunnel->parms.iph, htons(ETH_P_TEB));
  	return NETDEV_TX_OK;
  
-@@ -1370,6 +1374,7 @@ static void ipgre_tap_setup(struct net_d
+@@ -1374,6 +1378,7 @@ static void ipgre_tap_setup(struct net_d
  	dev->netdev_ops	= &gre_tap_netdev_ops;
  	dev->priv_flags &= ~IFF_TX_SKB_SHARING;
  	dev->priv_flags	|= IFF_LIVE_ADDR_CHANGE;
@@ -975,7 +975,7 @@
  
 --- a/net/ipv6/ip6_gre.c
 +++ b/net/ipv6/ip6_gre.c
-@@ -1935,6 +1935,7 @@ static void ip6gre_tap_setup(struct net_
+@@ -1933,6 +1933,7 @@ static void ip6gre_tap_setup(struct net_
  	dev->pcpu_stat_type = NETDEV_PCPU_STAT_TSTATS;
  	dev->priv_flags &= ~IFF_TX_SKB_SHARING;
  	dev->priv_flags |= IFF_LIVE_ADDR_CHANGE;

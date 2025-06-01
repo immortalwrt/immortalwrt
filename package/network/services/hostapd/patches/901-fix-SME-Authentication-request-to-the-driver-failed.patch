@@ -1,7 +1,7 @@
 reverted:
 --- a/src/drivers/driver_nl80211.c
 +++ b/src/drivers/driver_nl80211.c
-@@ -4068,33 +4068,6 @@ static enum nl80211_auth_type get_nl_aut
+@@ -4070,33 +4070,6 @@ static enum nl80211_auth_type get_nl_aut
  }
  
  
@@ -35,7 +35,7 @@ reverted:
  static int wpa_driver_nl80211_authenticate(
  	struct i802_bss *bss, struct wpa_driver_auth_params *params)
  {
-@@ -4196,10 +4169,6 @@ retry:
+@@ -4198,10 +4171,6 @@ retry:
  			goto fail;
  	}
  
@@ -46,7 +46,7 @@ reverted:
  	if (params->mld && params->ap_mld_addr) {
  		wpa_printf(MSG_DEBUG, "  * MLD: link_id=%u, MLD addr=" MACSTR,
  			   params->mld_link_id, MAC2STR(params->ap_mld_addr));
-@@ -7537,10 +7506,6 @@ static int wpa_driver_nl80211_associate(
+@@ -7454,10 +7423,6 @@ static int wpa_driver_nl80211_associate(
  	if (ret)
  		goto fail;
  
@@ -57,7 +57,7 @@ reverted:
  	if (params->mgmt_frame_protection == MGMT_FRAME_PROTECTION_REQUIRED &&
  	    nla_put_u32(msg, NL80211_ATTR_USE_MFP, NL80211_MFP_REQUIRED))
  		goto fail;
-@@ -10162,7 +10127,6 @@ static int nl80211_set_param(void *priv,
+@@ -10102,7 +10067,6 @@ static int nl80211_set_param(void *priv,
  {
  	struct i802_bss *bss = priv;
  	struct wpa_driver_nl80211_data *drv = bss->drv;
@@ -65,7 +65,7 @@ reverted:
  
  	if (param == NULL)
  		return 0;
-@@ -10236,33 +10200,6 @@ static int nl80211_set_param(void *priv,
+@@ -10173,33 +10137,6 @@ static int nl80211_set_param(void *priv,
  	if (os_strstr(param, "rsn_override_in_driver=1"))
  		drv->capa.flags2 |= WPA_DRIVER_FLAGS2_RSN_OVERRIDE_STA;
  
@@ -101,7 +101,7 @@ reverted:
  
 --- a/src/drivers/driver_nl80211.h
 +++ b/src/drivers/driver_nl80211.h
-@@ -202,8 +202,6 @@ struct wpa_driver_nl80211_data {
+@@ -201,8 +201,6 @@ struct wpa_driver_nl80211_data {
  	unsigned int qca_ap_allowed_freqs:1;
  	unsigned int connect_ext_vendor_cmd_avail:1;
  

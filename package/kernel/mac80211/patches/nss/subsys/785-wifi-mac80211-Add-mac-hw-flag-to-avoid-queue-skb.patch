@@ -123,7 +123,7 @@ Signed-off-by: Yuvasree Sivasankaran <quic_ysivasan@quicinc.com>
  		 * for MLO STA, the SA should be the AP MLD address, but
 --- a/net/mac80211/cfg.c
 +++ b/net/mac80211/cfg.c
-@@ -4601,6 +4601,9 @@ static int ieee80211_get_txq_stats(struc
+@@ -4622,6 +4622,9 @@ static int ieee80211_get_txq_stats(struc
  	struct ieee80211_sub_if_data *sdata;
  	int ret = 0;
  

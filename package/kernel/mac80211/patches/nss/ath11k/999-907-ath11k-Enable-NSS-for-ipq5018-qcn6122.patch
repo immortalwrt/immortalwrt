@@ -37,7 +37,7 @@
  	ath11k_hif_write32(ab, reo_base + HAL_REO1_DEST_RING_CTRL_IX_1,
 --- a/drivers/net/wireless/ath/ath11k/nss.c
 +++ b/drivers/net/wireless/ath/ath11k/nss.c
-@@ -4324,6 +4324,8 @@ static int ath11k_nss_get_target_type(st
+@@ -4253,6 +4253,8 @@ static int ath11k_nss_get_target_type(st
  		return ATH11K_WIFILI_TARGET_TYPE_QCN9074;
  	case ATH11K_HW_IPQ5018_HW10:
  		return ATH11K_WIFILI_TARGET_TYPE_QCA5018;
@@ -46,7 +46,7 @@
  	default:
  		ath11k_warn(ab, "NSS Offload not supported for this HW\n");
  		return ATH11K_WIFILI_TARGET_TYPE_UNKNOWN;
-@@ -4338,6 +4340,7 @@ static int ath11k_nss_get_interface_type
+@@ -4267,6 +4269,7 @@ static int ath11k_nss_get_interface_type
  	case ATH11K_HW_IPQ5018_HW10:
  		return NSS_WIFILI_INTERNAL_INTERFACE;
  	case ATH11K_HW_QCN9074_HW10:

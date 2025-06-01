@@ -1,6 +1,6 @@
 --- a/hostapd/ctrl_iface.c
 +++ b/hostapd/ctrl_iface.c
-@@ -1314,6 +1314,11 @@ static int hostapd_ctrl_iface_set(struct
+@@ -1290,6 +1290,11 @@ static int hostapd_ctrl_iface_set(struct
  		} else if (os_strncmp(cmd, "wme_ac_", 7) == 0 ||
  			   os_strncmp(cmd, "wmm_ac_", 7) == 0) {
  			hapd->parameter_set_count++;
@@ -22,7 +22,7 @@
  #include "wps/wps.h"
  #include "fst/fst.h"
  #include "wnm_ap.h"
-@@ -2334,6 +2335,47 @@ static void hostapd_event_wds_sta_interf
+@@ -2320,6 +2321,47 @@ static void hostapd_event_wds_sta_interf
  		ifname, MAC2STR(addr));
  }
  
@@ -70,7 +70,7 @@
  
  #ifdef CONFIG_OWE
  static int hostapd_notif_update_dh_ie(struct hostapd_data *hapd,
-@@ -2892,6 +2934,9 @@ void hostapd_wpa_event(void *ctx, enum w
+@@ -2878,6 +2920,9 @@ void hostapd_wpa_event(void *ctx, enum w
  			   hapd->conf->iface);
  		hostapd_event_color_change(hapd, true);
  		break;
@@ -82,7 +82,7 @@
  	case EVENT_MLD_INTERFACE_FREED:
 --- a/src/ap/hostapd.c
 +++ b/src/ap/hostapd.c
-@@ -4532,6 +4532,10 @@ static int hostapd_fill_csa_settings(str
+@@ -4646,6 +4646,10 @@ static int hostapd_fill_csa_settings(str
  	hapd->cs_count = settings->cs_count;
  	hapd->cs_block_tx = settings->block_tx;
  
@@ -157,7 +157,7 @@
  			  size_t len);
 --- a/src/drivers/driver.h
 +++ b/src/drivers/driver.h
-@@ -6078,6 +6078,16 @@ enum wpa_event_type {
+@@ -6111,6 +6111,16 @@ enum wpa_event_type {
  	EVENT_LINK_CH_SWITCH_STARTED,
  
  	/**
@@ -174,7 +174,7 @@
  	 * EVENT_TID_LINK_MAP - MLD event to set TID-to-link mapping
  	 *
  	 * This event is used by the driver to indicate the received TID-to-link
-@@ -7061,6 +7071,16 @@ union wpa_event_data {
+@@ -7094,6 +7104,16 @@ union wpa_event_data {
  	struct pasn_auth pasn_auth;
  
  	/**
@@ -211,7 +211,7 @@
  	C2S(NL80211_CMD_SET_HW_TIMESTAMP)
  	C2S(NL80211_CMD_LINKS_REMOVED)
  	C2S(NL80211_CMD_SET_TID_TO_LINK_MAPPING)
-@@ -3710,6 +3711,35 @@ static void nl80211_port_authorized(stru
+@@ -3725,6 +3726,35 @@ static void nl80211_port_authorized(stru
  	wpa_supplicant_event(drv->ctx, EVENT_PORT_AUTHORIZED, &event);
  }
  
@@ -247,7 +247,7 @@
  
  static void nl80211_sta_opmode_change_event(struct wpa_driver_nl80211_data *drv,
  					    struct nlattr **tb)
-@@ -4237,6 +4267,9 @@ static void do_process_drv_event(struct
+@@ -4252,6 +4282,9 @@ static void do_process_drv_event(struct
  	case NL80211_CMD_LINKS_REMOVED:
  		wpa_supplicant_event(drv->ctx, EVENT_LINK_RECONFIG, NULL);
  		break;
@@ -289,9 +289,9 @@
   *
   * @NL80211_ATTR_PUNCT_BITMAP: (u32) Preamble puncturing bitmap, lowest
   *	bit corresponds to the lowest 20 MHz channel. Each bit set to 1
-@@ -3448,6 +3457,7 @@ enum nl80211_attrs {
- 	NL80211_ATTR_MLO_RECONF_REM_LINKS,
- 	NL80211_ATTR_EPCS,
+@@ -3456,6 +3465,7 @@ enum nl80211_attrs {
+ 
+ 	NL80211_ATTR_ASSOC_MLD_EXT_CAPA_OPS,
  
 +	NL80211_ATTR_HE_MUEDCA_PARAMS,
  	/* add attributes here, update the policy in nl80211.c */
