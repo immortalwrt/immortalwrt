@@ -73,26 +73,10 @@ set_affinity() {
 }
 
 enable_affinity() {
-	# assign 4 rx interrupts to each core
-	set_affinity 'reo2host-destination-ring1' 0
-	set_affinity 'reo2host-destination-ring2' 1
-	set_affinity 'reo2host-destination-ring3' 2
-	set_affinity 'reo2host-destination-ring4' 3
-
-	# assign 3 tcl completions to last 3 CPUs
-	set_affinity 'wbm2host-tx-completions-ring1' 1
-	set_affinity 'wbm2host-tx-completions-ring2' 2
-	set_affinity 'wbm2host-tx-completions-ring3' 3
-
-	# assign 3 ppdu mac interrupts to last 3 cores
-	set_affinity 'ppdu-end-interrupts-mac1' 1
-	set_affinity 'ppdu-end-interrupts-mac2' 2
-	set_affinity 'ppdu-end-interrupts-mac3' 3
-
-	# assign 4 lan/wan to core 4
-	set_affinity 'edma_txcmpl' 3
-	set_affinity 'edma_rxfill' 3
-	set_affinity 'edma_rxdesc' 3
+	# assign 4 lan/wan
+	set_affinity 'edma_txcmpl' 1
+	set_affinity 'edma_rxfill' 1
+	set_affinity 'edma_rxdesc' 1
 	set_affinity 'edma_misc'   3
 }
 
