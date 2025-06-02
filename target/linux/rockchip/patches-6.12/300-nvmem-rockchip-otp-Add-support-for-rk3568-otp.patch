@@ -103,8 +103,8 @@ Change-Id: Ia74d77b68a6303223eaccdc08e882851a917f50f
  static int rk3588_otp_read(void *context, unsigned int offset,
  			   void *val, size_t bytes)
  {
-@@ -274,6 +343,17 @@ static const struct rockchip_data px30_d
- 	.reg_read = px30_otp_read,
+@@ -282,6 +351,17 @@ static const struct rockchip_data rk3576
+ 	.reg_read = rk3588_otp_read,
  };
  
 +static const char * const rk3568_otp_clocks[] = {
@@ -121,8 +121,8 @@ Change-Id: Ia74d77b68a6303223eaccdc08e882851a917f50f
  static const char * const rk3588_otp_clocks[] = {
  	"otp", "apb_pclk", "phy", "arb",
  };
-@@ -295,6 +375,10 @@ static const struct of_device_id rockchi
- 		.data = &px30_data,
+@@ -308,6 +388,10 @@ static const struct of_device_id rockchi
+ 		.data = &rk3576_data,
  	},
  	{
 +		.compatible = "rockchip,rk3568-otp",
