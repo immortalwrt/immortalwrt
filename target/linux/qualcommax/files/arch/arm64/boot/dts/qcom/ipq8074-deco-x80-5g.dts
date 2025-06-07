@@ -17,7 +17,7 @@
 	compatible = "tplink,deco-x80-5g", "qcom,ipq8074";
 
 	aliases {
-		 serial0 = &blsp1_uart5;
+		serial0 = &blsp1_uart5;
 	};
 
 	chosen {

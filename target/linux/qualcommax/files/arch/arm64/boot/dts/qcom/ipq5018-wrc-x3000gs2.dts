@@ -112,7 +112,7 @@
 	reserved-memory {
 		q6_mem_regions: q6_mem_regions@4b000000 {
 			no-map;
-			reg = <0x0 0x4b000000 0x0 0x3000000>;
+			reg = <0x0 0x4b000000 0x0 0x03000000>;
 			status = "disabled";
 		};
 	};
@@ -178,7 +178,7 @@
 
 				partition@0 {
 					label = "env-data";
-					reg = <0x0 0x40000>;
+					reg = <0x00000000 0x00040000>;
 
 					nvmem-layout {
 						compatible = "u-boot,env";
@@ -328,8 +328,7 @@
 	};
 
 	led_pins: led-state {
-		pins = "gpio12", "gpio13", "gpio16", "gpio24",
-		       "gpio25", "gpio26", "gpio28", "gpio46";
+		pins = "gpio12", "gpio13", "gpio16", "gpio24", "gpio25", "gpio26", "gpio28", "gpio46";
 		function = "gpio";
 		drive-strength = <8>;
 		bias-pull-down;

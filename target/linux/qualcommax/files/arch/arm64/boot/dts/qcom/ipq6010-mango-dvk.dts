@@ -72,28 +72,18 @@
 		};
 	};
 
-	spi_0_pins: spi-0-pins {
-		pins = "gpio38", "gpio39", "gpio40", "gpio41";
-		function = "blsp0_spi";
-		drive-strength = <8>;
-		bias-pull-down;
-	};
-
 	sd_pins: sd-pins {
 		sd_cd {
-			 pins = "gpio62";
-			 function = "gpio";
-			 drive-strength = <8>;
-			 bias-pull-up;
+			pins = "gpio62";
+			function = "gpio";
+			drive-strength = <8>;
+			bias-pull-up;
 		};
 	};
 };
 
 &blsp1_spi1 {
 	status = "okay";
-
-	pinctrl-0 = <&spi_0_pins>;
-	pinctrl-names = "default";
 
 	flash@0 {
 		compatible = "jedec,spi-nor";
@@ -153,15 +143,15 @@
 					compatible = "fixed-layout";
 
 					macaddr_eth0: macaddr@0 {
-						reg = <0x0 0x6>;
+						reg = <0x00 0x06>;
 					};
 
 					macaddr_eth1: macaddr@6 {
-						reg = <0x6 0x6>;
+						reg = <0x06 0x06>;
 					};
 
 					macaddr_eth2: macaddr@c {
-						reg = <0xc 0x6>;
+						reg = <0x0c 0x06>;
 					};
 				};
 			};
@@ -179,38 +169,10 @@
 			partition@4e0000 {
 				label = "firmware";
 				compatible = "denx,fit";
-				reg = <0x004e0000 0x1b20000>;
+				reg = <0x004e0000 0x01b20000>;
 			};
 		};
 	};
-};
-
-&dp3 {
-	status = "okay";
-	phy-handle = <&qca8072_4>;
-	label = "lan2";
-	nvmem-cells = <&macaddr_eth1>;
-	nvmem-cell-names = "mac-address";
-};
-
-&dp4 {
-	status = "okay";
-	phy-handle = <&qca8072_3>;
-	label = "lan1";
-	nvmem-cells = <&macaddr_eth0>;
-	nvmem-cell-names = "mac-address";
-};
-
-&dp5 {
-	status = "okay";
-	phy-handle = <&qca8081>;
-	label = "wan";
-	nvmem-cells = <&macaddr_eth2>;
-	nvmem-cell-names = "mac-address";
-};
-
-&edma {
-	status = "okay";
 };
 
 &mdio {
@@ -250,8 +212,8 @@
 
 	pinctrl-0 = <&sd_pins>;
 	pinctrl-names = "default";
-	bus-width = <4>;
 	cd-gpios = <&tlmm 62 GPIO_ACTIVE_LOW>;
+	bus-width = <4>;
 };
 
 &switch {
@@ -299,7 +261,7 @@
 
 			partition@0 {
 				label = "nand_data";
-				reg = <0x0000000 0x10000000>;
+				reg = <0x00000000 0x10000000>;
 			};
 		};
 	};
@@ -314,4 +276,32 @@
 	status = "okay";
 	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "8devices-Mango";
+};
+
+&dp3 {
+	status = "okay";
+	phy-handle = <&qca8072_4>;
+	label = "lan2";
+	nvmem-cells = <&macaddr_eth1>;
+	nvmem-cell-names = "mac-address";
+};
+
+&dp4 {
+	status = "okay";
+	phy-handle = <&qca8072_3>;
+	label = "lan1";
+	nvmem-cells = <&macaddr_eth0>;
+	nvmem-cell-names = "mac-address";
+};
+
+&dp5 {
+	status = "okay";
+	phy-handle = <&qca8081>;
+	label = "wan";
+	nvmem-cells = <&macaddr_eth2>;
+	nvmem-cell-names = "mac-address";
+};
+
+&edma {
+	status = "okay";
 };

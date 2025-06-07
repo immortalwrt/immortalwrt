@@ -13,8 +13,8 @@
 / {
 	aliases {
 		serial0 = &blsp1_uart3;
-		ethernet0 = &dp5;
 		label-mac-device = &dp5;
+		ethernet0 = &dp5;
 
 		led-boot = &led_system_blue;
 		led-failsafe = &led_system_orange;
@@ -24,10 +24,6 @@
 
 	chosen {
 		stdout-path = "serial0:115200n8";
-		/*
-		 * Netgear's U-Boot adds "ubi.mtd=rootfs root=mtd:ubi_rootfs"
-		 * That fails to create a UBI block device, so add it here.
-		*/
 		bootargs-append = " root=/dev/ubiblock0_1";
 	};
 
@@ -112,10 +108,6 @@
 	};
 };
 
-&edma {
-	status = "okay";
-};
-
 &switch {
 	status = "okay";
 
@@ -161,12 +153,6 @@
 	};
 };
 
-&dp5 {
-	status = "okay";
-	phy-handle = <&qca8081_24>;
-	label = "lan";
-};
-
 &qpic_nand {
 	status = "okay";
 
@@ -189,4 +175,14 @@
 	status = "okay";
 	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,m3-dump-addr = <0x50100000>;
+};
+
+&dp5 {
+	status = "okay";
+	phy-handle = <&qca8081_24>;
+	label = "lan";
+};
+
+&edma {
+	status = "okay";
 };

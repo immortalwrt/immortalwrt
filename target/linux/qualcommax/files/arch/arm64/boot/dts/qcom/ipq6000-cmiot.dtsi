@@ -59,30 +59,6 @@
 	};
 };
 
-&dp1 {
-	status = "okay";
-	phy-handle = <&qca8075_0>;
-	label = "lan3";
-};
-
-&dp2 {
-	status = "okay";
-	phy-handle = <&qca8075_1>;
-	label = "lan2";
-};
-
-&dp4 {
-	status = "okay";
-	phy-handle = <&qca8075_3>;
-	label = "lan1";
-};
-
-&dp5 {
-	status = "okay";
-	phy-handle = <&qca8075_4>;
-	label = "wan";
-};
-
 &mdio {
 	status = "okay";
 
@@ -164,6 +140,30 @@
 			compatible = "qcom,smem-part";
 		};
 	};
+};
+
+&dp1 {
+	status = "okay";
+	phy-handle = <&qca8075_0>;
+	label = "lan3";
+};
+
+&dp2 {
+	status = "okay";
+	phy-handle = <&qca8075_1>;
+	label = "lan2";
+};
+
+&dp4 {
+	status = "okay";
+	phy-handle = <&qca8075_3>;
+	label = "lan1";
+};
+
+&dp5 {
+	status = "okay";
+	phy-handle = <&qca8075_4>;
+	label = "wan";
 };
 
 &edma {

@@ -107,9 +107,6 @@
 &blsp1_i2c2 {
 	status = "okay";
 
-	pinctrl-0 = <&i2c_0_pins>;
-	pinctrl-names = "default";
-
 	tlc59208f@27 {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -163,175 +160,175 @@
 
 			partition@0 {
 				label = "0:sbl1";
-				reg = <0x00 0x100000>;
+				reg = <0x00000000 0x00100000>;
 				read-only;
 			};
 
 			partition@100000 {
 				label = "0:mibib";
-				reg = <0x100000 0x100000>;
+				reg = <0x00100000 0x00100000>;
 				read-only;
 			};
 
 			partition@200000 {
 				label = "0:bootconfig";
-				reg = <0x200000 0x80000>;
+				reg = <0x00200000 0x00080000>;
 				read-only;
 			};
 
 			partition@280000 {
 				label = "0:bootconfig_1";
-				reg = <0x280000 0x80000>;
+				reg = <0x00280000 0x00080000>;
 				read-only;
 			};
 
 			partition@300000 {
 				label = "0:qsee";
-				reg = <0x300000 0x300000>;
+				reg = <0x00300000 0x00300000>;
 				read-only;
 			};
 
 			partition@600000 {
 				label = "0:qsee_1";
-				reg = <0x600000 0x300000>;
+				reg = <0x00600000 0x00300000>;
 				read-only;
 			};
 
 			partition@900000 {
 				label = "0:devcfg";
-				reg = <0x900000 0x80000>;
+				reg = <0x00900000 0x00080000>;
 				read-only;
 			};
 
 			partition@980000 {
 				label = "0:devcfg_1";
-				reg = <0x980000 0x80000>;
+				reg = <0x00980000 0x00080000>;
 				read-only;
 			};
 
 			partition@a00000 {
 				label = "0:apdp";
-				reg = <0xa00000 0x80000>;
+				reg = <0x00a00000 0x00080000>;
 				read-only;
 			};
 
 			partition@a80000 {
 				label = "0:apdp_1";
-				reg = <0xa80000 0x80000>;
+				reg = <0x00a80000 0x00080000>;
 				read-only;
 			};
 
 			partition@b00000 {
 				label = "0:rpm";
-				reg = <0xb00000 0x80000>;
+				reg = <0x00b00000 0x00080000>;
 				read-only;
 			};
 
 			partition@b80000 {
 				label = "0:rpm_1";
-				reg = <0xb80000 0x80000>;
+				reg = <0x00b80000 0x00080000>;
 				read-only;
 			};
 
 			partition@c00000 {
 				label = "0:cdt";
-				reg = <0xc00000 0x80000>;
+				reg = <0x00c00000 0x00080000>;
 				read-only;
 			};
 
 			partition@c80000 {
 				label = "0:cdt_1";
-				reg = <0xc80000 0x80000>;
+				reg = <0x00c80000 0x00080000>;
 				read-only;
 			};
 
 			partition@d00000 {
 				label = "0:appsblenv";
-				reg = <0xd00000 0x80000>;
+				reg = <0x00d00000 0x00080000>;
 			};
 
 			partition@d80000 {
 				label = "0:appsbl";
-				reg = <0xd80000 0x100000>;
+				reg = <0x00d80000 0x00100000>;
 				read-only;
 			};
 
 			partition@e80000 {
 				label = "0:appsbl_1";
-				reg = <0xe80000 0x100000>;
+				reg = <0x00e80000 0x00100000>;
 				read-only;
 			};
 
 			partition@f80000 {
 				label = "0:art";
-				reg = <0xf80000 0x80000>;
+				reg = <0x00f80000 0x00080000>;
 				read-only;
 			};
 
 			partition@1000000 {
 				label = "0:art.bak";
-				reg = <0x1000000 0x80000>;
+				reg = <0x01000000 0x00080000>;
 				read-only;
 			};
 
 			partition@1080000 {
 				label = "config";
-				reg = <0x1080000 0x100000>;
+				reg = <0x01080000 0x00100000>;
 			};
 
 			partition@1180000 {
 				label = "boarddata1";
-				reg = <0x1180000 0x100000>;
+				reg = <0x01180000 0x00100000>;
 
 				nvmem-layout {
 					compatible = "fixed-layout";
 
 					macaddr_boarddata1_0: macaddr@0 {
-						reg = <0x0 0x6>;
+						reg = <0x00 0x06>;
 					};
 
 					macaddr_boarddata1_6: macaddr@6 {
-						reg = <0x6 0x6>;
+						reg = <0x06 0x06>;
 					};
 				};
 			};
 
 			partition@1280000 {
 				label = "boarddata2";
-				reg = <0x1280000 0x100000>;
+				reg = <0x01280000 0x00100000>;
 			};
 
 			partition@1380000 {
 				label = "pot";
-				reg = <0x1380000 0x100000>;
+				reg = <0x01380000 0x00100000>;
 				read-only;
 			};
 
 			partition@1480000 {
 				label = "dnidata";
-				reg = <0x1480000 0x500000>;
+				reg = <0x01480000 0x00500000>;
 				read-only;
 			};
 
 			partition@1980000 {
 				label = "kernel";
-				reg = <0x1980000 0x620000>;
+				reg = <0x01980000 0x00620000>;
 			};
 
 			partition@1fa0000 {
 				label = "rootfs";
-				reg = <0x1fa0000 0x66e0000>;
+				reg = <0x01fa0000 0x066e0000>;
 			};
 
 			partition@8680000 {
 				label = "kernel2";
-				reg = <0x8680000 0x620000>;
+				reg = <0x08680000 0x00620000>;
 				read-only;
 			};
 
 			partition@8ca0000 {
 				label = "rootfs2";
-				reg = <0x8ca0000 0x66e0000>;
+				reg = <0x08ca0000 0x066e0000>;
 				read-only;
 			};
 		};

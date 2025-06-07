@@ -1,9 +1,15 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
+&blsp1_i2c3 {
+	status = "okay";
+};
+
+&blsp1_spi1 {
+	status = "okay";
+};
+
 &blsp1_uart3 {
 	status = "okay";
-	pinctrl-0 = <&serial_3_pins>;
-	pinctrl-names = "default";
 };
 
 &rpm {

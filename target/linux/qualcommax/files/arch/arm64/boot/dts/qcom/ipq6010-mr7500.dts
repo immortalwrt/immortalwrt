@@ -349,55 +349,6 @@
 	};
 };
 
-&dp1 {
-	status = "okay";
-	label = "lan1";
-	phy-handle = <&qca8075_0>;
-	phy-mode = "qsgmii";
-	nvmem-cells = <&hw_mac_addr 1>;
-	nvmem-cell-names = "mac-address";
-};
-
-&dp2 {
-	status = "okay";
-	label = "lan2";
-	phy-handle = <&qca8075_1>;
-	phy-mode = "qsgmii";
-	nvmem-cells = <&hw_mac_addr 1>;
-	nvmem-cell-names = "mac-address";
-};
-
-&dp3 {
-	status = "okay";
-	label = "lan3";
-	phy-handle = <&qca8075_2>;
-	phy-mode = "qsgmii";
-	nvmem-cells = <&hw_mac_addr 1>;
-	nvmem-cell-names = "mac-address";
-};
-
-&dp4 {
-	status = "okay";
-	label = "lan4";
-	phy-handle = <&qca8075_3>;
-	phy-mode = "qsgmii";
-	nvmem-cells = <&hw_mac_addr 1>;
-	nvmem-cell-names = "mac-address";
-};
-
-&dp5_syn {
-	status = "okay";
-	label = "wan";
-	phy-handle = <&aqr114c>;
-	phy-mode = "usxgmii";
-	nvmem-cells = <&hw_mac_addr 0>;
-	nvmem-cell-names = "mac-address";
-};
-
-&edma {
-	status = "okay";
-};
-
 &switch {
 	status = "okay";
 	switch_lan_bmp = <( ESS_PORT1 | ESS_PORT2 | ESS_PORT3 | ESS_PORT4 )>;
@@ -431,18 +382,15 @@
 	};
 };
 
-&blsp1_uart3 {
-	pinctrl-0 = <&serial_3_pins>;
-	pinctrl-names = "default";
-	status = "okay";
-};
-
 &blsp1_uart2 {
-	pinctrl-0 = <&hsuart_pins &btcoex_pins>;
+	status = "okay";
+
+	pinctrl-0 = <&hsuart_pins>, <&btcoex_pins>;
 	pinctrl-names = "default";
+
 	dmas = <&blsp_dma 2>, <&blsp_dma 3>;
 	dma-names = "tx", "rx";
-	status = "okay";
+
 	bluetooth { // doesn't work
 		compatible = "csr,8811";
 		enable-gpios = <&tlmm 34 GPIO_ACTIVE_LOW>;
@@ -524,4 +472,53 @@
 	status = "okay";
 	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "Linksys-MR7500";
+};
+
+&dp1 {
+	status = "okay";
+	label = "lan1";
+	phy-handle = <&qca8075_0>;
+	phy-mode = "qsgmii";
+	nvmem-cells = <&hw_mac_addr 1>;
+	nvmem-cell-names = "mac-address";
+};
+
+&dp2 {
+	status = "okay";
+	label = "lan2";
+	phy-handle = <&qca8075_1>;
+	phy-mode = "qsgmii";
+	nvmem-cells = <&hw_mac_addr 1>;
+	nvmem-cell-names = "mac-address";
+};
+
+&dp3 {
+	status = "okay";
+	label = "lan3";
+	phy-handle = <&qca8075_2>;
+	phy-mode = "qsgmii";
+	nvmem-cells = <&hw_mac_addr 1>;
+	nvmem-cell-names = "mac-address";
+};
+
+&dp4 {
+	status = "okay";
+	label = "lan4";
+	phy-handle = <&qca8075_3>;
+	phy-mode = "qsgmii";
+	nvmem-cells = <&hw_mac_addr 1>;
+	nvmem-cell-names = "mac-address";
+};
+
+&dp5_syn {
+	status = "okay";
+	label = "wan";
+	phy-handle = <&aqr114c>;
+	phy-mode = "usxgmii";
+	nvmem-cells = <&hw_mac_addr 0>;
+	nvmem-cell-names = "mac-address";
+};
+
+&edma {
+	status = "okay";
 };

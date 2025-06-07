@@ -38,12 +38,6 @@
 	keys {
 		compatible = "gpio-keys";
 
-		wps {
-			label = "wps";
-			linux,code = <KEY_WPS_BUTTON>;
-			gpios = <&tlmm 72 GPIO_ACTIVE_LOW>;
-		};
-
 		reset {
 			label = "reset";
 			linux,code = <KEY_RESTART>;
@@ -52,8 +46,14 @@
 
 		screen {
 			label = "screen";
-			linux,code = <BTN_1>;
+			linux,code = <BTN_0>;
 			gpios = <&tlmm 71 GPIO_ACTIVE_LOW>;
+		};
+
+		wps {
+			label = "wps";
+			linux,code = <KEY_WPS_BUTTON>;
+			gpios = <&tlmm 72 GPIO_ACTIVE_LOW>;
 		};
 	};
 

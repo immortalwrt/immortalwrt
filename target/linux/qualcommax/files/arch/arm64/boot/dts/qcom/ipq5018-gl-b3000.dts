@@ -63,7 +63,7 @@
 
 		q6_mem_regions: q6_mem_regions@4b000000 {
 			no-map;
-			reg = <0x0 0x4b000000 0x0 0x3000000>;
+			reg = <0x0 0x4b000000 0x0 0x03000000>;
 		};
 	};
 };
@@ -247,7 +247,7 @@
 					macaddr_dp2: macaddr@0 {
 						compatible = "mac-base";
 						#nvmem-cell-cells = <1>;
-						reg = <0x0 0x6>;
+						reg = <0x00 0x06>;
 					};
 				};
 			};

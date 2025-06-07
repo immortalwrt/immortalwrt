@@ -119,19 +119,12 @@
 			bias-pull-up;
 		};
 	};
-
-	spi_pins: spi-pins {
-		pins = "gpio38", "gpio39", "gpio40", "gpio41";
-		function = "blsp0_spi";
-		drive-strength = <8>;
-		bias-pull-down;
-	};
 };
 
 &blsp1_uart2 {
 	status = "okay";
 
-	pinctrl-0 = <&hsuart_pins &btcoex_pins &btrstint_pins>;
+	pinctrl-0 = <&hsuart_pins>, <&btcoex_pins>, <&btrstint_pins>;
 	pinctrl-names = "default";
 
 	dmas = <&blsp_dma 2>, <&blsp_dma 3>;
@@ -140,9 +133,6 @@
 
 &blsp1_spi1 {
 	status = "okay";
-
-	pinctrl-0 = <&spi_pins>;
-	pinctrl-names = "default";
 
 	flash@0 {
 		compatible = "jedec,spi-nor";
@@ -249,11 +239,11 @@
 					compatible = "fixed-layout";
 
 					macaddr_lan: macaddr@6 {
-						reg = <0x6 0x6>;
+						reg = <0x06 0x06>;
 					};
 
 					macaddr_wan: macaddr@0 {
-						reg = <0x0 0x6>;
+						reg = <0x00 0x06>;
 					};
 				};
 			};
@@ -322,8 +312,10 @@
 	};
 };
 
-&edma {
+&wifi {
 	status = "okay";
+	qcom,ath11k-fw-memory-mode = <1>;
+	qcom,ath11k-calibration-variant = "ALFA-Network-AP120C-AX";
 };
 
 &dp4 {
@@ -344,9 +336,6 @@
 	nvmem-cell-names = "mac-address";
 };
 
-&wifi {
+&edma {
 	status = "okay";
-
-	qcom,ath11k-fw-memory-mode = <1>;
-	qcom,ath11k-calibration-variant = "ALFA-Network-AP120C-AX";
 };

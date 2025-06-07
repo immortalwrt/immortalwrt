@@ -16,13 +16,19 @@
 &partitions {
 	partition@a00000 {
 		label = "rootfs";
-		reg = <0x0a00000 0x7300000>;
+		reg = <0x00a00000 0x07300000>;
 	};
 };
 
 &switch {
 	switch_lan_bmp = <(ESS_PORT2 | ESS_PORT3 | ESS_PORT4 | ESS_PORT5)>;
 	switch_wan_bmp = <ESS_PORT1>;
+};
+
+&wifi {
+	status = "okay";
+	qcom,ath11k-fw-memory-mode = <1>;
+	qcom,ath11k-calibration-variant = "GL-iNet-GL-AX1800";
 };
 
 &dp1 {
@@ -63,10 +69,4 @@
 	label = "lan4";
 	nvmem-cells = <&macaddr_lan>;
 	nvmem-cell-names = "mac-address";
-};
-
-&wifi {
-	status = "okay";
-	qcom,ath11k-fw-memory-mode = <1>;
-	qcom,ath11k-calibration-variant = "GL-iNet-GL-AX1800";
 };

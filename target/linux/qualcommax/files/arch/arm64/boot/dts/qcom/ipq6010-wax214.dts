@@ -95,16 +95,6 @@
 	};
 };
 
-&dp3 {
-	status = "okay";
-	phy-handle = <&qca8072_4>;
-	label = "lan";
-};
-
-&edma {
-	status = "okay";
-};
-
 &mdio {
 	status = "okay";
 
@@ -162,4 +152,14 @@
 	status = "okay";
 	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "Netgear-WAX214";
+};
+
+&dp3 {
+	status = "okay";
+	phy-handle = <&qca8072_4>;
+	label = "lan";
+};
+
+&edma {
+	status = "okay";
 };

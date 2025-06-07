@@ -249,15 +249,6 @@
 };
 
 &tlmm {
-	i2c_pins: i2c-pins {
-		mux {
-			pins = "gpio42", "gpio43";
-			function = "blsp1_i2c";
-			drive-strength = <8>;
-			bias-disable;
-		};
-	};
-
 	mdio_pins: mdio-pins {
 		mdc {
 			pins = "gpio68";
@@ -350,61 +341,61 @@
 
 			partition@0 {
 				label = "0:sbl1";
-				reg = <0x0 0x60000>;
+				reg = <0x00000000 0x00060000>;
 				read-only;
 			};
 
 			partition@60000 {
 				label = "0:mibib";
-				reg = <0x00060000 0x40000>;
+				reg = <0x00060000 0x00040000>;
 				read-only;
 			};
 
 			partition@a0000 {
 				label = "0:qsee";
-				reg = <0x000a0000 0x1e0000>;
+				reg = <0x000a0000 0x001e0000>;
 				read-only;
 			};
 
 			partition@280000 {
 				label = "0:devcfg";
-				reg = <0x00280000 0x20000>;
+				reg = <0x00280000 0x00020000>;
 				read-only;
 			};
 
 			partition@2a0000 {
 				label = "0:apdp";
-				reg = <0x002a0000 0x20000>;
+				reg = <0x002a0000 0x00020000>;
 				read-only;
 			};
 
 			partition@2c0000 {
 				label = "0:rpm";
-				reg = <0x002c0000 0x40000>;
+				reg = <0x002c0000 0x00040000>;
 				read-only;
 			};
 
 			partition@300000 {
 				label = "0:cdt";
-				reg = <0x00300000 0x20000>;
+				reg = <0x00300000 0x00020000>;
 				read-only;
 			};
 
 			partition@320000 {
 				label = "0:appsbl";
-				reg = <0x00320000 0xc0000>;
+				reg = <0x00320000 0x000c0000>;
 				read-only;
 			};
 
 			partition@3e0000 {
 				label = "0:appsblenv";
-				reg = <0x003e0000 0x20000>;
+				reg = <0x003e0000 0x00020000>;
 			};
 
 			partition@400000 {
 				compatible = "linux,ubi";
 				label = "UBI_DEV";
-				reg = <0x00400000 0xfc00000>;
+				reg = <0x00400000 0x0fc00000>;
 			};
 		};
 	};

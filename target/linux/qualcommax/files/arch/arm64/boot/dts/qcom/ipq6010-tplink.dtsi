@@ -94,16 +94,6 @@
 	};
 };
 
-&dp5 {
-	status = "okay";
-	phy-handle = <&rtl8211f_4>;
-	label = "lan";
-};
-
-&edma {
-	status = "okay";
-};
-
 &mdio {
 	status = "okay";
 
@@ -150,4 +140,14 @@
 			compatible = "qcom,smem-part";
 		};
 	};
+};
+
+&dp5 {
+	status = "okay";
+	phy-handle = <&rtl8211f_4>;
+	label = "lan";
+};
+
+&edma {
+	status = "okay";
 };

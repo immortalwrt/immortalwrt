@@ -83,10 +83,6 @@
 &blsp1_spi1 {
 	status = "okay";
 
-	pinctrl-0 = <&spi_0_pins>;
-	pinctrl-names = "default";
-	cs-gpios = <0>;
-
 	flash@0 {
 		compatible = "jedec,spi-nor";
 		spi-max-frequency = <50000000>;

@@ -73,12 +73,12 @@
 	reserved-memory {
 		tz_appps@4a400000 {
 			no-map;
-			reg = <0x0 0x4a400000 0x0 0x400000>;
+			reg = <0x0 0x4a400000 0x0 0x00400000>;
 		};
 
 		q6_mem_regions: q6_mem_regions@4b000000 {
 			no-map;
-			reg = <0x0 0x4b000000 0x0 0x3000000>;
+			reg = <0x0 0x4b000000 0x0 0x03000000>;
 		};
 	};
 };

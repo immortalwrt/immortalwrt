@@ -48,72 +48,72 @@
 
 			partition@0 {
 				label = "0:sbl1";
-				reg = <0x00 0x50000>;
+				reg = <0x00000000 0x00050000>;
 			};
 
 			partition@50000 {
 				label = "0:mibib";
-				reg = <0x50000 0x10000>;
+				reg = <0x00050000 0x00010000>;
 			};
 
 			partition@60000 {
 				label = "0:qsee";
-				reg = <0x60000 0x180000>;
+				reg = <0x00060000 0x00180000>;
 			};
 
 			partition@1e0000 {
 				label = "0:devcfg";
-				reg = <0x1e0000 0x10000>;
+				reg = <0x001e0000 0x00010000>;
 			};
 
 			partition@1f0000 {
 				label = "0:apdp";
-				reg = <0x1f0000 0x10000>;
+				reg = <0x001f0000 0x00010000>;
 			};
 
 			partition@200000 {
 				label = "0:rpm";
-				reg = <0x200000 0x40000>;
+				reg = <0x00200000 0x00040000>;
 			};
 
 			partition@240000 {
 				label = "0:cdt";
-				reg = <0x240000 0x10000>;
+				reg = <0x00240000 0x00010000>;
 			};
 
 			partition@250000 {
 				label = "0:appsblenv";
-				reg = <0x250000 0x10000>;
+				reg = <0x00250000 0x00010000>;
 			};
 
 			partition@260000 {
 				label = "0:appsbl";
-				reg = <0x260000 0xa0000>;
+				reg = <0x00260000 0x000a0000>;
 			};
 
 			partition@300000 {
 				label = "0:art";
-				reg = <0x300000 0x40000>;
+				reg = <0x00300000 0x00040000>;
 			};
 
 			partition@340000 {
 				label = "0:ethphyfw";
-				reg = <0x340000 0x80000>;
+				reg = <0x00340000 0x00080000>;
 			};
 
 			partition@3c0000 {
 				label = "product_info";
-				reg = <0x3c0000 0x10000>;
+				reg = <0x003c0000 0x00010000>;
 			};
 
 			partition@3d0000 {
 				label = "mtdoops";
-				reg = <0x3d0000 0x20000>;
+				reg = <0x003d0000 0x00020000>;
 			};
 
 			partition@3f0000 {
 				label = "priv_data1";
-				reg = <0x3f0000 0x10000>;
+				reg = <0x003f0000 0x00010000>;
 			};
 		};
 	};
