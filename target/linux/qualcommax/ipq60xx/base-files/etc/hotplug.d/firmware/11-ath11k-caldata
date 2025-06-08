@@ -13,6 +13,7 @@ case "$FIRMWARE" in
 	alfa-network,ap120c-ax)
 		caldata_extract "0:ART" 0x1000 0x20000
 		;;
+	anysafe,e1|\
 	cambiumnetworks,xe3-4)
 		caldata_extract "0:ART" 0x1000 0x10000
 		;;
@@ -49,6 +50,7 @@ case "$FIRMWARE" in
 	;;
 "ath11k/QCN9074/hw1.0/cal-pci-0000:01:00.0.bin")
 	case "$board" in
+	anysafe,e1|\
 	cambiumnetworks,xe3-4)
 		caldata_extract "0:ART" 0x26800 0x20000
 		;;

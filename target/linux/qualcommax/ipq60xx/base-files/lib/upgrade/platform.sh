@@ -145,6 +145,10 @@ platform_do_upgrade() {
 		fw_setenv bootcount 0
 		nand_do_upgrade "$1"
 		;;
+	anysafe,e1)
+		CI_UBIPART="rootfs"
+		nand_do_upgrade "$1"
+		;;
 	cmiot,ax18|\
 	redmi,ax5|\
 	xiaomi,ax1800|\

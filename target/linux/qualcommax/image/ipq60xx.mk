@@ -222,6 +222,19 @@ define Device/yuncore_fap650
 endef
 TARGET_DEVICES += yuncore_fap650
 
+define Device/anysafe_e1
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := AnySafe
+	DEVICE_MODEL := E1
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	SOC := ipq6010
+	DEVICE_DTS_CONFIG := config@cp03-c1
+	DEVICE_PACKAGES := ipq-wifi-anysafe_e1 kmod-hwmon-pwmfan
+endef
+TARGET_DEVICES += anysafe_e1
+
 define Device/cmiot_ax18
 	$(call Device/FitImage)
 	$(call Device/UbiFit)
