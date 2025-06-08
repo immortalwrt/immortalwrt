@@ -38,9 +38,9 @@
 	keys {
 		compatible = "gpio-keys";
 
-		reset {
-			label = "reset";
-			linux,code = <KEY_RESTART>;
+		mount {
+			label = "mount";
+			linux,code = <BTN_0>;
 			gpios = <&tlmm 70 GPIO_ACTIVE_LOW>;
 		};
 
@@ -50,9 +50,9 @@
 			gpios = <&tlmm 71 GPIO_ACTIVE_LOW>;
 		};
 
-		mount {
-			label = "mount";
-			linux,code = <BTN_0>;
+		reset {
+			label = "reset";
+			linux,code = <KEY_RESTART>;
 			gpios = <&tlmm 72 GPIO_ACTIVE_LOW>;
 		};
 	};
@@ -308,9 +308,18 @@
 		#size-cells = <1>;
 		reg = <0>;
 
-		nand-ecc-strength = <4>;
+		nand-ecc-strength = <8>;
 		nand-ecc-step-size = <512>;
 		nand-bus-width = <8>;
+
+		partitions {
+			compatible = "fixed-partitions";
+
+			partition@0 {
+				label = "rootfs";
+				reg = <0x00000000 0x10000000>;
+			};
+		};
 	};
 };
 

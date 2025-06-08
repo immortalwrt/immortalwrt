@@ -22,7 +22,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
 
 --- a/arch/arm64/boot/dts/qcom/ipq5018.dtsi
 +++ b/arch/arm64/boot/dts/qcom/ipq5018.dtsi
-@@ -188,6 +188,30 @@
+@@ -207,6 +207,30 @@
  			status = "disabled";
  		};
  

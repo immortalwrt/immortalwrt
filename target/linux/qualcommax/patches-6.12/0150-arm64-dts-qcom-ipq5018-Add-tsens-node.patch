@@ -18,7 +18,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
 
 --- a/arch/arm64/boot/dts/qcom/ipq5018.dtsi
 +++ b/arch/arm64/boot/dts/qcom/ipq5018.dtsi
-@@ -182,6 +182,117 @@
+@@ -201,6 +201,117 @@
  			status = "disabled";
  		};
  
@@ -136,7 +136,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
  		tlmm: pinctrl@1000000 {
  			compatible = "qcom,ipq5018-tlmm";
  			reg = <0x01000000 0x300000>;
-@@ -630,6 +741,64 @@
+@@ -649,6 +760,64 @@
  			};
  		};
  	};

@@ -45,7 +45,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
  		sleep_clk: sleep-clk {
  			compatible = "fixed-clock";
  			#clock-cells = <0>;
-@@ -190,7 +202,8 @@
+@@ -209,7 +221,8 @@
  
  		mdio0: mdio@88000 {
  			compatible = "qcom,ipq5018-mdio";
@@ -55,7 +55,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
  			#address-cells = <1>;
  			#size-cells = <0>;
  
-@@ -198,6 +211,13 @@
+@@ -217,6 +230,13 @@
  			clock-names = "gcc_mdio_ahb_clk";
  
  			status = "disabled";
@@ -69,7 +69,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
  		};
  
  		mdio1: mdio@90000 {
-@@ -392,8 +412,8 @@
+@@ -411,8 +431,8 @@
  				 <&pcie0_phy>,
  				 <&pcie1_phy>,
  				 <0>,
