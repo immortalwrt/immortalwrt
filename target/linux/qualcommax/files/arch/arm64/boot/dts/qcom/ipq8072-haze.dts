@@ -54,29 +54,11 @@
 };
 
 &tlmm {
-	mdio_pins: mdio-state {
-		mdc-pins {
-			pins = "gpio68";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio-pins {
-			pins = "gpio69";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
-	i2c_3_pins: i2c-3-state {
-		mux {
-			pins = "gpio46", "gpio47";
-			function = "blsp2_i2c";
-			drive-strength = <8>;
-			bias-disable;
-		};
+	i2c_3_pins: i2c-3-pins {
+		pins = "gpio46", "gpio47";
+		function = "blsp2_i2c";
+		drive-strength = <8>;
+		bias-disable;
 	};
 };
 

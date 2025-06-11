@@ -44,12 +44,12 @@
 	leds {
 		compatible = "gpio-leds";
 
-		led_2g: led-2g {
+		led_2g: 2g {
 			label = "2g:status";
 			gpios = <&tlmm 47 GPIO_ACTIVE_HIGH>;
 		};
 
-		led_5g: led-5g {
+		led_5g: 5g {
 			label = "5g:status";
 			gpios = <&tlmm 48 GPIO_ACTIVE_HIGH>;
 		};
@@ -57,29 +57,11 @@
 };
 
 &tlmm {
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio68";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio69";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
 	usb_mux_sel_pins: usb-mux-sel-pins {
-		mux {
-			pins = "gpio27";
-			function = "gpio";
-			drive-strength = <8>;
-			bias-pull-down;
-		};
+		pins = "gpio27";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-pull-down;
 	};
 };
 

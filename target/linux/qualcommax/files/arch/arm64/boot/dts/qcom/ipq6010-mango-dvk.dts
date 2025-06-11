@@ -56,27 +56,16 @@
 };
 
 &tlmm {
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio64";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio65";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
 	sd_pins: sd-pins {
-		sd_cd {
+		sd {
 			pins = "gpio62";
+			function = "sd_card";
+			bias-pull-up;
+		};
+
+		ldo {
+			pins = "gpio66";
 			function = "gpio";
-			drive-strength = <8>;
 			bias-pull-up;
 		};
 	};
@@ -94,6 +83,8 @@
 
 		partitions {
 			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
 
 			partition@0 {
 				label = "0:SBL1";
@@ -141,6 +132,8 @@
 
 				nvmem-layout {
 					compatible = "fixed-layout";
+					#address-cells = <1>;
+					#size-cells = <1>;
 
 					macaddr_eth0: macaddr@0 {
 						reg = <0x00 0x06>;
@@ -212,6 +205,7 @@
 
 	pinctrl-0 = <&sd_pins>;
 	pinctrl-names = "default";
+
 	cd-gpios = <&tlmm 62 GPIO_ACTIVE_LOW>;
 	bus-width = <4>;
 };
@@ -247,6 +241,10 @@
 &qpic_nand {
 	status = "okay";
 
+	partitions {
+		status = "disabled";
+	};
+
 	nand@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -258,6 +256,8 @@
 
 		partitions {
 			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
 
 			partition@0 {
 				label = "nand_data";

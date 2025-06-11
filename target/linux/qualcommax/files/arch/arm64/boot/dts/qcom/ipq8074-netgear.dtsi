@@ -86,24 +86,6 @@
 	};
 };
 
-&tlmm {
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio68";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio69";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-};
-
 &blsp1_i2c2 {
 	status = "okay";
 
@@ -157,6 +139,8 @@
 
 		partitions {
 			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
 
 			partition@0 {
 				label = "0:sbl1";
@@ -282,6 +266,8 @@
 
 				nvmem-layout {
 					compatible = "fixed-layout";
+					#address-cells = <1>;
+					#size-cells = <1>;
 
 					macaddr_boarddata1_0: macaddr@0 {
 						reg = <0x00 0x06>;

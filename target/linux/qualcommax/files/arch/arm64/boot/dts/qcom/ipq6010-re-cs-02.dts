@@ -78,49 +78,25 @@
 };
 
 &tlmm {
-	gpio-reserved-ranges = <20 1>;
-
 	btuart_pins: btuart-pins {
-		mux {
-			pins = "gpio48", "gpio49";
-			function = "blsp5_uart";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
+		pins = "gpio48", "gpio49";
+		function = "blsp5_uart";
+		drive-strength = <8>;
+		bias-pull-up;
 	};
 
 	tmp1628_pins: tmp1628-pins {
-		mux {
-			pins = "gpio69", "gpio70", "gpio73", "gpio74";
-			function = "gpio";
-			drive-strength = <8>;
-			bias-pull-down;
-		};
-	};
-
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio64";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio65";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
+		pins = "gpio69", "gpio70", "gpio73", "gpio74";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-pull-down;
 	};
 
 	usb_pwr_pins: usb-pwr-pins {
-		mux {
-			pins = "gpio22";
-			function = "gpio";
-			bias-pull-down;
-			output-high;
-		};
+		pins = "gpio22";
+		function = "gpio";
+		bias-pull-down;
+		output-high;
 	};
 };
 

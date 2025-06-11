@@ -61,38 +61,18 @@
 
 &tlmm {
 	i2c_pins: i2c-pins {
-		mux {
-			pins = "gpio21", "gpio22";
-			function = "blsp4_i2c1";
-			drive-strength = <8>;
-			bias-disable;
-		};
-	};
-
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio68";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio69";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
+		pins = "gpio21", "gpio22";
+		function = "blsp4_i2c1";
+		drive-strength = <8>;
+		bias-disable;
 	};
 
 	usb_pwr_pins: usb-pwr-pins {
-		mux {
-			pins = "gpio29";
-			function = "gpio";
-			drive-strength = <8>;
-			bias-disable;
-			output-high;
-		};
+		pins = "gpio29";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-disable;
+		output-high;
 	};
 };
 
@@ -108,6 +88,8 @@
 
 		partitions {
 			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
 
 			partition@0 {
 				label = "0:sbl1";
@@ -255,6 +237,8 @@
 
 		partitions {
 			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
 
 			partition@0 {
 				label = "fota-flag";
@@ -269,11 +253,13 @@
 
 				nvmem-layout {
 					compatible = "fixed-layout";
+					#address-cells = <1>;
+					#size-cells = <1>;
 
 					macaddr_mac_0: macaddr@0 {
 						compatible = "mac-base";
-						reg = <0x00 0x06>;
 						#nvmem-cell-cells = <1>;
+						reg = <0x00 0x06>;
 					};
 				};
 			};

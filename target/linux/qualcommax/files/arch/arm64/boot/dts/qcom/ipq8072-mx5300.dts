@@ -53,59 +53,6 @@
 	};
 };
 
-&tlmm {
-	mdio_pins: mdio-state {
-		mdc-pins {
-			pins = "gpio68";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio-pins {
-			pins = "gpio69";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
-	/*
-	 * QCA4024 is not currently supported, keep for documentation purposes
-	 *spi_3_pins: spi-3-state {
-	 *	spi-pins {
-	 *		pins = "gpio50", "gpio52", "gpio53";
-	 *		function = "blsp3_spi";
-	 *		drive-strength = <8>;
-	 *		bias-disable;
-	 *	};
-	 *
-	 *	cs-pins {
-	 *		pins = "gpio22";
-	 *		function = "blsp3_spi2";
-	 *		drive-strength = <8>;
-	 *		bias-disable;
-	 *	};
-	 *};
-	 *
-	 *quartz_pins: quartz-state {
-	 *	interrupt-pins {
-	 *		pins = "gpio48";
-	 *		function = "gpio";
-	 *		bias-disable;
-	 *		input;
-	 *	};
-	 *
-	 *	reset-pins {
-	 *		pins = "gpio21";
-	 *		function = "gpio";
-	 *		bias-disable;
-	 *		output-high;
-	 *	};
-	 *};
-	 */
-};
-
 &qpic_nand {
 	status = "okay";
 
@@ -124,6 +71,8 @@
 
 		partitions {
 			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
 
 			partition@0 {
 				label = "0:sbl1";
@@ -233,9 +182,11 @@
 
 				nvmem-layout {
 					compatible = "fixed-layout";
+					#address-cells = <1>;
+					#size-cells = <1>;
 
 					caldata_qca9984: caldata@33000 {
-						reg = <0x00033000 0x00002f20>;
+						reg = <0x33000 0x02f20>;
 					};
 				};
 			};
@@ -337,22 +288,6 @@
 		reg = <0x68>;
 	};
 };
-
-/*
- * QCA4024 is not currently supported, keep for documentation purposes
- *&blsp1_spi4 {
- *	status = "okay";
- *
- *	pinctrl-0 = <&spi_3_pins>, <&quartz_pins>;
- *	pinctrl-names = "default";
- *
- *	iot@3 {
- *		compatible = "qca,qca4024";
- *		reg = <0>;
- *		spi-max-frequency = <24000000>;
- *	};
- *};
- */
 
 &mdio {
 	status = "okay";

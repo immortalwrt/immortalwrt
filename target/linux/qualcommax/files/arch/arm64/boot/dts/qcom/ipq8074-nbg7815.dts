@@ -40,24 +40,6 @@
 	};
 };
 
-&tlmm {
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio68";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio69";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-};
-
 &blsp1_spi1 {
 	status = "okay";
 
@@ -70,6 +52,8 @@
 
 		partitions {
 			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
 
 			partition@0 {
 				label = "0:sbl1";
@@ -173,8 +157,11 @@
 
 				nvmem-layout {
 					compatible = "u-boot,env";
+					#address-cells = <1>;
+					#size-cells = <1>;
 
 					macaddr_lan: ethaddr {
+						compatible = "mac-base";
 						#nvmem-cell-cells = <1>;
 					};
 				};
@@ -193,10 +180,12 @@
 
 				nvmem-layout {
 					compatible = "fixed-layout";
+					#address-cells = <1>;
+					#size-cells = <1>;
 
 					aqr_fw: aqr-fw@0 {
 						/* Skip the QCOM MBN Header of 40 bytes */
-						reg = <0x00000028 0x0005f402>;
+						reg = <0x00028 0x5f402>;
 					};
 				};
 			};
@@ -382,7 +371,7 @@
 
 &sdhc_1 {
 	status = "okay";
-	/* unstable, problem with the hs400 > h200 speed switch */
+
 	/delete-property/ mmc-hs400-1_8v;
 	mmc-hs200-1_8v;
 	mmc-ddr-1_8v;

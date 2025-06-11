@@ -56,14 +56,14 @@
 		sck-gpios = <&tlmm 18 GPIO_ACTIVE_HIGH>;
 		mosi-gpios = <&tlmm 19 GPIO_ACTIVE_HIGH>;
 
-		led_gpio: led_gpio@0 {
+		led_gpio: gpio {
 			compatible = "fairchild,74hc595";
 			reg = <0>;
 			gpio-controller;
 			#gpio-cells = <2>;
-			registers-number = <1>;
-			enable-gpios = <&tlmm 20 GPIO_ACTIVE_HIGH>;
+			registers-number = <2>;
 			spi-max-frequency = <1000000>;
+			enable-gpios = <&tlmm 20 GPIO_ACTIVE_HIGH>;
 		};
 	};
 
@@ -133,24 +133,6 @@
 			port_id = <6>;
 			phy_address = <28>;
 			port_mac_sel = "QGMAC_PORT";
-		};
-	};
-};
-
-&tlmm {
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio68";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio69";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
 		};
 	};
 };

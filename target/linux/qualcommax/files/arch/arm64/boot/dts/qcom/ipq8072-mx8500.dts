@@ -58,24 +58,6 @@
 	};
 };
 
-&tlmm {
-	mdio_pins: mdio-state {
-		mdc-pins {
-			pins = "gpio68";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio-pins {
-			pins = "gpio69";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-};
-
 &qpic_nand {
 	status = "okay";
 
@@ -94,6 +76,8 @@
 
 		partitions {
 			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
 
 			partition@0 {
 				label = "0:sbl1";
@@ -251,10 +235,12 @@
 
 				nvmem-layout {
 					compatible = "fixed-layout";
+					#address-cells = <1>;
+					#size-cells = <1>;
 
 					aqr_fw: firmware@0 {
 						/* Skip the QCOM MBN Header of 40 bytes */
-						reg = <0x00000028 0x00060002>;
+						reg = <0x00028 0x60002>;
 					};
 				};
 			};

@@ -78,29 +78,11 @@
 };
 
 &tlmm {
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio68";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio69";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
 	i2c_pins: i2c-pins {
-		mux {
-			pins = "gpio0", "gpio2";
-			function = "blsp5_i2c";
-			drive-strength = <8>;
-			bias-disable;
-		};
+		pins = "gpio0", "gpio2";
+		function = "blsp5_i2c";
+		drive-strength = <8>;
+		bias-disable;
 	};
 };
 
@@ -123,6 +105,8 @@
 
 		partitions {
 			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
 
 			partition@0 {
 				label = "0:sbl1";
@@ -243,6 +227,10 @@
 &qpic_nand {
 	status = "okay";
 
+	partitions {
+		status = "disabled";
+	};
+
 	nand@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -254,6 +242,8 @@
 
 		partitions {
 			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
 
 			partition@0 {
 				label = "rootfs";

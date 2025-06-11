@@ -40,10 +40,8 @@
 		status = "okay";
 	};
 
-	gpio_keys {
+	keys {
 		compatible = "gpio-keys";
-		pinctrl-0 = <&button_pins>;
-		pinctrl-names = "default";
 
 		wps {
 			label = "wps";
@@ -104,7 +102,7 @@
 };
 
 &tlmm {
-	pwm_pins: pwm_pinmux {
+	pwm_pins: pwm-pins {
 		/*LED_B*/
 		mux_0 {
 			pins = "gpio29";
@@ -138,51 +136,21 @@
 		};
 	};
 
-	extcon_usb_pins: extcon_usb_pins {
+	extcon_usb_pins: extcon-usb-pins {
 		pins = "gpio26";
 		function = "gpio";
 		drive-strength = <2>;
 		bias-pull-down;
 	};
 
-	button_pins: button_pins {
-		wps_button {
-			pins = "gpio37";
-			function = "gpio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-		reset_button {
-			pins = "gpio56";
-			function = "gpio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
-	mdio_pins: mdio_pinmux {
-		mux_0 {
-			pins = "gpio64";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-		mux_1 {
-			pins = "gpio65";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
-	hsuart_pins: hsuart_pins {
-		pins = "gpio71", "gpio72", "gpio69", "gpio70";
+	hsuart_pins: hsuart-pins {
+		pins = "gpio69", "gpio70", "gpio71", "gpio72";
 		function = "blsp1_uart";
 		drive-strength = <8>;
 		bias-disable;
 	};
 
-	btcoex_pins: btcoex_pins {
+	btcoex_pins: btcoex-pins {
 		mux_0 {
 			pins = "gpio51";
 			function = "pta1_1";
@@ -413,11 +381,16 @@
 			compatible = "qcom,smem-part";
 
 			partition-0-devinfo {
+				#address-cells = <1>;
+				#size-cells = <1>;
+
 				label = "devinfo";
 				read-only;
 
 				nvmem-layout {
 					compatible = "ascii-eq-delim-env";
+					#address-cells = <1>;
+					#size-cells = <1>;
 
 					hw_mac_addr: hw_mac_addr {
 						compatible = "mac-base";

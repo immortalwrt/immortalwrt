@@ -72,7 +72,7 @@
 	leds {
 		compatible = "gpio-leds";
 
-		led_pwr: led-pwr {
+		led_pwr: pwr {
 			function = LED_FUNCTION_POWER;
 			gpios = <&tlmm 21 GPIO_ACTIVE_HIGH>;
 			color = <LED_COLOR_ID_WHITE>;
@@ -249,32 +249,14 @@
 };
 
 &tlmm {
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio68";
-			function = "mdc";
-			drive-strength = <16>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio69";
-			function = "mdio";
-			drive-strength = <16>;
-			bias-pull-up;
-		};
-	};
-
 	mdio_gpio_pins: mdio-gpio-pins {
-		mux {
-			pins = "gpio54", "gpio56";
-			function = "gpio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
+		pins = "gpio54", "gpio56";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-pull-up;
 	};
 
-	uniphy_pins: uniphy_pinmux {
+	uniphy_pins: uniphy-pins {
 		mux {
 			pins = "gpio60";
 			function = "rx2";
@@ -305,7 +287,7 @@
 		};
 	};
 
-	fan_pins: fan-state {
+	fan_pins: fan-pins {
 		pins = "gpio64", "gpio66";
 		function = "gpio";
 		drive-strength = <8>;
@@ -327,6 +309,10 @@
 &qpic_nand {
 	status = "okay";
 
+	partitions {
+		status = "disabled";
+	};
+
 	nand@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -338,6 +324,8 @@
 
 		partitions {
 			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
 
 			partition@0 {
 				label = "0:sbl1";
@@ -482,9 +470,12 @@
 		compatible = "qca,qca8337";
 		#address-cells = <1>;
 		#size-cells = <0>;
-		reg = <0x10>;
+		reg = <10>;
 
 		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
 			port@0 {
 				reg = <0>;
 				label = "cpu";

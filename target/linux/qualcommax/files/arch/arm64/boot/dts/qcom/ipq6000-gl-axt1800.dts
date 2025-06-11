@@ -99,6 +99,7 @@
 			function = "sd_card";
 			bias-pull-up;
 		};
+
 		ldo {
 			pins = "gpio66";
 			function = "gpio";
@@ -130,6 +131,7 @@
 
 	pinctrl-0 = <&sd_pins>;
 	pinctrl-names = "default";
+
 	cd-gpios = <&tlmm 62 GPIO_ACTIVE_LOW>;
 	bus-width = <4>;
 

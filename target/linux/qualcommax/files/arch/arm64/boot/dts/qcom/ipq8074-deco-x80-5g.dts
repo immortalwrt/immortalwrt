@@ -50,7 +50,7 @@
 		};
 	};
 
-	gpio_keys {
+	keys {
 		compatible = "gpio-keys";
 
 		reset_button {
@@ -290,41 +290,25 @@
 
 
 &tlmm {
-	fan_pins: fan-state {
+	fan_pins: fan-pins {
 		pins = "gpio40", "gpio41", "gpio42";
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
 	};
 
-	antenna_pins: antenna-state {
+	antenna_pins: antenna-pins {
 		pins = "gpio56";
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
 	};
 
-	modem_pins: modem-state {
+	modem_pins: modem-pins {
 		pins = "gpio29", "gpio55";
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
-	};
-
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio68";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio69";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
 	};
 };
 

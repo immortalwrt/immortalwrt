@@ -65,40 +65,18 @@
 };
 
 &tlmm {
-	gpio-reserved-ranges = <20 1>;
-
 	btuart_pins: btuart-pins {
-		mux {
-			pins = "gpio48", "gpio49";
-			function = "blsp5_uart";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio64";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio65";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
+		pins = "gpio48", "gpio49";
+		function = "blsp5_uart";
+		drive-strength = <8>;
+		bias-pull-up;
 	};
 
 	usb_pwr_pins: usb-pwr-pins {
-		mux {
-			pins = "gpio22";
-			function = "gpio";
-			bias-pull-down;
-			output-high;
-		};
+		pins = "gpio22";
+		function = "gpio";
+		bias-pull-down;
+		output-high;
 	};
 };
 

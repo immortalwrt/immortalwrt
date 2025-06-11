@@ -71,28 +71,10 @@
 
 &tlmm {
 	hsuart_pins: hsuart-pins {
-		mux {
-			pins = "gpio69", "gpio70", "gpio71", "gpio72";
-			function = "blsp1_uart";
-			drive-strength = <8>;
-			bias-disable;
-		};
-	};
-
-	mdio_pins: mdio-state {
-		mdc-pins {
-			pins = "gpio64";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio-pins {
-			pins = "gpio65";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
+		pins = "gpio69", "gpio70", "gpio71", "gpio72";
+		function = "blsp1_uart";
+		drive-strength = <8>;
+		bias-disable;
 	};
 };
 
@@ -160,13 +142,20 @@
 
 		partitions {
 			compatible = "qcom,smem-part";
+			#address-cells = <1>;
+			#size-cells = <1>;
 
 			partition-0-devinfo {
+				#address-cells = <1>;
+				#size-cells = <1>;
+
 				label = "devinfo";
 				read-only;
 
 				nvmem-layout {
 					compatible = "ascii-eq-delim-env";
+					#address-cells = <1>;
+					#size-cells = <1>;
 
 					hw_mac_addr: hw_mac_addr {
 						compatible = "mac-base";

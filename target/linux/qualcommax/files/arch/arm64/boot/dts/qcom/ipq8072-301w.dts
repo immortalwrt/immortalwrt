@@ -167,25 +167,6 @@
 	};
 };
 
-&tlmm {
-
-	mdio_pins: mdio-state {
-		mdc-pins {
-			pins = "gpio68";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio-pins {
-			pins = "gpio69";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-};
-
 &blsp1_spi1 {
 	status = "okay";
 
@@ -198,6 +179,8 @@
 
 		partitions {
 			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
 
 			partition@0 {
 				label = "0:sbl1";
@@ -264,9 +247,11 @@
 
 				nvmem-layout {
 					compatible = "fixed-layout";
+					#address-cells = <1>;
+					#size-cells = <1>;
 
 					aqr0_fw: firmware@0 {
-						reg = <0x00000000 0x0005fc02>;
+						reg = <0x00000 0x5fc02>;
 					};
 				};
 			};
@@ -277,9 +262,11 @@
 
 				nvmem-layout {
 					compatible = "fixed-layout";
+					#address-cells = <1>;
+					#size-cells = <1>;
 
 					aqr1_fw: firmware@0 {
-						reg = <0x00000000 0x0005fc02>;
+						reg = <0x00000 0x5fc02>;
 					};
 				};
 			};
@@ -350,10 +337,6 @@
 &sdhc_1 {
 	status = "okay";
 
-	/* According to the stock dts from the QNAP gpl drop
-	 * the emmc has a problem with the hs400 > hs200 speed switch.
-	 * Therefore remove the mmc-hs400-1_8v property
-	*/
 	/delete-property/ mmc-hs400-1_8v;
 	mmc-hs200-1_8v;
 	mmc-ddr-1_8v;

@@ -4,14 +4,16 @@
 
 #include "ipq5018.dtsi"
 #include "ipq5018-ess.dtsi"
+#include "ipq5018-nss.dtsi"
+#include "ipq5018-common.dtsi"
+
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
+#include <dt-bindings/leds/common.h>
 
 / {
 	model = "JDCloud RE-CS-03";
 	compatible = "jdcloud,re-cs-03", "qcom,ipq5018";
-
-	interrupt-parent = <&intc>;
 
 	aliases {
 		sdhc1 = &sdhc_1;
@@ -27,6 +29,7 @@
 		led-running = &led_status_green;
 		led-upgrade = &led_status_red;
 	};
+
 	chosen {
 		stdout-path = "serial0:115200n8";
 	};
@@ -69,168 +72,6 @@
 			debounce-interval = <60>;
 		};
 	};
-
-	reserved-memory {
-		tz_appps@4a400000 {
-			no-map;
-			reg = <0x0 0x4a400000 0x0 0x00400000>;
-		};
-
-		q6_mem_regions: q6_mem_regions@4b000000 {
-			no-map;
-			reg = <0x0 0x4b000000 0x0 0x03000000>;
-		};
-	};
-};
-&switch {
-	status = "okay";
-	switch_mac_mode = <MAC_MODE_SGMII_PLUS>;
-	qcom,port_phyinfo {
-		// MAC0 -> GE Phy -> QCA8337 Phy2
-		port@0 {
-			port_id = <1>;
-			mdiobus = <&mdio0>;
-			phy_address = <7>;
-			phy_dac = <0x10 0x10>;
-			// status = "disabled";
-		};
-		// MAC1 ---SGMII---> QCA8337 SerDes
-		port@1 {
-			port_id = <2>;
-			forced-speed = <1000>;
-			forced-duplex = <1>;
-		};
-	};
-};
-// MAC0 -> GE Phy
-&dp1 {
-	status = "okay";
-};
-// MAC1 ---SGMII---> QCA8337 SerDes
-&dp2 {
-	status = "okay";
-	phy-mode = "sgmii";
-	fixed-link {
-		speed = <1000>;
-		full-duplex;
-	};
-};
-&mdio0 {
-	status = "okay";
-};
-// IPQ5018 GE Phy -> QCA8337 Phy1
-&ge_phy {
-	status = "okay";
-};
-&mdio1 {
-	status = "okay";
-
-	pinctrl-0 = <&mdio1_pins>;
-	pinctrl-names = "default";
-	reset-gpios = <&tlmm 39 GPIO_ACTIVE_LOW>;
-	// QCA8337 Phy0 -> LAN3
-	qca8337_0: ethernet-phy@0 {
-		reg = <0>;
-	};
-	// QCA8337 Phy1 -> LAN2
-	qca8337_1: ethernet-phy@1 {
-		reg = <1>;
-	};
-	// QCA8337 Phy3 -> LAN1
-	qca8337_2: ethernet-phy@2 {
-		reg = <2>;
-	};
-	// QCA8337 Phy2 -> IPQ5018 GE Phy
-	qca8337_3: ethernet-phy@3 {
-		reg = <3>;
-	};
-	// QCA8337 Phy2 -> IPQ5018 GE Phy
-	qca8337_4: ethernet-phy@4 {
-		reg = <4>;
-	};
-
-	// QCA8337 switch
-	switch0: ethernet-switch@17 {
-		compatible = "qca,qca8337";
-		reg = <17>;
-		#address-cells = <1>;
-		#size-cells = <0>;
-		switch_cpu_bmp = <0x40>;  /* cpu port bitmap */
-		switch_lan_bmp = <0x1e>; /* lan port bitmap */
-		switch_wan_bmp = <0x0>;  /* wan port bitmap */
-		ports {
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			switch0cpu: port@0 {
-				reg = <0>;
-				label = "cpu";
-				phy-mode = "sgmii";
-				ethernet = <&dp2>;
-				qca,sgmii-enable-pll;
-				fixed-link {
-					speed = <1000>;
-					full-duplex;
-				};
-			};
-			// QCA8337 Phy1 -> LAN3
-			port@1 {
-				reg = <1>;
-				label = "lan3";
-				phy-handle = <&qca8337_0>;
-				port_id = <1>;
-				phy_address = <0>;
-			};
-
-			// QCA8337 Phy2 -> LAN2
-			port@2 {
-				reg = <2>;
-				label = "lan2";
-				phy-handle = <&qca8337_1>;
-				port_id = <2>;
-				phy_address = <1>;
-			};
-			// QCA8337 Phy3 -> LAN1
-			port@3 {
-				reg = <3>;
-				label = "lan1";
-				phy-handle = <&qca8337_2>;
-				port_id = <3>;
-				phy_address = <2>;
-
-			};
-			// QCA8337 Phy4 -> WAN
-			port@4 {
-				reg = <4>;
-				label = "wan";
-				phy-handle = <&qca8337_3>;
-				port_id = <4>;
-				phy_address = <3>;
-
-			};
-		};
-	};
-};
-&sleep_clk {
-	clock-frequency = <32000>;
-};
-&xo_board_clk {
-	clock-frequency = <24000000>;
-};
-&blsp1_uart1 {
-	status = "okay";
-
-	pinctrl-0 = <&blsp_uart0_pins>;
-	pinctrl-names = "default";
-};
-&crypto {
-	status = "okay";
-};
-&cryptobam {
-	status = "okay";
-};
-&qpic_bam {
-	status = "okay";
 };
 
 &sdhc_1 {
@@ -239,177 +80,110 @@
 	pinctrl-0 = <&emmc_pins>;
 	pinctrl-names = "default";
 
+	max-frequency = <192000000>;
+
 	/delete-property/ mmc-hs400-1_8v;
 	mmc-hs200-1_8v;
 	mmc-ddr-1_8v;
 };
 
-&tlmm {
+&dp1 {
+	status = "okay";
+};
 
-	mdio1_pins: mdio1-pins {
-		mdio1_mdc {
-			pins = "gpio36";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
+&dp2 {
+	status = "okay";
 
-		mdio1_mdio {
-			pins = "gpio37";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
-	blsp_uart0_pins: blsp_uart0_pins {
-		pins =
-			"gpio20", // RX
-			"gpio21"; // TX
-		function = "blsp0_uart0";
-		drive-strength = <8>;
-		bias-disable;
-	};
-
-		emmc_pins: emmc-pins {
-		emmc_clk {
-			pins = "gpio9";
-			function = "sdc1_clk";
-			drive-strength = <8>;
-			bias-disable;
-		};
-
-		emmc_cmd {
-			pins = "gpio8";
-			function = "sdc1_cmd";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		emmc_data_0 {
-			pins = "gpio7";
-			function = "sdc10";
-			drive-strength = <0x08>;
-			bias-disable;
-		};
-
-		emmc_data_1 {
-			pins = "gpio6";
-			function = "sdc11";
-			drive-strength = <0x08>;
-			bias-disable;
-		};
-
-		emmc_data_2 {
-			pins = "gpio5";
-			function = "sdc12";
-			drive-strength = <0x08>;
-			bias-disable;
-		};
-
-		emmc_data_3 {
-			pins = "gpio4";
-			function = "sdc13";
-			drive-strength = <0x08>;
-			bias-disable;
-		};
+	fixed-link {
+		speed = <1000>;
+		full-duplex;
 	};
 };
 
-&tsens {
-	status = "disabled";
+&mdio1 {
+	status = "okay";
+
+	pinctrl-0 = <&mdio1_pins>;
+	pinctrl-names = "default";
+	reset-gpios = <&tlmm 39 GPIO_ACTIVE_LOW>;
+
+	qca8337_0: ethernet-phy@0 {
+		reg = <0>;
+	};
+
+	qca8337_1: ethernet-phy@1 {
+		reg = <1>;
+	};
+
+	qca8337_2: ethernet-phy@2 {
+		reg = <2>;
+	};
+
+	qca8337_3: ethernet-phy@3 {
+		reg = <3>;
+	};
+
+	switch1: ethernet-switch@17 {
+		compatible = "qca,qca8337";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <17>;
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+				label = "cpu";
+				phy-mode = "sgmii";
+				ethernet = <&dp2>;
+				qca,sgmii-enable-pll;
+
+				fixed-link {
+					speed = <1000>;
+					full-duplex;
+				};
+			};
+
+			port@1 {
+				reg = <1>;
+				label = "lan3";
+				phy-handle = <&qca8337_0>;
+			};
+
+			port@2 {
+				reg = <2>;
+				label = "lan2";
+				phy-handle = <&qca8337_1>;
+			};
+
+			port@3 {
+				reg = <3>;
+				label = "lan1";
+				phy-handle = <&qca8337_2>;
+			};
+
+			port@4 {
+				reg = <4>;
+				label = "wan";
+				phy-handle = <&qca8337_3>;
+			};
+		};
+	};
 };
 
 &q6v5_wcss {
-	status = "okay";
-	memory-region = <&q6_mem_regions>;
-	firmware-name = "IPQ5018/hw1.0/q6_fw.mdt",
-					"IPQ5018/hw1.0/m3_fw.mdt",
-					"QCN6122/hw1.0/m3_fw.mdt";
-
-	boot-args = <0x1 4 3 15 0 0>; /* type, length, UPD ID, reset GPIO, reserved */
-
-	// IPQ5018
-	q6_wcss_pd1: pd-1 {
-		firmware-name = "IPQ5018/hw1.0/q6_fw.mdt";
-		resets =
-			<&gcc GCC_WCSSAON_RESET>,
-			<&gcc GCC_WCSS_BCR>,
-			<&gcc GCC_CE_BCR>;
-		reset-names =
-			"wcss_aon_reset",
-			"wcss_reset",
-			"ce_reset";
-		clocks =
-			<&gcc GCC_WCSS_AHB_S_CLK>,
-			<&gcc GCC_WCSS_ACMT_CLK>,
-			<&gcc GCC_WCSS_AXI_M_CLK>;
-		clock-names =
-			"gcc_wcss_ahb_s_clk",
-			"gcc_wcss_acmt_clk",
-			"gcc_wcss_axi_m_clk";
-
-		interrupts-extended =
-			<&wcss_smp2p_in 8 0>,
-			<&wcss_smp2p_in 9 0>,
-			<&wcss_smp2p_in 12 0>,
-			<&wcss_smp2p_in 11 0>;
-		interrupt-names =
-			"fatal",
-			"ready",
-			"spawn-ack",
-			"stop-ack";
-		qcom,smem-states =
-			<&wcss_smp2p_out 8>,
-			<&wcss_smp2p_out 9>,
-			<&wcss_smp2p_out 10>;
-		qcom,smem-state-names =
-			"shutdown",
-			"stop",
-			"spawn";
-		status = "okay";
-	};
-
-	// QCN6102 5G
-	q6_wcss_pd2: pd-2 {
-		firmware-name = "IPQ5018/hw1.0/q6_fw.mdt";
-		interrupts-extended =
-			<&wcss_smp2p_in 24 0>,
-			<&wcss_smp2p_in 25 0>,
-			<&wcss_smp2p_in 28 0>,
-			<&wcss_smp2p_in 27 0>;
-		interrupt-names =
-			"fatal",
-			"ready",
-			"spawn-ack",
-			"stop-ack";
-		qcom,smem-states =
-			<&wcss_smp2p_out 24>,
-			<&wcss_smp2p_out 25>,
-			<&wcss_smp2p_out 26>;
-		qcom,smem-state-names =
-			"shutdown",
-			"stop",
-			"spawn";
-
-		status = "okay";
-	};
+	status = "okey";
+	boot-args = <0x02 0x04 0x02 0x0f 0x00 0x00>;
 };
+
 &wifi0 {
-	// IPQ5018
-	qcom,rproc = <&q6_wcss_pd1>;
-	qcom,userpd-subsys-name = "q6v5_wcss_userpd1";
+	status = "okey";
 	qcom,ath11k-calibration-variant = "JDC-RE-CS-03";
-	qcom,ath11k-fw-memory-mode = <1>;
-	qcom,bdf-addr = <0x4c400000>;
-	status = "okay";
 };
+
 &wifi1 {
-	qcom,rproc = <&q6_wcss_pd2>;
-	qcom,userpd-subsys-name = "q6v5_wcss_userpd2";
+	status = "okey";
 	qcom,ath11k-calibration-variant = "JDC-RE-CS-03";
-	qcom,ath11k-fw-memory-mode = <1>;
-	qcom,bdf-addr = <0x4d100000>;
-	qcom,m3-dump-addr = <0x4df00000>;
-	status = "okay";
 };

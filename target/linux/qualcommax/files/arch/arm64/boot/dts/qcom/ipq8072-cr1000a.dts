@@ -101,22 +101,6 @@
 };
 
 &tlmm {
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio68";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio69";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
 	spi_4_pins: spi-4-pins {
 		pins = "gpio5", "gpio6", "gpio7", "gpio8";
 		function = "blsp4_spi0";
@@ -218,4 +202,6 @@
 
 &sdhc_1 {
 	status = "okay";
+
+	vqmmc-supply = <&l11>;
 };
