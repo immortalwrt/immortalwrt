@@ -290,15 +290,15 @@
 
 
 &tlmm {
-	fan_pins: fan-pins {
-		pins = "gpio40", "gpio41", "gpio42";
+	antenna_pins: antenna-pins {
+		pins = "gpio56";
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
 	};
 
-	antenna_pins: antenna-pins {
-		pins = "gpio56";
+	fan_pins: fan-pins {
+		pins = "gpio40", "gpio41", "gpio42";
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;

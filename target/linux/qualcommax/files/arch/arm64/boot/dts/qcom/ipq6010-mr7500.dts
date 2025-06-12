@@ -36,7 +36,7 @@
 	extcon_usb {
 		pinctrl-0 = <&extcon_usb_pins>;
 		pinctrl-names = "default";
-		id-gpio = <&tlmm 26 GPIO_ACTIVE_LOW>;
+		id-gpios = <&tlmm 26 GPIO_ACTIVE_LOW>;
 		status = "okay";
 	};
 
@@ -97,11 +97,46 @@
 		regulator-name = "usb_vbus";
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
-		gpio = <&tlmm 25 GPIO_ACTIVE_LOW>;
+		gpios = <&tlmm 25 GPIO_ACTIVE_LOW>;
 	};
 };
 
 &tlmm {
+	btcoex_pins: btcoex-pins {
+		mux_0 {
+			pins = "gpio51";
+			function = "pta1_1";
+			drive-strength = <6>;
+			bias-pull-down;
+		};
+		mux_1 {
+			pins = "gpio53";
+			function = "pta1_0";
+			drive-strength = <6>;
+			bias-pull-down;
+		};
+		mux_2 {
+			pins = "gpio52";
+			function = "pta1_2";
+			drive-strength = <6>;
+			bias-pull-down;
+		};
+	};
+
+	extcon_usb_pins: extcon-usb-pins {
+		pins = "gpio26";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-down;
+	};
+
+	hsuart_pins: hsuart-pins {
+		pins = "gpio69", "gpio70", "gpio71", "gpio72";
+		function = "blsp1_uart";
+		drive-strength = <8>;
+		bias-disable;
+	};
+
 	pwm_pins: pwm-pins {
 		/*LED_B*/
 		mux_0 {
@@ -132,41 +167,6 @@
 			pins = "gpio32";
 			function = "pwm33";
 			drive-strength = <8>;
-			bias-pull-down;
-		};
-	};
-
-	extcon_usb_pins: extcon-usb-pins {
-		pins = "gpio26";
-		function = "gpio";
-		drive-strength = <2>;
-		bias-pull-down;
-	};
-
-	hsuart_pins: hsuart-pins {
-		pins = "gpio69", "gpio70", "gpio71", "gpio72";
-		function = "blsp1_uart";
-		drive-strength = <8>;
-		bias-disable;
-	};
-
-	btcoex_pins: btcoex-pins {
-		mux_0 {
-			pins = "gpio51";
-			function = "pta1_1";
-			drive-strength = <6>;
-			bias-pull-down;
-		};
-		mux_1 {
-			pins = "gpio53";
-			function = "pta1_0";
-			drive-strength = <6>;
-			bias-pull-down;
-		};
-		mux_2 {
-			pins = "gpio52";
-			function = "pta1_2";
-			drive-strength = <6>;
 			bias-pull-down;
 		};
 	};

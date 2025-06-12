@@ -249,6 +249,14 @@
 };
 
 &tlmm {
+	fan_pins: fan-pins {
+		pins = "gpio64", "gpio66";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-disable;
+		output-high;
+	};
+
 	mdio_gpio_pins: mdio-gpio-pins {
 		pins = "gpio54", "gpio56";
 		function = "gpio";
@@ -260,6 +268,7 @@
 		mux {
 			pins = "gpio60";
 			function = "rx2";
+			drive-strength = <8>;
 			bias-disable;
 		};
 
@@ -285,14 +294,6 @@
 			drive-strength = <8>;
 			bias-pull-up;
 		};
-	};
-
-	fan_pins: fan-pins {
-		pins = "gpio64", "gpio66";
-		function = "gpio";
-		drive-strength = <8>;
-		bias-disable;
-		output-high;
 	};
 };
 

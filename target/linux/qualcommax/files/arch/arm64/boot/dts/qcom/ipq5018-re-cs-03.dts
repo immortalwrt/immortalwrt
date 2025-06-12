@@ -39,17 +39,17 @@
 
 		led_status_blue: status-blue {
 			label = "blue:status";
-			gpio = <&tlmm 31 GPIO_ACTIVE_HIGH>;
+			gpios = <&tlmm 31 GPIO_ACTIVE_HIGH>;
 		};
 
 		led_status_green: status-green {
 			label = "green:status";
-			gpio = <&tlmm 32 GPIO_ACTIVE_HIGH>;
+			gpios = <&tlmm 32 GPIO_ACTIVE_HIGH>;
 		};
 
 		led_status_red: status-red {
 			label = "red:status";
-			gpio = <&tlmm 33 GPIO_ACTIVE_HIGH>;
+			gpios = <&tlmm 33 GPIO_ACTIVE_HIGH>;
 		};
 	};
 

@@ -95,6 +95,7 @@
 	usb_pwr_pins: usb-pwr-pins {
 		pins = "gpio22";
 		function = "gpio";
+		drive-strength = <8>;
 		bias-pull-down;
 		output-high;
 	};

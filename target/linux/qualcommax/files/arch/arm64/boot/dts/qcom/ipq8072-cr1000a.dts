@@ -101,16 +101,16 @@
 };
 
 &tlmm {
-	spi_4_pins: spi-4-pins {
-		pins = "gpio5", "gpio6", "gpio7", "gpio8";
-		function = "blsp4_spi0";
+	i2c_2_pins: i2c-2-pins {
+		pins = "gpio46", "gpio47";
+		function = "blsp2_i2c";
 		drive-strength = <8>;
 		bias-disable;
 	};
 
-	i2c_2_pins: i2c-2-pins {
-		pins = "gpio46", "gpio47";
-		function = "blsp2_i2c";
+	spi_4_pins: spi-4-pins {
+		pins = "gpio5", "gpio6", "gpio7", "gpio8";
+		function = "blsp4_spi0";
 		drive-strength = <8>;
 		bias-disable;
 	};
@@ -179,7 +179,7 @@
 
 &pcie0 {
 	status = "okay";
-	perst-gpio = <&tlmm 58 GPIO_ACTIVE_LOW>;
+	perst-gpios = <&tlmm 58 GPIO_ACTIVE_LOW>;
 
 	pcie@0 {
 		wifi@0,0 {

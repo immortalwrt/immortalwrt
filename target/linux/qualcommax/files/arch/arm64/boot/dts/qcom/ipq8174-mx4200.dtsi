@@ -14,12 +14,14 @@
 		recovery-pins {
 			pins = "gpio22";
 			function = "gpio";
+			drive-strength = <8>;
 			input;
 		};
 
 		reset-pins {
 			pins = "gpio21";
 			function = "gpio";
+			drive-strength = <8>;
 			bias-pull-up;
 		};
 	};

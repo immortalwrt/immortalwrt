@@ -94,15 +94,17 @@
 	};
 
 	sd_pins: sd-pins {
-		sd {
+		data {
 			pins = "gpio62";
 			function = "sd_card";
+			drive-strength = <8>;
 			bias-pull-up;
 		};
 
-		ldo {
+		power {
 			pins = "gpio66";
 			function = "gpio";
+			drive-strength = <8>;
 			bias-pull-up;
 		};
 	};
@@ -133,10 +135,9 @@
 	pinctrl-names = "default";
 
 	cd-gpios = <&tlmm 62 GPIO_ACTIVE_LOW>;
-	bus-width = <4>;
-
-	mmc-ddr-1_8v;
 	vqmmc-supply = <&vcc_sd>;
+	bus-width = <4>;
+	mmc-ddr-1_8v;
 };
 
 &switch {

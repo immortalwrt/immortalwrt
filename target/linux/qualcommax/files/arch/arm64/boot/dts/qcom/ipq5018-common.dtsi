@@ -122,6 +122,7 @@
 	serial_0_pins: serial-0-pins {
 		pins = "gpio20", "gpio21";
 		function = "blsp0_uart0";
+		drive-strength = <8>;
 		bias-disable;
 	};
 };

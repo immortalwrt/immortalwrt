@@ -67,6 +67,7 @@
 	phy_reset_pins: phy-reset-pins {
 		pins = "gpio77";
 		function = "gpio";
+		drive-strength = <8>;
 		bias-pull-up;
 	};
 

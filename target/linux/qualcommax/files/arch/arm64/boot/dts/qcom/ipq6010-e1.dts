@@ -126,6 +126,13 @@
 		};
 	};
 
+	hsuart_pins: hsuart-pins {
+		pins = "gpio69", "gpio70", "gpio71", "gpio72";
+		function = "blsp1_uart";
+		drive-strength = <8>;
+		bias-disable;
+	};
+
 	pwm_pins: pwm-pins {
 		mux_1 {
 			pins = "gpio24";
@@ -144,6 +151,7 @@
 		mux_1 {
 			pins = "gpio2", "gpio16";
 			function = "gpio";
+			drive-strength = <8>;
 			output-low;
 			bias-disable;
 		};
@@ -151,30 +159,26 @@
 		mux_2 {
 			pins = "gpio47", "gpio53";
 			function = "gpio";
+			drive-strength = <8>;
 			input;
 			bias-disable;
 		};
 	};
 
 	sd_pins: sd-pins {
-		sd {
+		data {
 			pins = "gpio62";
 			function = "sd_card";
+			drive-strength = <8>;
 			bias-pull-up;
 		};
 
-		ldo {
+		power {
 			pins = "gpio66";
 			function = "gpio";
+			drive-strength = <8>;
 			bias-pull-up;
 		};
-	};
-
-	hsuart_pins: hsuart-pins {
-		pins = "gpio69", "gpio70", "gpio71", "gpio72";
-		function = "blsp1_uart";
-		drive-strength = <8>;
-		bias-disable;
 	};
 };
 
@@ -195,10 +199,9 @@
 	pinctrl-names = "default";
 
 	cd-gpios = <&tlmm 62 GPIO_ACTIVE_LOW>;
-	bus-width = <4>;
-
-	mmc-ddr-1_8v;
 	vqmmc-supply = <&vcc_sd>;
+	bus-width = <4>;
+	mmc-ddr-1_8v;
 };
 
 &blsp1_spi1 {
