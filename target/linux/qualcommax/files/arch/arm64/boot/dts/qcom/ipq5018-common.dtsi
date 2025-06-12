@@ -56,55 +56,6 @@
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
 
-/ {
-	reserved-memory {
-		q6_ipq5018_data_region: q6_ipq5018_data@50000000 {
-			reg = <0x00 0x50000000 0x00 0x01000000>;
-			no-map;
-		};
-
-		m3_dump_region: m3_dump@51000000 {
-			reg = <0x00 0x51000000 0x00 0x00100000>;
-			no-map;
-		};
-
-		q6_etr_dump_region: q6_etr_dump@51100000 {
-			reg = <0x00 0x51100000 0x00 0x00100000>;
-			no-map;
-		};
-
-		q6_qcn6122_data1_region: q6_qcn6122_data1@51200000 {
-			reg = <0x00 0x51200000 0x00 0x01000000>;
-			no-map;
-		};
-
-		m3_dump_qcn6122_1_region: m3_dump_qcn6122_1@52200000 {
-			reg = <0x00 0x52200000 0x00 0x00100000>;
-			no-map;
-		};
-
-		q6_qcn6122_etr_1_region: q6_qcn6122_etr_1@52300000 {
-			reg = <0x00 0x52300000 0x00 0x00100000>;
-			no-map;
-		};
-
-		q6_qcn6122_data2_region: q6_qcn6122_data2@52400000 {
-			reg = <0x00 0x52400000 0x00 0x01000000>;
-			no-map;
-		};
-
-		m3_dump_qcn6122_2_region: m3_dump_qcn6122_2@53400000 {
-			reg = <0x00 0x53400000 0x00 0x00100000>;
-			no-map;
-		};
-
-		q6_qcn6122_etr_2_region: q6_qcn6122_etr_2@53500000 {
-			reg = <0x00 0x53500000 0x00 0x00100000>;
-			no-map;
-		};
-	};
-};
-
 &tlmm {
 	mdio1_pins: mdio1-pins {
 		mdc-pins {
@@ -201,12 +152,11 @@
 	status = "okay";
 
 	memory-region = <&q6_mem_region>;
-	firmware-name = "IPQ5018/hw1.0/q6_fw.mdt", "IPQ5018/hw1.0/m3_fw.mdt", "QCN6122/hw1.0/m3_fw.mdt";
+	firmware-name = "IPQ5018/q6_fw.mdt", "IPQ5018/m3_fw.mdt", "ath11k/QCN6122/hw1.0/m3_fw.mdt";
 
 	// IPQ5018
 	q6_wcss_pd1: pd-1 {
-		firmware-name = "IPQ5018/hw1.0/q6_fw.mdt";
-		memory-region = <&q6_ipq5018_data_region>, <&m3_dump_region>, <&q6_etr_dump_region>;
+		firmware-name = "IPQ5018/q6_fw.mdt";
 
 		resets = <&gcc GCC_WCSSAON_RESET>, <&gcc GCC_WCSS_BCR>, <&gcc GCC_CE_BCR>;
 		reset-names = "wcss_aon_reset", "wcss_reset", "ce_reset";
@@ -223,8 +173,7 @@
 
 	// QCN6102 5G
 	q6_wcss_pd2: pd-2 {
-		firmware-name = "IPQ5018/hw1.0/q6_fw.mdt";
-		memory-region = <&q6_qcn6122_data1_region>, <&m3_dump_qcn6122_1_region>, <&q6_qcn6122_etr_1_region>;
+		firmware-name = "IPQ5018/q6_fw.mdt";
 
 		interrupts-extended = <&wcss_smp2p_in 16 IRQ_TYPE_NONE>, <&wcss_smp2p_in 17 IRQ_TYPE_NONE>, <&wcss_smp2p_in 20 IRQ_TYPE_NONE>, <&wcss_smp2p_in 19 IRQ_TYPE_NONE>;
 		interrupt-names = "fatal", "ready", "spawn-ack", "stop-ack";
@@ -235,8 +184,7 @@
 
 	// QCN6102 6G
 	q6_wcss_pd3: pd-3 {
-		firmware-name = "IPQ5018/hw1.0/q6_fw.mdt";
-		memory-region = <&q6_qcn6122_data2_region>, <&m3_dump_qcn6122_2_region>, <&q6_qcn6122_etr_2_region>;
+		firmware-name = "IPQ5018/q6_fw.mdt";
 
 		interrupts-extended = <&wcss_smp2p_in 24 IRQ_TYPE_NONE>, <&wcss_smp2p_in 25 IRQ_TYPE_NONE>, <&wcss_smp2p_in 28 IRQ_TYPE_NONE>, <&wcss_smp2p_in 27 IRQ_TYPE_NONE>;
 		interrupt-names = "fatal", "ready", "spawn-ack", "stop-ack";
