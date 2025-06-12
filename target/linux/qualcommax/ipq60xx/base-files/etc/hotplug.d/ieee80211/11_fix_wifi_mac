@@ -15,6 +15,11 @@ case "$board" in
 		[ "$PHYNBR" = "0" ] && macaddr_add $label_mac 1 > /sys${DEVPATH}/macaddress
 		[ "$PHYNBR" = "1" ] && macaddr_add $label_mac 2 > /sys${DEVPATH}/macaddress
 		;;
+	anysafe,e1)
+		[ "$PHYNBR" = "0" ] && mtd_get_mac_binary 0:ART 0x0 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && mtd_get_mac_binary 0:ART 0x6 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "2" ] && mtd_get_mac_binary 0:ART 0xc > /sys${DEVPATH}/macaddress
+		;;
 	cmiot,ax18|\
 	zn,m2)
 		label_mac=$(mtd_get_mac_binary 0:art 0x6)
