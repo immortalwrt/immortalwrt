@@ -139,7 +139,7 @@ Link: https://lore.kernel.org/bpf/20211130030622.4131246-2-joannekoong@fb.com
 +};
 --- a/kernel/bpf/helpers.c
 +++ b/kernel/bpf/helpers.c
-@@ -1397,6 +1397,8 @@ bpf_base_func_proto(enum bpf_func_id fun
+@@ -1401,6 +1401,8 @@ bpf_base_func_proto(enum bpf_func_id fun
  		return &bpf_ringbuf_query_proto;
  	case BPF_FUNC_for_each_map_elem:
  		return &bpf_for_each_map_elem_proto;

@@ -1,0 +1,38 @@
+From 3b557be89fc688dbd9ccf704a70f7600a094f13a Mon Sep 17 00:00:00 2001
+From: Jinjie Ruan <ruanjinjie@huawei.com>
+Date: Fri, 1 Nov 2024 10:53:16 +0800
+Subject: [PATCH] net: wwan: t7xx: Fix off-by-one error in
+ t7xx_dpmaif_rx_buf_alloc()
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The error path in t7xx_dpmaif_rx_buf_alloc(), free and unmap the already
+allocated and mapped skb in a loop, but the loop condition terminates when
+the index reaches zero, which fails to free the first allocated skb at
+index zero.
+
+Check with i-- so that skb at index 0 is freed as well.
+
+Cc: stable@vger.kernel.org
+Fixes: d642b012df70 ("net: wwan: t7xx: Add data path interface")
+Acked-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Signed-off-by: Jinjie Ruan <ruanjinjie@huawei.com>
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://patch.msgid.link/20241101025316.3234023-1-ruanjinjie@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c
++++ b/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c
+@@ -226,7 +226,7 @@ int t7xx_dpmaif_rx_buf_alloc(struct dpma
+ 	return 0;
+ 
+ err_unmap_skbs:
+-	while (--i > 0)
++	while (i--)
+ 		t7xx_unmap_bat_skb(dpmaif_ctrl->dev, bat_req->bat_skb, i);
+ 
+ 	return ret;
