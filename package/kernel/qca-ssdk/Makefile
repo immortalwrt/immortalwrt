@@ -13,6 +13,11 @@ PKG_FLAGS:=nonshared
 PKG_BUILD_PARALLEL:=1
 PKG_BUILD_FLAGS:=no-lto
 
+PKG_CONFIG_DEPENDS:= \
+	CONFIG_TARGET_qualcommax_ipq807x \
+	CONFIG_TARGET_qualcommax_ipq60xx \
+	CONFIG_TARGET_qualcommax_ipq50xx
+
 include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
 
@@ -59,16 +64,16 @@ MAKE_FLAGS+= \
 	$(LNX_CONFIG_OPTS)
 
 ifeq ($(CONFIG_TARGET_SUBTARGET), "ipq807x")
-    MAKE_FLAGS+= CHIP_TYPE=HPPE
+	MAKE_FLAGS+= CHIP_TYPE=HPPE
 endif
 
 ifeq ($(CONFIG_TARGET_SUBTARGET), "ipq60xx")
-    MAKE_FLAGS+= CHIP_TYPE=CPPE \
-                 IN_AQUANTIA_PHY=TRUE
+	MAKE_FLAGS+= CHIP_TYPE=CPPE \
+				 IN_AQUANTIA_PHY=TRUE
 endif
 
 ifeq ($(CONFIG_TARGET_SUBTARGET), "ipq50xx")
-    MAKE_FLAGS+= CHIP_TYPE=MP
+	MAKE_FLAGS+= CHIP_TYPE=MP
 endif
 
 define Build/Compile

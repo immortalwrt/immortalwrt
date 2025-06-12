@@ -27,111 +27,8 @@ remove_oem_ubi_volume() {
 	fi
 }
 
-tplink_get_boot_part() {
-	local cur_boot_part
-	local args
-
-	# Try to find rootfs from kernel arguments
-	read -r args < /proc/cmdline
-	for arg in $args; do
-		local ubi_mtd_arg=${arg#ubi.mtd=}
-		case "$ubi_mtd_arg" in
-		rootfs|rootfs_1)
-			echo "$ubi_mtd_arg"
-			return
-		;;
-		esac
-	done
-
-	# Fallback to u-boot env (e.g. when running initramfs)
-	cur_boot_part="$(/usr/sbin/fw_printenv -n tp_boot_idx)"
-	case $cur_boot_part in
-	1)
-		echo rootfs_1
-		;;
-	0|*)
-		echo rootfs
-		;;
-	esac
-}
-
-tplink_do_upgrade() {
-	local new_boot_part
-
-	case $(tplink_get_boot_part) in
-	rootfs)
-		CI_UBIPART="rootfs_1"
-		new_boot_part=1
-	;;
-	rootfs_1)
-		CI_UBIPART="rootfs"
-		new_boot_part=0
-	;;
-	esac
-
-	fw_setenv -s - <<-EOF
-		tp_boot_idx $new_boot_part
-	EOF
-
-	remove_oem_ubi_volume ubi_rootfs
-	nand_do_upgrade "$1"
-}
-
 platform_check_image() {
 	return 0;
-}
-
-
-yuncore_fap650_env_setup() {
-	local ubifile=$(board_name)
-	local active=$(fw_printenv -n owrt_slotactive)
-	[ -z "$active" ] && active=$(hexdump -s 0x94 -n 4 -e '4 "%d"' /dev/mtd$(find_mtd_index 0:bootconfig))
-	cat > /tmp/env_tmp << EOF
-owrt_slotactive=${active}
-owrt_bootcount=0
-bootfile=${ubifile}.ubi
-owrt_bootcountcheck=if test \$owrt_bootcount > 4; then run owrt_tftprecover; fi; if test \$owrt_bootcount = 3; then run owrt_slotswap; else echo bootcountcheck successfull; fi
-owrt_bootinc=if test \$owrt_bootcount < 5; then echo save env part; setexpr owrt_bootcount \${owrt_bootcount} + 1 && saveenv; else echo save env skipped; fi; echo current bootcount: \$owrt_bootcount
-bootcmd=run owrt_bootinc && run owrt_bootcountcheck && run owrt_slotselect && run owrt_bootlinux
-owrt_bootlinux=echo booting linux... && ubi part fs && ubi read 0x44000000 kernel && bootm; reset
-owrt_setslot0=setenv bootargs console=ttyMSM0,115200n8 ubi.mtd=rootfs root=mtd:rootfs rootfstype=squashfs rootwait swiotlb=1 && setenv mtdparts mtdparts=nand0:0x3c00000@0(fs)
-owrt_setslot1=setenv bootargs console=ttyMSM0,115200n8 ubi.mtd=rootfs_1 root=mtd:rootfs rootfstype=squashfs rootwait swiotlb=1 && setenv mtdparts mtdparts=nand0:0x3c00000@0x3c00000(fs)
-owrt_slotswap=setexpr owrt_slotactive 1 - \${owrt_slotactive} && saveenv && echo slot swapped. new active slot: \$owrt_slotactive
-owrt_slotselect=setenv mtdids nand0=nand0,nand1=spi0.0; if test \$owrt_slotactive = 0; then run owrt_setslot0; else run owrt_setslot1; fi
-owrt_tftprecover=echo trying to recover firmware with tftp... && sleep 10 && dhcp && flash rootfs && flash rootfs_1 && setenv owrt_bootcount 0 && setenv owrt_slotactive 0 && saveenv && reset
-owrt_env_ver=7
-EOF
-	fw_setenv --script /tmp/env_tmp
-}
-
-alfa_bootconfig_rootfs_rotate() {
-	local part="$1"
-	local offs="$2"
-
-	local mtdnum=$(find_mtd_index "$part")
-	[ -c "/dev/mtd${mtdnum}" ] || return 1
-
-	dd if=/dev/mtd${mtdnum} of=/tmp/mtd${mtdnum} bs=1k > /dev/null 2>&1
-
-	local active="$(dd if=/tmp/mtd${mtdnum} bs=1 skip=${offs} count=1 2>/dev/null)"
-	active=$(printf "%d\n" "\"$active")
-
-	if [ "$active" = "1" ]; then
-		printf '\x00' | dd of=/tmp/mtd${mtdnum} \
-			conv=notrunc bs=1 seek=${offs} > /dev/null 2>&1
-	else
-		printf '\x01' | dd of=/tmp/mtd${mtdnum} \
-			conv=notrunc bs=1 seek=${offs} > /dev/null 2>&1
-	fi
-
-	mtd -qq write /tmp/mtd${mtdnum} /dev/mtd${mtdnum} 2>/dev/null
-
-	local mtdnum_sec=$(find_mtd_index "${part}1")
-	[ -c "/dev/mtd${mtdnum_sec}" ] && \
-		mtd -qq write \
-			/tmp/mtd${mtdnum} /dev/mtd${mtdnum_sec} 2>/dev/null
-
-	return 0
 }
 
 platform_do_upgrade() {
@@ -179,6 +76,7 @@ platform_do_upgrade() {
 	tplink,eap610od|\
 	tplink,eap623od-hd-v1|\
 	tplink,eap625od-hd-v1)
+		remove_oem_ubi_volume ubi_rootfs
 		tplink_do_upgrade "$1"
 		;;
 	yuncore,fap650)

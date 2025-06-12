@@ -1,3 +1,4 @@
+. /lib/functions.sh
 . /lib/upgrade/common.sh
 
 glinet_do_fit_upgrade() {

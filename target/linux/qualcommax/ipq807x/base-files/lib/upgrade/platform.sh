@@ -4,74 +4,6 @@ REQUIRE_IMAGE_METADATA=1
 RAMFS_COPY_BIN='fw_printenv fw_setenv head'
 RAMFS_COPY_DATA='/etc/fw_env.config /var/lock/fw_printenv.lock'
 
-buffalo_upgrade_prepare() {
-	local ubi_rootdev ubi_propdev
-
-	if ! ubi_rootdev="$(nand_attach_ubi rootfs)" || ! ubi_propdev="$(nand_attach_ubi user_property)"; then
-		echo "failed to attach UBI volume \"rootfs\" or \"user_property\", rebooting..."
-		reboot -f
-	fi
-
-	ubirmvol /dev/$ubi_rootdev -N ubi_rootfs &> /dev/null || true
-	ubirmvol /dev/$ubi_rootdev -N fw_hash &> /dev/null || true
-
-	ubirmvol /dev/$ubi_propdev -N user_property_ubi &> /dev/null || true
-	ubirmvol /dev/$ubi_propdev -N extra_property &> /dev/null || true
-}
-
-buffalo_upgrade_optvol() {
-	local ubi_rootdev ubi_rcvrdev
-	local hashvol_root hashvol_rcvr
-
-	if ! ubi_rootdev="$(nand_attach_ubi rootfs)" || ! ubi_rcvrdev="$(nand_attach_ubi rootfs_recover)"; then
-		echo "failed to attach UBI volume \"rootfs\" or \"rootfs_recover\", rebooting..."
-		reboot -f
-	fi
-
-	ubimkvol /dev/$ubi_rootdev -N ubi_rootfs -S 1
-	ubimkvol /dev/$ubi_rootdev -N fw_hash -S 1 -t static
-
-	if ! hashvol_root="$(nand_find_volume $ubi_rootdev fw_hash)" || ! hashvol_rcvr="$(nand_find_volume $ubi_rcvrdev fw_hash)"; then
-		echo "\"fw_hash\" volume in \"rootfs\" or \"rootfs_recover\" not found, rebooting..."
-		reboot -f
-	fi
-
-	echo -n "00000000000000000000000000000000" > /tmp/dummyhash.txt
-	ubiupdatevol /dev/$hashvol_root /tmp/dummyhash.txt
-	ubiupdatevol /dev/$hashvol_rcvr /tmp/dummyhash.txt
-}
-
-xiaomi_initramfs_prepare() {
-	# Wipe UBI if running initramfs
-	[ "$(rootfs_type)" = "tmpfs" ] || return 0
-
-	local rootfs_mtdnum="$( find_mtd_index rootfs )"
-	if [ ! "$rootfs_mtdnum" ]; then
-		echo "unable to find mtd partition rootfs"
-		return 1
-	fi
-
-	local kern_mtdnum="$( find_mtd_index ubi_kernel )"
-	if [ ! "$kern_mtdnum" ]; then
-		echo "unable to find mtd partition ubi_kernel"
-		return 1
-	fi
-
-	ubidetach -m "$rootfs_mtdnum"
-	ubiformat /dev/mtd$rootfs_mtdnum -y
-
-	ubidetach -m "$kern_mtdnum"
-	ubiformat /dev/mtd$kern_mtdnum -y
-}
-
-asus_initial_setup() {
-	# Remove existing linux and jffs2 volumes
-	[ "$(rootfs_type)" = "tmpfs" ] || return 0
-
-	ubirmvol /dev/ubi0 -N linux
-	ubirmvol /dev/ubi0 -N jffs2
-}
-
 remove_oem_ubi_volume() {
 	local oem_volume_name="$1"
 	local oem_ubivol
@@ -92,94 +24,6 @@ remove_oem_ubi_volume() {
 	if [ "$ubidev" ]; then
 		oem_ubivol=$(nand_find_volume "$ubidev" "$oem_volume_name")
 		[ "$oem_ubivol" ] && ubirmvol "/dev/$ubidev" --name="$oem_volume_name"
-	fi
-}
-
-tplink_get_boot_part() {
-	local cur_boot_part
-	local args
-
-	# Try to find rootfs from kernel arguments
-	read -r args < /proc/cmdline
-	for arg in $args; do
-		local ubi_mtd_arg=${arg#ubi.mtd=}
-		case "$ubi_mtd_arg" in
-		rootfs|rootfs_1)
-			echo "$ubi_mtd_arg"
-			return
-		;;
-		esac
-	done
-
-	# Fallback to u-boot env (e.g. when running initramfs)
-	cur_boot_part="$(/usr/sbin/fw_printenv -n tp_boot_idx)"
-	case $cur_boot_part in
-	1)
-		echo rootfs_1
-		;;
-	0|*)
-		echo rootfs
-		;;
-	esac
-}
-
-tplink_do_upgrade() {
-	local new_boot_part
-
-	case $(tplink_get_boot_part) in
-	rootfs)
-		CI_UBIPART="rootfs_1"
-		new_boot_part=1
-	;;
-	rootfs_1)
-		CI_UBIPART="rootfs"
-		new_boot_part=0
-	;;
-	esac
-
-	fw_setenv -s - <<-EOF
-		tp_boot_idx $new_boot_part
-	EOF
-
-	remove_oem_ubi_volume ubi_rootfs
-	nand_do_upgrade "$1"
-}
-
-linksys_mx_pre_upgrade() {
-	local setenv_script="/tmp/fw_env_upgrade"
-
-	CI_UBIPART="rootfs"
-	boot_part="$(fw_printenv -n boot_part)"
-	if [ -n "$UPGRADE_OPT_USE_CURR_PART" ]; then
-		if [ "$boot_part" -eq "2" ]; then
-			CI_KERNPART="alt_kernel"
-			CI_UBIPART="alt_rootfs"
-		fi
-	else
-		if [ "$boot_part" -eq "1" ]; then
-			echo "boot_part 2" >> $setenv_script
-			CI_KERNPART="alt_kernel"
-			CI_UBIPART="alt_rootfs"
-		else
-			echo "boot_part 1" >> $setenv_script
-		fi
-	fi
-
-	boot_part_ready="$(fw_printenv -n boot_part_ready)"
-	if [ "$boot_part_ready" -ne "3" ]; then
-		echo "boot_part_ready 3" >> $setenv_script
-	fi
-
-	auto_recovery="$(fw_printenv -n auto_recovery)"
-	if [ "$auto_recovery" != "yes" ]; then
-		echo "auto_recovery yes" >> $setenv_script
-	fi
-
-	if [ -f "$setenv_script" ]; then
-		fw_setenv -s $setenv_script || {
-			echo "failed to update U-Boot environment"
-			return 1
-		}
 	fi
 }
 
@@ -325,6 +169,7 @@ platform_do_upgrade() {
 	tplink,deco-x80-5g|\
 	tplink,eap620hd-v1|\
 	tplink,eap660hd-v1)
+		remove_oem_ubi_volume ubi_rootfs
 		tplink_do_upgrade "$1"
 		;;
 	yuncore,ax880)

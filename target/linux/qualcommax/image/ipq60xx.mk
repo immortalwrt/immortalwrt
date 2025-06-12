@@ -231,7 +231,7 @@ define Device/anysafe_e1
 	PAGESIZE := 2048
 	SOC := ipq6010
 	DEVICE_DTS_CONFIG := config@cp01-c3
-	DEVICE_PACKAGES := ipq-wifi-anysafe_e1 kmod-hwmon-pwmfan
+	DEVICE_PACKAGES := ipq-wifi-anysafe_e1 kmod-hwmon-pwmfan luci-app-fancontrol luci-i18n-fancontrol-zh-cn
 endef
 TARGET_DEVICES += anysafe_e1
 

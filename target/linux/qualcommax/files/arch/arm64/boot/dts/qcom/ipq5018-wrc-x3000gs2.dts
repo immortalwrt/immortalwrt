@@ -160,7 +160,7 @@
 	status = "okay";
 
 	label = "wan";
-	nvmem-cells = <&macaddr_appsblenv_ethaddr 3>;
+	nvmem-cells = <&macaddr_appsblenv_ethaddr 2>;
 	nvmem-cell-names = "mac-address";
 };
 

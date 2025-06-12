@@ -1,4 +1,5 @@
 . /lib/functions.sh
+. /lib/upgrade/common.sh
 
 bootconfig_find_entry() {
 	local cfgbin="$1"
