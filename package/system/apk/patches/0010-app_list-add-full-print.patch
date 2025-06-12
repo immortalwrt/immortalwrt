@@ -66,7 +66,7 @@ Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
  	if (ctx->manifest) {
  		printf("%s " BLOB_FMT "\n", pkg->name->name, BLOB_PRINTF(*pkg->version));
  		return;
-@@ -96,6 +137,7 @@ static void print_package(const struct apk_database *db, const struct apk_name *
+@@ -96,6 +137,7 @@ static void print_package(const struct a
  	OPT(OPT_LIST_depends,		APK_OPT_SH("d") "depends") \
  	OPT(OPT_LIST_installed,		APK_OPT_SH("I")) \
  	OPT(OPT_LIST_manifest,		"manifest") \
@@ -74,7 +74,7 @@ Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
  	OPT(OPT_LIST_origin,		APK_OPT_SH("o") "origin") \
  	OPT(OPT_LIST_orphaned,		APK_OPT_SH("O")) \
  	OPT(OPT_LIST_providers,		APK_OPT_SH("P") "providers") \
-@@ -109,6 +151,9 @@ static int list_parse_option(void *pctx, struct apk_ctx *ac, int opt, const char
+@@ -109,6 +151,9 @@ static int list_parse_option(void *pctx,
  	struct apk_query_spec *qs = &ac->query;
  
  	switch (opt) {
@@ -84,7 +84,7 @@ Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
  	case OPT_LIST_available:
  		qs->filter.available = 1;
  		break;
-@@ -117,6 +162,7 @@ static int list_parse_option(void *pctx, struct apk_ctx *ac, int opt, const char
+@@ -117,6 +162,7 @@ static int list_parse_option(void *pctx,
  		break;
  	case OPT_LIST_installed:
  	installed:
