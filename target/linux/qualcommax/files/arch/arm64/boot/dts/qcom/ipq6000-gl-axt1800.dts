@@ -137,7 +137,6 @@
 	cd-gpios = <&tlmm 62 GPIO_ACTIVE_LOW>;
 	vqmmc-supply = <&vcc_sd>;
 	bus-width = <4>;
-	mmc-ddr-1_8v;
 };
 
 &switch {

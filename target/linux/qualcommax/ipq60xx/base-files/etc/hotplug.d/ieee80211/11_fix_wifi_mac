@@ -17,8 +17,8 @@ case "$board" in
 		;;
 	anysafe,e1)
 		[ "$PHYNBR" = "0" ] && mtd_get_mac_binary 0:ART 0x0 > /sys${DEVPATH}/macaddress
-		[ "$PHYNBR" = "1" ] && mtd_get_mac_binary 0:ART 0x6 > /sys${DEVPATH}/macaddress
-		[ "$PHYNBR" = "2" ] && mtd_get_mac_binary 0:ART 0xc > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && mtd_get_mac_binary 0:ART 0x0 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "2" ] && mtd_get_mac_binary 0:ART 0x0 > /sys${DEVPATH}/macaddress
 		;;
 	cmiot,ax18|\
 	zn,m2)

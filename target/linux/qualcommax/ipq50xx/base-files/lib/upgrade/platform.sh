@@ -31,6 +31,14 @@ platform_check_image() {
 	return 0;
 }
 
+platform_pre_upgrade() {
+	case "$(board_name)" in
+	xiaomi,ax6000)
+		xiaomi_initramfs_prepare
+		;;
+	esac
+}
+
 platform_do_upgrade() {
 	case "$(board_name)" in
 	elecom,wrc-x3000gs2|\
@@ -57,6 +65,23 @@ platform_do_upgrade() {
 	linksys,spnmx56)
 		linksys_mx_pre_upgrade "$1"
 		remove_oem_ubi_volume squashfs
+		nand_do_upgrade "$1"
+		;;
+	xiaomi,ax6000)
+		# Make sure that UART is enabled
+		fw_setenv boot_wait on
+		fw_setenv uart_en 1
+
+		# Enforce single partition.
+		fw_setenv flag_boot_rootfs 0
+		fw_setenv flag_last_success 0
+		fw_setenv flag_boot_success 1
+		fw_setenv flag_try_sys1_failed 8
+		fw_setenv flag_try_sys2_failed 8
+
+		# Kernel and rootfs are placed in 2 different UBI
+		CI_KERN_UBIPART="ubi_kernel"
+		CI_ROOT_UBIPART="rootfs"
 		nand_do_upgrade "$1"
 		;;
 	jdcloud,re-cs-03)

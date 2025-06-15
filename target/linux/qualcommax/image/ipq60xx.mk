@@ -45,7 +45,7 @@ define Device/cambiumnetworks_xe3-4
 	PAGESIZE := 2048
 	SOC := ipq6010
 	DEVICE_DTS_CONFIG := config@cp01-c3-xv3-4
-	DEVICE_PACKAGES := ipq-wifi-cambiumnetworks_xe34 ath11k-firmware-qcn9074 kmod-ath11k-pci
+	DEVICE_PACKAGES := ipq-wifi-cambiumnetworks_xe34 ath11k-firmware-qcn9074
 endef
 TARGET_DEVICES += cambiumnetworks_xe3-4
 
@@ -104,7 +104,7 @@ define Device/linksys_mr7500
 	SOC := ipq6010
 	NAND_SIZE := 512m
 	IMAGE_SIZE := 147456k
-	DEVICE_PACKAGES += ipq-wifi-linksys_mr7500 ath11k-firmware-qcn9074 kmod-ath11k-pci kmod-leds-pwm kmod-phy-aquantia
+	DEVICE_PACKAGES += ipq-wifi-linksys_mr7500 ath11k-firmware-qcn9074
 endef
 TARGET_DEVICES += linksys_mr7500
 
@@ -231,7 +231,7 @@ define Device/anysafe_e1
 	PAGESIZE := 2048
 	SOC := ipq6010
 	DEVICE_DTS_CONFIG := config@cp01-c3
-	DEVICE_PACKAGES := ipq-wifi-anysafe_e1 kmod-hwmon-pwmfan luci-app-fancontrol luci-i18n-fancontrol-zh-cn
+	DEVICE_PACKAGES := ipq-wifi-anysafe_e1 ath11k-firmware-qcn9074 kmod-hwmon-pwmfan
 endef
 TARGET_DEVICES += anysafe_e1
 
@@ -344,7 +344,7 @@ define Device/jdcloud_re-cs-02
 	BLOCKSIZE := 128k
 	SOC := ipq6010
 	DEVICE_DTS_CONFIG := config@cp03-c3
-	DEVICE_PACKAGES := ipq-wifi-jdcloud_re-cs-02 ath11k-firmware-qcn9074 kmod-ath11k-pci luci-app-athena-led luci-i18n-athena-led-zh-cn
+	DEVICE_PACKAGES := ipq-wifi-jdcloud_re-cs-02 ath11k-firmware-qcn9074 luci-app-athena-led luci-i18n-athena-led-zh-cn
 	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | append-metadata
 endef
 TARGET_DEVICES += jdcloud_re-cs-02

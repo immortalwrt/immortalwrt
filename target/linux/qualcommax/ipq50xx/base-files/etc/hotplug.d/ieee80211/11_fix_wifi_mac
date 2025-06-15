@@ -1,0 +1,32 @@
+[ "$ACTION" == "add" ] || exit 0
+
+PHYNBR=${DEVPATH##*/phy}
+
+[ -n $PHYNBR ] || exit 0
+
+. /lib/functions.sh
+. /lib/functions/system.sh
+
+board=$(board_name)
+
+case "$board" in
+	elecom,wrc-x3000gs2|\
+	iodata,wn-dax3000gr)
+		[ "$PHYNBR" = "0" ] && mtd_get_mac_ascii 0:appsblenv wifi0 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && mtd_get_mac_ascii 0:appsblenv wifi1 > /sys${DEVPATH}/macaddress
+		;;
+	glinet,gl-b3000)
+		label_mac=$(get_mac_label_dt)
+		[ "$PHYNBR" = "0" ] && macaddr_add $label_mac 3 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && macaddr_add $label_mac 4 > /sys${DEVPATH}/macaddress
+		;;
+	linksys,mr5500|\
+	linksys,mx2000|\
+	linksys,mx5500|\
+	linksys,spnmx56)
+		label_mac=$(mtd_get_mac_ascii devinfo hw_mac_addr)
+		[ "$PHYNBR" = "0" ] && macaddr_add $label_mac 1 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && macaddr_add $label_mac 2 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "2" ] && macaddr_add $label_mac 3 > /sys${DEVPATH}/macaddress
+		;;
+esac

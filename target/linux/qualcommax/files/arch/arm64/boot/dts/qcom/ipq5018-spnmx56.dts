@@ -45,11 +45,11 @@
 	qca8081: ethernet-phy@28 {
 		compatible = "ethernet-phy-id004d.d101";
 		reg = <28>;
-		reset-deassert-us = <10000>;
 		reset-gpios = <&tlmm 24 GPIO_ACTIVE_LOW>;
+		reset-deassert-us = <10000>;
 	};
 
-	switch1: ethernet-switch@17 {
+	qca8337: ethernet-switch@17 {
 		ports {
 			#address-cells = <1>;
 			#size-cells = <0>;

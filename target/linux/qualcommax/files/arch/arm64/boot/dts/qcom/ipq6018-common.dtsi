@@ -98,3 +98,37 @@
 &usb3 {
 	status = "okay";
 };
+
+&cpu_opp_table {
+	opp-864000000 {
+		opp-supported-hw = <0xf>;
+	};
+
+	opp-1056000000 {
+		opp-supported-hw = <0xf>;
+	};
+
+	opp-1200000000 {
+		opp-supported-hw = <0xf>;
+	};
+
+	opp-1320000000 {
+		opp-supported-hw = <0xf>;
+	};
+
+	opp-1440000000 {
+		opp-supported-hw = <0xf>;
+	};
+
+	opp-1512000000 {
+		opp-supported-hw = <0xf>;
+	};
+
+	opp-1608000000 {
+		opp-supported-hw = <0x1>;
+	};
+
+	opp-1800000000 {
+		opp-supported-hw = <0x1>;
+	};
+};

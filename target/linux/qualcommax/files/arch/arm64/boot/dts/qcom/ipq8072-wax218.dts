@@ -27,10 +27,6 @@
 
 	chosen {
 		stdout-path = "serial0:115200n8";
-		/*
-		 * Netgear's U-Boot adds "ubi.mtd=rootfs root=mtd:ubi_rootfs"
-		 * That fails to create a UBI block device, so add it here.
-		*/
 		bootargs-append = " ubi.block=0,rootfs root=/dev/ubiblock0_1";
 	};
 

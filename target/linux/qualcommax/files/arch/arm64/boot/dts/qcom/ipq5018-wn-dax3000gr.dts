@@ -206,7 +206,7 @@
 		reg = <3>;
 	};
 
-	switch1: ethernet-switch@18 {
+	qca8337: ethernet-switch@18 {
 		compatible = "qca,qca8337";
 		#address-cells = <1>;
 		#size-cells = <0>;
