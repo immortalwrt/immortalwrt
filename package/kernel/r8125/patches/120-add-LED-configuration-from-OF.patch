@@ -15,7 +15,7 @@
 +static int
 +rtl8125_led_configuration(struct rtl8125_private *tp)
 +{
-+        const int led_regs[] = { 0x18, 0x86, 0x84, 0x96 }; /* LEDSEL 0-3 */
++        const int led_regs[] = { CustomLED, LEDSEL_1_8125, LEDSEL_2_8125, LEDSEL_3_8125 };
 +        u32 led_data[4];
 +        int ret, i;
 +
