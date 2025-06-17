@@ -322,7 +322,7 @@ menu "Target Images"
 		depends on USES_BOOT_PART
 		default 8 if TARGET_apm821xx_sata
 		default 16 if TARGET_rockchip
-		default 64 if TARGET_bcm27xx
+		default 64 if TARGET_bcm27xx || TARGET_sunxi_cortexa53
 		default 128 if TARGET_armsr
 		default 32
 
