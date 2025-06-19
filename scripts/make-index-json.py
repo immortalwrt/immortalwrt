@@ -42,7 +42,8 @@ def parse_apk(text: str) -> dict:
         for tag in package.get("tags", []):
             if tag.startswith("openwrt:abiversion="):
                 package_abi: str = tag.split("=")[-1]
-                package_name = package_name.removesuffix(package_abi)
+                if package_name.endswith(package_abi):
+                    package_name = package_name[:-len(package_abi)]
                 break
 
         packages[package_name] = package["version"]
@@ -59,7 +60,8 @@ def parse_opkg(text: str) -> dict:
         package: dict = parser.parsestr(chunk, headersonly=True)
         package_name: str = package["Package"]
         if package_abi := package.get("ABIVersion"):
-            package_name = package_name.removesuffix(package_abi)
+            if package_name.endswith(package_abi):
+                package_name = package_name[:-len(package_abi)]
 
         packages[package_name] = package["Version"]
 
