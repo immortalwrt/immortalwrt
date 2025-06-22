@@ -390,7 +390,7 @@
  /**
   *	napi_alloc_skb - allocate skbuff for rx in a specific NAPI instance
   *	@napi: napi instance this buffer was allocated for
-@@ -1120,7 +1248,8 @@ static void skb_free_head(struct sk_buff
+@@ -1108,7 +1236,8 @@ static void skb_free_head(struct sk_buff
  	}
  }
  
@@ -400,7 +400,7 @@
  {
  	struct skb_shared_info *shinfo = skb_shinfo(skb);
  	int i;
-@@ -1160,7 +1289,7 @@ exit:
+@@ -1148,7 +1277,7 @@ exit:
  /*
   *	Free an skbuff by memory without cleaning the state.
   */
@@ -409,7 +409,7 @@
  {
  	struct sk_buff_fclones *fclones;
  
-@@ -1204,11 +1333,12 @@ void skb_release_head_state(struct sk_bu
+@@ -1192,11 +1321,12 @@ void skb_release_head_state(struct sk_bu
  }
  
  /* Free everything but the sk_buff shell. */
@@ -424,7 +424,7 @@
  }
  
  /**
-@@ -1222,7 +1352,7 @@ static void skb_release_all(struct sk_bu
+@@ -1210,7 +1340,7 @@ static void skb_release_all(struct sk_bu
  
  void __kfree_skb(struct sk_buff *skb)
  {
@@ -433,7 +433,7 @@
  	kfree_skbmem(skb);
  }
  EXPORT_SYMBOL(__kfree_skb);
-@@ -1259,8 +1389,13 @@ bool __sk_skb_reason_drop(struct sock *s
+@@ -1247,8 +1377,13 @@ bool __sk_skb_reason_drop(struct sock *s
  void __fix_address
  sk_skb_reason_drop(struct sock *sk, struct sk_buff *skb, enum skb_drop_reason reason)
  {
@@ -448,7 +448,7 @@
  }
  EXPORT_SYMBOL(sk_skb_reason_drop);
  
-@@ -1281,7 +1416,7 @@ static void kfree_skb_add_bulk(struct sk
+@@ -1269,7 +1404,7 @@ static void kfree_skb_add_bulk(struct sk
  		return;
  	}
  
@@ -457,7 +457,7 @@
  	sa->skb_array[sa->skb_count++] = skb;
  
  	if (unlikely(sa->skb_count == KFREE_SKB_BULK_SIZE)) {
-@@ -1439,7 +1574,6 @@ void skb_tx_error(struct sk_buff *skb)
+@@ -1427,7 +1562,6 @@ void skb_tx_error(struct sk_buff *skb)
  }
  EXPORT_SYMBOL(skb_tx_error);
  
@@ -465,7 +465,7 @@
  /**
   *	consume_skb - free an skbuff
   *	@skb: buffer to free
-@@ -1448,18 +1582,93 @@ EXPORT_SYMBOL(skb_tx_error);
+@@ -1436,18 +1570,93 @@ EXPORT_SYMBOL(skb_tx_error);
   *	Functions identically to kfree_skb, but kfree_skb assumes that the frame
   *	is being dropped after a failure and notes that
   */
@@ -560,7 +560,7 @@
   *	__consume_stateless_skb - free an skbuff, assuming it is stateless
   *	@skb: buffer to free
   *
-@@ -1469,7 +1678,7 @@ EXPORT_SYMBOL(consume_skb);
+@@ -1457,7 +1666,7 @@ EXPORT_SYMBOL(consume_skb);
  void __consume_stateless_skb(struct sk_buff *skb)
  {
  	trace_consume_skb(skb, __builtin_return_address(0));
@@ -569,7 +569,7 @@
  	kfree_skbmem(skb);
  }
  
-@@ -1498,7 +1707,7 @@ static void napi_skb_cache_put(struct sk
+@@ -1486,7 +1695,7 @@ static void napi_skb_cache_put(struct sk
  
  void __napi_kfree_skb(struct sk_buff *skb, enum skb_drop_reason reason)
  {
@@ -578,7 +578,7 @@
  	napi_skb_cache_put(skb);
  }
  
-@@ -1536,7 +1745,7 @@ void napi_consume_skb(struct sk_buff *sk
+@@ -1524,7 +1733,7 @@ void napi_consume_skb(struct sk_buff *sk
  		return;
  	}
  
@@ -587,7 +587,7 @@
  	napi_skb_cache_put(skb);
  }
  EXPORT_SYMBOL(napi_consume_skb);
-@@ -1562,6 +1771,11 @@ static void __copy_skb_header(struct sk_
+@@ -1550,6 +1759,11 @@ static void __copy_skb_header(struct sk_
  	new->queue_mapping = old->queue_mapping;
  
  	memcpy(&new->headers, &old->headers, sizeof(new->headers));
@@ -599,7 +599,7 @@
  	CHECK_SKB_FIELD(protocol);
  	CHECK_SKB_FIELD(csum);
  	CHECK_SKB_FIELD(hash);
-@@ -1667,7 +1881,7 @@ EXPORT_SYMBOL_GPL(alloc_skb_for_msg);
+@@ -1655,7 +1869,7 @@ EXPORT_SYMBOL_GPL(alloc_skb_for_msg);
   */
  struct sk_buff *skb_morph(struct sk_buff *dst, struct sk_buff *src)
  {
@@ -608,7 +608,7 @@
  	return __skb_clone(dst, src);
  }
  EXPORT_SYMBOL_GPL(skb_morph);
-@@ -2293,6 +2507,7 @@ int pskb_expand_head(struct sk_buff *skb
+@@ -2281,6 +2495,7 @@ int pskb_expand_head(struct sk_buff *skb
  	if (skb_pfmemalloc(skb))
  		gfp_mask |= __GFP_MEMALLOC;
  
@@ -616,7 +616,7 @@
  	data = kmalloc_reserve(&size, gfp_mask, NUMA_NO_NODE, NULL);
  	if (!data)
  		goto nodata;
-@@ -2323,7 +2538,7 @@ int pskb_expand_head(struct sk_buff *skb
+@@ -2311,7 +2526,7 @@ int pskb_expand_head(struct sk_buff *skb
  		if (skb_has_frag_list(skb))
  			skb_clone_fraglist(skb);
  
@@ -625,7 +625,7 @@
  	} else {
  		skb_free_head(skb);
  	}
-@@ -2353,6 +2568,10 @@ int pskb_expand_head(struct sk_buff *skb
+@@ -2341,6 +2556,10 @@ int pskb_expand_head(struct sk_buff *skb
  	if (!skb->sk || skb->destructor == sock_edemux)
  		skb->truesize += size - osize;
  
@@ -636,7 +636,7 @@
  	return 0;
  
  nofrags:
-@@ -5122,6 +5341,17 @@ static void skb_extensions_init(void) {}
+@@ -5110,6 +5329,17 @@ static void skb_extensions_init(void) {}
  
  void __init skb_init(void)
  {
@@ -654,7 +654,7 @@
  	net_hotdata.skbuff_cache = kmem_cache_create_usercopy("skbuff_head_cache",
  					      sizeof(struct sk_buff),
  					      0,
-@@ -5147,6 +5377,7 @@ void __init skb_init(void)
+@@ -5135,6 +5365,7 @@ void __init skb_init(void)
  						SKB_SMALL_HEAD_HEADROOM,
  						NULL);
  	skb_extensions_init();
@@ -662,7 +662,7 @@
  }
  
  static int
-@@ -6681,6 +6912,7 @@ static int pskb_carve_inside_header(stru
+@@ -6669,6 +6900,7 @@ static int pskb_carve_inside_header(stru
  	if (skb_pfmemalloc(skb))
  		gfp_mask |= __GFP_MEMALLOC;
  
@@ -670,7 +670,7 @@
  	data = kmalloc_reserve(&size, gfp_mask, NUMA_NO_NODE, NULL);
  	if (!data)
  		return -ENOMEM;
-@@ -6704,7 +6936,7 @@ static int pskb_carve_inside_header(stru
+@@ -6692,7 +6924,7 @@ static int pskb_carve_inside_header(stru
  			skb_frag_ref(skb, i);
  		if (skb_has_frag_list(skb))
  			skb_clone_fraglist(skb);
@@ -679,7 +679,7 @@
  	} else {
  		/* we can reuse existing recount- all we did was
  		 * relocate values
-@@ -6797,6 +7029,7 @@ static int pskb_carve_inside_nonlinear(s
+@@ -6785,6 +7017,7 @@ static int pskb_carve_inside_nonlinear(s
  	if (skb_pfmemalloc(skb))
  		gfp_mask |= __GFP_MEMALLOC;
  
@@ -687,7 +687,7 @@
  	data = kmalloc_reserve(&size, gfp_mask, NUMA_NO_NODE, NULL);
  	if (!data)
  		return -ENOMEM;
-@@ -6844,7 +7077,7 @@ static int pskb_carve_inside_nonlinear(s
+@@ -6832,7 +7065,7 @@ static int pskb_carve_inside_nonlinear(s
  		skb_kfree_head(data, size);
  		return -ENOMEM;
  	}
