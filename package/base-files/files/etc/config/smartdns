@@ -1,0 +1,58 @@
+
+config smartdns
+	option enabled '0'
+	option server_name 'smartdns'
+	option port '53'
+	option auto_set_dnsmasq '1'
+	option tcp_server '1'
+	option ipv6_server '1'
+	option bind_device '1'
+	option dualstack_ip_selection '1'
+	option serve_expired '1'
+	option cache_persist '1'
+	option resolve_local_hostnames '1'
+	option force_https_soa '1'
+	option rr_ttl_min '600'
+	option seconddns_port '6553'
+	option seconddns_tcp_server '1'
+	option old_port '53'
+	option old_enabled '0'
+	option old_auto_set_dnsmasq '1'
+
+config domain-rule
+
+config server
+	option enabled '1'
+	option name 'cf'
+	option ip '1.1.1.1'
+	option port '853'
+	option type 'tls'
+
+config server
+	option enabled '1'
+	option name 'google'
+	option ip '8.8.8.8'
+	option port '853'
+	option type 'tls'
+
+config server
+	option enabled '1'
+	option name 'cf2'
+	option ip '1.0.0.1'
+	option type 'tls'
+	option port '853'
+
+config server
+	option enabled '1'
+	option name 'cf6'
+	option ip '2606:4700:4700::1111'
+	option type 'tls'
+	option port '853'
+
+config server
+	option enabled '1'
+	option name 'cf2-ipv6'
+	option ip '2606:4700:4700::1001'
+	option type 'tls'
+	option port '853'
+

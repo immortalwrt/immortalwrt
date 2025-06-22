@@ -1,0 +1,10 @@
+#
+# TTL Setting
+#
+
+#startTTL1
+iptables -t mangle -I POSTROUTING -o wwan0 -j TTL --ttl-set 64
+iptables -t mangle -I PREROUTING -i wwan0 -j TTL --ttl-set 64
+ip6tables -t mangle -I POSTROUTING -o wwan0 -j HL --hl-set 64
+ip6tables -t mangle -I PREROUTING -i wwan0 -j HL --hl-set 64
+#endTTL1
