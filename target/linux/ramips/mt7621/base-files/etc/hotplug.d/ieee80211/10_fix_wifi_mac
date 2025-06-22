@@ -131,9 +131,9 @@ case "$board" in
 			macaddr_setbit_la "$(mtd_get_mac_binary Factory 0x4)" > /sys${DEVPATH}/macaddress
 		;;
 	jdcloud,re-sp-01b)
-		addr=$(macaddr_canonicalize "$(strings "$(find_mtd_part config)" | sed -n 's/^'"mac"'=//p' | head -n1)")
-		[ "$PHYNBR" = "0" ] && echo $addr > /sys${DEVPATH}/macaddress
-		[ "$PHYNBR" = "1" ] && macaddr_add $addr 0x800000 > /sys${DEVPATH}/macaddress
+		hw_mac_addr=$(mtd_get_mac_ascii config mac)
+		[ "$PHYNBR" = "0" ] && echo $hw_mac_addr > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && macaddr_add $hw_mac_addr 0x800000 > /sys${DEVPATH}/macaddress
 		;;
 	keenetic,kn-1910)
 		lan_mac_addr="$(mtd_get_mac_binary RF-EEPROM 0x4)"
