@@ -34,7 +34,7 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
  	&foresee_spinand_manufacturer,
 --- /dev/null
 +++ b/drivers/mtd/nand/spi/dosilicon.c
-@@ -0,0 +1,279 @@
+@@ -0,0 +1,278 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2020 Rockchip Electronics Co., Ltd.
@@ -54,7 +54,6 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
 +
 +static SPINAND_OP_VARIANTS(read_cache_variants,
 +		SPINAND_PAGE_READ_FROM_CACHE_X4_OP(0, 1, NULL, 0),
-+		SPINAND_PAGE_READ_FROM_CACHE_X2_OP(0, 1, NULL, 0),
 +		SPINAND_PAGE_READ_FROM_CACHE_OP(true, 0, 1, NULL, 0),
 +		SPINAND_PAGE_READ_FROM_CACHE_OP(false, 0, 1, NULL, 0));
 +
