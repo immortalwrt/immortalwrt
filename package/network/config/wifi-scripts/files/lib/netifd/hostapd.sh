@@ -64,9 +64,11 @@ hostapd_append_wpa_key_mgmt() {
 			[ "${ieee80211r:-0}" -gt 0 ] && append wpa_key_mgmt "FT-SAE"
 		;;
 		psk-sae)
-			append wpa_key_mgmt "WPA-PSK"
-			[ "${ieee80211r:-0}" -gt 0 ] && append wpa_key_mgmt "FT-PSK"
-			[ "${ieee80211w:-0}" -gt 0 ] && append wpa_key_mgmt "WPA-PSK-SHA256"
+			[ "$band" = "6g" ] || {
+				append wpa_key_mgmt "WPA-PSK"
+				[ "${ieee80211r:-0}" -gt 0 ] && append wpa_key_mgmt "FT-PSK"
+				[ "${ieee80211w:-0}" -gt 0 ] && append wpa_key_mgmt "WPA-PSK-SHA256"
+			}
 			append wpa_key_mgmt "SAE"
 			[ "${ieee80211r:-0}" -gt 0 ] && append wpa_key_mgmt "FT-SAE"
 		;;
@@ -691,7 +693,11 @@ hostapd_set_bss_options() {
 			[ "$ppsk" -eq 0 ] && set_default sae_pwe 2
 		;;
 		psk-sae|eap-eap2)
-			set_default ieee80211w 1
+			if [ "$band" = 6g ]; then
+				set_default ieee80211w 2
+			else
+				set_default ieee80211w 1
+			fi
 			set_default sae_require_mfp 1
 			[ "$ppsk" -eq 0 ] && set_default sae_pwe 2
 		;;

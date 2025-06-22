@@ -19,7 +19,7 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
 +++ b/drivers/mtd/nand/spi/Makefile
 @@ -1,4 +1,5 @@
  # SPDX-License-Identifier: GPL-2.0
- spinand-objs := core.o alliancememory.o ato.o esmt.o etron.o fidelix.o foresee.o gigadevice.o
+ spinand-objs := core.o alliancememory.o ato.o esmt.o etron.o foresee.o gigadevice.o
 +spinand-objs += dosilicon.o
  spinand-objs += macronix.o micron.o paragon.o toshiba.o winbond.o xtx.o
  obj-$(CONFIG_MTD_SPI_NAND) += spinand.o
@@ -32,10 +32,10 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
 +	&dosilicon_spinand_manufacturer,
  	&esmt_c8_spinand_manufacturer,
  	&etron_spinand_manufacturer,
- 	&fidelix_spinand_manufacturer,
+ 	&foresee_spinand_manufacturer,
 --- /dev/null
 +++ b/drivers/mtd/nand/spi/dosilicon.c
-@@ -0,0 +1,281 @@
+@@ -0,0 +1,278 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2020 Rockchip Electronics Co., Ltd.
@@ -54,10 +54,7 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
 +#define DOSICON_STATUS_ECC_7TO8_BITFLIPS	(5 << 4)
 +
 +static SPINAND_OP_VARIANTS(read_cache_variants,
-+		SPINAND_PAGE_READ_FROM_CACHE_QUADIO_OP(0, 2, NULL, 0),
 +		SPINAND_PAGE_READ_FROM_CACHE_X4_OP(0, 1, NULL, 0),
-+		SPINAND_PAGE_READ_FROM_CACHE_DUALIO_OP(0, 1, NULL, 0),
-+		SPINAND_PAGE_READ_FROM_CACHE_X2_OP(0, 1, NULL, 0),
 +		SPINAND_PAGE_READ_FROM_CACHE_OP(true, 0, 1, NULL, 0),
 +		SPINAND_PAGE_READ_FROM_CACHE_OP(false, 0, 1, NULL, 0));
 +
@@ -326,4 +323,4 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
 +extern const struct spinand_manufacturer dosilicon_spinand_manufacturer;
  extern const struct spinand_manufacturer esmt_c8_spinand_manufacturer;
  extern const struct spinand_manufacturer etron_spinand_manufacturer;
- extern const struct spinand_manufacturer fidelix_spinand_manufacturer;
+ extern const struct spinand_manufacturer foresee_spinand_manufacturer;

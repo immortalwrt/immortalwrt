@@ -283,7 +283,7 @@ ramips_setup_macs()
 		wan_mac=$(macaddr_add "$lan_mac" 1)
 		;;
 	jdcloud,re-sp-01b)
-		lan_mac=$(macaddr_canonicalize "$(strings "$(find_mtd_part config)" | sed -n 's/^'"mac"'=//p' | head -n1)")
+		lan_mac=$(mtd_get_mac_ascii config mac)
 		wan_mac=$lan_mac
 		label_mac=$lan_mac
 		;;
