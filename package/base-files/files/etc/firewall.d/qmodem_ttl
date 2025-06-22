@@ -1,0 +1,4 @@
+iptables -t mangle -A POSTROUTING -j TTL --ttl-set 64 -m comment --comment modem_ttl
+ip6tables -t mangle -A POSTROUTING -j HL --hl-set 64 -m comment --comment modem_ttl
+iptables -t mangle -A POSTROUTING -j TTL --ttl-set 64 -m comment --comment modem_ttl
+ip6tables -t mangle -A POSTROUTING -j HL --hl-set 64 -m comment --comment modem_ttl

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+log () {
+	modlog "$@"
+}
+
+[ "$ACTION" = ifup -o "$ACTION" = ifupdate ] || exit 0
+	sleep 2
+	sh /etc/config/rirq
+  logger "CustomSC - Reloading IRQs when $INTERFACE ($DEVICE) is now up"
+	fi
+fi

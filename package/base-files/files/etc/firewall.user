@@ -1,0 +1,14 @@
+# This file is interpreted as shell script.
+# Put your custom iptables rules here, they will
+# be executed with each firewall (re-)start.
+
+# Internal uci firewall chains are flushed and recreated on reload, so
+# put custom rules into the root chains e.g. INPUT or FORWARD or into the
+# special user chains, e.g. input_wan_rule or postrouting_lan_rule.
+
+set_ttl=64
+
+iptables -t mangle -A PREROUTING -j TTL --ttl-set 64
+iptables -t mangle -A POSTROUTING -j TTL --ttl-set 64
+ip6tables -t mangle -A PREROUTING -i wwan0 -j HL --hl-set 64
+ip6tables -t mangle -A POSTROUTING -o wwan0 -j HL --hl-set 64
