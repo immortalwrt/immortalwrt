@@ -41,10 +41,6 @@ define KernelPackage/cryptodev/description
   via a "/dev/crypto" device.
 endef
 
-ifneq ($(CONFIG_PACKAGE_kmod-crypto-qce),)
-EXTRA_CFLAGS+=-DQCA
-endif
-
 ifneq ($(CONFIG_PACKAGE_kmod-qca-nss-crypto),)
 EXTRA_CFLAGS+=-DQCANSS
 endif
