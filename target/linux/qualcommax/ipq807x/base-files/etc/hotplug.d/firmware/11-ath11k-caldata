@@ -35,6 +35,7 @@ case "$FIRMWARE" in
 	xiaomi,ax3600|\
 	xiaomi,ax3600-stock|\
 	xiaomi,ax9000|\
+	xiaomi,ax9000-stock|\
 	yuncore,ax880|\
 	zte,mf269|\
 	zte,mf269-stock)

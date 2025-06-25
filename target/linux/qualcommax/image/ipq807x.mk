@@ -501,6 +501,17 @@ endif
 endef
 TARGET_DEVICES += xiaomi_ax9000
 
+define Device/xiaomi_ax9000-stock
+	$(call Device/xiaomi_ax9000)
+	DEVICE_VARIANT := (stock layout)
+	DEVICE_ALT0_VENDOR := Xiaomi
+	DEVICE_ALT0_MODEL := AX9000
+	DEVICE_ALT0_VARIANT := (custom U-Boot layout)
+	KERNEL_SIZE :=
+	ARTIFACTS :=
+endef
+TARGET_DEVICES += xiaomi_ax9000-stock
+
 define Device/yuncore_ax880
 	$(call Device/FitImage)
 	$(call Device/UbiFit)

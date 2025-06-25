@@ -64,7 +64,8 @@ redmi,ax6|\
 redmi,ax6-stock|\
 xiaomi,ax3600|\
 xiaomi,ax3600-stock|\
-xiaomi,ax9000)
+xiaomi,ax9000|\
+xiaomi,ax9000-stock)
 	ubootenv_add_mtd "0:appsblenv" "0x0" "0x10000" "0x20000"
 	ubootenv_add_sys_mtd "bdata" "0x0" "0x10000" "0x20000"
 	;;

@@ -12,6 +12,9 @@ case "$FIRMWARE" in
 	xiaomi,ax3600-stock)
 		caldata_extract "0:art" 0x33000 0x844
 		;;
+	xiaomi,ax9000-stock)
+		caldata_extract "0:art" 0x4d000 0x844
+		;;
 	esac
 	;;
 *)
