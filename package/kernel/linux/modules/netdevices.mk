@@ -255,6 +255,21 @@ endef
 
 $(eval $(call KernelPackage,et131x))
 
+define KernelPackage/phy-maxlinear
+   SUBMENU:=$(NETWORK_DEVICES_MENU)
+   TITLE:=Maxlinear Ethernet PHY driver
+   KCONFIG:=CONFIG_MAXLINEAR_GPHY
+   DEPENDS:=+kmod-libphy +kmod-hwmon-core +kmod-polynomial
+   FILES:=$(LINUX_DIR)/drivers/net/phy/mxl-gpy.ko
+   AUTOLOAD:=$(call AutoLoad,18,mxl-gpy,1)
+endef
+
+define KernelPackage/phy-maxlinear/description
+   Support Maxlinear Ethernet PHYs.
+endef
+
+$(eval $(call KernelPackage,phy-maxlinear))
+
 define KernelPackage/phy-microchip
    SUBMENU:=$(NETWORK_DEVICES_MENU)
    TITLE:=Microchip Ethernet PHY driver
@@ -1857,6 +1872,21 @@ endef
 
 $(eval $(call KernelPackage,net-selftests))
 
+define KernelPackage/qcom-ppe
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  DEPENDS:=@TARGET_qualcommbe +kmod-libphy +kmod-pcs-qcom-ipq9574
+  TITLE:=Qualcomm PPE ethernet controller
+  KCONFIG:= CONFIG_QCOM_PPE
+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/qualcomm/ppe/qcom-ppe.ko
+  AUTOLOAD:=$(call AutoProbe,qcom-ppe)
+endef
+
+define KernelPackage/qcom-ppe/description
+  This driver supports Qualcomm PPE ethternet controller
+  devices.
+endef
+
+$(eval $(call KernelPackage,qcom-ppe))
 
 define KernelPackage/qlcnic
   SUBMENU:=$(NETWORK_DEVICES_MENU)
@@ -1922,6 +1952,16 @@ endef
 
 $(eval $(call KernelPackage,sfp))
 
+define KernelPackage/pcs-qcom-ipq9574
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Qualcomm IPQ9574 PCS driver
+  DEPENDS:=@TARGET_qualcommbe +kmod-phylink
+  KCONFIG:=CONFIG_PCS_QCOM_IPQ9574
+  FILES:=$(LINUX_DIR)/drivers/net/pcs/pcs-qcom-ipq9574.ko
+  AUTOLOAD:=$(call AutoProbe,pcs-qcom-ipq9574)
+endef
+
+$(eval $(call KernelPackage,pcs-qcom-ipq9574))
 
 define KernelPackage/pcs-xpcs
   SUBMENU:=$(NETWORK_DEVICES_MENU)
