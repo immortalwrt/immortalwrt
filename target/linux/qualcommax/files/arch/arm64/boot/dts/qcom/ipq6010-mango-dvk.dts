@@ -53,6 +53,16 @@
 			linux,default-trigger = "phy1radio";
 		};
 	};
+
+	vcc_sd: regulator-vcc-sd {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc_sd";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		gpios = <&tlmm 66 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		regulator-always-on;
+	};
 };
 
 &tlmm {
@@ -209,6 +219,7 @@
 	pinctrl-names = "default";
 
 	cd-gpios = <&tlmm 62 GPIO_ACTIVE_LOW>;
+	vqmmc-supply = <&vcc_sd>;
 	bus-width = <4>;
 };
 
