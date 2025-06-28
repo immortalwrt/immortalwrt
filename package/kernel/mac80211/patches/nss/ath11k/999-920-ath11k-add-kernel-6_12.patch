@@ -1,6 +1,6 @@
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -2431,13 +2431,13 @@ err_sc_free:
+@@ -2433,13 +2433,13 @@ err_sc_free:
  }
  EXPORT_SYMBOL(ath11k_core_alloc);
  
