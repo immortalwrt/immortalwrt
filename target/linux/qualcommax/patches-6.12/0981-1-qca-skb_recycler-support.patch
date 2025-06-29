@@ -662,7 +662,7 @@
  }
  
  static int
-@@ -6669,6 +6900,7 @@ static int pskb_carve_inside_header(stru
+@@ -6666,6 +6897,7 @@ static int pskb_carve_inside_header(stru
  	if (skb_pfmemalloc(skb))
  		gfp_mask |= __GFP_MEMALLOC;
  
@@ -670,7 +670,7 @@
  	data = kmalloc_reserve(&size, gfp_mask, NUMA_NO_NODE, NULL);
  	if (!data)
  		return -ENOMEM;
-@@ -6692,7 +6924,7 @@ static int pskb_carve_inside_header(stru
+@@ -6689,7 +6921,7 @@ static int pskb_carve_inside_header(stru
  			skb_frag_ref(skb, i);
  		if (skb_has_frag_list(skb))
  			skb_clone_fraglist(skb);
@@ -679,7 +679,7 @@
  	} else {
  		/* we can reuse existing recount- all we did was
  		 * relocate values
-@@ -6785,6 +7017,7 @@ static int pskb_carve_inside_nonlinear(s
+@@ -6782,6 +7014,7 @@ static int pskb_carve_inside_nonlinear(s
  	if (skb_pfmemalloc(skb))
  		gfp_mask |= __GFP_MEMALLOC;
  
@@ -687,7 +687,7 @@
  	data = kmalloc_reserve(&size, gfp_mask, NUMA_NO_NODE, NULL);
  	if (!data)
  		return -ENOMEM;
-@@ -6832,7 +7065,7 @@ static int pskb_carve_inside_nonlinear(s
+@@ -6829,7 +7062,7 @@ static int pskb_carve_inside_nonlinear(s
  		skb_kfree_head(data, size);
  		return -ENOMEM;
  	}

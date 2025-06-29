@@ -314,7 +314,7 @@ Signed-off-by: Pavithra R <quic_pavir@quicinc.com>
 +EXPORT_SYMBOL(xfrm_event_unregister_notifier);
 --- a/net/xfrm/xfrm_user.c
 +++ b/net/xfrm/xfrm_user.c
-@@ -900,6 +900,8 @@ static struct xfrm_state *xfrm_state_con
+@@ -932,6 +932,8 @@ static struct xfrm_state *xfrm_state_con
  			goto error;
  	}
  
@@ -323,7 +323,7 @@ Signed-off-by: Pavithra R <quic_pavir@quicinc.com>
  	return x;
  
  error:
-@@ -938,6 +940,7 @@ static int xfrm_add_sa(struct sk_buff *s
+@@ -970,6 +972,7 @@ static int xfrm_add_sa(struct sk_buff *s
  	if (err < 0) {
  		x->km.state = XFRM_STATE_DEAD;
  		xfrm_dev_state_delete(x);
