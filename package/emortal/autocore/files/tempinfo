@@ -27,7 +27,7 @@ case "$DISTRIB_TARGET" in
 	if [ -n "$(uci -q get "wechatpush.config.server_host")" ]; then
 		cpu_temp="$(/usr/share/wechatpush/wechatpush soc)°C"
 	elif grep -q "GenuineIntel" "/proc/cpuinfo"; then
-		cpu_temp="$(sensors "coretemp-*" 2>/dev/null | grep -E "(Package id |Core )" | grep -Eo "\+[0-9.]*°C" | head -n1 | tr -d "+")"
+		cpu_temp="$(sensors "coretemp-*" 2>/dev/null | grep -E "(Package id | Core)" | grep -Eo "\+[0-9.]*°C" | head -n1 | tr -d "+")"
 	elif grep -q "AuthenticAMD" "/proc/cpuinfo"; then
 		cpu_temp="$(sensors "k10temp-*" 2>/dev/null | awk '/Tctl|Tdie/ {print $2}' | head -n1 | tr -d "+")"
 	fi

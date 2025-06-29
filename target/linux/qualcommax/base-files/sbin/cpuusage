@@ -5,7 +5,7 @@ cpu="$(top -bn1 | awk -F ' ' 'NR==2 {print $2}')"
 output="CPU: ${cpu}"
 
 if [ -f "/sys/kernel/debug/qca-nss-drv/stats/cpu_load_ubi" ]; then
-	hwe="$(cat "/sys/kernel/debug/qca-nss-drv/stats/cpu_load_ubi" | awk -F ' ' 'NR==6 {print $2}' )"
+	hwe="$(cat "/sys/kernel/debug/qca-nss-drv/stats/cpu_load_ubi" | awk -F ' ' 'NR==6 {print $2}')"
 	[ -n "$hwe" ] && output="${output} HWE: ${hwe}"
 fi
 
