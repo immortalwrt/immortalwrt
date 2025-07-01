@@ -96,6 +96,7 @@ platform_do_upgrade() {
 	qihoo,360t7|\
 	routerich,ax3000-ubootmod|\
 	snr,snr-cpe-ax2|\
+	tplink,tl-7dr7250-v1|\
 	tplink,tl-xdr4288|\
 	tplink,tl-xdr6086|\
 	tplink,tl-xdr6088|\
@@ -234,6 +235,7 @@ platform_check_image() {
 	netcore,n60-pro|\
 	qihoo,360t7|\
 	routerich,ax3000-ubootmod|\
+	tplink,tl-7dr7250-v1|\
 	tplink,tl-xdr4288|\
 	tplink,tl-xdr6086|\
 	tplink,tl-xdr6088|\

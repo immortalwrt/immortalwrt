@@ -52,7 +52,8 @@ mediatek_setup_interfaces()
 	qihoo,360t7|\
 	routerich,ax3000|\
 	routerich,ax3000-ubootmod|\
-	tenbay,wr3000k)
+	tenbay,wr3000k|\
+	tplink,tl-7dr7250-v1)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" wan
 		;;
 	asus,tuf-ax4200|\
