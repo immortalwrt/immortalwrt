@@ -25,6 +25,9 @@ xiaomi,ax6000)
 	ubootenv_add_mtd "0:appsblenv" "0x0" "0x10000" "0x20000"
 	ubootenv_add_sys_mtd "bdata" "0x0" "0x10000" "0x20000"
 	;;
+yuncore,ax830)
+	ubootenv_add_mtd "0:APPSBLENV" "0x0" "0x10000" "0x10000"
+	;;
 jdcloud,re-cs-03)
 	ubootenv_add_mmc "0:APPSBLENV" "0x0" "0x40000" "0x20000"
 	;;

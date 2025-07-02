@@ -134,6 +134,19 @@ endif
 endef
 TARGET_DEVICES += xiaomi_ax6000
 
+define Device/yuncore_ax830
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := Yuncore
+	DEVICE_MODEL := AX830
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	SOC := ipq5018
+	DEVICE_DTS_CONFIG := config@mp03.5-c1
+	DEVICE_PACKAGES := ath11k-firmware-ipq5018 ath11k-firmware-qcn6122 ipq-wifi-yuncore_ax830
+endef
+TARGET_DEVICES += yuncore_ax830
+
 define Device/jdcloud_re-cs-03
 	$(call Device/FitImage)
 	$(call Device/EmmcImage)
@@ -144,7 +157,7 @@ define Device/jdcloud_re-cs-03
 	PAGESIZE := 2048
 	SOC := ipq5018
 	DEVICE_DTS_CONFIG := config@mp03.5-c2
-	DEVICE_PACKAGES := ipq-wifi-jdcloud_re-cs-03
+	DEVICE_PACKAGES := ath11k-firmware-ipq5018 ath11k-firmware-qcn6122 ipq-wifi-jdcloud_re-cs-03
 	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | append-metadata
 endef
 TARGET_DEVICES += jdcloud_re-cs-03
