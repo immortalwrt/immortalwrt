@@ -8,7 +8,7 @@ CPUFREQ_PATH="/sys/devices/system/cpu/cpufreq/policy0/cpuinfo_cur_freq"
 cpu_arch="$(cat "$CPUINFO_PATH" 2>/dev/null | awk -F ': ' '/model name/ {print $2}' | head -n1 || echo 'N/A')"
 
 case "$DISTRIB_TARGET" in
-"x86"/*)
+x86/*)
 	cpu_cores="$(cat "$CPUINFO_PATH" 2>/dev/null | awk -F ': ' '/cpu cores/ {print $2}' | head -n1)C $(grep -c "processor" "$CPUINFO_PATH")T"
 	;;
 *)
@@ -17,13 +17,13 @@ case "$DISTRIB_TARGET" in
 esac
 
 case "$DISTRIB_TARGET" in
-"bcm27xx"/*)
+bcm27xx/*)
 	cpu_freq="$(( $(vcgencmd measure_clock arm | awk -F '=' '{print $2}') / 1000000 ))MHz"
 	;;
-"bcm53xx"/*)
+bcm53xx/*)
 	cpu_freq="$(nvram get clkfreq | awk -F ',' '{print $1}')MHz"
 	;;
-"x86"/*)
+x86/*)
 	cpu_freq="$(cat "$CPUINFO_PATH" 2>/dev/null | awk -F ': ' '/cpu MHz/ {print $2}' | head -n1)MHz"
 	;;
 *)

@@ -18,19 +18,13 @@ case "$FIRMWARE" in
 	linksys,mr5500|\
 	linksys,mx2000|\
 	linksys,mx5500|\
-	linksys,spnmx56)
+	linksys,spnmx56|\
+	yuncore,ax830)
 		caldata_extract "0:ART" 0x1000 0x20000
 		ath11k_remove_regdomain
 		;;
 	jdcloud,re-cs-03)
 		caldata_extract_mmc "0:ART" 0x1000 0x20000
-		;;
-	yuncore,ax830)
-		caldata_extract "0:ART" 0x1000 0x20000
-		label_mac=$(mtd_get_mac_binary 0:ART 0)
-		ath11k_patch_mac $(macaddr_add $label_mac 2) 0
-		ath11k_remove_regdomain
-		ath11k_set_macflag
 		;;
 	esac
 	;;
@@ -41,19 +35,13 @@ case "$FIRMWARE" in
 	glinet,gl-b3000)
 		caldata_extract "0:art" 0x26800 0x20000
 		;;
-	linksys,mx2000)
+	linksys,mx2000|\
+	yuncore,ax830)
 		caldata_extract "0:ART" 0x26800 0x20000
 		ath11k_remove_regdomain
 		;;
 	jdcloud,re-cs-03)
 		caldata_extract_mmc "0:ART" 0x26800 0x20000
-		;;
-        yuncore,ax830)
-		caldata_extract "0:ART" 0x26800 0x20000
-		label_mac=$(mtd_get_mac_binary 0:ART 0)
-		ath11k_patch_mac $(macaddr_add $label_mac 3) 0
-		ath11k_remove_regdomain
-		ath11k_set_macflag
 		;;
 	esac
 	;;

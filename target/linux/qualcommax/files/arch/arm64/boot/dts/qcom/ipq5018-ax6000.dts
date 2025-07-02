@@ -302,8 +302,8 @@
 	qca8081: ethernet-phy@8 {
 		compatible = "ethernet-phy-id004d.d101";
 		reg = <8>;
-		reset-gpios = <&tlmm 24 GPIO_ACTIVE_LOW>;
 		reset-deassert-us = <10000>;
+		reset-gpios = <&tlmm 24 GPIO_ACTIVE_LOW>;
 
 		leds {
 			#address-cells = <1>;
