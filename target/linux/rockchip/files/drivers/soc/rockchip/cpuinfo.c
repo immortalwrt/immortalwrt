@@ -24,6 +24,9 @@
 unsigned long rockchip_soc_id;
 EXPORT_SYMBOL(rockchip_soc_id);
 
+static char id[33] = "0";
+module_param_string(id, id, sizeof(id), 0444);
+
 static int rockchip_cpuinfo_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -74,6 +77,7 @@ static int rockchip_cpuinfo_probe(struct platform_device *pdev)
 	for (i = 0; i < 8; i++) {
 		buf[i] = efuse_buf[1 + (i << 1)];
 		buf[i + 8] = efuse_buf[i << 1];
+		sprintf(id + i * 4, "%02x%02x", efuse_buf[i << 1], efuse_buf[1 + (i << 1)]);
 	}
 
 	kfree(efuse_buf);
