@@ -176,7 +176,7 @@
 };
 
 &uartlite2 {
-	 /* EFR32BG21 Ble */
+	/* EFR32BG21 Ble */
 	status = "okay";
 };
 
