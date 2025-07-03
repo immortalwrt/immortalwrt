@@ -54,7 +54,7 @@ Signed-off-by: Seevalamuthu Mariappan <seevalam@codeaurora.org>
  
  	dyn_if_type = ath11k_nss_get_dynamic_interface_type(ab);
  
-@@ -4585,6 +4591,15 @@ int ath11k_nss_pdev_init(struct ath11k_b
+@@ -4585,6 +4591,17 @@ int ath11k_nss_pdev_init(struct ath11k_b
  	ath11k_dbg(ab, ATH11K_DBG_NSS, "nss pdev init - id:%d init ctxt:%p ifnum:%d\n",
  		   ar->pdev->pdev_id, ar->nss.ctx, ar->nss.if_num);
  
@@ -63,6 +63,8 @@ Signed-off-by: Seevalamuthu Mariappan <seevalam@codeaurora.org>
 +		if (scheme_id == WIFILI_SCHEME_ID_INVALID) {
 +			ath11k_warn(ab, "received invalid scheme_id, configuring default value\n");
 +			scheme_id = 0;
++		} else {
++			ab->nss.thread_scheme_allocated = true;
 +		}
 +	}
 +	ath11k_dbg(ab, ATH11K_DBG_NSS, "ifnum: %d scheme_id: %d nss_radio_priority: %d\n", ar->nss.if_num, scheme_id, nss_radio_priority);
@@ -70,7 +72,7 @@ Signed-off-by: Seevalamuthu Mariappan <seevalam@codeaurora.org>
  	wlmsg = kzalloc(sizeof(struct nss_wifili_msg), GFP_ATOMIC);
  	if (!wlmsg) {
  		ret = -ENOMEM;
-@@ -4597,6 +4612,7 @@ int ath11k_nss_pdev_init(struct ath11k_b
+@@ -4597,6 +4614,7 @@ int ath11k_nss_pdev_init(struct ath11k_b
  	pdevmsg->lmac_id = ar->lmac_id;
  	pdevmsg->target_pdev_id = ar->pdev->pdev_id;
  	pdevmsg->num_rx_swdesc = WIFILI_RX_DESC_POOL_WEIGHT * DP_RXDMA_BUF_RING_SIZE;
@@ -78,12 +80,13 @@ Signed-off-by: Seevalamuthu Mariappan <seevalam@codeaurora.org>
  
  	/* Store rxdma ring info to the message */
  	refill_ring_id = ar->dp.rx_refill_buf_ring.refill_buf_ring.ring_id;
-@@ -4890,6 +4906,9 @@ int ath11k_nss_pdev_deinit(struct ath11k
+@@ -4890,6 +4908,10 @@ int ath11k_nss_pdev_deinit(struct ath11k
  	/* pdev deinit msg success, dealloc, deregister and return */
  	ret = 0;
  
 +	/* reset thread scheme*/
-+	nss_wifili_thread_scheme_dealloc(ab->nss.ctx, ar->nss.if_num);
++	if (ab->nss.thread_scheme_allocated)
++		nss_wifili_thread_scheme_dealloc(ab->nss.ctx, ar->nss.if_num);
 +
  	nss_dynamic_interface_dealloc_node(ar->nss.if_num, dyn_if_type);
  	nss_unregister_wifili_radio_if(ar->nss.if_num);
@@ -107,3 +110,12 @@ Signed-off-by: Seevalamuthu Mariappan <seevalam@codeaurora.org>
  enum ath11k_nss_opmode {
  	ATH11K_NSS_OPMODE_UNKNOWN,
  	ATH11K_NSS_OPMODE_AP,
+@@ -266,6 +269,8 @@ struct ath11k_soc_nss {
+ 	/* Response to nss messages are stored here on msg callback
+ 	* used only in contention free messages during init */
+ 	int response;
++	/* if nss_wifili_thread_scheme_alloc successfully allocated thread scheme */
++	bool thread_scheme_allocated;
+ 	/* Below is used for identifying allocated tx descriptors */
+ 	dma_addr_t tx_desc_paddr[ATH11K_NSS_MAX_NUMBER_OF_PAGE];
+ 	uint32_t * tx_desc_vaddr[ATH11K_NSS_MAX_NUMBER_OF_PAGE];

@@ -1,6 +1,6 @@
 --- a/drivers/net/wireless/ath/ath11k/nss.c
 +++ b/drivers/net/wireless/ath/ath11k/nss.c
-@@ -907,36 +907,20 @@ ath11k_nss_vdev_data_receive(struct net_
+@@ -978,36 +978,20 @@ ath11k_nss_vdev_data_receive(struct net_
  			     __attribute__((unused)) struct napi_struct *napi)
  {
  	struct wireless_dev *wdev = NULL;
@@ -40,7 +40,7 @@
  	ab = arvif->ar->ab;
  
  	skb->dev = dev;
-@@ -945,7 +929,7 @@ ath11k_nss_vdev_data_receive(struct net_
+@@ -1016,7 +1000,7 @@ ath11k_nss_vdev_data_receive(struct net_
  	ath11k_dbg_dump(ab, ATH11K_DBG_DP_RX, "", "dp rx msdu from nss: ",
  			skb->data, skb->len);
  
