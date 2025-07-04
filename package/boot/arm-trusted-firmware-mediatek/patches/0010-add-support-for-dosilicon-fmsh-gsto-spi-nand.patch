@@ -82,13 +82,15 @@ Signed-off-by: Tianling Shen <cnsztl@immortalwrt.org>
  	if (ret != 0) {
  		return ret;
  	}
-@@ -873,13 +887,13 @@ int spi_nand_init(unsigned long long *si
+@@ -873,13 +887,15 @@ int spi_nand_init(unsigned long long *si
  	ret = spi_nand_read_casn((struct casn_page *)buf, &sel);
  	if (ret) {
  		WARN("Fail to read CASN page. Try reading parameter page\n");
 +		ret = spi_nand_read_id(id);
-+		if (ret)
++		if (ret) {
++			ERROR("SPI_NAND Read ID failed.\n");
 +			return ret;
++		}
  		pp = (struct parameter_page *)buf;
 -		ret = spi_nand_read_pp(pp, &sel);
 +		ret = spi_nand_read_pp(id, pp, &sel);
