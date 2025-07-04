@@ -1862,7 +1862,6 @@ define Device/tplink_tl-7dr-common
   PAGESIZE := 2048
   KERNEL_IN_UBI := 1
   UBOOTENV_IN_UBI := 1
-  #IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
   IMAGES := sysupgrade.itb
   KERNEL_INITRAMFS_SUFFIX := -recovery.itb
   KERNEL := kernel-bin | gzip
