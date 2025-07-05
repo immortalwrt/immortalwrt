@@ -22,18 +22,7 @@ Signed-off-by: Tianling Shen <cnsztl@immortalwrt.org>
  #define MACRONIX_ID			0xC2U
  #define MICRON_ID			0x2CU
  #define TOSHIBA_ID			0x98U
-@@ -63,6 +66,10 @@ static const struct spi_nand_info spi_na
- 		SPI_NAND_MEMORG_1G_2K_64, true, true)
- };
- 
-+static inline int is_dosilicon(uint8_t *id) {
-+	return id[1] == DOSILICON_ID;
-+}
-+
- static int spi_nand_reg(bool read_reg, uint8_t reg, uint8_t *val,
- 			enum spi_mem_data_dir dir)
- {
-@@ -129,7 +136,10 @@ static int spi_nand_quad_enable(uint8_t
+@@ -129,7 +132,10 @@ static int spi_nand_quad_enable(uint8_t
  
  	if (manufacturer_id != MACRONIX_ID &&
  	    manufacturer_id != GIGADEVICE_ID &&
@@ -44,7 +33,7 @@ Signed-off-by: Tianling Shen <cnsztl@immortalwrt.org>
  	    manufacturer_id != FORESEE_ID) {
  		return 0;
  	}
-@@ -364,6 +374,10 @@ static int spi_nand_check_pp(struct para
+@@ -364,6 +370,10 @@ static int spi_nand_check_pp(struct para
  		INFO("PP COPY %d CRC read: 0x%x, compute: 0x%x\n",
  		     i, crc, crc_compute);
  
@@ -55,34 +44,36 @@ Signed-off-by: Tianling Shen <cnsztl@immortalwrt.org>
  		if (crc != crc_compute) {
  			ret = -EBADMSG;
  			continue;
-@@ -400,7 +414,7 @@ static int spi_nand_check_pp(struct para
+@@ -400,8 +410,9 @@ static int spi_nand_check_pp(struct para
  	return ret;
  }
  
 -static int spi_nand_read_pp(struct parameter_page *pp, uint8_t *sel)
 +static int spi_nand_read_pp(uint8_t *id, struct parameter_page *pp, uint8_t *sel)
  {
++	const bool is_dosilicon = (id[1] == DOSILICON_ID);
  	uint8_t status;
  	uint8_t cfg_reg;
-@@ -413,7 +427,7 @@ static int spi_nand_read_pp(struct param
+ 	int ret, op_ret;
+@@ -413,7 +424,7 @@ static int spi_nand_read_pp(struct param
  		return ret;
  	}
  
 -	ret = spi_nand_write_reg(SPI_NAND_REG_CFG, cfg_reg | BIT(6));
-+	ret = spi_nand_write_reg(SPI_NAND_REG_CFG, is_dosilicon(id) ? BIT(6) : (cfg_reg | BIT(6)));
++	ret = spi_nand_write_reg(SPI_NAND_REG_CFG, is_dosilicon ? BIT(6) : (cfg_reg | BIT(6)));
  	if (ret != 0) {
  		return ret;
  	}
-@@ -449,7 +463,7 @@ out:
+@@ -449,7 +460,7 @@ out:
  		ERROR("Parameter page read failed\n");
  	}
  
 -	ret = spi_nand_write_reg(SPI_NAND_REG_CFG, cfg_reg);
-+	ret = spi_nand_write_reg(SPI_NAND_REG_CFG, is_dosilicon(id) ? 0x10 : cfg_reg);
++	ret = spi_nand_write_reg(SPI_NAND_REG_CFG, is_dosilicon ? 0x10 : cfg_reg);
  	if (ret != 0) {
  		return ret;
  	}
-@@ -589,12 +603,15 @@ int spi_nand_init(unsigned long long *si
+@@ -589,12 +600,15 @@ int spi_nand_init(unsigned long long *si
  		return ret;
  	}
  
