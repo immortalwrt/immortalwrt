@@ -12,7 +12,6 @@ mediatek_setup_interfaces()
 	cmcc,rax3000m|\
 	cmcc,rax3000me|\
 	h3c,magic-nx30-pro|\
-	h3c,magic-nx30-pro-nmbm|\
 	imou,lc-hx3001|\
 	konka,komi-a31|\
 	netis,nx31|\
@@ -187,8 +186,7 @@ mediatek_setup_macs()
 	bananapi,bpi-r4)
 		wan_mac=$(macaddr_add $(cat /sys/class/net/eth0/address) 1)
 		;;
-	h3c,magic-nx30-pro|\
-	h3c,magic-nx30-pro-nmbm)
+	h3c,magic-nx30-pro)
 		wan_mac=$(mtd_get_mac_ascii pdt_data_1 ethaddr)
 		lan_mac=$(macaddr_add "$wan_mac" 1)
 		label_mac=$wan_mac
