@@ -29,7 +29,7 @@ Signed-off-by: Manikanta Pubbisetty <mpubbise@codeaurora.org>
  
  #define	ATH11K_QCN6122_USERPD_2		1
  #define	ATH11K_QCN6122_USERPD_3		2
-@@ -429,6 +431,17 @@ struct ath11k_vif_iter {
+@@ -427,6 +429,17 @@ struct ath11k_vif_iter {
  	struct ath11k_vif *arvif;
  };
  
@@ -47,7 +47,7 @@ Signed-off-by: Manikanta Pubbisetty <mpubbise@codeaurora.org>
  struct ath11k_rx_peer_stats {
  	u64 num_msdu;
  	u64 num_mpdu_fcs_ok;
-@@ -440,10 +453,6 @@ struct ath11k_rx_peer_stats {
+@@ -438,10 +451,6 @@ struct ath11k_rx_peer_stats {
  	u64 non_ampdu_msdu_count;
  	u64 stbc_count;
  	u64 beamformed_count;
@@ -58,7 +58,7 @@ Signed-off-by: Manikanta Pubbisetty <mpubbise@codeaurora.org>
  	u64 coding_count[HAL_RX_SU_MU_CODING_MAX];
  	u64 tid_count[IEEE80211_NUM_TIDS + 1];
  	u64 pream_cnt[HAL_RX_PREAMBLE_MAX];
-@@ -451,6 +460,8 @@ struct ath11k_rx_peer_stats {
+@@ -449,6 +458,8 @@ struct ath11k_rx_peer_stats {
  	u64 rx_duration;
  	u64 dcm_count;
  	u64 ru_alloc_cnt[HAL_RX_RU_ALLOC_TYPE_MAX];
@@ -433,7 +433,7 @@ Signed-off-by: Manikanta Pubbisetty <mpubbise@codeaurora.org>
  int ath11k_dp_rx_ampdu_stop(struct ath11k *ar,
 --- a/drivers/net/wireless/ath/ath11k/hal_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/hal_rx.c
-@@ -976,44 +976,78 @@ ath11k_hal_rx_parse_mon_status_tlv(struc
+@@ -977,44 +977,78 @@ ath11k_hal_rx_parse_mon_status_tlv(struc
  		ppdu_info->is_stbc = FIELD_GET(HAL_RX_HT_SIG_INFO_INFO1_STBC,
  					       info1);
  		ppdu_info->ldpc = FIELD_GET(HAL_RX_HT_SIG_INFO_INFO1_FEC_CODING, info1);
@@ -536,7 +536,7 @@ Signed-off-by: Manikanta Pubbisetty <mpubbise@codeaurora.org>
  		ppdu_info->reception_type = HAL_RX_RECEPTION_TYPE_SU;
  		break;
  	}
-@@ -1471,6 +1505,9 @@ ath11k_hal_rx_parse_mon_status_tlv(struc
+@@ -1472,6 +1506,9 @@ ath11k_hal_rx_parse_mon_status_tlv(struc
  		peer_id = ath11k_hal_rx_mpduinfo_get_peerid(ab, mpdu_info);
  		if (peer_id)
  			ppdu_info->peer_id = peer_id;
@@ -661,7 +661,7 @@ Signed-off-by: Manikanta Pubbisetty <mpubbise@codeaurora.org>
  #define ATH11K_TX_RING_MASK_0 BIT(0)
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
-@@ -276,6 +276,7 @@ struct ath11k_hw_ops {
+@@ -277,6 +277,7 @@ struct ath11k_hw_ops {
  	bool (*rx_desc_mac_addr2_valid)(struct hal_rx_desc *desc);
  	u8* (*rx_desc_mpdu_start_addr2)(struct hal_rx_desc *desc);
  	u32 (*get_ring_selector)(struct sk_buff *skb);

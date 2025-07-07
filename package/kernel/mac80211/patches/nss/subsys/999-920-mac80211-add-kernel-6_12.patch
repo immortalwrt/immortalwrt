@@ -1,6 +1,6 @@
 --- a/net/mac80211/iface.c
 +++ b/net/mac80211/iface.c
-@@ -1250,7 +1250,7 @@ void ieee80211_del_virtual_monitor(struc
+@@ -1249,7 +1249,7 @@ void ieee80211_del_virtual_monitor(struc
  /* This callback is registered for nss redirect to receive packet exceptioned from nss in Rx path.
   * When packet does not match any of the ecm rules is redirected back here.
   */
@@ -31,7 +31,7 @@
  			    u32 info_flags, u32 ctrl_flags, u64 *cookie)
 --- a/net/mac80211/cfg.c
 +++ b/net/mac80211/cfg.c
-@@ -2522,8 +2522,8 @@ static int copy_mesh_setup(struct ieee80
+@@ -2541,8 +2541,8 @@ static int copy_mesh_setup(struct ieee80
  		ifmsh->security |= IEEE80211_MESH_SEC_SECURED;
  
  	/* mcast rate setting in Mesh Node */

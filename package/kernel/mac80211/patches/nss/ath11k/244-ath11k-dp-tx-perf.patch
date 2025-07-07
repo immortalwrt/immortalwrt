@@ -34,7 +34,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  };
  
  struct ath11k_skb_cb {
-@@ -934,10 +935,13 @@ struct ath11k_dp_ring_bp_stats {
+@@ -935,10 +936,13 @@ struct ath11k_dp_ring_bp_stats {
  struct ath11k_soc_dp_tx_err_stats {
  	/* TCL Ring Descriptor unavailable */
  	u32 desc_na[DP_TCL_NUM_RING_MAX];
@@ -413,7 +413,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -6490,12 +6490,22 @@ static void ath11k_mac_op_tx(struct ieee
+@@ -6483,12 +6483,22 @@ static void ath11k_mac_op_tx(struct ieee
  	if (control->sta)
  		arsta = ath11k_sta_to_arsta(control->sta);
  
@@ -437,7 +437,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  		ieee80211_free_txskb(ar->hw, skb);
  		return;
  	}
-@@ -7460,7 +7470,7 @@ err_vdev_del:
+@@ -7464,7 +7474,7 @@ err_vdev_del:
  	idr_for_each(&ar->txmgmt_idr,
  		     ath11k_mac_vif_txmgmt_idr_remove, vif);
  
@@ -473,41 +473,37 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  	if (len > size)
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -190,7 +190,6 @@ static struct ath11k_hw_params ath11k_hw
+@@ -106,7 +106,8 @@ static struct ath11k_hw_params ath11k_hw
  		.supports_regdb = false,
  		.fix_l1ss = true,
  		.credit_flow = false,
 -		.max_tx_ring = DP_TCL_NUM_RING_MAX,
++		/* In addition to TCL ring use TCL_CMD ring also for tx */
++		.max_tx_ring = DP_TCL_NUM_RING_MAX + 1,
  		.hal_params = &ath11k_hw_hal_params_ipq8074,
  		.supports_dynamic_smps_6ghz = false,
  		.alloc_cacheable_memory = true,
-@@ -216,6 +215,8 @@ static struct ath11k_hw_params ath11k_hw
- 		.smp2p_wow_exit = false,
- 		.support_fw_mac_sequence = false,
- 		.support_dual_stations = false,
-+		/* In addition to TCL ring use TCL_CMD ring also for tx */
-+		.max_tx_ring = DP_TCL_NUM_RING_MAX + 1,
- 	},
- 	{
- 		.name = "qca6390 hw2.0",
-@@ -362,7 +363,6 @@ static struct ath11k_hw_params ath11k_hw
+@@ -191,7 +192,8 @@ static struct ath11k_hw_params ath11k_hw
  		.supports_regdb = false,
  		.fix_l1ss = true,
  		.credit_flow = false,
 -		.max_tx_ring = DP_TCL_NUM_RING_MAX,
++		/* In addition to TCL ring use TCL_CMD ring also for tx */
++		.max_tx_ring = DP_TCL_NUM_RING_MAX + 1,
+ 		.hal_params = &ath11k_hw_hal_params_ipq8074,
+ 		.supports_dynamic_smps_6ghz = false,
+ 		.alloc_cacheable_memory = true,
+@@ -366,7 +368,8 @@ static struct ath11k_hw_params ath11k_hw
+ 		.supports_regdb = false,
+ 		.fix_l1ss = true,
+ 		.credit_flow = false,
+-		.max_tx_ring = DP_TCL_NUM_RING_MAX,
++		/* In addition to TCL ring use TCL_CMD ring also for tx */
++		.max_tx_ring = DP_TCL_NUM_RING_MAX + 1,
  		.hal_params = &ath11k_hw_hal_params_ipq8074,
  		.supports_dynamic_smps_6ghz = true,
  		.alloc_cacheable_memory = true,
-@@ -388,6 +388,8 @@ static struct ath11k_hw_params ath11k_hw
- 		.smp2p_wow_exit = false,
- 		.support_fw_mac_sequence = false,
- 		.support_dual_stations = false,
-+		/* In addition to TCL ring use TCL_CMD ring also for tx */
-+		.max_tx_ring = DP_TCL_NUM_RING_MAX + 1,
- 	},
- 	{
- 		.name = "wcn6855 hw2.0",
-@@ -2320,6 +2322,9 @@ int ath11k_core_pre_init(struct ath11k_b
+@@ -2454,6 +2457,9 @@ int ath11k_core_pre_init(struct ath11k_b
  	if (nss_offload)
  		ab->nss.stats_enabled = 1;
  

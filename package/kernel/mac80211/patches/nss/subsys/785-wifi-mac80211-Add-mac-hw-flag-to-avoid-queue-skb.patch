@@ -23,7 +23,7 @@ Signed-off-by: Yuvasree Sivasankaran <quic_ysivasan@quicinc.com>
 
 --- a/include/net/mac80211.h
 +++ b/include/net/mac80211.h
-@@ -2882,6 +2882,9 @@ struct ieee80211_txq {
+@@ -2908,6 +2908,9 @@ struct ieee80211_txq {
   *
   * @IEEE80211_HW_SUPPORTS_TID_CLASS_OFFLOAD: Hardware suports tid calssification offload.
   *
@@ -33,7 +33,7 @@ Signed-off-by: Yuvasree Sivasankaran <quic_ysivasan@quicinc.com>
   * @NUM_IEEE80211_HW_FLAGS: number of hardware flags, used for sizing arrays
   */
  enum ieee80211_hw_flags {
-@@ -2945,6 +2948,7 @@ enum ieee80211_hw_flags {
+@@ -2972,6 +2975,7 @@ enum ieee80211_hw_flags {
  	IEEE80211_HW_SUPPORTS_NSS_OFFLOAD,
  	IEEE80211_HW_SUPPORTS_MESH_NSS_OFFLOAD,
  	IEEE80211_HW_SUPPORTS_TID_CLASS_OFFLOAD,
@@ -43,7 +43,7 @@ Signed-off-by: Yuvasree Sivasankaran <quic_ysivasan@quicinc.com>
  	NUM_IEEE80211_HW_FLAGS
 --- a/net/mac80211/debugfs.c
 +++ b/net/mac80211/debugfs.c
-@@ -512,6 +512,7 @@ static const char *hw_flag_names[] = {
+@@ -513,6 +513,7 @@ static const char *hw_flag_names[] = {
  	FLAG(SUPPORTS_NSS_OFFLOAD),
  	FLAG(SUPPORTS_MESH_NSS_OFFLOAD),
  	FLAG(SUPPORTS_TID_CLASS_OFFLOAD),
@@ -123,7 +123,7 @@ Signed-off-by: Yuvasree Sivasankaran <quic_ysivasan@quicinc.com>
  		 * for MLO STA, the SA should be the AP MLD address, but
 --- a/net/mac80211/cfg.c
 +++ b/net/mac80211/cfg.c
-@@ -4622,6 +4622,9 @@ static int ieee80211_get_txq_stats(struc
+@@ -4673,6 +4673,9 @@ static int ieee80211_get_txq_stats(struc
  	struct ieee80211_sub_if_data *sdata;
  	int ret = 0;
  
@@ -135,7 +135,7 @@ Signed-off-by: Yuvasree Sivasankaran <quic_ysivasan@quicinc.com>
  
 --- a/net/mac80211/main.c
 +++ b/net/mac80211/main.c
-@@ -1003,7 +1003,10 @@ struct ieee80211_hw *ieee80211_alloc_hw_
+@@ -1008,7 +1008,10 @@ struct ieee80211_hw *ieee80211_alloc_hw_
  		atomic_set(&local->agg_queue_stop[i], 0);
  	}
  	tasklet_setup(&local->tx_pending_tasklet, ieee80211_tx_pending);
@@ -196,7 +196,7 @@ Signed-off-by: Yuvasree Sivasankaran <quic_ysivasan@quicinc.com>
  	kfree(rcu_dereference_raw(sta->sta.rates));
  #ifdef CPTCFG_MAC80211_MESH
  	kfree(sta->mesh);
-@@ -537,8 +541,6 @@ __sta_info_alloc(struct ieee80211_sub_if
+@@ -555,8 +559,6 @@ __sta_info_alloc(struct ieee80211_sub_if
  	struct ieee80211_local *local = sdata->local;
  	struct ieee80211_hw *hw = &local->hw;
  	struct sta_info *sta;
@@ -205,7 +205,7 @@ Signed-off-by: Yuvasree Sivasankaran <quic_ysivasan@quicinc.com>
  	int i;
  
  	sta = kzalloc(sizeof(*sta) + hw->sta_data_size, gfp);
-@@ -611,18 +613,22 @@ __sta_info_alloc(struct ieee80211_sub_if
+@@ -629,18 +631,22 @@ __sta_info_alloc(struct ieee80211_sub_if
  
  	sta->last_connected = ktime_get_seconds();
  
@@ -237,7 +237,7 @@ Signed-off-by: Yuvasree Sivasankaran <quic_ysivasan@quicinc.com>
  	}
  
  	if (sta_prepare_rate_control(local, sta, gfp))
-@@ -696,7 +702,8 @@ __sta_info_alloc(struct ieee80211_sub_if
+@@ -714,7 +720,8 @@ __sta_info_alloc(struct ieee80211_sub_if
  	return sta;
  
  free_txq:
@@ -247,7 +247,7 @@ Signed-off-by: Yuvasree Sivasankaran <quic_ysivasan@quicinc.com>
  free:
  	sta_info_free_link(&sta->deflink);
  #ifdef CPTCFG_MAC80211_MESH
-@@ -1715,11 +1722,13 @@ void ieee80211_sta_ps_deliver_wakeup(str
+@@ -1750,11 +1757,13 @@ void ieee80211_sta_ps_deliver_wakeup(str
  	if (!ieee80211_hw_check(&local->hw, AP_LINK_PS))
  		drv_sta_notify(local, sdata, STA_NOTIFY_AWAKE, &sta->sta);
  
@@ -265,7 +265,7 @@ Signed-off-by: Yuvasree Sivasankaran <quic_ysivasan@quicinc.com>
  	}
  
  	skb_queue_head_init(&pending);
-@@ -2134,6 +2143,9 @@ ieee80211_sta_ps_deliver_response(struct
+@@ -2169,6 +2178,9 @@ ieee80211_sta_ps_deliver_response(struct
  		 * TIM recalculation.
  		 */
  
@@ -275,7 +275,7 @@ Signed-off-by: Yuvasree Sivasankaran <quic_ysivasan@quicinc.com>
  		for (tid = 0; tid < ARRAY_SIZE(sta->sta.txq); tid++) {
  			if (!sta->sta.txq[tid] ||
  			    !(driver_release_tids & BIT(tid)) ||
-@@ -2568,7 +2580,7 @@ static void sta_set_tidstats(struct sta_
+@@ -2603,7 +2615,7 @@ static void sta_set_tidstats(struct sta_
  		tidstats->tx_msdu_failed = sta->deflink.status_stats.msdu_failed[tid];
  	}
  
@@ -284,7 +284,7 @@ Signed-off-by: Yuvasree Sivasankaran <quic_ysivasan@quicinc.com>
  		spin_lock_bh(&local->fq.lock);
  		rcu_read_lock();
  
-@@ -2897,6 +2909,9 @@ unsigned long ieee80211_sta_last_active(
+@@ -2932,6 +2944,9 @@ unsigned long ieee80211_sta_last_active(
  
  static void sta_update_codel_params(struct sta_info *sta, u32 thr)
  {
@@ -328,7 +328,7 @@ Signed-off-by: Yuvasree Sivasankaran <quic_ysivasan@quicinc.com>
  	if ((meshhdr->flags & MESH_FLAGS_AE) == MESH_FLAGS_AE_A5_A6) {
 --- a/net/mac80211/util.c
 +++ b/net/mac80211/util.c
-@@ -470,10 +470,8 @@ static void __ieee80211_wake_queue(struc
+@@ -471,10 +471,8 @@ static void __ieee80211_wake_queue(struc
  	 * release someone's lock, but it is fine because all the callers of
  	 * __ieee80211_wake_queue call it right before releasing the lock.
  	 */

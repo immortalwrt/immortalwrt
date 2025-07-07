@@ -191,7 +191,7 @@
  
  }
  
-@@ -5435,6 +5551,55 @@ static void ath11k_dp_rx_mon_dest_proces
+@@ -5439,6 +5555,55 @@ static void ath11k_dp_rx_mon_dest_proces
  	}
  }
  
@@ -247,7 +247,7 @@
  int ath11k_dp_rx_process_mon_status(struct ath11k_base *ab, int mac_id,
  				    struct napi_struct *napi, int budget)
  {
-@@ -5511,8 +5676,13 @@ int ath11k_dp_rx_process_mon_status(stru
+@@ -5515,8 +5680,13 @@ int ath11k_dp_rx_process_mon_status(stru
  
  		if ((ppdu_info->fc_valid) &&
  		    (ppdu_info->ast_index != HAL_AST_IDX_INVALID)) {
@@ -265,7 +265,7 @@
  		if (ath11k_debugfs_is_pktlog_peer_valid(ar, peer->addr))
 --- a/drivers/net/wireless/ath/ath11k/hal_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/hal_rx.c
-@@ -805,7 +805,6 @@ void ath11k_hal_reo_init_cmd_ring(struct
+@@ -806,7 +806,6 @@ void ath11k_hal_reo_init_cmd_ring(struct
  	}
  }
  
@@ -273,7 +273,7 @@
  static inline void
  ath11k_hal_rx_handle_ofdma_info(void *rx_tlv,
  				struct hal_rx_user_status *rx_user_status)
-@@ -837,6 +836,8 @@ ath11k_hal_rx_populate_mu_user_info(void
+@@ -838,6 +837,8 @@ ath11k_hal_rx_populate_mu_user_info(void
  {
  	rx_user_status->ast_index = ppdu_info->ast_index;
  	rx_user_status->tid = ppdu_info->tid;
@@ -282,7 +282,7 @@
  	rx_user_status->tcp_msdu_count =
  		ppdu_info->tcp_msdu_count;
  	rx_user_status->udp_msdu_count =
-@@ -860,6 +861,9 @@ ath11k_hal_rx_populate_mu_user_info(void
+@@ -861,6 +862,9 @@ ath11k_hal_rx_populate_mu_user_info(void
  		ppdu_info->num_mpdu_fcs_ok;
  	rx_user_status->mpdu_cnt_fcs_err =
  		ppdu_info->num_mpdu_fcs_err;
@@ -292,7 +292,7 @@
  
  	ath11k_hal_rx_populate_byte_count(rx_tlv, ppdu_info, rx_user_status);
  }
-@@ -889,6 +893,14 @@ ath11k_hal_rx_parse_mon_status_tlv(struc
+@@ -890,6 +894,14 @@ ath11k_hal_rx_parse_mon_status_tlv(struc
  				  __le32_to_cpu(ppdu_start->info0));
  		ppdu_info->chan_num = __le32_to_cpu(ppdu_start->chan_num);
  		ppdu_info->ppdu_ts = __le32_to_cpu(ppdu_start->ppdu_start_ts);
@@ -307,7 +307,7 @@
  		break;
  	}
  	case HAL_RX_PPDU_END_USER_STATS: {
-@@ -943,15 +955,16 @@ ath11k_hal_rx_parse_mon_status_tlv(struc
+@@ -944,15 +956,16 @@ ath11k_hal_rx_parse_mon_status_tlv(struc
  
  		if (userid < HAL_MAX_UL_MU_USERS) {
  			struct hal_rx_user_status *rxuser_stats =
@@ -327,7 +327,7 @@
  					__le32_to_cpu(eu_stats->rsvd1[1]);
  
  		break;
-@@ -959,12 +972,12 @@ ath11k_hal_rx_parse_mon_status_tlv(struc
+@@ -960,12 +973,12 @@ ath11k_hal_rx_parse_mon_status_tlv(struc
  	case HAL_RX_PPDU_END_USER_STATS_EXT: {
  		struct hal_rx_ppdu_end_user_stats_ext *eu_stats =
  			(struct hal_rx_ppdu_end_user_stats_ext *)tlv_data;

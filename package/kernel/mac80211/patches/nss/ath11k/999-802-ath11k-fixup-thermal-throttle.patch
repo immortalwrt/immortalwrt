@@ -147,7 +147,7 @@
  
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
-@@ -4059,12 +4059,14 @@ struct wmi_11d_new_cc_ev {
+@@ -4060,12 +4060,14 @@ struct wmi_11d_new_cc_ev {
  	u32 new_alpha2;
  } __packed;
  
@@ -163,7 +163,7 @@
  };
  
  struct thermal_mitigation_params {
-@@ -4075,6 +4077,14 @@ struct thermal_mitigation_params {
+@@ -4076,6 +4078,14 @@ struct thermal_mitigation_params {
  	struct tt_level_config levelconf[THERMAL_LEVELS];
  };
  
@@ -178,7 +178,7 @@
  struct wmi_therm_throt_config_request_cmd {
  	u32 tlv_header;
  	u32 pdev_id;
-@@ -4082,14 +4092,48 @@ struct wmi_therm_throt_config_request_cm
+@@ -4083,14 +4093,48 @@ struct wmi_therm_throt_config_request_cm
  	u32 dc;
  	u32 dc_per_event;
  	u32 therm_throt_levels;
@@ -229,7 +229,7 @@
  struct wmi_delba_send_cmd {
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -6710,6 +6710,9 @@ static int ath11k_mac_op_start(struct ie
+@@ -6703,6 +6703,9 @@ static int ath11k_mac_op_start(struct ie
  		}
  	}
  

@@ -134,7 +134,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
  };
  
  enum dp_mon_status_buf_state {
-@@ -211,7 +221,6 @@ struct ath11k_pdev_dp {
+@@ -210,7 +220,6 @@ struct ath11k_pdev_dp {
  #define DP_TCL_DATA_RING_SIZE		512
  #define DP_TCL_DATA_RING_SIZE_WCN6750	2048
  #define DP_TX_COMP_RING_SIZE		ATH11K_DP_TX_COMP_RING_SIZE

@@ -22,7 +22,7 @@
  #include "wps/wps.h"
  #include "fst/fst.h"
  #include "wnm_ap.h"
-@@ -2320,6 +2321,47 @@ static void hostapd_event_wds_sta_interf
+@@ -2363,6 +2364,47 @@ static void hostapd_event_wds_sta_interf
  		ifname, MAC2STR(addr));
  }
  
@@ -70,7 +70,7 @@
  
  #ifdef CONFIG_OWE
  static int hostapd_notif_update_dh_ie(struct hostapd_data *hapd,
-@@ -2878,6 +2920,9 @@ void hostapd_wpa_event(void *ctx, enum w
+@@ -2921,6 +2963,9 @@ void hostapd_wpa_event(void *ctx, enum w
  			   hapd->conf->iface);
  		hostapd_event_color_change(hapd, true);
  		break;
@@ -82,7 +82,7 @@
  	case EVENT_MLD_INTERFACE_FREED:
 --- a/src/ap/hostapd.c
 +++ b/src/ap/hostapd.c
-@@ -4646,6 +4646,10 @@ static int hostapd_fill_csa_settings(str
+@@ -4665,6 +4665,10 @@ static int hostapd_fill_csa_settings(str
  	hapd->cs_count = settings->cs_count;
  	hapd->cs_block_tx = settings->block_tx;
  
@@ -157,7 +157,7 @@
  			  size_t len);
 --- a/src/drivers/driver.h
 +++ b/src/drivers/driver.h
-@@ -6111,6 +6111,16 @@ enum wpa_event_type {
+@@ -6151,6 +6151,16 @@ enum wpa_event_type {
  	EVENT_LINK_CH_SWITCH_STARTED,
  
  	/**
@@ -174,7 +174,7 @@
  	 * EVENT_TID_LINK_MAP - MLD event to set TID-to-link mapping
  	 *
  	 * This event is used by the driver to indicate the received TID-to-link
-@@ -7094,6 +7104,16 @@ union wpa_event_data {
+@@ -7139,6 +7149,16 @@ union wpa_event_data {
  	struct pasn_auth pasn_auth;
  
  	/**
@@ -211,7 +211,7 @@
  	C2S(NL80211_CMD_SET_HW_TIMESTAMP)
  	C2S(NL80211_CMD_LINKS_REMOVED)
  	C2S(NL80211_CMD_SET_TID_TO_LINK_MAPPING)
-@@ -3725,6 +3726,35 @@ static void nl80211_port_authorized(stru
+@@ -3875,6 +3876,35 @@ static void nl80211_port_authorized(stru
  	wpa_supplicant_event(drv->ctx, EVENT_PORT_AUTHORIZED, &event);
  }
  
@@ -247,9 +247,9 @@
  
  static void nl80211_sta_opmode_change_event(struct wpa_driver_nl80211_data *drv,
  					    struct nlattr **tb)
-@@ -4252,6 +4282,9 @@ static void do_process_drv_event(struct
- 	case NL80211_CMD_LINKS_REMOVED:
- 		wpa_supplicant_event(drv->ctx, EVENT_LINK_RECONFIG, NULL);
+@@ -4405,6 +4435,9 @@ static void do_process_drv_event(struct
+ 	case NL80211_CMD_ASSOC_MLO_RECONF:
+ 		mlme_event_link_addition(drv, nla_data(frame), nla_len(frame));
  		break;
 +	case NL80211_CMD_UPDATE_HE_MUEDCA_PARAMS:
 +		nl80211_update_muedca_params_event(drv, tb);

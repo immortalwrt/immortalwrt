@@ -176,7 +176,7 @@
  	spin_unlock_bh(&ab->base_lock);
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -10379,7 +10379,7 @@ static const struct ieee80211_ops ath11k
+@@ -10386,7 +10386,7 @@ static const struct ieee80211_ops ath11k
  	.set_wakeup			= ath11k_wow_op_set_wakeup,
  #endif
  
@@ -187,7 +187,7 @@
  #endif
 --- a/local-symbols
 +++ b/local-symbols
-@@ -170,6 +170,8 @@ ATH11K_MEM_PROFILE_256M=
+@@ -164,6 +164,8 @@ ATH11K_MEM_PROFILE_256M=
  ATH11K_MEM_PROFILE_512M=
  ATH11K_DEBUG=
  ATH11K_DEBUGFS=

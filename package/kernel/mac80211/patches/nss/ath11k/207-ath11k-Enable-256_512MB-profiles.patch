@@ -94,8 +94,8 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  	bool support_fw_mac_sequence;
 +	const struct ath11k_num_vdevs_peers *num_vdevs_peers;
  	bool support_dual_stations;
+ 	bool pdev_suspend;
  	bool reo_status_poll;
- };
 --- a/drivers/net/wireless/ath/ath11k/qmi.h
 +++ b/drivers/net/wireless/ath/ath11k/qmi.h
 @@ -30,6 +30,12 @@
@@ -125,7 +125,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  	ATH11K_QMI_FILE_TYPE_BDF_GOLDEN,
 --- a/local-symbols
 +++ b/local-symbols
-@@ -166,6 +166,8 @@ ATH11K=
+@@ -160,6 +160,8 @@ ATH11K=
  ATH11K_AHB=
  ATH11K_PCI=
  ATH11K_NSS_SUPPORT=
@@ -136,7 +136,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  ATH11K_TRACING=
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -938,6 +938,11 @@ struct ath11k_msi_config {
+@@ -939,6 +939,11 @@ struct ath11k_msi_config {
  	u16 hw_rev;
  };
  
@@ -148,7 +148,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  /* Master structure to hold the hw data which may be used in core module */
  struct ath11k_base {
  	enum ath11k_hw_rev hw_rev;
-@@ -1095,6 +1100,8 @@ struct ath11k_base {
+@@ -1096,6 +1101,8 @@ struct ath11k_base {
  		DECLARE_BITMAP(fw_features, ATH11K_FW_FEATURE_COUNT);
  	} fw;
  
@@ -159,7 +159,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  		u32 data_pos;
 --- a/drivers/net/wireless/ath/ath11k/dp.h
 +++ b/drivers/net/wireless/ath/ath11k/dp.h
-@@ -210,8 +210,9 @@ struct ath11k_pdev_dp {
+@@ -209,8 +209,9 @@ struct ath11k_pdev_dp {
  #define DP_WBM_RELEASE_RING_SIZE	64
  #define DP_TCL_DATA_RING_SIZE		512
  #define DP_TCL_DATA_RING_SIZE_WCN6750	2048
@@ -170,7 +170,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  #define DP_TCL_CMD_RING_SIZE		32
  #define DP_TCL_STATUS_RING_SIZE		32
  #define DP_REO_DST_RING_MAX		4
-@@ -224,9 +225,9 @@ struct ath11k_pdev_dp {
+@@ -223,9 +224,9 @@ struct ath11k_pdev_dp {
  #define DP_RXDMA_BUF_RING_SIZE		4096
  #define DP_RXDMA_REFILL_RING_SIZE	2048
  #define DP_RXDMA_ERR_DST_RING_SIZE	1024
@@ -228,15 +228,24 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  static struct ath11k_hw_params ath11k_hw_params[] = {
  	{
  		.hw_rev = ATH11K_HW_IPQ8074,
+@@ -96,7 +98,7 @@ static struct ath11k_hw_params ath11k_hw
+ 		.coldboot_cal_mm = true,
+ 		.coldboot_cal_ftm = true,
+ 		.cbcal_restart_fw = true,
+-		.fw_mem_mode = 0,
++		.fw_mem_mode = ATH11K_QMI_TARGET_MEM_MODE,
+ 		.num_vdevs = 16 + 1,
+ 		.num_peers = 512,
+ 		.supports_suspend = false,
 @@ -128,6 +130,7 @@ static struct ath11k_hw_params ath11k_hw
  		.tcl_ring_retry = true,
  		.tx_ring_size = DP_TCL_DATA_RING_SIZE,
  		.smp2p_wow_exit = false,
 +		.num_vdevs_peers = ath11k_vdevs_peers,
  		.support_dual_stations = false,
+ 		.pdev_suspend = false,
  	},
- 	{
-@@ -179,7 +182,7 @@ static struct ath11k_hw_params ath11k_hw
+@@ -180,7 +183,7 @@ static struct ath11k_hw_params ath11k_hw
  		.coldboot_cal_mm = false,
  		.coldboot_cal_ftm = false,
  		.cbcal_restart_fw = true,
@@ -245,33 +254,15 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  		.num_vdevs = 16 + 1,
  		.num_peers = 512,
  		.supports_suspend = false,
-@@ -265,7 +268,7 @@ static struct ath11k_hw_params ath11k_hw
- 		.coldboot_cal_mm = false,
- 		.coldboot_cal_ftm = false,
- 		.cbcal_restart_fw = false,
--		.fw_mem_mode = 0,
-+		.fw_mem_mode = ATH11K_QMI_TARGET_MEM_MODE,
- 		.num_vdevs = 2 + 1,
- 		.num_peers = 512,
- 		.supports_suspend = true,
-@@ -437,7 +440,7 @@ static struct ath11k_hw_params ath11k_hw
- 		.coldboot_cal_mm = false,
- 		.coldboot_cal_ftm = false,
- 		.cbcal_restart_fw = false,
--		.fw_mem_mode = 0,
-+		.fw_mem_mode = ATH11K_QMI_TARGET_MEM_MODE,
- 		.num_vdevs = 2 + 1,
- 		.num_peers = 512,
- 		.supports_suspend = true,
-@@ -473,6 +476,7 @@ static struct ath11k_hw_params ath11k_hw
+@@ -213,6 +216,7 @@ static struct ath11k_hw_params ath11k_hw
  		.tx_ring_size = DP_TCL_DATA_RING_SIZE,
  		.smp2p_wow_exit = false,
- 		.support_fw_mac_sequence = true,
+ 		.support_fw_mac_sequence = false,
 +		.num_vdevs_peers = ath11k_vdevs_peers,
- 		.support_dual_stations = true,
+ 		.support_dual_stations = false,
+ 		.pdev_suspend = false,
  	},
- 	{
-@@ -524,7 +528,7 @@ static struct ath11k_hw_params ath11k_hw
+@@ -267,7 +271,7 @@ static struct ath11k_hw_params ath11k_hw
  		.coldboot_cal_mm = false,
  		.coldboot_cal_ftm = false,
  		.cbcal_restart_fw = false,
@@ -280,15 +271,24 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  		.num_vdevs = 2 + 1,
  		.num_peers = 512,
  		.supports_suspend = true,
-@@ -560,6 +564,7 @@ static struct ath11k_hw_params ath11k_hw
+@@ -387,6 +391,7 @@ static struct ath11k_hw_params ath11k_hw
  		.tx_ring_size = DP_TCL_DATA_RING_SIZE,
  		.smp2p_wow_exit = false,
- 		.support_fw_mac_sequence = true,
+ 		.support_fw_mac_sequence = false,
 +		.num_vdevs_peers = ath11k_vdevs_peers,
- 		.support_dual_stations = true,
+ 		.support_dual_stations = false,
+ 		.pdev_suspend = false,
  	},
- 	{
-@@ -609,7 +614,7 @@ static struct ath11k_hw_params ath11k_hw
+@@ -529,7 +534,7 @@ static struct ath11k_hw_params ath11k_hw
+ 		.coldboot_cal_mm = false,
+ 		.coldboot_cal_ftm = false,
+ 		.cbcal_restart_fw = false,
+-		.fw_mem_mode = 0,
++		.fw_mem_mode = ATH11K_QMI_TARGET_MEM_MODE,
+ 		.num_vdevs = 2 + 1,
+ 		.num_peers = 512,
+ 		.supports_suspend = true,
+@@ -615,7 +620,7 @@ static struct ath11k_hw_params ath11k_hw
  		.coldboot_cal_mm = true,
  		.coldboot_cal_ftm = true,
  		.cbcal_restart_fw = false,
@@ -297,7 +297,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  		.num_vdevs = 3,
  		.num_peers = 512,
  		.supports_suspend = false,
-@@ -689,7 +694,7 @@ static struct ath11k_hw_params ath11k_hw
+@@ -696,7 +701,7 @@ static struct ath11k_hw_params ath11k_hw
  		.supports_monitor = false,
  		.supports_sta_ps = false,
  		.supports_shadow_regs = false,
@@ -306,15 +306,32 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  		.num_vdevs = 16 + 1,
  		.num_peers = 512,
  		.supports_regdb = false,
-@@ -724,6 +729,7 @@ static struct ath11k_hw_params ath11k_hw
+@@ -731,6 +736,7 @@ static struct ath11k_hw_params ath11k_hw
  		.tx_ring_size = DP_TCL_DATA_RING_SIZE,
  		.smp2p_wow_exit = false,
  		.support_fw_mac_sequence = false,
 +		.num_vdevs_peers = ath11k_vdevs_peers,
  		.support_dual_stations = false,
+ 		.pdev_suspend = false,
  		.reo_status_poll = true,
+@@ -873,7 +879,7 @@ static struct ath11k_hw_params ath11k_hw
+ 		.coldboot_cal_mm = false,
+ 		.coldboot_cal_ftm = false,
+ 		.cbcal_restart_fw = false,
+-		.fw_mem_mode = 0,
++		.fw_mem_mode = ATH11K_QMI_TARGET_MEM_MODE,
+ 		.num_vdevs = 2 + 1,
+ 		.num_peers = 512,
+ 		.supports_suspend = true,
+@@ -909,6 +915,7 @@ static struct ath11k_hw_params ath11k_hw
+ 		.tx_ring_size = DP_TCL_DATA_RING_SIZE,
+ 		.smp2p_wow_exit = false,
+ 		.support_fw_mac_sequence = true,
++		.num_vdevs_peers = ath11k_vdevs_peers,
+ 		.support_dual_stations = true,
+ 		.pdev_suspend = false,
  	},
-@@ -881,6 +887,21 @@ static struct ath11k_hw_params ath11k_hw
+@@ -977,6 +984,21 @@ static struct ath11k_hw_params ath11k_hw
  	},
  };
  

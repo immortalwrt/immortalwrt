@@ -1,46 +1,30 @@
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -214,6 +214,7 @@ static struct ath11k_hw_params ath11k_hw
- 		.tx_ring_size = DP_TCL_DATA_RING_SIZE,
- 		.smp2p_wow_exit = false,
- 		.support_fw_mac_sequence = false,
-+		.num_vdevs_peers = ath11k_vdevs_peers,
- 		.support_dual_stations = false,
- 		/* In addition to TCL ring use TCL_CMD ring also for tx */
- 		.max_tx_ring = DP_TCL_NUM_RING_MAX + 1,
-@@ -305,6 +306,7 @@ static struct ath11k_hw_params ath11k_hw
+@@ -309,6 +309,7 @@ static struct ath11k_hw_params ath11k_hw
  		.tx_ring_size = DP_TCL_DATA_RING_SIZE,
  		.smp2p_wow_exit = false,
  		.support_fw_mac_sequence = true,
 +		.num_vdevs_peers = ath11k_vdevs_peers,
  		.support_dual_stations = true,
+ 		.pdev_suspend = false,
  	},
- 	{
-@@ -387,6 +389,7 @@ static struct ath11k_hw_params ath11k_hw
+@@ -485,6 +486,7 @@ static struct ath11k_hw_params ath11k_hw
  		.tx_ring_size = DP_TCL_DATA_RING_SIZE,
  		.smp2p_wow_exit = false,
- 		.support_fw_mac_sequence = false,
+ 		.support_fw_mac_sequence = true,
 +		.num_vdevs_peers = ath11k_vdevs_peers,
- 		.support_dual_stations = false,
- 		/* In addition to TCL ring use TCL_CMD ring also for tx */
- 		.max_tx_ring = DP_TCL_NUM_RING_MAX + 1,
-@@ -649,6 +652,7 @@ static struct ath11k_hw_params ath11k_hw
+ 		.support_dual_stations = true,
+ 		.pdev_suspend = false,
+ 	},
+@@ -656,6 +658,7 @@ static struct ath11k_hw_params ath11k_hw
  		.tx_ring_size = DP_TCL_DATA_RING_SIZE_WCN6750,
  		.smp2p_wow_exit = true,
  		.support_fw_mac_sequence = true,
 +		.num_vdevs_peers = ath11k_vdevs_peers,
  		.support_dual_stations = false,
+ 		.pdev_suspend = true,
  	},
- 	{
-@@ -822,6 +826,7 @@ static struct ath11k_hw_params ath11k_hw
- 		.tx_ring_size = DP_TCL_DATA_RING_SIZE,
- 		.smp2p_wow_exit = false,
- 		.support_fw_mac_sequence = true,
-+		.num_vdevs_peers = ath11k_vdevs_peers,
- 		.support_dual_stations = true,
- 	},
- 	{
-@@ -886,6 +891,7 @@ static struct ath11k_hw_params ath11k_hw
+@@ -984,6 +987,7 @@ static struct ath11k_hw_params ath11k_hw
  		.support_off_channel_tx = false,
  		.tcl_ring_retry = true,
  		.tx_ring_size = DP_TCL_DATA_RING_SIZE,

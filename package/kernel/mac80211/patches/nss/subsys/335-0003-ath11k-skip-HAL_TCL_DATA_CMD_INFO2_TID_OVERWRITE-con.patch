@@ -16,17 +16,17 @@ Signed-off-by: Gautham Kumar Senthilkumaran <quic_gauthamk@quicinc.com>
 
 --- a/include/net/mac80211.h
 +++ b/include/net/mac80211.h
-@@ -2881,6 +2881,8 @@ struct ieee80211_txq {
+@@ -2907,6 +2907,8 @@ struct ieee80211_txq {
   *
-  *  @IEEE80211_HW_SUPPORTS_NSS_OFFLOAD: Hardware/driver supports NSS offload
+  * @IEEE80211_HW_SUPPORTS_NSS_OFFLOAD: Hardware/driver supports NSS offload
   *
 + * @IEEE80211_HW_SUPPORTS_TID_CLASS_OFFLOAD: Hardware suports tid calssification offload.
 + *
   * @NUM_IEEE80211_HW_FLAGS: number of hardware flags, used for sizing arrays
   */
  enum ieee80211_hw_flags {
-@@ -2943,6 +2945,7 @@ enum ieee80211_hw_flags {
- 	IEEE80211_HW_HANDLES_QUIET_CSA,
+@@ -2970,6 +2972,7 @@ enum ieee80211_hw_flags {
+ 	IEEE80211_HW_STRICT,
  	IEEE80211_HW_SUPPORTS_NSS_OFFLOAD,
  	IEEE80211_HW_SUPPORTS_MESH_NSS_OFFLOAD,
 +	IEEE80211_HW_SUPPORTS_TID_CLASS_OFFLOAD,
@@ -35,8 +35,8 @@ Signed-off-by: Gautham Kumar Senthilkumaran <quic_gauthamk@quicinc.com>
  	NUM_IEEE80211_HW_FLAGS
 --- a/net/mac80211/debugfs.c
 +++ b/net/mac80211/debugfs.c
-@@ -511,6 +511,7 @@ static const char *hw_flag_names[] = {
- 	FLAG(HANDLES_QUIET_CSA),
+@@ -512,6 +512,7 @@ static const char *hw_flag_names[] = {
+ 	FLAG(STRICT),
  	FLAG(SUPPORTS_NSS_OFFLOAD),
  	FLAG(SUPPORTS_MESH_NSS_OFFLOAD),
 +	FLAG(SUPPORTS_TID_CLASS_OFFLOAD),

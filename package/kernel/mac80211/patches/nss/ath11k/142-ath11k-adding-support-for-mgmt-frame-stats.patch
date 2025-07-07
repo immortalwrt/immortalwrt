@@ -16,7 +16,7 @@
  
  #define SM(_v, _f) (((_v) << _f##_LSB) & _f##_MASK)
  
-@@ -362,6 +362,16 @@ struct ath11k_reg_tpc_power_info {
+@@ -361,6 +361,16 @@ struct ath11k_reg_tpc_power_info {
  	struct ath11k_chan_power_info chan_power_info[ATH11K_NUM_PWR_LEVELS];
  };
  
@@ -33,7 +33,7 @@
  struct ath11k_vif {
  	u32 vdev_id;
  	enum wmi_vdev_type vdev_type;
-@@ -418,7 +428,7 @@ struct ath11k_vif {
+@@ -416,7 +426,7 @@ struct ath11k_vif {
  	struct ath11k_rekey_data rekey_data;
  
  	struct ath11k_reg_tpc_power_info reg_tpc_info;
@@ -144,7 +144,7 @@
  		debugfs_create_file("dfs_simulate_radar", 0200,
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -6037,9 +6037,9 @@ static int ath11k_mac_mgmt_tx(struct ath
+@@ -6030,9 +6030,9 @@ static int ath11k_mac_mgmt_tx(struct ath
  	 */
  	if (is_prb_rsp &&
  	    atomic_read(&ar->num_pending_mgmt_tx) > ATH11K_PRB_RSP_DROP_THRESHOLD) {
@@ -156,7 +156,7 @@
  	}
  
  	if (skb_queue_len_lockless(q) >= ATH11K_TX_MGMT_NUM_PENDING_MAX) {
-@@ -6065,9 +6065,11 @@ static void ath11k_mac_op_tx(struct ieee
+@@ -6058,9 +6058,11 @@ static void ath11k_mac_op_tx(struct ieee
  	struct ath11k_vif *arvif = ath11k_vif_to_arvif(vif);
  	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)skb->data;
  	struct ieee80211_key_conf *key = info->control.hw_key;
@@ -168,7 +168,7 @@
  	int ret;
  
  	memset(skb_cb, 0, sizeof(*skb_cb));
-@@ -6081,12 +6083,21 @@ static void ath11k_mac_op_tx(struct ieee
+@@ -6074,12 +6076,21 @@ static void ath11k_mac_op_tx(struct ieee
  	if (info_flags & IEEE80211_TX_CTL_HW_80211_ENCAP) {
  		skb_cb->flags |= ATH11K_SKB_HW_80211_ENCAP;
  	} else if (ieee80211_is_mgmt(hdr->frame_control)) {

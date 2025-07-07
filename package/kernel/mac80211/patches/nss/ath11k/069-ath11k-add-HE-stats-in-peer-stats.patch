@@ -23,7 +23,7 @@ Signed-off-by: Miles Hu <milehu@codeaurora.org>
  #include "fw.h"
  
  #define SM(_v, _f) (((_v) << _f##_LSB) & _f##_MASK)
-@@ -522,6 +523,8 @@ struct ath11k_htt_data_stats {
+@@ -520,6 +521,8 @@ struct ath11k_htt_data_stats {
  	u64 bw[ATH11K_COUNTER_TYPE_MAX][ATH11K_BW_NUM];
  	u64 nss[ATH11K_COUNTER_TYPE_MAX][ATH11K_NSS_NUM];
  	u64 gi[ATH11K_COUNTER_TYPE_MAX][ATH11K_GI_NUM];
@@ -32,7 +32,7 @@ Signed-off-by: Miles Hu <milehu@codeaurora.org>
  };
  
  struct ath11k_htt_tx_stats {
-@@ -529,6 +532,9 @@ struct ath11k_htt_tx_stats {
+@@ -527,6 +530,9 @@ struct ath11k_htt_tx_stats {
  	u64 tx_duration;
  	u64 ba_fails;
  	u64 ack_fails;
@@ -42,7 +42,7 @@ Signed-off-by: Miles Hu <milehu@codeaurora.org>
  };
  
  struct ath11k_per_ppdu_tx_stats {
-@@ -645,11 +651,16 @@ struct ath11k_per_peer_tx_stats {
+@@ -643,11 +649,16 @@ struct ath11k_per_peer_tx_stats {
  	u32 succ_bytes;
  	u32 retry_bytes;
  	u32 failed_bytes;
@@ -317,7 +317,7 @@ Signed-off-by: Miles Hu <milehu@codeaurora.org>
  	if (len > size)
 --- a/drivers/net/wireless/ath/ath11k/dp.h
 +++ b/drivers/net/wireless/ath/ath11k/dp.h
-@@ -603,6 +603,45 @@ enum htt_ppdu_stats_tag_type {
+@@ -602,6 +602,45 @@ enum htt_ppdu_stats_tag_type {
  				    BIT(HTT_PPDU_STATS_TAG_TX_MGMTCTRL_PAYLOAD) | \
  				    HTT_PPDU_STATS_TAG_DEFAULT)
  
@@ -363,7 +363,7 @@ Signed-off-by: Miles Hu <milehu@codeaurora.org>
  /* HTT_H2T_MSG_TYPE_RX_RING_SELECTION_CFG Message
   *
   * details:
-@@ -1242,6 +1281,19 @@ enum htt_ppdu_stats_gi {
+@@ -1241,6 +1280,19 @@ enum htt_ppdu_stats_gi {
  #define HTT_PPDU_STATS_USER_RATE_INFO0_USER_POS_M	GENMASK(3, 0)
  #define HTT_PPDU_STATS_USER_RATE_INFO0_MU_GROUP_ID_M	GENMASK(11, 4)
  
@@ -383,7 +383,7 @@ Signed-off-by: Miles Hu <milehu@codeaurora.org>
  #define HTT_PPDU_STATS_USER_RATE_INFO1_RESP_TYPE_VALD_M	BIT(0)
  #define HTT_PPDU_STATS_USER_RATE_INFO1_PPDU_TYPE_M	GENMASK(5, 1)
  
-@@ -1269,6 +1321,12 @@ enum htt_ppdu_stats_gi {
+@@ -1268,6 +1320,12 @@ enum htt_ppdu_stats_gi {
  		FIELD_GET(HTT_PPDU_STATS_USER_RATE_FLAGS_GI_M, _val)
  #define HTT_USR_RATE_DCM(_val) \
  		FIELD_GET(HTT_PPDU_STATS_USER_RATE_FLAGS_DCM_M, _val)
@@ -396,7 +396,7 @@ Signed-off-by: Miles Hu <milehu@codeaurora.org>
  
  #define HTT_PPDU_STATS_USER_RATE_RESP_FLAGS_LTF_SIZE_M		GENMASK(1, 0)
  #define HTT_PPDU_STATS_USER_RATE_RESP_FLAGS_STBC_M		BIT(2)
-@@ -1360,16 +1418,33 @@ struct htt_ppdu_stats_usr_cmpltn_ack_ba_
+@@ -1359,16 +1417,33 @@ struct htt_ppdu_stats_usr_cmpltn_ack_ba_
  	u32 success_bytes;
  } __packed;
  
@@ -431,7 +431,7 @@ Signed-off-by: Miles Hu <milehu@codeaurora.org>
  #define HTT_PPDU_DESC_MAX_DEPTH	16
  
  struct htt_ppdu_stats {
-@@ -1378,7 +1453,7 @@ struct htt_ppdu_stats {
+@@ -1377,7 +1452,7 @@ struct htt_ppdu_stats {
  };
  
  struct htt_ppdu_stats_info {
