@@ -49,9 +49,9 @@ Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
  int brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
  		   struct brcmf_mp_device *settings)
  {
-@@ -122,6 +152,8 @@ int brcmf_of_probe(struct device *dev, e
+@@ -121,6 +151,8 @@ int brcmf_of_probe(struct device *dev, e
+ 
  	brcmf_dbg(INFO, "%s LPO clock\n", clk ? "enable" : "no");
- 	clk_set_rate(clk, 32768);
  
 +	brcmf_of_probe_cc(dev, settings);
 +
