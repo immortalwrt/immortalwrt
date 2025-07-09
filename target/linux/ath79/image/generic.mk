@@ -3442,6 +3442,7 @@ define Device/zyxel_nwa11xx
 	append-kernel | pad-to $$$$(BLOCKSIZE) | append-rootfs | \
 	pad-rootfs | pad-to 8192k | check-size | zyxel-tar-bz2 \
 	vmlinux_mi124_f1e mi124_f1e-jffs2 | append-md5sum-bin
+  DEFAULT := n
 endef
 
 define Device/zyxel_nwa1100-nh
