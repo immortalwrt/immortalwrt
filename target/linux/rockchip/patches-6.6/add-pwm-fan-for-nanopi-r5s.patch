@@ -1,0 +1,65 @@
+diff --git a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dtsi b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dtsi
+index 93189f830640..06d75e755d79 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dtsi
+@@ -35,6 +35,14 @@ hdmi_con_in: endpoint {
+ 		};
+ 	};
+ 
++	fan: pwm-fan {
++		compatible = "pwm-fan";
++		cooling-levels = <0 18 102 170 255>;
++		#cooling-cells = <2>;
++		fan-supply = <&vcc5v0_sys>;
++		pwms = <&pwm0 0 50000 0>;
++	};
++
+ 	vdd_usbc: vdd-usbc-regulator {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vdd_usbc";
+@@ -478,6 +486,10 @@ &pmu_io_domains {
+ 	status = "okay";
+ };
+ 
++&pwm0 {
++	status = "okay";
++};
++
+ &saradc {
+ 	vref-supply = <&vcca_1v8>;
+ 	status = "okay";
+@@ -507,6 +519,34 @@ &sdmmc0 {
+ 	status = "okay";
+ };
+ 
++&cpu_thermal {
++	trips {
++		cpu_warm: cpu_warm {
++			temperature = <55000>;
++			hysteresis = <2000>;
++			type = "active";
++		};
++
++		cpu_hot: cpu_hot {
++			temperature = <65000>;
++			hysteresis = <2000>;
++			type = "active";
++		};
++	};
++
++	cooling-maps {
++		map2 {
++			trip = <&cpu_warm>;
++			cooling-device = <&fan THERMAL_NO_LIMIT 1>;
++		};
++
++		map3 {
++			trip = <&cpu_hot>;
++			cooling-device = <&fan 2 THERMAL_NO_LIMIT>;
++		};
++	};
++};
++
+ &tsadc {
+ 	rockchip,hw-tshut-mode = <1>;
+ 	rockchip,hw-tshut-polarity = <0>;
