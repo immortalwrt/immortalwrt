@@ -337,11 +337,8 @@ define Device/totolink_a8000ru
 endef
 TARGET_DEVICES += totolink_a8000ru
 
-define Device/tplink_tl-xdr3230-v1
+define Device/tplink_tl-xdr-common
   DEVICE_VENDOR := TP-Link
-  DEVICE_MODEL := TL-XDR3230
-  DEVICE_VARIANT := v1
-  DEVICE_DTS := mt7622-tplink_tl-xdr3230-v1
   DEVICE_DTS_DIR := ../dts
   DEVICE_PACKAGES := kmod-mt7915-firmware swconfig
   KERNEL := kernel-bin | lzma
@@ -352,7 +349,22 @@ define Device/tplink_tl-xdr3230-v1
   IMAGE/sysupgrade.itb := append-kernel | \
 	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-static-with-rootfs | pad-rootfs | append-metadata
 endef
+
+define Device/tplink_tl-xdr3230-v1
+  DEVICE_MODEL := TL-XDR3230
+  DEVICE_VARIANT := v1
+  DEVICE_DTS := mt7622-tplink-tl-xdr3230-v1
+  $(call Device/tplink_tl-xdr-common)
+endef
 TARGET_DEVICES += tplink_tl-xdr3230-v1
+
+define Device/tplink_tl-xdr3250-v1
+  DEVICE_MODEL := TL-XDR3250
+  DEVICE_VARIANT := v1
+  DEVICE_DTS := mt7622-tplink-tl-xdr3250-v1
+  $(call Device/tplink_tl-xdr-common)
+endef
+TARGET_DEVICES += tplink_tl-xdr3250-v1
 
 define Device/ubnt_unifi-6-lr-v1
   DEVICE_VENDOR := Ubiquiti
