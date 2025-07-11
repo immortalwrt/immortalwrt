@@ -11,7 +11,7 @@ Change-Id: I4ec51ba8d4e1381f787c0137cb475a21e546789d
 
 --- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-@@ -882,6 +882,47 @@
+@@ -894,6 +894,47 @@
  		};
  	};
  

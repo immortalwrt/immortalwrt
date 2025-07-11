@@ -8,15 +8,15 @@
  #include <linux/tcp.h>
  #include <linux/interrupt.h>
  #include <linux/dma-mapping.h>
-@@ -5381,6 +5382,7 @@ static int rtl_init_one(struct pci_dev *
+@@ -5393,6 +5394,7 @@ static int rtl_init_one(struct pci_dev *
+ 	struct rtl8169_private *tp;
  	int jumbo_max, region, rc;
- 	enum mac_version chipset;
  	struct net_device *dev;
 +	const char *devname = of_get_property(pdev->dev.of_node, "label", NULL);
  	u32 txconfig;
  	u16 xid;
  
-@@ -5388,6 +5390,9 @@ static int rtl_init_one(struct pci_dev *
+@@ -5400,6 +5402,9 @@ static int rtl_init_one(struct pci_dev *
  	if (!dev)
  		return -ENOMEM;
  

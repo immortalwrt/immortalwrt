@@ -1139,7 +1139,7 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
  		};
  	} link_create;
  
-@@ -6585,6 +6595,10 @@ struct bpf_link_info {
+@@ -6587,6 +6597,10 @@ struct bpf_link_info {
  			__u32 ifindex;
  			__u32 attach_type;
  		} tcx;
@@ -1298,7 +1298,7 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
  		};
  	} link_create;
  
-@@ -6588,6 +6598,10 @@ struct bpf_link_info {
+@@ -6590,6 +6600,10 @@ struct bpf_link_info {
  			__u32 ifindex;
  			__u32 attach_type;
  		} tcx;
