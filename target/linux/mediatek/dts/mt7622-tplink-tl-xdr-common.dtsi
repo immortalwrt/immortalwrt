@@ -9,9 +9,6 @@
 #include "mt6380.dtsi"
 
 / {
-	model = "TP-Link TL-XDR3230 v1";
-	compatible = "tplink,tl-xdr3230-v1", "mediatek,mt7622";
-
 	aliases {
 		led-boot = &red_status_led;
 		led-failsafe = &red_status_led;
@@ -30,7 +27,6 @@
 	memory@40000000 {
 		reg = <0 0x40000000 0 0x10000000>;
 	};
-
 
 	cpus {
 		cpu@0 {
