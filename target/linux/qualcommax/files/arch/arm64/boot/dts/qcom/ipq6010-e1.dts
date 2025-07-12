@@ -93,9 +93,7 @@
 
 	fan: pwm-fan {
 		compatible = "pwm-fan";
-		pwms = <&pwm 1 40000 0>;
-		interrupt-parent = <&tlmm>;
-		interrupts = <31 IRQ_TYPE_EDGE_RISING>;
+		pwms = <&pwm 0 40000 0>;
 		cooling-levels = <64 128 192 255>;
 		#cooling-cells = <2>;
 	};
@@ -120,6 +118,12 @@
 					hysteresis = <2000>;
 					type = "active";
 				};
+
+				cpu_trip_idle: active-idle {
+					temperature = <25000>;
+					hysteresis = <2000>;
+					type = "active";
+				};
 			};
 
 			cooling-maps {
@@ -136,6 +140,11 @@
 				cpu-active-low {
 					cooling-device = <&fan 1 1>;
 					trip = <&cpu_trip_low>;
+				};
+
+				cpu-active-idle {
+					cooling-device = <&fan 0 0>;
+					trip = <&cpu_trip_idle>;
 				};
 			};
 		};

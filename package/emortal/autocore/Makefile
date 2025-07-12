@@ -18,12 +18,12 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/target.mk
 
 define Package/autocore
-  TITLE:=auto core loadbalance script.
-  DEPENDS:=@(aarch64||arm||i386||i686||x86_64) \
-    +TARGET_bcm27xx:bcm27xx-utils \
-    +TARGET_bcm53xx:nvram \
-    +TARGET_x86:ethtool \
-    +TARGET_x86:lm-sensors
+	TITLE:=auto core loadbalance script.
+	DEPENDS:=@(aarch64||arm||i386||i686||x86_64) \
+		+TARGET_bcm27xx:bcm27xx-utils \
+		+TARGET_bcm53xx:nvram \
+		+TARGET_x86:ethtool \
+		+TARGET_x86:lm-sensors
 endef
 
 define Build/Compile
@@ -38,9 +38,7 @@ endif
 
 	$(INSTALL_DIR) $(1)/sbin
 	$(INSTALL_BIN) ./files/cpuinfo $(1)/sbin/
-ifneq ($(filter ipq% mediatek% qualcommax%, $(TARGETID)),)
 	$(INSTALL_BIN) ./files/tempinfo $(1)/sbin/
-endif
 
 	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d
 	$(CP) ./files/luci-mod-status-autocore.json $(1)/usr/share/rpcd/acl.d/
