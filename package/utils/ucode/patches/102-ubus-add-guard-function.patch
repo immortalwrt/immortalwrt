@@ -10,7 +10,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
 
 --- a/lib/ubus.c
 +++ b/lib/ubus.c
-@@ -575,6 +575,40 @@ uc_ubus_call_cb(struct ubus_request *req
+@@ -573,6 +573,40 @@ uc_ubus_call_cb(struct ubus_request *req
  }
  
  static void
@@ -51,7 +51,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  uc_ubus_call_user_cb(uc_ubus_deferred_t *defer, int ret, uc_value_t *reply)
  {
  	uc_value_t *this = ucv_get(defer->res);
-@@ -625,10 +659,8 @@ uc_ubus_call_data_user_cb(struct ubus_re
+@@ -623,10 +657,8 @@ uc_ubus_call_data_user_cb(struct ubus_re
  		uc_vm_stack_push(vm, ucv_get(func));
  		uc_vm_stack_push(vm, ucv_get(reply));
  
@@ -63,7 +63,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	}
  }
  
-@@ -647,10 +679,8 @@ uc_ubus_call_fd_cb(struct ubus_request *
+@@ -645,10 +677,8 @@ uc_ubus_call_fd_cb(struct ubus_request *
  		uc_vm_stack_push(vm, ucv_get(func));
  		uc_vm_stack_push(vm, ucv_int64_new(fd));
  
@@ -75,7 +75,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	}
  }
  
-@@ -929,10 +959,8 @@ uc_ubus_defer_common(uc_vm_t *vm, uc_ubu
+@@ -927,10 +957,8 @@ uc_ubus_defer_common(uc_vm_t *vm, uc_ubu
  		uc_vm_stack_push(vm, ucv_get(replycb));
  		uc_vm_stack_push(vm, ucv_int64_new(rv));
  
@@ -87,7 +87,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  
  		ucv_put(res->res);
  	}
-@@ -1201,10 +1229,8 @@ uc_ubus_object_notify_data_cb(struct ubu
+@@ -1199,10 +1227,8 @@ uc_ubus_object_notify_data_cb(struct ubu
  		uc_vm_stack_push(vm, ucv_int64_new(type));
  		uc_vm_stack_push(vm, blob_array_to_ucv(vm, blob_data(msg), blob_len(msg), true));
  
@@ -99,7 +99,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	}
  }
  
-@@ -1224,10 +1250,8 @@ uc_ubus_object_notify_status_cb(struct u
+@@ -1222,10 +1248,8 @@ uc_ubus_object_notify_status_cb(struct u
  		uc_vm_stack_push(vm, ucv_int64_new(idx));
  		uc_vm_stack_push(vm, ucv_int64_new(ret));
  
@@ -111,7 +111,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	}
  }
  
-@@ -1247,10 +1271,8 @@ uc_ubus_object_notify_complete_cb(struct
+@@ -1245,10 +1269,8 @@ uc_ubus_object_notify_complete_cb(struct
  		uc_vm_stack_push(vm, ucv_int64_new(idx));
  		uc_vm_stack_push(vm, ucv_int64_new(ret));
  
@@ -123,7 +123,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	}
  
  	notifyctx->complete = true;
-@@ -1581,7 +1603,7 @@ uc_ubus_handle_reply_common(struct ubus_
+@@ -1579,7 +1601,7 @@ uc_ubus_handle_reply_common(struct ubus_
  	/* treat other exceptions as fatal and halt uloop */
  	default:
  		uc_ubus_request_finish_common(callctx, UBUS_STATUS_UNKNOWN_ERROR);
@@ -132,7 +132,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  		break;
  	}
  
-@@ -1640,10 +1662,8 @@ uc_ubus_object_subscribe_cb(struct ubus_
+@@ -1638,10 +1660,8 @@ uc_ubus_object_subscribe_cb(struct ubus_
  	uc_vm_stack_push(uuobj->vm, ucv_get(uuobj->res));
  	uc_vm_stack_push(uuobj->vm, ucv_get(func));
  
@@ -144,7 +144,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  }
  
  static bool
-@@ -1919,10 +1939,8 @@ uc_ubus_listener_cb(struct ubus_context
+@@ -1917,10 +1937,8 @@ uc_ubus_listener_cb(struct ubus_context
  	uc_vm_stack_push(vm, ucv_string_new(type));
  	uc_vm_stack_push(vm, blob_array_to_ucv(vm, blob_data(msg), blob_len(msg), true));
  
@@ -156,7 +156,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  }
  
  static uc_value_t *
-@@ -2042,10 +2060,8 @@ uc_ubus_subscriber_remove_cb(struct ubus
+@@ -2040,10 +2058,8 @@ uc_ubus_subscriber_remove_cb(struct ubus
  	uc_vm_stack_push(vm, ucv_get(func));
  	uc_vm_stack_push(vm, ucv_uint64_new(id));
  
@@ -168,7 +168,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  }
  
  static uc_value_t *
-@@ -2370,10 +2386,8 @@ uc_ubus_channel_disconnect_cb(struct ubu
+@@ -2334,10 +2350,8 @@ uc_ubus_channel_disconnect_cb(struct ubu
  		uc_vm_stack_push(c->vm, ucv_get(c->res));
  		uc_vm_stack_push(c->vm, ucv_get(func));
  
@@ -180,7 +180,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	}
  
  	blob_buf_free(&c->buf);
-@@ -2474,10 +2488,28 @@ uc_ubus_channel_connect(uc_vm_t *vm, siz
+@@ -2438,10 +2452,28 @@ uc_ubus_channel_connect(uc_vm_t *vm, siz
  }
  
  

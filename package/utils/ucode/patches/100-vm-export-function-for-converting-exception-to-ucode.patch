@@ -21,7 +21,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  uc_value_t *uc_vm_invoke(uc_vm_t *vm, const char *fname, size_t nargs, ...);
 --- a/vm.c
 +++ b/vm.c
-@@ -813,9 +813,12 @@ uc_vm_exception_tostring(uc_vm_t *vm, si
+@@ -814,9 +814,12 @@ uc_vm_exception_tostring(uc_vm_t *vm, si
  	return message ? ucv_get(message) : ucv_string_new("Exception");
  }
  
@@ -36,7 +36,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	uc_value_t *exception_prototype = uc_vm_registry_get(vm, "vm.exception.proto");
  	uc_value_t *exo;
  
-@@ -880,7 +883,7 @@ uc_vm_handle_exception(uc_vm_t *vm)
+@@ -881,7 +884,7 @@ uc_vm_handle_exception(uc_vm_t *vm)
  			ucv_put(uc_vm_stack_pop(vm));
  
  		/* prepare exception object and expose it to user handler code */
