@@ -55,14 +55,14 @@ endef
 
 define Package/ppp
 $(call Package/ppp/Default)
-  DEPENDS:=+kmod-ppp +libpthread +shellsync +kmod-mppe
+  DEPENDS:= +USE_GLIBC:libcrypt-compat +kmod-ppp +shellsync +kmod-mppe
   TITLE:=PPP daemon
   VARIANT:=default
 endef
 
 define Package/ppp-multilink
 $(call Package/ppp/Default)
-  DEPENDS:=+kmod-ppp
+  DEPENDS:= +USE_GLIBC:libcrypt-compat +kmod-ppp
   TITLE:=PPP daemon (with multilink support)
   VARIANT:=multilink
 endef
