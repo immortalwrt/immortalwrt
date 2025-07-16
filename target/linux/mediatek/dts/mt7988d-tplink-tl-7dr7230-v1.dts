@@ -21,7 +21,6 @@
 };
 
 &gsw_phy2_led0 {
-	function = LED_FUNCTION_LAN;
 	color = <LED_COLOR_ID_GREEN>;
 	status = "okay";
 };
@@ -32,7 +31,6 @@
 };
 
 &gsw_phy3_led0 {
-	function = LED_FUNCTION_LAN;
 	color = <LED_COLOR_ID_GREEN>;
 	status = "okay";
 };
@@ -55,20 +53,4 @@
 
 &i2p5gbe_led0 {
 	function = LED_FUNCTION_WAN;
-};
-
-&pio {
-	gbe2_led0_pins: gbe2-led0-pins {
-		mux {
-			function = "led";
-			groups = "gbe2_led0";
-		};
-	};
-
-	gbe3_led0_pins: gbe3-led0-pins {
-		mux {
-			function = "led";
-			groups = "gbe3_led0";
-		};
-	};
 };

@@ -68,24 +68,6 @@
 			gpios = <&pio 54 GPIO_ACTIVE_HIGH>;
 		};
 	};
-
-	reg_1p8v: regulator-1p8v {
-		compatible = "regulator-fixed";
-		regulator-name = "fixed-1.8V";
-		regulator-min-microvolt = <1800000>;
-		regulator-max-microvolt = <1800000>;
-		regulator-boot-on;
-		regulator-always-on;
-	};
-
-	reg_3p3v: regulator-3p3v {
-		compatible = "regulator-fixed";
-		regulator-name = "fixed-3.3V";
-		regulator-min-microvolt = <3300000>;
-		regulator-max-microvolt = <3300000>;
-		regulator-boot-on;
-		regulator-always-on;
-	};
 };
 
 &cpu0 {
@@ -131,7 +113,6 @@
 };
 
 &gsw_phy0_led0 {
-	function = LED_FUNCTION_LAN;
 	color = <LED_COLOR_ID_GREEN>;
 	status = "okay";
 };
@@ -142,7 +123,6 @@
 };
 
 &gsw_phy1_led0 {
-	function = LED_FUNCTION_LAN;
 	color = <LED_COLOR_ID_GREEN>;
 	status = "okay";
 };
@@ -255,57 +235,10 @@
 		mediatek,pull-down-adv = <0>;
 	};
 
-	gbe0_led0_pins: gbe0-led0-pins {
-		mux {
-			function = "led";
-			groups = "gbe0_led0";
-		};
-	};
-
-	gbe1_led0_pins: gbe1-led0-pins {
-		mux {
-			function = "led";
-			groups = "gbe1_led0";
-		};
-	};
-
-	i2c0_pins: i2c0-g0-pins {
-		mux {
-			function = "i2c";
-			groups = "i2c0_1";
-		};
-	};
-
-	i2p5gbe_led0_pins: i2p5gbe-led0-pins {
-		mux {
-			function = "led";
-			groups = "2p5gbe_led0";
-		};
-	};
-
-	mdio0_pins: mdio0-pins {
-		mux {
-			function = "eth";
-			groups = "mdc_mdio0";
-		};
-
-		conf {
-			groups = "mdc_mdio0";
-			drive-strength = <MTK_DRIVE_8mA>;
-		};
-	};
-
 	pcie0_1_pins: pcie0-pins-g1 {
 		mux {
 			function = "pcie";
 			groups = "pcie_2l_0_pereset", "pcie_clk_req_n0_0";
-		};
-	};
-
-	spi0_flash_pins: spi0-flash-pins {
-		mux {
-			function = "spi";
-			groups = "spi0", "spi0_wp_hold";
 		};
 	};
 };
