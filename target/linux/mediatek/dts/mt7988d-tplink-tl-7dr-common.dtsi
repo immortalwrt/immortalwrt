@@ -19,7 +19,7 @@
 		led-running = &led_status_green;
 		led-upgrade = &led_status_green;
 		label-mac-device = &gmac0;
-		serial0 = &serial0;
+		serial0 = &uart0;
 	};
 
 	chosen {
@@ -310,10 +310,6 @@
 	};
 };
 
-&serial0 {
-	status = "okay";
-};
-
 &spi0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi0_flash_pins>;
@@ -390,6 +386,10 @@
 };
 
 &switch {
+	status = "okay";
+};
+
+&uart0 {
 	status = "okay";
 };
 
