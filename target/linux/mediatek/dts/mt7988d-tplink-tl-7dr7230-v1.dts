@@ -37,6 +37,22 @@
 	status = "okay";
 };
 
+&gsw_port0 {
+	label = "lan4";
+};
+
+&gsw_port1 {
+	label = "lan3";
+};
+
+&gsw_port2 {
+	label = "lan2";
+};
+
+&gsw_port3 {
+	label = "lan1";
+};
+
 &i2p5gbe_led0 {
 	function = LED_FUNCTION_WAN;
 };
@@ -53,26 +69,6 @@
 		mux {
 			function = "led";
 			groups = "gbe3_led0";
-		};
-	};
-};
-
-&switch {
-	ports {
-		port@0 {
-			label = "lan4";
-		};
-
-		port@1 {
-			label = "lan3";
-		};
-
-		port@2 {
-			label = "lan2";
-		};
-
-		port@3 {
-			label = "lan1";
 		};
 	};
 };
