@@ -308,9 +308,18 @@
 			groups = "spi0", "spi0_wp_hold";
 		};
 	};
+
+	uart0_pins: uart0-pins {
+		mux {
+			function = "uart";
+			groups =  "uart0";
+		};
+	};
 };
 
 &serial0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart0_pins>;
 	status = "okay";
 };
 
