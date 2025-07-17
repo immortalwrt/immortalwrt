@@ -762,6 +762,18 @@ define U-Boot/mt7986_netcore_n60-pro
   DEPENDS:=+trusted-firmware-a-mt7986-spim-nand-ddr4
 endef
 
+define U-Boot/mt7986_ikuai_q6000
+  NAME:=ikuai Q6000
+  BUILD_SUBTARGET:=filogic
+  BUILD_DEVICES:=ikuai_q6000
+  UBOOT_CONFIG:=mt7986_ikuai_q6000
+  UBOOT_IMAGE:=u-boot.fip
+  BL2_BOOTDEV:=spim-nand
+  BL2_SOC:=mt7986
+  BL2_DDRTYPE:=ddr4
+  DEPENDS:=+trusted-firmware-a-mt7986-spim-nand-ddr4
+endef
+
 define U-Boot/mt7986_tplink_tl-xdr4288
   NAME:=TP-LINK TL-XDR4288
   BUILD_SUBTARGET:=filogic
