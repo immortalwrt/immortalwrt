@@ -243,6 +243,7 @@ platform_check_image() {
 	openwrt,one|\
 	netcore,n60|\
 	netcore,n60-pro|\
+ 	ikuai,q6000|\
 	qihoo,360t7|\
 	routerich,ax3000-ubootmod|\
 	tplink,tl-7dr7230-v1|\
