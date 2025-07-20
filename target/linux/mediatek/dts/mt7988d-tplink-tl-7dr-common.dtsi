@@ -102,8 +102,6 @@
 	phy-mode = "internal";
 	phy-connection-type = "internal";
 	phy = <&int_2p5g_phy>;
-	nvmem-cells = <&macaddr_factory_1e001c 0>;
-	nvmem-cell-names = "mac-address";
 	status = "okay";
 };
 
