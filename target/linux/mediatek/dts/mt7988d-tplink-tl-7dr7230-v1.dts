@@ -12,6 +12,8 @@
 };
 
 &gmac1 {
+	nvmem-cells = <&macaddr_factory_1e001c 1>;
+	nvmem-cell-names = "mac-address";
 	openwrt,netdev-name = "wan";
 };
 

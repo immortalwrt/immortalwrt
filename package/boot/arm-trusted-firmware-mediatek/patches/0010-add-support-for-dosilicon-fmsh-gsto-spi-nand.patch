@@ -33,7 +33,7 @@ Signed-off-by: Tianling Shen <cnsztl@immortalwrt.org>
  	    manufacturer_id != FORESEE_ID) {
  		return 0;
  	}
-@@ -542,6 +548,10 @@ static int spi_nand_check_pp(struct para
+@@ -543,6 +549,10 @@ static int spi_nand_check_pp(struct para
  		INFO("PP COPY %d CRC read: 0x%x, compute: 0x%x\n",
  		     i, crc, crc_compute);
  
@@ -44,18 +44,18 @@ Signed-off-by: Tianling Shen <cnsztl@immortalwrt.org>
  		if (crc != crc_compute) {
  			ret = -EBADMSG;
  			continue;
-@@ -633,8 +643,9 @@ restore:
- 	return ret;
+@@ -634,8 +644,9 @@ restore:
+ 	return valid ? valid: 0;
  }
  
 -static int spi_nand_read_pp(struct parameter_page *pp, uint8_t *sel)
 +static int spi_nand_read_pp(uint8_t *id, struct parameter_page *pp, uint8_t *sel)
  {
 +	const bool is_dosilicon = (id[1] == DOSILICON_ID);
- 	uint8_t status;
- 	uint8_t cfg_reg;
- 	int ret, op_ret;
-@@ -646,7 +657,7 @@ static int spi_nand_read_pp(struct param
+ 	uint8_t pp_offset[3] = {0x0, 0x1, 0x4};
+ 	int valid = -EINVAL;
+ 	int ret, last_ret;
+@@ -648,7 +659,7 @@ static int spi_nand_read_pp(struct param
  		return ret;
  	}
  
@@ -64,32 +64,38 @@ Signed-off-by: Tianling Shen <cnsztl@immortalwrt.org>
  	if (ret != 0) {
  		return ret;
  	}
-@@ -682,7 +693,7 @@ out:
- 		ERROR("Parameter page read failed\n");
+@@ -677,7 +688,7 @@ static int spi_nand_read_pp(struct param
  	}
  
--	ret = spi_nand_write_reg(SPI_NAND_REG_CFG, cfg_reg);
-+	ret = spi_nand_write_reg(SPI_NAND_REG_CFG, is_dosilicon ? 0x10 : cfg_reg);
- 	if (ret != 0) {
- 		return ret;
+ restore:
+-	last_ret = spi_nand_write_reg(SPI_NAND_REG_CFG, cfg_reg);
++	last_ret = spi_nand_write_reg(SPI_NAND_REG_CFG, is_dosilicon ? 0x10 : cfg_reg);
+ 	if (last_ret) {
+ 		return last_ret;
  	}
-@@ -873,13 +884,15 @@ int spi_nand_init(unsigned long long *si
- 	ret = spi_nand_read_casn((struct casn_page *)buf, &sel);
+@@ -877,9 +888,13 @@ int spi_nand_init(unsigned long long *si
+ 
+ fallback_pp:
+ 	WARN("CASN page may not exist. Try to read parameter page.\n");
++	ret = spi_nand_read_id(id);
++	if (ret) {
++		return ret;
++	}
+ 	sel = 0;
+ 	pp = (struct parameter_page *)buf;
+-	ret = spi_nand_read_pp(pp, &sel);
++	ret = spi_nand_read_pp(id, pp, &sel);
  	if (ret) {
- 		WARN("Fail to read CASN page. Try reading parameter page\n");
-+		ret = spi_nand_read_id(id);
-+		if (ret) {
-+			ERROR("SPI_NAND Read ID failed.\n");
-+			return ret;
-+		}
- 		pp = (struct parameter_page *)buf;
--		ret = spi_nand_read_pp(pp, &sel);
-+		ret = spi_nand_read_pp(id, pp, &sel);
- 		if (ret) {
- 			WARN("Parameter page read fail, fallback to read ID.\n");
--			ret = spi_nand_read_id(id);
--			if (ret)
--				return ret;
- 			spi_nand_set_data_via_id(&spinand_dev, id, &vendor_id);
- 		} else {
- 			vendor_id = pp[sel].manufactuere_id;
+ 		goto fallback_id;
+ 	}
+@@ -889,10 +904,6 @@ fallback_pp:
+ 
+ fallback_id:
+ 	WARN("Parameter page may not exist. Try to read ID.\n");
+-	ret = spi_nand_read_id(id);
+-	if (ret) {
+-		return ret;
+-	}
+ 	spi_nand_set_data_via_id(&spinand_dev, id, &vendor_id);
+ 
+ success:

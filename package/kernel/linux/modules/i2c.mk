@@ -169,7 +169,7 @@ define KernelPackage/i2c-hid
   $(call i2c_defaults,$(I2C_HID_MODULES),60)
   TITLE:=I2C HID support
   KCONFIG+= CONFIG_I2C_HID
-  DEPENDS:=+kmod-hid
+  DEPENDS:=+kmod-drm +kmod-hid
   HIDDEN:=1
 endef
 
@@ -286,6 +286,22 @@ define KernelPackage/i2c-mux-mlxcpld/description
 endef
 
 $(eval $(call KernelPackage,i2c-mux-mlxcpld))
+
+
+I2C_MUX_PINCTRL_MODULES:= \
+  CONFIG_I2C_MUX_PINCTRL:drivers/i2c/muxes/i2c-mux-pinctrl
+
+define KernelPackage/i2c-mux-pinctrl
+  $(call i2c_defaults,$(I2C_MUX_PINCTRL_MODULES),51)
+  TITLE:=Pinctrl-based I2C mux/switches
+  DEPENDS:=@PINCTRL_SUPPORT @USES_DEVICETREE +kmod-i2c-mux
+endef
+
+define KernelPackage/i2c-mux-pinctrl/description
+ Kernel modules for Pinctrl-based I2C bus mux/switching devices
+endef
+
+$(eval $(call KernelPackage,i2c-mux-pinctrl))
 
 
 I2C_MUX_REG_MODULES:= \
