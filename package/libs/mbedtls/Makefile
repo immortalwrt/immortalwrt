@@ -141,6 +141,7 @@ CMAKE_OPTIONS += \
 	-DENABLE_TESTING:Bool=OFF \
 	-DENABLE_PROGRAMS:Bool=ON
 
+ifeq ($(CONFIG_PACKAGE_libmbedtls),y)
 define Build/Configure
 	$(call Build/Configure/Default,)
 	$(foreach opt,$(MBEDTLS_BUILD_OPTS),
@@ -148,6 +149,7 @@ define Build/Configure
 		-f $(PKG_BUILD_DIR)/include/mbedtls/mbedtls_config.h \
 		$(if $($(opt)),set,unset) $(patsubst CONFIG_%,%,$(opt)))
 endef
+endif
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
