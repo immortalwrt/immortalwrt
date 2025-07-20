@@ -309,6 +309,7 @@ platform_copy_config() {
 	bananapi,bpi-r4-poe|\
 	cmcc,rax3000m|\
 	cmcc,rax3000me|\
+	gatonetworks,gdsp|\
 	mediatek,mt7988a-rfb)
 		if [ "$CI_METHOD" = "emmc" ]; then
 			emmc_copy_config

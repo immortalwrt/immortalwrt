@@ -17,17 +17,16 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
 
 --- a/drivers/mtd/nand/spi/Makefile
 +++ b/drivers/mtd/nand/spi/Makefile
-@@ -1,6 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0
+@@ -2,5 +2,5 @@
  
- spinand-objs := core.o esmt.o foresee.o etron.o gigadevice.o macronix.o micron.o paragon.o
--spinand-objs += dosilicon.o fmsh.o
-+spinand-objs += dosilicon.o fmsh.o gsto.o
+ spinand-objs := core.o esmt.o foresee.o gigadevice.o macronix.o micron.o paragon.o
  spinand-objs += toshiba.o winbond.o xtx.o
+-spinand-objs += dosilicon.o etron.o fmsh.o
++spinand-objs += dosilicon.o etron.o fmsh.o gsto.o
  obj-$(CONFIG_MTD_SPI_NAND) += spinand.o
 --- a/drivers/mtd/nand/spi/core.c
 +++ b/drivers/mtd/nand/spi/core.c
-@@ -830,6 +830,7 @@ static const struct spinand_manufacturer
+@@ -890,6 +890,7 @@ static const struct spinand_manufacturer
  	&etron_spinand_manufacturer,
  	&fmsh_spinand_manufacturer,
  	&gigadevice_spinand_manufacturer,
@@ -179,7 +178,7 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
 +};
 --- a/include/linux/mtd/spinand.h
 +++ b/include/linux/mtd/spinand.h
-@@ -248,6 +248,7 @@ extern const struct spinand_manufacturer
+@@ -301,6 +301,7 @@ extern const struct spinand_manufacturer
  extern const struct spinand_manufacturer etron_spinand_manufacturer;
  extern const struct spinand_manufacturer fmsh_spinand_manufacturer;
  extern const struct spinand_manufacturer gigadevice_spinand_manufacturer;
