@@ -1159,6 +1159,17 @@ define Device/imou_lc-hx3001
 endef
 TARGET_DEVICES += imou_lc-hx3001
 
+define Device/iptime_ax3000sm
+  DEVICE_VENDOR := ipTIME
+  DEVICE_MODEL := AX3000SM
+  DEVICE_DTS := mt7981b-iptime-ax3000sm
+  DEVICE_DTS_DIR := ../dts
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  SUPPORTED_DEVICES += mediatek,mt7981-spim-snand-rfb
+endef
+TARGET_DEVICES += iptime_ax3000sm
+
 define Device/jcg_q30-pro
   DEVICE_VENDOR := JCG
   DEVICE_MODEL := Q30 PRO
