@@ -62,7 +62,7 @@
 			gpios = <&pio 53 GPIO_ACTIVE_HIGH>;
 		};
 
-		led_status_green: led-2 {
+		led_status_green: led-1 {
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_STATUS;
 			gpios = <&pio 54 GPIO_ACTIVE_HIGH>;
