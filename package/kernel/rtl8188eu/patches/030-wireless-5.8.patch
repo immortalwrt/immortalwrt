@@ -29,17 +29,6 @@
  			sta->rssi_stat.ofdm_pkt_cnt -= (u8)((sta->rssi_stat.packet_map >> i) & BIT(0));
  			sta->rssi_stat.packet_map = sta->rssi_stat.packet_map << 1;
  		}
---- a/include/ieee80211.h
-+++ b/include/ieee80211.h
-@@ -1529,7 +1529,7 @@ enum ieee80211_state {
- 	(((Addr[2]) & 0xff) == 0xff) && (((Addr[3]) & 0xff) == 0xff) && (((Addr[4]) & 0xff) == 0xff) && \
- 				     (((Addr[5]) & 0xff) == 0xff))
- #else
--#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 18, 00))
-+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 18, 00)) && !defined(BUILD_OPENWRT)
- extern __inline int is_multicast_mac_addr(const u8 *addr)
- {
- 	return (addr[0] != 0xff) && (0x01 & addr[0]);
 --- a/include/wlan_bssdef.h
 +++ b/include/wlan_bssdef.h
 @@ -95,7 +95,7 @@ typedef struct _NDIS_802_11_FIXED_IEs {
@@ -62,129 +51,41 @@
  
 --- a/os_dep/linux/ioctl_cfg80211.c
 +++ b/os_dep/linux/ioctl_cfg80211.c
-@@ -417,7 +417,9 @@ u8 rtw_cfg80211_ch_switch_notify(_adapte
+@@ -417,7 +417,7 @@ u8 rtw_cfg80211_ch_switch_notify(_adapte
  	if (ret != _SUCCESS)
  		goto exit;
  
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0))
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 9, 0))
 +#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 9, 0)) || defined(BUILD_OPENWRT)
-+        cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0);
-+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0))
+         cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0);
+ #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0))
          cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0, 0);
- #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 0))
- 	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0);
-@@ -1105,7 +1107,7 @@ check_bss:
- 		#endif
- 
- 		#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0) || defined(RHEL79))
--		#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0))
-+		#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 0, 0)) || defined(BUILD_OPENWRT)
-                 roam_info.links[0].channel = notify_channel;
- 		roam_info.links[0].bssid = cur_network->network.MacAddress;
- 		#else
-@@ -1667,7 +1669,7 @@ exit:
- }
- 
- static int cfg80211_rtw_add_key(struct wiphy *wiphy, struct net_device *ndev
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0)) || defined(BUILD_OPENWRT)
-         , int link_id
+@@ -4018,6 +4018,9 @@ static int cfg80211_rtw_get_txpower(stru
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
+ 	struct wireless_dev *wdev,
  #endif
- 	, u8 key_index
-@@ -1814,7 +1816,7 @@ addkey_end:
- }
- 
- static int cfg80211_rtw_get_key(struct wiphy *wiphy, struct net_device *ndev
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0)) || defined(BUILD_OPENWRT)
-         , int link_id
- #endif
- 	, u8 keyid
-@@ -1982,7 +1984,7 @@ exit:
- }
- 
- static int cfg80211_rtw_del_key(struct wiphy *wiphy, struct net_device *ndev,
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0)) || defined(BUILD_OPENWRT)
-         int link_id,
- #endif
- #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) || defined(COMPAT_KERNEL_RELEASE)
-@@ -2006,7 +2008,7 @@ static int cfg80211_rtw_del_key(struct w
- 
- static int cfg80211_rtw_set_default_key(struct wiphy *wiphy,
- 	struct net_device *ndev,
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0)) || defined(BUILD_OPENWRT)
-         int link_id,
- #endif
-         u8 key_index
-@@ -2058,7 +2060,7 @@ static int cfg80211_rtw_set_default_key(
- #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 30))
- int cfg80211_rtw_set_default_mgmt_key(struct wiphy *wiphy,
- 	struct net_device *ndev,
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0)) || defined(BUILD_OPENWRT)
-         int link_id,
- #endif
-         u8 key_index)
-@@ -4895,6 +4897,19 @@ exit:
- 	return ret;
- }
- 
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0)) || defined(BUILD_OPENWRT)
-+static int cfg80211_rtw_change_beacon(struct wiphy *wiphy, struct net_device *ndev,
-+		struct cfg80211_ap_update *info)
-+{
-+        _adapter *adapter = (_adapter *)rtw_netdev_priv(ndev);
-+
-+        RTW_INFO(FUNC_NDEV_FMT"\n", FUNC_NDEV_ARG(ndev));
-+
-+	return rtw_add_beacon(adapter, info->beacon.head,
-+			      info->beacon.head_len, info->beacon.tail,
-+			      info->beacon.tail_len);
-+}
-+#else
- static int cfg80211_rtw_change_beacon(struct wiphy *wiphy, struct net_device *ndev,
- 		struct cfg80211_beacon_data *info)
- {
-@@ -4907,8 +4922,9 @@ static int cfg80211_rtw_change_beacon(st
- 
- 	return ret;
- }
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0)) || defined (BUILD_OPENWRT)
++	unsigned int link_id,
 +#endif
+ 	int *dbm)
+ {
+ 	_adapter *padapter = wiphy_to_adapter(wiphy);
+@@ -4897,7 +4900,7 @@ exit:
+ 	return ret;
+ }
  
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 0))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 0)) || defined(BUILD_OPENWRT)
- static int cfg80211_rtw_stop_ap(struct wiphy *wiphy, struct net_device *ndev, unsigned int link_id)
- #else
- static int cfg80211_rtw_stop_ap(struct wiphy *wiphy, struct net_device *ndev)
-@@ -5650,6 +5666,9 @@ static int	cfg80211_rtw_set_channel(stru
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0)) || defined(BUILD_OPENWRT)
+ static int cfg80211_rtw_change_beacon(struct wiphy *wiphy, struct net_device *ndev,
+ 		struct cfg80211_ap_update *ap_update)
+ {
+@@ -5659,6 +5662,9 @@ static int	cfg80211_rtw_set_channel(stru
  }
  
  static int cfg80211_rtw_set_monitor_channel(struct wiphy *wiphy
-+#ifdef BUILD_OPENWRT
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 13, 0)) || defined(BUILD_OPENWRT)
 +	, struct net_device *dev
 +#endif
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
  	, struct cfg80211_chan_def *chandef
  #else
-@@ -9670,7 +9689,7 @@ void rtw_wdev_unregister(struct wireless
- 	rtw_cfg80211_indicate_scan_done(adapter, _TRUE);
- 
- 	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 11, 0)) || defined(COMPAT_KERNEL_RELEASE)
--	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 0))
-+	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 0)) || defined(BUILD_OPENWRT)
- 	if (wdev->connected) {
- 	#else
- 	if (wdev->current_bss) {
---- a/os_dep/linux/usb_intf.c
-+++ b/os_dep/linux/usb_intf.c
-@@ -306,7 +306,7 @@ struct rtw_usb_drv usb_drv = {
- 	.usbdrv.supports_autosuspend = 1,
- #endif
- 
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 19))
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 19)) && (LINUX_VERSION_CODE < KERNEL_VERSION(6, 8, 0))
- 	.usbdrv.drvwrap.driver.shutdown = rtw_dev_shutdown,
- #else
- 	.usbdrv.driver.shutdown = rtw_dev_shutdown,
