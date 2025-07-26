@@ -88,6 +88,16 @@ case "$board" in
 		addr=$(mtd_get_mac_binary "Factory" 0x8000)
 		[ "$PHYNBR" = "1" ] && macaddr_add $addr 1 > /sys${DEVPATH}/macaddress
 		;;
+	creatlentem,clt-r30b1|\
+	creatlentem,clt-r30b1-112m|\
+	routerich,ax3000|\
+	zbtlink,zbt-z8102ax|\
+	zbtlink,zbt-z8103ax|\
+	zyxel,ex5601-t0|\
+	zyxel,ex5601-t0-ubootmod)
+		addr=$(mtd_get_mac_binary "Factory" 0x4)
+		[ "$PHYNBR" = "1" ] && macaddr_add $addr 1 > /sys${DEVPATH}/macaddress
+		;;
 	cudy,re3000-v1|\
 	cudy,tr3000-v1|\
 	cudy,tr3000-v1-ubootmod)
@@ -189,14 +199,6 @@ case "$board" in
 	ubnt,unifi-6-plus)
 		addr=$(mtd_get_mac_binary EEPROM 0x6)
 		[ "$PHYNBR" = "0" ] && echo "$addr" > /sys${DEVPATH}/macaddress
-		[ "$PHYNBR" = "1" ] && macaddr_add $addr 1 > /sys${DEVPATH}/macaddress
-		;;
-	routerich,ax3000|\
-	zbtlink,zbt-z8102ax|\
-	zbtlink,zbt-z8103ax|\
-	zyxel,ex5601-t0|\
-	zyxel,ex5601-t0-ubootmod)
-		addr=$(mtd_get_mac_binary "Factory" 0x4)
 		[ "$PHYNBR" = "1" ] && macaddr_add $addr 1 > /sys${DEVPATH}/macaddress
 		;;
 	zyxel,nwa50ax-pro)
