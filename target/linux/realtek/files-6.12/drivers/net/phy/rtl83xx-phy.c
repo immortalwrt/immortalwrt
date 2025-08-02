@@ -120,7 +120,10 @@ static u64 disable_polling(int port)
 		sw_w32_mask(BIT(port), 0, RTL930X_SMI_POLL_CTRL);
 		break;
 	case RTL9310_FAMILY_ID:
-		pr_warn("%s not implemented for RTL931X\n", __func__);
+		saved_state = sw_r32(RTL931X_SMI_PORT_POLLING_CTRL + 4);
+		saved_state <<= 32;
+		saved_state |= sw_r32(RTL931X_SMI_PORT_POLLING_CTRL);
+		sw_w32_mask(BIT(port % 32), 0, RTL931X_SMI_PORT_POLLING_CTRL + ((port >> 5) << 2));
 		break;
 	}
 
@@ -145,7 +148,8 @@ static int resume_polling(u64 saved_state)
 		sw_w32(saved_state, RTL930X_SMI_POLL_CTRL);
 		break;
 	case RTL9310_FAMILY_ID:
-		pr_warn("%s not implemented for RTL931X\n", __func__);
+		sw_w32(saved_state >> 32, RTL931X_SMI_PORT_POLLING_CTRL + 4);
+		sw_w32(saved_state, RTL931X_SMI_PORT_POLLING_CTRL);
 		break;
 	}
 
@@ -1707,9 +1711,11 @@ static int rtsds_930x_get_internal_mode(int sds)
 
 static void rtsds_930x_set_power(int sds, bool on)
 {
-	int power = on ? 0 : 3;
+	int power_down = on ? 0x0 : 0x3;
+	int rx_enable = on ? 0x3 : 0x1;
 
-	rtl9300_sds_field_w(sds, 0x20, 0x00, 7, 6, power);
+	rtl9300_sds_field_w(sds, 0x20, 0x00, 7, 6, power_down);
+	rtl9300_sds_field_w(sds, 0x20, 0x00, 5, 4, rx_enable);
 }
 
 static int rtsds_930x_config_pll(int sds, phy_interface_t interface)
@@ -3048,7 +3054,7 @@ static void rtl9310_sds_field_w(int sds, u32 page, u32 reg, int end_bit, int sta
 	if (l < 32) {
 		u32 mask = BIT(l) - 1;
 
-		data = rtl930x_read_sds_phy(sds, page, reg);
+		data = rtl931x_read_sds_phy(sds, page, reg);
 		data &= ~(mask << start_bit);
 		data |= (v & mask) << start_bit;
 	}
