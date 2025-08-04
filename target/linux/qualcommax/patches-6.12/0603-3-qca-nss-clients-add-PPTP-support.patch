@@ -72,7 +72,7 @@
  
  /*
   * Disconnect a channel from the generic layer.
-@@ -3706,6 +3720,28 @@ void ppp_update_stats(struct net_device
+@@ -3710,6 +3724,28 @@ void ppp_update_stats(struct net_device
  	ppp_recv_unlock(ppp);
  }
  
@@ -101,7 +101,7 @@
  /* Returns >0 if the device is a multilink PPP netdevice, 0 if not or < 0 if
   * the device is not PPP.
   */
-@@ -3976,6 +4012,7 @@ EXPORT_SYMBOL(ppp_unregister_channel);
+@@ -3980,6 +4016,7 @@ EXPORT_SYMBOL(ppp_unregister_channel);
  EXPORT_SYMBOL(ppp_channel_index);
  EXPORT_SYMBOL(ppp_unit_number);
  EXPORT_SYMBOL(ppp_dev_name);
@@ -111,7 +111,7 @@
  EXPORT_SYMBOL(ppp_output_wakeup);
 --- a/include/linux/ppp_channel.h
 +++ b/include/linux/ppp_channel.h
-@@ -129,6 +129,9 @@ extern void ppp_unregister_channel(struc
+@@ -128,6 +128,9 @@ extern void ppp_unregister_channel(struc
  /* Get the channel number for a channel */
  extern int ppp_channel_index(struct ppp_channel *);
  
@@ -121,7 +121,7 @@
  /* Get the unit number associated with a channel, or -1 if none */
  extern int ppp_unit_number(struct ppp_channel *);
  
-@@ -161,6 +164,7 @@ extern int ppp_hold_channels(struct net_
+@@ -160,6 +163,7 @@ extern int ppp_hold_channels(struct net_
  /* Test if ppp xmit lock is locked */
  extern bool ppp_is_xmit_locked(struct net_device *dev);
  
@@ -297,7 +297,7 @@
  		return sk_receive_skb(sk_pppox(po), skb, 0);
  	}
  drop:
-@@ -473,7 +584,7 @@ static int pptp_connect(struct socket *s
+@@ -474,7 +585,7 @@ static int pptp_connect(struct socket *s
  
  	opt->dst_addr = sp->sa_addr.pptp;
  	sk->sk_state |= PPPOX_CONNECTED;
@@ -306,7 +306,7 @@
   end:
  	release_sock(sk);
  	return error;
-@@ -603,9 +714,169 @@ static int pptp_ppp_ioctl(struct ppp_cha
+@@ -604,9 +715,169 @@ static int pptp_ppp_ioctl(struct ppp_cha
  	return err;
  }
  

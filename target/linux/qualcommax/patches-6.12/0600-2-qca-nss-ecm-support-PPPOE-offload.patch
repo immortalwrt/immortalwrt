@@ -45,7 +45,7 @@
  	pn = ppp_pernet(pch->chan_net);
  
  	mutex_lock(&pn->all_ppp_mutex);
-@@ -3510,13 +3533,40 @@ ppp_connect_channel(struct channel *pch,
+@@ -3514,13 +3537,40 @@ ppp_connect_channel(struct channel *pch,
  	++ppp->n_channels;
  	pch->ppp = ppp;
  	refcount_inc(&ppp->file.refcnt);
@@ -87,7 +87,7 @@
  	return ret;
  }
  
-@@ -3534,6 +3584,13 @@ ppp_disconnect_channel(struct channel *p
+@@ -3538,6 +3588,13 @@ ppp_disconnect_channel(struct channel *p
  	pch->ppp = NULL;
  	write_unlock_bh(&pch->upl);
  	if (ppp) {
@@ -101,7 +101,7 @@
  		/* remove it from the ppp unit's list */
  		ppp_lock(ppp);
  		list_del(&pch->clist);
-@@ -3613,6 +3670,222 @@ static void *unit_find(struct idr *p, in
+@@ -3617,6 +3674,222 @@ static void *unit_find(struct idr *p, in
  	return idr_find(p, n);
  }
  
@@ -324,7 +324,7 @@
  /* Module/initialization stuff */
  
  module_init(ppp_init);
-@@ -3629,6 +3902,7 @@ EXPORT_SYMBOL(ppp_input_error);
+@@ -3633,6 +3906,7 @@ EXPORT_SYMBOL(ppp_input_error);
  EXPORT_SYMBOL(ppp_output_wakeup);
  EXPORT_SYMBOL(ppp_register_compressor);
  EXPORT_SYMBOL(ppp_unregister_compressor);
@@ -342,7 +342,7 @@
  #include <linux/init.h>
  #include <linux/if_ether.h>
  #include <linux/if_pppox.h>
-@@ -87,7 +88,7 @@
+@@ -88,7 +89,7 @@
  static int __pppoe_xmit(struct sock *sk, struct sk_buff *skb);
  
  static const struct proto_ops pppoe_ops;
@@ -351,16 +351,16 @@
  
  /* per-net private data for this module */
  static unsigned int pppoe_net_id __read_mostly;
-@@ -692,7 +693,7 @@ static int pppoe_connect(struct socket *
+@@ -693,7 +694,7 @@ static int pppoe_connect(struct socket *
  
  		po->chan.mtu = dev->mtu - sizeof(struct pppoe_hdr) - 2;
  		po->chan.private = sk;
 -		po->chan.ops = &pppoe_chan_ops;
 +		po->chan.ops = (struct ppp_channel_ops *)&pppoe_chan_ops;
+ 		po->chan.direct_xmit = true;
  
  		error = ppp_register_net_channel(dev_net(dev), &po->chan);
- 		if (error) {
-@@ -995,9 +996,80 @@ static int pppoe_fill_forward_path(struc
+@@ -997,9 +998,80 @@ static int pppoe_fill_forward_path(struc
  	return 0;
  }
  
@@ -499,7 +499,7 @@
  };
  
  struct ppp_channel {
-@@ -76,6 +90,51 @@ extern int ppp_unit_number(struct ppp_ch
+@@ -75,6 +89,51 @@ extern int ppp_unit_number(struct ppp_ch
  /* Get the device name associated with a channel, or NULL if none */
  extern char *ppp_dev_name(struct ppp_channel *);
  
