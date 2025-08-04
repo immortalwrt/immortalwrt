@@ -381,7 +381,7 @@ define Device/radxa_rock-pi-e
   SOC := rk3328
   SUPPORTED_DEVICES := radxa,rockpi-e
   BOOT_FLOW := pine64-bin
-  DEVICE_PACKAGES := kmod-rtw88-8723du kmod-usb-net-cdc-ncm kmod-usb-net-rndis wpad-openssl
+  DEVICE_PACKAGES := kmod-rtw88-8723du kmod-rtw88-8821cu kmod-usb-net-cdc-ncm kmod-usb-net-rndis wpad-openssl
 endef
 TARGET_DEVICES += radxa_rock-pi-e
 
