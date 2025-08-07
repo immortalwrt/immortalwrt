@@ -94,7 +94,6 @@
 #define RTL838X_SDS_MODE_SEL			(0x0028)
 #define RTL838X_SDS_CFG_REG			(0x0034)
 #define RTL838X_INT_MODE_CTRL			(0x005c)
-#define RTL838X_CHIP_INFO			(0x00d8)
 #define RTL838X_SDS4_REG28			(0xef80)
 #define RTL838X_SDS4_DUMMY0			(0xef8c)
 #define RTL838X_SDS5_EXT_REG6			(0xf18c)
@@ -308,9 +307,16 @@ inline u32 rtl930x_get_mac_link_sts(int port)
 	return link & BIT(port);
 }
 
-inline u32 rtl931x_get_mac_link_sts(int p)
+inline u32 rtldsa_931x_get_mac_link_sts(int port)
 {
-	return (sw_r32(RTL931X_MAC_LINK_STS + ((p >> 5) << 2)) & BIT(p % 32));
+	unsigned int reg = RTL931X_MAC_LINK_STS + (port / 32) * 4;
+	u32 mask = BIT(port % 32);
+	u32 link;
+
+	link = sw_r32(reg);
+	link = sw_r32(reg);
+
+	return (link & mask);
 }
 
 inline u32 rtl838x_get_mac_link_dup_sts(int port)
@@ -455,5 +461,8 @@ int phy_port_write_paged(struct phy_device *phydev, int port, int page, u32 regn
 
 int rtmdio_838x_read_phy(u32 port, u32 page, u32 reg, u32 *val);
 int rtmdio_838x_write_phy(u32 port, u32 page, u32 reg, u32 val);
+
+int rtmdio_930x_read_sds_phy(int sds, int page, int regnum);
+int rtmdio_930x_write_sds_phy(int sds, int page, int regnum, u16 val);
 
 #endif /* _RTL838X_ETH_H */

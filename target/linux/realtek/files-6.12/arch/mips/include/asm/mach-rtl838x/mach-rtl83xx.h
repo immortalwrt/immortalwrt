@@ -7,6 +7,8 @@
 #define _MACH_RTL838X_H_
 
 #include <asm/types.h>
+#include <linux/types.h>
+
 /*
  * Register access macros
  */
@@ -222,9 +224,11 @@
 #define RTL930X_GPIO_PCD_IMR            (RTL930X_GPIO_CTRL_REG_BASE + 0x18)
 
 #define RTL838X_MODEL_NAME_INFO		(0x00D4)
+#define RTL838X_CHIP_INFO		(0x00D8)
 #define RTL839X_MODEL_NAME_INFO		(0x0FF0)
+#define RTL839X_CHIP_INFO		(0x0FF4)
 #define RTL93XX_MODEL_NAME_INFO		(0x0004)
-#define RTL931X_CHIP_INFO_ADDR		(0x0008)
+#define RTL93XX_CHIP_INFO		(0x0008)
 
 #define RTL838X_LED_GLB_CTRL		(0xA000)
 #define RTL839X_LED_GLB_CTRL		(0x00E4)
@@ -373,12 +377,8 @@
 #define RTL931X_ISR_PORT_LINK_STS_CHG	(0x12B8)
 
 /* Definition of family IDs */
-#define RTL8389_FAMILY_ID   (0x8389)
-#define RTL8328_FAMILY_ID   (0x8328)
-#define RTL8390_FAMILY_ID   (0x8390)
-#define RTL8350_FAMILY_ID   (0x8350)
 #define RTL8380_FAMILY_ID   (0x8380)
-#define RTL8330_FAMILY_ID   (0x8330)
+#define RTL8390_FAMILY_ID   (0x8390)
 #define RTL9300_FAMILY_ID   (0x9300)
 #define RTL9310_FAMILY_ID   (0x9310)
 
@@ -395,6 +395,9 @@ struct rtl83xx_soc_info {
 	unsigned char *name;
 	unsigned int id;
 	unsigned int family;
+	unsigned int revision;
+	unsigned int cpu;
+	bool testchip;
 	unsigned char *compatible;
 	volatile void *sw_base;
 	volatile void *icu_base;
