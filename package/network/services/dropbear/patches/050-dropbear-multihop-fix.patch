@@ -1,10 +1,13 @@
-Author: Konstantin Demin <rockdrilla@gmail.com>
+From 5cc0127000db5f7567b54d0495fb91a8e452fe09 Mon Sep 17 00:00:00 2001
+From: Konstantin Demin <rockdrilla@gmail.com>
+Date: Fri, 9 May 2025 22:39:35 +0300
 Subject: Fix proxycmd without netcat
 
-Fixes commit e5a0ef27c227 "Execute multihop commands directly, no shell"
+fixes e5a0ef27c2 "Execute multihop commands directly, no shell"
 
+Signed-off-by: Konstantin Demin <rockdrilla@gmail.com>
 Forwarded: https://github.com/mkj/dropbear/pull/363
-
+---
  src/cli-main.c | 12 +++++++++++-
  1 file changed, 11 insertions(+), 1 deletion(-)
 
