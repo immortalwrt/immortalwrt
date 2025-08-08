@@ -276,6 +276,7 @@
 #define MV_ACT_COPY2CPU				3
 
 #define RTL930X_ST_CTRL				(0x8798)
+#define RTL931x_ST_CTRL				(0x8000)
 
 #define RTL930X_L2_PORT_SABLK_CTRL		(0x905c)
 #define RTL930X_L2_PORT_DABLK_CTRL		(0x9060)
@@ -1143,6 +1144,7 @@ struct rtl838x_switch_priv {
 	u32 lag_primary[MAX_LAGS];
 	u32 is_lagmember[57];
 	u64 lagmembers;
+	struct workqueue_struct *wq;
 	struct notifier_block nb;  /* TODO: change to different name */
 	struct notifier_block ne_nb;
 	struct notifier_block fib_nb;
