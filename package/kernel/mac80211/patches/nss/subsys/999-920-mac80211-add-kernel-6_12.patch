@@ -11,7 +11,7 @@
  	struct sk_buff *skb;
 --- a/net/mac80211/tx.c
 +++ b/net/mac80211/tx.c
-@@ -4562,7 +4562,7 @@ static void ieee80211_mlo_multicast_tx(s
+@@ -4572,7 +4572,7 @@ static void ieee80211_mlo_multicast_tx(s
  }
  
  #ifdef CPTCFG_MAC80211_NSS_SUPPORT
@@ -20,7 +20,7 @@
  			      struct net_device *dev)
  {
  	struct ieee80211_sub_if_data *sdata = IEEE80211_DEV_TO_SUB_IF(dev);
-@@ -4807,7 +4807,7 @@ out_free:
+@@ -4817,7 +4817,7 @@ out_free:
  	kfree_skb(skb);
  }
  

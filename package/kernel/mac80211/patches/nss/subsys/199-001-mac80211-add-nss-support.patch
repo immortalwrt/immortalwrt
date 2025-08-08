@@ -220,7 +220,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  
 --- a/net/mac80211/tx.c
 +++ b/net/mac80211/tx.c
-@@ -1027,11 +1027,23 @@ ieee80211_tx_h_stats(struct ieee80211_tx
+@@ -1033,11 +1033,23 @@ ieee80211_tx_h_stats(struct ieee80211_tx
  {
  	struct sk_buff *skb;
  	int ac = -1;
@@ -244,7 +244,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  		ac = skb_get_queue_mapping(skb);
  		tx->sta->deflink.tx_stats.bytes[ac] += skb->len;
  	}
-@@ -2877,7 +2889,9 @@ static struct sk_buff *ieee80211_build_h
+@@ -2884,7 +2896,9 @@ static struct sk_buff *ieee80211_build_h
  	if (unlikely(!multicast &&
  		     ((skb->sk &&
  		       skb_shinfo(skb)->tx_flags & SKBTX_WIFI_STATUS) ||
@@ -255,7 +255,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  		info_id = ieee80211_store_ack_skb(local, skb, &info_flags,
  						  cookie);
  
-@@ -4667,7 +4681,8 @@ static void ieee80211_8023_xmit(struct i
+@@ -4677,7 +4691,8 @@ static void ieee80211_8023_xmit(struct i
  	}
  
  	if (unlikely(skb->sk &&
@@ -265,7 +265,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  		info->status_data = ieee80211_store_ack_skb(local, skb,
  							    &info->flags, NULL);
  		if (info->status_data)
-@@ -4675,8 +4690,10 @@ static void ieee80211_8023_xmit(struct i
+@@ -4685,8 +4700,10 @@ static void ieee80211_8023_xmit(struct i
  	}
  
  	dev_sw_netstats_tx_add(dev, skbs, len);

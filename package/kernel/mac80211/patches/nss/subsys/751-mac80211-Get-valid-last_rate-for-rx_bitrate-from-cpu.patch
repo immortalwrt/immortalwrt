@@ -48,7 +48,7 @@ Signed-off-by: Maharaja Kennadyrajan <quic_mkenna@quicinc.com>
  
  	if (rate == STA_STATS_RATE_INVALID)
  		return -EINVAL;
-@@ -2633,7 +2638,7 @@ void sta_set_sinfo(struct sta_info *sta,
+@@ -2654,7 +2659,7 @@ void sta_set_sinfo(struct sta_info *sta,
  	int i, ac, cpu;
  	struct ieee80211_sta_rx_stats *last_rxstats;
  
@@ -57,7 +57,7 @@ Signed-off-by: Maharaja Kennadyrajan <quic_mkenna@quicinc.com>
  
  	sinfo->generation = sdata->local->sta_generation;
  
-@@ -2917,7 +2922,7 @@ u32 sta_get_expected_throughput(struct s
+@@ -2940,7 +2945,7 @@ u32 sta_get_expected_throughput(struct s
  
  unsigned long ieee80211_sta_last_active(struct sta_info *sta)
  {
