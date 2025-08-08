@@ -462,3 +462,14 @@ define Device/xunlong_orangepi-r1-plus-lts
   DEVICE_PACKAGES := kmod-usb-net-rtl8152
 endef
 TARGET_DEVICES += xunlong_orangepi-r1-plus-lts
+
+define Device/radxa_e52c
+  DEVICE_VENDOR := Radxa
+  DEVICE_MODEL := E52C
+  SOC := rk3588s
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-r8125
+  UBOOT_DEVICE_NAME := radxa-e52c-rk3588s
+  DEVICE_DTS := rockchip/rk3588s-radxa-e52c
+endef
+TARGET_DEVICES += radxa_e52c
