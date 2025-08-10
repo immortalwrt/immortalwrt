@@ -284,7 +284,7 @@ Signed-off-by: Yuvasree Sivasankaran <quic_ysivasan@quicinc.com>
  		spin_lock_bh(&local->fq.lock);
  		rcu_read_lock();
  
-@@ -2955,6 +2967,9 @@ unsigned long ieee80211_sta_last_active(
+@@ -2957,6 +2969,9 @@ unsigned long ieee80211_sta_last_active(
  
  static void sta_update_codel_params(struct sta_info *sta, u32 thr)
  {
