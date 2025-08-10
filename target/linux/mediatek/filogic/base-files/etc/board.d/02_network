@@ -43,6 +43,8 @@ mediatek_setup_interfaces()
 	cmcc,a10-stock|\
 	cmcc,a10-ubootmod|\
 	confiabits,mt7981|\
+	creatlentem,clt-r30b1|\
+	creatlentem,clt-r30b1-112m|\
 	cudy,wr3000-v1|\
 	jcg,q30-pro|\
 	keenetic,kn-3811|\
@@ -146,6 +148,7 @@ mediatek_setup_interfaces()
 		ucidef_set_interfaces_lan_wan "port1 port3 port4 port5 port6" "port2"
 		;;
 	tplink,tl-xdr6086|\
+	wavlink,wl-wn551x3|\
 	wavlink,wl-wn586x3)
 		ucidef_set_interfaces_lan_wan "lan1 lan2" eth1
 		;;
