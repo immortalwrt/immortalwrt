@@ -34,6 +34,8 @@ configure_wifi() {
 		return 0
 	fi
 
+	[ -z "$htmode" ] && htmode="HT20"
+
 	# 设置无线设备参数
 	uci set wireless.radio${radio}.channel=${channel}
 	uci set wireless.radio${radio}.htmode=${htmode}
@@ -56,7 +58,7 @@ configure_wifi() {
 
 # 查询mode
 query_mode() {
-	json_load_file "/etc/board.json"
+	json_load_file "/etc/board.json" || return
 	json_select wlan
 	json_get_keys phy_keys
 	for phy in $phy_keys; do
@@ -68,17 +70,15 @@ query_mode() {
 			json_get_keys band_keys
 			for band in $band_keys; do
 				json_select $band
-				json_select modes
-				json_get_keys mode_keys
-				for mode in $mode_keys; do
-					json_get_var mode_value $mode
-					last_mode=$mode_value
-				done
-				json_select ..
-				json_select ..
+				json_get_var max_width "max_width"
+				case "$max_width" in
+					160) echo "HE160"; return;;
+					80)  echo "HE80"; return;;
+					40)  echo "HE40"; return;;
+					20)  echo "HE20"; return;;
+					*)   echo "HT20"; return;;
+				esac
 			done
-			echo "$last_mode"
-			return
 		fi
 		json_select ..
 	done
