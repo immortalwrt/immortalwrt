@@ -291,11 +291,11 @@ define U-Boot/mt7981_cmcc_rax3000me-emmc
   DEPENDS:=+trusted-firmware-a-mt7981-emmc-ddr3
 endef
 
-define U-Boot/mt7981_cmcc_rax3000me-nand-usb
+define U-Boot/mt7981_cmcc_rax3000me-nand-ddr3
   NAME:=CMCC RAX3000Me
   BUILD_SUBTARGET:=filogic
   BUILD_DEVICES:=cmcc_rax3000me
-  UBOOT_CONFIG:=mt7981_cmcc_rax3000me-nand-usb
+  UBOOT_CONFIG:=mt7981_cmcc_rax3000me-nand-ddr3
   UBOOT_IMAGE:=u-boot.fip
   BL2_BOOTDEV:=spim-nand
   BL2_SOC:=mt7981
@@ -303,11 +303,11 @@ define U-Boot/mt7981_cmcc_rax3000me-nand-usb
   DEPENDS:=+trusted-firmware-a-mt7981-spim-nand-ddr3
 endef
 
-define U-Boot/mt7981_cmcc_rax3000me-nand-nousb
+define U-Boot/mt7981_cmcc_rax3000me-nand-ddr4
   NAME:=CMCC RAX3000Me
   BUILD_SUBTARGET:=filogic
   BUILD_DEVICES:=cmcc_rax3000me
-  UBOOT_CONFIG:=mt7981_cmcc_rax3000me-nand-nousb
+  UBOOT_CONFIG:=mt7981_cmcc_rax3000me-nand-ddr4
   UBOOT_IMAGE:=u-boot.fip
   BL2_BOOTDEV:=spim-nand
   BL2_SOC:=mt7981
@@ -1065,8 +1065,8 @@ UBOOT_TARGETS := \
 	mt7981_cmcc_rax3000m-emmc \
 	mt7981_cmcc_rax3000m-nand \
 	mt7981_cmcc_rax3000me-emmc \
-	mt7981_cmcc_rax3000me-nand-usb \
-	mt7981_cmcc_rax3000me-nand-nousb \
+	mt7981_cmcc_rax3000me-nand-ddr3 \
+	mt7981_cmcc_rax3000me-nand-ddr4 \
 	mt7981_cudy_tr3000-v1 \
 	mt7981_gatonetworks_gdsp \
 	mt7981_glinet_gl-mt2500 \
