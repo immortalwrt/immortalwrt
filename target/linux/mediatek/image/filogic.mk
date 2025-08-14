@@ -697,7 +697,7 @@ define Device/cmcc_rax3000m_common
   IMAGE/sysupgrade.itb := append-kernel | \
 	fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-static-with-rootfs | \
 	pad-rootfs | append-metadata
-  ARTIFACTS := emmc-gpt.bin emmc-preloader.bin emmc-bl31-uboot.fip
+  ARTIFACTS := emmc-gpt.bin
   ARTIFACT/emmc-gpt.bin := mt798x-gpt emmc
 endef
 
@@ -706,7 +706,8 @@ define Device/cmcc_rax3000m
   DEVICE_MODEL := RAX3000M
   DEVICE_DTS := mt7981b-cmcc-rax3000m
   $(call Device/cmcc_rax3000m_common)
-  ARTIFACTS += nand-preloader.bin nand-bl31-uboot.fip
+  ARTIFACTS += emmc-preloader.bin emmc-bl31-uboot.fip \
+	nand-preloader.bin nand-bl31-uboot.fip
   ARTIFACT/emmc-preloader.bin := mt7981-bl2 emmc-ddr4
   ARTIFACT/emmc-bl31-uboot.fip := mt7981-bl31-uboot cmcc_rax3000m-emmc
   ARTIFACT/nand-preloader.bin := mt7981-bl2 spim-nand-ddr4
@@ -720,14 +721,18 @@ define Device/cmcc_rax3000me
   DEVICE_DTS := mt7981b-cmcc-rax3000me
   $(call Device/cmcc_rax3000m_common)
   DEVICE_DTS_OVERLAY += mt7981b-cmcc-rax3000me-nousb
-  ARTIFACTS += nand-ddr3-preloader.bin nand-ddr4-preloader.bin \
-	nand-usb-bl31-uboot.fip nand-nousb-bl31-uboot.fip
-  ARTIFACT/emmc-preloader.bin := mt7981-bl2 emmc-ddr3
-  ARTIFACT/emmc-bl31-uboot.fip := mt7981-bl31-uboot cmcc_rax3000me-emmc
+  ARTIFACTS += emmc-ddr3-preloader.bin emmc-ddr3-bl31-uboot.fip \
+	emmc-ddr4-preloader.bin emmc-ddr4-bl31-uboot.fip \
+	nand-ddr3-preloader.bin nand-ddr3-bl31-uboot.fip \
+	nand-ddr4-preloader.bin nand-ddr4-bl31-uboot.fip
+  ARTIFACT/emmc-ddr3-preloader.bin := mt7981-bl2 emmc-ddr3
+  ARTIFACT/emmc-ddr3-bl31-uboot.fip := mt7981-bl31-uboot cmcc_rax3000me-emmc-ddr3
+  ARTIFACT/emmc-ddr4-preloader.bin := mt7981-bl2 emmc-ddr4
+  ARTIFACT/emmc-ddr4-bl31-uboot.fip := mt7981-bl31-uboot cmcc_rax3000me-emmc-ddr4
   ARTIFACT/nand-ddr3-preloader.bin := mt7981-bl2 spim-nand-ddr3
+  ARTIFACT/nand-ddr3-bl31-uboot.fip := mt7981-bl31-uboot cmcc_rax3000me-nand-ddr3
   ARTIFACT/nand-ddr4-preloader.bin := mt7981-bl2 spim-nand-ddr4
-  ARTIFACT/nand-usb-bl31-uboot.fip := mt7981-bl31-uboot cmcc_rax3000me-nand-usb
-  ARTIFACT/nand-nousb-bl31-uboot.fip := mt7981-bl31-uboot cmcc_rax3000me-nand-nousb
+  ARTIFACT/nand-ddr4-bl31-uboot.fip := mt7981-bl31-uboot cmcc_rax3000me-nand-ddr4
 endef
 TARGET_DEVICES += cmcc_rax3000me
 
