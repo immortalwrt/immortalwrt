@@ -127,7 +127,7 @@
 +CONFIG_HEXDUMP=y
 +CONFIG_LMB_MAX_REGIONS=64
 --- /dev/null
-+++ b/configs/mt7981_cmcc_rax3000me-nand-usb_defconfig
++++ b/configs/mt7981_cmcc_rax3000me-nand-ddr3_defconfig
 @@ -0,0 +1,125 @@
 +CONFIG_ARM=y
 +CONFIG_SYS_HAS_NONCACHED_MEMORY=y
@@ -202,7 +202,7 @@
 +CONFIG_ENV_UBI_VOLUME_REDUND="ubootenv2"
 +CONFIG_SYS_RELOC_GD_ENV_ADDR=y
 +CONFIG_USE_DEFAULT_ENV_FILE=y
-+CONFIG_DEFAULT_ENV_FILE="cmcc_rax3000me-nand-usb_env"
++CONFIG_DEFAULT_ENV_FILE="cmcc_rax3000me-nand-ddr3_env"
 +CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG=y
 +CONFIG_VERSION_VARIABLE=y
 +CONFIG_NET_RANDOM_ETHADDR=y
@@ -255,7 +255,7 @@
 +CONFIG_HEXDUMP=y
 +CONFIG_LMB_MAX_REGIONS=64
 --- /dev/null
-+++ b/configs/mt7981_cmcc_rax3000me-nand-nousb_defconfig
++++ b/configs/mt7981_cmcc_rax3000me-nand-ddr4_defconfig
 @@ -0,0 +1,125 @@
 +CONFIG_ARM=y
 +CONFIG_SYS_HAS_NONCACHED_MEMORY=y
@@ -330,7 +330,7 @@
 +CONFIG_ENV_UBI_VOLUME_REDUND="ubootenv2"
 +CONFIG_SYS_RELOC_GD_ENV_ADDR=y
 +CONFIG_USE_DEFAULT_ENV_FILE=y
-+CONFIG_DEFAULT_ENV_FILE="cmcc_rax3000me-nand-nousb_env"
++CONFIG_DEFAULT_ENV_FILE="cmcc_rax3000me-nand-ddr4_env"
 +CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG=y
 +CONFIG_VERSION_VARIABLE=y
 +CONFIG_NET_RANDOM_ETHADDR=y
@@ -465,7 +465,7 @@
 +_switch_to_menu=setenv _switch_to_menu ; setenv bootdelay 3 ; setenv bootmenu_delay 3 ; setenv bootmenu_0 $bootmenu_0d ; setenv bootmenu_0d ; run _bootmenu_update_title
 +_bootmenu_update_title=setenv _bootmenu_update_title ; setenv bootmenu_title "$bootmenu_title       [33m$ver[0m"
 --- /dev/null
-+++ b/cmcc_rax3000me-nand-usb_env
++++ b/cmcc_rax3000me-nand-ddr3_env
 @@ -0,0 +1,56 @@
 +ipaddr=192.168.1.1
 +serverip=192.168.1.254
@@ -476,7 +476,7 @@
 +bootdelay=0
 +bootfile=immortalwrt-mediatek-filogic-cmcc_rax3000me-initramfs-recovery.itb
 +bootfile_bl2=immortalwrt-mediatek-filogic-cmcc_rax3000me-nand-ddr3-preloader.bin
-+bootfile_fip=immortalwrt-mediatek-filogic-cmcc_rax3000me-nand-usb-bl31-uboot.fip
++bootfile_fip=immortalwrt-mediatek-filogic-cmcc_rax3000me-nand-ddr3-bl31-uboot.fip
 +bootfile_upg=immortalwrt-mediatek-filogic-cmcc_rax3000me-squashfs-sysupgrade.itb
 +bootled_pwr=red:status
 +bootled_rec=blue:status
@@ -524,7 +524,7 @@
 +_switch_to_menu=setenv _switch_to_menu ; setenv bootdelay 3 ; setenv bootmenu_delay 3 ; setenv bootmenu_0 $bootmenu_0d ; setenv bootmenu_0d ; run _bootmenu_update_title
 +_bootmenu_update_title=setenv _bootmenu_update_title ; setenv bootmenu_title "$bootmenu_title       [33m$ver[0m"
 --- /dev/null
-+++ b/cmcc_rax3000me-nand-nousb_env
++++ b/cmcc_rax3000me-nand-ddr4_env
 @@ -0,0 +1,56 @@
 +ipaddr=192.168.1.1
 +serverip=192.168.1.254
@@ -535,7 +535,7 @@
 +bootdelay=0
 +bootfile=immortalwrt-mediatek-filogic-cmcc_rax3000me-initramfs-recovery.itb
 +bootfile_bl2=immortalwrt-mediatek-filogic-cmcc_rax3000me-nand-ddr4-preloader.bin
-+bootfile_fip=immortalwrt-mediatek-filogic-cmcc_rax3000me-nand-nousb-bl31-uboot.fip
++bootfile_fip=immortalwrt-mediatek-filogic-cmcc_rax3000me-nand-ddr4-bl31-uboot.fip
 +bootfile_upg=immortalwrt-mediatek-filogic-cmcc_rax3000me-squashfs-sysupgrade.itb
 +bootled_pwr=red:status
 +bootled_rec=blue:status
