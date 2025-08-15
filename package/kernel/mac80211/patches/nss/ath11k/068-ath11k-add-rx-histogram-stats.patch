@@ -20,7 +20,7 @@ Signed-off-by: Manikanta Pubbisetty <mpubbise@codeaurora.org>
 
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -44,6 +44,8 @@
+@@ -46,6 +46,8 @@
  
  #define ATH11K_INVALID_HW_MAC_ID	0xFF
  #define ATH11K_CONNECTION_LOSS_HZ	(3 * HZ)
@@ -29,7 +29,7 @@ Signed-off-by: Manikanta Pubbisetty <mpubbise@codeaurora.org>
  
  #define	ATH11K_QCN6122_USERPD_2		1
  #define	ATH11K_QCN6122_USERPD_3		2
-@@ -427,6 +429,17 @@ struct ath11k_vif_iter {
+@@ -430,6 +432,17 @@ struct ath11k_vif_iter {
  	struct ath11k_vif *arvif;
  };
  
@@ -47,7 +47,7 @@ Signed-off-by: Manikanta Pubbisetty <mpubbise@codeaurora.org>
  struct ath11k_rx_peer_stats {
  	u64 num_msdu;
  	u64 num_mpdu_fcs_ok;
-@@ -438,10 +451,6 @@ struct ath11k_rx_peer_stats {
+@@ -441,10 +454,6 @@ struct ath11k_rx_peer_stats {
  	u64 non_ampdu_msdu_count;
  	u64 stbc_count;
  	u64 beamformed_count;
@@ -58,7 +58,7 @@ Signed-off-by: Manikanta Pubbisetty <mpubbise@codeaurora.org>
  	u64 coding_count[HAL_RX_SU_MU_CODING_MAX];
  	u64 tid_count[IEEE80211_NUM_TIDS + 1];
  	u64 pream_cnt[HAL_RX_PREAMBLE_MAX];
-@@ -449,6 +458,8 @@ struct ath11k_rx_peer_stats {
+@@ -452,6 +461,8 @@ struct ath11k_rx_peer_stats {
  	u64 rx_duration;
  	u64 dcm_count;
  	u64 ru_alloc_cnt[HAL_RX_RU_ALLOC_TYPE_MAX];
@@ -269,7 +269,7 @@ Signed-off-by: Manikanta Pubbisetty <mpubbise@codeaurora.org>
  			    &fops_htt_peer_stats);
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -2753,10 +2753,43 @@ exit:
+@@ -2760,19 +2760,54 @@ exit:
  	return total_msdu_reaped;
  }
  
@@ -313,16 +313,19 @@ Signed-off-by: Manikanta Pubbisetty <mpubbise@codeaurora.org>
  	u32 num_msdu;
  	int i;
  
-@@ -2766,6 +2799,8 @@ static void ath11k_dp_rx_update_peer_sta
- 	arsta->rssi_comb = ppdu_info->rssi_comb;
+ 	if (!rx_stats)
+ 		return;
+ 
+-	arsta->rssi_comb = ppdu_info->rssi_comb;
  	ewma_avg_rssi_add(&arsta->avg_rssi, ppdu_info->rssi_comb);
  
 +	if (!ath11k_debugfs_is_extd_rx_stats_enabled(ar))
 +		return;
++
  	num_msdu = ppdu_info->tcp_msdu_count + ppdu_info->tcp_ack_msdu_count +
  		   ppdu_info->udp_msdu_count + ppdu_info->other_msdu_count;
  
-@@ -2782,18 +2817,6 @@ static void ath11k_dp_rx_update_peer_sta
+@@ -2789,18 +2824,6 @@ static void ath11k_dp_rx_update_peer_sta
  		ppdu_info->tid = IEEE80211_NUM_TIDS;
  	}
  
@@ -341,16 +344,7 @@ Signed-off-by: Manikanta Pubbisetty <mpubbise@codeaurora.org>
  	if (ppdu_info->ldpc < HAL_RX_SU_MU_CODING_MAX)
  		rx_stats->coding_count[ppdu_info->ldpc] += num_msdu;
  
-@@ -2822,8 +2845,6 @@ static void ath11k_dp_rx_update_peer_sta
- 	rx_stats->dcm_count += ppdu_info->dcm;
- 	rx_stats->ru_alloc_cnt[ppdu_info->ru_alloc] += num_msdu;
- 
--	arsta->rssi_comb = ppdu_info->rssi_comb;
--
- 	BUILD_BUG_ON(ARRAY_SIZE(arsta->chain_signal) >
- 			     ARRAY_SIZE(ppdu_info->rssi_chain_pri20));
- 
-@@ -2832,6 +2853,52 @@ static void ath11k_dp_rx_update_peer_sta
+@@ -2837,6 +2860,51 @@ static void ath11k_dp_rx_update_peer_sta
  
  	rx_stats->rx_duration += ppdu_info->rx_duration;
  	arsta->rx_duration = rx_stats->rx_duration;
@@ -399,7 +393,6 @@ Signed-off-by: Manikanta Pubbisetty <mpubbise@codeaurora.org>
 +	}
 +
 +	ath11k_dp_rx_update_peer_rate_table_stats(rx_stats, ppdu_info, num_msdu);
-+
  }
  
  static struct sk_buff *ath11k_dp_rx_alloc_mon_status_buf(struct ath11k_base *ab,

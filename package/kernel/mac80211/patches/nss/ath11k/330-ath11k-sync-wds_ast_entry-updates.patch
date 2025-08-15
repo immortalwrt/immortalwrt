@@ -56,7 +56,7 @@ Signed-off-by: Rameshkumar Sundaram <ramess@codeaurora.org>
  static void ath11k_ahb_free_resources(struct ath11k_base *ab)
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -2523,6 +2523,7 @@ struct ath11k_base *ath11k_core_alloc(st
+@@ -2777,6 +2777,7 @@ struct ath11k_base *ath11k_core_alloc(st
  
  	mutex_init(&ab->core_lock);
  	mutex_init(&ab->tbl_mtx_lock);
@@ -64,10 +64,10 @@ Signed-off-by: Rameshkumar Sundaram <ramess@codeaurora.org>
  	spin_lock_init(&ab->base_lock);
  	mutex_init(&ab->vdev_id_11d_lock);
  	init_completion(&ab->reset_complete);
-@@ -2536,6 +2537,8 @@ struct ath11k_base *ath11k_core_alloc(st
- 	INIT_WORK(&ab->restart_work, ath11k_core_restart);
+@@ -2791,6 +2792,8 @@ struct ath11k_base *ath11k_core_alloc(st
  	INIT_WORK(&ab->update_11d_work, ath11k_update_11d);
  	INIT_WORK(&ab->reset_work, ath11k_core_reset);
+ 	INIT_WORK(&ab->dump_work, ath11k_coredump_upload);
 +	INIT_WORK(&ab->wmi_ast_work, ath11k_peer_ast_wds_wmi_wk);
 +	INIT_LIST_HEAD(&ab->wmi_ast_list);
  	timer_setup(&ab->rx_replenish_retry, ath11k_ce_rx_replenish_retry, 0);
@@ -75,15 +75,15 @@ Signed-off-by: Rameshkumar Sundaram <ramess@codeaurora.org>
  	init_completion(&ab->wow.wakeup_completed);
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -33,6 +33,7 @@
+@@ -34,6 +34,7 @@
  #include "wow.h"
  #include "rx_desc.h"
  #include "nss.h"
 +#include "peer.h"
  #include "fw.h"
+ #include "coredump.h"
  
- #define SM(_v, _f) (((_v) << _f##_LSB) & _f##_MASK)
-@@ -1144,6 +1145,9 @@ struct ath11k_base {
+@@ -1164,6 +1165,9 @@ struct ath11k_base {
  
  	u32 max_ast_index;
  	u32 num_ast_entries;
@@ -183,14 +183,14 @@ Signed-off-by: Rameshkumar Sundaram <ramess@codeaurora.org>
  }
 --- a/drivers/net/wireless/ath/ath11k/pci.c
 +++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -1011,6 +1011,7 @@ static void ath11k_pci_remove(struct pci
+@@ -1193,6 +1193,7 @@ static void ath11k_pci_remove(struct pci
  	}
  
  	set_bit(ATH11K_FLAG_UNREGISTERING, &ab->dev_flags);
 +	cancel_work_sync(&ab->wmi_ast_work);
  
- 	ath11k_core_deinit(ab);
- 
+ 	cancel_work_sync(&ab->reset_work);
+ 	cancel_work_sync(&ab->dump_work);
 --- a/drivers/net/wireless/ath/ath11k/peer.c
 +++ b/drivers/net/wireless/ath/ath11k/peer.c
 @@ -160,49 +160,68 @@ struct ath11k_ast_entry *ath11k_peer_ast

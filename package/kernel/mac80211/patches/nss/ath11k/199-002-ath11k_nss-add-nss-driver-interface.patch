@@ -43,9 +43,9 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  ath11k-$(CPTCFG_ATH11K_SPECTRAL) += spectral.o
  ath11k-$(CONFIG_PM) += wow.o
 +ath11k-$(CPTCFG_ATH11K_NSS_SUPPORT) += nss.o
+ ath11k-$(CONFIG_DEV_COREDUMP) += coredump.o
  
  obj-$(CPTCFG_ATH11K_AHB) += ath11k_ahb.o
- ath11k_ahb-y += ahb.o
 --- /dev/null
 +++ b/drivers/net/wireless/ath/ath11k/nss.c
 @@ -0,0 +1,2399 @@
@@ -2760,15 +2760,15 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
 +#endif
 --- a/drivers/net/wireless/ath/ath11k/hif.h
 +++ b/drivers/net/wireless/ath/ath11k/hif.h
-@@ -32,6 +32,7 @@ struct ath11k_hif_ops {
- 	void (*ce_irq_disable)(struct ath11k_base *ab);
+@@ -33,6 +33,7 @@ struct ath11k_hif_ops {
  	void (*get_ce_msi_idx)(struct ath11k_base *ab, u32 ce_id, u32 *msi_idx);
+ 	void (*coredump_download)(struct ath11k_base *ab);
  	void (*config_static_window)(struct ath11k_base *ab);
 +	u32 (*get_window_offset)(struct ath11k_base *ab, u32 offset);
  };
  
  static inline void ath11k_hif_ce_irq_enable(struct ath11k_base *ab)
-@@ -138,6 +139,14 @@ static inline void ath11k_get_msi_addres
+@@ -145,6 +146,14 @@ static inline void ath11k_get_msi_addres
  	ab->hif.ops->get_msi_address(ab, msi_addr_lo, msi_addr_hi);
  }
  
@@ -2785,7 +2785,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  {
 --- a/drivers/net/wireless/ath/ath11k/pci.c
 +++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -70,6 +70,20 @@ static u32 ath11k_pci_get_window_start(s
+@@ -72,6 +72,20 @@ static u32 ath11k_pci_get_window_start(s
  		return ATH11K_PCI_WINDOW_START;
  }
  
@@ -2806,14 +2806,14 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  static inline void ath11k_pci_select_window(struct ath11k_pci *ab_pci, u32 offset)
  {
  	struct ath11k_base *ab = ab_pci->ab;
-@@ -725,6 +739,7 @@ static const struct ath11k_hif_ops ath11
+@@ -904,6 +918,7 @@ static const struct ath11k_hif_ops ath11
  	.map_service_to_pipe = ath11k_pcic_map_service_to_pipe,
  	.ce_irq_enable = ath11k_pci_hif_ce_irq_enable,
  	.ce_irq_disable = ath11k_pci_hif_ce_irq_disable,
 +	.get_window_offset = ath11k_pci_get_window_offset,
  	.get_ce_msi_idx = ath11k_pcic_get_ce_msi_idx,
- };
- 
+ #ifdef CONFIG_DEV_COREDUMP
+ 	.coredump_download = ath11k_pci_coredump_download,
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
 @@ -994,6 +994,29 @@ unlock_exit:
@@ -2940,7 +2940,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  struct wmi_peer_set_param_cmd {
  	u32 tlv_header;
  	u32 vdev_id;
-@@ -6391,6 +6422,8 @@ int ath11k_wmi_send_peer_create_cmd(stru
+@@ -6396,6 +6427,8 @@ int ath11k_wmi_send_peer_create_cmd(stru
  int ath11k_wmi_vdev_set_param_cmd(struct ath11k *ar, u32 vdev_id,
  				  u32 param_id, u32 param_value);
  
@@ -2998,7 +2998,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  int ath11k_dp_pdev_reo_setup(struct ath11k_base *ab);
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -6249,6 +6249,16 @@ static int ath11k_mac_op_start(struct ie
+@@ -6310,6 +6310,16 @@ static int ath11k_mac_op_start(struct ie
  		goto err;
  	}
  
@@ -3017,7 +3017,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  	/* TODO: Do we need to enable ANI? */
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -901,6 +901,8 @@ struct ath11k_soc_dp_tx_err_stats {
+@@ -906,6 +906,8 @@ struct ath11k_soc_dp_tx_err_stats {
  	 * idr unavailable etc.
  	 */
  	atomic_t misc_fail;
@@ -3026,7 +3026,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  };
  
  struct ath11k_soc_dp_stats {
-@@ -942,6 +944,7 @@ struct ath11k_base {
+@@ -956,6 +958,7 @@ struct ath11k_base {
  	struct ath11k_htc htc;
  
  	struct ath11k_dp dp;

@@ -1,6 +1,6 @@
 --- a/include/net/mac80211.h
 +++ b/include/net/mac80211.h
-@@ -1553,39 +1553,38 @@ ieee80211_tx_info_clear_status(struct ie
+@@ -1561,39 +1561,38 @@ ieee80211_tx_info_clear_status(struct ie
   *	hardware or driver)
   */
  enum mac80211_rx_flags {

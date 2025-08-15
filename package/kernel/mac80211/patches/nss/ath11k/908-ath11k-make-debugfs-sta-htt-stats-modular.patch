@@ -40,7 +40,7 @@
  ath11k-$(CPTCFG_ATH11K_THERMAL) += thermal.o
 --- a/drivers/net/wireless/ath/ath11k/debugfs.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.c
-@@ -1876,7 +1876,9 @@ int ath11k_debugfs_register(struct ath11
+@@ -1754,7 +1754,9 @@ int ath11k_debugfs_register(struct ath11
  	snprintf(buf, 100, "../../ath11k/%pd2", ar->debug.debugfs_pdev);
  	debugfs_create_symlink("ath11k", ar->hw->wiphy->debugfsdir, buf);
  
@@ -176,7 +176,7 @@
  	spin_unlock_bh(&ab->base_lock);
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -10386,7 +10386,7 @@ static const struct ieee80211_ops ath11k
+@@ -10479,7 +10479,7 @@ static const struct ieee80211_ops ath11k
  	.set_wakeup			= ath11k_wow_op_set_wakeup,
  #endif
  

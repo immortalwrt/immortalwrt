@@ -15,7 +15,7 @@ Signed-off-by: Sean Khan <datapronix@protonmail.com>
 
 --- a/net/wireless/nl80211.c
 +++ b/net/wireless/nl80211.c
-@@ -4923,13 +4923,10 @@ static int nl80211_new_key(struct sk_buf
+@@ -4935,13 +4935,10 @@ static int nl80211_new_key(struct sk_buf
  		err = nl80211_validate_key_link_id(info, wdev, link_id,
  				key.type == NL80211_KEYTYPE_PAIRWISE);
  

@@ -1,6 +1,6 @@
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -2581,13 +2581,13 @@ err_sc_free:
+@@ -2837,13 +2837,13 @@ err_sc_free:
  }
  EXPORT_SYMBOL(ath11k_core_alloc);
  
@@ -36,7 +36,7 @@
  			struct htt_ppdu_user_stats* usr_stats)
  {
  	usr_stats->rate.reserved0 = peer->ppdu_stats_delayba.reserved0;
-@@ -6293,7 +6293,7 @@ static void ath11k_dp_rx_mon_dest_proces
+@@ -6298,7 +6298,7 @@ static void ath11k_dp_rx_mon_dest_proces
  	}
  }
  

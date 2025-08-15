@@ -24,7 +24,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
 
 --- a/include/net/mac80211.h
 +++ b/include/net/mac80211.h
-@@ -2246,6 +2246,8 @@ enum ieee80211_key_flags {
+@@ -2251,6 +2251,8 @@ enum ieee80211_key_flags {
   * @tx_pn: PN used for TX keys, may be used by the driver as well if it
   *	needs to do software PN assignment by itself (e.g. due to TSO)
   * @flags: key flags, see &enum ieee80211_key_flags.
@@ -33,7 +33,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
   * @keyidx: the key index (0-7)
   * @keylen: key material length
   * @key: key material. For ALG_TKIP the key is encoded as a 256-bit (32 byte)
-@@ -2265,6 +2267,7 @@ struct ieee80211_key_conf {
+@@ -2270,6 +2272,7 @@ struct ieee80211_key_conf {
  	u8 hw_key_idx;
  	s8 keyidx;
  	u16 flags;
@@ -43,7 +43,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  	u8 key[];
 --- a/net/mac80211/cfg.c
 +++ b/net/mac80211/cfg.c
-@@ -562,6 +562,7 @@ static int ieee80211_add_key(struct wiph
+@@ -574,6 +574,7 @@ static int ieee80211_add_key(struct wiph
  		break;
  	case NL80211_IFTYPE_AP:
  	case NL80211_IFTYPE_AP_VLAN:
@@ -102,7 +102,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  	key->conf.cipher = cipher;
 --- a/net/mac80211/tx.c
 +++ b/net/mac80211/tx.c
-@@ -4683,16 +4683,25 @@ static void ieee80211_8023_xmit(struct i
+@@ -4668,16 +4668,25 @@ static void ieee80211_8023_xmit(struct i
  				struct ieee80211_key *key, struct sk_buff *skb)
  {
  	struct ieee80211_tx_info *info;

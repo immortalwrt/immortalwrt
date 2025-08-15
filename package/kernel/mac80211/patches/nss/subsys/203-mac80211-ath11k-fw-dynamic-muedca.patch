@@ -31,7 +31,7 @@ Signed-off-by: Muna Sinada <msinada@codeaurora.org>
 
 --- a/include/net/cfg80211.h
 +++ b/include/net/cfg80211.h
-@@ -9839,4 +9839,15 @@ ssize_t wiphy_locked_debugfs_write(struc
+@@ -9837,4 +9837,15 @@ ssize_t wiphy_locked_debugfs_write(struc
  				   void *data);
  #endif
  
@@ -49,7 +49,7 @@ Signed-off-by: Muna Sinada <msinada@codeaurora.org>
  #endif /* __NET_CFG80211_H */
 --- a/include/net/mac80211.h
 +++ b/include/net/mac80211.h
-@@ -7631,6 +7631,20 @@ u32 ieee80211_calc_rx_airtime(struct iee
+@@ -7647,6 +7647,20 @@ u32 ieee80211_calc_rx_airtime(struct iee
  			      int len);
  
  /**
@@ -91,18 +91,18 @@ Signed-off-by: Muna Sinada <msinada@codeaurora.org>
  	/* add new commands above here */
  
  	/* used to define NL80211_CMD_MAX below */
-@@ -2893,6 +2898,8 @@ enum nl80211_commands {
-  * @NL80211_ATTR_EPCS: Flag attribute indicating that EPCS is enabled for a
-  *	station interface.
+@@ -2899,6 +2904,8 @@ enum nl80211_commands {
+  *	APs Support". Drivers may set additional flags that they support
+  *	in the kernel or device.
   *
 + * @NL80211_ATTR_HE_MUEDCA_PARAMS: MU-EDCA AC parameters for the
 + *	%NL80211_CMD_UPDATE_HE_MUEDCA_PARAMS command.
   * @NUM_NL80211_ATTR: total number of nl80211_attrs available
   * @NL80211_ATTR_MAX: highest attribute number currently defined
   * @__NL80211_ATTR_AFTER_LAST: internal use
-@@ -3448,6 +3455,8 @@ enum nl80211_attrs {
- 	NL80211_ATTR_MLO_RECONF_REM_LINKS,
- 	NL80211_ATTR_EPCS,
+@@ -3456,6 +3463,8 @@ enum nl80211_attrs {
+ 
+ 	NL80211_ATTR_ASSOC_MLD_EXT_CAPA_OPS,
  
 +	NL80211_ATTR_HE_MUEDCA_PARAMS,
 +
@@ -111,9 +111,9 @@ Signed-off-by: Muna Sinada <msinada@codeaurora.org>
  	__NL80211_ATTR_AFTER_LAST,
 --- a/net/mac80211/mlme.c
 +++ b/net/mac80211/mlme.c
-@@ -10465,3 +10465,15 @@ int ieee80211_mgd_assoc_ml_reconf(struct
- 	kfree(data);
- 	return err;
+@@ -10805,3 +10805,15 @@ void ieee80211_process_epcs_teardown(str
+ 	ieee80211_epcs_teardown(sdata);
+ 	ieee80211_epcs_changed(sdata, false);
  }
 +
 +void ieee80211_update_muedca_params(struct ieee80211_hw *hw,
@@ -158,7 +158,7 @@ Signed-off-by: Muna Sinada <msinada@codeaurora.org>
  		     struct ieee80211_sub_if_data *sdata,
 --- a/net/wireless/nl80211.c
 +++ b/net/wireless/nl80211.c
-@@ -840,6 +840,7 @@ static const struct nla_policy nl80211_p
+@@ -846,6 +846,7 @@ static const struct nla_policy nl80211_p
  	[NL80211_ATTR_HW_TIMESTAMP_ENABLED] = { .type = NLA_FLAG },
  	[NL80211_ATTR_EMA_RNR_ELEMS] = { .type = NLA_NESTED },
  	[NL80211_ATTR_MLO_LINK_DISABLED] = { .type = NLA_FLAG },
@@ -166,7 +166,7 @@ Signed-off-by: Muna Sinada <msinada@codeaurora.org>
  	[NL80211_ATTR_BSS_DUMP_INCLUDE_USE_DATA] = { .type = NLA_FLAG },
  	[NL80211_ATTR_MLO_TTLM_DLINK] = NLA_POLICY_EXACT_LEN(sizeof(u16) * 8),
  	[NL80211_ATTR_MLO_TTLM_ULINK] = NLA_POLICY_EXACT_LEN(sizeof(u16) * 8),
-@@ -20554,6 +20555,42 @@ void cfg80211_epcs_changed(struct net_de
+@@ -20611,6 +20612,42 @@ void cfg80211_epcs_changed(struct net_de
  }
  EXPORT_SYMBOL(cfg80211_epcs_changed);
  
@@ -211,7 +211,7 @@ Signed-off-by: Muna Sinada <msinada@codeaurora.org>
  int __init nl80211_init(void)
 --- a/net/wireless/trace.h
 +++ b/net/wireless/trace.h
-@@ -3999,6 +3999,46 @@ TRACE_EVENT(cfg80211_update_owe_info_eve
+@@ -4001,6 +4001,46 @@ TRACE_EVENT(cfg80211_update_owe_info_eve
  		  __entry->assoc_link_id, __entry->peer_mld_addr)
  );
  

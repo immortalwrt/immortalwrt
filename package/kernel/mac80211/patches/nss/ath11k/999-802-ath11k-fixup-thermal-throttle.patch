@@ -137,7 +137,7 @@
  #define ATH11K_HWMON_NAME_LEN           15
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -3237,6 +3237,7 @@ ath11k_wmi_send_thermal_mitigation_param
+@@ -3238,6 +3238,7 @@ ath11k_wmi_send_thermal_mitigation_param
  		lvl_conf->temp_hwm = param->levelconf[i].tmphwm;
  		lvl_conf->dc_off_percent = param->levelconf[i].dcoffpercent;
  		lvl_conf->prio = param->levelconf[i].priority;
@@ -229,7 +229,7 @@
  struct wmi_delba_send_cmd {
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -6703,6 +6703,9 @@ static int ath11k_mac_op_start(struct ie
+@@ -6764,6 +6764,9 @@ static int ath11k_mac_op_start(struct ie
  		}
  	}
  
