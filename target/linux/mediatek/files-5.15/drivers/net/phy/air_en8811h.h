@@ -14,6 +14,7 @@
 #define EN8811H_PHY_ID2             0xa411
 #define EN8811H_PHY_ID              ((EN8811H_PHY_ID1 << 16) | EN8811H_PHY_ID2)
 #define EN8811H_PHY_READY           0x02
+#define EN8811H_PHY_IVY_READY		0xABC
 #define MAX_RETRY                   25
 
 #define EN8811H_TX_POL_NORMAL   0x1
@@ -43,7 +44,7 @@
 #define MII_MMD_ADDR_DATA_REG       0x0e
 #define MMD_OP_MODE_DATA            BIT(14)
 
-#define EN8811H_DRIVER_VERSION      "v1.2.5"
+#define EN8811H_DRIVER_VERSION      "v1.3.0"
 
 #define LED_ON_CTRL(i)              (0x024 + ((i)*2))
 #define LED_ON_EN                   (1 << 15)
@@ -83,20 +84,64 @@
 #define LED_BLK_DUR                 (0x023)
 #define LED_BLK_DUR_MASK            (0xffff)
 
-#define UNIT_LED_BLINK_DURATION     1024
+#define UNIT_LED_BLINK_DURATION     780
 
 #define GET_BIT(val, bit) ((val & BIT(bit)) >> bit)
 
 #define INVALID_DATA                0xffff
 #define PBUS_INVALID_DATA           0xffffffff
 
+/* MII Registers */
+#define AIR_AUX_CTRL_STATUS		0x1d
+#define AIR_AUX_CTRL_STATUS_SPEED_MASK	GENMASK(4, 2)
+#define AIR_AUX_CTRL_STATUS_SPEED_100		0x4
+#define AIR_AUX_CTRL_STATUS_SPEED_1000	0x8
+#define AIR_AUX_CTRL_STATUS_SPEED_2500	0xc
+
+/* Registers on BUCKPBUS */
+#define EN8811H_2P5G_LPA		0x3b30
+#define EN8811H_2P5G_LPA_2P5G			BIT(0)
+
+#define EN8811H_FW_CTRL_1		0x0f0018
+#define   EN8811H_FW_CTRL_1_START		0x0
+#define   EN8811H_FW_CTRL_1_FINISH		0x1
+#define EN8811H_FW_CTRL_2		0x800000
+#define EN8811H_FW_CTRL_2_LOADING		BIT(11)
+#define EN8811H_LOOP      0x800
+
+#define NUM_ASI_REGS       5
+struct air_cable_test_rsl {
+	int          status[4];
+	unsigned int length[4];
+};
+
 struct en8811h_priv {
 	struct dentry       *debugfs_root;
 	unsigned int        dm_crc32;
 	unsigned int        dsp_crc32;
-	char                buf[512];
+	unsigned int        ivy_crc32;
 	int                 pol;
 	int                 surge;
+	int                 cko;
+	struct kobject      *cable_kobj;
+	int                 running_status;
+	int                 pair[4];
+	int                 an;
+	int                 link;
+	int                 speed;
+	int                 duplex;
+	int                 pause;
+	int                 asym_pause;
+	u16                 on_crtl[3];
+	u16                 blk_crtl[3];
+	u32                 firmware_version;
+	bool                mcu_needs_restart;
+	bool                mcu_load;
+	int                 debug;
+	int                 phy_handle;
+	int                 init_stage;
+	int                 need_an;
+	int                 count;
 };
 
 struct air_base_t_led_cfg {
@@ -106,6 +151,18 @@ struct air_base_t_led_cfg {
 	u16 on_cfg;
 	u16 blk_cfg;
 };
+
+enum air_init_stage {
+	AIR_INIT_START,
+	AIR_INIT_CONFIG,
+	AIR_INIT_FW_LOADING,
+	AIR_INIT_FW_READY,
+	AIR_INIT_SUCESS,
+	AIR_INIT_FW_FAIL,
+	AIR_INIT_FAIL,
+	AIR_INIT_LAST
+};
+
 enum air_led_gpio {
 	AIR_LED2_GPIO3 = 3,
 	AIR_LED1_GPIO4,
