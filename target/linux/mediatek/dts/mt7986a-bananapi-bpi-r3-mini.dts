@@ -140,24 +140,14 @@
 		compatible = "mediatek,eth-mac";
 		reg = <0>;
 		phy-mode = "2500base-x";
-
-		fixed-link {
-			speed = <2500>;
-			full-duplex;
-			pause;
-		};
+		phy-handle = <&phy14>;
 	};
 
 	gmac1: mac@1 {
 		compatible = "mediatek,eth-mac";
 		reg = <1>;
 		phy-mode = "2500base-x";
-
-		fixed-link {
-			speed = <2500>;
-			full-duplex;
-			pause;
-		};
+		phy-handle = <&phy15>;
 	};
 
 	mdio: mdio-bus {
@@ -170,6 +160,7 @@
 			pinctrl-names = "default";
 			pinctrl-0 = <&en8811_pwr_a>;
 
+			airoha,phy-handle;
 			airoha,polarity = <3>;
 
 			interrupt-parent = <&pio>;
@@ -177,10 +168,6 @@
 			reset-gpios = <&pio 49 1>;
 			reset-assert-us = <10000>;
 			reset-deassert-us = <20000>;
-
-			phy-mode = "2500base-x";
-			full-duplex;
-			pause;
 		};
 
 		phy15: phy@15 {
@@ -189,6 +176,7 @@
 			pinctrl-names = "default";
 			pinctrl-0 = <&en8811_pwr_b>;
 
+			airoha,phy-handle;
 			airoha,polarity = <3>;
 
 			interrupt-parent = <&pio>;
@@ -196,10 +184,6 @@
 			reset-gpios = <&pio 47 1>;
 			reset-assert-us = <10000>;
 			reset-deassert-us = <20000>;
-
-			phy-mode = "2500base-x";
-			full-duplex;
-			pause;
 		};
 	};
 };
