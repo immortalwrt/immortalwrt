@@ -470,6 +470,16 @@ int en8811h_of_init(struct phy_device *phydev)
 	else
 		priv->phy_handle = false;
 
+	if (of_find_property(of_node, "airoha,led-cfg", NULL)) {
+		if (of_property_read_u32_array(dev->of_node, "airoha,led-cfg",
+				(u32 *)priv->led_cfg, EN8811H_LED_SIZE) != 0) {
+			dev_err(dev, "airoha,led-cfg value is invalid.");
+			return -EINVAL;
+		}
+		priv->led_cfg_valid = true;
+	} else
+		priv->led_cfg_valid = false;
+
 	return 0;
 }
 #else

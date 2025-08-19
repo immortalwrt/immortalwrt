@@ -36,7 +36,7 @@ MODULE_LICENSE("GPL");
 /* User-defined.B */
 #define AIR_LED_SUPPORT
 #ifdef AIR_LED_SUPPORT
-static const struct air_base_t_led_cfg led_cfg[3] = {
+static const struct air_base_t_led_cfg default_led_cfg[3] = {
 /********************************************************************
  *Enable,     GPIO,        LED Polarity,    LED ON,     LED Blink
 *********************************************************************/
@@ -254,6 +254,7 @@ static int en8811h_led_init(struct phy_device *phydev)
 	unsigned long led_gpio = 0, reg_value = 0;
 	u16 cl45_data = led_dur;
 	int ret = 0, id;
+	const struct air_base_t_led_cfg *led_cfg;
 	struct device *dev = phydev_dev(phydev);
 	struct en8811h_priv *priv = phydev->priv;
 
@@ -269,8 +270,14 @@ static int en8811h_led_init(struct phy_device *phydev)
 		dev_err(dev, "led_set_mode fail(ret:%d)!\n", ret);
 		return ret;
 	}
+
+	if (priv->led_cfg_valid)
+		led_cfg = priv->led_cfg;
+	else
+		led_cfg = default_led_cfg;
+
 	for (id = 0; id < EN8811H_LED_COUNT; id++) {
-		/* LED0 <-> GPIO5, LED1 <-> GPIO4, LED0 <-> GPIO3 */
+		/* LED0 <-> GPIO5, LED1 <-> GPIO4, LED2 <-> GPIO3 */
 		if (led_cfg[id].gpio != (id + (AIR_LED0_GPIO5 - (2 * id)))) {
 			dev_err(dev, "LED%d uses incorrect GPIO%d !\n",
 							id, led_cfg[id].gpio);
