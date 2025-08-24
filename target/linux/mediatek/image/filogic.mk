@@ -193,6 +193,23 @@ define Device/acer_predator-w6d
 endef
 TARGET_DEVICES += acer_predator-w6d
 
+define Device/acer_predator-w6x
+  DEVICE_VENDOR := Acer
+  DEVICE_MODEL := Predator Connect W6x
+  DEVICE_DTS := mt7986a-acer-predator-w6x
+  DEVICE_DTS_DIR := ../dts
+  DEVICE_DTS_LOADADDR := 0x47000000
+  KERNEL_IN_UBI := 1
+  UBOOTENV_IN_UBI := 1
+  DEVICE_PACKAGES := kmod-usb3 kmod-leds-ws2812b kmod-mt7915e kmod-mt7986-firmware mt7986-wo-firmware
+  IMAGES := sysupgrade.bin
+  KERNEL := kernel-bin | lzma | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
+  KERNEL_INITRAMFS := kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += acer_predator-w6x
+
 define Device/acer_vero-w6m
   DEVICE_VENDOR := Acer
   DEVICE_MODEL := Connect Vero W6m
@@ -2278,6 +2295,25 @@ define Device/wavlink_wl-wn586x3
   DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware
 endef
 TARGET_DEVICES += wavlink_wl-wn586x3
+
+define Device/wavlink_wl-wn586x3b
+  DEVICE_VENDOR := WAVLINK
+  DEVICE_MODEL := WL-WN586X3B
+  DEVICE_DTS := mt7981b-wavlink-wl-wn586x3b
+  DEVICE_DTS_DIR := ../dts
+  DEVICE_DTS_LOADADDR := 0x47000000
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 65536k
+  KERNEL_INITRAMFS_SUFFIX := .itb
+  KERNEL_IN_UBI := 1
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware
+  IMAGES := factory.bin initramfs-kernel.bin sysupgrade.bin
+  IMAGE/factory.bin := append-ubi | check-size $$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += wavlink_wl-wn586x3b
 
 define Device/wavlink_wl-wn573hx3
   DEVICE_VENDOR := WAVLINK

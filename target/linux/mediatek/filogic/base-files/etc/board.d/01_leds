@@ -16,6 +16,9 @@ acer,predator-w6d)
 	ucidef_set_led_netdev "internet" "INTERNET" "mdio-bus:06:amber:wan" "eth1" "link_10 link_100 link_1000 tx rx"
 	ucidef_set_led_netdev "internet" "INTERNET" "mdio-bus:06:green:wan" "eth1" "link_2500 tx rx"
 	;;
+acer,predator-w6x)
+	ucidef_set_led_netdev "wan" "wan" "rgb:status" "eth1"
+	;;
 asus,rt-ax52|\
 snr,snr-cpe-ax2)
 	ucidef_set_led_netdev "wan" "wan" "blue:wan" "wan" "link tx rx"
@@ -232,7 +235,8 @@ wavlink,wl-wn551x3)
         ucidef_set_led_netdev "lan-2" "lan-2" "green:lan-2" "lan2" "link tx rx"
         ucidef_set_led_netdev "wan" "wan" "green:wan" "eth1" "link tx rx"
         ;;
-wavlink,wl-wn586x3)
+wavlink,wl-wn586x3|\
+wavlink,wl-wn586x3b)
 	ucidef_set_led_netdev "lan-1" "lan-1" "blue:lan-1" "lan1" "link tx rx"
 	ucidef_set_led_netdev "lan-2" "lan-2" "blue:lan-2" "lan2" "link tx rx"
 	ucidef_set_led_netdev "wan" "wan" "blue:wan" "eth1" "link tx rx"
