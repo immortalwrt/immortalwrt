@@ -1,0 +1,379 @@
+From 17527795fffbd55f1e9edfbfee89c7d958e5671f Mon Sep 17 00:00:00 2001
+From: Jo-Philipp Wich <jo@mein.io>
+Date: Wed, 6 Nov 2024 15:51:37 +0100
+Subject: [PATCH] digest: implement compile time option to exclude less common
+ algorithms
+
+Introduce a new default enabled CMake option `DIGEST_SUPPORT_EXTENDED`
+which, when turned off, disables all but the most common md5, sha1 and
+sha256 alogirthms to reduce the library size.
+
+Also prefer statically linking libmd if possible.
+
+Signed-off-by: Jo-Philipp Wich <jo@mein.io>
+---
+ CMakeLists.txt |   8 ++-
+ lib/digest.c   | 138 ++++++++++++++++++++++++++-----------------------
+ 2 files changed, 80 insertions(+), 66 deletions(-)
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -29,7 +29,7 @@ find_library(libubox NAMES ubox)
+ find_library(libubus NAMES ubus)
+ find_library(libblobmsg_json NAMES blobmsg_json)
+ find_package(ZLIB)
+-find_library(libmd NAMES md)
++find_library(libmd NAMES libmd.a md)
+ 
+ if(LINUX)
+   find_library(libnl_tiny NAMES nl-tiny)
+@@ -73,6 +73,7 @@ option(LOG_SUPPORT "Log plugin support"
+ option(SOCKET_SUPPORT "Socket plugin support" ON)
+ option(ZLIB_SUPPORT "Zlib plugin support" ${DEFAULT_ZLIB_SUPPORT})
+ option(DIGEST_SUPPORT "Digest plugin support" ${DEFAULT_DIGEST_SUPPORT})
++option(DIGEST_SUPPORT_EXTENDED "Enable additional hash algorithms" ${DEFAULT_DIGEST_SUPPORT})
+ 
+ set(LIB_SEARCH_PATH "${CMAKE_INSTALL_PREFIX}/lib/ucode/*.so:${CMAKE_INSTALL_PREFIX}/share/ucode/*.uc:./*.so:./*.uc" CACHE STRING "Default library search path")
+ string(REPLACE ":" "\", \"" LIB_SEARCH_DEFINE "${LIB_SEARCH_PATH}")
+@@ -297,9 +298,14 @@ if(ZLIB_SUPPORT)
+ endif()
+ 
+ if(DIGEST_SUPPORT)
++  pkg_check_modules(LIBMD REQUIRED libmd)
++  include_directories(${LIBMD_INCLUDE_DIRS})
+   set(LIBRARIES ${LIBRARIES} digest_lib)
+   add_library(digest_lib MODULE lib/digest.c)
+   set_target_properties(digest_lib PROPERTIES OUTPUT_NAME digest PREFIX "")
++  if(DIGEST_SUPPORT_EXTENDED)
++    target_compile_definitions(digest_lib PUBLIC HAVE_DIGEST_EXTENDED)
++  endif()
+   target_link_options(digest_lib PRIVATE ${UCODE_MODULE_LINK_OPTIONS})
+   target_link_libraries(digest_lib ${libmd})
+ endif()
+--- a/lib/digest.c
++++ b/lib/digest.c
+@@ -22,12 +22,15 @@
+  * @module digest
+  */
+ 
+-#include <md2.h>
+-#include <md4.h>
+ #include <md5.h>
+ #include <sha1.h>
+ #include <sha2.h>
+ 
++#ifdef HAVE_DIGEST_EXTENDED
++#include <md2.h>
++#include <md4.h>
++#endif
++
+ #include "ucode/module.h"
+ 
+ 
+@@ -59,13 +62,12 @@ uc_digest_calc_file(uc_value_t *path, ch
+ 	return NULL;
+ }
+ 
+-
+ /**
+- * Calculates the MD2 hash of string and returns that hash.
++ * Calculates the MD5 hash of string and returns that hash.
+  *
+  * Returns `null` if a non-string argument is given.
+  *
+- * @function module:digest#md2
++ * @function module:digest#md5
+  *
+  * @param {string} str
+  * The string to hash.
+@@ -73,21 +75,21 @@ uc_digest_calc_file(uc_value_t *path, ch
+  * @returns {?string}
+  *
+  * @example
+- * md2("This is a test");  // Returns "dc378580fd0722e56b82666a6994c718"
+- * md2(123);               // Returns null
++ * md5("This is a test");  // Returns "ce114e4501d2f4e2dcea3e17b546f339"
++ * md5(123);               // Returns null
+  */
+ static uc_value_t *
+-uc_digest_md2(uc_vm_t *vm, size_t nargs)
++uc_digest_md5(uc_vm_t *vm, size_t nargs)
+ {
+-	return uc_digest_calc_data(uc_fn_arg(0), MD2Data);
++	return uc_digest_calc_data(uc_fn_arg(0), MD5Data);
+ }
+ 
+ /**
+- * Calculates the MD4 hash of string and returns that hash.
++ * Calculates the SHA1 hash of string and returns that hash.
+  *
+  * Returns `null` if a non-string argument is given.
+  *
+- * @function module:digest#md4
++ * @function module:digest#sha1
+  *
+  * @param {string} str
+  * The string to hash.
+@@ -95,21 +97,21 @@ uc_digest_md2(uc_vm_t *vm, size_t nargs)
+  * @returns {?string}
+  *
+  * @example
+- * md4("This is a test");  // Returns "3b487cf6856af7e330bc4b1b7d977ef8"
+- * md4(123);               // Returns null
++ * sha1("This is a test");  // Returns "a54d88e06612d820bc3be72877c74f257b561b19"
++ * sha1(123);               // Returns null
+  */
+ static uc_value_t *
+-uc_digest_md4(uc_vm_t *vm, size_t nargs)
++uc_digest_sha1(uc_vm_t *vm, size_t nargs)
+ {
+-	return uc_digest_calc_data(uc_fn_arg(0), MD4Data);
++	return uc_digest_calc_data(uc_fn_arg(0), SHA1Data);
+ }
+ 
+ /**
+- * Calculates the MD5 hash of string and returns that hash.
++ * Calculates the SHA256 hash of string and returns that hash.
+  *
+  * Returns `null` if a non-string argument is given.
+  *
+- * @function module:digest#md5
++ * @function module:digest#sha256
+  *
+  * @param {string} str
+  * The string to hash.
+@@ -117,21 +119,22 @@ uc_digest_md4(uc_vm_t *vm, size_t nargs)
+  * @returns {?string}
+  *
+  * @example
+- * md5("This is a test");  // Returns "ce114e4501d2f4e2dcea3e17b546f339"
+- * md5(123);               // Returns null
++ * sha256("This is a test");  // Returns "c7be1ed902fb8dd4d48997c6452f5d7e509fbcdbe2808b16bcf4edce4c07d14e"
++ * sha256(123);               // Returns null
+  */
+ static uc_value_t *
+-uc_digest_md5(uc_vm_t *vm, size_t nargs)
++uc_digest_sha256(uc_vm_t *vm, size_t nargs)
+ {
+-	return uc_digest_calc_data(uc_fn_arg(0), MD5Data);
++	return uc_digest_calc_data(uc_fn_arg(0), SHA256Data);
+ }
+ 
++#ifdef HAVE_DIGEST_EXTENDED
+ /**
+- * Calculates the SHA1 hash of string and returns that hash.
++ * Calculates the MD2 hash of string and returns that hash.
+  *
+  * Returns `null` if a non-string argument is given.
+  *
+- * @function module:digest#sha1
++ * @function module:digest#md2
+  *
+  * @param {string} str
+  * The string to hash.
+@@ -139,21 +142,21 @@ uc_digest_md5(uc_vm_t *vm, size_t nargs)
+  * @returns {?string}
+  *
+  * @example
+- * sha1("This is a test");  // Returns "a54d88e06612d820bc3be72877c74f257b561b19"
+- * sha1(123);               // Returns null
++ * md2("This is a test");  // Returns "dc378580fd0722e56b82666a6994c718"
++ * md2(123);               // Returns null
+  */
+ static uc_value_t *
+-uc_digest_sha1(uc_vm_t *vm, size_t nargs)
++uc_digest_md2(uc_vm_t *vm, size_t nargs)
+ {
+-	return uc_digest_calc_data(uc_fn_arg(0), SHA1Data);
++	return uc_digest_calc_data(uc_fn_arg(0), MD2Data);
+ }
+ 
+ /**
+- * Calculates the SHA256 hash of string and returns that hash.
++ * Calculates the MD4 hash of string and returns that hash.
+  *
+  * Returns `null` if a non-string argument is given.
+  *
+- * @function module:digest#sha256
++ * @function module:digest#md4
+  *
+  * @param {string} str
+  * The string to hash.
+@@ -161,13 +164,13 @@ uc_digest_sha1(uc_vm_t *vm, size_t nargs
+  * @returns {?string}
+  *
+  * @example
+- * sha256("This is a test");  // Returns "c7be1ed902fb8dd4d48997c6452f5d7e509fbcdbe2808b16bcf4edce4c07d14e"
+- * sha256(123);               // Returns null
++ * md4("This is a test");  // Returns "3b487cf6856af7e330bc4b1b7d977ef8"
++ * md4(123);               // Returns null
+  */
+ static uc_value_t *
+-uc_digest_sha256(uc_vm_t *vm, size_t nargs)
++uc_digest_md4(uc_vm_t *vm, size_t nargs)
+ {
+-	return uc_digest_calc_data(uc_fn_arg(0), SHA256Data);
++	return uc_digest_calc_data(uc_fn_arg(0), MD4Data);
+ }
+ 
+ /**
+@@ -213,13 +216,14 @@ uc_digest_sha512(uc_vm_t *vm, size_t nar
+ {
+ 	return uc_digest_calc_data(uc_fn_arg(0), SHA512Data);
+ }
++#endif
+ 
+ /**
+- * Calculates the MD2 hash of a given file and returns that hash.
++ * Calculates the MD5 hash of a given file and returns that hash.
+  *
+  * Returns `null` if an error occurred.
+  *
+- * @function module:digest#md2_file
++ * @function module:digest#md5_file
+  *
+  * @param {string} path
+  * The path to the file.
+@@ -227,17 +231,17 @@ uc_digest_sha512(uc_vm_t *vm, size_t nar
+  * @returns {?string}
+  */
+ static uc_value_t *
+-uc_digest_md2_file(uc_vm_t *vm, size_t nargs)
++uc_digest_md5_file(uc_vm_t *vm, size_t nargs)
+ {
+-	return uc_digest_calc_file(uc_fn_arg(0), MD2File);
++	return uc_digest_calc_file(uc_fn_arg(0), MD5File);
+ }
+ 
+ /**
+- * Calculates the MD4 hash of a given file and returns that hash.
++ * Calculates the SHA1 hash of a given file and returns that hash.
+  *
+  * Returns `null` if an error occurred.
+  *
+- * @function module:digest#md4_file
++ * @function module:digest#sha1_file
+  *
+  * @param {string} path
+  * The path to the file.
+@@ -245,17 +249,17 @@ uc_digest_md2_file(uc_vm_t *vm, size_t n
+  * @returns {?string}
+  */
+ static uc_value_t *
+-uc_digest_md4_file(uc_vm_t *vm, size_t nargs)
++uc_digest_sha1_file(uc_vm_t *vm, size_t nargs)
+ {
+-	return uc_digest_calc_file(uc_fn_arg(0), MD4File);
++	return uc_digest_calc_file(uc_fn_arg(0), SHA1File);
+ }
+ 
+ /**
+- * Calculates the MD5 hash of a given file and returns that hash.
++ * Calculates the SHA256 hash of a given file and returns that hash.
+  *
+  * Returns `null` if an error occurred.
+  *
+- * @function module:digest#md5_file
++ * @function module:digest#sha256_file
+  *
+  * @param {string} path
+  * The path to the file.
+@@ -263,17 +267,18 @@ uc_digest_md4_file(uc_vm_t *vm, size_t n
+  * @returns {?string}
+  */
+ static uc_value_t *
+-uc_digest_md5_file(uc_vm_t *vm, size_t nargs)
++uc_digest_sha256_file(uc_vm_t *vm, size_t nargs)
+ {
+-	return uc_digest_calc_file(uc_fn_arg(0), MD5File);
++	return uc_digest_calc_file(uc_fn_arg(0), SHA256File);
+ }
+ 
++#ifdef HAVE_DIGEST_EXTENDED
+ /**
+- * Calculates the SHA1 hash of a given file and returns that hash.
++ * Calculates the MD2 hash of a given file and returns that hash.
+  *
+  * Returns `null` if an error occurred.
+  *
+- * @function module:digest#sha1_file
++ * @function module:digest#md2_file
+  *
+  * @param {string} path
+  * The path to the file.
+@@ -281,17 +286,17 @@ uc_digest_md5_file(uc_vm_t *vm, size_t n
+  * @returns {?string}
+  */
+ static uc_value_t *
+-uc_digest_sha1_file(uc_vm_t *vm, size_t nargs)
++uc_digest_md2_file(uc_vm_t *vm, size_t nargs)
+ {
+-	return uc_digest_calc_file(uc_fn_arg(0), SHA1File);
++	return uc_digest_calc_file(uc_fn_arg(0), MD2File);
+ }
+ 
+ /**
+- * Calculates the SHA256 hash of a given file and returns that hash.
++ * Calculates the MD4 hash of a given file and returns that hash.
+  *
+  * Returns `null` if an error occurred.
+  *
+- * @function module:digest#sha256_file
++ * @function module:digest#md4_file
+  *
+  * @param {string} path
+  * The path to the file.
+@@ -299,9 +304,9 @@ uc_digest_sha1_file(uc_vm_t *vm, size_t
+  * @returns {?string}
+  */
+ static uc_value_t *
+-uc_digest_sha256_file(uc_vm_t *vm, size_t nargs)
++uc_digest_md4_file(uc_vm_t *vm, size_t nargs)
+ {
+-	return uc_digest_calc_file(uc_fn_arg(0), SHA256File);
++	return uc_digest_calc_file(uc_fn_arg(0), MD4File);
+ }
+ 
+ /**
+@@ -339,26 +344,29 @@ uc_digest_sha512_file(uc_vm_t *vm, size_
+ {
+ 	return uc_digest_calc_file(uc_fn_arg(0), SHA512File);
+ }
++#endif
+ 
+ 
+ static const uc_function_list_t global_fns[] = {
+-	{ "md2"        , uc_digest_md2         },
+-	{ "md4"        , uc_digest_md4         },
+-	{ "md5"        , uc_digest_md5         },
+-	{ "sha1"       , uc_digest_sha1        },
+-	{ "sha256"     , uc_digest_sha256      },
+-	{ "sha384"     , uc_digest_sha384      },
+-	{ "sha512"     , uc_digest_sha512      },
+-	{ "md2_file"   , uc_digest_md2_file    },
+-	{ "md4_file"   , uc_digest_md4_file    },
+-	{ "md5_file"   , uc_digest_md5_file    },
+-	{ "sha1_file"  , uc_digest_sha1_file   },
++	{ "md5",         uc_digest_md5         },
++	{ "sha1",        uc_digest_sha1        },
++	{ "sha256",      uc_digest_sha256      },
++	{ "md5_file",    uc_digest_md5_file    },
++	{ "sha1_file",   uc_digest_sha1_file   },
+ 	{ "sha256_file", uc_digest_sha256_file },
++#ifdef HAVE_DIGEST_EXTENDED
++	{ "md2",         uc_digest_md2         },
++	{ "md4",         uc_digest_md4         },
++	{ "sha384",      uc_digest_sha384      },
++	{ "sha512",      uc_digest_sha512      },
++	{ "md2_file",    uc_digest_md2_file    },
++	{ "md4_file",    uc_digest_md4_file    },
+ 	{ "sha384_file", uc_digest_sha384_file },
+ 	{ "sha512_file", uc_digest_sha512_file },
++#endif
+ };
+ 
+ void uc_module_init(uc_vm_t *vm, uc_value_t *scope)
+ {
+-	uc_function_list_register(scope,global_fns);
++	uc_function_list_register(scope, global_fns);
+ }

@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ucode
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=https://github.com/jow-/ucode.git
@@ -19,6 +19,7 @@ PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
 PKG_LICENSE:=ISC
 
 PKG_ABI_VERSION:=20230711
+PKG_BUILD_DEPENDS:=libmd
 HOST_BUILD_DEPENDS:=libjson-c/host
 
 include $(INCLUDE_DIR)/package.mk
@@ -51,7 +52,8 @@ CMAKE_HOST_OPTIONS += \
 	-DUCI_SUPPORT=OFF \
 	-DULOOP_SUPPORT=OFF \
 	-DDEBUG_SUPPORT=ON \
-	-DLOG_SUPPORT=OFF
+	-DLOG_SUPPORT=OFF \
+	-DDIGEST_SUPPORT=OFF
 
 
 define Package/ucode/default
@@ -173,6 +175,10 @@ $(eval $(call UcodeModule, \
 $(eval $(call UcodeModule, \
 	uloop, ULOOP_SUPPORT, +libubox, \
 	The uloop module allows ucode scripts to interact with OpenWrt uloop event loop implementation.))
+
+$(eval $(call UcodeModule, \
+	digest, DIGEST_SUPPORT, , \
+	The digest module allows ucode scripts to use libmd digests.))
 
 $(eval $(call BuildPackage,libucode))
 $(eval $(call BuildPackage,ucode))
