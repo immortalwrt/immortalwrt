@@ -223,7 +223,7 @@ export function wpa_key_mgmt(config) {
 };
 
 function macaddr_random() {
-	let f = open("/dev/urandom", "r");
+	let f = fs.open("/dev/urandom", "r");
 	let addr = f.read(6);
 
 	addr = map(split(addr, ""), (v) => ord(v));
@@ -243,8 +243,10 @@ export function prepare(data, phy, num_global_macaddr, macaddr_base) {
 
 		data.default_macaddr = true;
 		mac_idx++;
-	} else if (data.macaddr == 'random')
+	} else if (data.macaddr == 'random') {
 		data.macaddr = macaddr_random();
+		data.random_macaddr = true;
+	}
 
 	log(`Preparing interface: ${data.ifname} with MAC: ${data.macaddr}`);
 };
