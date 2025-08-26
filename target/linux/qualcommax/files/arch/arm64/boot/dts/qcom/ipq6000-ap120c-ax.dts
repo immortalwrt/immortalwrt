@@ -242,6 +242,10 @@
 &qpic_nand {
 	status = "okay";
 
+	partitions {
+		status = "disabled";
+	};
+
 	nand@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -250,6 +254,17 @@
 		nand-ecc-strength = <4>;
 		nand-ecc-step-size = <512>;
 		nand-bus-width = <8>;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "rootfs";
+				reg = <0x0 0x0>;
+			};
+		};
 	};
 };
 
