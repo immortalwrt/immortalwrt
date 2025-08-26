@@ -82,7 +82,7 @@
  	case EVENT_MLD_INTERFACE_FREED:
 --- a/src/ap/hostapd.c
 +++ b/src/ap/hostapd.c
-@@ -4681,6 +4681,10 @@ static int hostapd_fill_csa_settings(str
+@@ -4680,6 +4680,10 @@ static int hostapd_fill_csa_settings(str
  	hapd->cs_count = settings->cs_count;
  	hapd->cs_block_tx = settings->block_tx;
  

@@ -15,7 +15,7 @@ That's seen with SSH.NET https://github.com/sshnet/SSH.NET/issues/1671
 
 --- a/src/common-channel.c
 +++ b/src/common-channel.c
-@@ -858,17 +858,21 @@ void common_recv_msg_channel_data(struct Channel *channel, int fd,
+@@ -858,17 +858,21 @@ void common_recv_msg_channel_data(struct
  void recv_msg_channel_window_adjust() {
  
  	struct Channel * channel;
