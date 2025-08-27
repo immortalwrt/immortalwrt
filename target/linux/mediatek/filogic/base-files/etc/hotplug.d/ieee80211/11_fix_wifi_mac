@@ -141,7 +141,7 @@ case "$board" in
 		;;
 	jcg,q30|\
 	jcg,q30-ubootmod|\
-	netcore,n60)
+	netcore,n60|\
 	netcore,n60-pro)
 		# Originally, phy1 is phy0 mac with LA bit set. However, this would conflict
 		# addresses on multiple VIFs with the other radio. Use label mac to set LA bit.
