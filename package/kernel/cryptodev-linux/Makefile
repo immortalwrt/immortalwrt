@@ -42,7 +42,7 @@ define KernelPackage/cryptodev/description
 endef
 
 ifneq ($(CONFIG_PACKAGE_kmod-qca-nss-crypto),)
-EXTRA_CFLAGS+=-DQCANSS
+  EXTRA_CFLAGS+=-DQCANSS
 endif
 
 define Build/Configure
