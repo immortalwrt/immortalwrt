@@ -81,13 +81,15 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  			goto fail_free_skb;
  
  		spin_lock_bh(&rx_ring->idr_lock);
+-		buf_id = idr_alloc(&rx_ring->bufs_idr, skb, 1,
+-				   (rx_ring->bufs_max * 3) + 1, GFP_ATOMIC);
 +		if (buf_ids && buf_id_index) {
 +			buf_id_index--;
 +			buf_id = buf_ids[buf_id_index];
 +			idr_replace(&rx_ring->bufs_idr, skb, buf_id);
 +		} else {
- 			buf_id = idr_alloc(&rx_ring->bufs_idr, skb, 1,
- 					(rx_ring->bufs_max * 3) + 1, GFP_ATOMIC);
++			buf_id = idr_alloc(&rx_ring->bufs_idr, skb, 1,
++					(rx_ring->bufs_max * 3) + 1, GFP_ATOMIC);
 +		}
  		spin_unlock_bh(&rx_ring->idr_lock);
  		if (buf_id <= 0)
@@ -130,11 +132,12 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  
  	srng = &ab->hal.srng_list[dp->reo_dst_ring[ring_id].ring_id];
  
-@@ -3378,8 +3400,14 @@ try_again:
+@@ -3368,8 +3390,15 @@ try_again:
  
  		ar = ab->pdevs[mac_id].ar;
  		rx_ring = &ar->dp.rx_refill_buf_ring;
 +		i = num_buffs_reaped[mac_id];
++
  		spin_lock_bh(&rx_ring->idr_lock);
 -		msdu = idr_remove(&rx_ring->bufs_idr, buf_id);
 +		if (rx_buf_id[mac_id] && i < DP_RX_MAX_IDR_BUF) {
@@ -146,7 +149,7 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  		spin_unlock_bh(&rx_ring->idr_lock);
  		if (unlikely(!msdu)) {
  			ath11k_warn(ab, "frame rx with invalid buf_id %d\n",
-@@ -3461,9 +3489,12 @@ try_again:
+@@ -3453,9 +3482,12 @@ try_again:
  		rx_ring = &ar->dp.rx_refill_buf_ring;
  
  		ath11k_dp_rxbufs_replenish(ab, i, rx_ring, num_buffs_reaped[i],
@@ -160,7 +163,7 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  	return total_msdu_reaped;
  }
  
-@@ -4825,7 +4856,7 @@ exit:
+@@ -4819,7 +4851,7 @@ exit:
  		rx_ring = &ar->dp.rx_refill_buf_ring;
  
  		ath11k_dp_rxbufs_replenish(ab, i, rx_ring, n_bufs_reaped[i],
@@ -169,7 +172,7 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  	}
  
  	return tot_n_bufs_reaped;
-@@ -5041,14 +5072,17 @@ int ath11k_dp_rx_process_wbm_err(struct
+@@ -5035,14 +5067,17 @@ int ath11k_dp_rx_process_wbm_err(struct
  	struct sk_buff *msdu;
  	struct sk_buff_head msdu_list[MAX_RADIOS];
  	struct ath11k_skb_rxcb *rxcb;
@@ -188,7 +191,7 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  
  	srng = &ab->hal.srng_list[dp->rx_rel_ring.ring_id];
  
-@@ -5074,9 +5108,15 @@ int ath11k_dp_rx_process_wbm_err(struct
+@@ -5068,9 +5103,15 @@ int ath11k_dp_rx_process_wbm_err(struct
  
  		ar = ab->pdevs[mac_id].ar;
  		rx_ring = &ar->dp.rx_refill_buf_ring;
@@ -205,7 +208,7 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  		spin_unlock_bh(&rx_ring->idr_lock);
  		if (!msdu) {
  			ath11k_warn(ab, "frame rx with invalid buf_id %d pdev %d\n",
-@@ -5121,7 +5161,7 @@ int ath11k_dp_rx_process_wbm_err(struct
+@@ -5115,7 +5156,7 @@ int ath11k_dp_rx_process_wbm_err(struct
  		rx_ring = &ar->dp.rx_refill_buf_ring;
  
  		ath11k_dp_rxbufs_replenish(ab, i, rx_ring, num_buffs_reaped[i],
@@ -214,7 +217,7 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  	}
  
  	rcu_read_lock();
-@@ -5143,6 +5183,8 @@ int ath11k_dp_rx_process_wbm_err(struct
+@@ -5137,6 +5178,8 @@ int ath11k_dp_rx_process_wbm_err(struct
  	}
  	rcu_read_unlock();
  done:
@@ -223,7 +226,7 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  	return total_num_buffs_reaped;
  }
  
-@@ -5228,7 +5270,7 @@ int ath11k_dp_process_rxdma_err(struct a
+@@ -5222,7 +5265,7 @@ int ath11k_dp_process_rxdma_err(struct a
  
  	if (num_buf_freed)
  		ath11k_dp_rxbufs_replenish(ab, mac_id, rx_ring, num_buf_freed,
@@ -232,7 +235,7 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  
  	return budget - quota;
  }
-@@ -6177,12 +6219,12 @@ static void ath11k_dp_rx_mon_dest_proces
+@@ -6171,12 +6214,12 @@ static void ath11k_dp_rx_mon_dest_proces
  			ath11k_dp_rxbufs_replenish(ar->ab, dp->mac_id,
  						   &dp->rxdma_mon_buf_ring,
  						   rx_bufs_used,
@@ -247,7 +250,7 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  	}
  }
  
-@@ -6699,7 +6741,7 @@ next_entry:
+@@ -6694,7 +6737,7 @@ next_entry:
  		ath11k_dp_rxbufs_replenish(ar->ab, dp->mac_id,
  					   &dp->rxdma_mon_buf_ring,
  					   rx_bufs_used,

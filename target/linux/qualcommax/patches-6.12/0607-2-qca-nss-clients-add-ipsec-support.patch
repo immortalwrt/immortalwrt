@@ -207,7 +207,7 @@ Signed-off-by: Pavithra R <quic_pavir@quicinc.com>
  
  		/* All xfrm_state objects are created by xfrm_state_alloc.
  		 * The xfrm_state_alloc call gives a reference, and that
-@@ -2988,6 +2987,20 @@ struct xfrm_state_afinfo *xfrm_state_get
+@@ -2995,6 +2994,20 @@ struct xfrm_state_afinfo *xfrm_state_get
  	return afinfo;
  }
  
@@ -228,7 +228,7 @@ Signed-off-by: Pavithra R <quic_pavir@quicinc.com>
  void xfrm_flush_gc(void)
  {
  	flush_work(&xfrm_state_gc_work);
-@@ -3009,38 +3022,16 @@ void xfrm_state_delete_tunnel(struct xfr
+@@ -3016,38 +3029,16 @@ void xfrm_state_delete_tunnel(struct xfr
  }
  EXPORT_SYMBOL(xfrm_state_delete_tunnel);
  
@@ -272,7 +272,7 @@ Signed-off-by: Pavithra R <quic_pavir@quicinc.com>
  
  int __xfrm_init_state(struct xfrm_state *x, bool init_replay, bool offload,
  		      struct netlink_ext_ack *extack)
-@@ -3385,3 +3376,39 @@ void xfrm_audit_state_icvfail(struct xfr
+@@ -3392,3 +3383,39 @@ void xfrm_audit_state_icvfail(struct xfr
  }
  EXPORT_SYMBOL_GPL(xfrm_audit_state_icvfail);
  #endif /* CONFIG_AUDITSYSCALL */

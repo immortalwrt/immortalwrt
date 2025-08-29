@@ -39,7 +39,7 @@
  				return;
  			}
  		}
-@@ -3741,7 +3740,7 @@ static void ath11k_dp_rx_update_user_sta
+@@ -3735,7 +3734,7 @@ static void ath11k_dp_rx_update_user_sta
  		return;
  	}
  
@@ -48,7 +48,7 @@
  	rx_stats = arsta->rx_stats;
  
  	if (ar->ab->nss.enabled)
-@@ -6438,7 +6437,7 @@ int ath11k_dp_rx_process_mon_status(stru
+@@ -6434,7 +6433,7 @@ int ath11k_dp_rx_process_mon_status(stru
  		if ((ppdu_info->fc_valid) &&
  		    (ppdu_info->ast_index != HAL_AST_IDX_INVALID)) {
  			if (ppdu_info->reception_type == HAL_RX_RECEPTION_TYPE_SU) {

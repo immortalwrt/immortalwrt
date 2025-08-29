@@ -331,9 +331,9 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  		.support_dual_stations = true,
  		.pdev_suspend = false,
  	},
-@@ -977,6 +984,21 @@ static struct ath11k_hw_params ath11k_hw
- 	},
- };
+@@ -2657,6 +2664,21 @@ static int ath11k_core_pm_notify(struct
+ 	return NOTIFY_OK;
+ }
  
 +static const struct ath11k_num_vdevs_peers ath11k_vdevs_peers[] = {
 +	{
@@ -350,6 +350,6 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
 +	},
 +};
 +
- static const struct dmi_system_id ath11k_pm_quirk_table[] = {
- 	{
- 		.driver_data = (void *)ATH11K_PM_WOW,
+ static int ath11k_core_pm_notifier_register(struct ath11k_base *ab)
+ {
+ 	ab->pm_nb.notifier_call = ath11k_core_pm_notify;

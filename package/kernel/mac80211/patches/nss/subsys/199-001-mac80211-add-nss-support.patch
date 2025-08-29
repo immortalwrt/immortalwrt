@@ -48,14 +48,14 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  /*
   * The maximum number of IPv4 addresses listed for ARP filtering. If the number
   * of addresses for an interface increase beyond this value, hardware ARP
-@@ -744,6 +758,7 @@ struct ieee80211_parsed_tpe {
-  * @eht_80mhz_full_bw_ul_mumimo: in AP-mode, does this BSS support the
-  *	reception of an EHT TB PPDU on an RU that spans the entire PPDU
-  *	bandwidth
+@@ -758,6 +772,7 @@ struct ieee80211_parsed_tpe {
+  *	be updated to 1, even if bss_param_ch_cnt didn't change. This allows
+  *	the link to know that it heard the latest value from its own beacon
+  *	(as opposed to hearing its value from another link's beacon).
 + * @nss_ap_isolate: Used for notifying the NSS host about AP isolate feature
-  * @eht_disable_mcs15: disable EHT-MCS 15 reception capability.
-  * @bss_param_ch_cnt: in BSS-mode, the BSS params change count. This
-  *	information is the latest known value. It can come from this link's
+  */
+ struct ieee80211_bss_conf {
+ 	struct ieee80211_vif *vif;
 @@ -857,6 +872,7 @@ struct ieee80211_bss_conf {
  
  	u8 bss_param_ch_cnt;
@@ -187,7 +187,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  			      NL80211_EXT_FEATURE_SCAN_FREQ_KHZ);
  	wiphy_ext_feature_set(wiphy,
  			      NL80211_EXT_FEATURE_POWERED_ADDR_CHANGE);
-@@ -1192,6 +1197,18 @@ int ieee80211_register_hw(struct ieee802
+@@ -1189,6 +1194,18 @@ int ieee80211_register_hw(struct ieee802
  			return -EINVAL;
  	}
  
@@ -249,9 +249,9 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  	if (unlikely(!multicast &&
  		     (sk_requests_wifi_status(skb->sk) ||
 -		      ctrl_flags & IEEE80211_TX_CTL_REQ_TX_STATUS)))
-+		      ctrl_flags & IEEE80211_TX_CTL_REQ_TX_STATUS) &&
-+		      !(ieee80211_hw_check(&local->hw, SUPPORTS_NSS_OFFLOAD) &&
-+			      ieee80211_is_data(fc) && !ieee80211_is_qos_nullfunc(fc))))
++		     ctrl_flags & IEEE80211_TX_CTL_REQ_TX_STATUS) &&
++		     !(ieee80211_hw_check(&local->hw, SUPPORTS_NSS_OFFLOAD) &&
++		       ieee80211_is_data(fc) && !ieee80211_is_qos_nullfunc(fc))))
  		info_id = ieee80211_store_ack_skb(local, skb, &info_flags,
  						  cookie);
  
@@ -261,7 +261,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  
 -	if (unlikely(sk_requests_wifi_status(skb->sk))) {
 +	if (unlikely(sk_requests_wifi_status(skb->sk) &&
-+	    !ieee80211_hw_check(&local->hw, SUPPORTS_NSS_OFFLOAD))) {
++		     !ieee80211_hw_check(&local->hw, SUPPORTS_NSS_OFFLOAD))) {
  		info->status_data = ieee80211_store_ack_skb(local, skb,
  							    &info->flags, NULL);
  		if (info->status_data)
@@ -347,7 +347,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  {
 --- a/net/mac80211/ieee80211_i.h
 +++ b/net/mac80211/ieee80211_i.h
-@@ -1887,6 +1887,8 @@ void ieee80211_vif_cfg_change_notify(str
+@@ -1900,6 +1900,8 @@ void ieee80211_vif_cfg_change_notify(str
  void ieee80211_link_info_change_notify(struct ieee80211_sub_if_data *sdata,
  				       struct ieee80211_link_data *link,
  				       u64 changed);

@@ -164,15 +164,15 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  #include "qmi.h"
  #include "htc.h"
  #include "wmi.h"
-@@ -34,6 +33,8 @@
- #include "spectral.h"
+@@ -35,6 +34,8 @@
  #include "wow.h"
  #include "rx_desc.h"
+ #include "coredump.h"
 +#include "nss.h"
 +#include "fw.h"
- #include "coredump.h"
  
  #define SM(_v, _f) (((_v) << _f##_LSB) & _f##_MASK)
+ 
 @@ -430,6 +431,9 @@ struct ath11k_vif {
  
  	struct ath11k_reg_tpc_power_info reg_tpc_info;
@@ -403,7 +403,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
  			 struct napi_struct *napi, int budget)
  {
-@@ -3122,7 +3141,8 @@ static void ath11k_dp_rx_update_user_sta
+@@ -3123,7 +3142,8 @@ static void ath11k_dp_rx_update_user_sta
  	peer = ath11k_peer_find_by_ast(ar->ab, user_stats->ast_index);
  
  	if (peer == NULL) {
@@ -413,7 +413,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  			    user_stats->ast_index);
  		return;
  	}
-@@ -3130,6 +3150,13 @@ static void ath11k_dp_rx_update_user_sta
+@@ -3131,6 +3151,13 @@ static void ath11k_dp_rx_update_user_sta
  	arsta = (struct ath11k_sta *)peer->sta->drv_priv;
  	rx_stats = arsta->rx_stats;
  
@@ -427,7 +427,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  	if (!rx_stats)
  		return;
  
-@@ -3206,8 +3233,10 @@ static void ath11k_dp_rx_update_peer_mu_
+@@ -3207,8 +3234,10 @@ static void ath11k_dp_rx_update_peer_mu_
  {
  	u32 num_users, i;
  
@@ -439,7 +439,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  
  	num_users = ppdu_info->num_users;
  	if (num_users > HAL_MAX_UL_MU_USERS)
-@@ -5678,7 +5707,7 @@ int ath11k_dp_rx_process_mon_status(stru
+@@ -5680,7 +5709,7 @@ int ath11k_dp_rx_process_mon_status(stru
  	struct sk_buff *skb;
  	struct sk_buff_head skb_list;
  	struct ath11k_peer *peer;
@@ -448,7 +448,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  	int num_buffs_reaped = 0;
  	u32 rx_buf_sz;
  	u16 log_type;
-@@ -5749,6 +5778,7 @@ int ath11k_dp_rx_process_mon_status(stru
+@@ -5751,6 +5780,7 @@ int ath11k_dp_rx_process_mon_status(stru
  			if (ppdu_info->reception_type == HAL_RX_RECEPTION_TYPE_SU) {
  				arsta = (struct ath11k_sta *)peer->sta->drv_priv;
  				ath11k_dp_rx_update_peer_su_stats(arsta, ppdu_info);

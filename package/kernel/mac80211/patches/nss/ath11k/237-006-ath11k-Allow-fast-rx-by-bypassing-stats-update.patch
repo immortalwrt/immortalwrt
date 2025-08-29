@@ -343,7 +343,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  
  	rx_status.flag |= RX_FLAG_SKIP_MONITOR | RX_FLAG_DUP_VALIDATED;
  
-@@ -4385,6 +4484,7 @@ static int ath11k_dp_rx_h_null_q_desc(st
+@@ -4387,6 +4486,7 @@ static int ath11k_dp_rx_h_null_q_desc(st
  				      struct ieee80211_rx_status *status,
  				      struct sk_buff_head *msdu_list)
  {
@@ -351,7 +351,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  	u16 msdu_len;
  	struct hal_rx_desc *desc = (struct hal_rx_desc *)msdu->data;
  	struct rx_attention *rx_attention;
-@@ -4434,7 +4534,8 @@ static int ath11k_dp_rx_h_null_q_desc(st
+@@ -4436,7 +4536,8 @@ static int ath11k_dp_rx_h_null_q_desc(st
  	}
  	ath11k_dp_rx_h_ppdu(ar, desc, status);
  

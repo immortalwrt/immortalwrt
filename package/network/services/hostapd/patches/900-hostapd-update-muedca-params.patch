@@ -22,7 +22,7 @@
  #include "wps/wps.h"
  #include "fst/fst.h"
  #include "wnm_ap.h"
-@@ -2363,6 +2364,47 @@ static void hostapd_event_wds_sta_interf
+@@ -2358,6 +2359,47 @@ static void hostapd_event_wds_sta_interf
  		ifname, MAC2STR(addr));
  }
  
@@ -70,7 +70,7 @@
  
  #ifdef CONFIG_OWE
  static int hostapd_notif_update_dh_ie(struct hostapd_data *hapd,
-@@ -2921,6 +2963,9 @@ void hostapd_wpa_event(void *ctx, enum w
+@@ -2916,6 +2958,9 @@ void hostapd_wpa_event(void *ctx, enum w
  			   hapd->conf->iface);
  		hostapd_event_color_change(hapd, true);
  		break;
@@ -157,7 +157,7 @@
  			  size_t len);
 --- a/src/drivers/driver.h
 +++ b/src/drivers/driver.h
-@@ -6151,6 +6151,16 @@ enum wpa_event_type {
+@@ -6156,6 +6156,16 @@ enum wpa_event_type {
  	EVENT_LINK_CH_SWITCH_STARTED,
  
  	/**
@@ -174,7 +174,7 @@
  	 * EVENT_TID_LINK_MAP - MLD event to set TID-to-link mapping
  	 *
  	 * This event is used by the driver to indicate the received TID-to-link
-@@ -7139,6 +7149,16 @@ union wpa_event_data {
+@@ -7144,6 +7154,16 @@ union wpa_event_data {
  	struct pasn_auth pasn_auth;
  
  	/**

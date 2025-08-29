@@ -38,14 +38,14 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  	depends on m
 --- a/drivers/net/wireless/ath/ath11k/Makefile
 +++ b/drivers/net/wireless/ath/ath11k/Makefile
-@@ -27,6 +27,7 @@ ath11k-$(CPTCFG_ATH11K_TRACING) += trace
- ath11k-$(CPTCFG_ATH11K_THERMAL) += thermal.o
+@@ -28,6 +28,7 @@ ath11k-$(CPTCFG_ATH11K_THERMAL) += therm
  ath11k-$(CPTCFG_ATH11K_SPECTRAL) += spectral.o
  ath11k-$(CONFIG_PM) += wow.o
-+ath11k-$(CPTCFG_ATH11K_NSS_SUPPORT) += nss.o
  ath11k-$(CONFIG_DEV_COREDUMP) += coredump.o
++ath11k-$(CPTCFG_ATH11K_NSS_SUPPORT) += nss.o
  
  obj-$(CPTCFG_ATH11K_AHB) += ath11k_ahb.o
+ ath11k_ahb-y += ahb.o
 --- /dev/null
 +++ b/drivers/net/wireless/ath/ath11k/nss.c
 @@ -0,0 +1,2399 @@

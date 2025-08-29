@@ -72,7 +72,7 @@
  
  int skb_append_pagefrags(struct sk_buff *skb, struct page *page,
  			 int offset, size_t size, size_t max_frags);
-@@ -3353,6 +3376,9 @@ static inline void *netdev_alloc_frag_al
+@@ -3376,6 +3399,9 @@ static inline void *netdev_alloc_frag_al
  struct sk_buff *__netdev_alloc_skb(struct net_device *dev, unsigned int length,
  				   gfp_t gfp_mask);
  

@@ -200,7 +200,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  		}
 --- a/net/mac80211/mlme.c
 +++ b/net/mac80211/mlme.c
-@@ -6214,7 +6214,8 @@ static bool ieee80211_assoc_success(stru
+@@ -6223,7 +6223,8 @@ static bool ieee80211_assoc_success(stru
  	 * If we're using 4-addr mode, let the AP know that we're
  	 * doing so, so that it can create the STA VLAN on its side
  	 */

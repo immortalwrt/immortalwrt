@@ -16,7 +16,7 @@ Signed-off-by: Anilkumar Kolli <quic_akolli@quicinc.com>
 
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -6022,12 +6022,23 @@ int ath11k_dp_rx_process_mon_status(stru
+@@ -6024,8 +6024,20 @@ int ath11k_dp_rx_process_mon_status(stru
  			}
  		}
  
@@ -39,11 +39,7 @@ Signed-off-by: Anilkumar Kolli <quic_akolli@quicinc.com>
  			dev_kfree_skb_any(skb);
  			continue;
  		}
--
- 		rcu_read_lock();
- 		spin_lock_bh(&ab->base_lock);
- 		peer = ath11k_peer_find_by_id(ab, ppdu_info->peer_id);
-@@ -6351,6 +6362,13 @@ static int ath11k_dp_full_mon_process_rx
+@@ -6353,6 +6365,13 @@ static int ath11k_dp_full_mon_process_rx
  
  	spin_lock_bh(&pmon->mon_lock);
  
@@ -57,7 +53,7 @@ Signed-off-by: Anilkumar Kolli <quic_akolli@quicinc.com>
  	sw_mon_entries = &pmon->sw_mon_entries;
  	rx_mon_stats = &pmon->rx_mon_stats;
  
-@@ -6393,7 +6411,6 @@ static int ath11k_dp_full_mon_process_rx
+@@ -6395,7 +6414,6 @@ static int ath11k_dp_full_mon_process_rx
  		}
  
  		rx_mon_stats->dest_ppdu_done++;
@@ -65,7 +61,7 @@ Signed-off-by: Anilkumar Kolli <quic_akolli@quicinc.com>
  		pmon->buf_state = DP_MON_STATUS_LAG;
  		pmon->mon_status_paddr = sw_mon_entries->mon_status_paddr;
  		pmon->hold_mon_dst_ring = true;
-@@ -6425,16 +6442,10 @@ reap_status_ring:
+@@ -6427,16 +6445,10 @@ reap_status_ring:
  int ath11k_dp_rx_process_mon_rings(struct ath11k_base *ab, int mac_id,
  				   struct napi_struct *napi, int budget)
  {
@@ -75,14 +71,13 @@ Signed-off-by: Anilkumar Kolli <quic_akolli@quicinc.com>
 -	if (test_bit(ATH11K_FLAG_MONITOR_STARTED, &ar->monitor_flags) &&
 -	    ab->hw_params.full_monitor_mode)
 -		ret = ath11k_dp_full_mon_process_rx(ab, mac_id, napi, budget);
--	else
++	if (ab->hw_params.full_monitor_mode)
++		return ath11k_dp_full_mon_process_rx(ab, mac_id, napi, budget);
+ 	else
 -		ret = ath11k_dp_rx_process_mon_status(ab, mac_id, napi, budget);
 -
 -	return ret;
-+ 	if (ab->hw_params.full_monitor_mode)
-+ 		return ath11k_dp_full_mon_process_rx(ab, mac_id, napi, budget);
-+ 	else
-+ 		return ath11k_dp_rx_process_mon_status(ab, mac_id, napi, budget);
++		return ath11k_dp_rx_process_mon_status(ab, mac_id, napi, budget);
  }
  
  static int ath11k_dp_rx_pdev_mon_status_attach(struct ath11k *ar)

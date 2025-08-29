@@ -41,7 +41,7 @@
 +	}
  };
  
- static const struct ath11k_num_vdevs_peers ath11k_vdevs_peers[] = {
+ static const struct dmi_system_id ath11k_pm_quirk_table[] = {
 --- a/drivers/net/wireless/ath/ath11k/hw.c
 +++ b/drivers/net/wireless/ath/ath11k/hw.c
 @@ -1043,6 +1043,7 @@ static void ath11k_hw_wcn6855_reo_setup(

@@ -503,7 +503,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  		.hal_params = &ath11k_hw_hal_params_ipq8074,
  		.supports_dynamic_smps_6ghz = true,
  		.alloc_cacheable_memory = true,
-@@ -2655,6 +2658,9 @@ int ath11k_core_pre_init(struct ath11k_b
+@@ -2640,6 +2643,9 @@ int ath11k_core_pre_init(struct ath11k_b
  	if (nss_offload)
  		ab->nss.stats_enabled = 1;
  
