@@ -73,7 +73,7 @@
  		case AD_MUX_COLLECTING_DISTRIBUTING:
  			port->actor_oper_port_state |= LACP_STATE_COLLECTING;
  			port->actor_oper_port_state |= LACP_STATE_DISTRIBUTING;
-@@ -2054,6 +2112,7 @@ static void ad_enable_collecting_distrib
+@@ -2060,6 +2118,7 @@ static void ad_enable_collecting_distrib
  					      bool *update_slave_arr)
  {
  	if (port->aggregator->is_active) {
@@ -81,7 +81,7 @@
  		slave_dbg(port->slave->bond->dev, port->slave->dev,
  			  "Enabling port %d (LAG %d)\n",
  			  port->actor_port_number,
-@@ -2061,6 +2120,16 @@ static void ad_enable_collecting_distrib
+@@ -2067,6 +2126,16 @@ static void ad_enable_collecting_distrib
  		__enable_port(port);
  		/* Slave array needs update */
  		*update_slave_arr = true;
@@ -98,7 +98,7 @@
  	}
  }
  
-@@ -2818,6 +2887,104 @@ int bond_3ad_get_active_agg_info(struct
+@@ -2824,6 +2893,104 @@ int bond_3ad_get_active_agg_info(struct
  	return ret;
  }
  
@@ -629,7 +629,7 @@
  		return bond_xmit_broadcast(skb, dev);
 --- a/include/net/bond_3ad.h
 +++ b/include/net/bond_3ad.h
-@@ -307,8 +307,15 @@ int bond_3ad_lacpdu_recv(const struct sk
+@@ -307,6 +307,13 @@ int bond_3ad_lacpdu_recv(const struct sk
  			 struct slave *slave);
  int bond_3ad_set_carrier(struct bonding *bond);
  void bond_3ad_update_lacp_rate(struct bonding *bond);
@@ -640,12 +640,9 @@
 +				       struct net_device *bond_dev,
 +				       __be16 *layer4hdr);
 +/* QCA NSS ECM bonding support */
-+
+ void bond_3ad_update_lacp_active(struct bonding *bond);
  void bond_3ad_update_ad_actor_settings(struct bonding *bond);
  int bond_3ad_stats_fill(struct sk_buff *skb, struct bond_3ad_stats *stats);
- size_t bond_3ad_stats_size(void);
- #endif /* _NET_BOND_3AD_H */
--
 --- a/include/net/bonding.h
 +++ b/include/net/bonding.h
 @@ -90,6 +90,8 @@

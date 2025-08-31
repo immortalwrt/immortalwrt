@@ -261,7 +261,7 @@
  
 --- a/drivers/net/ppp/ppp_generic.c
 +++ b/drivers/net/ppp/ppp_generic.c
-@@ -3736,6 +3736,32 @@ int ppp_is_multilink(struct net_device *
+@@ -3741,6 +3741,32 @@ int ppp_is_multilink(struct net_device *
  }
  EXPORT_SYMBOL(ppp_is_multilink);
  
@@ -294,7 +294,7 @@
  /* ppp_channel_get_protocol()
   *	Call this to obtain the underlying protocol of the PPP channel,
   *	e.g. PX_PROTO_OE
-@@ -3874,6 +3900,59 @@ int ppp_hold_channels(struct net_device
+@@ -3879,6 +3905,59 @@ int ppp_hold_channels(struct net_device
  }
  EXPORT_SYMBOL(ppp_hold_channels);
  

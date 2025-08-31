@@ -201,7 +201,7 @@
  void fib_del_ifaddr(struct in_ifaddr *, struct in_ifaddr *);
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -2302,4 +2302,6 @@ void br_do_suppress_nd(struct sk_buff *s
+@@ -2304,4 +2304,6 @@ void br_do_suppress_nd(struct sk_buff *s
  		       u16 vid, struct net_bridge_port *p, struct nd_msg *msg);
  struct nd_msg *br_is_nd_neigh_msg(struct sk_buff *skb, struct nd_msg *m);
  bool br_is_neigh_suppress_enabled(const struct net_bridge_port *p, u16 vid);
@@ -760,7 +760,7 @@
  	}
  #undef N
  	return "UNKNOWN_NETDEV_EVENT";
-@@ -12053,7 +12054,7 @@ static void __init net_dev_struct_check(
+@@ -12065,7 +12066,7 @@ static void __init net_dev_struct_check(
  #ifdef CONFIG_NET_XGRESS
  	CACHELINE_ASSERT_GROUP_MEMBER(struct net_device, net_device_read_tx, tcx_egress);
  #endif
@@ -769,7 +769,7 @@
  
  	/* TXRX read-mostly hotpath */
  	CACHELINE_ASSERT_GROUP_MEMBER(struct net_device, net_device_read_txrx, lstats);
-@@ -12062,7 +12063,7 @@ static void __init net_dev_struct_check(
+@@ -12074,7 +12075,7 @@ static void __init net_dev_struct_check(
  	CACHELINE_ASSERT_GROUP_MEMBER(struct net_device, net_device_read_txrx, hard_header_len);
  	CACHELINE_ASSERT_GROUP_MEMBER(struct net_device, net_device_read_txrx, features);
  	CACHELINE_ASSERT_GROUP_MEMBER(struct net_device, net_device_read_txrx, ip6_ptr);
@@ -778,7 +778,7 @@
  
  	/* RX read-mostly hotpath */
  	CACHELINE_ASSERT_GROUP_MEMBER(struct net_device, net_device_read_rx, ptype_specific);
-@@ -12082,7 +12083,7 @@ static void __init net_dev_struct_check(
+@@ -12094,7 +12095,7 @@ static void __init net_dev_struct_check(
  #ifdef CONFIG_NET_XGRESS
  	CACHELINE_ASSERT_GROUP_MEMBER(struct net_device, net_device_read_rx, tcx_ingress);
  #endif
