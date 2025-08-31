@@ -15,7 +15,7 @@ Signed-off-by: jensen <jensenhuang@friendlyarm.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
-@@ -1749,6 +1749,7 @@
+@@ -1748,6 +1748,7 @@
  		snps,mixed-burst;
  		snps,mtl-rx-config = <&gmac1_mtl_rx_setup>;
  		snps,mtl-tx-config = <&gmac1_mtl_tx_setup>;
@@ -35,7 +35,7 @@ Signed-off-by: jensen <jensenhuang@friendlyarm.com>
  
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7692,7 +7692,7 @@ int stmmac_dvr_probe(struct device *devi
+@@ -7691,7 +7691,7 @@ int stmmac_dvr_probe(struct device *devi
  		ndev->hw_features |= NETIF_F_HW_VLAN_CTAG_RX;
  		priv->hw->hw_vlan_en = true;
  	}
@@ -46,7 +46,7 @@ Signed-off-by: jensen <jensenhuang@friendlyarm.com>
  	}
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-@@ -589,6 +589,9 @@ stmmac_probe_config_dt(struct platform_d
+@@ -596,6 +596,9 @@ stmmac_probe_config_dt(struct platform_d
  			 "force_sf_dma_mode is ignored if force_thresh_dma_mode is set.\n");
  	}
  
