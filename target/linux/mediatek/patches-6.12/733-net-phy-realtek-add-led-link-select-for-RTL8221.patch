@@ -31,8 +31,8 @@ Signed-off-by: Yangyu Chen <cyy@cyyself.name>
  #define RTL8366RB_POWER_SAVE			0x15
  #define RTL8366RB_POWER_SAVE_ON			BIT(12)
  
-@@ -1036,6 +1042,45 @@ static int rtl822x_probe(struct phy_devi
- 	return 0;
+@@ -1139,6 +1145,45 @@ static int rtl822x_config_init(struct ph
+ 	return rtl822x_set_serdes_option_mode(phydev, true);
  }
  
 +static int rtl8221b_config_led(struct phy_device *phydev) {
@@ -76,13 +76,13 @@ Signed-off-by: Yangyu Chen <cyy@cyyself.name>
 +
  static int rtl822xb_config_init(struct phy_device *phydev)
  {
- 	bool has_2500, has_sgmii;
-@@ -1126,7 +1171,7 @@ static int rtl822xb_config_init(struct p
- 	if (ret < 0)
- 		return ret;
+ 	return rtl822x_set_serdes_option_mode(phydev, false);
+@@ -1259,7 +1304,7 @@ static int rtl822x_read_status(struct ph
+ 
+ 	mii_10gbt_stat_mod_linkmode_lpa_t(phydev->lp_advertising, lpadv);
  
 -	return 0;
 +	return rtl8221b_config_led(phydev);
  }
  
- static int rtl822xb_config_init_war(struct phy_device *phydev)
+ static int rtl822xb_read_status(struct phy_device *phydev)
