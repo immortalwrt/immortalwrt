@@ -512,6 +512,7 @@
 };
 
 &uart4 {
+	dma-names = "tx", "rx";
 	status = "okay";
 };
 
