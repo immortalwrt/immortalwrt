@@ -21,7 +21,9 @@ define KernelPackage/drm-rockchip
 	CONFIG_ROCKCHIP_ANALOGIX_DP=n \
 	CONFIG_ROCKCHIP_CDN_DP=n \
 	CONFIG_ROCKCHIP_DW_HDMI=y \
+	CONFIG_ROCKCHIP_DW_HDMI_QP=y \
 	CONFIG_ROCKCHIP_DW_MIPI_DSI=y \
+	CONFIG_ROCKCHIP_DW_MIPI_DSI2=y \
 	CONFIG_ROCKCHIP_INNO_HDMI=y \
 	CONFIG_ROCKCHIP_LVDS=y \
 	CONFIG_ROCKCHIP_RGB=n \
@@ -36,7 +38,9 @@ define KernelPackage/drm-rockchip
   FILES:= \
 	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-hdmi.ko \
 	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-hdmi-cec.ko \
+	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-hdmi-qp.ko \
 	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.ko \
+	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi2.ko \
 	$(LINUX_DIR)/drivers/phy/rockchip/phy-rockchip-inno-hdmi.ko \
 	$(LINUX_DIR)/drivers/phy/rockchip/phy-rockchip-samsung-hdptx.ko \
 	$(LINUX_DIR)/drivers/gpu/drm/drm_dma_helper.ko \
