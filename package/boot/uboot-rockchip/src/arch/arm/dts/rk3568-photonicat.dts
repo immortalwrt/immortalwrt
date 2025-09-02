@@ -433,7 +433,8 @@
 &sdhci {
 	bus-width = <8>;
 	cap-mmc-highspeed;
-	max-frequency = <52000000>;
+	max-frequency = <150000000>;
+	mmc-hs200-1_8v;
 	non-removable;
 	pinctrl-names = "default";
 	pinctrl-0 = <&emmc_bus8 &emmc_clk &emmc_cmd>;
@@ -512,6 +513,7 @@
 };
 
 &uart4 {
+	dma-names = "tx", "rx";
 	status = "okay";
 };
 
