@@ -76,7 +76,8 @@ friendlyarm,nanopi-r5s)
 	set_interface_core 4 "eth1"
 	set_interface_core 8 "eth2"
 	;;
-friendlyarm,nanopi-r6s)
+friendlyarm,nanopi-r6s|\
+radxa,rock-5a)
 	set_interface_core 10 "eth0"
 	set_interface_core 20 "eth1"
 	set_interface_core 40 "eth2"

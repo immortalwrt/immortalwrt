@@ -382,7 +382,7 @@ define Device/radxa_rock-5a
   SOC := rk3588s
   UBOOT_DEVICE_NAME := rock5a-rk3588s
   BOOT_FLOW := pine64-img
-  DEVICE_PACKAGES := kmod-r8125 kmod-hwmon-pwmfan
+  DEVICE_PACKAGES := blkdiscard block-mount kmod-ata-ahci kmod-hwmon-pwmfan kmod-nvme kmod-r8125 kmod-rtw89-8852be wpad-openssl
 endef
 TARGET_DEVICES += radxa_rock-5a
 
