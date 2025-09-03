@@ -376,6 +376,15 @@ define Device/radxa_rock-4se
 endef
 TARGET_DEVICES += radxa_rock-4se
 
+define Device/radxa_rock-5-itx
+  DEVICE_VENDOR := Radxa
+  DEVICE_MODEL := ROCK 5 ITX/ITX+
+  SOC := rk3588
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := blkdiscard block-mount kmod-ata-ahci kmod-hwmon-pwmfan kmod-nvme kmod-r8125 kmod-rtw89-8852be wpad-openssl
+endef
+TARGET_DEVICES += radxa_rock-5-itx
+
 define Device/radxa_rock-5a
   DEVICE_VENDOR := Radxa
   DEVICE_MODEL := ROCK 5A
