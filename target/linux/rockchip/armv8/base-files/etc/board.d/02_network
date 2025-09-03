@@ -32,6 +32,7 @@ rockchip_setup_interfaces()
 	nlnet,xiguapi-v3|\
 	radxa,e25|\
 	radxa,rock-3b|\
+	radxa,rock-5t|\
 	xunlong,orangepi-5-plus)
 		ucidef_set_interfaces_lan_wan 'eth0' 'eth1'
 		;;
