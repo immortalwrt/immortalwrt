@@ -359,6 +359,13 @@ define U-Boot/cyber3588-aib-rk3588
     cyber_cyber3588-aib
 endef
 
+define U-Boot/generic-rk3588
+  $(U-Boot/rk358x/Default)
+  NAME:=Generic RK358x board
+  BUILD_DEVICES:= \
+    radxa_rock-5b-plus
+endef
+
 # RK3588 boards
 
 define U-Boot/nanopc-t6-rk3588
@@ -460,6 +467,7 @@ UBOOT_TARGETS := \
   rock-3b-rk3568 \
   sige3-rk3568 \
   cyber3588-aib-rk3588 \
+  generic-rk3588 \
   nanopc-t6-rk3588 \
   orangepi-5-plus-rk3588 \
   rock5b-rk3588 \
