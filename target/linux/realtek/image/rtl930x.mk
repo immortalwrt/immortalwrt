@@ -40,17 +40,18 @@ define Device/plasmacloud_psx10
 endef
 TARGET_DEVICES += plasmacloud_psx10
 
-define Device/tplink_tl-st1008f_v2
+define Device/tplink_tl-st1008f-v2
   SOC := rtl9303
   UIMAGE_MAGIC := 0x93030000
   DEVICE_VENDOR := TP-Link
   DEVICE_MODEL := TL-ST1008F
   DEVICE_VARIANT := v2.0
   DEVICE_PACKAGES := kmod-gpio-pca953x
+  SUPPORTED_DEVICES += tplink,tl-st1008f,v2
   IMAGE_SIZE := 31808k
   $(Device/kernel-lzma)
 endef
-TARGET_DEVICES += tplink_tl-st1008f_v2
+TARGET_DEVICES += tplink_tl-st1008f-v2
 
 define Device/vimin_vm-s100-0800ms
   SOC := rtl9303
@@ -95,12 +96,14 @@ define Device/xikestor_sks8310-8x
 endef
 TARGET_DEVICES += xikestor_sks8310-8x
 
-define Device/zyxel_xgs1210-12
+define Device/zyxel_xgs1210-12-a1
   SOC := rtl9302
+  SUPPORTED_DEVICES += zyxel,xgs1210-12
   UIMAGE_MAGIC := 0x93001210
   ZYXEL_VERS := ABTY
   DEVICE_VENDOR := Zyxel
   DEVICE_MODEL := XGS1210-12
+  DEVICE_VARIANT := A1
   IMAGE_SIZE := 13312k
   KERNEL_INITRAMFS := \
         kernel-bin | \
@@ -109,7 +112,7 @@ define Device/zyxel_xgs1210-12
         zyxel-vers | \
         uImage gzip
 endef
-TARGET_DEVICES += zyxel_xgs1210-12
+TARGET_DEVICES += zyxel_xgs1210-12-a1
 
 define Device/zyxel_xgs1250-12
   SOC := rtl9302
