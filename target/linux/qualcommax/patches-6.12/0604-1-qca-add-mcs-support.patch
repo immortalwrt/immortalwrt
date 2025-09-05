@@ -144,7 +144,7 @@
  	bool promisc;
  	u16 vid = 0;
  	u8 state;
-@@ -182,6 +198,12 @@ int br_handle_frame_finish(struct net *n
+@@ -180,6 +196,12 @@ int br_handle_frame_finish(struct net *n
  
  	switch (pkt_type) {
  	case BR_PKT_MULTICAST:
@@ -157,7 +157,7 @@
  		mdst = br_mdb_entry_skb_get(brmctx, skb, vid);
  		if ((mdst || BR_INPUT_SKB_CB_MROUTERS_ONLY(skb)) &&
  		    br_multicast_querier_exists(brmctx, eth_hdr(skb), mdst)) {
-@@ -197,8 +219,15 @@ int br_handle_frame_finish(struct net *n
+@@ -196,8 +218,15 @@ int br_handle_frame_finish(struct net *n
  		}
  		break;
  	case BR_PKT_UNICAST:
@@ -175,7 +175,7 @@
  	default:
  		break;
  	}
-@@ -213,6 +242,13 @@ int br_handle_frame_finish(struct net *n
+@@ -212,6 +241,13 @@ int br_handle_frame_finish(struct net *n
  			dst->used = now;
  		br_forward(dst->dst, skb, local_rcv, false);
  	} else {
