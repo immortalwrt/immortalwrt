@@ -297,6 +297,17 @@ define Device/radxa_e25
 endef
 TARGET_DEVICES += radxa_e25
 
+define Device/radxa_e52c
+  DEVICE_VENDOR := Radxa
+  DEVICE_MODEL := E52C
+  SOC := rk3582
+  DEVICE_DTS := rockchip/rk3582-radxa-e52c
+  UBOOT_DEVICE_NAME := generic-rk3588
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := blkdiscard kmod-r8125
+endef
+TARGET_DEVICES += radxa_e52c
+
 define Device/radxa_rock-3a
   DEVICE_VENDOR := Radxa
   DEVICE_MODEL := ROCK 3A
@@ -341,13 +352,22 @@ define Device/radxa_rock-4se
 endef
 TARGET_DEVICES += radxa_rock-4se
 
+define Device/radxa_rock-5-itx
+  DEVICE_VENDOR := Radxa
+  DEVICE_MODEL := ROCK 5 ITX/ITX+
+  SOC := rk3588
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := blkdiscard block-mount kmod-ata-ahci kmod-hwmon-pwmfan kmod-nvme kmod-r8125 kmod-rtw89-8852be wpad-openssl
+endef
+TARGET_DEVICES += radxa_rock-5-itx
+
 define Device/radxa_rock-5a
   DEVICE_VENDOR := Radxa
   DEVICE_MODEL := ROCK 5A
   SOC := rk3588s
   UBOOT_DEVICE_NAME := rock5a-rk3588s
   BOOT_FLOW := pine64-img
-  DEVICE_PACKAGES := kmod-r8125 kmod-hwmon-pwmfan
+  DEVICE_PACKAGES := blkdiscard block-mount kmod-ata-ahci kmod-hwmon-pwmfan kmod-nvme kmod-r8125 kmod-rtw89-8852be wpad-openssl
 endef
 TARGET_DEVICES += radxa_rock-5a
 
@@ -357,9 +377,39 @@ define Device/radxa_rock-5b
   SOC := rk3588
   UBOOT_DEVICE_NAME := rock5b-rk3588
   BOOT_FLOW := pine64-img
-  DEVICE_PACKAGES := kmod-r8125 kmod-hwmon-pwmfan
+  DEVICE_PACKAGES := blkdiscard block-mount kmod-hwmon-pwmfan kmod-nvme kmod-r8125 kmod-rtw89-8852be wpad-openssl
 endef
 TARGET_DEVICES += radxa_rock-5b
+
+define Device/radxa_rock-5b-plus
+  DEVICE_VENDOR := Radxa
+  DEVICE_MODEL := ROCK 5B+
+  SOC := rk3588
+  DEVICE_DTS := rockchip/rk3588-rock-5b-plus
+  UBOOT_DEVICE_NAME := generic-rk3588
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := blkdiscard block-mount kmod-hwmon-pwmfan kmod-nvme kmod-r8125 kmod-rtw89-8852be wpad-openssl
+endef
+TARGET_DEVICES += radxa_rock-5b-plus
+
+define Device/radxa_rock-5c
+  DEVICE_VENDOR := Radxa
+  DEVICE_MODEL := ROCK 5C/5C Lite
+  SOC := rk3588s
+  DEVICE_PACKAGES := blkdiscard block-mount kmod-ata-ahci kmod-hwmon-pwmfan kmod-nvme kmod-r8169
+endef
+TARGET_DEVICES += radxa_rock-5c
+
+define Device/radxa_rock-5t
+  DEVICE_VENDOR := Radxa
+  DEVICE_MODEL := ROCK 5T
+  SOC := rk3588
+  DEVICE_DTS := rockchip/rk3588-rock-5t
+  UBOOT_DEVICE_NAME := generic-rk3588
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := blkdiscard block-mount iwlwifi-firmware-ax210 kmod-hwmon-pwmfan kmod-iwlwifi kmod-nvme kmod-r8125 wpad-openssl
+endef
+TARGET_DEVICES += radxa_rock-5t
 
 define Device/radxa_rock-pi-4a
   DEVICE_VENDOR := Radxa
