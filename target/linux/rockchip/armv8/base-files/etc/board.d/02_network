@@ -19,6 +19,7 @@ rockchip_setup_interfaces()
 	friendlyarm,nanopi-r4se|\
 	friendlyarm,nanopi-r4s-enterprise|\
 	friendlyarm,nanopi-r6c|\
+	radxa,e52c|\
 	radxa,rockpi-e|\
 	xunlong,orangepi-r1-plus|\
 	xunlong,orangepi-r1-plus-lts)
@@ -30,7 +31,9 @@ rockchip_setup_interfaces()
 	mmbox,anas3035|\
 	radxa,e25|\
 	radxa,rock-3b|\
-	xunlong,orangepi-5-plus)
+	xunlong,orangepi-5-plus|\
+	radxa,rock-5-itx|\
+	radxa,rock-5t)
 		ucidef_set_interfaces_lan_wan 'eth0' 'eth1'
 		;;
 	cyber,cyber3588-aib)

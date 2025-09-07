@@ -15,7 +15,7 @@ Signed-off-by: jensen <jensenhuang@friendlyarm.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
-@@ -1748,6 +1748,7 @@
+@@ -1808,6 +1808,7 @@
  		snps,mixed-burst;
  		snps,mtl-rx-config = <&gmac1_mtl_rx_setup>;
  		snps,mtl-tx-config = <&gmac1_mtl_tx_setup>;
@@ -25,7 +25,7 @@ Signed-off-by: jensen <jensenhuang@friendlyarm.com>
  
 --- a/arch/arm64/boot/dts/rockchip/rk3588-extra.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-extra.dtsi
-@@ -344,6 +344,7 @@
+@@ -462,6 +462,7 @@
  		snps,mixed-burst;
  		snps,mtl-rx-config = <&gmac0_mtl_rx_setup>;
  		snps,mtl-tx-config = <&gmac0_mtl_tx_setup>;
@@ -35,7 +35,7 @@ Signed-off-by: jensen <jensenhuang@friendlyarm.com>
  
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7691,7 +7691,7 @@ int stmmac_dvr_probe(struct device *devi
+@@ -7693,7 +7693,7 @@ int stmmac_dvr_probe(struct device *devi
  		ndev->hw_features |= NETIF_F_HW_VLAN_CTAG_RX;
  		priv->hw->hw_vlan_en = true;
  	}
