@@ -267,16 +267,50 @@ Signed-off-by: Aviana Cruz <gwencroft@proton.me>
  	uint32_t dhcp_leasetime;
 --- a/src/router.c
 +++ b/src/router.c
-@@ -371,7 +371,7 @@ static int calc_adv_interval(struct inte
+@@ -342,8 +342,8 @@ static int calc_adv_interval(struct inte
+ 
+ 	*maxival = iface->ra_maxinterval;
+ 
+-	if (*maxival > minvalid/3)
+-		*maxival = minvalid/3;
++	if (*maxival > minvalid)
++		*maxival = minvalid;
+ 
+ 	if (*maxival > MaxRtrAdvInterval)
+ 		*maxival = MaxRtrAdvInterval;
+@@ -371,16 +371,17 @@ static int calc_adv_interval(struct inte
  
  static uint32_t calc_ra_lifetime(struct interface *iface, uint32_t maxival)
  {
 -	uint32_t lifetime = 3*maxival;
-+	uint32_t lifetime = maxival * 3;
++	uint32_t lifetime = iface->max_preferred_lifetime;
  
  	if (iface->ra_lifetime >= 0) {
  		lifetime = iface->ra_lifetime;
-@@ -590,16 +590,15 @@ static int send_router_advert(struct int
+-		if (lifetime > 0 && lifetime < maxival)
+-			lifetime = maxival;
+-		else if (lifetime > 9000)
+-			lifetime = 9000;
+ 	}
+ 
++	if (lifetime > 0 && lifetime < maxival)
++		lifetime = maxival;
++	else if (lifetime > 9000)
++		lifetime = 9000;
++
+ 	return lifetime;
+ }
+ 
+@@ -452,7 +453,7 @@ static int send_router_advert(struct int
+ 	size_t dns_sz = 0, search_sz = 0, pref64_sz = 0;
+ 	size_t pfxs_cnt = 0, routes_cnt = 0;
+ 	ssize_t valid_addr_cnt = 0, invalid_addr_cnt = 0;
+-	uint32_t minvalid = UINT32_MAX, maxival, lifetime;
++	uint32_t minvalid = UINT32_MAX, maxvalid = 0, maxival, ra_lifetime;
+ 	int msecs, mtu = iface->ra_mtu, hlim = iface->ra_hoplimit;
+ 	bool default_route = false;
+ 	bool valid_prefix = false;
+@@ -590,16 +591,15 @@ static int send_router_advert(struct int
  		if (addr->preferred > (uint32_t)now) {
  			preferred = TIME_LEFT(addr->preferred, now);
  
@@ -297,7 +331,38 @@ Signed-off-by: Aviana Cruz <gwencroft@proton.me>
  		}
  
  		if (minvalid > valid)
-@@ -643,9 +642,9 @@ static int send_router_advert(struct int
+@@ -608,6 +608,12 @@ static int send_router_advert(struct int
+ 		if ((!IN6_IS_ADDR_ULA(&addr->addr.in6) || iface->default_router) && valid)
+ 			valid_prefix = true;
+ 
++		if (!IN6_IS_ADDR_ULA(&addr->addr.in6) && valid) {
++			if (maxvalid < valid)
++				maxvalid = valid;
++		}
++
++
+ 		odhcpd_bmemcpy(&p->nd_opt_pi_prefix, &addr->addr.in6,
+ 				(iface->ra_advrouter) ? 128 : addr->prefix);
+ 		p->nd_opt_pi_type = ND_OPT_PREFIX_INFORMATION;
+@@ -629,7 +635,9 @@ static int send_router_advert(struct int
+ 
+ 	/* Calculate periodic transmit */
+ 	msecs = calc_adv_interval(iface, minvalid, &maxival);
+-	lifetime = calc_ra_lifetime(iface, maxival);
++	ra_lifetime = calc_ra_lifetime(iface, maxival);
++	if (!maxvalid)
++		maxvalid = ra_lifetime;
+ 
+ 	if (!iface->have_link_local) {
+ 		syslog(LOG_NOTICE, "Skip sending a RA on %s as no link local address is available", iface->name);
+@@ -637,15 +645,15 @@ static int send_router_advert(struct int
+ 	}
+ 
+ 	if (default_route && valid_prefix) {
+-		adv.h.nd_ra_router_lifetime = htons(lifetime < UINT16_MAX ? lifetime : UINT16_MAX);
++		adv.h.nd_ra_router_lifetime = htons(ra_lifetime < UINT16_MAX ? ra_lifetime : UINT16_MAX);
+ 	} else {
+ 		adv.h.nd_ra_router_lifetime = 0;
  
  		if (default_route) {
  			syslog(LOG_WARNING, "A default route is present but there is no public prefix "
@@ -309,12 +374,41 @@ Signed-off-by: Aviana Cruz <gwencroft@proton.me>
  		}
  	}
  
-@@ -710,7 +709,7 @@ static int send_router_advert(struct int
+@@ -674,7 +682,7 @@ static int send_router_advert(struct int
+ 			memset(dns, 0, dns_sz);
+ 			dns->type = ND_OPT_RECURSIVE_DNS;
+ 			dns->len = 1 + (2 * dns_cnt);
+-			dns->lifetime = htonl(lifetime);
++			dns->lifetime = htonl(maxvalid);
+ 			memcpy(dns->addr, dns_addr, sizeof(struct in6_addr)*dns_cnt);
+ 		}
+ 
+@@ -697,7 +705,7 @@ static int send_router_advert(struct int
+ 			memset(search, 0, search_sz);
+ 			search->type = ND_OPT_DNS_SEARCH;
+ 			search->len = search_len ? ((sizeof(*search) + search_padded) / 8) : 0;
+-			search->lifetime = htonl(lifetime);
++			search->lifetime = htonl(maxvalid);
+ 			memcpy(search->name, search_domain, search_len);
+ 			memset(&search->name[search_len], 0, search_padded - search_len);
+ 		}
+@@ -710,7 +718,7 @@ static int send_router_advert(struct int
  
  	if (iface->pref64_length) {
  		/* RFC 8781 § 4.1 rounding up lifetime to multiply of 8 */
 -		uint16_t pref64_lifetime = lifetime < (UINT16_MAX - 7) ? lifetime + 7 : UINT16_MAX;
-+		uint16_t pref64_lifetime = lifetime < (UINT16_MAX - 7) ? lifetime + 7 : (UINT16_MAX - 7);
++		uint16_t pref64_lifetime = ra_lifetime < (UINT16_MAX - 7) ? ra_lifetime + 7 : (UINT16_MAX - 7);
  		uint8_t prefix_length_code;
  		uint32_t mask_a1, mask_a2;
  
+@@ -823,7 +831,9 @@ pref64_out:
+ 			routes[routes_cnt].flags |= ND_RA_PREF_HIGH;
+ 
+ 		valid = TIME_LEFT(addr->valid, now);
+-		routes[routes_cnt].lifetime = htonl(valid < lifetime ? valid : lifetime);
++		if (iface->max_valid_lifetime && valid > iface->max_valid_lifetime)
++			valid = iface->max_valid_lifetime;
++		routes[routes_cnt].lifetime = htonl(valid);
+ 		routes[routes_cnt].addr[0] = addr->addr.in6.s6_addr32[0];
+ 		routes[routes_cnt].addr[1] = addr->addr.in6.s6_addr32[1];
+ 		routes[routes_cnt].addr[2] = 0;
