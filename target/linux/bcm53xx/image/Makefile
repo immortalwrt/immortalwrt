@@ -141,7 +141,7 @@ BRCMFMAC_43602A1 := $(IEEE8021X) kmod-brcmfmac brcmfmac-firmware-43602a1-pcie
 BRCMFMAC_4366B1 := $(IEEE8021X) kmod-brcmfmac brcmfmac-firmware-4366b1-pcie
 BRCMFMAC_4366C0 := $(IEEE8021X) kmod-brcmfmac brcmfmac-firmware-4366c0-pcie
 USB2_PACKAGES := kmod-usb-ohci kmod-usb2 kmod-phy-bcm-ns-usb2
-USB2_PACKAGES += kmod-usb-ledtrig-usbport
+USB2_PACKAGES += kmod-usb-ledtrig-usbport automount
 USB3_PACKAGES := $(USB2_PACKAGES) kmod-usb3 kmod-phy-bcm-ns-usb3
 
 define Device/Default

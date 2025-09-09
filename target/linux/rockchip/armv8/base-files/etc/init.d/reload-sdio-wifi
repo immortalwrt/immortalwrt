@@ -5,7 +5,7 @@ START=99
 boot() {
 	case "$(board_name)" in
 	ariaboard,photonicat)
-		( sleep 15s; wifi; ) &
+		( modprobe ath10k_sdio; sleep 5s; wifi config; wifi; ) &
 		;;
 	armsom,sige3)
 		( sleep 50s; wifi; ) &

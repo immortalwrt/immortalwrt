@@ -82,7 +82,7 @@ Link: https://patch.msgid.link/20240910-wireless-mainline-v14-3-9d80fea5326d@wes
  	int irq;
  	int err;
 @@ -106,15 +108,22 @@ void brcmf_of_probe(struct device *dev,
- 		board_type = devm_kstrdup(dev, tmp, GFP_KERNEL);
+ 
  		if (!board_type) {
  			of_node_put(root);
 -			return;
@@ -260,7 +260,7 @@ Link: https://patch.msgid.link/20240910-wireless-mainline-v14-3-9d80fea5326d@wes
  /* Detach and free everything */
 --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
 +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
-@@ -1272,6 +1272,9 @@ static int brcmf_usb_probe_cb(struct brc
+@@ -1274,6 +1274,9 @@ static int brcmf_usb_probe_cb(struct brc
  		ret = -ENOMEM;
  		goto fail;
  	}

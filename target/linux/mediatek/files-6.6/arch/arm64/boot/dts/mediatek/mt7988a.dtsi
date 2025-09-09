@@ -1463,7 +1463,7 @@
 		eth: ethernet@15100000 {
 			compatible = "mediatek,mt7988-eth";
 			reg = <0 0x15100000 0 0x80000>,
-			      <0 0x15400000 0 0x380000>;
+			      <0 0x15400000 0 0x200000>;
 			interrupts = <GIC_SPI 196 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 197 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 198 IRQ_TYPE_LEVEL_HIGH>,

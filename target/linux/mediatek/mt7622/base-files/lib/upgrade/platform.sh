@@ -9,6 +9,7 @@ platform_do_upgrade() {
 	bananapi,bpi-r64|\
 	linksys,e8450-ubi|\
 	tplink,tl-xdr3230-v1|\
+	tplink,tl-xdr3250-v1|\
 	ubnt,unifi-6-lr-v1-ubootmod|\
 	ubnt,unifi-6-lr-v2-ubootmod|\
 	ubnt,unifi-6-lr-v3-ubootmod|\

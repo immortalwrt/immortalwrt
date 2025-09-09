@@ -49,10 +49,12 @@ mediatek_setup_interfaces()
 	livinet,zr-3020-ubootmod|\
 	qihoo,360t7|\
 	routerich,ax3000|\
-	routerich,ax3000-ubootmod)
+	routerich,ax3000-ubootmod|\
+	tplink,tl-7dr7250-v1)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" wan
 		;;
 	asus,tuf-ax4200|\
+	iptime,ax3000sm|\
 	jdcloud,re-cp-03|\
 	mediatek,mt7981-rfb|\
 	netcore,n60|\
@@ -77,7 +79,8 @@ mediatek_setup_interfaces()
 		;;
 	bananapi,bpi-r3-mini|\
 	edgecore,eap111|\
-	huasifei,wh3000-emmc)
+	huasifei,wh3000-emmc|\
+	huasifei,wh3000-pro)
 		ucidef_set_interfaces_lan_wan eth0 eth1
 		;;
 	bananapi,bpi-r4|\
@@ -91,6 +94,7 @@ mediatek_setup_interfaces()
 	cudy,ap3000-v1|\
 	cudy,re3000-v1|\
 	netgear,wax220|\
+	openfi,6c|\
 	ubnt,unifi-6-plus|\
 	wavlink,wl-wn573hx3|\
 	zyxel,nwa50ax-pro)
@@ -141,6 +145,10 @@ mediatek_setup_interfaces()
 		;;
 	tplink,re6000xd)
 		ucidef_set_interface_lan "lan1 lan2 eth1"
+		;;
+	tplink,tl-7dr7230-v1|\
+	tplink,tl-7dr7230-v2)
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" wan
 		;;
 	xiaomi,mi-router-ax3000t|\
 	xiaomi,mi-router-ax3000t-ubootmod|\

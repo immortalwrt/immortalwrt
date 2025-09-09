@@ -93,6 +93,9 @@ platform_do_upgrade() {
 	netcore,n60-pro|\
 	qihoo,360t7|\
 	routerich,ax3000-ubootmod|\
+	tplink,tl-7dr7230-v1|\
+	tplink,tl-7dr7230-v2|\
+	tplink,tl-7dr7250-v1|\
 	tplink,tl-xdr4288|\
 	tplink,tl-xdr6086|\
 	tplink,tl-xdr6088|\
@@ -112,6 +115,7 @@ platform_do_upgrade() {
 	glinet,gl-x3000|\
 	glinet,gl-xe3000|\
 	huasifei,wh3000-emmc|\
+	huasifei,wh3000-pro|\
 	smartrg,sdg-8612|\
 	smartrg,sdg-8614|\
 	smartrg,sdg-8622|\
@@ -229,6 +233,7 @@ platform_copy_config() {
 	glinet,gl-x3000|\
 	glinet,gl-xe3000|\
 	huasifei,wh3000-emmc|\
+	huasifei,wh3000-pro|\
 	jdcloud,re-cp-03|\
 	smartrg,sdg-8612|\
 	smartrg,sdg-8614|\

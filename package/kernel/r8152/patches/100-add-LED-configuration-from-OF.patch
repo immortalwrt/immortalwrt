@@ -22,7 +22,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  #include <linux/crc32.h>
  #include <linux/if_vlan.h>
  #include <linux/uaccess.h>
-@@ -12645,6 +12646,22 @@ out:
+@@ -12724,6 +12725,22 @@ out:
  	return ret;
  }
  
@@ -45,7 +45,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  static int r8152b_init(struct r8152 *tp)
  {
  	int ret;
-@@ -12744,6 +12761,8 @@ static int r8152b_init(struct r8152 *tp)
+@@ -12823,6 +12840,8 @@ static int r8152b_init(struct r8152 *tp)
  	ret = ocp_word_clr_bits(tp, MCU_TYPE_USB, USB_USB_CTRL,
  				RX_AGG_DISABLE | RX_ZERO_EN);
  
@@ -54,7 +54,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  out:
  	return (ret < 0) ? ret : 0;
  }
-@@ -12932,6 +12951,8 @@ static int r8153_init(struct r8152 *tp)
+@@ -13011,6 +13030,8 @@ static int r8153_init(struct r8152 *tp)
  		break;
  	}
  
@@ -63,7 +63,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  out:
  	return (ret < 0) ? ret : 0;
  }
-@@ -13062,6 +13083,8 @@ static int r8153b_init(struct r8152 *tp)
+@@ -13141,6 +13162,8 @@ static int r8153b_init(struct r8152 *tp)
  
  	tp->coalesce = 15000;	/* 15 us */
  
@@ -72,7 +72,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  out:
  	return (ret < 0) ? ret : 0;
  }
-@@ -13176,6 +13199,8 @@ static int r8153c_init(struct r8152 *tp)
+@@ -13255,6 +13278,8 @@ static int r8153c_init(struct r8152 *tp)
  
  	tp->coalesce = 15000;	/* 15 us */
  
