@@ -76,6 +76,9 @@ livinet,zr-3020-ubootmod)
 	ucidef_set_led_netdev "wlan2g" "WLAN2G" "blue:wlan2g" "phy0-ap0"
 	ucidef_set_led_netdev "wlan5g" "WLAN5G" "blue:wlan5g" "phy1-ap0"
 	;;
+iptime,ax3000q)
+	ucidef_set_led_netdev "wan" "WAN" "amber:wan" "wan" "link tx rx"
+	;;
 iptime,ax3000sm)
 	ucidef_set_led_netdev "wan" "wan" "amber:wan" "eth1" "link tx rx"
 	;;
