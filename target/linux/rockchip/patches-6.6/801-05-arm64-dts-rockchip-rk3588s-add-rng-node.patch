@@ -21,7 +21,7 @@ Change-Id: Ifb8964053daa6b593dd2c2c6a3b8caab8526e56d
 +		interrupts = <GIC_SPI 400 IRQ_TYPE_LEVEL_HIGH 0>;
 +		clocks = <&scmi_clk SCMI_HCLK_SECURE_NS>;
 +		clock-names = "hclk_trng";
-+		resets = <&scmi_reset SRST_H_TRNG_NS>;
++		resets = <&scmi_reset SCMI_SRST_H_TRNG_NS>;
 +		reset-names = "reset";
 +		status = "disabled";
 +	};
