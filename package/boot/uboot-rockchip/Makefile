@@ -401,7 +401,7 @@ define U-Boot/nanopi-r6s-rk3588s
 endef
 
 define U-Boot/orangepi-5-rk3588s
-  $(U-Boot/rk3588/Default)
+  $(U-Boot/rk358x/Default)
   NAME:=OrangePi 5
   BUILD_DEVICES:= \
     xunlong_orangepi-5
