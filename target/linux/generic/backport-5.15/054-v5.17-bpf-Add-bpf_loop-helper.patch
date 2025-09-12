@@ -52,7 +52,7 @@ Link: https://lore.kernel.org/bpf/20211130030622.4131246-2-joannekoong@fb.com
    enum bpf_func_id func_id, const struct bpf_prog *prog);
 --- a/include/uapi/linux/bpf.h
 +++ b/include/uapi/linux/bpf.h
-@@ -4896,6 +4896,30 @@ union bpf_attr {
+@@ -4897,6 +4897,30 @@ union bpf_attr {
   *		Get the struct pt_regs associated with **task**.
   *	Return
   *		A pointer to struct pt_regs.
@@ -83,7 +83,7 @@ Link: https://lore.kernel.org/bpf/20211130030622.4131246-2-joannekoong@fb.com
   */
  #define __BPF_FUNC_MAPPER(FN)		\
  	FN(unspec),			\
-@@ -5074,6 +5098,12 @@ union bpf_attr {
+@@ -5075,6 +5099,12 @@ union bpf_attr {
  	FN(get_func_ip),		\
  	FN(get_attach_cookie),		\
  	FN(task_pt_regs),		\
@@ -150,7 +150,7 @@ Link: https://lore.kernel.org/bpf/20211130030622.4131246-2-joannekoong@fb.com
  	}
 --- a/kernel/bpf/verifier.c
 +++ b/kernel/bpf/verifier.c
-@@ -6222,6 +6222,27 @@ static int set_map_elem_callback_state(s
+@@ -6239,6 +6239,27 @@ static int set_map_elem_callback_state(s
  	return 0;
  }
  
@@ -178,7 +178,7 @@ Link: https://lore.kernel.org/bpf/20211130030622.4131246-2-joannekoong@fb.com
  static int set_timer_callback_state(struct bpf_verifier_env *env,
  				    struct bpf_func_state *caller,
  				    struct bpf_func_state *callee,
-@@ -6587,13 +6608,7 @@ static int check_helper_call(struct bpf_
+@@ -6604,13 +6625,7 @@ static int check_helper_call(struct bpf_
  			return err;
  	}
  
@@ -193,7 +193,7 @@ Link: https://lore.kernel.org/bpf/20211130030622.4131246-2-joannekoong@fb.com
  		err = release_reference(env, meta.ref_obj_id);
  		if (err) {
  			verbose(env, "func %s#%d reference has not been acquired before\n",
-@@ -6604,35 +6619,43 @@ static int check_helper_call(struct bpf_
+@@ -6621,35 +6636,43 @@ static int check_helper_call(struct bpf_
  
  	regs = cur_regs(env);
  
@@ -261,7 +261,7 @@ Link: https://lore.kernel.org/bpf/20211130030622.4131246-2-joannekoong@fb.com
  		mark_reg_not_init(env, regs, caller_saved[i]);
 --- a/tools/include/uapi/linux/bpf.h
 +++ b/tools/include/uapi/linux/bpf.h
-@@ -4896,6 +4896,30 @@ union bpf_attr {
+@@ -4897,6 +4897,30 @@ union bpf_attr {
   *		Get the struct pt_regs associated with **task**.
   *	Return
   *		A pointer to struct pt_regs.
@@ -292,7 +292,7 @@ Link: https://lore.kernel.org/bpf/20211130030622.4131246-2-joannekoong@fb.com
   */
  #define __BPF_FUNC_MAPPER(FN)		\
  	FN(unspec),			\
-@@ -5074,6 +5098,12 @@ union bpf_attr {
+@@ -5075,6 +5099,12 @@ union bpf_attr {
  	FN(get_func_ip),		\
  	FN(get_attach_cookie),		\
  	FN(task_pt_regs),		\
