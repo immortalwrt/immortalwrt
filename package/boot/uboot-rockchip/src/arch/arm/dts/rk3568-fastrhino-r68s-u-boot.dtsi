@@ -1,12 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
-#include "rk3568-fastrhino-r66s-u-boot.dtsi"
-
-/ {
-	chosen {
-		u-boot,spl-boot-order = "same-as-spl", &sdhci;
-	};
-};
+#include "rk356x-u-boot.dtsi"
 
 &i2c0 {
 	bootph-pre-ram;

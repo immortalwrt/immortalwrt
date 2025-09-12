@@ -8,7 +8,7 @@
  #include <linux/if_vlan.h>
  #include <linux/crc32.h>
  #include <linux/interrupt.h>
-@@ -14807,6 +14808,25 @@ rtl8125_restore_phy_fuse_dout(struct rtl
+@@ -14800,6 +14801,25 @@ rtl8125_restore_phy_fuse_dout(struct rtl
                  return;
  }
  
@@ -34,7 +34,7 @@
  static void
  rtl8125_init_software_variable(struct net_device *dev)
  {
-@@ -15309,6 +15329,7 @@ rtl8125_init_software_variable(struct ne
+@@ -15316,6 +15336,7 @@ rtl8125_init_software_variable(struct ne
          else if (tp->InitRxDescType == RX_DESC_RING_TYPE_4)
                  tp->rtl8125_rx_config &= ~EnableRxDescV4_1;
  
