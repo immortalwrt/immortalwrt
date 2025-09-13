@@ -2,8 +2,8 @@
 
 uci_write_config() {
 	uci -q set "cpufreq.cpufreq.governor$1"="$2"
-	uci -q set "cpufreq.cpufreq.minfreq$1"="$3"
-	uci -q set "cpufreq.cpufreq.maxfreq$1"="$4"
+	[ -n "$3" ] && uci -q set "cpufreq.cpufreq.minfreq$1"="$3"
+	[ -n "$4" ] && uci -q set "cpufreq.cpufreq.maxfreq$1"="$4"
 	[ -n "$5" ] && uci -q set "cpufreq.cpufreq.sdfactor$1"="$5"
 	[ -n "$6" ] && uci -q set "cpufreq.cpufreq.upthreshold$1"="$6"
 	uci -q commit cpufreq
@@ -40,9 +40,9 @@ case "$DISTRIB_TARGET" in
 	"rockchip/armv8")
 		if echo "$CPU_POLICYS" | grep -q "6"; then
 			# RK3588/J/S
-			uci_write_config 0 schedutil "$CPU_MIN_FREQ" "$CPU_MAX_FREQ"
-			uci_write_config 4 schedutil "$CPU_MIN_FREQ" "$CPU_MAX_FREQ"
-			uci_write_config 6 schedutil "$CPU_MIN_FREQ" "$CPU_MAX_FREQ"
+			uci_write_config 0 schedutil
+			uci_write_config 4 schedutil
+			uci_write_config 6 schedutil
 		elif echo "$CPU_POLICYS" | grep -q "4"; then
 			# RK3399
 			uci_write_config 0 schedutil 600000 1608000
@@ -58,10 +58,10 @@ case "$DISTRIB_TARGET" in
 	"sunxi/cortexa53")
 		if echo "$CPU_FREQS" | grep -q "1800000"; then
 			# H6
-			uci_write_config 0 schedutil "888000" "$CPU_MAX_FREQ"
+			uci_write_config 0 schedutil 888000 "$CPU_MAX_FREQ"
 		elif echo "$CPU_FREQS" | grep -q "1512000"; then
 			# H616/8
-			uci_write_config 0 schedutil "936000" "$CPU_MAX_FREQ"
+			uci_write_config 0 schedutil 936000 "$CPU_MAX_FREQ"
 		else
 			# A64/H5
 			uci_write_config 0 schedutil "$CPU_MIN_FREQ" "$CPU_MAX_FREQ"
