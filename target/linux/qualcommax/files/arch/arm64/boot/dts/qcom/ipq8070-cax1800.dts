@@ -219,7 +219,7 @@
 
 			partition@0 {
 				label = "rootfs";
-				reg = <0x00000000 0x03400000>;
+				reg = <0x0 0x0>;
 			};
 		};
 	};
