@@ -44,9 +44,15 @@ case "$DISTRIB_TARGET" in
 			uci_write_config 4 schedutil
 			uci_write_config 6 schedutil
 		elif echo "$CPU_POLICYS" | grep -q "4"; then
-			# RK3399
-			uci_write_config 0 schedutil 600000 1608000
-			uci_write_config 4 schedutil 600000 2016000
+			if echo "$CPU_FREQS" | grep -q "2208000"; then
+				# RK3576
+				uci_write_config 0 schedutil 1008000 2208000
+				uci_write_config 4 schedutil 1008000 2304000
+			else
+				# RK3399
+				uci_write_config 0 schedutil 600000 1608000
+				uci_write_config 4 schedutil 600000 2016000
+			fi
 		else
 			if ! echo "$CPU_FREQS" | grep -q "1992000"; then
 				# RK3328
