@@ -845,70 +845,65 @@ static int rtmdio_931x_get_backing_sds(u32 sds, u32 page)
 	return back;
 }
 
-static int rtmdio_931x_read_sds_phy(int sds, int page, int regnum)
-{
-	u32 cmd = sds << 2 | page << 7 | regnum << 13 | 1;
-	int i, ret = -EIO;
-
-	pr_debug("%s: phy_addr(SDS-ID) %d, phy_reg: %d\n", __func__, sds, regnum);
-
-	mutex_lock(&rtmdio_lock_sds);
-	sw_w32(cmd, RTMDIO_931X_SERDES_INDRT_ACCESS_CTRL);
-
-	for (i = 0; i < 100; i++) {
-		if (!(sw_r32(RTMDIO_931X_SERDES_INDRT_ACCESS_CTRL) & 0x1))
-			break;
-		mdelay(1);
-	}
-
-	if (i < 100)
-		ret = sw_r32(RTMDIO_931X_SERDES_INDRT_DATA_CTRL) & 0xffff;
-
-	mutex_unlock(&rtmdio_lock_sds);
-
-	pr_debug("%s: returning %08x\n", __func__, ret);
-
-	return ret;
-}
-
 int rtmdio_931x_read_sds_phy_new(int sds, int page, int regnum)
 {
-	int backsds = rtmdio_931x_get_backing_sds(sds, page);
+	int backsds, i, cmd, ret = -EIO;
+	int backpage = page & 0x3f;
 
-	return backsds < 0 ? 0 : rtmdio_931x_read_sds_phy(backsds, page & 0x3f, regnum);
-}
+	if (sds < 0 || sds > 13 || page < 0 || page > 575 || regnum < 0 || regnum > 31)
+		return -EIO;
 
-static int rtmdio_931x_write_sds_phy(int sds, int page, int regnum, u16 val)
-{
-	u32 cmd = sds << 2 | page << 7 | regnum << 13;;
-	int i, ret = -EIO;
+	backsds = rtmdio_931x_get_backing_sds(sds, page);
+	if (backsds == -EINVAL)
+		return 0;
 
 	mutex_lock(&rtmdio_lock_sds);
-	sw_w32(cmd, RTMDIO_931X_SERDES_INDRT_ACCESS_CTRL);
-	sw_w32(val, RTMDIO_931X_SERDES_INDRT_DATA_CTRL);
 
-	cmd = sw_r32(RTMDIO_931X_SERDES_INDRT_ACCESS_CTRL) | 0x3;
+	cmd = backsds << 2 | backpage << 7 | regnum << 13 | 0x1;
 	sw_w32(cmd, RTMDIO_931X_SERDES_INDRT_ACCESS_CTRL);
 
 	for (i = 0; i < 100; i++) {
-		if (!(sw_r32(RTMDIO_931X_SERDES_INDRT_ACCESS_CTRL) & 0x1))
+		if (!(sw_r32(RTMDIO_931X_SERDES_INDRT_ACCESS_CTRL) & 0x1)) {
+			ret = sw_r32(RTMDIO_931X_SERDES_INDRT_DATA_CTRL) & 0xffff;
 			break;
+		}
 		mdelay(1);
 	}
 
 	mutex_unlock(&rtmdio_lock_sds);
-
-	if (i < 100)
-		ret = 0;
 
 	return ret;
 }
 
 int rtmdio_931x_write_sds_phy_new(int sds, int page, int regnum, u16 val)
 {
-	int backsds = rtmdio_931x_get_backing_sds(sds, page);
+	int backsds, i, cmd, ret = -EIO;
+	int backpage = page & 0x3f;
 
-	return backsds < 0 ? 0 : rtmdio_931x_write_sds_phy(backsds, page & 0x3f, regnum, val);
+	if (sds < 0 || sds > 13 || page < 0 || page > 575 || regnum < 0 || regnum > 31)
+		return -EIO;
+
+	backsds = rtmdio_931x_get_backing_sds(sds, page);
+	if (backsds == -EINVAL)
+		return 0;
+
+	mutex_lock(&rtmdio_lock_sds);
+
+	cmd = backsds << 2 | backpage << 7 | regnum << 13 | 0x3;
+	sw_w32(val, RTMDIO_931X_SERDES_INDRT_DATA_CTRL);
+	sw_w32(cmd, RTMDIO_931X_SERDES_INDRT_ACCESS_CTRL);
+
+	for (i = 0; i < 100; i++) {
+		if (!(sw_r32(RTMDIO_931X_SERDES_INDRT_ACCESS_CTRL) & 0x1)) {
+			ret = 0;
+			break;
+		}
+		mdelay(1);
+	}
+
+	mutex_unlock(&rtmdio_lock_sds);
+
+	return ret;
 }
 
 /* RTL931x specific MDIO functions */
@@ -1146,29 +1141,6 @@ static int rtmdio_read(struct mii_bus *bus, int addr, int regnum)
 	return err ? err : val;
 }
 
-static int rtmdio_93xx_read(struct mii_bus *bus, int addr, int regnum)
-{
-	struct rtmdio_bus_priv *priv = bus->priv;
-	int err, val;
-
-	if (addr >= priv->cpu_port)
-		return -ENODEV;
-
-	if (regnum == RTMDIO_PAGE_SELECT && priv->page[addr] != priv->rawpage)
-		return priv->page[addr];
-
-	priv->raw[addr] = (priv->page[addr] == priv->rawpage);
-	if (priv->phy_is_internal[addr]) {
-		return rtmdio_931x_read_sds_phy(priv->sds_id[addr],
-						priv->page[addr], regnum);
-	}
-
-	err = (*priv->read_phy)(addr, priv->page[addr], regnum, &val);
-	pr_debug("rd_PHY(adr=%d, pag=%d, reg=%d) = %d, err = %d\n",
-		 addr, priv->page[addr], regnum, val, err);
-	return err ? err : val;
-}
-
 static int rtmdio_write_c45(struct mii_bus *bus, int addr, int devnum, int regnum, u16 val)
 {
 	struct rtmdio_bus_priv *priv = bus->priv;
@@ -1206,35 +1178,6 @@ static int rtmdio_write(struct mii_bus *bus, int addr, int regnum, u16 val)
 		pr_debug("wr_PHY(adr=%d, pag=%d, reg=%d, val=%d) err = %d\n",
 			 addr, page, regnum, val, err);
 		return err;
-	}
-
-	priv->raw[addr] = false;
-	return 0;
-}
-
-static int rtmdio_93xx_write(struct mii_bus *bus, int addr, int regnum, u16 val)
-{
-	struct rtmdio_bus_priv *priv = bus->priv;
-	int err, page;
-
-	if (addr >= priv->cpu_port)
-		return -ENODEV;
-
-	page = priv->page[addr];
-
-	if (regnum == RTMDIO_PAGE_SELECT)
-		priv->page[addr] = val;
-
-	if (!priv->raw[addr] && (regnum != RTMDIO_PAGE_SELECT || page == priv->rawpage)) {
-		priv->raw[addr] = (page == priv->rawpage);
-		if (priv->phy_is_internal[addr]) {
-			return rtmdio_931x_write_sds_phy(priv->sds_id[addr],
-							 page, regnum, val);
-		}
-
-		err = (*priv->write_phy)(addr, page, regnum, val);
-		pr_debug("wr_PHY(adr=%d, pag=%d, reg=%d, val=%d) err = %d\n",
-			 addr, page, regnum, val, err);
 	}
 
 	priv->raw[addr] = false;
@@ -1322,9 +1265,6 @@ static int rtmdio_930x_reset(struct mii_bus *bus)
 		switch (priv->interfaces[i]) {
 		case PHY_INTERFACE_MODE_10GBASER:
 			break;			/* Serdes: Value = 0 */
-		case PHY_INTERFACE_MODE_HSGMII:
-			private_poll_mask |= BIT(i);
-			fallthrough;
 		case PHY_INTERFACE_MODE_USXGMII:
 			v |= BIT(mac_type_bit[i]);
 			uses_usxgmii = true;
@@ -1454,15 +1394,24 @@ static int rtmdio_get_family(void)
 
 static int rtmdio_probe(struct platform_device *pdev)
 {
+	struct device_node *dn, *mii_np;
 	struct device *dev = &pdev->dev;
 	struct rtmdio_bus_priv *priv;
-	struct device_node *dn;
 	struct mii_bus *bus;
-	int i, ret, family;
+	int i, family;
 	u32 pn;
 
 	family = rtmdio_get_family();
 	dev_info(dev, "probing RTL%04x family mdio bus\n", family);
+
+	mii_np = of_get_child_by_name(dev->of_node, "mdio-bus");
+	if (!mii_np)
+		return -ENODEV;
+
+	if (!of_device_is_available(mii_np)) {
+		of_node_put(mii_np);
+		return -ENODEV;
+	}
 
 	bus = devm_mdiobus_alloc_size(dev, sizeof(*priv));
 	if (!bus)
@@ -1519,9 +1468,11 @@ static int rtmdio_probe(struct platform_device *pdev)
 		break;
 	case RTMDIO_931X_FAMILY_ID:
 		bus->name = "rtl931x-eth-mdio";
-		bus->read = rtmdio_93xx_read;
-		bus->write = rtmdio_93xx_write;
+		bus->read = rtmdio_read;
+		bus->write = rtmdio_write;
 		bus->reset = rtmdio_931x_reset;
+		priv->read_sds_phy = rtmdio_931x_read_sds_phy_new;
+		priv->write_sds_phy = rtmdio_931x_write_sds_phy_new;
 		priv->read_mmd_phy = rtmdio_931x_read_mmd_phy;
 		priv->write_mmd_phy = rtmdio_931x_write_mmd_phy;
 		priv->read_phy = rtmdio_931x_read_phy;
@@ -1591,14 +1542,15 @@ static int rtmdio_probe(struct platform_device *pdev)
 	}
 
 	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-mii", dev_name(dev));
-	ret = devm_of_mdiobus_register(dev, bus, dev->of_node);
 
-	return ret;
+	return devm_of_mdiobus_register(dev, bus, mii_np);
 }
 
-
 static const struct of_device_id rtmdio_ids[] = {
-	{ .compatible = "realtek,rtl838x-mdio" },
+	{ .compatible = "realtek,rtl8380-mdio" },
+	{ .compatible = "realtek,rtl8392-mdio" },
+	{ .compatible = "realtek,rtl9301-mdio" },
+	{ .compatible = "realtek,rtl9311-mdio" },
 	{}
 };
 MODULE_DEVICE_TABLE(of, rtmdio_ids);
@@ -1612,30 +1564,6 @@ static struct platform_driver rtmdio_driver = {
 };
 
 module_platform_driver(rtmdio_driver);
-
-/*
- * TODO: The below initialization function is only needed because the mdio bus
- * is a subnode of the ethernet node. That means detection via platform driver
- * will not work out of the box. Until this is solved, populate the platform
- * data manually.
- */
-static int __init rtmdio_init(void)
-{
-	struct device_node *np;
-
-	np = of_find_compatible_node(NULL, NULL, "realtek,rtl838x-eth");
-	if (!np) {
-		pr_err("realtek,rtl838x-eth compatible device not found\n");
-		return -ENODEV;
-	}
-
-	pr_info("populating rtl838x-mdio device manually\n");
-	of_platform_populate(np, NULL, NULL, NULL);
-	of_node_put(np);
-
-	return 0;
-}
-module_init(rtmdio_init);
 
 MODULE_DESCRIPTION("RTL83xx/RTL93xx MDIO driver");
 MODULE_LICENSE("GPL");

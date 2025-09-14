@@ -2,7 +2,7 @@
 #
 # Copyright (C) 2016 OpenWrt.org
 
-# PACKAGES:= kmod-usb2 kmod-ath9k-htc wpad-basic-mbedtls
+# PACKAGES:= kmod-usb2 kmod-ath9k-htc wpad-openssl
 
 define Profile/Default
 	NAME:=Default Profile (all drivers)
