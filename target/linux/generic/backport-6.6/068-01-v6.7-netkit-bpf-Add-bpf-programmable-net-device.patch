@@ -1185,10 +1185,10 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
  /* include statistics in the dump */
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
-@@ -35,8 +35,9 @@
- #include <linux/rcupdate_trace.h>
+@@ -36,8 +36,9 @@
  #include <linux/memcontrol.h>
  #include <linux/trace_events.h>
+ #include <linux/cookie.h>
 -#include <net/netfilter/nf_bpf_link.h>
  
 +#include <net/netfilter/nf_bpf_link.h>
@@ -1196,7 +1196,7 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
  #include <net/tcx.h>
  
  #define IS_FD_ARRAY(map) ((map)->map_type == BPF_MAP_TYPE_PERF_EVENT_ARRAY || \
-@@ -3828,6 +3829,8 @@ attach_type_to_prog_type(enum bpf_attach
+@@ -3834,6 +3835,8 @@ attach_type_to_prog_type(enum bpf_attach
  		return BPF_PROG_TYPE_LSM;
  	case BPF_TCX_INGRESS:
  	case BPF_TCX_EGRESS:
@@ -1205,7 +1205,7 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
  		return BPF_PROG_TYPE_SCHED_CLS;
  	default:
  		return BPF_PROG_TYPE_UNSPEC;
-@@ -3884,7 +3887,9 @@ static int bpf_prog_attach_check_attach_
+@@ -3890,7 +3893,9 @@ static int bpf_prog_attach_check_attach_
  		return 0;
  	case BPF_PROG_TYPE_SCHED_CLS:
  		if (attach_type != BPF_TCX_INGRESS &&
@@ -1216,7 +1216,7 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
  			return -EINVAL;
  		return 0;
  	default:
-@@ -3968,7 +3973,11 @@ static int bpf_prog_attach(const union b
+@@ -3974,7 +3979,11 @@ static int bpf_prog_attach(const union b
  			ret = cgroup_bpf_prog_attach(attr, ptype, prog);
  		break;
  	case BPF_PROG_TYPE_SCHED_CLS:
@@ -1229,7 +1229,7 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
  		break;
  	default:
  		ret = -EINVAL;
-@@ -4029,7 +4038,11 @@ static int bpf_prog_detach(const union b
+@@ -4035,7 +4044,11 @@ static int bpf_prog_detach(const union b
  		ret = cgroup_bpf_prog_detach(attr, ptype);
  		break;
  	case BPF_PROG_TYPE_SCHED_CLS:
@@ -1242,7 +1242,7 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
  		break;
  	default:
  		ret = -EINVAL;
-@@ -4091,6 +4104,9 @@ static int bpf_prog_query(const union bp
+@@ -4097,6 +4110,9 @@ static int bpf_prog_query(const union bp
  	case BPF_TCX_INGRESS:
  	case BPF_TCX_EGRESS:
  		return tcx_prog_query(attr, uattr);
@@ -1252,7 +1252,7 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
  	default:
  		return -EINVAL;
  	}
-@@ -5072,7 +5088,11 @@ static int link_create(union bpf_attr *a
+@@ -5078,7 +5094,11 @@ static int link_create(union bpf_attr *a
  		ret = bpf_xdp_link_attach(attr, prog);
  		break;
  	case BPF_PROG_TYPE_SCHED_CLS:
