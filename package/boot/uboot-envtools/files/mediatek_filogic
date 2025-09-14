@@ -141,6 +141,9 @@ smartrg,sdg-8734)
 tplink,archer-ax80-v1)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x20000" "0x20000" "8"
 	;;
+nradio,c8-668gl)
+    ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x10000" "0x10000"
+    ;;
 ubnt,unifi-6-plus)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x80000" "0x10000"
 	;;
