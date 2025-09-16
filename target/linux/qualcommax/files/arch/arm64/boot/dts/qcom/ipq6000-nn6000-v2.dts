@@ -60,8 +60,8 @@
 &switch {
 	status = "okay";
 
-	switch_lan_bmp = <(ESS_PORT2 | ESS_PORT3 | ESS_PORT4 | ESS_PORT5)>;
-	switch_wan_bmp = <ESS_PORT1>;
+	switch_lan_bmp = <(ESS_PORT1 | ESS_PORT3 | ESS_PORT4 | ESS_PORT5)>;
+	switch_wan_bmp = <ESS_PORT2>;
 	switch_mac_mode = <MAC_MODE_PSGMII>;
 
 	qcom,port_phyinfo {
@@ -95,13 +95,13 @@
 &dp1 {
 	status = "okay";
 	phy-handle = <&qca8075_0>;
-	label = "wan";
+	label = "lan1";
 };
 
 &dp2 {
 	status = "okay";
 	phy-handle = <&qca8075_1>;
-	label = "lan1";
+	label = "wan";
 };
 
 &dp3 {

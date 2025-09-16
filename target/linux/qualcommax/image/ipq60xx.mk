@@ -309,7 +309,7 @@ define Device/link_nn6000-v1
 	KERNEL_SIZE := 6144k
 	BLOCKSIZE := 128k
 	SOC := ipq6000
-	DEVICE_DTS_CONFIG := config@cp03-c2
+	DEVICE_DTS_CONFIG := config@cp03-c1
 	DEVICE_PACKAGES := ipq-wifi-link_nn6000
 	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | append-metadata
 endef
