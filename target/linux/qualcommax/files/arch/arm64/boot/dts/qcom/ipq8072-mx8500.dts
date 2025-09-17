@@ -200,6 +200,15 @@
 				label = "devinfo";
 				reg = <0x01060000 0x00020000>;
 				read-only;
+
+				nvmem-layout {
+					compatible = "ascii-eq-delim-env";
+
+					hw_mac_addr: hw_mac_addr {
+						compatible = "mac-base";
+						#nvmem-cell-cells = <1>;
+					};
+				};
 			};
 
 			partition@1080000 {
@@ -389,6 +398,8 @@
 	phy-mode = "qsgmii";
 	phy-handle = <&qca8075_0>;
 	label = "lan1";
+	nvmem-cells = <&hw_mac_addr 1>;
+	nvmem-cell-names = "mac-address";
 };
 
 &dp2 {
@@ -396,6 +407,8 @@
 	phy-mode = "qsgmii";
 	phy-handle = <&qca8075_1>;
 	label = "lan2";
+	nvmem-cells = <&hw_mac_addr 1>;
+	nvmem-cell-names = "mac-address";
 };
 
 &dp3 {
@@ -403,6 +416,8 @@
 	phy-mode = "qsgmii";
 	phy-handle = <&qca8075_2>;
 	label = "lan3";
+	nvmem-cells = <&hw_mac_addr 1>;
+	nvmem-cell-names = "mac-address";
 };
 
 &dp4 {
@@ -410,6 +425,8 @@
 	phy-mode = "qsgmii";
 	phy-handle = <&qca8075_3>;
 	label = "lan4";
+	nvmem-cells = <&hw_mac_addr 1>;
+	nvmem-cell-names = "mac-address";
 };
 
 &dp6_syn {
@@ -417,6 +434,8 @@
 	phy-mode = "usxgmii";
 	phy-handle = <&aqr114c>;
 	label = "wan";
+	nvmem-cells = <&hw_mac_addr 0>;
+	nvmem-cell-names = "mac-address";
 };
 
 &pcie0 {
