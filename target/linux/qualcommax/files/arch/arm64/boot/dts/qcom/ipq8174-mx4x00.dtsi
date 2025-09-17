@@ -19,9 +19,6 @@
 		led-running = &led_system_blue;
 		led-failsafe = &led_system_red;
 		led-upgrade = &led_system_green;
-
-		ethernet1 = &dp2;
-		ethernet2 = &dp3;
 	};
 
 	chosen {
