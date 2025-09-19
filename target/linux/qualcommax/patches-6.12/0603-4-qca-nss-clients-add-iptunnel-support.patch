@@ -10,7 +10,7 @@
  	__u32 flags;		/* tunnel flags */
 --- a/include/net/ip_tunnels.h
 +++ b/include/net/ip_tunnels.h
-@@ -703,4 +703,9 @@ static inline void ip_tunnel_info_opts_s
+@@ -709,4 +709,9 @@ static inline void ip_tunnel_info_opts_s
  
  #endif /* CONFIG_INET */
  
