@@ -50,6 +50,7 @@ mediatek_setup_interfaces()
 	creatlentem,clt-r30b1-112m|\
 	cudy,wr3000-v1|\
 	jcg,q30-pro|\
+	keenetic,kn-3711|\
 	keenetic,kn-3811|\
 	livinet,zr-3020|\
 	livinet,zr-3020-ubootmod|\
