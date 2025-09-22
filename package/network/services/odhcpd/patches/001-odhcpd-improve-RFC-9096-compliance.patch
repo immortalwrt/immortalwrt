@@ -90,7 +90,7 @@ Signed-off-by: Aviana Cruz <gwencroft@proton.me>
  	iface->dhcpv4_start.s_addr = htonl(START_DEFAULT);
  	iface->dhcpv4_end.s_addr = htonl(START_DEFAULT + LIMIT_DEFAULT - 1);
  	iface->dhcpv6_assignall = true;
-@@ -979,15 +980,26 @@ int config_parse_interface(void *data, s
+@@ -998,15 +999,26 @@ int config_parse_interface(void *data, s
  
  	}
  
@@ -122,7 +122,7 @@ Signed-off-by: Aviana Cruz <gwencroft@proton.me>
  	}
  
  	if ((c = tb[IFACE_ATTR_START])) {
-@@ -1311,9 +1323,6 @@ int config_parse_interface(void *data, s
+@@ -1330,9 +1342,6 @@ int config_parse_interface(void *data, s
  	if ((c = tb[IFACE_ATTR_RA_LIFETIME]))
  		iface->ra_lifetime = blobmsg_get_u32(c);
  
@@ -246,7 +246,7 @@ Signed-off-by: Aviana Cruz <gwencroft@proton.me>
  // RFC 9463 - Discovery of Network-designated Resolvers (DNR)
  #define ND_OPT_DNR 144
  
-@@ -327,7 +331,6 @@ struct interface {
+@@ -328,7 +332,6 @@ struct interface {
  	bool ra_slaac;
  	bool ra_not_onlink;
  	bool ra_advrouter;
@@ -254,7 +254,7 @@ Signed-off-by: Aviana Cruz <gwencroft@proton.me>
  	bool ra_dns;
  	uint8_t pref64_length;
  	uint8_t pref64_plc;
-@@ -345,7 +348,8 @@ struct interface {
+@@ -346,7 +349,8 @@ struct interface {
  	uint32_t ra_retranstime;
  	uint32_t ra_hoplimit;
  	int ra_mtu;
