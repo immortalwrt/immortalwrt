@@ -74,7 +74,7 @@
  errout:
 --- a/net/bridge/br.c
 +++ b/net/bridge/br.c
-@@ -467,6 +467,12 @@ static void __exit br_deinit(void)
+@@ -474,6 +474,12 @@ static void __exit br_deinit(void)
  	br_fdb_fini();
  }
  
