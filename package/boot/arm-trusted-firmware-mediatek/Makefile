@@ -28,6 +28,7 @@ define Trusted-Firmware-A/Default
   TFA_IMAGE:=bl2.img bl31.bin
   BOOT_DEVICE:=
   DDR3_FLYBY:=
+  DDR3_FREQ:=
   DDR_TYPE:=
   NAND_TYPE:=
   BOARD_QFN:=
@@ -128,6 +129,15 @@ define Trusted-Firmware-A/mt7981-emmc-ddr3
   DDR_TYPE:=ddr3
 endef
 
+define Trusted-Firmware-A/mt7981-emmc-ddr3-1866mhz
+  NAME:=Mediatek MT7981 (eMMC, DDR3-1866MHz)
+  BOOT_DEVICE:=emmc
+  BUILD_SUBTARGET:=filogic
+  PLAT:=mt7981
+  DDR_TYPE:=ddr3
+  DDR3_FREQ:=1866
+endef
+
 define Trusted-Firmware-A/mt7981-sdmmc-ddr3
   NAME:=MediaTek MT7981 (SD card, DDR3)
   BOOT_DEVICE:=sdmmc
@@ -150,6 +160,15 @@ define Trusted-Firmware-A/mt7981-spim-nand-ddr3
   BUILD_SUBTARGET:=filogic
   PLAT:=mt7981
   DDR_TYPE:=ddr3
+endef
+
+define Trusted-Firmware-A/mt7981-spim-nand-ddr3-1866mhz
+  NAME:=Mediatek MT7981 (SPI-NAND via SPIM, DDR3-1866MHz)
+  BOOT_DEVICE:=spim-nand
+  BUILD_SUBTARGET:=filogic
+  PLAT:=mt7981
+  DDR_TYPE:=ddr3
+  DDR3_FREQ:=1866
 endef
 
 define Trusted-Firmware-A/mt7981-cudy-tr3000-v1
@@ -382,10 +401,12 @@ TFA_TARGETS:= \
 	mt7622-sdmmc-1ddr \
 	mt7622-sdmmc-2ddr \
 	mt7981-emmc-ddr3 \
+	mt7981-emmc-ddr3-1866mhz \
 	mt7981-nor-ddr3 \
 	mt7981-sdmmc-ddr3 \
 	mt7981-snand-ddr3 \
 	mt7981-spim-nand-ddr3 \
+	mt7981-spim-nand-ddr3-1866mhz \
 	mt7981-emmc-ddr4 \
 	mt7981-spim-nand-ddr4 \
 	mt7981-cudy-tr3000-v1 \
@@ -424,6 +445,7 @@ TFA_MAKE_FLAGS += \
 	$(if $(NAND_TYPE),NAND_TYPE=$(NAND_TYPE)) \
 	HAVE_DRAM_OBJ_FILE=yes \
 	$(if $(DDR3_FLYBY),DDR3_FLYBY=1) \
+	$(if $(DDR3_FREQ),DDR3_FREQ_$(DDR3_FREQ)=1) \
 	$(if $(DRAM_USE_COMB),DRAM_USE_COMB=1) \
 	$(if $(FIP_OFFSET),OVERRIDE_FIP_BASE=$(FIP_OFFSET)) \
 	$(if $(FIP_SIZE),OVERRIDE_FIP_SIZE=$(FIP_SIZE)) \
