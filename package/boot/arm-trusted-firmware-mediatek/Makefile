@@ -180,6 +180,7 @@ define Trusted-Firmware-A/mt7981-ram-ddr3
   PLAT:=mt7981
   DDR_TYPE:=ddr3
   RAM_BOOT_UART_DL:=1
+  DDR3_FREQ:=1866
   HIDDEN:=
   DEFAULT:=TARGET_mediatek_filogic
 endef
