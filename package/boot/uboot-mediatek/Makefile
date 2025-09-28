@@ -287,7 +287,7 @@ define U-Boot/mt7981_cmcc_rax3000me-emmc-ddr3
   UBOOT_IMAGE:=u-boot.fip
   BL2_BOOTDEV:=emmc
   BL2_SOC:=mt7981
-  BL2_DDRTYPE:=ddr3
+  BL2_DDRTYPE:=ddr3-1866mhz
   DEPENDS:=+trusted-firmware-a-mt7981-emmc-ddr3-1866mhz
 endef
 
@@ -311,7 +311,7 @@ define U-Boot/mt7981_cmcc_rax3000me-nand-ddr3
   UBOOT_IMAGE:=u-boot.fip
   BL2_BOOTDEV:=spim-nand
   BL2_SOC:=mt7981
-  BL2_DDRTYPE:=ddr3
+  BL2_DDRTYPE:=ddr3-1866mhz
   DEPENDS:=+trusted-firmware-a-mt7981-spim-nand-ddr3-1866mhz
 endef
 
