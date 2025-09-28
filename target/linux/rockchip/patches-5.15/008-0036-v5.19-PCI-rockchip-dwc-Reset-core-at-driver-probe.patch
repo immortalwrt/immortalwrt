@@ -32,7 +32,7 @@ Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
  }
  
 @@ -182,18 +187,6 @@ static void rockchip_pcie_phy_deinit(str
- 	phy_power_off(rockchip->phy);
+ 	phy_exit(rockchip->phy);
  }
  
 -static int rockchip_pcie_reset_control_release(struct rockchip_pcie *rockchip)

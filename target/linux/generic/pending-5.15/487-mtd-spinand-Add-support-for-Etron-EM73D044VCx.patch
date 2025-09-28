@@ -47,7 +47,7 @@ Submitted-by: Daniel Danzberger <daniel@dd-wrt.com>
  obj-$(CONFIG_MTD_SPI_NAND) += spinand.o
 --- a/drivers/mtd/nand/spi/core.c
 +++ b/drivers/mtd/nand/spi/core.c
-@@ -907,6 +907,7 @@ static const struct nand_ops spinand_ops
+@@ -910,6 +910,7 @@ static const struct nand_ops spinand_ops
  
  static const struct spinand_manufacturer *spinand_manufacturers[] = {
  	&esmt_c8_spinand_manufacturer,

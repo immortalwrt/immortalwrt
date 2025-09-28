@@ -46,7 +46,7 @@ Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 
 --- a/include/linux/bpf.h
 +++ b/include/linux/bpf.h
-@@ -1127,6 +1127,9 @@ struct bpf_array {
+@@ -1215,6 +1215,9 @@ struct bpf_array {
  #define BPF_COMPLEXITY_LIMIT_INSNS      1000000 /* yes. 1M insns */
  #define MAX_TAIL_CALL_CNT 32
  
