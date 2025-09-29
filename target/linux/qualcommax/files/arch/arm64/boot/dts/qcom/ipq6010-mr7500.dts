@@ -109,15 +109,17 @@
 			drive-strength = <6>;
 			bias-pull-down;
 		};
+
 		mux_1 {
-			pins = "gpio53";
-			function = "pta1_0";
+			pins = "gpio52";
+			function = "pta1_2";
 			drive-strength = <6>;
 			bias-pull-down;
 		};
+
 		mux_2 {
-			pins = "gpio52";
-			function = "pta1_2";
+			pins = "gpio53";
+			function = "pta1_0";
 			drive-strength = <6>;
 			bias-pull-down;
 		};
