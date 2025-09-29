@@ -64,13 +64,8 @@ DEFAULT_PACKAGES.tweak:=\
 	block-mount \
 	default-settings-chn \
 	kmod-nf-nathelper \
-	kmod-nf-nathelper-extra \
-	luci-light \
-	luci-app-cpufreq \
-	luci-app-package-manager \
-	luci-compat \
-	luci-lib-base \
-	luci-lib-ipkg
+	luci \
+	luci-app-cpufreq
 
 ifneq ($(DUMP),)
   all: dumpinfo
