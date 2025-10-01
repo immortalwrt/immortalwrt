@@ -15,7 +15,6 @@ define KernelPackage/drm-rockchip
 	CONFIG_DRM_BRIDGE=y \
 	CONFIG_HDMI=y \
 	CONFIG_PHY_ROCKCHIP_INNO_HDMI \
-	CONFIG_PHY_ROCKCHIP_SAMSUNG_HDPTX \
 	CONFIG_DRM_DW_HDMI \
 	CONFIG_DRM_DW_HDMI_CEC \
 	CONFIG_ROCKCHIP_ANALOGIX_DP=n \
@@ -38,12 +37,11 @@ define KernelPackage/drm-rockchip
 	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-hdmi-cec.ko \
 	$(LINUX_DIR)/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.ko \
 	$(LINUX_DIR)/drivers/phy/rockchip/phy-rockchip-inno-hdmi.ko \
-	$(LINUX_DIR)/drivers/phy/rockchip/phy-rockchip-samsung-hdptx.ko \
 	$(LINUX_DIR)/drivers/gpu/drm/drm_dma_helper.ko \
 	$(LINUX_DIR)/drivers/gpu/drm/panel/panel-simple.ko \
 	$(LINUX_DIR)/drivers/gpu/drm/rockchip/rockchipdrm.ko \
 	$(LINUX_DIR)/drivers/media/cec/core/cec.ko
-  AUTOLOAD:=$(call AutoProbe,rockchipdrm phy-rockchip-inno-hdmi phy-rockchip-samsung-hdptx dw-hdmi-cec)
+  AUTOLOAD:=$(call AutoProbe,rockchipdrm phy-rockchip-inno-hdmi dw-hdmi-cec)
 endef
 
 define KernelPackage/drm-rockchip/description

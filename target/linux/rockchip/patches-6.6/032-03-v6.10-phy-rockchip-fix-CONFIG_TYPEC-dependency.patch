@@ -31,7 +31,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
 
 --- a/drivers/phy/rockchip/Kconfig
 +++ b/drivers/phy/rockchip/Kconfig
-@@ -119,8 +119,8 @@ config PHY_ROCKCHIP_USB
+@@ -111,8 +111,8 @@ config PHY_ROCKCHIP_USB
  config PHY_ROCKCHIP_USBDP
  	tristate "Rockchip USBDP COMBO PHY Driver"
  	depends on ARCH_ROCKCHIP && OF

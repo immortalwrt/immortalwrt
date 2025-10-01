@@ -34,7 +34,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
 
 --- a/drivers/phy/rockchip/Kconfig
 +++ b/drivers/phy/rockchip/Kconfig
-@@ -115,3 +115,15 @@ config PHY_ROCKCHIP_USB
+@@ -107,3 +107,15 @@ config PHY_ROCKCHIP_USB
  	select GENERIC_PHY
  	help
  	  Enable this to support the Rockchip USB 2.0 PHY.
@@ -52,7 +52,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
 +	  will be called phy-rockchip-usbdp
 --- a/drivers/phy/rockchip/Makefile
 +++ b/drivers/phy/rockchip/Makefile
-@@ -12,3 +12,4 @@ obj-$(CONFIG_PHY_ROCKCHIP_SAMSUNG_HDPTX)
+@@ -11,3 +11,4 @@ obj-$(CONFIG_PHY_ROCKCHIP_PCIE)		+= phy-
  obj-$(CONFIG_PHY_ROCKCHIP_SNPS_PCIE3)	+= phy-rockchip-snps-pcie3.o
  obj-$(CONFIG_PHY_ROCKCHIP_TYPEC)	+= phy-rockchip-typec.o
  obj-$(CONFIG_PHY_ROCKCHIP_USB)		+= phy-rockchip-usb.o
