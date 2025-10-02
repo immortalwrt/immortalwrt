@@ -334,15 +334,15 @@ static int __init rtl83xx_mdio_probe(struct rtl838x_switch_priv *priv)
 		if (of_property_read_u32(dn, "reg", &pn))
 			continue;
 
+		pcs_node = of_parse_phandle(dn, "pcs-handle", 0);
+		priv->pcs[pn] = rtpcs_create(priv->dev, pcs_node, pn);
+
 		phy_node = of_parse_phandle(dn, "phy-handle", 0);
 		if (!phy_node) {
 			if (pn != priv->cpu_port)
 				dev_err(priv->dev, "Port node %d misses phy-handle\n", pn);
 			continue;
 		}
-
-		pcs_node = of_parse_phandle(dn, "pcs-handle", 0);
-		priv->pcs[pn] = rtpcs_create(priv->dev, pcs_node, pn);
 
 		/*
 		 * TODO: phylink_pcs was completely converted to the standalone PCS driver - see
@@ -359,6 +359,12 @@ static int __init rtl83xx_mdio_probe(struct rtl838x_switch_priv *priv)
 
 		if (of_get_phy_mode(dn, &interface))
 			interface = PHY_INTERFACE_MODE_NA;
+
+		if (interface == PHY_INTERFACE_MODE_10G_QXGMII) {
+			interface = PHY_INTERFACE_MODE_USXGMII;
+			dev_warn(priv->dev, "handle mode 10g-qsxgmii internally as usxgmii for now\n");
+		}
+
 		if (interface == PHY_INTERFACE_MODE_USXGMII)
 			priv->ports[pn].is2G5 = priv->ports[pn].is10G = true;
 		if (interface == PHY_INTERFACE_MODE_10GBASER)

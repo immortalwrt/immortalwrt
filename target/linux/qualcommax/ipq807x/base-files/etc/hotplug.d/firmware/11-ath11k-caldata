@@ -73,7 +73,8 @@ case "$FIRMWARE" in
 	verizon,cr1000a)
 		caldata_extract_mmc "0:ART" 0x26800 0x20000
 		;;
-	xiaomi,ax9000)
+	xiaomi,ax9000|\
+	xiaomi,ax9000-stock)
 		caldata_extract "0:art" 0x26800 0x20000
 		;;
 	esac

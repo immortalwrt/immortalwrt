@@ -1008,6 +1008,7 @@ function mld_add_bss(name, data, phy_list, i)
 	if (!config.phy)
 		return;
 
+	hostapd.printf(`Add MLD interface ${name}`);
 	wdev_remove(name);
 	let phydev = phy_list[config.phy];
 	if (!phydev) {
@@ -1111,7 +1112,8 @@ function mld_set_config(config)
 	// add new interfaces
 	hostapd.data.mld = new_mld;
 	for (let name, data in new_mld)
-		mld_add_bss(name, data, phy_list);
+		if (!data.ifname)
+			mld_add_bss(name, data, phy_list);
 
 	if (!new_config)
 		return;
@@ -1209,6 +1211,34 @@ let main_obj = {
 			ret.macaddr = map(config.bss, (bss) => bss.bssid);
 			return ret;
 		}
+	},
+	switch_channel: {
+		args: {
+			phy: "",
+			radio: 0,
+			csa_count: 0,
+			sec_channel: 0,
+			oper_chwidth: 0,
+			frequency: 0,
+			center_freq1: 0,
+			center_freq2: 0,
+		},
+		call: function(req) {
+			let phy = phy_name(req.args.phy, req.args.radio);
+			if (!req.args.frequency || !phy)
+				return libubus.STATUS_INVALID_ARGUMENT;
+
+			let iface = hostapd.interfaces[phy];
+			if (!iface)
+				return libubus.STATUS_NOT_FOUND;
+
+			req.args.csa_count ??= 10;
+			let ret = iface.switch_channel(req.args);
+			if (!ret)
+				return libubus.STATUS_UNKNOWN_ERROR;
+
+			return 0;
+		},
 	},
 	mld_set: {
 		args: {
