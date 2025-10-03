@@ -1,0 +1,17 @@
+--- a/arch/arm64/boot/dts/rockchip/rk3576.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3576.dtsi
+@@ -1927,11 +1927,13 @@
+ 		};
+ 
+ 		rng: rng@2a410000 {
+-			compatible = "rockchip,rk3576-rng";
++			compatible = "rockchip,rkrng";
+ 			reg = <0x0 0x2a410000 0x0 0x200>;
+ 			clocks = <&cru HCLK_TRNG_NS>;
++			clock-names = "hclk_trng";
+ 			interrupts = <GIC_SPI 181 IRQ_TYPE_LEVEL_HIGH>;
+ 			resets = <&cru SRST_H_TRNG_NS>;
++			reset-names = "reset";
+ 		};
+ 
+ 		otp: otp@2a580000 {
