@@ -15,12 +15,16 @@ CPU_FREQS="$(cat '/sys/devices/system/cpu/cpufreq/policy0/scaling_available_freq
 CPU_MIN_FREQ="$(cat '/sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq')"
 CPU_MAX_FREQ="$(cat '/sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq')"
 CPU_POLICYS="$(find '/sys/devices/system/cpu/cpufreq/policy'* -maxdepth 0 | grep -Eo '[0-9]+')"
+SOC="$(strings '/proc/device-tree/compatible' | tail -n1)"
 
 source "/etc/openwrt_release"
 case "$DISTRIB_TARGET" in
-	"bcm27xx/bcm2710"|\
-	"bcm27xx/bcm2711")
+	"bcm27xx/bcm2710")
 		uci_write_config 0 ondemand 600000 "$CPU_MAX_FREQ" 10 50
+		;;
+	"bcm27xx/bcm2711"|\
+	"bcm27xx/bcm2712")
+		uci_write_config 0 schedutil
 		;;
 	"ipq40xx/generic")
 		uci_write_config 0 performance 200000 "$CPU_MAX_FREQ"
@@ -35,37 +39,47 @@ case "$DISTRIB_TARGET" in
 		;;
 	"qualcommax/ipq60xx"|\
 	"qualcommax/ipq807x")
-		uci_write_config 0 schedutil "$CPU_MIN_FREQ" "$CPU_MAX_FREQ"
+		uci_write_config 0 schedutil
 		;;
 	"rockchip/armv8")
-		if echo "$CPU_POLICYS" | grep -q "6"; then
-			# RK3588/J/S
+		case "$SOC" in
+		"rockchip,rk3328")
+			uci_write_config 0 schedutil 816000 1512000
+			;;
+		"rockchip,rk3399")
+			uci_write_config 0 schedutil 600000 1608000
+			uci_write_config 4 schedutil 600000 2016000
+			;;
+		"rockchip,rk3566"|\
+		"rockchip,rk3568")
+			uci_write_config 0 schedutil 816000 "$CPU_MAX_FREQ"
+			;;
+		"rockchip,rk3576")
+			uci_write_config 0 schedutil 1008000 2208000
+			uci_write_config 4 schedutil 1008000 2304000
+			;;
+		"rockchip,rk3588"|\
+		"rockchip,rk3588j"|\
+		"rockchip,rk3588s")
 			uci_write_config 0 schedutil
 			uci_write_config 4 schedutil
 			uci_write_config 6 schedutil
-		elif echo "$CPU_POLICYS" | grep -q "4"; then
-			# RK3399
-			uci_write_config 0 schedutil 600000 1608000
-			uci_write_config 4 schedutil 600000 2016000
-		else
-			if ! echo "$CPU_FREQS" | grep -q "1992000"; then
-				# RK3328
-				CPU_MAX_FREQ="1512000"
-			fi
-			uci_write_config 0 schedutil 816000 "$CPU_MAX_FREQ"
-		fi
+			;;
+		esac
 		;;
 	"sunxi/cortexa53")
-		if echo "$CPU_FREQS" | grep -q "1800000"; then
-			# H6
+		case "$SOC" in
+		"allwinner,sun50i-h6")
 			uci_write_config 0 schedutil 888000 "$CPU_MAX_FREQ"
-		elif echo "$CPU_FREQS" | grep -q "1512000"; then
-			# H616/8
+			;;
+		"allwinner,sun50i-h616"|\
+		"allwinner,sun50i-h618")
 			uci_write_config 0 schedutil 936000 "$CPU_MAX_FREQ"
-		else
-			# A64/H5
-			uci_write_config 0 schedutil "$CPU_MIN_FREQ" "$CPU_MAX_FREQ"
-		fi
+			;;
+		*)
+			uci_write_config 0 schedutil
+			;;
+		esac
 		;;
 esac
 
