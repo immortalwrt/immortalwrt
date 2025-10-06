@@ -47,7 +47,7 @@ Link: https://lore.kernel.org/r/20230405200729.632435-3-martin.blumenstingl@goog
 
 --- a/drivers/net/wireless/realtek/rtw88/Kconfig
 +++ b/drivers/net/wireless/realtek/rtw88/Kconfig
-@@ -19,6 +19,11 @@ config RTW88_PCI
+@@ -20,6 +20,11 @@ config RTW88_PCI
  	tristate
  	depends on m
  
@@ -110,7 +110,7 @@ Link: https://lore.kernel.org/r/20230405200729.632435-3-martin.blumenstingl@goog
  
  #define REG_AFE_CTRL_4		0x0078
  #define BIT_CK320M_AFE_EN	BIT(4)
-@@ -185,6 +186,9 @@
+@@ -186,6 +187,9 @@
  	(((x) & BIT_MASK_TXDMA_VIQ_MAP) << BIT_SHIFT_TXDMA_VIQ_MAP)
  #define REG_TXDMA_PQ_MAP	0x010C
  #define BIT_RXDMA_ARBBW_EN	BIT(0)
@@ -120,7 +120,7 @@ Link: https://lore.kernel.org/r/20230405200729.632435-3-martin.blumenstingl@goog
  #define BIT_SHIFT_TXDMA_BEQ_MAP	8
  #define BIT_MASK_TXDMA_BEQ_MAP	0x3
  #define BIT_TXDMA_BEQ_MAP(x)                                                   \
-@@ -283,10 +287,18 @@
+@@ -284,10 +288,18 @@
  #define REG_H2C_TAIL		0x0248
  #define REG_H2C_READ_ADDR	0x024C
  #define REG_H2C_INFO		0x0254

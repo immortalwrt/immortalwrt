@@ -136,7 +136,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	.add_interface = il_mac_add_interface,
 --- a/drivers/net/wireless/intel/iwlegacy/4965-mac.c
 +++ b/drivers/net/wireless/intel/iwlegacy/4965-mac.c
-@@ -6308,6 +6308,7 @@ il4965_tx_queue_set_status(struct il_pri
+@@ -6311,6 +6311,7 @@ il4965_tx_queue_set_status(struct il_pri
  
  static const struct ieee80211_ops il4965_mac_ops = {
  	.tx = il4965_mac_tx,
@@ -186,7 +186,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	.add_interface		= lbtf_op_add_interface,
 --- a/drivers/net/wireless/marvell/mwl8k.c
 +++ b/drivers/net/wireless/marvell/mwl8k.c
-@@ -5611,6 +5611,7 @@ static void mwl8k_sw_scan_complete(struc
+@@ -5615,6 +5615,7 @@ static void mwl8k_sw_scan_complete(struc
  
  static const struct ieee80211_ops mwl8k_ops = {
  	.tx			= mwl8k_tx,
@@ -296,7 +296,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	.add_interface		= rtl8180_add_interface,
 --- a/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c
 +++ b/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c
-@@ -1378,6 +1378,7 @@ static int rtl8187_conf_tx(struct ieee80
+@@ -1379,6 +1379,7 @@ static int rtl8187_conf_tx(struct ieee80
  
  static const struct ieee80211_ops rtl8187_ops = {
  	.tx			= rtl8187_tx,
@@ -386,7 +386,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	.cancel_hw_scan = wl1271_op_cancel_hw_scan,
 --- a/drivers/net/wireless/zydas/zd1211rw/zd_mac.c
 +++ b/drivers/net/wireless/zydas/zd1211rw/zd_mac.c
-@@ -1344,6 +1344,7 @@ static u64 zd_op_get_tsf(struct ieee8021
+@@ -1348,6 +1348,7 @@ static u64 zd_op_get_tsf(struct ieee8021
  
  static const struct ieee80211_ops zd_ops = {
  	.tx			= zd_op_tx,

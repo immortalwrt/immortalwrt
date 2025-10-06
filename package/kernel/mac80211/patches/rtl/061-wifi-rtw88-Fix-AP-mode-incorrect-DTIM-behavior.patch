@@ -41,7 +41,7 @@ Link: https://lore.kernel.org/r/20230616125540.36877-3-pkshih@realtek.com
  		rtw_clear_op_chan(rtwdev);
 --- a/drivers/net/wireless/realtek/rtw88/reg.h
 +++ b/drivers/net/wireless/realtek/rtw88/reg.h
-@@ -410,6 +410,7 @@
+@@ -411,6 +411,7 @@
  #define REG_TCR			0x0604
  #define BIT_PWRMGT_HWDATA_EN	BIT(7)
  #define BIT_TCR_UPDATE_TIMIE	BIT(5)

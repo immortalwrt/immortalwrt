@@ -30,7 +30,7 @@ Link: https://lore.kernel.org/r/20230414121135.17828-3-pkshih@realtek.com
  	mutex_unlock(&rtwdev->mutex);
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -2264,6 +2264,85 @@ void rtw_unregister_hw(struct rtw_dev *r
+@@ -2255,6 +2255,85 @@ void rtw_unregister_hw(struct rtw_dev *r
  }
  EXPORT_SYMBOL(rtw_unregister_hw);
  

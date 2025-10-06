@@ -100,7 +100,7 @@ Link: https://lore.kernel.org/r/20230414121323.18008-1-pkshih@realtek.com
  	chip->ops->set_channel(rtwdev, center_chan, bandwidth,
  			       hal->current_primary_channel_index);
  
-@@ -2343,6 +2346,42 @@ void rtw_core_port_switch(struct rtw_dev
+@@ -2334,6 +2337,42 @@ void rtw_core_port_switch(struct rtw_dev
  	rtw_iterate_vifs(rtwdev, rtw_port_switch_iter, &iter_data);
  }
  

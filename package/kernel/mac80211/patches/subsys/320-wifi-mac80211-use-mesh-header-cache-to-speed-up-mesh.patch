@@ -117,7 +117,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  void ieee80211_apply_htcap_overrides(struct ieee80211_sub_if_data *sdata,
 --- a/net/mac80211/tx.c
 +++ b/net/mac80211/tx.c
-@@ -1197,10 +1197,8 @@ static bool ieee80211_tx_prep_agg(struct
+@@ -1203,10 +1203,8 @@ static bool ieee80211_tx_prep_agg(struct
  	return queued;
  }
  

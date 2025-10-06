@@ -38,7 +38,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 
 --- a/include/net/mac80211.h
 +++ b/include/net/mac80211.h
-@@ -5279,6 +5279,74 @@ ieee80211_beacon_get_template(struct iee
+@@ -5281,6 +5281,74 @@ ieee80211_beacon_get_template(struct iee
  			      unsigned int link_id);
  
  /**
@@ -168,7 +168,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  
 --- a/net/mac80211/tx.c
 +++ b/net/mac80211/tx.c
-@@ -5213,13 +5213,20 @@ ieee80211_beacon_get_finish(struct ieee8
+@@ -5223,13 +5223,20 @@ ieee80211_beacon_get_finish(struct ieee8
  }
  
  static void
@@ -192,7 +192,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	for (i = 0; i < beacon->mbssid_ies->cnt; i++)
  		skb_put_data(skb, beacon->mbssid_ies->elem[i].data,
  			     beacon->mbssid_ies->elem[i].len);
-@@ -5232,7 +5239,8 @@ ieee80211_beacon_get_ap(struct ieee80211
+@@ -5242,7 +5249,8 @@ ieee80211_beacon_get_ap(struct ieee80211
  			struct ieee80211_mutable_offsets *offs,
  			bool is_template,
  			struct beacon_data *beacon,
@@ -202,7 +202,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  {
  	struct ieee80211_local *local = hw_to_local(hw);
  	struct ieee80211_sub_if_data *sdata = vif_to_sdata(vif);
-@@ -5251,7 +5259,9 @@ ieee80211_beacon_get_ap(struct ieee80211
+@@ -5261,7 +5269,9 @@ ieee80211_beacon_get_ap(struct ieee80211
  	/* headroom, head length,
  	 * tail length, maximum TIM length and multiple BSSID length
  	 */
@@ -213,7 +213,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	skb = dev_alloc_skb(local->tx_headroom + beacon->head_len +
  			    beacon->tail_len + 256 +
  			    local->hw.extra_beacon_tailroom + mbssid_len);
-@@ -5269,7 +5279,7 @@ ieee80211_beacon_get_ap(struct ieee80211
+@@ -5279,7 +5289,7 @@ ieee80211_beacon_get_ap(struct ieee80211
  		offs->cntdwn_counter_offs[0] = beacon->cntdwn_counter_offsets[0];
  
  		if (mbssid_len) {
@@ -222,7 +222,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  			offs->mbssid_off = skb->len - mbssid_len;
  		}
  
-@@ -5290,12 +5300,51 @@ ieee80211_beacon_get_ap(struct ieee80211
+@@ -5300,12 +5310,51 @@ ieee80211_beacon_get_ap(struct ieee80211
  	return skb;
  }
  
@@ -275,7 +275,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  {
  	struct ieee80211_local *local = hw_to_local(hw);
  	struct beacon_data *beacon = NULL;
-@@ -5324,8 +5373,29 @@ __ieee80211_beacon_get(struct ieee80211_
+@@ -5334,8 +5383,29 @@ __ieee80211_beacon_get(struct ieee80211_
  		if (!beacon)
  			goto out;
  
@@ -307,7 +307,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	} else if (sdata->vif.type == NL80211_IFTYPE_ADHOC) {
  		struct ieee80211_if_ibss *ifibss = &sdata->u.ibss;
  		struct ieee80211_hdr *hdr;
-@@ -5413,10 +5483,50 @@ ieee80211_beacon_get_template(struct iee
+@@ -5423,10 +5493,50 @@ ieee80211_beacon_get_template(struct iee
  			      struct ieee80211_mutable_offsets *offs,
  			      unsigned int link_id)
  {
@@ -359,7 +359,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  struct sk_buff *ieee80211_beacon_get_tim(struct ieee80211_hw *hw,
  					 struct ieee80211_vif *vif,
  					 u16 *tim_offset, u16 *tim_length,
-@@ -5424,7 +5534,9 @@ struct sk_buff *ieee80211_beacon_get_tim
+@@ -5434,7 +5544,9 @@ struct sk_buff *ieee80211_beacon_get_tim
  {
  	struct ieee80211_mutable_offsets offs = {};
  	struct sk_buff *bcn = __ieee80211_beacon_get(hw, vif, &offs, false,

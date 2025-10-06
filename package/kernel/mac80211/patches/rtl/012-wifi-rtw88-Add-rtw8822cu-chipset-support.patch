@@ -19,7 +19,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-11-s.hauer@pengutronix.de
 
 --- a/drivers/net/wireless/realtek/rtw88/Kconfig
 +++ b/drivers/net/wireless/realtek/rtw88/Kconfig
-@@ -75,6 +75,18 @@ config RTW88_8822CE
+@@ -76,6 +76,18 @@ config RTW88_8822CE
  
  	  802.11ac PCIe wireless network adapter
  
@@ -75,7 +75,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-11-s.hauer@pengutronix.de
  	default:
  		/* unsupported now */
  		return -ENOTSUPP;
-@@ -4557,6 +4566,18 @@ static void rtw8822c_adaptivity(struct r
+@@ -4560,6 +4569,18 @@ static void rtw8822c_adaptivity(struct r
  	rtw_phy_set_edcca_th(rtwdev, l2h, h2l);
  }
  
@@ -94,7 +94,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-11-s.hauer@pengutronix.de
  static const struct rtw_pwr_seq_cmd trans_carddis_to_cardemu_8822c[] = {
  	{0x0086,
  	 RTW_PWR_CUT_ALL_MSK,
-@@ -4895,6 +4916,8 @@ static const struct rtw_rfe_def rtw8822c
+@@ -4898,6 +4919,8 @@ static const struct rtw_rfe_def rtw8822c
  	[0] = RTW_DEF_RFE(8822c, 0, 0),
  	[1] = RTW_DEF_RFE(8822c, 0, 0),
  	[2] = RTW_DEF_RFE(8822c, 0, 0),
@@ -103,7 +103,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-11-s.hauer@pengutronix.de
  	[5] = RTW_DEF_RFE(8822c, 0, 5),
  	[6] = RTW_DEF_RFE(8822c, 0, 0),
  };
-@@ -4978,6 +5001,7 @@ static struct rtw_chip_ops rtw8822c_ops
+@@ -4981,6 +5004,7 @@ static struct rtw_chip_ops rtw8822c_ops
  	.cfo_track		= rtw8822c_cfo_track,
  	.config_tx_path		= rtw8822c_config_tx_path,
  	.config_txrx_mode	= rtw8822c_config_trx_mode,

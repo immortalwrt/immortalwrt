@@ -20,7 +20,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-12-s.hauer@pengutronix.de
 
 --- a/drivers/net/wireless/realtek/rtw88/Kconfig
 +++ b/drivers/net/wireless/realtek/rtw88/Kconfig
-@@ -99,6 +99,18 @@ config RTW88_8723DE
+@@ -100,6 +100,18 @@ config RTW88_8723DE
  
  	  802.11n PCIe wireless network adapter
  
@@ -39,7 +39,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-12-s.hauer@pengutronix.de
  config RTW88_8821CE
  	tristate "Realtek 8821CE PCI wireless network adapter"
  	depends on m
-@@ -113,6 +125,7 @@ config RTW88_8821CE
+@@ -114,6 +126,7 @@ config RTW88_8821CE
  
  config RTW88_8821CU
  	tristate "Realtek 8821CU USB wireless network adapter"

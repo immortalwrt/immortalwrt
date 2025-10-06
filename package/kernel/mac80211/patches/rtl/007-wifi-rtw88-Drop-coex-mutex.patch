@@ -52,7 +52,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-6-s.hauer@pengutronix.de
  }
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -2084,7 +2084,6 @@ int rtw_core_init(struct rtw_dev *rtwdev
+@@ -2075,7 +2075,6 @@ int rtw_core_init(struct rtw_dev *rtwdev
  	spin_lock_init(&rtwdev->tx_report.q_lock);
  
  	mutex_init(&rtwdev->mutex);
@@ -60,7 +60,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-6-s.hauer@pengutronix.de
  	mutex_init(&rtwdev->hal.tx_power_mutex);
  
  	init_waitqueue_head(&rtwdev->coex.wait);
-@@ -2156,7 +2155,6 @@ void rtw_core_deinit(struct rtw_dev *rtw
+@@ -2147,7 +2146,6 @@ void rtw_core_deinit(struct rtw_dev *rtw
  	}
  
  	mutex_destroy(&rtwdev->mutex);

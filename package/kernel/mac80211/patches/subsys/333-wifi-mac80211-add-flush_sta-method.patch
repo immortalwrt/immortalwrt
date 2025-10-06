@@ -23,7 +23,7 @@ Reviewed-by: Greenman, Gregory <gregory.greenman@intel.com>
   * @channel_switch: Drivers that need (or want) to offload the channel
   *	switch operation for CSAs received from the AP may implement this
   *	callback. They must then call ieee80211_chswitch_done() to indicate
-@@ -4395,6 +4399,8 @@ struct ieee80211_ops {
+@@ -4397,6 +4401,8 @@ struct ieee80211_ops {
  #endif
  	void (*flush)(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
  		      u32 queues, bool drop);
@@ -58,7 +58,7 @@ Reviewed-by: Greenman, Gregory <gregory.greenman@intel.com>
  				      struct ieee80211_channel_switch *ch_switch)
 --- a/net/mac80211/sta_info.c
 +++ b/net/mac80211/sta_info.c
-@@ -1295,8 +1295,12 @@ static void __sta_info_destroy_part2(str
+@@ -1296,8 +1296,12 @@ static void __sta_info_destroy_part2(str
  	 * frames sitting on hardware queues might be sent out without
  	 * any encryption at all.
  	 */

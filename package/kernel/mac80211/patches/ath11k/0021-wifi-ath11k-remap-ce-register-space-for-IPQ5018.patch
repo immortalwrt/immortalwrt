@@ -222,7 +222,7 @@ Link: https://lore.kernel.org/r/20221122132152.17771-5-quic_kathirve@quicinc.com
  	struct {
 --- a/drivers/net/wireless/ath/ath11k/hal.c
 +++ b/drivers/net/wireless/ath/ath11k/hal.c
-@@ -1220,16 +1220,20 @@ static int ath11k_hal_srng_create_config
+@@ -1245,16 +1245,20 @@ static int ath11k_hal_srng_create_config
  	s->reg_start[1] = HAL_SEQ_WCSS_UMAC_TCL_REG + HAL_TCL_STATUS_RING_HP;
  
  	s = &hal->srng_config[HAL_CE_SRC];
@@ -247,7 +247,7 @@ Link: https://lore.kernel.org/r/20221122132152.17771-5-quic_kathirve@quicinc.com
  	s->reg_size[0] = HAL_SEQ_WCSS_UMAC_CE1_DST_REG(ab) -
  		HAL_SEQ_WCSS_UMAC_CE0_DST_REG(ab);
  	s->reg_size[1] = HAL_SEQ_WCSS_UMAC_CE1_DST_REG(ab) -
-@@ -1237,8 +1241,9 @@ static int ath11k_hal_srng_create_config
+@@ -1262,8 +1266,9 @@ static int ath11k_hal_srng_create_config
  
  	s = &hal->srng_config[HAL_CE_DST_STATUS];
  	s->reg_start[0] = HAL_SEQ_WCSS_UMAC_CE0_DST_REG(ab) +

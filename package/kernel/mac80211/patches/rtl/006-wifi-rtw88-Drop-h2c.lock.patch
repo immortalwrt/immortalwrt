@@ -89,7 +89,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-5-s.hauer@pengutronix.de
  void
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -2080,7 +2080,6 @@ int rtw_core_init(struct rtw_dev *rtwdev
+@@ -2071,7 +2071,6 @@ int rtw_core_init(struct rtw_dev *rtwdev
  	skb_queue_head_init(&rtwdev->coex.queue);
  	skb_queue_head_init(&rtwdev->tx_report.queue);
  

@@ -133,7 +133,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  			       const u8 *ie, size_t ie_len, bool from_ap);
 --- a/net/wireless/sme.c
 +++ b/net/wireless/sme.c
-@@ -1267,7 +1267,8 @@ out:
+@@ -1270,7 +1270,8 @@ out:
  }
  EXPORT_SYMBOL(cfg80211_roamed);
  
@@ -143,7 +143,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  {
  	ASSERT_WDEV_LOCK(wdev);
  
-@@ -1280,11 +1281,11 @@ void __cfg80211_port_authorized(struct w
+@@ -1283,11 +1284,11 @@ void __cfg80211_port_authorized(struct w
  		return;
  
  	nl80211_send_port_authorized(wiphy_to_rdev(wdev->wiphy), wdev->netdev,
@@ -157,7 +157,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  {
  	struct wireless_dev *wdev = dev->ieee80211_ptr;
  	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
-@@ -1294,12 +1295,15 @@ void cfg80211_port_authorized(struct net
+@@ -1297,12 +1298,15 @@ void cfg80211_port_authorized(struct net
  	if (WARN_ON(!bssid))
  		return;
  
@@ -176,7 +176,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	 * Use the wdev event list so that if there are pending
 --- a/net/wireless/util.c
 +++ b/net/wireless/util.c
-@@ -1065,7 +1065,9 @@ void cfg80211_process_wdev_events(struct
+@@ -1113,7 +1113,9 @@ void cfg80211_process_wdev_events(struct
  			__cfg80211_leave(wiphy_to_rdev(wdev->wiphy), wdev);
  			break;
  		case EVENT_PORT_AUTHORIZED:

@@ -108,7 +108,7 @@ Link: https://lore.kernel.org/r/20230616125540.36877-7-pkshih@realtek.com
  	si->rtwdev = rtwdev;
  	si->sta = sta;
  	si->vif = vif;
-@@ -2338,6 +2341,9 @@ static void rtw_port_switch_iter(void *d
+@@ -2329,6 +2332,9 @@ static void rtw_port_switch_iter(void *d
  	rtw_dbg(rtwdev, RTW_DBG_STATE, "AP port switch from %d -> %d\n",
  		rtwvif_ap->port, rtwvif_target->port);
  
@@ -118,7 +118,7 @@ Link: https://lore.kernel.org/r/20230616125540.36877-7-pkshih@realtek.com
  	reg1 = &rtwvif_ap->conf->net_type;
  	reg2 = &rtwvif_target->conf->net_type;
  	rtw_swap_reg_mask(rtwdev, reg1, reg2);
-@@ -2356,6 +2362,8 @@ static void rtw_port_switch_iter(void *d
+@@ -2347,6 +2353,8 @@ static void rtw_port_switch_iter(void *d
  
  	swap(rtwvif_target->port, rtwvif_ap->port);
  	swap(rtwvif_target->conf, rtwvif_ap->conf);

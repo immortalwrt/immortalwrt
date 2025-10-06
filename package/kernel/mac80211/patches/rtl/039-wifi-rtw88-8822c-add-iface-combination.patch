@@ -44,7 +44,7 @@ Link: https://lore.kernel.org/r/20230414121331.18062-1-pkshih@realtek.com
  u16 rtw_desc_to_bitrate(u8 desc_rate)
  {
  	struct ieee80211_rate rate;
-@@ -2218,6 +2238,11 @@ int rtw_register_hw(struct rtw_dev *rtwd
+@@ -2209,6 +2229,11 @@ int rtw_register_hw(struct rtw_dev *rtwd
  	hw->wiphy->max_scan_ssids = RTW_SCAN_MAX_SSIDS;
  	hw->wiphy->max_scan_ie_len = rtw_get_max_scan_ie_len(rtwdev);
  

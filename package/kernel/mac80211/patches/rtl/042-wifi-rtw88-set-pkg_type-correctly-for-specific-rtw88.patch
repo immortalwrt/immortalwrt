@@ -26,7 +26,7 @@ Link: https://lore.kernel.org/r/20230417140358.2240429-4-s.hauer@pengutronix.de
 
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -2023,7 +2023,7 @@ static int rtw_chip_board_info_setup(str
+@@ -2014,7 +2014,7 @@ static int rtw_chip_board_info_setup(str
  	if (!rfe_def)
  		return -ENODEV;
  

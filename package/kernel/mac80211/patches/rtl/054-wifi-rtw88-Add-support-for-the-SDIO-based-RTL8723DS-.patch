@@ -20,7 +20,7 @@ Link: https://lore.kernel.org/r/20230522202425.1827005-5-martin.blumenstingl@goo
 
 --- a/drivers/net/wireless/realtek/rtw88/Kconfig
 +++ b/drivers/net/wireless/realtek/rtw88/Kconfig
-@@ -129,6 +129,17 @@ config RTW88_8723DE
+@@ -130,6 +130,17 @@ config RTW88_8723DE
  
  	  802.11n PCIe wireless network adapter
  

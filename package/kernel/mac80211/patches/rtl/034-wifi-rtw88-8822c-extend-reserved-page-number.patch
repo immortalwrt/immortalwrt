@@ -64,7 +64,7 @@ Link: https://lore.kernel.org/r/20230414121135.17828-4-pkshih@realtek.com
  	.max_power_index = 0x3f,
 --- a/drivers/net/wireless/realtek/rtw88/rtw8822b.c
 +++ b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
-@@ -2540,6 +2540,7 @@ const struct rtw_chip_info rtw8822b_hw_s
+@@ -2542,6 +2542,7 @@ const struct rtw_chip_info rtw8822b_hw_s
  	.txff_size = 262144,
  	.rxff_size = 24576,
  	.fw_rxff_size = 12288,
@@ -74,7 +74,7 @@ Link: https://lore.kernel.org/r/20230414121135.17828-4-pkshih@realtek.com
  	.max_power_index = 0x3f,
 --- a/drivers/net/wireless/realtek/rtw88/rtw8822c.c
 +++ b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-@@ -5358,6 +5358,7 @@ const struct rtw_chip_info rtw8822c_hw_s
+@@ -5361,6 +5361,7 @@ const struct rtw_chip_info rtw8822c_hw_s
  	.txff_size = 262144,
  	.rxff_size = 24576,
  	.fw_rxff_size = 12288,

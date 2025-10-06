@@ -28,7 +28,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-8-s.hauer@pengutronix.de
 
 --- a/drivers/net/wireless/realtek/rtw88/Kconfig
 +++ b/drivers/net/wireless/realtek/rtw88/Kconfig
-@@ -19,6 +19,10 @@ config RTW88_PCI
+@@ -20,6 +20,10 @@ config RTW88_PCI
  	tristate
  	depends on m
  
@@ -62,7 +62,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-8-s.hauer@pengutronix.de
  
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -1798,6 +1798,10 @@ static int rtw_chip_parameter_setup(stru
+@@ -1789,6 +1789,10 @@ static int rtw_chip_parameter_setup(stru
  		rtwdev->hci.rpwm_addr = 0x03d9;
  		rtwdev->hci.cpwm_addr = 0x03da;
  		break;
@@ -88,7 +88,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-8-s.hauer@pengutronix.de
  	void (*coex_set_init)(struct rtw_dev *rtwdev);
 --- a/drivers/net/wireless/realtek/rtw88/reg.h
 +++ b/drivers/net/wireless/realtek/rtw88/reg.h
-@@ -184,6 +184,7 @@
+@@ -185,6 +185,7 @@
  #define BIT_TXDMA_VIQ_MAP(x)                                                   \
  	(((x) & BIT_MASK_TXDMA_VIQ_MAP) << BIT_SHIFT_TXDMA_VIQ_MAP)
  #define REG_TXDMA_PQ_MAP	0x010C

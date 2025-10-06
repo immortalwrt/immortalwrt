@@ -67,7 +67,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-7-s.hauer@pengutronix.de
  
 --- a/drivers/net/wireless/realtek/rtw88/util.c
 +++ b/drivers/net/wireless/realtek/rtw88/util.c
-@@ -105,3 +105,106 @@ void rtw_desc_to_mcsrate(u16 rate, u8 *m
+@@ -106,3 +106,106 @@ void rtw_desc_to_mcsrate(u16 rate, u8 *m
  		*mcs = rate - DESC_RATEMCS0;
  	}
  }

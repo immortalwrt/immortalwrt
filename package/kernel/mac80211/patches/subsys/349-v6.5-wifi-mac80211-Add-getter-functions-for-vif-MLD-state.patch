@@ -290,7 +290,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  				data.ap_mld_addr = assoc_data->ap_addr;
  
  			cfg80211_assoc_failure(sdata->dev, &data);
-@@ -4980,7 +4981,7 @@ static bool ieee80211_assoc_success(stru
+@@ -4987,7 +4988,7 @@ static bool ieee80211_assoc_success(stru
  	if (WARN_ON(!sta))
  		goto out_err;
  
@@ -299,7 +299,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  		u16 valid_links = 0;
  
  		for (link_id = 0; link_id < IEEE80211_MLD_MAX_NUM_LINKS; link_id++) {
-@@ -5009,7 +5010,7 @@ static bool ieee80211_assoc_success(stru
+@@ -5016,7 +5017,7 @@ static bool ieee80211_assoc_success(stru
  		if (WARN_ON(!link))
  			goto out_err;
  
@@ -308,7 +308,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  			link_info(link,
  				  "local address %pM, AP link address %pM\n",
  				  link->conf->addr,
-@@ -5241,7 +5242,7 @@ static void ieee80211_rx_mgmt_assoc_resp
+@@ -5248,7 +5249,7 @@ static void ieee80211_rx_mgmt_assoc_resp
  			ifmgd->broken_ap = true;
  		}
  
@@ -317,7 +317,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  			if (!elems->multi_link) {
  				sdata_info(sdata,
  					   "MLO association with %pM but no multi-link element in response!\n",
-@@ -5305,7 +5306,7 @@ static void ieee80211_rx_mgmt_assoc_resp
+@@ -5312,7 +5313,7 @@ static void ieee80211_rx_mgmt_assoc_resp
  				resp.uapsd_queues |= ieee80211_ac_to_qos_mask[ac];
  	}
  
@@ -326,7 +326,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  		ether_addr_copy(ap_mld_addr, sdata->vif.cfg.ap_addr);
  		resp.ap_mld_addr = ap_mld_addr;
  	}
-@@ -5630,7 +5631,7 @@ static void ieee80211_rx_mgmt_beacon(str
+@@ -5637,7 +5638,7 @@ static void ieee80211_rx_mgmt_beacon(str
  	rcu_read_unlock();
  
  	if (ifmgd->assoc_data && ifmgd->assoc_data->need_beacon &&
@@ -335,7 +335,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	    ieee80211_rx_our_beacon(bssid, ifmgd->assoc_data->link[0].bss)) {
  		parse_params.bss = ifmgd->assoc_data->link[0].bss;
  		elems = ieee802_11_parse_elems_full(&parse_params);
-@@ -6320,7 +6321,7 @@ static void ieee80211_sta_bcn_mon_timer(
+@@ -6327,7 +6328,7 @@ static void ieee80211_sta_bcn_mon_timer(
  	struct ieee80211_sub_if_data *sdata =
  		from_timer(sdata, t, u.mgd.bcn_mon_timer);
  
@@ -344,7 +344,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  		return;
  
  	if (sdata->vif.bss_conf.csa_active &&
-@@ -6344,7 +6345,7 @@ static void ieee80211_sta_conn_mon_timer
+@@ -6351,7 +6352,7 @@ static void ieee80211_sta_conn_mon_timer
  	struct sta_info *sta;
  	unsigned long timeout;
  
@@ -353,7 +353,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  		return;
  
  	if (sdata->vif.bss_conf.csa_active &&
-@@ -6899,7 +6900,7 @@ int ieee80211_mgd_auth(struct ieee80211_
+@@ -6906,7 +6907,7 @@ int ieee80211_mgd_auth(struct ieee80211_
  	return 0;
  
   err_clear:
@@ -375,7 +375,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	for (link_id = 0; link_id < ARRAY_SIZE(sdata->vif.link_conf); link_id++) {
 --- a/net/mac80211/tx.c
 +++ b/net/mac80211/tx.c
-@@ -866,7 +866,7 @@ ieee80211_tx_h_sequence(struct ieee80211
+@@ -872,7 +872,7 @@ ieee80211_tx_h_sequence(struct ieee80211
  
  	/* SNS11 from 802.11be 10.3.2.14 */
  	if (unlikely(is_multicast_ether_addr(hdr->addr1) &&
@@ -384,7 +384,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  		     info->control.vif->type == NL80211_IFTYPE_AP)) {
  		if (info->control.flags & IEEE80211_TX_CTRL_MCAST_MLO_FIRST_TX)
  			tx->sdata->mld_mcast_seq += 0x10;
-@@ -2635,7 +2635,7 @@ static struct sk_buff *ieee80211_build_h
+@@ -2642,7 +2642,7 @@ static struct sk_buff *ieee80211_build_h
  	ethertype = (skb->data[12] << 8) | skb->data[13];
  	fc = cpu_to_le16(IEEE80211_FTYPE_DATA | IEEE80211_STYPE_DATA);
  
@@ -393,7 +393,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  		chanctx_conf =
  			rcu_dereference(sdata->vif.bss_conf.chanctx_conf);
  
-@@ -2652,7 +2652,7 @@ static struct sk_buff *ieee80211_build_h
+@@ -2659,7 +2659,7 @@ static struct sk_buff *ieee80211_build_h
  			authorized = test_sta_flag(sta, WLAN_STA_AUTHORIZED);
  			wme_sta = sta->sta.wme;
  		}
@@ -402,7 +402,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  			struct ieee80211_sub_if_data *ap_sdata;
  
  			/* override chanctx_conf from AP (we don't have one) */
-@@ -2670,7 +2670,7 @@ static struct sk_buff *ieee80211_build_h
+@@ -2677,7 +2677,7 @@ static struct sk_buff *ieee80211_build_h
  		/* DA BSSID SA */
  		memcpy(hdr.addr1, skb->data, ETH_ALEN);
  
@@ -411,7 +411,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  			struct ieee80211_link_data *link;
  
  			link_id = sta->deflink.link_id;
-@@ -2822,7 +2822,7 @@ static struct sk_buff *ieee80211_build_h
+@@ -2829,7 +2829,7 @@ static struct sk_buff *ieee80211_build_h
  	}
  
  	if (!chanctx_conf) {
@@ -420,7 +420,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  			ret = -ENOTCONN;
  			goto free;
  		}
-@@ -3064,7 +3064,7 @@ void ieee80211_check_fast_xmit(struct st
+@@ -3071,7 +3071,7 @@ void ieee80211_check_fast_xmit(struct st
  	    !ieee80211_hw_check(&local->hw, SUPPORTS_TX_FRAG))
  		goto out;
  
@@ -429,7 +429,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  		rcu_read_lock();
  		chanctx_conf =
  			rcu_dereference(sdata->vif.bss_conf.chanctx_conf);
-@@ -3135,7 +3135,7 @@ void ieee80211_check_fast_xmit(struct st
+@@ -3142,7 +3142,7 @@ void ieee80211_check_fast_xmit(struct st
  		fc |= cpu_to_le16(IEEE80211_FCTL_FROMDS);
  		/* DA BSSID SA */
  		build.da_offs = offsetof(struct ieee80211_hdr, addr1);
@@ -438,7 +438,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  			memcpy(hdr->addr2, sdata->vif.addr, ETH_ALEN);
  		} else {
  			unsigned int link_id = sta->deflink.link_id;
-@@ -4507,7 +4507,7 @@ netdev_tx_t ieee80211_subif_start_xmit(s
+@@ -4517,7 +4517,7 @@ netdev_tx_t ieee80211_subif_start_xmit(s
  			__ieee80211_subif_start_xmit(skb, dev, 0,
  						     IEEE80211_TX_CTRL_MLO_LINK_UNSPEC,
  						     NULL);
@@ -447,7 +447,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  		   sdata->vif.type == NL80211_IFTYPE_AP &&
  		   !ieee80211_hw_check(&sdata->local->hw, MLO_MCAST_MULTI_LINK_TX)) {
  		ieee80211_mlo_multicast_tx(dev, skb);
-@@ -4785,7 +4785,7 @@ static bool ieee80211_tx_pending_skb(str
+@@ -4795,7 +4795,7 @@ static bool ieee80211_tx_pending_skb(str
  
  	if (info->control.flags & IEEE80211_TX_INTCFL_NEED_TXPROCESSING) {
  		/* update band only for non-MLD */
@@ -456,7 +456,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  			chanctx_conf =
  				rcu_dereference(sdata->vif.bss_conf.chanctx_conf);
  			if (unlikely(!chanctx_conf)) {
-@@ -6010,7 +6010,7 @@ void __ieee80211_tx_skb_tid_band(struct
+@@ -6020,7 +6020,7 @@ void __ieee80211_tx_skb_tid_band(struct
  	BUILD_BUG_ON(!FIELD_FIT(IEEE80211_TX_CTRL_MLO_LINK,
  				IEEE80211_LINK_UNSPECIFIED));
  
@@ -465,7 +465,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  		link = 0;
  	} else if (link_id >= 0) {
  		link = link_id;
-@@ -6056,7 +6056,7 @@ void ieee80211_tx_skb_tid(struct ieee802
+@@ -6066,7 +6066,7 @@ void ieee80211_tx_skb_tid(struct ieee802
  	enum nl80211_band band;
  
  	rcu_read_lock();

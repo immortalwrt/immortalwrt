@@ -19,7 +19,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-10-s.hauer@pengutronix.de
 
 --- a/drivers/net/wireless/realtek/rtw88/Kconfig
 +++ b/drivers/net/wireless/realtek/rtw88/Kconfig
-@@ -51,6 +51,18 @@ config RTW88_8822BE
+@@ -52,6 +52,18 @@ config RTW88_8822BE
  
  	  802.11ac PCIe wireless network adapter
  
@@ -75,7 +75,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-10-s.hauer@pengutronix.de
  	default:
  		/* unsupported now */
  		return -ENOTSUPP;
-@@ -1588,6 +1597,15 @@ static void rtw8822b_adaptivity(struct r
+@@ -1590,6 +1599,15 @@ static void rtw8822b_adaptivity(struct r
  	rtw_phy_set_edcca_th(rtwdev, l2h, h2l);
  }
  
@@ -91,7 +91,7 @@ Link: https://lore.kernel.org/r/20221202081224.2779981-10-s.hauer@pengutronix.de
  static const struct rtw_pwr_seq_cmd trans_carddis_to_cardemu_8822b[] = {
  	{0x0086,
  	 RTW_PWR_CUT_ALL_MSK,
-@@ -2163,6 +2181,7 @@ static struct rtw_chip_ops rtw8822b_ops
+@@ -2165,6 +2183,7 @@ static struct rtw_chip_ops rtw8822b_ops
  	.cfg_csi_rate		= rtw_bf_cfg_csi_rate,
  	.adaptivity_init	= rtw8822b_adaptivity_init,
  	.adaptivity		= rtw8822b_adaptivity,

@@ -23,7 +23,7 @@ Link: https://lore.kernel.org/r/20230405200729.632435-6-martin.blumenstingl@goog
 
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -2176,9 +2176,11 @@ int rtw_register_hw(struct rtw_dev *rtwd
+@@ -2167,9 +2167,11 @@ int rtw_register_hw(struct rtw_dev *rtwd
  	int max_tx_headroom = 0;
  	int ret;
  

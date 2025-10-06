@@ -25,7 +25,7 @@ Link: https://lore.kernel.org/r/20230405200729.632435-5-martin.blumenstingl@goog
  
  bool rtw_disable_lps_deep_mode;
  EXPORT_SYMBOL(rtw_disable_lps_deep_mode);
-@@ -1800,6 +1801,10 @@ static int rtw_chip_parameter_setup(stru
+@@ -1791,6 +1792,10 @@ static int rtw_chip_parameter_setup(stru
  		rtwdev->hci.rpwm_addr = 0x03d9;
  		rtwdev->hci.cpwm_addr = 0x03da;
  		break;

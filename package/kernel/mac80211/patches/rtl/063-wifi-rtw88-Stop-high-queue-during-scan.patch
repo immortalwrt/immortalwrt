@@ -18,7 +18,7 @@ Link: https://lore.kernel.org/r/20230616125540.36877-5-pkshih@realtek.com
 
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -2401,10 +2401,13 @@ void rtw_core_enable_beacon(struct rtw_d
+@@ -2392,10 +2392,13 @@ void rtw_core_enable_beacon(struct rtw_d
  	if (!rtwdev->ap_active)
  		return;
  
@@ -36,7 +36,7 @@ Link: https://lore.kernel.org/r/20230616125540.36877-5-pkshih@realtek.com
  MODULE_AUTHOR("Realtek Corporation");
 --- a/drivers/net/wireless/realtek/rtw88/reg.h
 +++ b/drivers/net/wireless/realtek/rtw88/reg.h
-@@ -378,6 +378,7 @@
+@@ -379,6 +379,7 @@
  #define BIT_SIFS_BK_EN		BIT(12)
  #define REG_TXPAUSE		0x0522
  #define BIT_AC_QUEUE		GENMASK(7, 0)
