@@ -361,7 +361,8 @@
 	dmas = <&blsp_dma 2>, <&blsp_dma 3>;
 	dma-names = "tx", "rx";
 
-	bluetooth { // doesn't work
+	// doesn't work
+	bluetooth {
 		compatible = "csr,8811";
 		enable-gpios = <&tlmm 34 GPIO_ACTIVE_LOW>;
 	};

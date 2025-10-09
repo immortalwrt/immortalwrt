@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/*
- * Copyright (c) 2025, Shubham Vishwakarma <shubhamvis98@fossfrog.in>
- */
 
 /dts-v1/;
 
 #include "ipq5018.dtsi"
 #include "ipq5018-ess.dtsi"
+#include "ipq5018-nss.dtsi"
+#include "ipq5018-common.dtsi"
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
@@ -25,14 +24,12 @@
 	};
 
 	chosen {
-		bootargs-append = " root=/dev/ubiblock0_1 swiotlb=1 coherent_pool=2M";
 		stdout-path = "serial0:115200n8";
+		bootargs-append = " root=/dev/ubiblock0_1";
 	};
 
 	keys {
 		compatible = "gpio-keys";
-		pinctrl-0 = <&button_pins>;
-		pinctrl-names = "default";
 
 		reset {
 			label = "reset";
@@ -65,13 +62,6 @@
 		};
 	};
 
-	reserved-memory {
-		q6_mem_regions: q6_mem_regions@4b000000 {
-			no-map;
-			reg = <0x0 0x4b000000 0x0 0x3000000>;
-		};
-	};
-
 	gpio-watchdog {
 		compatible = "linux,wdt-gpio";
 		gpios = <&tlmm 27 GPIO_ACTIVE_LOW>;
@@ -84,27 +74,26 @@
 &switch {
 	status = "okay";
 
-	switch_mac_mode = <MAC_MODE_SGMII_CHANNEL0>;
-
 	qcom,port_phyinfo {
-		// MAC0 -> GE Phy
 		port@0 {
 			port_id = <1>;
 			mdiobus = <&mdio0>;
 			phy_address = <7>;
+			phy_dac = <0x10 0x10>;
 		};
 
-		// MAC1 -> Uniphy --- SGMII --- QCA8081
 		port@1 {
 			port_id = <2>;
 			mdiobus = <&mdio1>;
 			phy_address = <28>;
 			port_mac_sel = "QGMAC_PORT";
+
+			/delete-property/ forced-speed;
+			/delete-property/ forced-duplex;
 		};
 	};
 };
 
-// MAC0 -> GE Phy
 &dp1 {
 	status = "okay";
 
@@ -114,7 +103,6 @@
 	phy-mode = "sgmii";
 };
 
-// MAC1 ---SGMII---> QCA8081
 &dp2 {
 	status = "okay";
 
@@ -122,10 +110,6 @@
 	phy-handle = <&qca8081>;
 	nvmem-cells = <&hw_mac_addr 1>;
 	nvmem-cell-names = "mac-address";
-};
-
-&mdio0 {
-	status = "okay";
 };
 
 &mdio1 {
@@ -142,49 +126,15 @@
 	};
 };
 
-&sleep_clk {
-	clock-frequency = <32000>;
-};
-
-&xo_board_clk {
-	clock-frequency = <24000000>;
-};
-
-&blsp1_uart1 {
-	status = "okay";
-	pinctrl-0 = <&serial_0_pins>;
-	pinctrl-names = "default";
-};
-
-&crypto {
-	status = "okay";
-};
-
-&cryptobam {
-	status = "okay";
-};
-
-&prng {
-	status = "okay";
-};
-
-&qfprom {
-	status = "okay";
-};
-
-&qpic_bam {
-	status = "okay";
-};
-
 &blsp1_spi1 {
 	status = "okay";
 
 	flash@0 {
+		compatible = "jedec,spi-nor";
+		spi-max-frequency = <50000000>;
 		#address-cells = <1>;
 		#size-cells = <1>;
 		reg = <0>;
-		compatible = "jedec,spi-nor";
-		spi-max-frequency = <50000000>;
 
 		partitions {
 			compatible = "fixed-partitions";
@@ -290,9 +240,10 @@
 };
 
 &qpic_nand {
+	status = "okay";
+
 	pinctrl-0 = <&qpic_pins>;
 	pinctrl-names = "default";
-	status = "okay";
 
 	partitions {
 		status = "disabled";
@@ -300,11 +251,13 @@
 
 	nand@0 {
 		compatible = "spi-nand";
-		reg = <0>;
 		#address-cells = <1>;
 		#size-cells = <1>;
+		reg = <0>;
 
 		nand-ecc-engine = <&qpic_nand>;
+		nand-ecc-strength = <4>;
+		nand-ecc-step-size = <512>;
 		nand-bus-width = <8>;
 
 		partitions {
@@ -330,145 +283,22 @@
 	};
 };
 
-&tlmm {
-	button_pins: button-state {
-		pins = "gpio38";
-		function = "gpio";
-		drive-strength = <8>;
-		bias-pull-up;
-	};
-
-	mdio1_pins: mdio-state {
-		mdc-pins {
-			pins = "gpio36";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio-pins {
-			pins = "gpio37";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
-	qpic_pins: qpic-state {
-		clock-pins {
-			pins = "gpio9";
-			function = "qspi_clk";
-			drive-strength = <8>;
-			bias-disable;
-		};
-
-		cs-pins {
-			pins = "gpio8";
-			function = "qspi_cs";
-			drive-strength = <8>;
-			bias-disable;
-		};
-
-		data-pins {
-			pins = "gpio4", "gpio5", "gpio6", "gpio7";
-			function = "qspi_data";
-			drive-strength = <8>;
-			bias-disable;
-		};
-	};
-
-	serial_0_pins: uart0-state {
-		pins = "gpio20", "gpio21";
-		function = "blsp0_uart0";
-		bias-disable;
-	};
-};
-
-&tsens {
+&pcie0 {
 	status = "okay";
-};
+	perst-gpios = <&tlmm 15 GPIO_ACTIVE_LOW>;
 
-&q6v5_wcss {
-	status = "okay";
-
-	memory-region = <&q6_mem_regions>;
-	firmware-name = "ath11k/IPQ5018/hw1.0/q6_fw.mdt",
-			"ath11k/IPQ5018/hw1.0/m3_fw.mdt";
-
-	// IPQ5018
-	q6_wcss_pd1: pd-1 {
-		firmware-name = "ath11k/IPQ5018/hw1.0/q6_fw.mdt";
-
-		resets =
-			<&gcc GCC_WCSSAON_RESET>,
-			<&gcc GCC_WCSS_BCR>,
-			<&gcc GCC_CE_BCR>;
-		reset-names =
-			"wcss_aon_reset",
-			"wcss_reset",
-			"ce_reset";
-
-		clocks =
-			<&gcc GCC_WCSS_AHB_S_CLK>,
-			<&gcc GCC_WCSS_ACMT_CLK>,
-			<&gcc GCC_WCSS_AXI_M_CLK>;
-		clock-names =
-			"gcc_wcss_ahb_s_clk",
-			"gcc_wcss_acmt_clk",
-			"gcc_wcss_axi_m_clk";
-
-		interrupts-extended =
-			<&wcss_smp2p_in 8 IRQ_TYPE_NONE>,
-			<&wcss_smp2p_in 9 IRQ_TYPE_NONE>,
-			<&wcss_smp2p_in 12 IRQ_TYPE_NONE>,
-			<&wcss_smp2p_in 11 IRQ_TYPE_NONE>;
-		interrupt-names =
-			"fatal",
-			"ready",
-			"spawn-ack",
-			"stop-ack";
-
-		qcom,smem-states =
-			<&wcss_smp2p_out 8>,
-			<&wcss_smp2p_out 9>,
-			<&wcss_smp2p_out 10>;
-		qcom,smem-state-names =
-			"shutdown",
-			"stop",
-			"spawn";
+	pcie@0 {
+		wifi@0,0 {
+			status = "okay";
+			compatible = "pci17cb,1104";
+			qcom,ath11k-fw-memory-mode = <1>;
+			qcom,ath11k-calibration-variant = "Yuncore-AX850";
+			reg = <0x00010000 0 0 0 0>;
+		};
 	};
 };
 
 &wifi0 {
-	// IPQ5018
 	status = "okay";
-	qcom,rproc = <&q6_wcss_pd1>;
 	qcom,ath11k-calibration-variant = "Yuncore-AX850";
-	qcom,ath11k-fw-memory-mode = <1>;
-	qcom,bdf-addr = <0x4c400000>;
-};
-
-&pcie0_phy {
-	status = "okay";
-};
-
-&pcie0 {
-	status = "okay";
-
-	perst-gpios = <&tlmm 15 GPIO_ACTIVE_LOW>;
-
-	bridge@0,0 {
-		reg = <0x00000000 0 0 0 0>;
-		#address-cells = <3>;
-		#size-cells = <2>;
-		ranges;
-
-		wifi@1,0 {
-			status = "okay";
-			/* QCN9074: ath11k lacks DT compatible for PCI cards */
-			compatible = "pci17cb,1104";
-			reg = <0x00010000 0 0 0 0>;
-			qcom,ath11k-calibration-variant = "Yuncore-AX850";
-		};
-	};
 };
