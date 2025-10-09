@@ -232,6 +232,7 @@ $(_endef)
     $$(PACK_$(1)) : export DESCRIPTION=$$(Package/$(1)/description)
     $$(PACK_$(1)) : export PATH=$$(TARGET_PATH_PKG)
     $$(PACK_$(1)) : export PKG_SOURCE_DATE_EPOCH:=$(PKG_SOURCE_DATE_EPOCH)
+    $$(PACK_$(1)) : export SOURCE_DATE_EPOCH:=$(PKG_SOURCE_DATE_EPOCH)
     $(PKG_INFO_DIR)/$(1).provides $$(PACK_$(1)): $(STAMP_BUILT) $(INCLUDE_DIR)/package-pack.mk
 	rm -rf $$(IDIR_$(1))
 ifeq ($$(CONFIG_USE_APK),)
@@ -383,9 +384,6 @@ else
 		exit 1; \
 	fi
 
-	# Touch all files to set mtime to PKG_SOURCE_DATE_EPOCH for reproducible builds
-	find $$(IDIR_$(1)) -exec touch -d "@$(PKG_SOURCE_DATE_EPOCH)" {} \;
-
 	$(FAKEROOT) $(STAGING_DIR_HOST)/bin/apk mkpkg \
 	  --info "name:$(1)$$(ABIV_$(1))" \
 	  --info "version:$(VERSION)" \
@@ -410,8 +408,7 @@ else
 	  $$(APK_SCRIPTS_$(1)) \
 	  --info "depends:$$(foreach depends,$$(subst $$(comma),$$(space),$$(subst $$(space),,$$(subst $$(paren_right),,$$(subst $$(paren_left),,$$(Package/$(1)/DEPENDS))))),$$(depends))" \
 	  --files "$$(IDIR_$(1))" \
-	  --output "$$(PACK_$(1))" \
-	  --sign "$(BUILD_KEY_APK_SEC)"
+	  --output "$$(PACK_$(1))"
 endif
 
 	@[ -f $$(PACK_$(1)) ]

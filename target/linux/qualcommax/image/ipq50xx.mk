@@ -147,6 +147,19 @@ define Device/yuncore_ax830
 endef
 TARGET_DEVICES += yuncore_ax830
 
+define Device/yuncore_ax850
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := Yuncore
+	DEVICE_MODEL := AX850
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	SOC := ipq5018
+	DEVICE_DTS_CONFIG := config@mp03.1
+	DEVICE_PACKAGES := ipq-wifi-yuncore_ax850 ath11k-firmware-qcn9074
+endef
+TARGET_DEVICES += yuncore_ax850
+
 define Device/jdcloud_re-cs-03
 	$(call Device/FitImage)
 	$(call Device/EmmcImage)

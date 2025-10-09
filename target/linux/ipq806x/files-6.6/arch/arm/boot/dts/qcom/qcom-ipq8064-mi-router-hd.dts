@@ -230,7 +230,7 @@
 		ranges;
 
 		wifi@1,0 {
-			compatible = "pci168c,0040";
+			compatible = "qcom,ath10k";
 			reg = <0x00010000 0 0 0 0>;
 
 			nvmem-cells = <&macaddr_art_1006 0>, <&precal_art_1000>;
@@ -253,7 +253,7 @@
 		ranges;
 
 		wifi@1,0 {
-			compatible = "pci168c,0040";
+			compatible = "qcom,ath10k";
 			reg = <0x00010000 0 0 0 0>;
 
 			nvmem-cells = <&macaddr_art_5006 0>, <&precal_art_5000>;
