@@ -27,10 +27,10 @@ Link: https://lore.kernel.org/linux-mtd/20231002140458.147605-1-mmkurbanov@salut
 +spinand-objs := core.o esmt.o foresee.o gigadevice.o macronix.o micron.o paragon.o
  spinand-objs += toshiba.o winbond.o xtx.o
  spinand-objs += etron.o
- spinand-objs += fudanmicro.o
+ obj-$(CONFIG_MTD_SPI_NAND) += spinand.o
 --- a/drivers/mtd/nand/spi/core.c
 +++ b/drivers/mtd/nand/spi/core.c
-@@ -895,6 +895,7 @@ static const struct spinand_manufacturer
+@@ -894,6 +894,7 @@ static const struct spinand_manufacturer
  	&toshiba_spinand_manufacturer,
  	&winbond_spinand_manufacturer,
  	&esmt_c8_spinand_manufacturer,
@@ -138,7 +138,7 @@ Link: https://lore.kernel.org/linux-mtd/20231002140458.147605-1-mmkurbanov@salut
 +};
 --- a/include/linux/mtd/spinand.h
 +++ b/include/linux/mtd/spinand.h
-@@ -306,6 +306,7 @@ extern const struct spinand_manufacturer
+@@ -305,6 +305,7 @@ extern const struct spinand_manufacturer
  extern const struct spinand_manufacturer toshiba_spinand_manufacturer;
  extern const struct spinand_manufacturer winbond_spinand_manufacturer;
  extern const struct spinand_manufacturer esmt_c8_spinand_manufacturer;
