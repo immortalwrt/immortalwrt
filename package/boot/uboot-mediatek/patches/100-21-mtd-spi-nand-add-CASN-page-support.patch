@@ -115,7 +115,7 @@ Signed-off-by: Weijie Gao <weijie.gao@mediatek.com>
  static int spinand_check_ecc_status(struct spinand_device *spinand, u8 status)
  {
  	struct nand_device *nand = spinand_to_nand(spinand);
-@@ -865,6 +925,300 @@ static int spinand_manufacturer_match(st
+@@ -864,6 +924,300 @@ static int spinand_manufacturer_match(st
  	return -ENOTSUPP;
  }
  
@@ -416,7 +416,7 @@ Signed-off-by: Weijie Gao <weijie.gao@mediatek.com>
  static int spinand_id_detect(struct spinand_device *spinand)
  {
  	u8 *id = spinand->id.data;
-@@ -896,7 +1250,7 @@ static int spinand_id_detect(struct spin
+@@ -895,7 +1249,7 @@ static int spinand_id_detect(struct spin
  
  static int spinand_manufacturer_init(struct spinand_device *spinand)
  {
@@ -425,7 +425,7 @@ Signed-off-by: Weijie Gao <weijie.gao@mediatek.com>
  		return spinand->manufacturer->ops->init(spinand);
  
  	return 0;
-@@ -905,7 +1259,7 @@ static int spinand_manufacturer_init(str
+@@ -904,7 +1258,7 @@ static int spinand_manufacturer_init(str
  static void spinand_manufacturer_cleanup(struct spinand_device *spinand)
  {
  	/* Release manufacturer private data */
@@ -434,7 +434,7 @@ Signed-off-by: Weijie Gao <weijie.gao@mediatek.com>
  		return spinand->manufacturer->ops->cleanup(spinand);
  }
  
-@@ -1026,37 +1380,455 @@ int spinand_match_and_init(struct spinan
+@@ -1025,37 +1379,455 @@ int spinand_match_and_init(struct spinan
  	return -ENOTSUPP;
  }
  
@@ -1158,7 +1158,7 @@ Signed-off-by: Weijie Gao <weijie.gao@mediatek.com>
  #define SPINAND_PAGE_READ_FROM_CACHE_OP(fast, addr, ndummy, buf, len)	\
  	SPI_MEM_OP(SPI_MEM_OP_CMD(fast ? 0x0b : 0x03, 1),		\
  		   SPI_MEM_OP_ADDR(2, addr, 1),				\
-@@ -295,6 +348,11 @@ struct spinand_ecc_info {
+@@ -294,6 +347,11 @@ struct spinand_ecc_info {
  
  #define SPINAND_HAS_QE_BIT		BIT(0)
  #define SPINAND_HAS_CR_FEAT_BIT		BIT(1)
@@ -1170,7 +1170,7 @@ Signed-off-by: Weijie Gao <weijie.gao@mediatek.com>
  
  /**
   * struct spinand_info - Structure used to describe SPI NAND chips
-@@ -366,6 +424,28 @@ struct spinand_info {
+@@ -365,6 +423,28 @@ struct spinand_info {
  	}
  
  /**
@@ -1199,7 +1199,7 @@ Signed-off-by: Weijie Gao <weijie.gao@mediatek.com>
   * struct spinand_device - SPI NAND device instance
   * @base: NAND device instance
   * @slave: pointer to the SPI slave object
-@@ -419,6 +499,23 @@ struct spinand_device {
+@@ -418,6 +498,23 @@ struct spinand_device {
  	u8 *oobbuf;
  	u8 *scratchbuf;
  	const struct spinand_manufacturer *manufacturer;
