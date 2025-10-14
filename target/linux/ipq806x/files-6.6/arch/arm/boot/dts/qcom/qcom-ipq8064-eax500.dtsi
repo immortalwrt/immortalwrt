@@ -53,36 +53,22 @@
 
 	max-link-speed = <1>;
 
-	bridge@0,0 {
-		reg = <0x00000000 0 0 0 0>;
-		#address-cells = <3>;
-		#size-cells = <2>;
-		ranges;
-
-		wifi@1,0 {
-			compatible = "qcom,ath10k";
-			reg = <0x00010000 0 0 0 0>;
-			nvmem-cells = <&precal_art_1000>;
-			nvmem-cell-names = "pre-calibration";
-		};
+	wifi@0,0 {
+		compatible = "qcom,ath10k";
+		reg = <0x0000 0 0 0 0>;
+		nvmem-cells = <&precal_art_1000>;
+		nvmem-cell-names = "pre-calibration";
 	};
 };
 
 &pcie1 {
 	status = "okay";
 
-	bridge@0,0 {
-		reg = <0x00000000 0 0 0 0>;
-		#address-cells = <3>;
-		#size-cells = <2>;
-		ranges;
-
-		wifi@1,0 {
-			compatible = "qcom,ath10k";
-			reg = <0x00010000 0 0 0 0>;
-			nvmem-cells = <&precal_art_5000>;
-			nvmem-cell-names = "pre-calibration";
-		};
+	wifi@0,0 {
+		compatible = "qcom,ath10k";
+		reg = <0x0000 0 0 0 0>;
+		nvmem-cells = <&precal_art_5000>;
+		nvmem-cell-names = "pre-calibration";
 	};
 };
 
