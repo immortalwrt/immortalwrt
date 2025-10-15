@@ -71,7 +71,12 @@
 		};
 	};
 
-	spi_pins: spi_pins {
+	spi_pins: spi-state {
+		/delete-property/ pins;
+		/delete-property/ function;
+		/delete-property/ drive-strength;
+		/delete-property/ bias-disable;
+
 		mux {
 			pins = "gpio18", "gpio19", "gpio21";
 			function = "gsbi5";
@@ -100,7 +105,7 @@
 
 		pinctrl-0 = <&spi_pins>;
 		pinctrl-names = "default";
-		cs-gpios = <&qcom_pinmux 20 0>;
+		cs-gpios = <&qcom_pinmux 20 GPIO_ACTIVE_HIGH>;
 
 		flash@0 {
 			compatible = "mx25u25635f", "jedec,spi-nor";
@@ -282,10 +287,12 @@
 
 &pcie0 {
 	status = "okay";
+};
 
+&pcie_bridge0 {
 	wifi@0,0 {
 		compatible = "qcom,ath10k";
-		reg = <0x0000 0 0 0 0>;
+		reg = <0x10000 0 0 0 0>;
 		nvmem-cells = <&macaddr_eeprom_6 1>;
 		nvmem-cell-names = "mac-address";
 	};
@@ -293,10 +300,12 @@
 
 &pcie1 {
 	status = "okay";
+};
 
+&pcie_bridge1 {
 	wifi@0,0 {
 		compatible = "qcom,ath10k";
-		reg = <0x0000 0 0 0 0>;
+		reg = <0x10000 0 0 0 0>;
 		nvmem-cells = <&macaddr_eeprom_6 2>;
 		nvmem-cell-names = "mac-address";
 	};
