@@ -1,0 +1,24 @@
+--- a/arch/arm64/boot/dts/rockchip/rk3308.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3308.dtsi
+@@ -607,6 +607,21 @@
+ 		#dma-cells = <1>;
+ 	};
+ 
++	rng: rng@ff2f0400 {
++		compatible = "rockchip,cryptov2-rng";
++		reg = <0x0 0xff2f0400 0x0 0x80>;
++		clocks = <&cru SCLK_CRYPTO>, <&cru SCLK_CRYPTO_APK>,
++			 <&cru ACLK_CRYPTO>, <&cru HCLK_CRYPTO>;
++		clock-names = "clk_crypto", "clk_crypto_apk",
++			      "aclk_crypto", "hclk_crypto";
++		assigned-clocks = <&cru SCLK_CRYPTO>, <&cru SCLK_CRYPTO_APK>,
++				  <&cru ACLK_CRYPTO>, <&cru HCLK_CRYPTO>;
++		assigned-clock-rates = <150000000>, <150000000>,
++				       <200000000>, <100000000>;
++		resets = <&cru SRST_CRYPTO>;
++		reset-names = "reset";
++	};
++
+ 	/*
+ 	 * - can be clock producer or consumer
+ 	 * - up to 8 capture channels and 2 playback channels
