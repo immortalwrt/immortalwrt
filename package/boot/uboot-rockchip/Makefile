@@ -332,6 +332,13 @@ define U-Boot/rk3576/Default
   TPL:=$(RK3576_TPL)
 endef
 
+define U-Boot/generic-rk3576
+  $(U-Boot/rk3576/Default)
+  NAME:=Generic RK3576
+  BUILD_DEVICES:= \
+    friendlyarm_nanopi-r76s
+endef
+
 define U-Boot/rock-4d-rk3576
   $(U-Boot/rk3576/Default)
   NAME:=ROCK 4D
@@ -474,6 +481,7 @@ UBOOT_TARGETS := \
   rock-3a-rk3568 \
   rock-3b-rk3568 \
   sige3-rk3568 \
+  generic-rk3576 \
   rock-4d-rk3576 \
   cyber3588-aib-rk3588 \
   nanopc-t6-rk3588 \

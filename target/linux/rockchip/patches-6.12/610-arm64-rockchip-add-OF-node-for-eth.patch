@@ -414,6 +414,52 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  };
  
+--- a/arch/arm64/boot/dts/rockchip/rk3576-nanopi-r76s.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3576-nanopi-r76s.dts
+@@ -663,6 +663,21 @@
+ 	reset-gpios = <&gpio2 RK_PB4 GPIO_ACTIVE_HIGH>;
+ 	vpcie3v3-supply = <&vcc_3v3_s3>;
+ 	status = "okay";
++
++	pcie@0,0 {
++		reg = <0x00000000 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++		device_type = "pci";
++
++		pcie@0,0 {
++			compatible = "pci10ec,8125";
++			reg = <0x000000 0 0 0 0>;
++
++			realtek,led-data = <0x0 0x0 0x200 0x2b>;
++			label = "eth0";
++		};
++	};
+ };
+ 
+ &pcie1 {
+@@ -671,6 +686,21 @@
+ 	reset-gpios = <&gpio0 RK_PC7 GPIO_ACTIVE_HIGH>;
+ 	vpcie3v3-supply = <&vcc_3v3_s3>;
+ 	status = "okay";
++
++	pcie@0,0 {
++		reg = <0x00200000 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++		device_type = "pci";
++
++		pcie@20,0 {
++			compatible = "pci10ec,8125";
++			reg = <0x000000 0 0 0 0>;
++
++			realtek,led-data = <0x0 0x0 0x200 0x2b>;
++			label = "eth1";
++		};
++	};
+ };
+ 
+ &pinctrl {
 --- a/arch/arm64/boot/dts/rockchip/rk3588-armsom-sige7.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-armsom-sige7.dts
 @@ -267,6 +267,19 @@
