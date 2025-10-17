@@ -27,6 +27,7 @@ rockchip_setup_interfaces()
 		;;
 	armsom,sige3|\
 	friendlyarm,nanopi-r5c|\
+	friendlyarm,nanopi-r76s|\
 	lunzn,fastrhino-r66s|\
 	mmbox,anas3035|\
 	radxa,e25|\
@@ -78,6 +79,7 @@ rockchip_setup_macs()
 	friendlyarm,nanopc-t6|\
 	friendlyarm,nanopi-r2c|\
 	friendlyarm,nanopi-r2s|\
+	friendlyarm,nanopi-r76s|\
 	lunzn,fastrhino-r66s|\
 	lunzn,fastrhino-r68s|\
 	mmbox,anas3035)
