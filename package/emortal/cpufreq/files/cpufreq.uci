@@ -58,6 +58,8 @@ case "$DISTRIB_TARGET" in
 			uci_write_config 0 schedutil 1008000 2208000
 			uci_write_config 4 schedutil 1008000 2304000
 			;;
+		"rockchip,rk3582"|\
+		"rockchip,rk3583"|\
 		"rockchip,rk3588"|\
 		"rockchip,rk3588j"|\
 		"rockchip,rk3588s")
