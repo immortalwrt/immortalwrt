@@ -6,8 +6,6 @@ owrt 为多平台通用，可编译高通平台，但没有NSS驱动。
 # 自用 ImmortalWRT
 高通部分源码取自以下项目：
 
-https://github.com/JiaY-shi/openwrt.git
-
 https://github.com/LiBwrt/openwrt-6.x.git
 
 https://github.com/qosmio/openwrt-ipq.git

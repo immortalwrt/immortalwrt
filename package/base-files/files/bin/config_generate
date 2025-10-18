@@ -312,7 +312,7 @@ generate_static_system() {
 	uci -q batch <<-EOF
 		delete system.@system[0]
 		add system system
-		set system.@system[-1].hostname='ImmortalWrt'
+		set system.@system[-1].hostname='ImmortalWRT'
 		set system.@system[-1].timezone='CST-8'
 		set system.@system[-1].zonename='Asia/Shanghai'
 		set system.@system[-1].ttylogin='0'

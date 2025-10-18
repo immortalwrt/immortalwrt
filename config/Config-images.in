@@ -280,7 +280,7 @@ menu "Target Images"
 	config GRUB_TITLE
 		string "Title for the menu entry in GRUB"
 		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
-		default "ImmortalWrt"
+		default "ImmortalWRT"
 		help
 		  This is the title of the GRUB menu entry.
 		  If unspecified, it defaults to OpenWrt.
