@@ -70,7 +70,7 @@
 	led-controller {
 		compatible = "pwm-leds";
 
-		backlight: backlight {
+		backlight: backlight-led {
 			label = "lcd:backlight";
 			pwms = <&pwm14 0 1000000 0>;
 			max-brightness = <255>;
