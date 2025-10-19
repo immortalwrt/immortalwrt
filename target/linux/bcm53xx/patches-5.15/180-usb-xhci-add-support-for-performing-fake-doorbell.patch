@@ -19,21 +19,19 @@ it on BCM4708 family.
 
 --- a/drivers/usb/host/xhci-plat.c
 +++ b/drivers/usb/host/xhci-plat.c
-@@ -76,14 +76,18 @@ static int xhci_priv_resume_quirk(struct
- 
+@@ -77,6 +77,8 @@ static int xhci_priv_resume_quirk(struct
  static void xhci_plat_quirks(struct device *dev, struct xhci_hcd *xhci)
  {
--	struct xhci_plat_priv *priv = xhci_to_priv(xhci);
+ 	struct xhci_plat_priv *priv = xhci_to_priv(xhci);
 +	struct platform_device *pdev = to_platform_device(dev);
 +	struct device_node *node = pdev->dev.of_node;
  
  	/*
  	 * As of now platform drivers don't provide MSI support so we ensure
- 	 * here that the generic code does not try to make a pci_dev from our
+@@ -84,6 +86,9 @@ static void xhci_plat_quirks(struct devi
  	 * dev struct in order to setup MSI
  	 */
--	xhci->quirks |= XHCI_PLAT | priv->quirks;
-+	xhci->quirks |= XHCI_PLAT | xhci_to_priv(xhci)->quirks;
+ 	xhci->quirks |= XHCI_PLAT | priv->quirks;
 +
 +	if (node && of_machine_is_compatible("brcm,bcm4708"))
 +		xhci->quirks |= XHCI_FAKE_DOORBELL;
