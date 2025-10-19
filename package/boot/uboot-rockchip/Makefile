@@ -278,7 +278,7 @@ define U-Boot/nanopi-r5s-rk3568
     friendlyarm_nanopi-r5s
 endef
 
-define U-Boot/xgp-rk3568
+define U-Boot/xiguapi-v3-rk3568
   $(U-Boot/rk3568/Default)
   NAME:=XGP Board
   BUILD_DEVICES:= \
