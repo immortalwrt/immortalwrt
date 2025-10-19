@@ -280,7 +280,7 @@ endef
 
 define U-Boot/xiguapi-v3-rk3568
   $(U-Boot/rk3568/Default)
-  NAME:=XGP Board
+  NAME:=XiGuaPi V3
   BUILD_DEVICES:= \
     nlnet_xiguapi-v3
 endef
