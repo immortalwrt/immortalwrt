@@ -35,7 +35,7 @@ Link: https://lore.kernel.org/r/20220923170235.18873-1-quic_adisi@quicinc.com
 
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -1675,7 +1675,7 @@ static void ath11k_update_11d(struct wor
+@@ -1671,7 +1671,7 @@ static void ath11k_update_11d(struct wor
  	}
  }
  
@@ -44,7 +44,7 @@ Link: https://lore.kernel.org/r/20220923170235.18873-1-quic_adisi@quicinc.com
  {
  	struct ath11k *ar;
  	struct ath11k_pdev *pdev;
-@@ -1764,9 +1764,6 @@ static void ath11k_core_restart(struct w
+@@ -1760,9 +1760,6 @@ static void ath11k_core_restart(struct w
  	struct ath11k_base *ab = container_of(work, struct ath11k_base, restart_work);
  	int ret;
  

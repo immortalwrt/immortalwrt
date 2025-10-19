@@ -112,7 +112,7 @@ Link: https://lore.kernel.org/r/20230517135934.16408-4-quic_rajkbhag@quicinc.com
  	if (ret) {
  		ath11k_err(ab, "failed to start firmware: %d\n", ret);
  		return ret;
-@@ -1779,7 +1788,8 @@ void ath11k_core_pre_reconfigure_recover
+@@ -1775,7 +1784,8 @@ void ath11k_core_pre_reconfigure_recover
  	for (i = 0; i < ab->num_radios; i++) {
  		pdev = &ab->pdevs[i];
  		ar = pdev->ar;
@@ -122,7 +122,7 @@ Link: https://lore.kernel.org/r/20230517135934.16408-4-quic_rajkbhag@quicinc.com
  			continue;
  
  		ieee80211_stop_queues(ar->hw);
-@@ -1848,7 +1858,12 @@ static void ath11k_core_post_reconfigure
+@@ -1844,7 +1854,12 @@ static void ath11k_core_post_reconfigure
  			ath11k_warn(ab,
  				    "device is wedged, will not restart radio %d\n", i);
  			break;

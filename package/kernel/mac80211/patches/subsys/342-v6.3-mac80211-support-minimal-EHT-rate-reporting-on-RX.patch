@@ -67,7 +67,7 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	u8 rx_flags;
 --- a/net/mac80211/rx.c
 +++ b/net/mac80211/rx.c
-@@ -5362,6 +5362,15 @@ void ieee80211_rx_list(struct ieee80211_
+@@ -5378,6 +5378,15 @@ void ieee80211_rx_list(struct ieee80211_
  				      status->rate_idx, status->nss))
  				goto drop;
  			break;
