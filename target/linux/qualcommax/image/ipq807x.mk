@@ -256,13 +256,13 @@ define Device/netgear_rax120v2
 	DEVICE_PACKAGES := ipq-wifi-netgear_rax120v2 kmod-spi-bitbang kmod-gpio-nxp-74hc164 kmod-hwmon-g762
 	NETGEAR_BOARD_ID := RAX120
 	NETGEAR_HW_ID := 29765589+0+512+1024+4x4+8x8
+	IMAGE/sysupgrade.bin := append-kernel | pad-offset $$$$(BLOCKSIZE) 64 | append-uImage-fakehdr filesystem | sysupgrade-tar kernel=$$$$@ | append-metadata
 ifeq ($(IB),)
 ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
 	IMAGES += web-ui-factory.img
 	IMAGE/web-ui-factory.img := append-image initramfs-uImage.itb | pad-offset $$$$(BLOCKSIZE) 64 | append-uImage-fakehdr filesystem | netgear-dni
 endif
 endif
-	IMAGE/sysupgrade.bin := append-kernel | pad-offset $$$$(BLOCKSIZE) 64 | append-uImage-fakehdr filesystem | sysupgrade-tar kernel=$$$$@ | append-metadata
 endef
 TARGET_DEVICES += netgear_rax120v2
 
@@ -302,12 +302,13 @@ define Device/netgear_wax218
 	PAGESIZE := 2048
 	SOC := ipq8072
 	DEVICE_DTS_CONFIG := config@hk07
+	DEVICE_PACKAGES := ipq-wifi-netgear_wax218 kmod-spi-bitbang kmod-gpio-nxp-74hc164
 ifeq ($(IB),)
 ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
 	ARTIFACTS := web-ui-factory.fit
 	ARTIFACT/web-ui-factory.fit := append-image initramfs-uImage.itb | ubinize-kernel | qsdk-ipq-factory-nand
 endif
-	DEVICE_PACKAGES := ipq-wifi-netgear_wax218 kmod-spi-bitbang kmod-gpio-nxp-74hc164
+endif
 endef
 TARGET_DEVICES += netgear_wax218
 

@@ -127,9 +127,11 @@ define Device/xiaomi_ax6000
 	SOC := ipq5018
 	DEVICE_DTS_CONFIG := config@mp03.1
 	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax6000 ath11k-firmware-qcn9074 ath10k-firmware-qca9887 kmod-ath10k-smallbuffers
+ifeq ($(IB),)
 ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
 	ARTIFACTS := initramfs-factory.ubi
 	ARTIFACT/initramfs-factory.ubi := append-image-stage initramfs-uImage.itb | ubinize-kernel
+endif
 endif
 endef
 TARGET_DEVICES += xiaomi_ax6000
