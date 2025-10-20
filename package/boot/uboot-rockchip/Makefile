@@ -322,6 +322,12 @@ define U-Boot/sige3-rk3568
     armsom_sige3
 endef
 
+define U-Boot/xiguapi-v3-rk3568
+  $(U-Boot/rk3568/Default)
+  NAME:=XiGuaPi V3
+  BUILD_DEVICES:= \
+    nlnet_xiguapi-v3
+endef
 
 # RK3588 boards
 
@@ -429,6 +435,7 @@ UBOOT_TARGETS := \
   nanopi-r5c-rk3568 \
   nanopi-r5s-rk3568 \
   photonicat-rk3568 \
+  xiguapi-v3-rk3568 \
   radxa-e25-rk3568 \
   roc-pc-rk3568 \
   rock-3a-rk3568 \
