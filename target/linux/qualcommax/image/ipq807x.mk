@@ -74,6 +74,7 @@ define Device/asus_rt-ax89x
 		append-kernel | asus-fake-ramdisk |\
 		multiImage gzip $$(KDIR)/tmp/fakerd $$(KDIR)/image-$$(DEVICE_DTS).dtb |\
 		sysupgrade-tar kernel=$$$$@ | append-metadata
+ifeq ($(IB),)
 ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
 	ARTIFACTS := initramfs-factory.trx initramfs-uImage.itb
 	ARTIFACT/initramfs-uImage.itb := \
@@ -83,6 +84,7 @@ ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
 		asus-fake-rootfs xz /lib/firmware/IPQ8074A/fw_version.txt "fake" -no-compression |\
 		multiImage gzip $$(KDIR)/tmp/fakehsqs $$(KDIR)/image-$$(DEVICE_DTS).dtb |\
 		asus-trx -v 2 -n RT-AX89U -b 388 -e 49000
+endif
 endif
 endef
 TARGET_DEVICES += asus_rt-ax89x
@@ -254,9 +256,11 @@ define Device/netgear_rax120v2
 	DEVICE_PACKAGES := ipq-wifi-netgear_rax120v2 kmod-spi-bitbang kmod-gpio-nxp-74hc164 kmod-hwmon-g762
 	NETGEAR_BOARD_ID := RAX120
 	NETGEAR_HW_ID := 29765589+0+512+1024+4x4+8x8
+ifeq ($(IB),)
 ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
 	IMAGES += web-ui-factory.img
 	IMAGE/web-ui-factory.img := append-image initramfs-uImage.itb | pad-offset $$$$(BLOCKSIZE) 64 | append-uImage-fakehdr filesystem | netgear-dni
+endif
 endif
 	IMAGE/sysupgrade.bin := append-kernel | pad-offset $$$$(BLOCKSIZE) 64 | append-uImage-fakehdr filesystem | sysupgrade-tar kernel=$$$$@ | append-metadata
 endef
@@ -298,6 +302,7 @@ define Device/netgear_wax218
 	PAGESIZE := 2048
 	SOC := ipq8072
 	DEVICE_DTS_CONFIG := config@hk07
+ifeq ($(IB),)
 ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
 	ARTIFACTS := web-ui-factory.fit
 	ARTIFACT/web-ui-factory.fit := append-image initramfs-uImage.itb | ubinize-kernel | qsdk-ipq-factory-nand
@@ -447,9 +452,11 @@ define Device/xiaomi_ax3600
 	SOC := ipq8071
 	DEVICE_DTS_CONFIG := config@ac04
 	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax3600 ath10k-firmware-qca9887 kmod-ath10k-smallbuffers
+ifeq ($(IB),)
 ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
 	ARTIFACTS := initramfs-factory.ubi
 	ARTIFACT/initramfs-factory.ubi := append-image-stage initramfs-uImage.itb | ubinize-kernel
+endif
 endif
 endef
 TARGET_DEVICES += xiaomi_ax3600
@@ -477,9 +484,11 @@ define Device/xiaomi_ax9000
 	SOC := ipq8072
 	DEVICE_DTS_CONFIG := config@hk14
 	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax9000 ath11k-firmware-qcn9074 ath10k-firmware-qca9887 kmod-ath10k-smallbuffers
+ifeq ($(IB),)
 ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
 	ARTIFACTS := initramfs-factory.ubi
 	ARTIFACT/initramfs-factory.ubi := append-image-stage initramfs-uImage.itb | ubinize-kernel
+endif
 endif
 endef
 TARGET_DEVICES += xiaomi_ax9000

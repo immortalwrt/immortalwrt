@@ -6,9 +6,9 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/firmware/qca-wireless.git
-PKG_SOURCE_DATE:=2025-10-14
-PKG_SOURCE_VERSION:=821d27b582c130ab65b7d20d0dfcbade7cdaf623
-PKG_MIRROR_HASH:=1e2959037baa5cfb24d931f9ad9b8f9a732d93810fce91a836ca7ed4d46ad7b0
+PKG_SOURCE_DATE:=2025-10-17
+PKG_SOURCE_VERSION:=a1529e183333e38bdc95dc8d9317b7af2bec0dcd
+PKG_MIRROR_HASH:=30ce8f808424602cba556e106cb16080ef29d6d45a9d9018e04664598460eb2f
 PKG_FLAGS:=nonshared
 
 include $(INCLUDE_DIR)/package.mk
@@ -57,6 +57,8 @@ ALLWIFIBOARDS:= \
 	linksys_mx8500 \
 	linksys_spnmx56 \
 	linksys_whw03 \
+	meraki_mr30h \
+	meraki_z3 \
 	netgear_lbr20 \
 	netgear_rax120v2 \
 	netgear_sxk80 \
@@ -241,6 +243,8 @@ $(eval $(call generate-ipq-wifi-package,linksys_mx5500,Linksys MX5500))
 $(eval $(call generate-ipq-wifi-package,linksys_mx8500,Linksys MX8500))
 $(eval $(call generate-ipq-wifi-package,linksys_spnmx56,Linksys SPNMX56))
 $(eval $(call generate-ipq-wifi-package,linksys_whw03,Linksys WHW03))
+$(eval $(call generate-ipq-wifi-package,meraki_mr30h,Meraki MR30H))
+$(eval $(call generate-ipq-wifi-package,meraki_z3,Meraki Z3))
 $(eval $(call generate-ipq-wifi-package,netgear_lbr20,Netgear LBR20))
 $(eval $(call generate-ipq-wifi-package,netgear_rax120v2,Netgear RAX120v2))
 $(eval $(call generate-ipq-wifi-package,netgear_sxk80,Netgear SXK80))
