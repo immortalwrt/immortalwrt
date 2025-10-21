@@ -386,6 +386,40 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  };
  
  &pcie3x2 {
+--- a/arch/arm64/boot/dts/rockchip/rk3568-photonicat.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-photonicat.dts
+@@ -287,6 +287,7 @@
+ &gmac0 {
+ 	assigned-clocks = <&cru SCLK_GMAC0_RX_TX>;
+ 	assigned-clock-parents = <&gmac0_xpcsclk>;
++	label = "eth1";
+ 	power-domains = <&power RK3568_PD_PIPE>;
+ 	phys = <&combphy2 PHY_TYPE_SGMII>;
+ 	phy-handle = <&sgmii_phy>;
+@@ -305,6 +306,7 @@
+ 	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>;
+ 	assigned-clock-rates = <0>, <125000000>;
+ 	clock_in_out = "output";
++	label = "eth0";
+ 	phy-handle = <&rgmii_phy>;
+ 	phy-mode = "rgmii-id";
+ 	phy-supply = <&vcc_3v3>;
+@@ -380,6 +382,7 @@
+ 		compatible = "ethernet-phy-id0000.011a";
+ 		reg = <0x3>;
+ 		max-speed = <1000>;
++		motorcomm,led-data = <0xe004 0x0000 0x2600 0x0070 0x000a>;
+ 		eee-broken-10gt;
+ 		eee-broken-10gkx4;
+ 		eee-broken-10gkr;
+@@ -393,6 +396,7 @@
+ 	rgmii_phy: ethernet-phy@3 {
+ 		compatible = "ethernet-phy-ieee802.3-c22";
+ 		reg = <0x3>;
++		motorcomm,led-data = <0xe004 0x0000 0x2600 0x0070 0x000a>;
+ 		reset-assert-us = <20000>;
+ 		reset-deassert-us = <100000>;
+ 		reset-gpios = <&gpio4 RK_PC0 GPIO_ACTIVE_LOW>;
 --- a/arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts
 @@ -591,6 +591,25 @@

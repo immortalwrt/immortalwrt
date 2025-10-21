@@ -18,6 +18,11 @@
 	bootph-pre-ram;
 };
 
+&sdhci {
+	cap-mmc-highspeed;
+	max-frequency = <150000000>;
+};
+
 &uart2 {
 	clock-frequency = <24000000>;
 	bootph-all;
