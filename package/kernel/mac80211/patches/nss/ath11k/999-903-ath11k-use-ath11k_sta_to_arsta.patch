@@ -39,7 +39,7 @@
  				return;
  			}
  		}
-@@ -3735,7 +3734,7 @@ static void ath11k_dp_rx_update_user_sta
+@@ -3732,7 +3731,7 @@ static void ath11k_dp_rx_update_user_sta
  		return;
  	}
  
@@ -48,7 +48,7 @@
  	rx_stats = arsta->rx_stats;
  
  	if (ar->ab->nss.enabled)
-@@ -6434,7 +6433,7 @@ int ath11k_dp_rx_process_mon_status(stru
+@@ -6431,7 +6430,7 @@ int ath11k_dp_rx_process_mon_status(stru
  		if ((ppdu_info->fc_valid) &&
  		    (ppdu_info->ast_index != HAL_AST_IDX_INVALID)) {
  			if (ppdu_info->reception_type == HAL_RX_RECEPTION_TYPE_SU) {
@@ -59,7 +59,7 @@
  			} else {
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -4467,7 +4467,7 @@ static int ath11k_mac_op_set_key(struct
+@@ -4500,7 +4500,7 @@ static int ath11k_mac_op_set_key(struct
  	mutex_lock(&ar->conf_mutex);
  	if (sta) {
  		peer_addr = sta->addr;

@@ -136,7 +136,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  ATH11K_TRACING=
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -949,6 +949,11 @@ enum ath11k_pm_policy {
+@@ -951,6 +951,11 @@ enum ath11k_pm_policy {
  	ATH11K_PM_WOW,
  };
  
@@ -148,7 +148,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  /* Master structure to hold the hw data which may be used in core module */
  struct ath11k_base {
  	enum ath11k_hw_rev hw_rev;
-@@ -1112,6 +1117,8 @@ struct ath11k_base {
+@@ -1114,6 +1119,8 @@ struct ath11k_base {
  
  	struct completion restart_completed;
  

@@ -23,7 +23,7 @@ Signed-off-by: Miles Hu <milehu@codeaurora.org>
  #include "fw.h"
  #include "coredump.h"
  
-@@ -523,6 +524,8 @@ struct ath11k_htt_data_stats {
+@@ -525,6 +526,8 @@ struct ath11k_htt_data_stats {
  	u64 bw[ATH11K_COUNTER_TYPE_MAX][ATH11K_BW_NUM];
  	u64 nss[ATH11K_COUNTER_TYPE_MAX][ATH11K_NSS_NUM];
  	u64 gi[ATH11K_COUNTER_TYPE_MAX][ATH11K_GI_NUM];
@@ -32,7 +32,7 @@ Signed-off-by: Miles Hu <milehu@codeaurora.org>
  };
  
  struct ath11k_htt_tx_stats {
-@@ -530,6 +533,9 @@ struct ath11k_htt_tx_stats {
+@@ -532,6 +535,9 @@ struct ath11k_htt_tx_stats {
  	u64 tx_duration;
  	u64 ba_fails;
  	u64 ack_fails;
@@ -42,7 +42,7 @@ Signed-off-by: Miles Hu <milehu@codeaurora.org>
  };
  
  struct ath11k_per_ppdu_tx_stats {
-@@ -648,11 +654,16 @@ struct ath11k_per_peer_tx_stats {
+@@ -650,11 +656,16 @@ struct ath11k_per_peer_tx_stats {
  	u32 succ_bytes;
  	u32 retry_bytes;
  	u32 failed_bytes;
