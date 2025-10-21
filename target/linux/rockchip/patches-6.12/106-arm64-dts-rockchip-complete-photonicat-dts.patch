@@ -1,0 +1,154 @@
+--- a/arch/arm64/boot/dts/rockchip/rk3568-photonicat.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-photonicat.dts
+@@ -40,6 +40,12 @@
+ 		stdout-path = "serial2:1500000n8";
+ 	};
+ 
++	gpio-poweroff {
++		compatible = "gpio-poweroff";
++		gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_LOW>;
++		timeout-ms = <3000>;
++	};
++
+ 	hdmi_con: hdmi-con {
+ 		compatible = "hdmi-connector";
+ 		type = "a";
+@@ -81,6 +87,7 @@
+ 		regulator-boot-on;
+ 		regulator-min-microvolt = <3300000>;
+ 		regulator-max-microvolt = <3300000>;
++		startup-delay-us = <50000>;
+ 		vin-supply = <&vcc3v3_pi6c>;
+ 	};
+ 
+@@ -94,6 +101,7 @@
+ 		regulator-name = "vcc3v3_pi6c";
+ 		regulator-min-microvolt = <3300000>;
+ 		regulator-max-microvolt = <3300000>;
++		startup-delay-us = <200000>;
+ 		vin-supply = <&vcc_syson>;
+ 	};
+ 
+@@ -131,6 +139,19 @@
+ 		vin-supply = <&vccin_5v>;
+ 	};
+ 
++	/* actually fed by vccin_5v, dependent on vcc5v0_usb30_otg0 */
++	vcc5v0_boost: regulator-vcc5v0-boost {
++		compatible = "regulator-fixed";
++		enable-active-high;
++		gpio = <&gpio4 RK_PD2 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&vcc5v0_boost_en>;
++		regulator-name = "vcc5v0_boost";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		vin-supply = <&vcc5v0_usb30_otg0>;
++	};
++
+ 	vcc5v0_usb30_otg0: regulator-vcc5v0-usb30-otg0 {
+ 		compatible = "regulator-fixed";
+ 		enable-active-high;
+@@ -218,6 +239,7 @@
+ 		compatible = "rfkill-gpio";
+ 		label = "M.2 USB Modem";
+ 		radio-type = "wwan";
++		reset-gpios = <&gpio0 RK_PB0 GPIO_ACTIVE_LOW>;
+ 		shutdown-gpios = <&gpio4 RK_PC4 GPIO_ACTIVE_HIGH>;
+ 	};
+ 
+@@ -241,6 +263,7 @@
+ };
+ 
+ &combphy2 {
++	rockchip,sgmii-mac-sel = <0>;
+ 	status = "okay";
+ };
+ 
+@@ -262,9 +285,20 @@
+ 
+ /* Motorcomm YT8521SC LAN port (require SGMII) */
+ &gmac0 {
+-	status = "disabled";
++	assigned-clocks = <&cru SCLK_GMAC0_RX_TX>;
++	assigned-clock-parents = <&gmac0_xpcsclk>;
++	power-domains = <&power RK3568_PD_PIPE>;
++	phys = <&combphy2 PHY_TYPE_SGMII>;
++	phy-handle = <&sgmii_phy>;
++	phy-mode = "sgmii";
++	phy-supply = <&vcc_3v3>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&gmac0_miim>;
++	rockchip,xpcs = <&xpcs>;
++	status = "okay";
+ };
+ 
++
+ /* Motorcomm YT8521SC WAN port */
+ &gmac1 {
+ 	assigned-clocks = <&cru SCLK_GMAC1_RX_TX>, <&cru SCLK_GMAC1>;
+@@ -341,6 +375,20 @@
+ 	status = "okay";
+ };
+ 
++&mdio0 {
++	sgmii_phy: ethernet-phy@3 {
++		compatible = "ethernet-phy-id0000.011a";
++		reg = <0x3>;
++		max-speed = <1000>;
++		eee-broken-10gt;
++		eee-broken-10gkx4;
++		eee-broken-10gkr;
++		reset-assert-us = <20000>;
++		reset-deassert-us = <100000>;
++		reset-gpios = <&gpio3 RK_PC6 GPIO_ACTIVE_LOW>;
++	};
++};
++
+ &mdio1 {
+ 	rgmii_phy: ethernet-phy@3 {
+ 		compatible = "ethernet-phy-ieee802.3-c22";
+@@ -395,6 +443,10 @@
+ 		usb_host_pwren_h: usb-host-pwren-h {
+ 			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
++
++		vcc5v0_boost_en: vcc5v0-boost-en {
++			rockchip,pins = <4 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
+ 	};
+ 
+ 	wifi {
+@@ -500,6 +552,7 @@
+ 
+ 	bluetooth {
+ 		compatible = "qcom,qca9377-bt";
++		clock-names = "lpo";
+ 		clocks = <&pmucru CLK_RTC_32K>;
+ 		enable-gpios = <&gpio2 RK_PB7 GPIO_ACTIVE_HIGH>;
+ 		pinctrl-names = "default";
+@@ -536,6 +589,7 @@
+ /* USB Type-A Port */
+ &usb_host0_xhci {
+ 	dr_mode = "host";
++	extcon = <&usb2phy0>;
+ 	status = "okay";
+ };
+ 
+@@ -554,7 +608,7 @@
+ };
+ 
+ &usb2phy0_otg {
+-	phy-supply = <&vcc5v0_usb30_otg0>;
++	phy-supply = <&vcc5v0_boost>;
+ 	status = "okay";
+ };
+ 
+@@ -588,3 +642,7 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&clk32k_out1>;
+ };
++
++&xpcs {
++	status = "okay";
++};
