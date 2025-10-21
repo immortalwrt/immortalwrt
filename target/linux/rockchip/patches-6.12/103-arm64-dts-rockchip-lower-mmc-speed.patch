@@ -34,6 +34,28 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  &u2phy0_host {
  	phy-supply = <&vdd_5v>;
  };
+--- a/arch/arm64/boot/dts/rockchip/rk3568-photonicat.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-photonicat.dts
+@@ -433,7 +433,8 @@
+ /* eMMC */
+ &sdhci {
+ 	bus-width = <8>;
+-	max-frequency = <200000000>;
++	cap-mmc-highspeed;
++	max-frequency = <150000000>;
+ 	mmc-hs200-1_8v;
+ 	non-removable;
+ 	pinctrl-names = "default";
+@@ -467,7 +468,8 @@
+ 	non-removable;
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&sdmmc1_bus4 &sdmmc1_cmd &sdmmc1_clk>;
+-	sd-uhs-sdr104;
++	sd-uhs-sdr25;
++	sd-uhs-sdr50;
+ 	vmmc-supply = <&vcc3v3_sys>;
+ 	vqmmc-supply = <&vcc_1v8>;
+ 	#address-cells = <1>;
 --- a/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
 @@ -771,7 +771,7 @@

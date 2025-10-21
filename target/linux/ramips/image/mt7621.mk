@@ -228,8 +228,9 @@ define Build/zytrx-header
 endef
 
 define Build/zyxel-nwa-fit
+	# "77 e1" is NWA90AX
 	$(TOPDIR)/scripts/mkits-zyxel-fit.sh \
-		$@.its $@ "6b e1 6f e1 ff ff ff ff ff ff"
+		$@.its $@ "6b e1 6f e1 77 e1 ff ff ff ff"
 	PATH=$(LINUX_DIR)/scripts/dtc:$(PATH) mkimage -f $@.its $@.new
 	@mv $@.new $@
 endef
@@ -1104,6 +1105,30 @@ define Device/dlink_dir-882-r1
 	ab0dff19af8842cdb70a86b4b68d23f7
 endef
 TARGET_DEVICES += dlink_dir-882-r1
+
+define Device/dlink_dir-x1860-b1
+  $(Device/nand)
+  KERNEL_SIZE := 8192k
+  IMAGE_SIZE := 40960k
+  DEVICE_VENDOR := D-Link
+  DEVICE_MODEL := DIR-X1860
+  DEVICE_VARIANT := B1
+  DEVICE_ALT0_VENDOR := D-Link
+  DEVICE_ALT0_MODEL := DIR-X1550
+  DEVICE_ALT0_VARIANT := A1
+  DEVICE_PACKAGES := kmod-mt7915-firmware
+  KERNEL_LOADADDR := 0x82000000
+  KERNEL := kernel-bin | relocate-kernel $(loadaddr-y) | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb | \
+	append-squashfs4-fakeroot
+  IMAGES += factory.bin recovery.bin
+  IMAGE/recovery.bin := append-kernel | pad-to $$(KERNEL_SIZE) | \
+	append-ubi | check-size
+  IMAGE/factory.bin := $$(IMAGE/recovery.bin) | \
+	append-dlink-covr-metadata $$(DEVICE_MODEL) | \
+	dlink-sge-image $$(DEVICE_MODEL)-$$(DEVICE_VARIANT)
+endef
+TARGET_DEVICES += dlink_dir-x1860-b1
 
 define Device/dlink_dra-1360-a1
   $(Device/dlink_dxx-1xx0-x1)
@@ -2884,7 +2909,7 @@ define Device/tplink_eap613-v1
   DEVICE_PACKAGES := kmod-mt7915-firmware -uboot-envtools
   TPLINK_BOARD_ID := EAP610-V3
   KERNEL := kernel-bin | lzma | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb | pad-to 64k
-  KERNEL_INITRAMFS := kernel-bin | lzma | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd
+  KERNEL_INITRAMFS := kernel-bin | lzma | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
   IMAGE_SIZE := 13248k
 endef
 TARGET_DEVICES += tplink_eap613-v1
@@ -2897,7 +2922,7 @@ define Device/tplink_eap615-wall-v1
   DEVICE_PACKAGES := kmod-mt7915-firmware -uboot-envtools
   TPLINK_BOARD_ID := EAP615-WALL-V1
   KERNEL := kernel-bin | lzma -d22 | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb | pad-to 64k
-  KERNEL_INITRAMFS := kernel-bin | lzma -d22 | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd
+  KERNEL_INITRAMFS := kernel-bin | lzma -d22 | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
   IMAGE_SIZE := 13248k
 endef
 TARGET_DEVICES += tplink_eap615-wall-v1
@@ -3748,6 +3773,8 @@ endef
 define Device/zyxel_nwa50ax
   $(Device/zyxel_nwa-ax)
   DEVICE_MODEL := NWA50AX
+  DEVICE_ALT0_VENDOR := Zyxel
+  DEVICE_ALT0_MODEL := NWA90AX
 endef
 TARGET_DEVICES += zyxel_nwa50ax
 

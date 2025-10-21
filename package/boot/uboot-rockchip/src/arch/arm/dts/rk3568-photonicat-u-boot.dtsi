@@ -14,6 +14,11 @@
 	bootph-pre-ram;
 };
 
+&sdhci {
+	cap-mmc-highspeed;
+	max-frequency = <150000000>;
+};
+
 &vcc3v3_sd {
 	bootph-pre-ram;
 };
