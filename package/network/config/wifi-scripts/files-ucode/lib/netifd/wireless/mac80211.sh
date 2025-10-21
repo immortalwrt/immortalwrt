@@ -270,11 +270,15 @@ function setup() {
 		if (!v.config.default_macaddr)
 			config.macaddr = v.config.macaddr;
 
-		config_add(config, "htmode", wdev_htmode(data.config));
+		config_add(config, "freq", data.config.frequency);
+		config_add(config, "htmode", iw_htmode(data.config));
 		if (mode != "monitor") {
-			config_add(config, "basic-rates", supplicant.ratelist(data.config.basic_rate));
+			let basic_rate_list = v.config.basic_rate ?? data.config.basic_rate;
+			config_add(config, "basic-rates", supplicant.ratelist(basic_rate_list));
 			config_add(config, "mcast-rate", supplicant.ratestr(v.config.mcast_rate));
 			config_add(config, "beacon-interval", data.config.beacon_int);
+			if (mode == "adhoc")
+				config_add(config, "bssid", v.config.bssid);
 			if (mode == "mesh") {
 				config_add(config, "ssid", v.config.mesh_id);
 				config_add_mesh_params(config, v.config);
