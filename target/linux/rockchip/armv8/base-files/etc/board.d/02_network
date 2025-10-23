@@ -19,6 +19,7 @@ rockchip_setup_interfaces()
 	friendlyarm,nanopi-r4se|\
 	friendlyarm,nanopi-r4s-enterprise|\
 	friendlyarm,nanopi-r6c|\
+	ninetripod,x3568-v4|\
 	radxa,e52c|\
 	radxa,rockpi-e|\
 	xunlong,orangepi-r1-plus|\
