@@ -1,0 +1,88 @@
+From aa4a7ee1d3417bc11207ad0a78d579ece7fe0c13 Mon Sep 17 00:00:00 2001
+From: Felix Fietkau <nbd@nbd.name>
+Date: Fri, 17 Oct 2025 10:25:55 +0000
+Subject: [PATCH] ubusd: fix more instances of missing length checks for
+ patterns
+
+More instances of the same bug fixed by commit d31effb4277bd5.
+
+Reported-by: Karsten Sperling <ksperling@apple.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+---
+ ubusd_acl.c   | 17 +++++++++++++++++
+ ubusd_proto.c |  3 +++
+ 2 files changed, 20 insertions(+)
+
+--- a/ubusd_acl.c
++++ b/ubusd_acl.c
+@@ -247,6 +247,9 @@ ubusd_acl_alloc_obj(struct ubusd_acl_fil
+ 	char *k;
+ 	bool partial = false;
+ 
++	if (!len)
++		return NULL;
++
+ 	if (obj[len - 1] == '*') {
+ 		partial = true;
+ 		len--;
+@@ -277,6 +280,8 @@ ubusd_acl_add_access(struct ubusd_acl_fi
+ 		return;
+ 
+ 	o = ubusd_acl_alloc_obj(file, blobmsg_name(obj));
++	if (!o)
++		return;
+ 
+ 	o->methods = tb[ACL_ACCESS_METHODS];
+ 	o->tags = tb[ACL_ACCESS_TAGS];
+@@ -291,6 +296,9 @@ ubusd_acl_add_subscribe(struct ubusd_acl
+ {
+ 	struct ubusd_acl_obj *o = ubusd_acl_alloc_obj(file, obj);
+ 
++	if (!o)
++		return;
++
+ 	o->subscribe = true;
+ }
+ 
+@@ -299,6 +307,9 @@ ubusd_acl_add_publish(struct ubusd_acl_f
+ {
+ 	struct ubusd_acl_obj *o = ubusd_acl_alloc_obj(file, obj);
+ 
++	if (!o)
++		return;
++
+ 	o->publish = true;
+ }
+ 
+@@ -306,6 +317,9 @@ static void ubusd_acl_add_listen(struct
+ {
+ 	struct ubusd_acl_obj *o = ubusd_acl_alloc_obj(file, obj);
+ 
++	if (!o)
++		return;
++
+ 	o->listen = true;
+ }
+ 
+@@ -313,6 +327,9 @@ static void ubusd_acl_add_send(struct ub
+ {
+ 	struct ubusd_acl_obj *o = ubusd_acl_alloc_obj(file, obj);
+ 
++	if (!o)
++		return;
++
+ 	o->send = true;
+ }
+ 
+--- a/ubusd_proto.c
++++ b/ubusd_proto.c
+@@ -241,6 +241,9 @@ static int __ubusd_handle_lookup(struct
+ 
+ 	objpath = blob_data(attr[UBUS_ATTR_OBJPATH]);
+ 	len = strlen(objpath);
++	if (!len)
++		return UBUS_STATUS_INVALID_ARGUMENT;
++
+ 	if (objpath[len - 1] != '*') {
+ 		obj = avl_find_element(&path, objpath, obj, path);
+ 		if (!obj)

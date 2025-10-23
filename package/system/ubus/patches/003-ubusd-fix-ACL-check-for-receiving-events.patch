@@ -1,0 +1,24 @@
+From 60e04048a0e2f3e33651c19e62861b41be4c290f Mon Sep 17 00:00:00 2001
+From: Felix Fietkau <nbd@nbd.name>
+Date: Fri, 17 Oct 2025 11:15:26 +0000
+Subject: [PATCH] ubusd: fix ACL check for receiving events
+
+Wildcard event match must also be subject to ACL checks
+
+Reported-by: Karsten Sperling <ksperling@apple.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+---
+ ubusd_event.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/ubusd_event.c
++++ b/ubusd_event.c
+@@ -93,7 +93,7 @@ static int ubusd_alloc_event_pattern(str
+ 		len--;
+ 	}
+ 
+-	if (pattern[0] && ubusd_acl_check(cl, pattern, NULL, UBUS_ACL_LISTEN))
++	if (ubusd_acl_check(cl, pattern, NULL, UBUS_ACL_LISTEN))
+ 		return UBUS_STATUS_PERMISSION_DENIED;
+ 
+ 	ev = calloc(1, sizeof(*ev) + len + 1);
