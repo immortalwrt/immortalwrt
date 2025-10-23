@@ -259,6 +259,18 @@ define Device/mmbox_anas3035
 endef
 TARGET_DEVICES += mmbox_anas3035
 
+define Device/ninetripod_x3568-v4
+  DEVICE_VENDOR := NineTripod
+  DEVICE_MODEL := X3568
+  DEVICE_VARIANT := v4
+  SOC := rk3568
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := blkdiscard block-mount kmod-ata-ahci-dwc kmod-nvme kmod-hwmon-pwmfan \
+	kmod-input-adc-keys kmod-saradc-rockchip kmod-rtc-pcf8563 kmod-brcmfmac wpad-openssl \
+	brcmfmac-firmware-43752-sdio brcmfmac-nvram-43752-sdio
+endef
+TARGET_DEVICES += ninetripod_x3568-v4
+
 define Device/nlnet_xiguapi-v3
   DEVICE_VENDOR := NLnet
   DEVICE_MODEL := XiGuaPi V3
