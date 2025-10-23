@@ -293,6 +293,14 @@ define Device/mmbox_anas3035
 endef
 TARGET_DEVICES += mmbox_anas3035
 
+define Device/nlnet_xiguapi-v3
+  $(Device/rk3568)
+  DEVICE_VENDOR := NLnet
+  DEVICE_MODEL := XiGuaPi V3
+  DEVICE_PACKAGES := kmod-mt7916-firmware wpad-openssl kmod-usb-net-rndis uqmi
+endef
+TARGET_DEVICES += nlnet_xiguapi-v3
+
 define Device/pine64_rock64
   $(Device/rk3328)
   DEVICE_VENDOR := Pine64
