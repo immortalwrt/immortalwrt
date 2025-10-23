@@ -1,0 +1,57 @@
+From 76a4e06f21f8433c3176c2d1d3d3461c4c5f9621 Mon Sep 17 00:00:00 2001
+From: Tianling Shen <cnsztl@gmail.com>
+Date: Thu, 23 Oct 2025 15:15:46 +0800
+Subject: [PATCH] Revert "perf test: Don't leak workload gopipe in
+ PERF_RECORD_*"
+
+This commit breaks building perf followingly with v5.15.195:
+
+   | /usr/bin/ld: perf-in.o: in function `test__PERF_RECORD':
+   | /home/username/src/vaisala-linux-stable/tools/perf/tests/perf-record.c:142: undefined reference to `evlist__cancel_workload'
+   | /usr/bin/ld: /home/username/src/vaisala-linux-stable/tools/perf/tests/perf-record.c:130: undefined reference to `evlist__cancel_workload'
+
+The 'evlist__cancel_workload' seems to be introduced in commit e880a70f8046 ("perf stat: Close cork_fd when create_perf_stat_counter() failed")
+which is currently not included in the 5.15.y stable series.
+
+This reverts commit b7e5c59f3b0971f56ebbceb9d42cc45e9ac1cd94.
+
+Link: https://lore.kernel.org/stable/8c1c66c4-62dc-416a-b52e-314ce98fe474@vaisala.com/
+Signed-off-by: Tianling Shen <cnsztl@gmail.com>
+---
+ tools/perf/tests/perf-record.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+--- a/tools/perf/tests/perf-record.c
++++ b/tools/perf/tests/perf-record.c
+@@ -115,7 +115,6 @@ int test__PERF_RECORD(struct test *test
+ 	if (err < 0) {
+ 		pr_debug("sched__get_first_possible_cpu: %s\n",
+ 			 str_error_r(errno, sbuf, sizeof(sbuf)));
+-		evlist__cancel_workload(evlist);
+ 		goto out_delete_evlist;
+ 	}
+ 
+@@ -127,7 +126,6 @@ int test__PERF_RECORD(struct test *test
+ 	if (sched_setaffinity(evlist->workload.pid, cpu_mask_size, &cpu_mask) < 0) {
+ 		pr_debug("sched_setaffinity: %s\n",
+ 			 str_error_r(errno, sbuf, sizeof(sbuf)));
+-		evlist__cancel_workload(evlist);
+ 		goto out_delete_evlist;
+ 	}
+ 
+@@ -139,7 +137,6 @@ int test__PERF_RECORD(struct test *test
+ 	if (err < 0) {
+ 		pr_debug("perf_evlist__open: %s\n",
+ 			 str_error_r(errno, sbuf, sizeof(sbuf)));
+-		evlist__cancel_workload(evlist);
+ 		goto out_delete_evlist;
+ 	}
+ 
+@@ -152,7 +149,6 @@ int test__PERF_RECORD(struct test *test
+ 	if (err < 0) {
+ 		pr_debug("evlist__mmap: %s\n",
+ 			 str_error_r(errno, sbuf, sizeof(sbuf)));
+-		evlist__cancel_workload(evlist);
+ 		goto out_delete_evlist;
+ 	}
+ 
