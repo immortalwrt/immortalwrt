@@ -57,7 +57,7 @@ reverted:
  	if (params->mgmt_frame_protection == MGMT_FRAME_PROTECTION_REQUIRED &&
  	    nla_put_u32(msg, NL80211_ATTR_USE_MFP, NL80211_MFP_REQUIRED))
  		goto fail;
-@@ -10202,7 +10167,6 @@ static int nl80211_set_param(void *priv,
+@@ -10205,7 +10170,6 @@ static int nl80211_set_param(void *priv,
  {
  	struct i802_bss *bss = priv;
  	struct wpa_driver_nl80211_data *drv = bss->drv;
@@ -65,7 +65,7 @@ reverted:
  
  	if (param == NULL)
  		return 0;
-@@ -10273,33 +10237,6 @@ static int nl80211_set_param(void *priv,
+@@ -10276,33 +10240,6 @@ static int nl80211_set_param(void *priv,
  	if (os_strstr(param, "rsn_override_in_driver=1"))
  		drv->capa.flags2 |= WPA_DRIVER_FLAGS2_RSN_OVERRIDE_STA;
  
