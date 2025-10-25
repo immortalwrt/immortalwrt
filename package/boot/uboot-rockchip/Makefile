@@ -488,8 +488,8 @@ UBOOT_TARGETS := \
   mrkaio-m68s-rk3568 \
   nanopi-r5c-rk3568 \
   nanopi-r5s-rk3568 \
-  x3568-v4-rk3568 \
   photonicat-rk3568 \
+  x3568-v4-rk3568 \
   xiguapi-v3-rk3568 \
   radxa-e25-rk3568 \
   roc-pc-rk3568 \

@@ -226,6 +226,14 @@
 	};
 };
 
+&can1 {
+	assigned-clocks = <&cru CLK_CAN1>;
+	assigned-clock-rates = <150000000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&can1m1_pins>;
+	status = "okay";
+};
+
 /* used for usb_host0_xhci */
 &combphy0 {
 	status = "okay";
@@ -293,14 +301,6 @@
 
 &gpu {
 	mali-supply = <&vdd_gpu>;
-	status = "okay";
-};
-
-&pdm {
-	status = "okay";
-};
-
-&spdif {
 	status = "okay";
 };
 
@@ -588,19 +588,6 @@
 	status = "okay";
 };
 
-&can1 {
-	assigned-clocks = <&cru CLK_CAN1>;
-	assigned-clock-rates = <150000000>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&can1m1_pins>;
-	status = "okay";
-};
-
-/* Required remotectl for IR receiver */
-&pwm7 {
-	status = "disabled";
-};
-
 &mdio0 {
 	rgmii_phy0: ethernet-phy@0 {
 		compatible = "ethernet-phy-ieee802.3-c22";
@@ -608,8 +595,6 @@
 		reset-assert-us = <20000>;
 		reset-deassert-us = <100000>;
 		reset-gpios = <&gpio2 RK_PD3 GPIO_ACTIVE_LOW>;
-		rx-internal-delay-ps = <1500>;
-		tx-internal-delay-ps = <1500>;
 	};
 };
 
@@ -620,8 +605,6 @@
 		reset-assert-us = <20000>;
 		reset-deassert-us = <100000>;
 		reset-gpios = <&gpio2 RK_PD1 GPIO_ACTIVE_LOW>;
-		rx-internal-delay-ps = <1500>;
-		tx-internal-delay-ps = <1500>;
 	};
 };
 
@@ -634,6 +617,10 @@
 	pinctrl-0 = <&pcie_reset_pin>;
 	reset-gpios = <&gpio2 RK_PD6 GPIO_ACTIVE_HIGH>;
 	vpcie3v3-supply = <&vcc3v3_pcie>;
+	status = "okay";
+};
+
+&pdm {
 	status = "okay";
 };
 
@@ -693,6 +680,11 @@
 	status = "okay";
 };
 
+/* Required remotectl for IR receiver */
+&pwm7 {
+	status = "disabled";
+};
+
 &saradc {
 	vref-supply = <&vcca_1v8>;
 	status = "okay";
@@ -744,6 +736,10 @@
 	sd-uhs-sdr104;
 	vmmc-supply = <&vcc3v3_sys>;
 	vqmmc-supply = <&vcc_1v8>;
+	status = "okay";
+};
+
+&spdif {
 	status = "okay";
 };
 
