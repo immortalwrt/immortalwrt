@@ -296,14 +296,6 @@
 	status = "okay";
 };
 
-&pdm {
-	status = "okay";
-};
-
-&spdif {
-	status = "okay";
-};
-
 &hdmi {
 	avdd-0v9-supply = <&vdda0v9_image>;
 	avdd-1v8-supply = <&vcca1v8_image>;
@@ -600,8 +592,6 @@
 		reset-assert-us = <20000>;
 		reset-deassert-us = <100000>;
 		reset-gpios = <&gpio2 RK_PD3 GPIO_ACTIVE_LOW>;
-		rx-internal-delay-ps = <1500>;
-		tx-internal-delay-ps = <1500>;
 	};
 };
 
@@ -612,8 +602,6 @@
 		reset-assert-us = <20000>;
 		reset-deassert-us = <100000>;
 		reset-gpios = <&gpio2 RK_PD1 GPIO_ACTIVE_LOW>;
-		rx-internal-delay-ps = <1500>;
-		tx-internal-delay-ps = <1500>;
 	};
 };
 
@@ -626,6 +614,10 @@
 	pinctrl-0 = <&pcie_reset_pin>;
 	reset-gpios = <&gpio2 RK_PD6 GPIO_ACTIVE_HIGH>;
 	vpcie3v3-supply = <&vcc3v3_pcie>;
+	status = "okay";
+};
+
+&pdm {
 	status = "okay";
 };
 
@@ -685,6 +677,11 @@
 	status = "okay";
 };
 
+/* Required remotectl for IR receiver */
+&pwm7 {
+	status = "disabled";
+};
+
 &saradc {
 	vref-supply = <&vcca_1v8>;
 	status = "okay";
@@ -736,6 +733,10 @@
 	sd-uhs-sdr104;
 	vmmc-supply = <&vcc3v3_sys>;
 	vqmmc-supply = <&vcc_1v8>;
+	status = "okay";
+};
+
+&spdif {
 	status = "okay";
 };
 
