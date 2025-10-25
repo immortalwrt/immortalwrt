@@ -1,0 +1,52 @@
+From a1211a5f6bf655ca039988e3501e85e1f27078c6 Mon Sep 17 00:00:00 2001
+From: Frank Sae <Frank.Sae@motor-comm.com>
+Date: Thu, 12 Sep 2024 05:02:24 -0700
+Subject: [PATCH] net: phy: motorcomm: Optimize phy speed mask to be compatible
+ to YT8821
+
+YT8531 as Gigabit transceiver uses bit15:14(bit9 reserved default 0) as phy
+speed mask, YT8821 as 2.5 Gigabit transceiver uses bit9 bit15:14 as phy
+speed mask.
+
+Be compatible to YT8821, reform phy speed mask and phy speed macro.
+
+Signed-off-by: Frank Sae <Frank.Sae@motor-comm.com>
+---
+ drivers/net/phy/motorcomm.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+--- a/drivers/net/phy/motorcomm.c
++++ b/drivers/net/phy/motorcomm.c
+@@ -102,8 +102,10 @@
+ #define YTPHY_SPECIFIC_STATUS_REG		0x11
+ #define YTPHY_DUPLEX_MASK			BIT(13)
+ #define YTPHY_DUPLEX_SHIFT			13
+-#define YTPHY_SPEED_MODE_MASK			GENMASK(15, 14)
+-#define YTPHY_SPEED_MODE_SHIFT			14
++#define YTPHY_SPEED_MASK			((0x3 << 14) | BIT(9))
++#define YTPHY_SPEED_10M				((0x0 << 14))
++#define YTPHY_SPEED_100M			((0x1 << 14))
++#define YTPHY_SPEED_1000M			((0x2 << 14))
+ 
+ #define YT8531_EXTREG_SLEEP_CONTROL1_REG	0x27
+ #define YT8531_ESC1R_SLEEP_SW			BIT(15)
+@@ -295,15 +297,15 @@ static int yt8531_parse_status(struct ph
+ 	if (val < 0)
+ 		return val;
+ 
+-	speed_mode = (val & YTPHY_SPEED_MODE_MASK) >> YTPHY_SPEED_MODE_SHIFT;
++	speed_mode = (val & YTPHY_SPEED_MASK);
+ 	switch (speed_mode) {
+-	case 2:
++	case YTPHY_SPEED_1000M:
+ 		speed = SPEED_1000;
+ 		break;
+-	case 1:
++	case YTPHY_SPEED_100M:
+ 		speed = SPEED_100;
+ 		break;
+-	default:
++	case YTPHY_SPEED_10M:
+ 		speed = SPEED_10;
+ 		break;
+ 	}
