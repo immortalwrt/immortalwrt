@@ -14,15 +14,29 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2c.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2c.dts
-@@ -29,6 +29,7 @@
- 			motorcomm,clk-out-frequency-hz = <125000000>;
- 			motorcomm,keep-pll-enabled;
- 			motorcomm,auto-sleep-disabled;
-+			motorcomm,led-data = <0xe004 0x0 0x2600 0x0070 0x000a>;
- 
- 			pinctrl-0 = <&eth_phy_reset_pin>;
- 			pinctrl-names = "default";
-@@ -38,3 +39,7 @@
+@@ -35,6 +35,29 @@
+ 			reset-assert-us = <10000>;
+ 			reset-deassert-us = <50000>;
+ 			reset-gpios = <&gpio1 RK_PC2 GPIO_ACTIVE_LOW>;
++
++			leds {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				led@1 {
++					reg = <1>;
++					color = <LED_COLOR_ID_AMBER>;
++					function = LED_FUNCTION_WAN;
++					default-state = "keep";
++				};
++
++				led@2 {
++					reg = <2>;
++					color = <LED_COLOR_ID_GREEN>;
++					function = LED_FUNCTION_WAN;
++					default-state = "keep";
++				};
++			};
  		};
  	};
  };
@@ -64,15 +78,29 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  
 --- a/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus-lts.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3328-orangepi-r1-plus-lts.dts
-@@ -33,6 +33,7 @@
- 			motorcomm,keep-pll-enabled;
- 			motorcomm,rx-clk-drv-microamp = <5020>;
- 			motorcomm,rx-data-drv-microamp = <5020>;
-+			motorcomm,led-data = <0xe004 0x0 0x2600 0x0070 0x000a>;
- 
- 			pinctrl-0 = <&eth_phy_reset_pin>;
- 			pinctrl-names = "default";
-@@ -42,3 +43,7 @@
+@@ -39,6 +39,29 @@
+ 			reset-assert-us = <15000>;
+ 			reset-deassert-us = <50000>;
+ 			reset-gpios = <&gpio1 RK_PC2 GPIO_ACTIVE_LOW>;
++
++			leds {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				led@1 {
++					reg = <1>;
++					color = <LED_COLOR_ID_AMBER>;
++					function = LED_FUNCTION_WAN;
++					default-state = "keep";
++				};
++
++				led@2 {
++					reg = <2>;
++					color = <LED_COLOR_ID_GREEN>;
++					function = LED_FUNCTION_WAN;
++					default-state = "keep";
++				};
++			};
  		};
  	};
  };
@@ -388,7 +416,15 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  &pcie3x2 {
 --- a/arch/arm64/boot/dts/rockchip/rk3568-photonicat.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-photonicat.dts
-@@ -287,6 +287,7 @@
+@@ -3,6 +3,7 @@
+ /dts-v1/;
+ 
+ #include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/leds/common.h>
+ #include <dt-bindings/pinctrl/rockchip.h>
+ #include <dt-bindings/soc/rockchip,vop2.h>
+ #include "rk3568.dtsi"
+@@ -287,6 +288,7 @@
  &gmac0 {
  	assigned-clocks = <&cru SCLK_GMAC0_RX_TX>;
  	assigned-clock-parents = <&gmac0_xpcsclk>;
@@ -396,7 +432,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	power-domains = <&power RK3568_PD_PIPE>;
  	phys = <&combphy2 PHY_TYPE_SGMII>;
  	phy-handle = <&sgmii_phy>;
-@@ -305,6 +306,7 @@
+@@ -305,6 +307,7 @@
  	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>;
  	assigned-clock-rates = <0>, <125000000>;
  	clock_in_out = "output";
@@ -404,22 +440,58 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	phy-handle = <&rgmii_phy>;
  	phy-mode = "rgmii-id";
  	phy-supply = <&vcc_3v3>;
-@@ -380,6 +382,7 @@
- 		compatible = "ethernet-phy-id0000.011a";
- 		reg = <0x3>;
- 		max-speed = <1000>;
-+		motorcomm,led-data = <0xe004 0x0000 0x2600 0x0070 0x000a>;
- 		eee-broken-10gt;
- 		eee-broken-10gkx4;
- 		eee-broken-10gkr;
-@@ -393,6 +396,7 @@
- 	rgmii_phy: ethernet-phy@3 {
- 		compatible = "ethernet-phy-ieee802.3-c22";
- 		reg = <0x3>;
-+		motorcomm,led-data = <0xe004 0x0000 0x2600 0x0070 0x000a>;
+@@ -386,6 +389,25 @@
  		reset-assert-us = <20000>;
  		reset-deassert-us = <100000>;
+ 		reset-gpios = <&gpio3 RK_PC6 GPIO_ACTIVE_LOW>;
++
++		leds {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			led@1 {
++				reg = <1>;
++				color = <LED_COLOR_ID_AMBER>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++
++			led@2 {
++				reg = <2>;
++				color = <LED_COLOR_ID_GREEN>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++		};
+ 	};
+ };
+ 
+@@ -398,6 +420,25 @@
  		reset-gpios = <&gpio4 RK_PC0 GPIO_ACTIVE_LOW>;
+ 		rx-internal-delay-ps = <1500>;
+ 		tx-internal-delay-ps = <1500>;
++
++		leds {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			led@1 {
++				reg = <1>;
++				color = <LED_COLOR_ID_AMBER>;
++				function = LED_FUNCTION_WAN;
++				default-state = "keep";
++			};
++
++			led@2 {
++				reg = <2>;
++				color = <LED_COLOR_ID_GREEN>;
++				function = LED_FUNCTION_WAN;
++				default-state = "keep";
++			};
++		};
+ 	};
+ };
+ 
 --- a/arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts
 @@ -591,6 +591,25 @@
