@@ -106,7 +106,7 @@ define Package/brcmfmac-nvram-43456-sdio/install
 	$(INSTALL_DATA) \
 		$(PKG_BUILD_DIR)/brcm/brcmfmac43456-sdio.txt \
 		$(1)/lib/firmware/brcm/
-	 $(INSTALL_DATA) \
+	$(INSTALL_DATA) \
 		$(PKG_BUILD_DIR)/brcm/nvram_ap6256.txt \
 		$(1)/lib/firmware/brcm/brcmfmac4356-sdio.AP6256S.txt
 	$(LN) \
@@ -139,5 +139,8 @@ define Package/brcmfmac-nvram-43752-sdio/install
 	$(LN) \
 		brcmfmac43752-sdio.txt \
 		$(1)/lib/firmware/brcm/brcmfmac43752-sdio.firefly,rk3568-roc-pc.txt
+	$(LN) \
+		brcmfmac43752-sdio.txt \
+		$(1)/lib/firmware/brcm/brcmfmac43752-sdio.ninetripod,x3568-v4.txt
 endef
 $(eval $(call BuildPackage,brcmfmac-nvram-43752-sdio))
