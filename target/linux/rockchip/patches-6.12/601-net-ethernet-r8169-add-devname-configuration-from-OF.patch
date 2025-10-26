@@ -8,7 +8,7 @@
  #include <linux/tcp.h>
  #include <linux/interrupt.h>
  #include <linux/dma-mapping.h>
-@@ -5384,6 +5385,7 @@ static int rtl_init_one(struct pci_dev *
+@@ -5385,6 +5386,7 @@ static int rtl_init_one(struct pci_dev *
  	struct rtl8169_private *tp;
  	int jumbo_max, region, rc;
  	struct net_device *dev;
@@ -16,7 +16,7 @@
  	u32 txconfig;
  	u16 xid;
  
-@@ -5391,6 +5393,9 @@ static int rtl_init_one(struct pci_dev *
+@@ -5392,6 +5394,9 @@ static int rtl_init_one(struct pci_dev *
  	if (!dev)
  		return -ENOMEM;
  
