@@ -49,7 +49,7 @@ Includes iptunnel fixes by integrating the following patches:
  	gro_cells_receive(&tunnel->gro_cells, skb);
  	return 0;
  
-@@ -1426,6 +1429,9 @@ route_lookup:
+@@ -1425,6 +1428,9 @@ route_lookup:
  	ipv6h->nexthdr = proto;
  	ipv6h->saddr = fl6->saddr;
  	ipv6h->daddr = fl6->daddr;
@@ -59,7 +59,7 @@ Includes iptunnel fixes by integrating the following patches:
  	ip6tunnel_xmit(NULL, skb, dev);
  	return 0;
  tx_err_link_failure:
-@@ -1542,17 +1548,19 @@ ipxip6_tnl_xmit(struct sk_buff *skb, str
+@@ -1541,17 +1547,19 @@ ipxip6_tnl_xmit(struct sk_buff *skb, str
  	fl6.flowi6_uid = sock_net_uid(dev_net(dev), NULL);
  	dsfield = INET_ECN_encapsulate(dsfield, orig_dsfield);
  
