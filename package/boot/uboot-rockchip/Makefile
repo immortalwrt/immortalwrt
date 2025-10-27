@@ -278,6 +278,13 @@ define U-Boot/nanopi-r5s-rk3568
     friendlyarm_nanopi-r5s
 endef
 
+define U-Boot/x3568-v4-rk3568
+  $(U-Boot/rk3568/Default)
+  NAME:=NineTripod X3568 v4
+  BUILD_DEVICES:= \
+    ninetripod_x3568-v4
+endef
+
 define U-Boot/photonicat-rk3568
   $(U-Boot/rk3568/Default)
   NAME:=Photonicat
@@ -482,6 +489,7 @@ UBOOT_TARGETS := \
   nanopi-r5c-rk3568 \
   nanopi-r5s-rk3568 \
   photonicat-rk3568 \
+  x3568-v4-rk3568 \
   xiguapi-v3-rk3568 \
   radxa-e25-rk3568 \
   roc-pc-rk3568 \
