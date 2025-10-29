@@ -1,0 +1,35 @@
+#!/bin/sh /etc/rc.common
+
+START=93
+
+netled_set() {
+	local path="/sys/class/leds/$1"
+	local device="$2"
+	shift 2
+
+	[ -d "$path" ] || return 1
+
+	if [ -n "$device" ]; then
+		echo "netdev" > "$path/trigger"
+		echo "$device" > "$path/device_name"
+	fi
+
+	while [ "$#" -ge 2 ]; do
+		local params="$1"
+		local value="$2"
+
+		for param in $params; do
+			echo "$value" > "$path/$param"
+		done
+		shift 2
+	done
+}
+
+boot() {
+	case "$(board_name)" in
+	xunlong,orangepi-zero3)
+		netled_set "stmmac-0:01:amber:lan" "eth0" "link_10 link_100 link_1000" "0" "rx tx" "1"
+		netled_set "stmmac-0:01:green:lan" "eth0" "link_10 link_100 link_1000" "1" "rx tx" "0"
+		;;
+	esac
+}
