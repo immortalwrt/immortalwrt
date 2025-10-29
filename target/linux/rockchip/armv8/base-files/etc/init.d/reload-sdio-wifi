@@ -13,5 +13,8 @@ boot() {
 	armsom,sige7)
 		( sleep 100s; wifi; ) &
 		;;
+	ninetripod,x3568-v4)
+		( sleep 5s; wifi; ) &
+		;;
 	esac
 }
