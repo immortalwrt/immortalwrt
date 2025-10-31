@@ -340,6 +340,8 @@ define Device/radxa_e52c
   UBOOT_DEVICE_NAME := generic-rk3588
   BOOT_FLOW := pine64-img
   DEVICE_PACKAGES := blkdiscard kmod-r8125
+  DEVICE_COMPAT_VERSION := 1.1
+  DEVICE_COMPAT_MESSAGE := Network interface names have been changed
 endef
 TARGET_DEVICES += radxa_e52c
 
