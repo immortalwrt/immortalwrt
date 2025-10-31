@@ -5,10 +5,10 @@
  	struct combphy_reg pipe_pcie1l0_sel;
  	struct combphy_reg pipe_pcie1l1_sel;
 +	struct combphy_reg pipe_sgmii_mac_sel;
+ 	struct combphy_reg u3otg0_port_en;
+ 	struct combphy_reg u3otg1_port_en;
  };
- 
- struct rockchip_combphy_cfg {
-@@ -274,6 +275,7 @@ static struct phy *rockchip_combphy_xlat
+@@ -276,6 +277,7 @@ static struct phy *rockchip_combphy_xlat
  
  static int rockchip_combphy_parse_dt(struct device *dev, struct rockchip_combphy_priv *priv)
  {
@@ -16,7 +16,7 @@
  	int i;
  
  	priv->num_clks = devm_clk_bulk_get_all(dev, &priv->clks);
-@@ -309,6 +311,11 @@ static int rockchip_combphy_parse_dt(str
+@@ -311,6 +313,11 @@ static int rockchip_combphy_parse_dt(str
  
  	priv->ext_refclk = device_property_present(dev, "rockchip,ext-refclk");
  
@@ -28,11 +28,11 @@
  	priv->phy_rst = devm_reset_control_get_exclusive(dev, "phy");
  	/* fallback to old behaviour */
  	if (PTR_ERR(priv->phy_rst) == -ENOENT)
-@@ -574,6 +581,7 @@ static const struct rockchip_combphy_grf
+@@ -584,6 +591,7 @@ static const struct rockchip_combphy_grf
  	/* pipe-grf */
  	.pipe_con0_for_sata	= { 0x0000, 15, 0, 0x00, 0x2220 },
  	.pipe_xpcs_phy_ready	= { 0x0040, 2, 2, 0x00, 0x01 },
 +	.pipe_sgmii_mac_sel	= { 0x0040, 1, 1, 0x00, 0x01 },
+ 	.u3otg0_port_en		= { 0x0104, 15, 0, 0x0181, 0x1100 },
+ 	.u3otg1_port_en		= { 0x0144, 15, 0, 0x0181, 0x1100 },
  };
- 
- static const struct rockchip_combphy_cfg rk3568_combphy_cfgs = {

@@ -14,7 +14,7 @@ Signed-off-by: Lin Jinhan <troy.lin@rock-chips.com>
 
 --- a/drivers/char/hw_random/Kconfig
 +++ b/drivers/char/hw_random/Kconfig
-@@ -383,6 +383,19 @@ config HW_RANDOM_STM32
+@@ -384,6 +384,19 @@ config HW_RANDOM_STM32
  
  	  If unsure, say N.
  
