@@ -259,10 +259,10 @@ Signed-off-by: Enrico Mioso <mrkiko.rs@gmail.com>
 +bootcmd=run boot_system
 +boot_default=if env exists flag_recover ; then else run bootcmd ; fi ; run boot_tftp_forever
 +bootdelay=0
-+bootfile_bl2=openwrt-mediatek-filogic-glinet_gl-mt2500-emmc-preloader.bin
-+bootfile_fip=openwrt-mediatek-filogic-glinet_gl-mt2500-emmc-bl31-uboot.fip
-+bootfile_firmware=openwrt-mediatek-filogic-glinet_gl-mt2500-squashfs-factory.bin
-+bootfile=openwrt-mediatek-filogic-glinet_gl-mt2500-initramfs-kernel.bin
++bootfile_bl2=immortalwrt-mediatek-filogic-glinet_gl-mt2500-emmc-preloader.bin
++bootfile_fip=immortalwrt-mediatek-filogic-glinet_gl-mt2500-emmc-bl31-uboot.fip
++bootfile_firmware=immortalwrt-mediatek-filogic-glinet_gl-mt2500-squashfs-factory.bin
++bootfile=immortalwrt-mediatek-filogic-glinet_gl-mt2500-initramfs-kernel.bin
 +boot_first=if button reset ; then run boot_tftp ; setenv flag_recover 1 ; run boot_default ; fi ; bootmenu
 +bootmenu_0d=Run default boot command.=run boot_default
 +bootmenu_0=Initialize environment.=run _firstboot
