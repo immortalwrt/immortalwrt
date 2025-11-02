@@ -1,8 +1,3 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
 #include "rk3588-u-boot.dtsi"
-
-&sdhci {
-	cap-mmc-highspeed;
-	mmc-hs200-1_8v;
-};
