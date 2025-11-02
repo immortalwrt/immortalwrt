@@ -2,8 +2,10 @@
 
 #include "rk356x-u-boot.dtsi"
 
-&sdhci {
-	mmc-ddr-1_8v;
+/ {
+	chosen {
+		stdout-path = &uart2;
+	};
 };
 
 &vcc5v0_usb_host {
