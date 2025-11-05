@@ -276,7 +276,7 @@ define Device/nlnet_xiguapi-v3
   DEVICE_MODEL := XiGuaPi V3
   SOC := rk3568
   BOOT_FLOW := pine64-img
-  DEVICE_PACKAGES := kmod-mt7916-firmware wpad-openssl kmod-usb-net-rndis uqmi
+  DEVICE_PACKAGES := wpad-openssl kmod-hwmon-pwmfan
 endef
 TARGET_DEVICES += nlnet_xiguapi-v3
 
