@@ -27,6 +27,7 @@ acer,predator-w6x-ubootmod|\
 asus,zenwifi-bt8-ubootmod|\
 cetron,ct3003-ubootmod|\
 cmcc,a10-ubootmod|\
+comfast,cf-wr632ax-ubootmod|\
 cudy,tr3000-v1-ubootmod|\
 h3c,magic-nx30-pro|\
 imou,lc-hx3001|\
@@ -102,6 +103,7 @@ tplink,re6000xd)
 	;;
 asiarf,ap7986-003|\
 cetron,ct3003|\
+comfast,cf-wr632ax|\
 edgecore,eap111|\
 livinet,zr-3020|\
 netgear,wax220|\
