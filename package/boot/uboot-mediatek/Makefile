@@ -1049,6 +1049,7 @@ define U-Boot/mt7988_tplink_tl-7dr7250-v1
   BL2_SOC:=mt7988
   BL2_DDRTYPE:=ddr4
   DEPENDS:=+trusted-firmware-a-mt7988-spim-nand-ddr4
+endef
 
 define U-Boot/mt7987_rfb-emmc
   NAME:=MT7987 Reference Board
