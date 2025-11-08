@@ -368,7 +368,7 @@
  	bond_set_carrier(bond);
  }
  
-@@ -4189,9 +4275,220 @@ static inline u32 bond_eth_hash(struct s
+@@ -4185,9 +4271,220 @@ static inline u32 bond_eth_hash(struct s
  		return 0;
  
  	ep = (struct ethhdr *)(data + mhoff);
@@ -590,7 +590,7 @@
  static bool bond_flow_ip(struct sk_buff *skb, struct flow_keys *fk, const void *data,
  			 int hlen, __be16 l2_proto, int *nhoff, int *ip_proto, bool l34)
  {
-@@ -5319,15 +5616,18 @@ static netdev_tx_t bond_3ad_xor_xmit(str
+@@ -5315,15 +5612,18 @@ static netdev_tx_t bond_3ad_xor_xmit(str
  				     struct net_device *dev)
  {
  	struct bonding *bond = netdev_priv(dev);
@@ -616,7 +616,7 @@
  }
  
  /* in broadcast mode, we send everything to all usable interfaces. */
-@@ -5577,8 +5877,9 @@ static netdev_tx_t __bond_start_xmit(str
+@@ -5573,8 +5873,9 @@ static netdev_tx_t __bond_start_xmit(str
  		return bond_xmit_roundrobin(skb, dev);
  	case BOND_MODE_ACTIVEBACKUP:
  		return bond_xmit_activebackup(skb, dev);
@@ -665,7 +665,7 @@
  int bond_create(struct net *net, const char *name);
  int bond_create_sysfs(struct bond_net *net);
  void bond_destroy_sysfs(struct bond_net *net);
-@@ -707,6 +710,13 @@ struct bond_vlan_tag *bond_verify_device
+@@ -708,6 +711,13 @@ struct bond_vlan_tag *bond_verify_device
  					      int level);
  int bond_update_slave_arr(struct bonding *bond, struct slave *skipslave);
  void bond_slave_arr_work_rearm(struct bonding *bond, unsigned long delay);
@@ -679,7 +679,7 @@
  void bond_work_init_all(struct bonding *bond);
  
  #ifdef CONFIG_PROC_FS
-@@ -811,4 +821,18 @@ static inline netdev_tx_t bond_tx_drop(s
+@@ -812,4 +822,18 @@ static inline netdev_tx_t bond_tx_drop(s
  	return NET_XMIT_DROP;
  }
  

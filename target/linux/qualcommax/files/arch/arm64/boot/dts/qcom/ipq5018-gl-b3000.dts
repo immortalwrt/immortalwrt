@@ -65,7 +65,7 @@
 
 &dp2 {
 	status = "okay";
-	nvmem-cells = <&macaddr_dp2>;
+	nvmem-cells = <&macaddr_dp2 0>;
 	nvmem-cell-names = "mac-address";
 
 	fixed-link {
@@ -162,15 +162,9 @@
 
 		partitions {
 			compatible = "qcom,smem-part";
-			#address-cells = <1>;
-			#size-cells = <1>;
 
 			partition-0-art {
-				compatible = "fixed-partitions";
-				#address-cells = <1>;
-				#size-cells = <1>;
-
-				label = "0:ART";
+				label = "0:art";
 				read-only;
 
 				nvmem-layout {
@@ -181,7 +175,7 @@
 					macaddr_dp2: macaddr@0 {
 						compatible = "mac-base";
 						#nvmem-cell-cells = <1>;
-						reg = <0x00 0x06>;
+						reg = <0x6 0x6>;
 					};
 				};
 			};
