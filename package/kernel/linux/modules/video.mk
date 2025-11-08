@@ -371,19 +371,6 @@ endef
 $(eval $(call KernelPackage,drm-exec))
 
 
-define KernelPackage/drm-gem-shmem-helper
-  SUBMENU:=$(VIDEO_MENU)
-  TITLE:=GEM shmem helper functions
-  DEPENDS:=@DISPLAY_SUPPORT +kmod-drm +!LINUX_6_6:kmod-drm-kms-helper \
-	+!LINUX_6_6:kmod-fb-sys-fops +!LINUX_6_6:kmod-fb-sys-ram
-  KCONFIG:=CONFIG_DRM_GEM_SHMEM_HELPER
-  FILES:=$(LINUX_DIR)/drivers/gpu/drm/drm_shmem_helper.ko
-  AUTOLOAD:=$(call AutoProbe,drm_shmem_helper)
-endef
-
-$(eval $(call KernelPackage,drm-gem-shmem-helper))
-
-
 define KernelPackage/drm-dma-helper
   SUBMENU:=$(VIDEO_MENU)
   HIDDEN:=1
@@ -400,6 +387,24 @@ endef
 
 $(eval $(call KernelPackage,drm-dma-helper))
 
+
+define KernelPackage/drm-shmem-helper
+  SUBMENU:=$(VIDEO_MENU)
+  HIDDEN:=1
+  TITLE:=GEM SHMEM helper functions
+  DEPENDS:=@DISPLAY_SUPPORT +kmod-drm-kms-helper
+  KCONFIG:=CONFIG_DRM_GEM_SHMEM_HELPER
+  FILES:=$(LINUX_DIR)/drivers/gpu/drm/drm_shmem_helper.ko
+  AUTOLOAD:=$(call AutoProbe,drm_shmem_helper)
+endef
+
+define KernelPackage/drm-shmem-helper/description
+  GEM SHMEM helper functions.
+endef
+
+$(eval $(call KernelPackage,drm-shmem-helper))
+
+
 define KernelPackage/drm-mipi-dbi
   SUBMENU:=$(VIDEO_MENU)
   HIDDEN:=1
@@ -415,6 +420,25 @@ define KernelPackage/drm-mipi-dbi/description
 endef
 
 $(eval $(call KernelPackage,drm-mipi-dbi))
+
+
+define KernelPackage/drm-sched
+  SUBMENU:=$(VIDEO_MENU)
+  HIDDEN:=1
+  TITLE:=GPU scheduler
+  DEPENDS:=@DISPLAY_SUPPORT +kmod-drm
+  KCONFIG:=CONFIG_DRM_SCHED
+  FILES:=$(LINUX_DIR)/drivers/gpu/drm/scheduler/gpu-sched.ko
+  AUTOLOAD:=$(call AutoProbe,gpu-sched)
+endef
+
+define KernelPackage/drm-sched/description
+  The GPU scheduler provides entities which allow userspace to push jobs
+  into software queues which are then scheduled on a hardware run queue.
+endef
+
+$(eval $(call KernelPackage,drm-sched))
+
 
 define KernelPackage/drm-ttm
   SUBMENU:=$(VIDEO_MENU)
@@ -664,7 +688,7 @@ $(eval $(call KernelPackage,drm-imx-ldb))
 define KernelPackage/drm-lima
   SUBMENU:=$(VIDEO_MENU)
   TITLE:=Mali-4xx GPU support
-  DEPENDS:=@(TARGET_rockchip||TARGET_sunxi) +kmod-drm +kmod-drm-gem-shmem-helper
+  DEPENDS:=@(TARGET_rockchip||TARGET_sunxi) +kmod-drm +kmod-drm-shmem-helper
   KCONFIG:= \
 	CONFIG_DRM_VGEM \
 	CONFIG_DRM_GEM_CMA_HELPER=y \
@@ -685,7 +709,7 @@ $(eval $(call KernelPackage,drm-lima))
 define KernelPackage/drm-panfrost
   SUBMENU:=$(VIDEO_MENU)
   TITLE:=DRM support for ARM Mali Midgard/Bifrost GPUs
-  DEPENDS:=@(TARGET_rockchip||TARGET_sunxi) +kmod-drm +kmod-drm-gem-shmem-helper
+  DEPENDS:=@(TARGET_rockchip||TARGET_sunxi) +kmod-drm +kmod-drm-shmem-helper
   KCONFIG:=CONFIG_DRM_PANFROST
   FILES:= \
 	$(LINUX_DIR)/drivers/gpu/drm/panfrost/panfrost.ko \
@@ -704,7 +728,7 @@ define KernelPackage/drm-panthor
   SUBMENU:=$(VIDEO_MENU)
   TITLE:=DRM support for ARM Mali CSF-based GPUs
   DEPENDS:=@TARGET_rockchip +kmod-drm +kmod-drm-exec \
-	+kmod-drm-gem-shmem-helper +panthor-firmware
+	+kmod-drm-shmem-helper +panthor-firmware
   KCONFIG:= \
 	CONFIG_DRM_GPUVM \
 	CONFIG_DRM_PANTHOR
