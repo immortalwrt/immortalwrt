@@ -1,0 +1,163 @@
+From 36ec3f437227470568e5f460997f367f5446a34d Mon Sep 17 00:00:00 2001
+From: Chen-Yu Tsai <wenst@chromium.org>
+Date: Wed, 25 Sep 2024 17:38:05 +0800
+Subject: [PATCH] regulator: Add devres version of of_regulator_get_optional()
+
+There are existing uses for a devres version of of_regulator_get_optional()
+in power domain drivers. On MediaTek platforms, power domains may have
+regulator supplies tied to them. The driver currently tries to use
+devm_regulator_get() to not have to manage the lifecycle, but ends up
+doing it in a very hacky way by replacing the device node of the power
+domain controller device to the device node of the power domain that is
+currently being registered, getting the supply, and reverting the device
+node.
+
+Provide a better API so that the hack can be replaced.
+
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Link: https://patch.msgid.link/20240925093807.1026949-3-wenst@chromium.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+---
+ drivers/regulator/devres.c         | 39 ++++++++++++++++++++++++++++++
+ drivers/regulator/internal.h       | 16 +++++++-----
+ drivers/regulator/of_regulator.c   |  4 +--
+ include/linux/regulator/consumer.h | 17 +++++++++++++
+ 4 files changed, 68 insertions(+), 8 deletions(-)
+
+--- a/drivers/regulator/devres.c
++++ b/drivers/regulator/devres.c
+@@ -749,3 +749,42 @@ void *devm_regulator_irq_helper(struct d
+ 	return ptr;
+ }
+ EXPORT_SYMBOL_GPL(devm_regulator_irq_helper);
++
++#if IS_ENABLED(CONFIG_OF)
++static struct regulator *_devm_of_regulator_get(struct device *dev, struct device_node *node,
++						const char *id, int get_type)
++{
++	struct regulator **ptr, *regulator;
++
++	ptr = devres_alloc(devm_regulator_release, sizeof(*ptr), GFP_KERNEL);
++	if (!ptr)
++		return ERR_PTR(-ENOMEM);
++
++	regulator = _of_regulator_get(dev, node, id, get_type);
++	if (!IS_ERR(regulator)) {
++		*ptr = regulator;
++		devres_add(dev, ptr);
++	} else {
++		devres_free(ptr);
++	}
++
++	return regulator;
++}
++
++/**
++ * devm_of_regulator_get_optional - Resource managed of_regulator_get_optional()
++ * @dev: device used for dev_printk() messages and resource lifetime management
++ * @node: device node for regulator "consumer"
++ * @id:  supply name or regulator ID.
++ *
++ * Managed regulator_get_optional(). Regulators returned from this
++ * function are automatically regulator_put() on driver detach. See
++ * of_regulator_get_optional() for more information.
++ */
++struct regulator *devm_of_regulator_get_optional(struct device *dev, struct device_node *node,
++						 const char *id)
++{
++	return _devm_of_regulator_get(dev, node, id, OPTIONAL_GET);
++}
++EXPORT_SYMBOL_GPL(devm_of_regulator_get_optional);
++#endif
+--- a/drivers/regulator/internal.h
++++ b/drivers/regulator/internal.h
+@@ -65,6 +65,13 @@ static inline struct regulator_dev *dev_
+ 	return container_of(dev, struct regulator_dev, dev);
+ }
+ 
++enum regulator_get_type {
++	NORMAL_GET,
++	EXCLUSIVE_GET,
++	OPTIONAL_GET,
++	MAX_GET_TYPE
++};
++
+ #ifdef CONFIG_OF
+ struct regulator_dev *of_regulator_dev_lookup(struct device *dev,
+ 					      struct device_node *np,
+@@ -74,6 +81,9 @@ struct regulator_init_data *regulator_of
+ 				 struct regulator_config *config,
+ 				 struct device_node **node);
+ 
++struct regulator *_of_regulator_get(struct device *dev, struct device_node *node,
++				    const char *id, enum regulator_get_type get_type);
++
+ struct regulator_dev *of_parse_coupled_regulator(struct regulator_dev *rdev,
+ 						 int index);
+ 
+@@ -116,12 +126,6 @@ static inline bool of_check_coupling_dat
+ }
+ 
+ #endif
+-enum regulator_get_type {
+-	NORMAL_GET,
+-	EXCLUSIVE_GET,
+-	OPTIONAL_GET,
+-	MAX_GET_TYPE
+-};
+ 
+ int _regulator_get_common_check(struct device *dev, const char *id,
+ 				enum regulator_get_type get_type);
+--- a/drivers/regulator/of_regulator.c
++++ b/drivers/regulator/of_regulator.c
+@@ -680,8 +680,8 @@ struct regulator_dev *of_regulator_dev_l
+ 	return ERR_PTR(-ENODEV);
+ }
+ 
+-static struct regulator *_of_regulator_get(struct device *dev, struct device_node *node,
+-					   const char *id, enum regulator_get_type get_type)
++struct regulator *_of_regulator_get(struct device *dev, struct device_node *node,
++				    const char *id, enum regulator_get_type get_type)
+ {
+ 	struct regulator_dev *r;
+ 	int ret;
+--- a/include/linux/regulator/consumer.h
++++ b/include/linux/regulator/consumer.h
+@@ -172,6 +172,9 @@ void devm_regulator_put(struct regulator
+ struct regulator *__must_check of_regulator_get_optional(struct device *dev,
+ 							 struct device_node *node,
+ 							 const char *id);
++struct regulator *__must_check devm_of_regulator_get_optional(struct device *dev,
++							      struct device_node *node,
++							      const char *id);
+ #else
+ static inline struct regulator *__must_check of_regulator_get_optional(struct device *dev,
+ 								       struct device_node *node,
+@@ -179,6 +182,13 @@ static inline struct regulator *__must_c
+ {
+ 	return ERR_PTR(-ENODEV);
+ }
++
++static inline struct regulator *__must_check devm_of_regulator_get_optional(struct device *dev,
++									    struct device_node *node,
++									    const char *id)
++{
++	return ERR_PTR(-ENODEV);
++}
+ #endif
+ 
+ int regulator_register_supply_alias(struct device *dev, const char *id,
+@@ -369,6 +379,13 @@ static inline struct regulator *__must_c
+ {
+ 	return ERR_PTR(-ENODEV);
+ }
++
++static inline struct regulator *__must_check devm_of_regulator_get_optional(struct device *dev,
++									    struct device_node *node,
++									    const char *id)
++{
++	return ERR_PTR(-ENODEV);
++}
+ 
+ static inline void regulator_put(struct regulator *regulator)
+ {

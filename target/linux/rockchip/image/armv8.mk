@@ -308,7 +308,7 @@ define Device/nlnet_xiguapi-v3
   $(Device/rk3568)
   DEVICE_VENDOR := NLnet
   DEVICE_MODEL := XiGuaPi V3
-  DEVICE_PACKAGES := wpad-openssl kmod-hwmon-pwmfan
+  DEVICE_PACKAGES := kmod-hwmon-pwmfan
 endef
 TARGET_DEVICES += nlnet_xiguapi-v3
 

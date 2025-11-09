@@ -1,0 +1,91 @@
+From edcef667070f7dbddca403e6331c86940407dae0 Mon Sep 17 00:00:00 2001
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Thu, 20 Feb 2025 19:58:07 +0100
+Subject: [PATCH] pmdomain: rockchip: reduce indentation in rockchip_pd_power
+
+Rework the logic, so that the function exits early when the
+power domain state is already correct to reduce code indentation.
+
+No functional change intended.
+
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+Tested-by: Heiko Stuebner <heiko@sntech.de>
+Tested-by: Adrian Larumbe <adrian.larumbe@collabora.com> # On Rock 5B
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20250220-rk3588-gpu-pwr-domain-regulator-v6-4-a4f9c24e5b81@kernel.org
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+---
+ drivers/pmdomain/rockchip/pm-domains.c | 49 +++++++++++++-------------
+ 1 file changed, 25 insertions(+), 24 deletions(-)
+
+--- a/drivers/pmdomain/rockchip/pm-domains.c
++++ b/drivers/pmdomain/rockchip/pm-domains.c
+@@ -592,39 +592,40 @@ static int rockchip_pd_power(struct rock
+ 
+ 	guard(mutex)(&pmu->mutex);
+ 
+-	if (rockchip_pmu_domain_is_on(pd) != power_on) {
+-		ret = clk_bulk_enable(pd->num_clks, pd->clks);
+-		if (ret < 0) {
+-			dev_err(pmu->dev, "failed to enable clocks\n");
+-			return ret;
+-		}
+-
+-		rockchip_pmu_ungate_clk(pd, true);
+-
+-		if (!power_on) {
+-			rockchip_pmu_save_qos(pd);
+-
+-			/* if powering down, idle request to NIU first */
+-			rockchip_pmu_set_idle_request(pd, true);
+-		}
+-
+-		ret = rockchip_do_pmu_set_power_domain(pd, power_on);
+-		if (ret < 0) {
+-			clk_bulk_disable(pd->num_clks, pd->clks);
+-			return ret;
+-		}
+-
+-		if (power_on) {
+-			/* if powering up, leave idle mode */
+-			rockchip_pmu_set_idle_request(pd, false);
++	if (rockchip_pmu_domain_is_on(pd) == power_on)
++		return 0;
+ 
+-			rockchip_pmu_restore_qos(pd);
+-		}
++	ret = clk_bulk_enable(pd->num_clks, pd->clks);
++	if (ret < 0) {
++		dev_err(pmu->dev, "failed to enable clocks\n");
++		return ret;
++	}
++
++	rockchip_pmu_ungate_clk(pd, true);
++
++	if (!power_on) {
++		rockchip_pmu_save_qos(pd);
++
++		/* if powering down, idle request to NIU first */
++		rockchip_pmu_set_idle_request(pd, true);
++	}
+ 
+-		rockchip_pmu_ungate_clk(pd, false);
++	ret = rockchip_do_pmu_set_power_domain(pd, power_on);
++	if (ret < 0) {
+ 		clk_bulk_disable(pd->num_clks, pd->clks);
++		return ret;
+ 	}
+ 
++	if (power_on) {
++		/* if powering up, leave idle mode */
++		rockchip_pmu_set_idle_request(pd, false);
++
++		rockchip_pmu_restore_qos(pd);
++	}
++
++	rockchip_pmu_ungate_clk(pd, false);
++	clk_bulk_disable(pd->num_clks, pd->clks);
++
+ 	return 0;
+ }
+ 
