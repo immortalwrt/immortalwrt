@@ -727,6 +727,10 @@
 			"type": "alias",
 			"default": "multicast_to_unicast"
 		},
+		"na_mcast_to_ucast": {
+			"description": "IPv6 Neighbor Advertisement multicast-to-unicast conversion",
+			"type": "boolean"
+		},
 		"nas_identifier": {
 			"description": "NAS-Identifier string for RADIUS messages",
 			"type": "string"
@@ -948,6 +952,10 @@
 			"description": "Use RSNE override IE WPA3 compatibility (0: disabled, 1: enabled, 2:force WPA2 for older devices)",
 			"default": 1
 		},
+		"sae_password_file": {
+			"description": "External file containing VLAN SAE MAC address triplets",
+			"type": "string"
+		},
 		"sae_pwe": {
 			"description": "SAE mechanism for PWE derivation",
 			"type": "number",
@@ -956,6 +964,10 @@
 		"sae_require_mfp": {
 			"description": "Require MFP for all associations using SAE",
 			"type": "boolean"
+		},
+		"sae_track_password": {
+			"description": "Tracking of SAE password use",
+			"type": "number"
 		},
 		"server:host": {
 			"type": "string"
