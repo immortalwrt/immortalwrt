@@ -38,6 +38,12 @@ boot() {
 		netled_set "stmmac-0:01:amber:lan" "eth0" "link_10 link_100 link_1000" "0" "rx tx" "1"
 		netled_set "stmmac-0:01:green:lan" "eth0" "link_10 link_100 link_1000" "1" "rx tx" "0"
 		;;
+	linkease,easepi-r1)
+		netled_set "stmmac-0:01:amber:wan" "eth0" "link_10 link_100 link_1000" "0" "rx tx" "1"
+		netled_set "stmmac-0:01:green:wan" "eth0" "link_10 link_100 link_1000" "1" "rx tx" "0"
+		netled_set "stmmac-1:01:amber:lan" "eth1" "link_10 link_100 link_1000" "0" "rx tx" "1"
+		netled_set "stmmac-1:01:green:lan" "eth1" "link_10 link_100 link_1000" "1" "rx tx" "0"
+		;;
 	lunzn,fastrhino-r68s|\
 	ezpro,mrkaio-m68s)
 		netled_set "stmmac-0:01:amber:lan" "eth0" "link_10 link_100 link_1000" "0" "rx tx" "1"

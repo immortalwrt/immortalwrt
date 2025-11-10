@@ -61,7 +61,12 @@
 		};
 	};
 
-	mdio0_pins: mdio0-pins {
+	mdio0_pins: mdio0-state {
+		/delete-property/ pins;
+		/delete-property/ function;
+		/delete-property/ drive-strength;
+		/delete-property/ bias-disable;
+
 		clk {
 			pins = "gpio1";
 			input-disable;
