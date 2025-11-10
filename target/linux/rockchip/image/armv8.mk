@@ -256,6 +256,15 @@ define Device/huake_guangmiao-g4c
 endef
 TARGET_DEVICES += huake_guangmiao-g4c
 
+define Device/linkease_easepi-r1
+  $(Device/rk3568)
+  DEVICE_VENDOR := LinkEase
+  DEVICE_MODEL := EasePi R1
+  UBOOT_DEVICE_NAME := generic-rk3568
+  DEVICE_PACKAGES := blkdiscard block-mount kmod-button-hotplug kmod-nvme kmod-r8125
+endef
+TARGET_DEVICES += linkease_easepi-r1
+
 define Device/lunzn_fastrhino-r66s
   $(Device/rk3568)
   DEVICE_VENDOR := Lunzn
@@ -354,6 +363,8 @@ define Device/radxa_e52c
   DEVICE_DTS := rk3582-radxa-e52c
   UBOOT_DEVICE_NAME := generic-rk3588
   DEVICE_PACKAGES := blkdiscard kmod-r8125
+  DEVICE_COMPAT_VERSION := 1.1
+  DEVICE_COMPAT_MESSAGE := Network interface names have been changed
 endef
 TARGET_DEVICES += radxa_e52c
 
