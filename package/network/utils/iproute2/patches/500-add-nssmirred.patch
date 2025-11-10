@@ -1,6 +1,6 @@
 --- a/tc/Makefile
 +++ b/tc/Makefile
-@@ -50,6 +50,7 @@ TCMODULES += m_tunnel_key.o
+@@ -51,6 +51,7 @@ TCMODULES += m_tunnel_key.o
  TCMODULES += m_sample.o
  TCMODULES += m_ct.o
  TCMODULES += m_gate.o

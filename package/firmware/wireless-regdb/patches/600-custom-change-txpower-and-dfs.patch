@@ -1,6 +1,6 @@
 --- a/db.txt
 +++ b/db.txt
-@@ -446,9 +446,8 @@ country CL: DFS-JP
+@@ -455,9 +455,8 @@ country CL: DFS-JP
  # https://www.miit.gov.cn/cms_files/filemanager/1226211233/attach/20236/d1dc19424d5a4cfe90d631adeee8dd58.pdf
  # Note: The transmit power for 5250-5350MHz bands can be raised by 3dBm when TPC is implemented
  country CN: DFS-FCC
@@ -12,7 +12,7 @@
  	(5725 - 5850 @ 80), (33)
  	# 60 GHz band channels 1,4: 28dBm, channels 2,3: 44dBm
  	# ref: http://www.miit.gov.cn/n11293472/n11505629/n11506593/n11960250/n11960606/n11960700/n12330791.files/n12330790.pdf
-@@ -2007,14 +2006,12 @@ country US: DFS-FCC
+@@ -2029,14 +2028,12 @@ country US: DFS-FCC
  	(920 - 928 @ 8), (30)
  	(2400 - 2472 @ 40), (30)
  	# 5.15 ~ 5.25 GHz: 30 dBm for master mode, 23 dBm for clients

@@ -254,7 +254,7 @@
  struct tc_fifo_qopt {
 --- a/tc/Makefile
 +++ b/tc/Makefile
-@@ -77,6 +77,7 @@ TCMODULES += q_etf.o
+@@ -78,6 +78,7 @@ TCMODULES += q_etf.o
  TCMODULES += q_taprio.o
  TCMODULES += q_plug.o
  TCMODULES += q_ets.o
