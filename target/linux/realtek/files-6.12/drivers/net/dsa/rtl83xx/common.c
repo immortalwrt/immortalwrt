@@ -452,26 +452,11 @@ int rtl83xx_lag_add(struct dsa_switch *ds, int group, int port, struct netdev_la
 	u32 algomsk = 0;
 	u32 algoidx = 0;
 
-	if (info->tx_type != NETDEV_LAG_TX_TYPE_HASH) {
-		pr_err("%s: Only mode LACP 802.3ad (4) allowed.\n", __func__);
-		return -EINVAL;
-	}
-
-	if (group >= priv->n_lags) {
-		pr_err("%s: LAG %d invalid.\n", __func__, group);
-		return -EINVAL;
-	}
-
-	if (port >= priv->cpu_port) {
-		pr_err("%s: Port %d invalid.\n", __func__, port);
-		return -EINVAL;
-	}
-
-	for (i = 0; i < priv->n_lags; i++) {
+	for (i = 0; i < priv->ds->num_lag_ids; i++) {
 		if (priv->lags_port_members[i] & BIT_ULL(port))
 			break;
 	}
-	if (i != priv->n_lags) {
+	if (i != priv->ds->num_lag_ids) {
 		pr_err("%s: Port %d already member of LAG %d.\n", __func__, port, i);
 		return -ENOSPC;
 	}
@@ -513,13 +498,8 @@ int rtl83xx_lag_del(struct dsa_switch *ds, int group, int port)
 {
 	struct rtl838x_switch_priv *priv = ds->priv;
 
-	if (group >= priv->n_lags) {
+	if (group >= priv->ds->num_lag_ids) {
 		pr_err("%s: LAG %d invalid.\n", __func__, group);
-		return -EINVAL;
-	}
-
-	if (port >= priv->cpu_port) {
-		pr_err("%s: Port %d invalid.\n", __func__, port);
 		return -EINVAL;
 	}
 
@@ -689,59 +669,6 @@ static int rtl83xx_l2_nexthop_rm(struct rtl838x_switch_priv *priv, struct rtl83x
 	return 0;
 }
 
-static int rtl83xx_handle_changeupper(struct rtl838x_switch_priv *priv,
-				      struct net_device *ndev,
-				      struct netdev_notifier_changeupper_info *info)
-{
-	struct net_device *upper = info->upper_dev;
-	struct netdev_lag_upper_info *lag_upper_info = NULL;
-	int i, j, err;
-
-	if (!netif_is_lag_master(upper))
-		return 0;
-
-	mutex_lock(&priv->reg_mutex);
-
-	for (i = 0; i < priv->n_lags; i++) {
-		if ((!priv->lag_devs[i]) || (priv->lag_devs[i] == upper))
-			break;
-	}
-	for (j = 0; j < priv->cpu_port; j++) {
-		if (priv->ports[j].dp->user == ndev)
-			break;
-	}
-	if (j >= priv->cpu_port) {
-		err = -EINVAL;
-		goto out;
-	}
-
-	if (info->linking) {
-		lag_upper_info = info->upper_info;
-		if (!priv->lag_devs[i])
-			priv->lag_devs[i] = upper;
-		err = rtl83xx_lag_add(priv->ds, i, priv->ports[j].dp->index, lag_upper_info);
-		if (err) {
-			err = -EINVAL;
-			goto out;
-		}
-	} else {
-		if (!priv->lag_devs[i])
-			err = -EINVAL;
-		err = rtl83xx_lag_del(priv->ds, i, priv->ports[j].dp->index);
-		if (err) {
-			err = -EINVAL;
-			goto out;
-		}
-		if (!priv->lags_port_members[i])
-			priv->lag_devs[i] = NULL;
-	}
-
-out:
-	mutex_unlock(&priv->reg_mutex);
-
-	return 0;
-}
-
 int rtl83xx_port_is_under(const struct net_device * dev, struct rtl838x_switch_priv *priv)
 {
 	/* Is the lower network device a DSA user network device of our RTL930X-switch?
@@ -762,31 +689,6 @@ int rtl83xx_port_is_under(const struct net_device * dev, struct rtl838x_switch_p
 	}
 
 	return -EINVAL;
-}
-
-static int rtl83xx_netdevice_event(struct notifier_block *this,
-				   unsigned long event, void *ptr)
-{
-	struct net_device *ndev = netdev_notifier_info_to_dev(ptr);
-	struct rtl838x_switch_priv *priv;
-	int err;
-
-	pr_debug("In: %s, event: %lu\n", __func__, event);
-
-	if ((event != NETDEV_CHANGEUPPER) && (event != NETDEV_CHANGELOWERSTATE))
-		return NOTIFY_DONE;
-
-	priv = container_of(this, struct rtl838x_switch_priv, nb);
-	switch (event) {
-	case NETDEV_CHANGEUPPER:
-		err = rtl83xx_handle_changeupper(priv, ndev, ptr);
-		break;
-	}
-
-	if (err)
-		return err;
-
-	return NOTIFY_DONE;
 }
 
 static const struct rhashtable_params route_ht_params = {
@@ -1563,7 +1465,7 @@ static int __init rtl83xx_sw_probe(struct platform_device *pdev)
 		priv->ds->num_ports = 29;
 		priv->fib_entries = 8192;
 		rtl8380_get_version(priv);
-		priv->n_lags = 8;
+		priv->ds->num_lag_ids = 8;
 		priv->l2_bucket_size = 4;
 		priv->n_pie_blocks = 12;
 		priv->port_ignore = 0x1f;
@@ -1579,7 +1481,7 @@ static int __init rtl83xx_sw_probe(struct platform_device *pdev)
 		priv->ds->num_ports = 53;
 		priv->fib_entries = 16384;
 		rtl8390_get_version(priv);
-		priv->n_lags = 16;
+		priv->ds->num_lag_ids = 16;
 		priv->l2_bucket_size = 4;
 		priv->n_pie_blocks = 18;
 		priv->port_ignore = 0x3f;
@@ -1598,7 +1500,7 @@ static int __init rtl83xx_sw_probe(struct platform_device *pdev)
 		 * be constructed. For now, just set it to a static 'A'
 		 */
 		priv->version = RTL8390_VERSION_A;
-		priv->n_lags = 16;
+		priv->ds->num_lag_ids = 16;
 		sw_w32(1, RTL930X_ST_CTRL);
 		priv->l2_bucket_size = 8;
 		priv->n_pie_blocks = 16;
@@ -1618,7 +1520,7 @@ static int __init rtl83xx_sw_probe(struct platform_device *pdev)
 		 * be constructed. For now, just set it to a static 'A'
 		 */
 		priv->version = RTL8390_VERSION_A;
-		priv->n_lags = 16;
+		priv->ds->num_lag_ids = 16;
 		sw_w32(1, RTL931x_ST_CTRL);
 		priv->l2_bucket_size = 8;
 		priv->n_pie_blocks = 16;
@@ -1701,14 +1603,6 @@ static int __init rtl83xx_sw_probe(struct platform_device *pdev)
 	for (int i = 0; i < 4; i++)
 		priv->mirror_group_ports[i] = -1;
 
-	/* Register netdevice event callback to catch changes in link aggregation groups */
-	priv->nb.notifier_call = rtl83xx_netdevice_event;
-	if (register_netdevice_notifier(&priv->nb)) {
-		priv->nb.notifier_call = NULL;
-		dev_err(dev, "Failed to register LAG netdev notifier\n");
-		goto err_register_nb;
-	}
-
 	/* Initialize hash table for L3 routing */
 	rhltable_init(&priv->routes, &route_ht_params);
 
@@ -1756,8 +1650,6 @@ static int __init rtl83xx_sw_probe(struct platform_device *pdev)
 err_register_fib_nb:
 	unregister_netevent_notifier(&priv->ne_nb);
 err_register_ne_nb:
-	unregister_netdevice_notifier(&priv->nb);
-err_register_nb:
 	dsa_switch_shutdown(priv->ds);
 err_register_switch:
 	destroy_workqueue(priv->wq);

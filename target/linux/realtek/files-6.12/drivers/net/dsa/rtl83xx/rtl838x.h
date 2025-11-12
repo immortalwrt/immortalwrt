@@ -1164,14 +1164,24 @@ struct rtl838x_switch_priv {
 	u32 fib_entries;
 	int l2_bucket_size;
 	struct dentry *dbgfs_dir;
-	int n_lags;
+
+	/** @lags_port_members: Port (bit) is part of a specific LAG */
 	u64 lags_port_members[MAX_LAGS];
-	struct net_device *lag_devs[MAX_LAGS];
+
+	/** @lag_primary: port of a LAG is primary (repesenting) and is added to
+	 * the port matrix
+	 */
 	u32 lag_primary[MAX_LAGS];
-	u32 is_lagmember[57];
+
+	/**
+	 * @lag_non_primary: Port (bit) is part of any LAG but not the
+	 * first/primary port which needs to be added in the port matrix
+	 */
+	u64 lag_non_primary;
+
+	/** @lagmembers: Port (bit) is part of any LAG */
 	u64 lagmembers;
 	struct workqueue_struct *wq;
-	struct notifier_block nb;  /* TODO: change to different name */
 	struct notifier_block ne_nb;
 	struct notifier_block fib_nb;
 	bool eee_enabled;
