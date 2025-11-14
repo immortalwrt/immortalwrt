@@ -1,0 +1,14 @@
+--- a/arch/arm/mach-rockchip/rk3588/rk3588.c
++++ b/arch/arm/mach-rockchip/rk3588/rk3588.c
+@@ -342,9 +342,11 @@ int ft_system_setup(void *blob, struct b
+ 	if (ip_state[0] & FAIL_CPU_CLUSTER2)
+ 		ip_state[0] |= FAIL_CPU_CLUSTER2;
+ 
++#if 0
+ 	/* policy: always fail one big core cluster on rk3582/rk3583 */
+ 	if (!(ip_state[0] & (FAIL_CPU_CLUSTER1 | FAIL_CPU_CLUSTER2)))
+ 		ip_state[0] |= FAIL_CPU_CLUSTER2;
++#endif
+ 
+ 	/* policy: always fail one rkvdec core on rk3582/rk3583 */
+ 	if (!(ip_state[1] & (FAIL_RKVDEC0 | FAIL_RKVDEC1)))
