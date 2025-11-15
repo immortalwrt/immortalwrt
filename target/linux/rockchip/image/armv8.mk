@@ -61,6 +61,20 @@ define Device/IfnameMigration
   DEVICE_COMPAT_MESSAGE := Network interface names have been changed
 endef
 
+define Device/9tripod_x3568-v4
+  $(Device/rk3568)
+  DEVICE_VENDOR := 9Tripod
+  DEVICE_MODEL := X3568
+  DEVICE_VARIANT := v4
+  DEVICE_DTS := rk3568-9tripod-x3568-v4
+  SUPPORTED_DEVICES := ninetripod,x3568-v4
+  DEVICE_PACKAGES := blkdiscard block-mount kmod-ata-ahci-dwc kmod-nvme kmod-hwmon-pwmfan \
+	kmod-input-adc-keys kmod-saradc-rockchip kmod-rtc-pcf8563 kmod-brcmfmac wpad-openssl \
+	brcmfmac-firmware-43752-sdio brcmfmac-nvram-43752-sdio
+  UBOOT_DEVICE_NAME := 9tripod-x3568-v4-rk3568
+endef
+TARGET_DEVICES += 9tripod_x3568-v4
+
 define Device/ariaboard_photonicat
   $(Device/rk3568)
   DEVICE_VENDOR := Ariaboard
@@ -301,17 +315,6 @@ define Device/mmbox_anas3035
   DEVICE_PACKAGES := kmod-r8125 kmod-ata-ahci-dwc kmod-hwmon-pwmfan kmod-hwmon-drivetemp
 endef
 TARGET_DEVICES += mmbox_anas3035
-
-define Device/ninetripod_x3568-v4
-  $(Device/rk3568)
-  DEVICE_VENDOR := NineTripod
-  DEVICE_MODEL := X3568
-  DEVICE_VARIANT := v4
-  DEVICE_PACKAGES := blkdiscard block-mount kmod-ata-ahci-dwc kmod-nvme kmod-hwmon-pwmfan \
-	kmod-input-adc-keys kmod-saradc-rockchip kmod-rtc-pcf8563 kmod-brcmfmac wpad-openssl \
-	brcmfmac-firmware-43752-sdio brcmfmac-nvram-43752-sdio
-endef
-TARGET_DEVICES += ninetripod_x3568-v4
 
 define Device/nlnet_xiguapi-v3
   $(Device/rk3568)
