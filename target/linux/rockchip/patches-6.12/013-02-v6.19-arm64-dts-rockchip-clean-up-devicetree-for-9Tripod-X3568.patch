@@ -1,0 +1,79 @@
+From c1ffe499306b26a61f390b7d83c5703aa8e2af55 Mon Sep 17 00:00:00 2001
+From: Coia Prant <coiaprant@gmail.com>
+Date: Fri, 7 Nov 2025 21:38:38 +0800
+Subject: [PATCH] arm64: dts: rockchip: clean up devicetree for 9Tripod X3568
+ v4
+
+Fix indentation, remove unused SDIO properties, and drop the GMAC clock
+that was used for input direction. The board uses the clock as
+output, so the input clock is not needed.
+
+Signed-off-by: Coia Prant <coiaprant@gmail.com>
+Link: https://patch.msgid.link/20251107133839.300252-1-coiaprant@gmail.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ .../dts/rockchip/rk3568-9tripod-x3568-v4.dts  | 25 +++++++------------
+ 1 file changed, 9 insertions(+), 16 deletions(-)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3568-9tripod-x3568-v4.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-9tripod-x3568-v4.dts
+@@ -273,11 +273,10 @@
+ 	clock_in_out = "output";
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&gmac0_miim
+-			&gmac0_tx_bus2
+-			&gmac0_rx_bus2
+-			&gmac0_rgmii_clk
+-			&gmac0_rgmii_bus
+-			&gmac0_clkinout>;
++		     &gmac0_tx_bus2
++		     &gmac0_rx_bus2
++		     &gmac0_rgmii_clk
++		     &gmac0_rgmii_bus>;
+ 	phy-handle = <&rgmii_phy0>;
+ 	phy-mode = "rgmii-id";
+ 	status = "okay";
+@@ -290,11 +289,10 @@
+ 	clock_in_out = "output";
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&gmac1m1_miim
+-			&gmac1m1_tx_bus2
+-			&gmac1m1_rx_bus2
+-			&gmac1m1_rgmii_clk
+-			&gmac1m1_rgmii_bus
+-			&gmac1m1_clkinout>;
++		     &gmac1m1_tx_bus2
++		     &gmac1m1_rx_bus2
++		     &gmac1m1_rgmii_clk
++		     &gmac1m1_rgmii_bus>;
+ 	phy-handle = <&rgmii_phy1>;
+ 	phy-mode = "rgmii-id";
+ 	status = "okay";
+@@ -674,8 +672,7 @@
+ 
+ 	pmic {
+ 		pmic_int: pmic_int {
+-			rockchip,pins =
+-				<0 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>;
++			rockchip,pins = <0 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>;
+ 		};
+ 	};
+ 
+@@ -763,7 +760,6 @@
+ /* used for AP6275S WiFi */
+ &sdmmc2 {
+ 	bus-width = <4>;
+-	disable-wp;
+ 	cap-sd-highspeed;
+ 	cap-sdio-irq;
+ 	keep-power-in-suspend;
+@@ -771,9 +767,6 @@
+ 	non-removable;
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&sdmmc2m0_bus4 &sdmmc2m0_cmd &sdmmc2m0_clk>;
+-	sd-uhs-sdr12;
+-	sd-uhs-sdr25;
+-	sd-uhs-sdr50;
+ 	sd-uhs-sdr104;
+ 	vmmc-supply = <&vcc3v3_sys>;
+ 	vqmmc-supply = <&vcc_1v8>;

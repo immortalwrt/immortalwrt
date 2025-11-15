@@ -141,6 +141,6 @@ define Package/brcmfmac-nvram-43752-sdio/install
 		$(1)/lib/firmware/brcm/brcmfmac43752-sdio.firefly,rk3568-roc-pc.txt
 	$(LN) \
 		brcmfmac43752-sdio.txt \
-		$(1)/lib/firmware/brcm/brcmfmac43752-sdio.ninetripod,x3568-v4.txt
+		$(1)/lib/firmware/brcm/brcmfmac43752-sdio.9tripod,x3568-v4.txt
 endef
 $(eval $(call BuildPackage,brcmfmac-nvram-43752-sdio))
