@@ -9,8 +9,8 @@
 #include "rk3568.dtsi"
 
 / {
-	model = "NineTripod X3568 v4";
-	compatible = "ninetripod,x3568-v4", "rockchip,rk3568";
+	model = "9Tripod X3568 v4";
+	compatible = "9tripod,x3568-v4", "rockchip,rk3568";
 
 	aliases {
 		ethernet0 = &gmac0;
@@ -18,6 +18,7 @@
 		mmc0 = &sdhci;
 		mmc1 = &sdmmc0;
 		mmc2 = &sdmmc2;
+		rtc0 = &rtc0;
 	};
 
 	chosen {
@@ -170,15 +171,15 @@
 
 	vcc3v3_pcie: regulator-vcc3v3-pcie {
 		compatible = "regulator-fixed";
-		regulator-name = "vcc3v3_pcie";
 		enable-active-high;
-		regulator-min-microvolt = <3300000>;
-		regulator-max-microvolt = <3300000>;
+		gpio = <&gpio3 RK_PC3 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&vcc3v3_pcie_en_pin>;
-		gpio = <&gpio0 RK_PD4 GPIO_ACTIVE_HIGH>;
+		regulator-name = "vcc3v3_pcie";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
 		startup-delay-us = <5000>;
-		vin-supply = <&vcc5v0_sys>;
+		vin-supply = <&dc_12v>;
 	};
 
 	vcc5v0_sys: regulator-vcc5v0-sys {
@@ -264,11 +265,10 @@
 	clock_in_out = "output";
 	pinctrl-names = "default";
 	pinctrl-0 = <&gmac0_miim
-			&gmac0_tx_bus2
-			&gmac0_rx_bus2
-			&gmac0_rgmii_clk
-			&gmac0_rgmii_bus
-			&gmac0_clkinout>;
+		     &gmac0_tx_bus2
+		     &gmac0_rx_bus2
+		     &gmac0_rgmii_clk
+		     &gmac0_rgmii_bus>;
 	phy-handle = <&rgmii_phy0>;
 	phy-mode = "rgmii-id";
 	status = "okay";
@@ -281,11 +281,10 @@
 	clock_in_out = "output";
 	pinctrl-names = "default";
 	pinctrl-0 = <&gmac1m1_miim
-			&gmac1m1_tx_bus2
-			&gmac1m1_rx_bus2
-			&gmac1m1_rgmii_clk
-			&gmac1m1_rgmii_bus
-			&gmac1m1_clkinout>;
+		     &gmac1m1_tx_bus2
+		     &gmac1m1_rx_bus2
+		     &gmac1m1_rgmii_clk
+		     &gmac1m1_rgmii_bus>;
 	phy-handle = <&rgmii_phy1>;
 	phy-mode = "rgmii-id";
 	status = "okay";
@@ -558,7 +557,7 @@
 &i2c5 {
 	status = "okay";
 
-	rtc@51 {
+	rtc0: rtc@51 {
 		compatible = "nxp,pcf8563";
 		reg = <0x51>;
 		#clock-cells = <0>;
@@ -580,11 +579,6 @@
 	status = "okay";
 };
 
-/* Required remotectl for IR receiver */
-&pwm7 {
-	status = "disabled";
-};
-
 &mdio0 {
 	rgmii_phy0: ethernet-phy@3 {
 		compatible = "ethernet-phy-ieee802.3-c22";
@@ -592,6 +586,26 @@
 		reset-assert-us = <20000>;
 		reset-deassert-us = <100000>;
 		reset-gpios = <&gpio2 RK_PD3 GPIO_ACTIVE_LOW>;
+
+		leds {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			led@1 {
+				reg = <1>;
+				color = <LED_COLOR_ID_GREEN>;
+				function = LED_FUNCTION_LAN;
+				default-state = "keep";
+			};
+
+			/* Note: The LED polarity is inverted */
+			led@2 {
+				reg = <2>;
+				color = <LED_COLOR_ID_AMBER>;
+				function = LED_FUNCTION_LAN;
+				default-state = "keep";
+			};
+		};
 	};
 };
 
@@ -602,6 +616,26 @@
 		reset-assert-us = <20000>;
 		reset-deassert-us = <100000>;
 		reset-gpios = <&gpio2 RK_PD1 GPIO_ACTIVE_LOW>;
+
+		leds {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			led@1 {
+				reg = <1>;
+				color = <LED_COLOR_ID_GREEN>;
+				function = LED_FUNCTION_LAN;
+				default-state = "keep";
+			};
+
+			/* Note: The LED polarity is inverted */
+			led@2 {
+				reg = <2>;
+				color = <LED_COLOR_ID_AMBER>;
+				function = LED_FUNCTION_LAN;
+				default-state = "keep";
+			};
+		};
 	};
 };
 
@@ -630,8 +664,7 @@
 
 	pmic {
 		pmic_int: pmic_int {
-			rockchip,pins =
-				<0 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>;
+			rockchip,pins = <0 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
 
@@ -655,7 +688,7 @@
 			rockchip,pins = <2 RK_PD6 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 		vcc3v3_pcie_en_pin: vcc3v3-pcie-en-pin {
-			rockchip,pins = <0 RK_PD4 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins = <3 RK_PC3 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 };
@@ -719,7 +752,6 @@
 /* used for AP6275S WiFi */
 &sdmmc2 {
 	bus-width = <4>;
-	disable-wp;
 	cap-sd-highspeed;
 	cap-sdio-irq;
 	keep-power-in-suspend;
@@ -727,9 +759,6 @@
 	non-removable;
 	pinctrl-names = "default";
 	pinctrl-0 = <&sdmmc2m0_bus4 &sdmmc2m0_cmd &sdmmc2m0_clk>;
-	sd-uhs-sdr12;
-	sd-uhs-sdr25;
-	sd-uhs-sdr50;
 	sd-uhs-sdr104;
 	vmmc-supply = <&vcc3v3_sys>;
 	vqmmc-supply = <&vcc_1v8>;

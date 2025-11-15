@@ -337,6 +337,28 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  		};
  	};
  
+--- a/arch/arm64/boot/dts/rockchip/rk3568-9tripod-x3568-v4.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-9tripod-x3568-v4.dts
+@@ -19,6 +19,11 @@
+ 		mmc1 = &sdmmc0;
+ 		mmc2 = &sdmmc2;
+ 		rtc0 = &rtc0;
++
++		led-boot = &led_work;
++		led-failsafe = &led_work;
++		led-running = &led_work;
++		led-upgrade = &led_work;
+ 	};
+ 
+ 	chosen {
+@@ -63,7 +68,6 @@
+ 			gpios = <&gpio0 RK_PC0 GPIO_ACTIVE_HIGH>;
+ 			function = LED_FUNCTION_HEARTBEAT;
+ 			color = <LED_COLOR_ID_BLUE>;
+-			linux,default-trigger = "heartbeat";
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&led_work_en>;
+ 		};
 --- a/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi
 @@ -9,6 +9,13 @@
