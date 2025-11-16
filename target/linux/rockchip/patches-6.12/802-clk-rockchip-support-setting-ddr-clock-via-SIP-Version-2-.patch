@@ -180,7 +180,7 @@ Signed-off-by: hmz007 <hmz007@gmail.com>
  	GATE(0, "clk_ddrupctl", "clk_ddr", CLK_IGNORE_UNUSED,
 --- a/drivers/clk/rockchip/clk.h
 +++ b/drivers/clk/rockchip/clk.h
-@@ -564,7 +564,8 @@ struct clk *rockchip_clk_register_mmc(co
+@@ -593,7 +593,8 @@ struct clk *rockchip_clk_register_mmc(co
   * DDRCLK flags, including method of setting the rate
   * ROCKCHIP_DDRCLK_SIP: use SIP call to bl31 to change ddrclk rate.
   */

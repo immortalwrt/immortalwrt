@@ -1,0 +1,19 @@
+--- a/arch/arm64/boot/dts/rockchip/rk3528.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3528.dtsi
+@@ -1365,6 +1365,16 @@
+ 			};
+ 		};
+ 
++		rng: rng@ffc50000 {
++			compatible = "rockchip,rkrng";
++			reg = <0x0 0xffc50000 0x0 0x200>;
++			interrupts = <GIC_SPI 23 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&scmi_clk SCMI_HCLK_TRNG>;
++			clock-names = "hclk_trng";
++			resets = <&cru 0x000000a3>;
++			reset-names = "reset";
++		};
++
+ 		dmac: dma-controller@ffd60000 {
+ 			compatible = "arm,pl330", "arm,primecell";
+ 			reg = <0x0 0xffd60000 0x0 0x4000>;

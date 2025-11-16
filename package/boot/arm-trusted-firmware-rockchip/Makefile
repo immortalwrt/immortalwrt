@@ -50,6 +50,12 @@ define Trusted-Firmware-A/rk3399
   LOADER:=rk33/$(RK3399_LOADER)
 endef
 
+define Trusted-Firmware-A/rk3528
+  BUILD_SUBTARGET:=armv8
+  ATF:=rk35/$(RK3528_ATF)
+  TPL:=rk35/$(RK3528_TPL)
+endef
+
 define Trusted-Firmware-A/rk3566
   BUILD_SUBTARGET:=armv8
   ATF:=rk35/$(RK3566_ATF)
@@ -85,6 +91,7 @@ TFA_TARGETS:= \
 	rk3308-tpl-rock-pi-s \
 	rk3328 \
 	rk3399 \
+	rk3528 \
 	rk3566 \
 	rk3568 \
 	rk3568-tpl-e25 \
