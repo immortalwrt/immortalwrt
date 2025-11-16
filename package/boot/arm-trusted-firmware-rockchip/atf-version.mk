@@ -10,6 +10,9 @@ RK3399_ATF:=rk3399_bl31_v1.36.elf
 RK3399_TPL:=rk3399_ddr_800MHz_v1.30.bin
 RK3399_LOADER:=rk3399_miniloader_v1.30.bin
 
+RK3528_ATF:=rk3528_bl31_v1.20.elf
+RK3528_TPL:=rk3528_ddr_1056MHz_v1.11.bin
+
 RK3566_ATF:=rk3568_bl31_v1.45.elf
 RK3566_TPL:=rk3566_ddr_1056MHz_v1.23.bin
 
