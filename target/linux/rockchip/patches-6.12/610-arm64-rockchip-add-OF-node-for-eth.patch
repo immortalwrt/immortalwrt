@@ -215,7 +215,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +		#address-cells = <3>;
 +		#size-cells = <2>;
 +
-+		rtl8168: pcie@1,0 {
++		rtl8168: pcie-eth@1,0 {
 +			compatible = "pci10ec,8168";
 +			reg = <0x000000 0 0 0 0>;
 +			realtek,led-data = <0x870>;
