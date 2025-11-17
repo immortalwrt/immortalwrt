@@ -132,15 +132,33 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  &pinctrl {
 --- a/arch/arm64/boot/dts/rockchip/rk3528-radxa-e20c.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3528-radxa-e20c.dts
-@@ -244,6 +244,7 @@
+@@ -244,6 +244,25 @@
  		reset-assert-us = <20000>;
  		reset-deassert-us = <100000>;
  		reset-gpios = <&gpio4 RK_PC2 GPIO_ACTIVE_LOW>;
-+		motorcomm,led-data = <0xe004 0x0 0x0070 0x2600 0x000a>;
++
++		leds {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			led@1 {
++				reg = <1>;
++				color = <LED_COLOR_ID_AMBER>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++
++			led@2 {
++				reg = <2>;
++				color = <LED_COLOR_ID_GREEN>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++		};
  	};
  };
  
-@@ -253,6 +254,18 @@
+@@ -253,6 +272,18 @@
  	reset-gpios = <&gpio1 RK_PA2 GPIO_ACTIVE_HIGH>;
  	vpcie3v3-supply = <&vcc_3v3>;
  	status = "okay";
@@ -197,7 +215,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +		#address-cells = <3>;
 +		#size-cells = <2>;
 +
-+		rtl8168: pcie@1,0 {
++		rtl8168: pcie-eth@1,0 {
 +			compatible = "pci10ec,8168";
 +			reg = <0x000000 0 0 0 0>;
 +			realtek,led-data = <0x870>;
