@@ -11,7 +11,7 @@ Change-Id: Ifb8964053daa6b593dd2c2c6a3b8caab8526e56d
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
-@@ -1945,6 +1945,16 @@
+@@ -1946,6 +1946,16 @@
  		status = "disabled";
  	};
  
