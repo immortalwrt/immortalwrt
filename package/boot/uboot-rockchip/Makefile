@@ -261,6 +261,13 @@ define U-Boot/bpi-r2-pro-rk3568
     sinovoip_bpi-r2-pro
 endef
 
+define U-Boot/easepi-r1-rk3568
+  $(U-Boot/rk3568/Default)
+  NAME:=LinkEase EasePi R1
+  BUILD_DEVICES:= \
+    linkease_easepi-r1
+endef
+
 define U-Boot/fastrhino-r66s-rk3568
   $(U-Boot/rk3568/Default)
   NAME:=FastRhino R66S
@@ -273,13 +280,6 @@ define U-Boot/fastrhino-r68s-rk3568
   NAME:=FastRhino R68S
   BUILD_DEVICES:= \
     lunzn_fastrhino-r68s
-endef
-
-define U-Boot/generic-rk3568
-  $(U-Boot/rk3568/Default)
-  NAME:=Generic RK3566/RK3568 board
-  BUILD_DEVICES:= \
-    linkease_easepi-r1
 endef
 
 define U-Boot/lyt-t68m-rk3568
@@ -516,9 +516,9 @@ UBOOT_TARGETS := \
   rock-3c-rk3566 \
   9tripod-x3568-v4-rk3568 \
   bpi-r2-pro-rk3568 \
+  easepi-r1-rk3568 \
   fastrhino-r66s-rk3568 \
   fastrhino-r68s-rk3568 \
-  generic-rk3568 \
   lyt-t68m-rk3568 \
   mmbox-anas3035-rk3568 \
   mrkaio-m68s-rk3568 \
