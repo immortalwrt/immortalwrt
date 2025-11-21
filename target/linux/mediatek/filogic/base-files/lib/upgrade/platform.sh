@@ -95,7 +95,7 @@ platform_do_upgrade() {
 	cudy,tr3000-v1-ubootmod|\
 	gatonetworks,gdsp|\
 	h3c,magic-nx30-pro|\
-	imou,lc-hx3001|\
+	imou,hx21|\
 	jcg,q30-pro|\
 	jdcloud,re-cp-03|\
 	konka,komi-a31|\

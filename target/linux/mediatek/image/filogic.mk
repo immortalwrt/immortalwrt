@@ -110,7 +110,7 @@ endef
 
 define Build/zyxel-nwa-fit-filogic
 	$(TOPDIR)/scripts/mkits-zyxel-fit-filogic.sh \
-		$@.its $@ "80 e1 ff ff ff ff ff ff ff ff"
+		$@.its $@ "80 e1 81 e1 ff ff ff ff ff ff"
 	PATH=$(LINUX_DIR)/scripts/dtc:$(PATH) mkimage -f $@.its $@.new
 	@mv $@.new $@
 endef
@@ -1476,12 +1476,15 @@ define Device/huasifei_wh3000-pro
 endef
 TARGET_DEVICES += huasifei_wh3000-pro
 
-define Device/imou_lc-hx3001
+define Device/imou_hx21
   DEVICE_VENDOR := Imou
-  DEVICE_MODEL := LC-HX3001
-  DEVICE_DTS := mt7981b-imou-lc-hx3001
+  DEVICE_MODEL := HX21
+  DEVICE_ALT0_VENDOR := Imou
+  DEVICE_ALT0_MODEL := LC-HX3001
+  DEVICE_DTS := mt7981b-imou-hx21
   DEVICE_DTS_DIR := ../dts
   DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware
+  SUPPORTED_DEVICES += imou,lc-hx3001
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
   PAGESIZE := 2048
@@ -1496,9 +1499,9 @@ define Device/imou_lc-hx3001
         fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-static-with-rootfs | append-metadata
   ARTIFACTS := preloader.bin bl31-uboot.fip
   ARTIFACT/preloader.bin := mt7981-bl2 spim-nand-ddr3
-  ARTIFACT/bl31-uboot.fip := mt7981-bl31-uboot imou_lc-hx3001
+  ARTIFACT/bl31-uboot.fip := mt7981-bl31-uboot imou_hx21
 endef
-TARGET_DEVICES += imou_lc-hx3001
+TARGET_DEVICES += imou_hx21
 
 define Device/iptime_ax3000q
   DEVICE_VENDOR := ipTIME
@@ -1518,6 +1521,26 @@ define Device/iptime_ax3000q
   SUPPORTED_DEVICES += mediatek,mt7981-spim-snand-rfb
 endef
 TARGET_DEVICES += iptime_ax3000q
+
+define Device/iptime_ax3000se
+  DEVICE_VENDOR := ipTIME
+  DEVICE_MODEL := AX3000SE
+  DEVICE_DTS := mt7981b-iptime-ax3000se
+  DEVICE_DTS_DIR := ../dts
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 32768k
+  KERNEL := kernel-bin | lzma | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
+  KERNEL_INITRAMFS := kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
+  IMAGES := sysupgrade.bin
+  IMAGES := factory.bin sysupgrade.bin
+  IMAGE/factory.bin := sysupgrade-tar | append-metadata | check-size | iptime-crc32 ax3kse
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware
+  SUPPORTED_DEVICES += mediatek,mt7981-spim-snand-rfb
+endef
+TARGET_DEVICES += iptime_ax3000se
 
 define Device/iptime_ax3000sm
   DEVICE_VENDOR := ipTIME
@@ -1572,7 +1595,8 @@ define Device/iptime_ax7800m-6e
   IMAGES := factory.bin sysupgrade.bin
   IMAGE/factory.bin := sysupgrade-tar | append-metadata | check-size | iptime-crc32 ax7800m
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
-  DEVICE_PACKAGES := kmod-usb3 kmod-mt7915e kmod-mt7916-firmware kmod-mt7986-firmware mt7986-wo-firmware kmod-hwmon-gpiofan
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7916-firmware kmod-mt7986-firmware mt7986-wo-firmware kmod-hwmon-gpiofan \
+	kmod-usb3 automount
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += iptime_ax7800m-6e
@@ -1657,7 +1681,7 @@ define Device/keenetic_kn-3811
   DEVICE_MODEL := KN-3811
   DEVICE_DTS := mt7981b-keenetic-kn-3811
   DEVICE_DTS_DIR := ../dts
-  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware kmod-usb3
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware kmod-usb3 automount
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
   PAGESIZE := 2048
@@ -2374,7 +2398,7 @@ define Device/teltonika_rutc50
   KERNEL_IN_UBI := 1
   UBINIZE_OPTS := -E 5
   DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware kmod-usb3 kmod-usb-net-qmi-wwan \
-  kmod-usb-serial-option kmod-gpio-nxp-74hc164 uqmi
+  kmod-usb-serial-option kmod-gpio-nxp-74hc164 uqmi automount
   IMAGES += factory.bin
   IMAGE/factory.bin := append-ubi | append-teltonika-metadata
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
@@ -2453,7 +2477,7 @@ define Device/tplink_be450
   DEVICE_MODEL := BE450
   DEVICE_DTS := mt7988d-tplink-be450
   DEVICE_DTS_DIR := ../dts
-  DEVICE_PACKAGES := kmod-mt7992-firmware kmod-usb3 \
+  DEVICE_PACKAGES := kmod-mt7992-firmware kmod-usb3 automount \
 	    mt7988-2p5g-phy-firmware mt7988-wo-firmware
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
@@ -2885,6 +2909,8 @@ define Device/zbtlink_zbt-z8102ax-v2
   IMAGES += factory.bin
   IMAGE/factory.bin := append-ubi | check-size $$(IMAGE_SIZE)
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  DEVICE_COMPAT_VERSION := 1.1
+  DEVICE_COMPAT_MESSAGE := Partition layout has been changed to fit the bootloader
 endef
 TARGET_DEVICES += zbtlink_zbt-z8102ax-v2
 

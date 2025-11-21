@@ -208,7 +208,7 @@
 
 			nand_rootfs: partition@580000 {
 				label = "ubi";
-				reg = <0x0580000 0x7220000>;
+				reg = <0x0580000 0x7280000>;
 			};
 		};
 	};
