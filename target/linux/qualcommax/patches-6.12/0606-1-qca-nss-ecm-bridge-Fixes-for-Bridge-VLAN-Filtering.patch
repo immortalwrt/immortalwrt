@@ -71,7 +71,7 @@ Signed-off-by: Vishnu Vardhan Bantanahal <quic_vishvard@quicinc.com>
  }
 --- a/net/bridge/br.c
 +++ b/net/bridge/br.c
-@@ -42,6 +42,10 @@ static int br_device_event(struct notifi
+@@ -47,6 +47,10 @@ static int br_device_event(struct notifi
  			return notifier_from_errno(err);
  
  		if (event == NETDEV_REGISTER) {
@@ -84,7 +84,7 @@ Signed-off-by: Vishnu Vardhan Bantanahal <quic_vishvard@quicinc.com>
  			if (err)
 --- a/net/bridge/br_if.c
 +++ b/net/bridge/br_if.c
-@@ -800,9 +800,12 @@ struct net_device *br_port_dev_get(struc
+@@ -801,9 +801,12 @@ struct net_device *br_port_dev_get(struc
  				   struct sk_buff *skb,
  				   unsigned int cookie)
  {
@@ -97,7 +97,7 @@ Signed-off-by: Vishnu Vardhan Bantanahal <quic_vishvard@quicinc.com>
  
  	/* Is this a bridge? */
  	if (!(dev->priv_flags & IFF_EBRIDGE))
-@@ -831,14 +834,20 @@ struct net_device *br_port_dev_get(struc
+@@ -832,14 +835,20 @@ struct net_device *br_port_dev_get(struc
  	 * determine the port to use - fall back to using FDB
  	 */
  
