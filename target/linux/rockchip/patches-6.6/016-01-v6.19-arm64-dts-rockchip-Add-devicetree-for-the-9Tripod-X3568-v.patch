@@ -94,7 +94,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-fastrhino-r66s.dtb
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-9tripod-x3568-v4.dts
-@@ -0,0 +1,887 @@
+@@ -0,0 +1,879 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +
 +/dts-v1/;
@@ -322,14 +322,6 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 +		regulator-max-microvolt = <5000000>;
 +		vin-supply = <&vcc5v0_usb>;
 +	};
-+};
-+
-+&can1 {
-+	assigned-clocks = <&cru CLK_CAN1>;
-+	assigned-clock-rates = <150000000>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&can1m1_pins>;
-+	status = "okay";
 +};
 +
 +/* used for usb_host0_xhci */

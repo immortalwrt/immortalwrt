@@ -17,7 +17,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3568-9tripod-x3568-v4.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-9tripod-x3568-v4.dts
-@@ -273,11 +273,10 @@
+@@ -265,11 +265,10 @@
  	clock_in_out = "output";
  	pinctrl-names = "default";
  	pinctrl-0 = <&gmac0_miim
@@ -33,7 +33,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	phy-handle = <&rgmii_phy0>;
  	phy-mode = "rgmii-id";
  	status = "okay";
-@@ -290,11 +289,10 @@
+@@ -282,11 +281,10 @@
  	clock_in_out = "output";
  	pinctrl-names = "default";
  	pinctrl-0 = <&gmac1m1_miim
@@ -49,7 +49,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	phy-handle = <&rgmii_phy1>;
  	phy-mode = "rgmii-id";
  	status = "okay";
-@@ -674,8 +672,7 @@
+@@ -666,8 +664,7 @@
  
  	pmic {
  		pmic_int: pmic_int {
@@ -59,7 +59,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  		};
  	};
  
-@@ -763,7 +760,6 @@
+@@ -755,7 +752,6 @@
  /* used for AP6275S WiFi */
  &sdmmc2 {
  	bus-width = <4>;
@@ -67,7 +67,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	cap-sd-highspeed;
  	cap-sdio-irq;
  	keep-power-in-suspend;
-@@ -771,9 +767,6 @@
+@@ -763,9 +759,6 @@
  	non-removable;
  	pinctrl-names = "default";
  	pinctrl-0 = <&sdmmc2m0_bus4 &sdmmc2m0_cmd &sdmmc2m0_clk>;
