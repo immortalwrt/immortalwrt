@@ -34,6 +34,7 @@ rockchip_setup_interfaces()
 	radxa,e20c|\
 	radxa,e25|\
 	radxa,rock-3b|\
+	widora,mangopi-m28k|\
 	xunlong,orangepi-5-plus)
 		ucidef_set_interfaces_lan_wan 'eth0' 'eth1'
 		;;
@@ -119,6 +120,7 @@ rockchip_setup_macs()
 	friendlyarm,nanopi-r3s|\
 	friendlyarm,nanopi-r5c|\
 	friendlyarm,nanopi-r6c|\
+	widora,mangopi-m28k|\
 	xunlong,orangepi-5-plus)
 		wan_mac=$(macaddr_generate_from_mmc_cid mmcblk*)
 		lan_mac=$(macaddr_add "$wan_mac" 1)

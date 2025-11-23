@@ -44,6 +44,7 @@ nlnet,xiguapi-v3|\
 radxa,e20c|\
 radxa,e25|\
 sinovoip,rk3568-bpi-r2pro|\
+widora,mangopi-m28k|\
 xunlong,orangepi-5-plus)
 	set_interface_core 2 "eth0"
 	set_interface_core 4 "eth1"
