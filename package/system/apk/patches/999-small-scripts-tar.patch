@@ -1,6 +1,6 @@
 --- a/doc/apk.8.scd
 +++ b/doc/apk.8.scd
-@@ -461,7 +461,8 @@ timeout 120
+@@ -462,7 +462,8 @@ timeout 120
  */lib/apk/db/installed*
  	Database of installed packages and their contents.
  
@@ -12,7 +12,7 @@
  */lib/apk/db/triggers*
 --- a/src/apk_database.h
 +++ b/src/apk_database.h
-@@ -202,6 +202,7 @@ struct apk_database {
+@@ -210,6 +210,7 @@ struct apk_database {
  	unsigned int compat_depversions : 1;
  	unsigned int sorted_names : 1;
  	unsigned int sorted_installed_packages : 1;
@@ -22,7 +22,7 @@
  	struct apk_id_cache *id_cache;
 --- a/src/database.c
 +++ b/src/database.c
-@@ -1255,8 +1255,11 @@ static int apk_db_read_layer(struct apk_
+@@ -1338,8 +1338,11 @@ static int apk_db_read_layer(struct apk_
  	}
  
  	if (!(flags & APK_OPENF_NO_SCRIPTS)) {
@@ -36,7 +36,7 @@
  		if (!ret && r != -ENOENT) ret = r;
  	}
  
-@@ -2128,8 +2131,9 @@ static int apk_db_write_layers(struct ap
+@@ -2214,8 +2217,9 @@ static int apk_db_write_layers(struct ap
  			continue;
  		}
  		ld->installed = apk_ostream_to_file(ld->fd, "installed", 0644);
