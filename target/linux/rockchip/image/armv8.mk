@@ -16,7 +16,7 @@ define Device/9tripod_x3568-v4
   DEVICE_MODEL := X3568
   DEVICE_VARIANT := v4
   SOC := rk3568
-  DEVICE_DTS := rk3568-9tripod-x3568-v4
+  DEVICE_DTS := rockchip/rk3568-9tripod-x3568-v4
   BOOT_FLOW := pine64-img
   SUPPORTED_DEVICES := ninetripod,x3568-v4
   DEVICE_PACKAGES := blkdiscard block-mount kmod-ata-ahci-dwc kmod-nvme kmod-hwmon-pwmfan \
