@@ -205,7 +205,7 @@ static struct fw_header *rtl838x_request_fw(struct phy_device *phydev,
 	struct device *dev = &phydev->mdio.dev;
 	int err;
 	struct fw_header *h;
-	uint32_t checksum, my_checksum;
+	u32 checksum, my_checksum;
 
 	err = request_firmware(&fw, name, dev);
 	if (err < 0)
@@ -217,7 +217,7 @@ static struct fw_header *rtl838x_request_fw(struct phy_device *phydev,
 		goto out;
 	}
 
-	h = (struct fw_header *) fw->data;
+	h = (struct fw_header *)fw->data;
 	pr_info("Firmware loaded. Size %d, magic: %08x\n", fw->size, h->magic);
 
 	if (h->magic != 0x83808380) {
@@ -252,7 +252,7 @@ static void rtl821x_phy_setup_package_broadcast(struct phy_device *phydev, bool 
 	/* select page 0x266 */
 	phy_write_paged(phydev, RTL838X_PAGE_RAW, RTL8XXX_PAGE_SELECT, RTL821X_PAGE_PORT);
 	/* set phy id and target broadcast bitmap in register 0x16 on page 0x266 */
-	phy_write_paged(phydev, RTL838X_PAGE_RAW, 0x16, (enable?0xff00:0x00) | mac);
+	phy_write_paged(phydev, RTL838X_PAGE_RAW, 0x16, (enable ? 0xff00 : 0x00) | mac);
 	/* return to main page 0 */
 	phy_write_paged(phydev, RTL838X_PAGE_RAW, RTL8XXX_PAGE_SELECT, RTL8XXX_PAGE_MAIN);
 	/* write to 0x0 to register 0x1d on main page 0 */
@@ -418,7 +418,7 @@ static int rtl8380_configure_ext_rtl8218b(struct phy_device *phydev)
 	phydev_info(phydev, "patch chip revision %d\n", val);
 
 	for (int i = 0; rtl8380_rtl8218b_perchip[i * 3] &&
-	                rtl8380_rtl8218b_perchip[i * 3 + 1]; i++) {
+			rtl8380_rtl8218b_perchip[i * 3 + 1]; i++) {
 		patchphy = get_package_phy(phydev, rtl8380_rtl8218b_perchip[i * 3]);
 		phy_write_paged(patchphy, RTL838X_PAGE_RAW,
 				rtl8380_rtl8218b_perchip[i * 3 + 1],
@@ -450,7 +450,7 @@ static int rtl8380_configure_ext_rtl8218b(struct phy_device *phydev)
 
 	for (int i = 0; rtl8218B_6276B_rtl8380_perport[i * 2]; i++) {
 		phy_write_paged(phydev, RTL838X_PAGE_RAW, rtl8218B_6276B_rtl8380_perport[i * 2],
-		                rtl8218B_6276B_rtl8380_perport[i * 2 + 1]);
+				rtl8218B_6276B_rtl8380_perport[i * 2 + 1]);
 	}
 
 	/* Disable broadcast ID */
@@ -735,7 +735,7 @@ static int rtl8380_configure_rtl8214fc(struct phy_device *phydev)
 	phy_write_paged(phydev, 0, RTL821XEXT_MEDIA_PAGE_SELECT, RTL821X_MEDIA_PAGE_COPPER);
 
 	for (int i = 0; rtl8380_rtl8214fc_perchip[i * 3] &&
-	                rtl8380_rtl8214fc_perchip[i * 3 + 1]; i++) {
+			rtl8380_rtl8214fc_perchip[i * 3 + 1]; i++) {
 		u32 page = 0;
 
 		if (rtl8380_rtl8214fc_perchip[i * 3 + 1] == 0x1f)
@@ -792,7 +792,7 @@ static int rtl8380_configure_rtl8214fc(struct phy_device *phydev)
 
 	for (int i = 0; rtl8380_rtl8214fc_perport[i * 2]; i++) {
 		phy_write_paged(phydev, RTL838X_PAGE_RAW, rtl8380_rtl8214fc_perport[i * 2],
-		                rtl8380_rtl8214fc_perport[i * 2 + 1]);
+				rtl8380_rtl8214fc_perport[i * 2 + 1]);
 	}
 
 	/* Disable broadcast ID */

@@ -151,12 +151,12 @@
 #define RTL930X_L2_PORT_DABLK_CTRL		(0x9060)
 
 /* MAC link state bits */
-#define FORCE_EN				(1 << 0)
-#define FORCE_LINK_EN				(1 << 1)
-#define NWAY_EN					(1 << 2)
-#define DUPLX_MODE				(1 << 3)
-#define TX_PAUSE_EN				(1 << 6)
-#define RX_PAUSE_EN				(1 << 7)
+#define FORCE_EN				BIT(0)
+#define FORCE_LINK_EN				BIT(1)
+#define NWAY_EN					BIT(2)
+#define DUPLX_MODE				BIT(3)
+#define TX_PAUSE_EN				BIT(6)
+#define RX_PAUSE_EN				BIT(7)
 
 /* L2 Notification DMA interface */
 #define RTL839X_DMA_IF_NBUF_BASE_DESC_ADDR_CTRL	(0x785C)
@@ -374,7 +374,6 @@ inline u32 rtl839x_get_mac_link_spd_sts(int port)
 	return (speed & 0x3);
 }
 
-
 inline u32 rtl930x_get_mac_link_spd_sts(int port)
 {
 	int r = RTL930X_MAC_LINK_SPD_STS + ((port >> 3) << 2);
@@ -468,5 +467,8 @@ struct rtl838x_eth_reg {
 	void (*create_tx_header)(struct p_hdr *h, unsigned int dest_port, int prio);
 	bool (*decode_tag)(struct p_hdr *h, struct dsa_tag *tag);
 };
+
+/* TODO actually from arch/mips/rtl838x/prom.c */
+extern struct rtl83xx_soc_info soc_info;
 
 #endif /* _RTL838X_ETH_H */
