@@ -25,7 +25,7 @@
 #define RTMDIO_931X_FAMILY_ID			0x9310
 
 /* Register base */
-#define RTMDIO_SW_BASE         			((volatile void *) 0xBB000000)
+#define RTMDIO_SW_BASE				((volatile void *) 0xBB000000)
 
 /* MDIO bus registers */
 #define RTMDIO_838X_SMI_GLB_CTRL		(0xa100)
@@ -85,18 +85,9 @@
 #define RTMDIO_839X_MODEL_NAME_INFO_REG		(0x0ff0)
 #define RTMDIO_93XX_MODEL_NAME_INFO_REG		(0x0004)
 
-#define sw_r32(reg)             		readl(RTMDIO_SW_BASE + reg)
-#define sw_w32(val, reg)        		writel(val, RTMDIO_SW_BASE + reg)
+#define sw_r32(reg)				readl(RTMDIO_SW_BASE + reg)
+#define sw_w32(val, reg)			writel(val, RTMDIO_SW_BASE + reg)
 #define sw_w32_mask(clear, set, reg)		sw_w32((sw_r32(reg) & ~(clear)) | (set), reg)
-
-int rtmdio_930x_read_sds_phy(int sds, int page, int regnum);
-int rtmdio_930x_write_sds_phy(int sds, int page, int regnum, u16 val);
-
-int rtsds_931x_read(int sds, int page, int regnum);
-int rtsds_931x_read_field(int sds, int page, int regnum, int end_bit, int start_bit);
-
-int rtsds_931x_write(int sds, int page, int regnum, u16 val);
-int rtsds_931x_write_field(int sds, int page, int regnum, int end_bit, int start_bit, u16 val);
 
 /*
  * On all Realtek switch platforms the hardware periodically reads the link status of all
@@ -622,10 +613,10 @@ errout:
  * - SerDes 10-11 are 10GBase-R capable
  */
 
-int rtmdio_930x_read_sds_phy(int sds, int page, int regnum)
+static int rtmdio_930x_read_sds_phy(int sds, int page, int regnum)
 {
-        int i, ret = -EIO;
-        u32 cmd;
+	int i, ret = -EIO;
+	u32 cmd;
 
 	if (sds < 0 || sds > 11 || page < 0 || page > 63 || regnum < 0 || regnum > 31)
 		return -EIO;
@@ -641,7 +632,7 @@ int rtmdio_930x_read_sds_phy(int sds, int page, int regnum)
 		mdelay(1);
 	}
 
-        if (i < 100)
+	if (i < 100)
 		ret = sw_r32(RTMDIO_930X_SDS_INDACS_DATA) & 0xffff;
 
 	mutex_unlock(&rtmdio_lock_sds);
@@ -649,7 +640,7 @@ int rtmdio_930x_read_sds_phy(int sds, int page, int regnum)
 	return ret;
 }
 
-int rtmdio_930x_write_sds_phy(int sds, int page, int regnum, u16 val)
+static int rtmdio_930x_write_sds_phy(int sds, int page, int regnum, u16 val)
 {
 	int i, ret = -EIO;
 	u32 cmd;
@@ -725,7 +716,7 @@ static int rtmdio_930x_read_phy(u32 port, u32 page, u32 reg, u32 *val)
 
 	do {
 		v = sw_r32(RTMDIO_930X_SMI_ACCESS_PHY_CTRL_1);
-	} while ( v & 0x1);
+	} while (v & 0x1);
 
 	if (v & BIT(25)) {
 		pr_debug("Error reading phy %d, register %d\n", port, reg);
@@ -848,7 +839,7 @@ static int rtsds_931x_get_backing_sds(int sds, int page)
 	return back;
 }
 
-int rtsds_931x_read(int sds, int page, int regnum)
+static int rtsds_931x_read(int sds, int page, int regnum)
 {
 	int backsds, i, cmd, ret = -EIO;
 	int backpage = page & 0x3f;
@@ -878,7 +869,7 @@ int rtsds_931x_read(int sds, int page, int regnum)
 	return ret;
 }
 
-int rtsds_931x_write(int sds, int page, int regnum, u16 val)
+static int rtsds_931x_write(int sds, int page, int regnum, u16 val)
 {
 	int backsds, i, cmd, ret = -EIO;
 	int backpage = page & 0x3f;
@@ -909,7 +900,8 @@ int rtsds_931x_write(int sds, int page, int regnum, u16 val)
 	return ret;
 }
 
-int rtsds_931x_write_field(int sds, int page, int reg, int end_bit, int start_bit, u16 val)
+__always_unused
+static int rtsds_931x_write_field(int sds, int page, int reg, int end_bit, int start_bit, u16 val)
 {
 	int l = end_bit - start_bit + 1;
 	u32 data = val;
@@ -925,7 +917,8 @@ int rtsds_931x_write_field(int sds, int page, int reg, int end_bit, int start_bi
 	return rtsds_931x_write(sds, page, reg, data);
 }
 
-int rtsds_931x_read_field(int sds, int page, int reg, int end_bit, int start_bit)
+__always_unused
+static int rtsds_931x_read_field(int sds, int page, int reg, int end_bit, int start_bit)
 {
 	int l = end_bit - start_bit + 1;
 	u32 v = rtsds_931x_read(sds, page, reg);
@@ -956,7 +949,7 @@ static int rtmdio_931x_write_phy(u32 port, u32 page, u32 reg, u32 val)
 
 	sw_w32_mask(0xffff, val, RTMDIO_931X_SMI_INDRT_ACCESS_CTRL_3);
 
-	v = reg << 6 | page << 11 ;
+	v = reg << 6 | page << 11;
 	sw_w32(v, RTMDIO_931X_SMI_INDRT_ACCESS_CTRL_0);
 
 	sw_w32(0x1ff, RTMDIO_931X_SMI_INDRT_ACCESS_CTRL_1);
@@ -997,7 +990,7 @@ static int rtmdio_931x_read_phy(u32 port, u32 page, u32 reg, u32 *val)
 	*val = (*val & 0xffff0000) >> 16;
 
 	pr_debug("%s: port %d, page: %d, reg: %x, val: %x, v: %08x\n",
-		__func__, port, page, reg, *val, v);
+		 __func__, port, page, reg, *val, v);
 
 	mutex_unlock(&rtmdio_lock);
 
@@ -1448,12 +1441,12 @@ static int rtmdio_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	priv = bus->priv;
-	for (i=0; i < RTMDIO_MAX_PORT; i++) {
+	for (i = 0; i < RTMDIO_MAX_PORT; i++) {
 		priv->page[i] = 0;
 		priv->raw[i] = false;
 	}
 
-	switch(family) {
+	switch (family) {
 	case RTMDIO_838X_FAMILY_ID:
 		bus->name = "rtl838x-eth-mdio";
 		bus->read = rtmdio_read;
@@ -1573,7 +1566,7 @@ static int rtmdio_probe(struct platform_device *pdev)
 		if (pcs_node)
 			of_property_read_u32(pcs_node, "reg", &priv->sds_id[pn]);
 		if (priv->phy_is_internal[pn] && priv->sds_id[pn] >= 0)
-			priv->smi_bus[pn]= -1;
+			priv->smi_bus[pn] = -1;
 		if (priv->sds_id[pn] >= 0)
 			dev_dbg(dev, "PHY %d has SDS %d\n", pn, priv->sds_id[pn]);
 	}

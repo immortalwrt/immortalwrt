@@ -288,7 +288,7 @@ function iface_vlan(interface, config, vlans) {
 		if (vlan.config.name && vlan.config.vid) {
 			let ifname = `${config.ifname}-${vlan.config.name}`;
 			file.write(`${vlan.config.vid} ${ifname}\n`);
-			netifd.set_vlan(interface, k, ifname);
+			netifd.set_vlan(interface, ifname, k);
 		}
 	file.close();
 
@@ -307,9 +307,6 @@ function iface_vlan(interface, config, vlans) {
 }
 
 function iface_wpa_stations(config, stas) {
-	if (!length(stas))
-		return;
-
 	let path = `/var/run/hostapd-${config.ifname}.psk`;
 
 	let file = fs.open(path, 'w');
@@ -326,9 +323,6 @@ function iface_wpa_stations(config, stas) {
 }
 
 function iface_sae_stations(config, stas) {
-	if (!length(stas))
-		return;
-
 	let path = `/var/run/hostapd-${config.ifname}.sae`;
 
 	let file = fs.open(path, 'w');

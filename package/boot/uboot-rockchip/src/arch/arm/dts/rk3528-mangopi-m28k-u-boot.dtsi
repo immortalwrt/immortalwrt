@@ -1,0 +1,11 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+#include "rk3528-u-boot.dtsi"
+
+&vdd_arm {
+	regulator-init-microvolt = <953000>;
+};
+
+&vdd_logic {
+	regulator-init-microvolt = <900000>;
+};
