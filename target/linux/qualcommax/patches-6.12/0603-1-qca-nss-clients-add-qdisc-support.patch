@@ -360,7 +360,7 @@
  subsys_initcall(pktsched_init);
 --- a/net/sched/sch_generic.c
 +++ b/net/sched/sch_generic.c
-@@ -1090,6 +1090,7 @@ static void __qdisc_destroy(struct Qdisc
+@@ -1093,6 +1093,7 @@ static void __qdisc_destroy(struct Qdisc
  
  	call_rcu(&qdisc->rcu, qdisc_free_cb);
  }
