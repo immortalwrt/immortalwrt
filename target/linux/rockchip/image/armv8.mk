@@ -572,6 +572,14 @@ define Device/sinovoip_bpi-r2-pro
 endef
 TARGET_DEVICES += sinovoip_bpi-r2-pro
 
+define Device/widora_mangopi-m28c
+  $(Device/rk3528)
+  DEVICE_VENDOR := Widora
+  DEVICE_MODEL := MangoPi M28C
+  DEVICE_PACKAGES := kmod-aic8800-sdio wpad-openssl kmod-hwmon-pwmfan
+endef
+TARGET_DEVICES += widora_mangopi-m28c
+
 define Device/widora_mangopi-m28k
   $(Device/rk3528)
   DEVICE_VENDOR := Widora
