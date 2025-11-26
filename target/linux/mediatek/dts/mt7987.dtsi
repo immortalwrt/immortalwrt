@@ -13,7 +13,6 @@
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/thermal/thermal.h>
 #include <dt-bindings/reset/mediatek,mt7987-resets.h>
-#include <dt-bindings/regulator/richtek,rt5190a-regulator.h>
 
 /* TOPRGU resets */
 #define MT7987_TOPRGU_SGMII0_GRST		1
@@ -45,7 +44,6 @@
 		optee {
 			method = "smc";
 			compatible = "linaro,optee-tz";
-			status = "okay";
 		};
 	};
 
@@ -237,7 +235,7 @@
 
 	fan: pwm-fan {
 		compatible = "pwm-fan";
-		cooling-levels = <0 128 255>;
+		cooling-levels = <0 128 192 255>;
 		#cooling-cells = <2>;
 		#thermal-sensor-cells = <1>;
 		status = "disabled";
@@ -679,9 +677,14 @@
 				     "mediatek,mt6577-uart";
 			reg = <0 0x11000000 0 0x100>;
 			interrupts = <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>;
-			clocks = <&topckgen CLK_TOP_UART_SEL>,
-				 <&infracfg CLK_INFRA_52M_UART0_CK>;
+			clocks = <&infracfg CLK_INFRA_52M_UART0_CK>,
+				 <&infracfg CLK_INFRA_66M_UART0_PCK>;
 			clock-names = "baud", "bus";
+			assigned-clocks = <&topckgen CLK_TOP_UART_SEL>,
+					  <&infracfg CLK_INFRA_MUX_UART0_SEL>;
+			assigned-clock-parents = <&topckgen
+						  CLK_TOP_CB_CKSQ_40M>,
+						  <&topckgen CLK_TOP_UART_SEL>;
 			status = "disabled";
 		};
 
@@ -853,9 +856,10 @@
 				      "dma_ck";
 			#address-cells = <2>;
 			#size-cells = <2>;
-			phys = <&tphyu2port0 PHY_TYPE_USB2>;
+			mediatek,u3p-dis-msk = <0x0>;
+			phys = <&tphyu2port0 PHY_TYPE_USB2>,
+			       <&tphyu3port0 PHY_TYPE_USB3>;
 			usb2-lpm-disable;
-			mediatek,u3p-dis-msk=<1>;
 			status = "disabled";
 		};
 
@@ -995,9 +999,6 @@
 				#address-cells = <0>;
 				#interrupt-cells = <1>;
 				interrupt-controller;
-			};
-			slot1: pcie@0,0 {
-				reg = <0x0000 0 0 0 0>;
 			};
 		};
 
