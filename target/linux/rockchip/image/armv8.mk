@@ -90,6 +90,15 @@ define Device/ariaboard_photonicat
 endef
 TARGET_DEVICES += ariaboard_photonicat
 
+define Device/ariaboard_photonicat2
+  $(Device/rk3576)
+  DEVICE_VENDOR := Ariaboard
+  DEVICE_MODEL := Photonicat2
+  UBOOT_DEVICE_NAME := generic-rk3576
+  DEVICE_PACKAGES := wpad-openssl kmod-aic8800-usb
+endef
+TARGET_DEVICES += ariaboard_photonicat2
+
 define Device/armsom_sige3
   $(Device/rk3568)
   DEVICE_VENDOR := ArmSoM
