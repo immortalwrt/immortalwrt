@@ -75,6 +75,9 @@ ipq807x_setup_interfaces()
 	zyxel,nbg7815)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 10g" "wan"
 		;;
+	zyxel,nwa210ax)
+		ucidef_set_interface_lan "uplink lan1" "dhcp"
+		;;
 	*)
 		echo "Unsupported hardware. Network interfaces not initialized"
 		;;
@@ -104,12 +107,15 @@ ipq807x_setup_macs()
 		label_mac=$(get_mac_binary /tmp/factory_data/default-mac 0)
 		lan_mac=$label_mac
 		;;
-		zte,mf269)
-			wan_mac="$(mtd_get_mac_binary mac 0x0)"
-			[ "$wan_mac" != "00:00:00:00:00:00" ] || wan_mac="$(get_mac_binary "$(find_mtd_chardev mac)" 0x20000)"
-			lan_mac="$(macaddr_add "$wan_mac" 1)"
-			label_mac="$wan_mac"
-
+	zte,mf269)
+		wan_mac="$(mtd_get_mac_binary mac 0x0)"
+		[ "$wan_mac" != "00:00:00:00:00:00" ] || wan_mac="$(get_mac_binary "$(find_mtd_chardev mac)" 0x20000)"
+		lan_mac="$(macaddr_add "$wan_mac" 1)"
+		label_mac="$wan_mac"
+		;;
+	zyxel,nwa210ax)
+		label_mac=$(get_mac_label_dt)
+		lan_mac=$label_mac
 		;;
 	esac
 
