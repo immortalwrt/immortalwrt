@@ -18,7 +18,7 @@ Signed-off-by: Yangyu Chen <cyy@cyyself.name>
 
 --- a/drivers/net/phy/realtek/realtek_main.c
 +++ b/drivers/net/phy/realtek/realtek_main.c
-@@ -160,6 +160,12 @@
+@@ -166,6 +166,12 @@
  #define RTL8221B_PHYCR1_ALDPS_EN		BIT(2)
  #define RTL8221B_PHYCR1_ALDPS_XTAL_OFF_EN	BIT(12)
  
@@ -31,7 +31,7 @@ Signed-off-by: Yangyu Chen <cyy@cyyself.name>
  #define RTL8366RB_POWER_SAVE			0x15
  #define RTL8366RB_POWER_SAVE_ON			BIT(12)
  
-@@ -1196,6 +1202,45 @@ static int rtl822x_config_init(struct ph
+@@ -1349,6 +1355,45 @@ static int rtl822x_config_init(struct ph
  	return rtl822x_set_serdes_option_mode(phydev, true);
  }
  
@@ -77,7 +77,7 @@ Signed-off-by: Yangyu Chen <cyy@cyyself.name>
  static int rtl822xb_config_init(struct phy_device *phydev)
  {
  	return rtl822x_set_serdes_option_mode(phydev, false);
-@@ -1316,7 +1361,7 @@ static int rtl822x_read_status(struct ph
+@@ -1469,7 +1514,7 @@ static int rtl822x_read_status(struct ph
  
  	mii_10gbt_stat_mod_linkmode_lpa_t(phydev->lp_advertising, lpadv);
  
