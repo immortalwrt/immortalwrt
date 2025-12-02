@@ -71,8 +71,6 @@
 
 	nand@0 {
 		compatible = "spi-nand";
-		#address-cells = <1>;
-		#size-cells = <1>;
 		reg = <0>;
 
 		nand-ecc-engine = <&qpic_nand>;
@@ -208,12 +206,18 @@
 	};
 };
 
-&wifi0 {
+&wifi {
 	status = "okay";
+
+	qcom,rproc = <&q6_wcss_pd1>;
+	qcom,userpd-subsys-name = "q6v5_wcss_userpd1";
 	qcom,ath11k-calibration-variant = "CMCC-PZ-L8";
 };
 
 &wifi1 {
 	status = "okay";
+
+	qcom,rproc = <&q6_wcss_pd2>;
+	qcom,userpd-subsys-name = "q6v5_wcss_userpd2";
 	qcom,ath11k-calibration-variant = "CMCC-PZ-L8";
 };

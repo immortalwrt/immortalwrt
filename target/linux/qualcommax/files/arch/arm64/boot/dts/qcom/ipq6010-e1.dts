@@ -266,8 +266,6 @@
 	flash@0 {
 		compatible = "jedec,spi-nor";
 		spi-max-frequency = <50000000>;
-		#address-cells = <1>;
-		#size-cells = <1>;
 		reg = <0>;
 
 		partitions {
@@ -371,8 +369,6 @@
 	};
 
 	nand@0 {
-		#address-cells = <1>;
-		#size-cells = <1>;
 		reg = <0>;
 
 		nand-ecc-strength = <8>;

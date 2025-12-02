@@ -170,8 +170,6 @@
 		compatible = "micron,n25q128a11", "jedec,spi-nor";
 		linux,modalias = "m25p80", "mx30uf2g18ac", "n25q128a11";
 		spi-max-frequency = <50000000>;
-		#address-cells = <1>;
-		#size-cells = <1>;
 		reg = <0>;
 
 		partitions {
@@ -307,8 +305,6 @@
 	};
 
 	nand@0 {
-		#address-cells = <1>;
-		#size-cells = <1>;
 		reg = <0>;
 
 		nand-ecc-strength = <4>;

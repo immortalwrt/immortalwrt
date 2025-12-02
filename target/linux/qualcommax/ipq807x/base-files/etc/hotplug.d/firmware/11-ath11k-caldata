@@ -39,7 +39,8 @@ case "$FIRMWARE" in
 	zbtlink,zbt-z800ax|\
 	zte,mf269|\
 	zte,mf269-stock|\
-	zyxel,nbg7815)
+	zyxel,nbg7815|\
+	zyxel,nwa210ax)
 		caldata_extract "0:art" 0x1000 0x20000
 		;;
 	linksys,homewrk|\
@@ -59,13 +60,6 @@ case "$FIRMWARE" in
 	tplink,eap620hd-v1|\
 	tplink,eap660hd-v1)
 		caldata_from_file "/tmp/factory_data/radio" 0 0x20000
-		;;
-	zyxel,nwa210ax)
-		caldata_extract "0:art" 0x1000 0x20000
-		label_mac=$(get_mac_label)
-		ath11k_patch_mac $(macaddr_add $label_mac 3) 0
-		ath11k_patch_mac $(macaddr_add $label_mac 2) 1
-		ath11k_set_macflag
 		;;
 	esac
 	;;

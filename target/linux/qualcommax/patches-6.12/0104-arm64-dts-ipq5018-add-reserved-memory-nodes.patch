@@ -1,6 +1,6 @@
 --- a/arch/arm64/boot/dts/qcom/ipq5018.dtsi
 +++ b/arch/arm64/boot/dts/qcom/ipq5018.dtsi
-@@ -136,26 +136,45 @@
+@@ -104,17 +104,27 @@
  		#size-cells = <2>;
  		ranges;
  
@@ -29,26 +29,5 @@
 -		smem@4ab00000 {
 +		smem_region: smem@4ab00000 {
  			compatible = "qcom,smem";
-+			hwlocks = <&tcsr_mutex 3>;
  			reg = <0x0 0x4ab00000 0x0 0x100000>;
  			no-map;
--
--			hwlocks = <&tcsr_mutex 3>;
- 		};
- 
- 		tz_region: tz@4ac00000 {
--			reg = <0x0 0x4ac00000 0x0 0x200000>;
-+			reg = <0x0 0x4ac00000 0x0 0x400000>;
-+			no-map;
-+		};
-+
-+		q6_mem_region: q6_mem@4b000000 {
-+			reg = <0x0 0x4b000000 0x0 0x4000000>;
-+			no-map;
-+		};
-+
-+		q6_code_data_region: q6_code_data@4f000000 {
-+			reg = <0x0 0x4f000000 0x0 0x1000000>;
- 			no-map;
- 		};
- 	};

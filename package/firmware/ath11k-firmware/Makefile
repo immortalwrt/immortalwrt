@@ -63,8 +63,8 @@ define Build/Compile
 endef
 
 define Package/ath11k-firmware-ipq5018/install
-	$(INSTALL_DIR) $(1)/lib/firmware/IPQ5018/hw1.0
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/IPQ5018/hw1.0/* $(1)/lib/firmware/IPQ5018/
+	$(INSTALL_DIR) $(1)/lib/firmware/ath11k/IPQ5018/hw1.0
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/IPQ5018/hw1.0/* $(1)/lib/firmware/ath11k/IPQ5018/hw1.0/
 endef
 
 define Package/ath11k-firmware-ipq6018/install

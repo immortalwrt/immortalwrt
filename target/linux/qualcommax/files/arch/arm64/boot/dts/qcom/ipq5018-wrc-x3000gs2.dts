@@ -115,8 +115,6 @@
 
 	nand@0 {
 		compatible = "spi-nand";
-		#address-cells = <1>;
-		#size-cells = <1>;
 		reg = <0>;
 
 		nand-ecc-engine = <&qpic_nand>;
@@ -258,18 +256,21 @@
 };
 
 &q6v5_wcss {
-	status = "disabled";
 	boot-args = <0x02 0x04 0x02 0x12 0x00 0x00>;
 };
 
-&wifi0 {
-	status = "disabled";
+&wifi {
+	status = "okay";
+
+	qcom,rproc = <&q6_wcss_pd1>;
+	qcom,userpd-subsys-name = "q6v5_wcss_userpd1";
 	qcom,ath11k-calibration-variant = "ELECOM-WRC-X3000GS2";
-	ieee80211-freq-limit = <2400000 2483000>;
 };
 
 &wifi1 {
-	status = "disabled";
+	status = "okay";
+
+	qcom,rproc = <&q6_wcss_pd2>;
+	qcom,userpd-subsys-name = "q6v5_wcss_userpd2";
 	qcom,ath11k-calibration-variant = "ELECOM-WRC-X3000GS2";
-	ieee80211-freq-limit = <5150000 5730000>;
 };

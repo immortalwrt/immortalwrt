@@ -132,8 +132,6 @@
 	flash@0 {
 		compatible = "jedec,spi-nor";
 		spi-max-frequency = <50000000>;
-		#address-cells = <1>;
-		#size-cells = <1>;
 		reg = <0>;
 
 		partitions {
@@ -251,8 +249,6 @@
 
 	nand@0 {
 		compatible = "spi-nand";
-		#address-cells = <1>;
-		#size-cells = <1>;
 		reg = <0>;
 
 		nand-ecc-engine = <&qpic_nand>;
@@ -298,7 +294,9 @@
 	};
 };
 
-&wifi0 {
+&wifi {
 	status = "okay";
+
+	qcom,rproc = <&q6v5_wcss>;
 	qcom,ath11k-calibration-variant = "Yuncore-AX850";
 };

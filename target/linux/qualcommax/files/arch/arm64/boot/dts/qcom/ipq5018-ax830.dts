@@ -109,8 +109,6 @@
 	flash@0 {
 		compatible = "jedec,spi-nor";
 		spi-max-frequency = <50000000>;
-		#address-cells = <1>;
-		#size-cells = <1>;
 		reg = <0>;
 
 		partitions {
@@ -228,8 +226,6 @@
 
 	nand@0 {
 		compatible = "spi-nand";
-		#address-cells = <1>;
-		#size-cells = <1>;
 		reg = <0>;
 
 		nand-ecc-engine = <&qpic_nand>;
@@ -260,12 +256,18 @@
 	};
 };
 
-&wifi0 {
+&wifi {
 	status = "okay";
+
+	qcom,rproc = <&q6_wcss_pd1>;
+	qcom,userpd-subsys-name = "q6v5_wcss_userpd1";
 	qcom,ath11k-calibration-variant = "Yuncore-AX830";
 };
 
 &wifi1 {
 	status = "okay";
+
+	qcom,rproc = <&q6_wcss_pd3>;
+	qcom,userpd-subsys-name = "q6v5_wcss_userpd3";
 	qcom,ath11k-calibration-variant = "Yuncore-AX830";
 };

@@ -585,11 +585,11 @@ define Device/zyxel_nwa210ax
 	$(call Device/UbiFit)
 	DEVICE_VENDOR := ZYXEL
 	DEVICE_MODEL := NWA210AX
-	DEVICE_DTS_CONFIG := config@ac02
-	SOC := ipq8071
-	DEVICE_PACKAGES := ipq-wifi-zyxel_nwa210ax zyxel-bootconfig-ipq807x kmod-leds-lp5562
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
+	SOC := ipq8071
+	DEVICE_DTS_CONFIG := config@ac02
+	DEVICE_PACKAGES := ipq-wifi-zyxel_nwa210ax zyxel-bootconfig-ipq807x kmod-leds-lp5562
 	IMAGE_SIZE := 61440k
 	IMAGES += factory.bin
 	IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE) | zyxel-nwa210ax-fit

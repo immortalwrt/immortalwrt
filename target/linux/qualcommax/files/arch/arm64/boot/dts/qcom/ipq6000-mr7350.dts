@@ -132,8 +132,6 @@
 	status = "okay";
 
 	nand@0 {
-		#address-cells = <1>;
-		#size-cells = <1>;
 		reg = <0>;
 
 		nand-ecc-strength = <4>;

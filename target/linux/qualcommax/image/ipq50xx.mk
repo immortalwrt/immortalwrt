@@ -43,7 +43,7 @@ define Device/elecom_wrc-x3000gs2
 	PAGESIZE := 2048
 	SOC := ipq5018
 	DEVICE_DTS_CONFIG := config@mp03.3
-	DEVICE_PACKAGES := ipq-wifi-elecom_wrc-x3000gs2
+	DEVICE_PACKAGES := ipq-wifi-elecom_wrc-x3000gs2 ath11k-firmware-qcn6122
 	IMAGES += factory.bin
 	IMAGE/factory.bin := append-ubi | qsdk-ipq-factory-nand | mstc-header 4.04(XZF.0)b90 | elecom-product-header WRC-X3000GS2
 endef
@@ -61,7 +61,7 @@ define Device/glinet_gl-b3000
 	PAGESIZE := 2048
 	SOC := ipq5018
 	DEVICE_DTS_CONFIG := config@mp03.5-c1
-	DEVICE_PACKAGES := ipq-wifi-glinet_gl-b3000 dumpimage
+	DEVICE_PACKAGES := ipq-wifi-glinet_gl-b3000 ath11k-firmware-qcn6122 dumpimage
 	IMAGES := factory.img sysupgrade.bin
 	IMAGE/factory.img := append-ubi | gl-qsdk-factory | append-metadata
 endef
@@ -78,7 +78,7 @@ define Device/iodata_wn-dax3000gr
 	PAGESIZE := 2048
 	SOC := ipq5018
 	DEVICE_DTS_CONFIG := config@mp03.3
-	DEVICE_PACKAGES := ipq-wifi-iodata_wn-dax3000gr
+	DEVICE_PACKAGES := ipq-wifi-iodata_wn-dax3000gr ath11k-firmware-qcn6122
 	IMAGES += factory.bin
 	IMAGE/factory.bin := append-ubi | qsdk-ipq-factory-nand | mstc-header 4.04(XZH.1)b90 0x480
 endef
@@ -109,7 +109,7 @@ define Device/linksys_mx2000
 	$(call Device/linksys_ipq50xx_mx_base)
 	DEVICE_MODEL := MX2000
 	DEVICE_DTS_CONFIG := config@mp03.5-c1
-	DEVICE_PACKAGES := ipq-wifi-linksys_mx2000
+	DEVICE_PACKAGES := ipq-wifi-linksys_mx2000 ath11k-firmware-qcn6122
 endef
 TARGET_DEVICES += linksys_mx2000
 
@@ -159,7 +159,7 @@ define Device/yuncore_ax830
 	PAGESIZE := 2048
 	SOC := ipq5018
 	DEVICE_DTS_CONFIG := config@mp03.5-c1
-	DEVICE_PACKAGES := ipq-wifi-yuncore_ax830
+	DEVICE_PACKAGES := ipq-wifi-yuncore_ax830 ath11k-firmware-qcn6122
 endef
 TARGET_DEVICES += yuncore_ax830
 
@@ -186,7 +186,7 @@ define Device/jdcloud_re-cs-03
 	PAGESIZE := 2048
 	SOC := ipq5018
 	DEVICE_DTS_CONFIG := config@mp03.5-c2
-	DEVICE_PACKAGES := ipq-wifi-jdcloud_re-cs-03
+	DEVICE_PACKAGES := ipq-wifi-jdcloud_re-cs-03 ath11k-firmware-qcn6122
 	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | append-metadata
 endef
 TARGET_DEVICES += jdcloud_re-cs-03
