@@ -177,6 +177,100 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  };
  
  &pinctrl {
+--- a/arch/arm64/boot/dts/rockchip/rk3568-easepi-r1.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-easepi-r1.dts
+@@ -465,6 +465,25 @@
+ 		reset-assert-us = <20000>;
+ 		reset-deassert-us = <100000>;
+ 		reset-gpios = <&gpio2 RK_PD3 GPIO_ACTIVE_LOW>;
++
++		leds {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			led@0 {
++				reg = <0>;
++				color = <LED_COLOR_ID_AMBER>;
++				function = LED_FUNCTION_WAN;
++				default-state = "keep";
++			};
++
++			led@2 {
++				reg = <2>;
++				color = <LED_COLOR_ID_GREEN>;
++				function = LED_FUNCTION_WAN;
++				default-state = "keep";
++			};
++		};
+ 	};
+ };
+ 
+@@ -477,6 +496,25 @@
+ 		reset-assert-us = <20000>;
+ 		reset-deassert-us = <100000>;
+ 		reset-gpios = <&gpio2 RK_PD1 GPIO_ACTIVE_LOW>;
++
++		leds {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			led@0 {
++				reg = <0>;
++				color = <LED_COLOR_ID_AMBER>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++
++			led@2 {
++				reg = <2>;
++				color = <LED_COLOR_ID_GREEN>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++		};
+ 	};
+ };
+ 
+@@ -485,6 +523,19 @@
+ 	reset-gpios = <&gpio3 RK_PA4 GPIO_ACTIVE_HIGH>;
+ 	vpcie3v3-supply = <&vcc3v3_sys>;
+ 	status = "okay";
++
++	pcie@0,0 {
++		reg = <0x00000000 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++
++		pcie-eth@1,0 {
++			compatible = "pci10ec,8125";
++			reg = <0x000000 0 0 0 0>;
++
++			realtek,led-data = <0x0 0x0 0x200 0x2b>;
++		};
++	};
+ };
+ 
+ &pcie30phy {
+@@ -498,6 +549,19 @@
+ 	reset-gpios = <&gpio3 RK_PA3 GPIO_ACTIVE_HIGH>;
+ 	vpcie3v3-supply = <&vcc3v3_sys>;
+ 	status = "okay";
++
++	pcie@0,0 {
++		reg = <0x00100000 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++
++		pcie-eth@10,0 {
++			compatible = "pci10ec,8125";
++			reg = <0x000000 0 0 0 0>;
++
++			realtek,led-data = <0x0 0x0 0x200 0x2b>;
++		};
++	};
+ };
+ 
+ /* M.2 Key for 2280 NVMe */
 --- a/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-fastrhino-r66s.dtsi
 @@ -369,6 +369,19 @@

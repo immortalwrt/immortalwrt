@@ -30,9 +30,9 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
  	&alliancememory_spinand_manufacturer,
  	&ato_spinand_manufacturer,
 +	&dosilicon_spinand_manufacturer,
+ 	&esmt_8c_spinand_manufacturer,
  	&esmt_c8_spinand_manufacturer,
  	&etron_spinand_manufacturer,
- 	&fmsh_spinand_manufacturer,
 --- /dev/null
 +++ b/drivers/mtd/nand/spi/dosilicon.c
 @@ -0,0 +1,278 @@
@@ -321,6 +321,6 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
  extern const struct spinand_manufacturer alliancememory_spinand_manufacturer;
  extern const struct spinand_manufacturer ato_spinand_manufacturer;
 +extern const struct spinand_manufacturer dosilicon_spinand_manufacturer;
+ extern const struct spinand_manufacturer esmt_8c_spinand_manufacturer;
  extern const struct spinand_manufacturer esmt_c8_spinand_manufacturer;
  extern const struct spinand_manufacturer etron_spinand_manufacturer;
- extern const struct spinand_manufacturer fmsh_spinand_manufacturer;

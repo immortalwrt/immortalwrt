@@ -234,6 +234,15 @@ define Device/huake_guangmiao-g4c
 endef
 TARGET_DEVICES += huake_guangmiao-g4c
 
+define Device/linkease_easepi-r1
+  DEVICE_VENDOR := LinkEase
+  DEVICE_MODEL := EasePi R1
+  SOC := rk3568
+  BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := blkdiscard block-mount kmod-button-hotplug kmod-nvme kmod-r8125
+endef
+TARGET_DEVICES += linkease_easepi-r1
+
 define Device/lunzn_fastrhino-r66s
   DEVICE_VENDOR := Lunzn
   DEVICE_MODEL := FastRhino R66S

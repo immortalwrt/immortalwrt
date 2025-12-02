@@ -75,6 +75,7 @@ case "$board" in
 	cudy,wr3000e-v1|\
 	cudy,wr3000s-v1|\
 	cudy,wr3000h-v1|\
+	cudy,wr3000p-v1|\
 	cudy,wr3000-v1)
 		addr=$(mtd_get_mac_binary bdinfo 0xde00)
 		# Originally, phy0 is phy1 mac with LA bit set. However, this would conflict
@@ -108,6 +109,12 @@ case "$board" in
 		addr=$(mtd_get_mac_binary "Factory" 0x4)
 		[ "$PHYNBR" = "1" ] && macaddr_setbit_la $(macaddr_unsetbit $(macaddr_unsetbit $(macaddr_unsetbit $(macaddr_setbit $addr 26) 25) 27) 28) > \
 			/sys${DEVPATH}/macaddress
+		;;
+	iptime,ax7800m-6e)
+		addr1=$(mtd_get_mac_binary "Factory" 0xa0004)
+		addr2=$(mtd_get_mac_binary "Factory" 0x4)
+		[ "$PHYNBR" = "1" ] && macaddr_setbit_la $addr1 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "2" ] && macaddr_setbit_la $addr2 > /sys${DEVPATH}/macaddress
 		;;
 	jcg,q30-pro|\
 	netcore,n60|\
