@@ -158,7 +158,7 @@ Signed-off-by: Pavithra R <quic_pavir@quicinc.com>
  };
  
  int xfrm_register_type(const struct xfrm_type *type, unsigned short family);
-@@ -1669,6 +1688,7 @@ struct xfrm_state *xfrm_state_lookup_bya
+@@ -1670,6 +1689,7 @@ struct xfrm_state *xfrm_state_lookup_bya
  					    const xfrm_address_t *saddr,
  					    u8 proto,
  					    unsigned short family);
@@ -166,7 +166,7 @@ Signed-off-by: Pavithra R <quic_pavir@quicinc.com>
  #ifdef CONFIG_XFRM_SUB_POLICY
  void xfrm_tmpl_sort(struct xfrm_tmpl **dst, struct xfrm_tmpl **src, int n,
  		    unsigned short family);
-@@ -1713,7 +1733,7 @@ void xfrm_sad_getinfo(struct net *net, s
+@@ -1714,7 +1734,7 @@ void xfrm_sad_getinfo(struct net *net, s
  void xfrm_spd_getinfo(struct net *net, struct xfrmk_spdinfo *si);
  u32 xfrm_replay_seqhi(struct xfrm_state *x, __be32 net_seq);
  int xfrm_init_replay(struct xfrm_state *x, struct netlink_ext_ack *extack);
@@ -207,7 +207,7 @@ Signed-off-by: Pavithra R <quic_pavir@quicinc.com>
  
  		/* All xfrm_state objects are created by xfrm_state_alloc.
  		 * The xfrm_state_alloc call gives a reference, and that
-@@ -2998,6 +2997,20 @@ struct xfrm_state_afinfo *xfrm_state_get
+@@ -3002,6 +3001,20 @@ struct xfrm_state_afinfo *xfrm_state_get
  	return afinfo;
  }
  
@@ -228,7 +228,7 @@ Signed-off-by: Pavithra R <quic_pavir@quicinc.com>
  void xfrm_flush_gc(void)
  {
  	flush_work(&xfrm_state_gc_work);
-@@ -3019,38 +3032,16 @@ void xfrm_state_delete_tunnel(struct xfr
+@@ -3023,38 +3036,16 @@ void xfrm_state_delete_tunnel(struct xfr
  }
  EXPORT_SYMBOL(xfrm_state_delete_tunnel);
  
@@ -272,7 +272,7 @@ Signed-off-by: Pavithra R <quic_pavir@quicinc.com>
  
  int __xfrm_init_state(struct xfrm_state *x, bool init_replay, bool offload,
  		      struct netlink_ext_ack *extack)
-@@ -3395,3 +3386,39 @@ void xfrm_audit_state_icvfail(struct xfr
+@@ -3399,3 +3390,39 @@ void xfrm_audit_state_icvfail(struct xfr
  }
  EXPORT_SYMBOL_GPL(xfrm_audit_state_icvfail);
  #endif /* CONFIG_AUDITSYSCALL */
@@ -314,7 +314,7 @@ Signed-off-by: Pavithra R <quic_pavir@quicinc.com>
 +EXPORT_SYMBOL(xfrm_event_unregister_notifier);
 --- a/net/xfrm/xfrm_user.c
 +++ b/net/xfrm/xfrm_user.c
-@@ -932,6 +932,8 @@ static struct xfrm_state *xfrm_state_con
+@@ -935,6 +935,8 @@ static struct xfrm_state *xfrm_state_con
  			goto error;
  	}
  
@@ -323,7 +323,7 @@ Signed-off-by: Pavithra R <quic_pavir@quicinc.com>
  	return x;
  
  error:
-@@ -970,6 +972,7 @@ static int xfrm_add_sa(struct sk_buff *s
+@@ -973,6 +975,7 @@ static int xfrm_add_sa(struct sk_buff *s
  	if (err < 0) {
  		x->km.state = XFRM_STATE_DEAD;
  		xfrm_dev_state_delete(x);
