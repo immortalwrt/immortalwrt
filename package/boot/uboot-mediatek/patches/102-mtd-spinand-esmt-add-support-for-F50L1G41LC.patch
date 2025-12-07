@@ -12,9 +12,9 @@ ID with support for the ESMT F50L1G41LC chip.
  	&winbond_spinand_manufacturer,
  	&esmt_c8_spinand_manufacturer,
 +	&esmt_8c_spinand_manufacturer,
+ 	&foresee_spinand_manufacturer,
  	&xtx_spinand_manufacturer,
  };
- 
 --- a/drivers/mtd/nand/spi/esmt.c
 +++ b/drivers/mtd/nand/spi/esmt.c
 @@ -13,6 +13,7 @@
@@ -63,6 +63,6 @@ ID with support for the ESMT F50L1G41LC chip.
  extern const struct spinand_manufacturer winbond_spinand_manufacturer;
  extern const struct spinand_manufacturer esmt_c8_spinand_manufacturer;
 +extern const struct spinand_manufacturer esmt_8c_spinand_manufacturer;
+ extern const struct spinand_manufacturer foresee_spinand_manufacturer;
  extern const struct spinand_manufacturer xtx_spinand_manufacturer;
  
- /**
