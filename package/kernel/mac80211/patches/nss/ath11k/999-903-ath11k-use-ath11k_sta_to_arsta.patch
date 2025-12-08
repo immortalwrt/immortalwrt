@@ -1,6 +1,6 @@
 --- a/drivers/net/wireless/ath/ath11k/debugfs_sta.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs_sta.c
-@@ -1074,7 +1074,7 @@ static ssize_t ath11k_dbg_sta_reset_rx_s
+@@ -1075,7 +1075,7 @@ static ssize_t ath11k_dbg_sta_reset_rx_s
  					     size_t count, loff_t *ppos)
  {
  	struct ieee80211_sta *sta = file->private_data;
@@ -39,7 +39,7 @@
  				return;
  			}
  		}
-@@ -3732,7 +3731,7 @@ static void ath11k_dp_rx_update_user_sta
+@@ -3728,7 +3727,7 @@ static void ath11k_dp_rx_update_user_sta
  		return;
  	}
  
@@ -48,7 +48,7 @@
  	rx_stats = arsta->rx_stats;
  
  	if (ar->ab->nss.enabled)
-@@ -6431,7 +6430,7 @@ int ath11k_dp_rx_process_mon_status(stru
+@@ -6426,7 +6425,7 @@ int ath11k_dp_rx_process_mon_status(stru
  		if ((ppdu_info->fc_valid) &&
  		    (ppdu_info->ast_index != HAL_AST_IDX_INVALID)) {
  			if (ppdu_info->reception_type == HAL_RX_RECEPTION_TYPE_SU) {

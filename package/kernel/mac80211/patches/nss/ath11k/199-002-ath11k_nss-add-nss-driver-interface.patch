@@ -3017,7 +3017,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  	/* TODO: Do we need to enable ANI? */
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -908,6 +908,8 @@ struct ath11k_soc_dp_tx_err_stats {
+@@ -909,6 +909,8 @@ struct ath11k_soc_dp_tx_err_stats {
  	 * idr unavailable etc.
  	 */
  	atomic_t misc_fail;
@@ -3026,7 +3026,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  };
  
  struct ath11k_soc_dp_stats {
-@@ -958,6 +960,7 @@ struct ath11k_base {
+@@ -959,6 +961,7 @@ struct ath11k_base {
  	struct ath11k_htc htc;
  
  	struct ath11k_dp dp;

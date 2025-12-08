@@ -19,7 +19,7 @@ Signed-off-by: Sarika Sharma <quic_sarishar@quicinc.com>
 
 --- a/drivers/net/wireless/ath/ath11k/dp_tx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_tx.c
-@@ -384,9 +384,13 @@ static void ath11k_dp_tx_free_txbuf(stru
+@@ -385,9 +385,13 @@ static void ath11k_dp_tx_free_txbuf(stru
  	skb_cb = ATH11K_SKB_CB(msdu);
  
  	dma_unmap_single(ab->dev, skb_cb->paddr, msdu->len, DMA_TO_DEVICE);

@@ -36,7 +36,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
 
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -107,6 +107,11 @@ enum ath11k_crypt_mode {
+@@ -108,6 +108,11 @@ enum ath11k_crypt_mode {
  	ATH11K_CRYPT_MODE_SW,
  };
  
@@ -48,7 +48,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  static inline enum wme_ac ath11k_tid_to_ac(u32 tid)
  {
  	return (((tid == 0) || (tid == 3)) ? WME_AC_BE :
-@@ -375,6 +380,20 @@ struct ath11k_mgmt_frame_stats {
+@@ -376,6 +381,20 @@ struct ath11k_mgmt_frame_stats {
  	u32 tx_compl_fail[ATH11K_STATS_MGMT_FRM_TYPE_MAX];
  };
  
@@ -69,7 +69,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  struct ath11k_vif {
  	u32 vdev_id;
  	enum wmi_vdev_type vdev_type;
-@@ -438,6 +457,11 @@ struct ath11k_vif {
+@@ -439,6 +458,11 @@ struct ath11k_vif {
  	struct arvif_nss nss;
  #endif
  	struct list_head ap_vlan_arvifs;
@@ -427,7 +427,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  	ath11k_peer_cleanup(ar, arvif->vdev_id);
  
  	idr_for_each(&ar->txmgmt_idr,
-@@ -10095,6 +10287,33 @@ static int ath11k_mac_station_remove(str
+@@ -10099,6 +10291,33 @@ static int ath11k_mac_station_remove(str
  	return ret;
  }
  
@@ -461,7 +461,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  static int ath11k_mac_op_sta_state(struct ieee80211_hw *hw,
  				   struct ieee80211_vif *vif,
  				   struct ieee80211_sta *sta,
-@@ -10184,6 +10403,34 @@ static int ath11k_mac_op_sta_state(struc
+@@ -10188,6 +10407,34 @@ static int ath11k_mac_op_sta_state(struc
  			if (ret)
  				ath11k_warn(ar->ab, "Unable to authorize peer %pM vdev %d: %d\n",
  					    sta->addr, arvif->vdev_id, ret);
@@ -496,7 +496,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  		}
  
  		if (!ret &&
-@@ -10806,8 +11053,11 @@ static int __ath11k_mac_register(struct
+@@ -10810,8 +11057,11 @@ static int __ath11k_mac_register(struct
  	    ab->hw_params.bios_sar_capa)
  		ar->hw->wiphy->sar_capa = ab->hw_params.bios_sar_capa;
  

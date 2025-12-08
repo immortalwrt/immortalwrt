@@ -16,22 +16,22 @@ Signed-off-by: Maharaja Kennadyrajan <quic_mkenna@quicinc.com>
 
 --- a/net/mac80211/sta_info.c
 +++ b/net/mac80211/sta_info.c
-@@ -2436,7 +2436,7 @@ void ieee80211_sta_update_pending_airtim
+@@ -2485,7 +2485,7 @@ void ieee80211_sta_update_pending_airtim
  }
  
  static struct ieee80211_sta_rx_stats *
--sta_get_last_rx_stats(struct sta_info *sta)
-+sta_get_last_rx_stats(struct sta_info *sta, bool is_rx_bitrate)
+-sta_get_last_rx_stats(struct sta_info *sta, int link_id)
++sta_get_last_rx_stats(struct sta_info *sta, int link_id, bool is_rx_bitrate)
  {
- 	struct ieee80211_sta_rx_stats *stats = &sta->deflink.rx_stats;
- 	int cpu;
-@@ -2449,8 +2449,13 @@ sta_get_last_rx_stats(struct sta_info *s
+ 	struct ieee80211_sta_rx_stats *stats;
+ 	struct link_sta_info *link_sta_info;
+@@ -2507,8 +2507,13 @@ sta_get_last_rx_stats(struct sta_info *s
  
  	for_each_possible_cpu(cpu) {
  		struct ieee80211_sta_rx_stats *cpustats;
 +		u16 rate;
  
- 		cpustats = per_cpu_ptr(sta->deflink.pcpu_rx_stats, cpu);
+ 		cpustats = per_cpu_ptr(link_sta_info->pcpu_rx_stats, cpu);
 +		rate = READ_ONCE(cpustats->last_rate);
 +
 +		if(!cpustats->last_rx || (is_rx_bitrate && (rate == STA_STATS_RATE_INVALID)))
@@ -39,30 +39,39 @@ Signed-off-by: Maharaja Kennadyrajan <quic_mkenna@quicinc.com>
  
  		if (time_after(cpustats->last_rx, stats->last_rx))
  			stats = cpustats;
-@@ -2527,7 +2532,7 @@ static void sta_stats_decode_rate(struct
- 
- static int sta_set_rate_info_rx(struct sta_info *sta, struct rate_info *rinfo)
+@@ -2586,7 +2591,7 @@ static void sta_stats_decode_rate(struct
+ static int sta_set_rate_info_rx(struct sta_info *sta, struct rate_info *rinfo,
+ 				int link_id)
  {
--	u32 rate = READ_ONCE(sta_get_last_rx_stats(sta)->last_rate);
-+	u32 rate = READ_ONCE(sta_get_last_rx_stats(sta, true)->last_rate);
+-	u32 rate = READ_ONCE(sta_get_last_rx_stats(sta, link_id)->last_rate);
++	u32 rate = READ_ONCE(sta_get_last_rx_stats(sta, link_id, true)->last_rate);
  
  	if (rate == STA_STATS_RATE_INVALID)
  		return -EINVAL;
-@@ -2683,7 +2688,7 @@ void sta_set_sinfo(struct sta_info *sta,
+@@ -2755,7 +2760,7 @@ static void sta_set_link_sinfo(struct st
+ 	struct link_sta_info *link_sta_info;
+ 	u32 thr = 0;
+ 
+-	last_rxstats = sta_get_last_rx_stats(sta, link_id);
++	last_rxstats = sta_get_last_rx_stats(sta, link_id, false);
+ 
+ 	link_sta_info = wiphy_dereference(sta->local->hw.wiphy,
+ 					  sta->link[link_id]);
+@@ -3012,7 +3017,7 @@ void sta_set_sinfo(struct sta_info *sta,
  	int i, ac, cpu;
  	struct ieee80211_sta_rx_stats *last_rxstats;
  
--	last_rxstats = sta_get_last_rx_stats(sta);
-+	last_rxstats = sta_get_last_rx_stats(sta, false);
+-	last_rxstats = sta_get_last_rx_stats(sta, -1);
++	last_rxstats = sta_get_last_rx_stats(sta, -1, false);
  
  	sinfo->generation = sdata->local->sta_generation;
  
-@@ -2942,7 +2947,7 @@ u32 sta_get_expected_throughput(struct s
+@@ -3300,7 +3305,7 @@ unsigned long ieee80211_sta_last_active(
+ 	struct ieee80211_sta_rx_stats *stats;
+ 	struct link_sta_info *link_sta_info;
  
- unsigned long ieee80211_sta_last_active(struct sta_info *sta)
- {
--	struct ieee80211_sta_rx_stats *stats = sta_get_last_rx_stats(sta);
-+	struct ieee80211_sta_rx_stats *stats = sta_get_last_rx_stats(sta, false);
+-	stats = sta_get_last_rx_stats(sta, link_id);
++	stats = sta_get_last_rx_stats(sta, link_id, false);
  
- 	if (!sta->deflink.status_stats.last_ack ||
- 	    time_after(stats->last_rx, sta->deflink.status_stats.last_ack))
+ 	if (link_id < 0)
+ 		link_sta_info = &sta->deflink;

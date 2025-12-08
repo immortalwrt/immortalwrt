@@ -1,14 +1,14 @@
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -18,6 +18,7 @@
- #include <linux/firmware.h>
+@@ -19,6 +19,7 @@
  #include <linux/suspend.h>
+ #include <linux/of.h>
  
 +#include "fw.h"
  #include "qmi.h"
  #include "htc.h"
  #include "wmi.h"
-@@ -33,7 +34,6 @@
+@@ -34,7 +35,6 @@
  #include "spectral.h"
  #include "wow.h"
  #include "rx_desc.h"
@@ -16,7 +16,7 @@
  #include "coredump.h"
  
  #define SM(_v, _f) (((_v) << _f##_LSB) & _f##_MASK)
-@@ -363,6 +363,16 @@ struct ath11k_reg_tpc_power_info {
+@@ -364,6 +364,16 @@ struct ath11k_reg_tpc_power_info {
  	struct ath11k_chan_power_info chan_power_info[ATH11K_NUM_PWR_LEVELS];
  };
  
@@ -33,7 +33,7 @@
  struct ath11k_vif {
  	u32 vdev_id;
  	enum wmi_vdev_type vdev_type;
-@@ -421,7 +431,7 @@ struct ath11k_vif {
+@@ -422,7 +432,7 @@ struct ath11k_vif {
  	bool reinstall_group_keys;
  
  	struct ath11k_reg_tpc_power_info reg_tpc_info;
@@ -44,7 +44,7 @@
  	 * FIXME: Driver should not copy struct ieee80211_chanctx_conf,
 --- a/drivers/net/wireless/ath/ath11k/debugfs.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.c
-@@ -1467,6 +1467,87 @@ static const struct file_operations fops
+@@ -1469,6 +1469,87 @@ static const struct file_operations fops
  	.llseek = default_llseek,
  };
  
@@ -132,7 +132,7 @@
  int ath11k_debugfs_register(struct ath11k *ar)
  {
  	struct ath11k_base *ab = ar->ab;
-@@ -1499,6 +1580,9 @@ int ath11k_debugfs_register(struct ath11
+@@ -1501,6 +1582,9 @@ int ath11k_debugfs_register(struct ath11
  	debugfs_create_file("fw_dbglog_config", 0600,
  			    ar->debug.debugfs_pdev, ar,
  			    &fops_fw_dbglog);
@@ -227,7 +227,7 @@
  	int num_mgmt;
  
  	spin_lock_bh(&ar->txmgmt_idr_lock);
-@@ -5971,6 +5977,31 @@ static int wmi_process_mgmt_tx_comp(stru
+@@ -5974,6 +5980,31 @@ static int wmi_process_mgmt_tx_comp(stru
  			info->status.ack_signal = tx_compl_param->ack_rssi;
  	}
  
@@ -259,7 +259,7 @@
  	ieee80211_tx_status_irqsafe(ar->hw, msdu);
  
  	num_mgmt = atomic_dec_if_positive(&ar->num_pending_mgmt_tx);
-@@ -7550,6 +7581,11 @@ static void ath11k_mgmt_rx_event(struct
+@@ -7553,6 +7584,11 @@ static void ath11k_mgmt_rx_event(struct
  	struct ieee80211_hdr *hdr;
  	u16 fc;
  	struct ieee80211_supported_band *sband;
@@ -271,7 +271,7 @@
  
  	if (ath11k_pull_mgmt_rx_params_tlv(ab, skb, &rx_ev) != 0) {
  		ath11k_warn(ab, "failed to extract mgmt rx event");
-@@ -7615,7 +7651,34 @@ static void ath11k_mgmt_rx_event(struct
+@@ -7618,7 +7654,34 @@ static void ath11k_mgmt_rx_event(struct
  
  	hdr = (struct ieee80211_hdr *)skb->data;
  	fc = le16_to_cpu(hdr->frame_control);

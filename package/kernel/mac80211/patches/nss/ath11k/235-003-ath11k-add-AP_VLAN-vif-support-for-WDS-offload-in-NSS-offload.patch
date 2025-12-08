@@ -33,7 +33,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
 
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -437,6 +437,7 @@ struct ath11k_vif {
+@@ -438,6 +438,7 @@ struct ath11k_vif {
  #ifdef CPTCFG_ATH11K_NSS_SUPPORT
  	struct arvif_nss nss;
  #endif
@@ -328,7 +328,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  	mutex_unlock(&ar->conf_mutex);
  }
  
-@@ -7301,16 +7478,17 @@ static int ath11k_mac_op_ampdu_action(st
+@@ -7303,16 +7480,17 @@ static int ath11k_mac_op_ampdu_action(st
  				      struct ieee80211_ampdu_params *params)
  {
  	struct ath11k *ar = hw->priv;
@@ -348,7 +348,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  		break;
  	case IEEE80211_AMPDU_TX_START:
  	case IEEE80211_AMPDU_TX_STOP_CONT:
-@@ -9326,6 +9504,7 @@ static void ath11k_mac_op_sta_statistics
+@@ -9330,6 +9508,7 @@ static void ath11k_mac_op_sta_statistics
  {
  	struct ath11k_sta *arsta = ath11k_sta_to_arsta(sta);
  	struct ath11k *ar = arsta->arvif->ar;
@@ -356,7 +356,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  	s8 signal;
  	bool db2dbm = test_bit(WMI_TLV_SERVICE_HW_DB2DBM_CONVERSION_SUPPORT,
  			       ar->ab->wmi_ab.svc_map);
-@@ -9387,7 +9566,8 @@ static void ath11k_mac_op_sta_statistics
+@@ -9391,7 +9570,8 @@ static void ath11k_mac_op_sta_statistics
  
  	sinfo->filled |= BIT_ULL(NL80211_STA_INFO_SIGNAL_AVG);
  

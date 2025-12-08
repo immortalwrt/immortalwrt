@@ -20,7 +20,7 @@ Signed-off-by: Aaradhana Sahu <quic_aarasahu@quicinc.com>
 
 --- a/net/mac80211/ieee80211_i.h
 +++ b/net/mac80211/ieee80211_i.h
-@@ -2132,6 +2132,11 @@ netdev_tx_t ieee80211_subif_start_xmit(s
+@@ -2167,6 +2167,11 @@ netdev_tx_t ieee80211_subif_start_xmit(s
  				       struct net_device *dev);
  netdev_tx_t ieee80211_subif_start_xmit_8023(struct sk_buff *skb,
  					    struct net_device *dev);
@@ -44,7 +44,7 @@ Signed-off-by: Aaradhana Sahu <quic_aarasahu@quicinc.com>
  /* misc utils */
  
  static __le16 ieee80211_duration(struct ieee80211_tx_data *tx,
-@@ -4337,7 +4338,7 @@ void __ieee80211_subif_start_xmit(struct
+@@ -4347,7 +4348,7 @@ void __ieee80211_subif_start_xmit(struct
  		    !is_multicast_ether_addr(skb->data)) {
  			if (sta)
  				key = rcu_dereference(sta->ptk[sta->ptk_idx]);
@@ -53,7 +53,7 @@ Signed-off-by: Aaradhana Sahu <quic_aarasahu@quicinc.com>
  			rcu_read_unlock();
  			return;
  		}
-@@ -4383,7 +4384,7 @@ void __ieee80211_subif_start_xmit(struct
+@@ -4393,7 +4394,7 @@ void __ieee80211_subif_start_xmit(struct
  		if (info->flags & IEEE80211_TX_CTL_HW_80211_ENCAP) {
  			if (sta)
  				key = rcu_dereference(sta->ptk[sta->ptk_idx]);
@@ -62,7 +62,7 @@ Signed-off-by: Aaradhana Sahu <quic_aarasahu@quicinc.com>
  		} else {
  			dev_sw_netstats_tx_add(dev, 1, skb->len);
  			ieee80211_xmit(sdata, sta, skb);
-@@ -4685,7 +4686,8 @@ static bool ieee80211_tx_8023(struct iee
+@@ -4695,7 +4696,8 @@ static bool ieee80211_tx_8023(struct iee
  
  static void ieee80211_8023_xmit(struct ieee80211_sub_if_data *sdata,
  				struct net_device *dev, struct sta_info *sta,
@@ -72,7 +72,7 @@ Signed-off-by: Aaradhana Sahu <quic_aarasahu@quicinc.com>
  {
  	struct ieee80211_tx_info *info;
  	struct ethhdr *ehdr = (struct ethhdr *)skb->data;
-@@ -4741,6 +4743,7 @@ static void ieee80211_8023_xmit(struct i
+@@ -4751,6 +4753,7 @@ static void ieee80211_8023_xmit(struct i
  	info = IEEE80211_SKB_CB(skb);
  	memset(info, 0, sizeof(*info));
  
@@ -80,7 +80,7 @@ Signed-off-by: Aaradhana Sahu <quic_aarasahu@quicinc.com>
  	info->hw_queue = sdata->vif.hw_queue[queue];
  
  	if (sdata->vif.type == NL80211_IFTYPE_AP_VLAN &&
-@@ -4761,10 +4764,11 @@ static void ieee80211_8023_xmit(struct i
+@@ -4771,10 +4774,11 @@ static void ieee80211_8023_xmit(struct i
  			memcpy(IEEE80211_SKB_CB(seg), info, sizeof(*info));
  	}
  
@@ -95,7 +95,7 @@ Signed-off-by: Aaradhana Sahu <quic_aarasahu@quicinc.com>
  		if (info->status_data)
  			info->status_data_idr = 1;
  	}
-@@ -4787,7 +4791,8 @@ out_free:
+@@ -4797,7 +4801,8 @@ out_free:
  
  void ieee80211_8023_xmit_ap(struct ieee80211_sub_if_data *sdata,
  			    struct net_device *dev, struct sta_info *sta,
@@ -105,7 +105,7 @@ Signed-off-by: Aaradhana Sahu <quic_aarasahu@quicinc.com>
  {
  	struct ieee80211_tx_info *info;
  	struct ieee80211_local *local = sdata->local;
-@@ -4796,6 +4801,9 @@ void ieee80211_8023_xmit_ap(struct ieee8
+@@ -4806,6 +4811,9 @@ void ieee80211_8023_xmit_ap(struct ieee8
  	unsigned long flags;
  	int q;
  	u16 q_map;
@@ -115,7 +115,7 @@ Signed-off-by: Aaradhana Sahu <quic_aarasahu@quicinc.com>
  
  	/*
  	 * If the skb is shared we need to obtain our own copy.
-@@ -4807,11 +4815,12 @@ void ieee80211_8023_xmit_ap(struct ieee8
+@@ -4817,11 +4825,12 @@ void ieee80211_8023_xmit_ap(struct ieee8
  
  	info = IEEE80211_SKB_CB(skb);
  	memset(info, 0, sizeof(*info));
@@ -131,7 +131,7 @@ Signed-off-by: Aaradhana Sahu <quic_aarasahu@quicinc.com>
  
  	info->flags |= IEEE80211_TX_CTL_HW_80211_ENCAP;
  	info->control.vif = &sdata->vif;
-@@ -4845,14 +4854,23 @@ void ieee80211_8023_xmit_ap(struct ieee8
+@@ -4855,14 +4864,23 @@ void ieee80211_8023_xmit_ap(struct ieee8
  	drv_tx(local, &control, skb);
  
  }
@@ -156,7 +156,7 @@ Signed-off-by: Aaradhana Sahu <quic_aarasahu@quicinc.com>
  
  #ifdef CPTCFG_MAC80211_NSS_SUPPORT
  	ieee80211_xmit_nss_fixup(skb, dev);
-@@ -4868,14 +4886,15 @@ netdev_tx_t ieee80211_subif_start_xmit_8
+@@ -4878,14 +4896,15 @@ netdev_tx_t ieee80211_subif_start_xmit_8
  		kfree_skb(skb);
  		goto out;
  	}
@@ -174,7 +174,7 @@ Signed-off-by: Aaradhana Sahu <quic_aarasahu@quicinc.com>
  		goto skip_offload;
  
  	key = rcu_dereference(sta->ptk[sta->ptk_idx]);
-@@ -4886,13 +4905,13 @@ netdev_tx_t ieee80211_subif_start_xmit_8
+@@ -4896,13 +4915,13 @@ netdev_tx_t ieee80211_subif_start_xmit_8
  		goto skip_offload;
  
  	if (sdata->vif.type == NL80211_IFTYPE_AP) {
@@ -190,7 +190,7 @@ Signed-off-by: Aaradhana Sahu <quic_aarasahu@quicinc.com>
  	goto out;
  
  skip_offload:
-@@ -6429,7 +6448,10 @@ int ieee80211_tx_control_port(struct wip
+@@ -6602,7 +6621,10 @@ int ieee80211_tx_control_port(struct wip
  
  start_xmit:
  	local_bh_disable();

@@ -1,6 +1,6 @@
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -44,6 +44,7 @@ module_param_named(ftm_mode, ath11k_ftm_
+@@ -46,6 +46,7 @@ module_param_named(ftm_mode, ath11k_ftm_
  MODULE_PARM_DESC(ftm_mode, "Boots up in factory test mode");
  
  static const struct ath11k_num_vdevs_peers ath11k_vdevs_peers[];
@@ -8,7 +8,7 @@
  
  static struct ath11k_hw_params ath11k_hw_params[] = {
  	{
-@@ -742,7 +743,7 @@ static struct ath11k_hw_params ath11k_hw
+@@ -744,7 +745,7 @@ static struct ath11k_hw_params ath11k_hw
  		.tx_ring_size = DP_TCL_DATA_RING_SIZE,
  		.smp2p_wow_exit = false,
  		.support_fw_mac_sequence = false,
@@ -17,7 +17,7 @@
  		.support_dual_stations = false,
  		.pdev_suspend = false,
  		.reo_status_poll = true,
-@@ -987,8 +988,23 @@ static struct ath11k_hw_params ath11k_hw
+@@ -989,8 +990,23 @@ static struct ath11k_hw_params ath11k_hw
  		.support_off_channel_tx = false,
  		.tcl_ring_retry = true,
  		.tx_ring_size = DP_TCL_DATA_RING_SIZE,

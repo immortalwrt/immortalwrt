@@ -15,7 +15,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
 
 --- a/drivers/net/wireless/ath/ath11k/dp_tx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_tx.c
-@@ -44,19 +44,6 @@ static void ath11k_dp_tx_encap_nwifi(str
+@@ -45,19 +45,6 @@ static void ath11k_dp_tx_encap_nwifi(str
  	hdr->frame_control &= ~__cpu_to_le16(IEEE80211_STYPE_QOS_DATA);
  }
  
@@ -35,7 +35,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
  enum hal_encrypt_type ath11k_dp_tx_get_encrypt_type(u32 cipher)
  {
  	switch (cipher) {
-@@ -232,10 +219,6 @@ tcl_ring_sel:
+@@ -233,10 +220,6 @@ tcl_ring_sel:
  	if (ieee80211_vif_is_mesh(arvif->vif))
  		ti.enable_mesh = true;
  
@@ -58,7 +58,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
  	tcl_cmd.info3 = FIELD_PREP(HAL_TCL_DATA_CMD_INFO3_DSCP_TID_TABLE_IDX,
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -10998,6 +10998,8 @@ static int __ath11k_mac_register(struct
+@@ -11002,6 +11002,8 @@ static int __ath11k_mac_register(struct
  			ieee80211_hw_set(ar->hw, USES_RSS);
  	}
  

@@ -40,7 +40,7 @@
  ath11k-$(CPTCFG_ATH11K_THERMAL) += thermal.o
 --- a/drivers/net/wireless/ath/ath11k/debugfs.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.c
-@@ -1754,7 +1754,9 @@ int ath11k_debugfs_register(struct ath11
+@@ -1756,7 +1756,9 @@ int ath11k_debugfs_register(struct ath11
  	snprintf(buf, 100, "../../ath11k/%pd2", ar->debug.debugfs_pdev);
  	debugfs_create_symlink("ath11k", ar->hw->wiphy->debugfsdir, buf);
  
@@ -52,7 +52,7 @@
  
 --- a/drivers/net/wireless/ath/ath11k/debugfs_sta.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs_sta.c
-@@ -12,7 +12,9 @@
+@@ -13,7 +13,9 @@
  #include "debug.h"
  #include "dp_tx.h"
  #include "dp_rx.h"
@@ -62,7 +62,7 @@
  
  static inline u32 ath11k_he_tones_in_ru_to_nl80211_he_ru_alloc(u16 ru_tones)
  {
-@@ -552,6 +554,7 @@ static const struct file_operations fops
+@@ -553,6 +555,7 @@ static const struct file_operations fops
  	.llseek = default_llseek,
  };
  
@@ -70,7 +70,7 @@
  static int
  ath11k_dbg_sta_open_htt_peer_stats(struct inode *inode, struct file *file)
  {
-@@ -623,6 +626,7 @@ static const struct file_operations fops
+@@ -624,6 +627,7 @@ static const struct file_operations fops
  	.owner = THIS_MODULE,
  	.llseek = default_llseek,
  };
@@ -78,7 +78,7 @@
  
  static ssize_t ath11k_dbg_sta_write_peer_pktlog(struct file *file,
  						const char __user *buf,
-@@ -907,6 +911,7 @@ static const struct file_operations fops
+@@ -908,6 +912,7 @@ static const struct file_operations fops
  	.llseek = default_llseek,
  };
  
@@ -86,7 +86,7 @@
  static ssize_t
  ath11k_write_htt_peer_stats_reset(struct file *file,
  				  const char __user *user_buf,
-@@ -966,6 +971,7 @@ static const struct file_operations fops
+@@ -967,6 +972,7 @@ static const struct file_operations fops
  	.owner = THIS_MODULE,
  	.llseek = default_llseek,
  };
@@ -94,7 +94,7 @@
  
  static ssize_t ath11k_dbg_sta_read_peer_ps_state(struct file *file,
  						 char __user *user_buf,
-@@ -1112,8 +1118,10 @@ void ath11k_debugfs_sta_op_add(struct ie
+@@ -1113,8 +1119,10 @@ void ath11k_debugfs_sta_op_add(struct ie
  				    &fops_reset_rx_stats);
  	}
  
@@ -105,7 +105,7 @@
  
  	debugfs_create_file("peer_pktlog", 0644, dir, sta,
  			    &fops_peer_pktlog);
-@@ -1123,10 +1131,12 @@ void ath11k_debugfs_sta_op_add(struct ie
+@@ -1124,10 +1132,12 @@ void ath11k_debugfs_sta_op_add(struct ie
  	debugfs_create_file("addba_resp", 0200, dir, sta, &fops_addba_resp);
  	debugfs_create_file("delba", 0200, dir, sta, &fops_delba);
  
@@ -143,7 +143,7 @@
  		ath11k_htt_pktlog(ab, skb);
 --- a/drivers/net/wireless/ath/ath11k/dp_tx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_tx.c
-@@ -7,7 +7,9 @@
+@@ -8,7 +8,9 @@
  #include "core.h"
  #include "dp_tx.h"
  #include "debug.h"
@@ -153,7 +153,7 @@
  #include "hw.h"
  #include "peer.h"
  #include "mac.h"
-@@ -547,7 +549,9 @@ static void ath11k_dp_tx_cache_peer_stat
+@@ -548,7 +550,9 @@ static void ath11k_dp_tx_cache_peer_stat
  void ath11k_dp_tx_update_txcompl(struct ath11k *ar, struct hal_tx_status *ts)
  {
  	struct ath11k_base *ab = ar->ab;
@@ -163,7 +163,7 @@
  	enum hal_tx_rate_stats_pkt_type pkt_type;
  	enum hal_tx_rate_stats_sgi sgi;
  	enum hal_tx_rate_stats_bw bw;
-@@ -636,8 +640,10 @@ void ath11k_dp_tx_update_txcompl(struct
+@@ -637,8 +641,10 @@ void ath11k_dp_tx_update_txcompl(struct
  			ath11k_mac_he_ru_tones_to_nl80211_he_ru_alloc(ru_tones);
  	}
  
@@ -176,7 +176,7 @@
  	spin_unlock_bh(&ab->base_lock);
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -10588,7 +10588,7 @@ static const struct ieee80211_ops ath11k
+@@ -10592,7 +10592,7 @@ static const struct ieee80211_ops ath11k
  	.set_wakeup			= ath11k_wow_op_set_wakeup,
  #endif
  
@@ -187,7 +187,7 @@
  #endif
 --- a/local-symbols
 +++ b/local-symbols
-@@ -164,6 +164,8 @@ ATH11K_MEM_PROFILE_256M=
+@@ -165,6 +165,8 @@ ATH11K_MEM_PROFILE_256M=
  ATH11K_MEM_PROFILE_512M=
  ATH11K_DEBUG=
  ATH11K_DEBUGFS=

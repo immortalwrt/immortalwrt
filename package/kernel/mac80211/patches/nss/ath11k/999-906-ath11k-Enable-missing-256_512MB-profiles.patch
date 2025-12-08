@@ -1,6 +1,6 @@
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -309,6 +309,7 @@ static struct ath11k_hw_params ath11k_hw
+@@ -311,6 +311,7 @@ static struct ath11k_hw_params ath11k_hw
  		.tx_ring_size = DP_TCL_DATA_RING_SIZE,
  		.smp2p_wow_exit = false,
  		.support_fw_mac_sequence = true,
@@ -8,7 +8,7 @@
  		.support_dual_stations = true,
  		.pdev_suspend = false,
  	},
-@@ -485,6 +486,7 @@ static struct ath11k_hw_params ath11k_hw
+@@ -487,6 +488,7 @@ static struct ath11k_hw_params ath11k_hw
  		.tx_ring_size = DP_TCL_DATA_RING_SIZE,
  		.smp2p_wow_exit = false,
  		.support_fw_mac_sequence = true,
@@ -16,7 +16,7 @@
  		.support_dual_stations = true,
  		.pdev_suspend = false,
  	},
-@@ -656,6 +658,7 @@ static struct ath11k_hw_params ath11k_hw
+@@ -658,6 +660,7 @@ static struct ath11k_hw_params ath11k_hw
  		.tx_ring_size = DP_TCL_DATA_RING_SIZE_WCN6750,
  		.smp2p_wow_exit = true,
  		.support_fw_mac_sequence = true,
@@ -24,7 +24,7 @@
  		.support_dual_stations = false,
  		.pdev_suspend = true,
  	},
-@@ -984,6 +987,7 @@ static struct ath11k_hw_params ath11k_hw
+@@ -986,6 +989,7 @@ static struct ath11k_hw_params ath11k_hw
  		.support_off_channel_tx = false,
  		.tcl_ring_retry = true,
  		.tx_ring_size = DP_TCL_DATA_RING_SIZE,

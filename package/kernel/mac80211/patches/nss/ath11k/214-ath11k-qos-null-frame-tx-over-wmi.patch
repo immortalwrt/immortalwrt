@@ -158,7 +158,7 @@ Signed-off-by: Sowmiya Sree Elavalagan <ssreeela@codeaurora.org>
  {
  	struct sk_buff *msdu;
  	struct ieee80211_tx_info *info;
-@@ -6065,6 +6114,11 @@ static int wmi_process_mgmt_tx_comp(stru
+@@ -6068,6 +6117,11 @@ static int wmi_process_mgmt_tx_comp(stru
  			info->status.ack_signal = tx_compl_param->ack_rssi;
  	}
  
@@ -170,7 +170,7 @@ Signed-off-by: Sowmiya Sree Elavalagan <ssreeela@codeaurora.org>
  	hdr = (struct ieee80211_hdr *)msdu->data;
  	frm_type = FIELD_GET(IEEE80211_FCTL_STYPE, hdr->frame_control);
  
-@@ -6083,10 +6137,13 @@ static int wmi_process_mgmt_tx_comp(stru
+@@ -6086,10 +6140,13 @@ static int wmi_process_mgmt_tx_comp(stru
  	arvif = ath11k_vif_to_arvif(vif);
  	mgmt_stats = &arvif->mgmt_stats;
  
@@ -188,7 +188,7 @@ Signed-off-by: Sowmiya Sree Elavalagan <ssreeela@codeaurora.org>
  	spin_unlock_bh(&ar->data_lock);
  
  skip_mgmt_stats:
-@@ -6108,12 +6165,13 @@ skip_mgmt_stats:
+@@ -6111,12 +6168,13 @@ skip_mgmt_stats:
  	return 0;
  }
  
@@ -206,7 +206,7 @@ Signed-off-by: Sowmiya Sree Elavalagan <ssreeela@codeaurora.org>
  	int ret;
  
  	tb = ath11k_wmi_tlv_parse_alloc(ab, skb, GFP_ATOMIC);
-@@ -6123,7 +6181,7 @@ static int ath11k_pull_mgmt_tx_compl_par
+@@ -6126,7 +6184,7 @@ static int ath11k_pull_mgmt_tx_compl_par
  		return ret;
  	}
  
@@ -215,12 +215,12 @@ Signed-off-by: Sowmiya Sree Elavalagan <ssreeela@codeaurora.org>
  	if (!ev) {
  		ath11k_warn(ab, "failed to fetch mgmt tx compl ev");
  		kfree(tb);
-@@ -7841,10 +7899,11 @@ exit:
+@@ -7844,10 +7902,11 @@ exit:
  
  static void ath11k_mgmt_tx_compl_event(struct ath11k_base *ab, struct sk_buff *skb)
  {
--	struct wmi_mgmt_tx_compl_event tx_compl_param = {0};
-+	struct wmi_tx_compl_event tx_compl_param = {0};
+-	struct wmi_mgmt_tx_compl_event tx_compl_param = {};
++	struct wmi_tx_compl_event tx_compl_param = {};
  	struct ath11k *ar;
  
 -	if (ath11k_pull_mgmt_tx_compl_param_tlv(ab, skb, &tx_compl_param) != 0) {
@@ -229,7 +229,7 @@ Signed-off-by: Sowmiya Sree Elavalagan <ssreeela@codeaurora.org>
  		ath11k_warn(ab, "failed to extract mgmt tx compl event");
  		return;
  	}
-@@ -7857,7 +7916,7 @@ static void ath11k_mgmt_tx_compl_event(s
+@@ -7860,7 +7919,7 @@ static void ath11k_mgmt_tx_compl_event(s
  		goto exit;
  	}
  
@@ -238,7 +238,7 @@ Signed-off-by: Sowmiya Sree Elavalagan <ssreeela@codeaurora.org>
  
  	ath11k_dbg(ab, ATH11K_DBG_MGMT,
  		   "event mgmt tx compl ev pdev_id %d, desc_id %d, status %d ack_rssi %d",
-@@ -7868,6 +7927,36 @@ exit:
+@@ -7871,6 +7930,36 @@ exit:
  	rcu_read_unlock();
  }
  
@@ -275,7 +275,7 @@ Signed-off-by: Sowmiya Sree Elavalagan <ssreeela@codeaurora.org>
  static struct ath11k *ath11k_get_ar_on_scan_state(struct ath11k_base *ab,
  						  u32 vdev_id,
  						  enum ath11k_scan_state state)
-@@ -9147,6 +9236,10 @@ static void ath11k_wmi_tlv_op_rx(struct
+@@ -9150,6 +9239,10 @@ static void ath11k_wmi_tlv_op_rx(struct
  	case WMI_WDS_PEER_EVENTID:
  		ath11k_wmi_wds_peer_event(ab, skb);
  		break;

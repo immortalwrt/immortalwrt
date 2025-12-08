@@ -41,7 +41,7 @@ Signed-off-by: Tamizh Chelvam Raja <quic_tamizhr@quicinc.com>
 
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -961,6 +961,9 @@ struct ath11k_soc_dp_stats {
+@@ -962,6 +962,9 @@ struct ath11k_soc_dp_stats {
  	u32 rxdma_error[HAL_REO_ENTR_RING_RXDMA_ECODE_MAX];
  	u32 reo_error[HAL_REO_DEST_RING_ERROR_CODE_MAX];
  	u32 hal_reo_error[DP_REO_DST_RING_MAX];
@@ -53,7 +53,7 @@ Signed-off-by: Tamizh Chelvam Raja <quic_tamizhr@quicinc.com>
  };
 --- a/drivers/net/wireless/ath/ath11k/debugfs.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.c
-@@ -727,6 +727,18 @@ static ssize_t ath11k_debugfs_dump_soc_d
+@@ -729,6 +729,18 @@ static ssize_t ath11k_debugfs_dump_soc_d
  			 "\nNSS Transmit Failures: %d\n",
  			 atomic_read(&soc_stats->tx_err.nss_tx_fail));
  
@@ -74,7 +74,7 @@ Signed-off-by: Tamizh Chelvam Raja <quic_tamizhr@quicinc.com>
  	if (len > size)
 --- a/drivers/net/wireless/ath/ath11k/dp.c
 +++ b/drivers/net/wireless/ath/ath11k/dp.c
-@@ -1158,8 +1158,10 @@ int ath11k_dp_alloc(struct ath11k_base *
+@@ -1160,8 +1160,10 @@ int ath11k_dp_alloc(struct ath11k_base *
  
  	INIT_LIST_HEAD(&dp->reo_cmd_list);
  	INIT_LIST_HEAD(&dp->reo_cmd_cache_flush_list);
@@ -194,7 +194,7 @@ Signed-off-by: Tamizh Chelvam Raja <quic_tamizhr@quicinc.com>
 +static int ath11k_dp_reo_cache_flush(struct ath11k_base *ab,
  				      struct dp_rx_tid *rx_tid)
  {
- 	struct ath11k_hal_reo_cmd cmd = {0};
+ 	struct ath11k_hal_reo_cmd cmd = {};
  	unsigned long tot_desc_sz, desc_sz;
  	int ret;
  
@@ -318,7 +318,7 @@ Signed-off-by: Tamizh Chelvam Raja <quic_tamizhr@quicinc.com>
  void ath11k_peer_rx_tid_delete(struct ath11k *ar,
  			       struct ath11k_peer *peer, u8 tid)
  {
--	struct ath11k_hal_reo_cmd cmd = {0};
+-	struct ath11k_hal_reo_cmd cmd = {};
  	struct dp_rx_tid *rx_tid = &peer->rx_tid[tid];
 -	int ret;
 +	struct dp_reo_update_rx_queue_elem *elem, *tmp;

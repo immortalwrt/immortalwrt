@@ -13,7 +13,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
 
 --- a/drivers/net/wireless/ath/ath11k/dp_tx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_tx.c
-@@ -405,6 +405,7 @@ ath11k_dp_tx_htt_tx_complete_buf(struct
+@@ -406,6 +406,7 @@ ath11k_dp_tx_htt_tx_complete_buf(struct
  	struct ath11k_skb_cb *skb_cb;
  	struct ath11k *ar;
  	struct ath11k_peer *peer;
@@ -21,7 +21,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
  
  	spin_lock(&tx_ring->tx_idr_lock);
  	msdu = idr_remove(&tx_ring->txbuf_idr, ts->msdu_id);
-@@ -647,9 +648,41 @@ err_out:
+@@ -648,9 +649,41 @@ err_out:
  	spin_unlock_bh(&ab->base_lock);
  }
  
@@ -62,9 +62,9 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
 +				       struct hal_wbm_release_ring *tx_status,
 +				       enum hal_wbm_rel_src_module buf_rel_source)
  {
- 	struct ieee80211_tx_status status = { 0 };
- 	struct ieee80211_rate_status status_rate = { 0 };
-@@ -659,8 +692,11 @@ static void ath11k_dp_tx_complete_msdu(s
+ 	struct ieee80211_tx_status status = {};
+ 	struct ieee80211_rate_status status_rate = {};
+@@ -660,8 +693,11 @@ static void ath11k_dp_tx_complete_msdu(s
  	struct ath11k_peer *peer;
  	struct ath11k_sta *arsta;
  	struct rate_info rate;
@@ -77,7 +77,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
  		/* Must not happen */
  		return;
  	}
-@@ -669,11 +705,14 @@ static void ath11k_dp_tx_complete_msdu(s
+@@ -670,11 +706,14 @@ static void ath11k_dp_tx_complete_msdu(s
  
  	dma_unmap_single(ab->dev, skb_cb->paddr, msdu->len, DMA_TO_DEVICE);
  
@@ -94,7 +94,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
  		}
  		if (skb_has_frag_list(msdu)) {
  			kfree_skb_list(skb_shinfo(msdu)->frag_list);
-@@ -683,6 +722,8 @@ static void ath11k_dp_tx_complete_msdu(s
+@@ -684,6 +723,8 @@ static void ath11k_dp_tx_complete_msdu(s
  		return;
  	}
  
@@ -103,7 +103,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
  	if (unlikely(!rcu_access_pointer(ab->pdevs_active[ar->pdev_idx]))) {
  		ieee80211_free_txskb(ar->hw, msdu);
  		return;
-@@ -699,10 +740,10 @@ static void ath11k_dp_tx_complete_msdu(s
+@@ -700,10 +741,10 @@ static void ath11k_dp_tx_complete_msdu(s
  	/* skip tx rate update from ieee80211_status*/
  	info->status.rates[0].idx = -1;
  
@@ -116,7 +116,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
  
  		if (!test_bit(WMI_TLV_SERVICE_HW_DB2DBM_CONVERSION_SUPPORT,
  			      ab->wmi_ab.svc_map))
-@@ -711,40 +752,40 @@ static void ath11k_dp_tx_complete_msdu(s
+@@ -712,40 +753,40 @@ static void ath11k_dp_tx_complete_msdu(s
  		info->status.flags |= IEEE80211_TX_STATUS_ACK_SIGNAL_VALID;
  	}
  
@@ -167,7 +167,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
  		spin_unlock_bh(&ab->base_lock);
  		ieee80211_free_txskb(ar->hw, msdu);
  		return;
-@@ -766,37 +807,6 @@ static void ath11k_dp_tx_complete_msdu(s
+@@ -767,37 +808,6 @@ static void ath11k_dp_tx_complete_msdu(s
  	ieee80211_tx_status_ext(ar->hw, &status);
  }
  
@@ -205,18 +205,18 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
  static inline bool ath11k_dp_tx_completion_valid(struct hal_wbm_release_ring *desc)
  {
  	struct htt_tx_wbm_completion *status_desc;
-@@ -820,9 +830,9 @@ void ath11k_dp_tx_completion_handler(str
+@@ -821,9 +831,9 @@ void ath11k_dp_tx_completion_handler(str
  	int hal_ring_id = dp->tx_ring[ring_id].tcl_comp_ring.ring_id, count = 0, i = 0;
  	struct hal_srng *status_ring = &ab->hal.srng_list[hal_ring_id];
  	struct sk_buff *msdu;
--	struct hal_tx_status ts = { 0 };
+-	struct hal_tx_status ts = {};
  	struct dp_tx_ring *tx_ring = &dp->tx_ring[ring_id];
  	int valid_entries;
 +	enum hal_wbm_rel_src_module buf_rel_source;
  	struct hal_wbm_release_ring *desc;
  	u32 msdu_id, desc_id;
- 	u8 mac_id;
-@@ -863,14 +873,16 @@ void ath11k_dp_tx_completion_handler(str
+  	u8 mac_id;
+@@ -864,14 +874,16 @@ void ath11k_dp_tx_completion_handler(str
  
  	while (count--) {
  		tx_status = &tx_ring->tx_status[i++];
@@ -235,7 +235,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
  			ath11k_dp_tx_process_htt_tx_complete(ab,
  							     (void *)tx_status,
  							     mac_id, msdu_id,
-@@ -894,7 +906,7 @@ void ath11k_dp_tx_completion_handler(str
+@@ -895,7 +907,7 @@ void ath11k_dp_tx_completion_handler(str
  		if (atomic_dec_and_test(&ar->dp.num_tx_pending))
  			wake_up(&ar->dp.tx_empty_waitq);
  

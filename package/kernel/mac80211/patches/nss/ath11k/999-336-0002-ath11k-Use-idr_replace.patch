@@ -18,7 +18,7 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
 
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -718,6 +718,11 @@ struct ath11k_per_peer_tx_stats {
+@@ -719,6 +719,11 @@ struct ath11k_per_peer_tx_stats {
  #define ATH11K_FLUSH_TIMEOUT (5 * HZ)
  #define ATH11K_VDEV_DELETE_TIMEOUT_HZ (5 * HZ)
  
@@ -30,7 +30,7 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  struct ath11k {
  	struct ath11k_base *ab;
  	struct ath11k_pdev *pdev;
-@@ -870,6 +875,7 @@ struct ath11k {
+@@ -871,6 +876,7 @@ struct ath11k {
  	bool ps_state_enable;
  	bool ps_timekeeper_enable;
  	s8 max_allowed_tx_power;
@@ -40,7 +40,7 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  struct ath11k_band_cap {
 --- a/drivers/net/wireless/ath/ath11k/dp.c
 +++ b/drivers/net/wireless/ath/ath11k/dp.c
-@@ -953,7 +953,7 @@ int ath11k_dp_service_srng(struct ath11k
+@@ -955,7 +955,7 @@ int ath11k_dp_service_srng(struct ath11k
  
  				hal_params = ab->hw_params.hal_params;
  				ath11k_dp_rxbufs_replenish(ab, id, rx_ring, 0,
@@ -121,12 +121,13 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  	struct hal_reo_dest_ring *desc;
  	enum hal_reo_dest_ring_push_reason push_reason;
 +	u32 *rx_buf_id[MAX_RADIOS];
- 	u32 cookie, info0, rx_msdu_info0, rx_mpdu_info0;
+ 	u32 cookie;
  	int i;
  
 -	for (i = 0; i < MAX_RADIOS; i++)
+-		__skb_queue_head_init(&msdu_list[i]);
 +	for (i = 0; i < MAX_RADIOS; i++) {
- 		__skb_queue_head_init(&msdu_list[i]);
++ 		__skb_queue_head_init(&msdu_list[i]);
 +		rx_buf_id[i] = kzalloc(sizeof(u32) * DP_RX_MAX_IDR_BUF, GFP_ATOMIC);
 +	}
  
@@ -149,7 +150,7 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  		spin_unlock_bh(&rx_ring->idr_lock);
  		if (unlikely(!msdu)) {
  			ath11k_warn(ab, "frame rx with invalid buf_id %d\n",
-@@ -3450,9 +3479,12 @@ try_again:
+@@ -3446,9 +3475,12 @@ try_again:
  		rx_ring = &ar->dp.rx_refill_buf_ring;
  
  		ath11k_dp_rxbufs_replenish(ab, i, rx_ring, num_buffs_reaped[i],
@@ -163,7 +164,7 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  	return total_msdu_reaped;
  }
  
-@@ -4816,7 +4848,7 @@ exit:
+@@ -4812,7 +4844,7 @@ exit:
  		rx_ring = &ar->dp.rx_refill_buf_ring;
  
  		ath11k_dp_rxbufs_replenish(ab, i, rx_ring, n_bufs_reaped[i],
@@ -172,26 +173,27 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  	}
  
  	return tot_n_bufs_reaped;
-@@ -5032,14 +5064,17 @@ int ath11k_dp_rx_process_wbm_err(struct
+@@ -5028,14 +5060,17 @@ int ath11k_dp_rx_process_wbm_err(struct
  	struct sk_buff *msdu;
  	struct sk_buff_head msdu_list[MAX_RADIOS];
  	struct ath11k_skb_rxcb *rxcb;
 +	u32 *wbm_err_buf_id[MAX_RADIOS];
  	u32 *rx_desc;
  	int buf_id, mac_id;
- 	int num_buffs_reaped[MAX_RADIOS] = {0};
+ 	int num_buffs_reaped[MAX_RADIOS] = {};
  	int total_num_buffs_reaped = 0;
  	int ret, i;
  
 -	for (i = 0; i < ab->num_radios; i++)
+-		__skb_queue_head_init(&msdu_list[i]);
 +	for (i = 0; i < ab->num_radios; i++) {
- 		__skb_queue_head_init(&msdu_list[i]);
++ 		__skb_queue_head_init(&msdu_list[i]);
 +		wbm_err_buf_id[i] = kzalloc(sizeof(u32) * DP_RX_MAX_IDR_BUF, GFP_ATOMIC);
 +	}
  
  	srng = &ab->hal.srng_list[dp->rx_rel_ring.ring_id];
  
-@@ -5065,9 +5100,15 @@ int ath11k_dp_rx_process_wbm_err(struct
+@@ -5061,9 +5096,15 @@ int ath11k_dp_rx_process_wbm_err(struct
  
  		ar = ab->pdevs[mac_id].ar;
  		rx_ring = &ar->dp.rx_refill_buf_ring;
@@ -208,7 +210,7 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  		spin_unlock_bh(&rx_ring->idr_lock);
  		if (!msdu) {
  			ath11k_warn(ab, "frame rx with invalid buf_id %d pdev %d\n",
-@@ -5112,7 +5153,7 @@ int ath11k_dp_rx_process_wbm_err(struct
+@@ -5108,7 +5149,7 @@ int ath11k_dp_rx_process_wbm_err(struct
  		rx_ring = &ar->dp.rx_refill_buf_ring;
  
  		ath11k_dp_rxbufs_replenish(ab, i, rx_ring, num_buffs_reaped[i],
@@ -217,7 +219,7 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  	}
  
  	rcu_read_lock();
-@@ -5134,6 +5175,8 @@ int ath11k_dp_rx_process_wbm_err(struct
+@@ -5130,6 +5171,8 @@ int ath11k_dp_rx_process_wbm_err(struct
  	}
  	rcu_read_unlock();
  done:
@@ -226,7 +228,7 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  	return total_num_buffs_reaped;
  }
  
-@@ -5219,7 +5262,7 @@ int ath11k_dp_process_rxdma_err(struct a
+@@ -5215,7 +5258,7 @@ int ath11k_dp_process_rxdma_err(struct a
  
  	if (num_buf_freed)
  		ath11k_dp_rxbufs_replenish(ab, mac_id, rx_ring, num_buf_freed,
@@ -235,7 +237,7 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  
  	return budget - quota;
  }
-@@ -6168,12 +6211,12 @@ static void ath11k_dp_rx_mon_dest_proces
+@@ -6163,12 +6206,12 @@ static void ath11k_dp_rx_mon_dest_proces
  			ath11k_dp_rxbufs_replenish(ar->ab, dp->mac_id,
  						   &dp->rxdma_mon_buf_ring,
  						   rx_bufs_used,
@@ -250,7 +252,7 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  	}
  }
  
-@@ -6691,7 +6734,7 @@ next_entry:
+@@ -6686,7 +6729,7 @@ next_entry:
  		ath11k_dp_rxbufs_replenish(ar->ab, dp->mac_id,
  					   &dp->rxdma_mon_buf_ring,
  					   rx_bufs_used,

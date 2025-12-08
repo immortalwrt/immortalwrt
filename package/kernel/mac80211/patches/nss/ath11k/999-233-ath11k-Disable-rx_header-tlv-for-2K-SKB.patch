@@ -12,7 +12,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
 
 --- a/drivers/net/wireless/ath/ath11k/debugfs.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.c
-@@ -547,6 +547,7 @@ static ssize_t ath11k_write_extd_rx_stat
+@@ -549,6 +549,7 @@ static ssize_t ath11k_write_extd_rx_stat
  	}
  
  	ar->debug.rx_filter = tlv_filter.rx_filter;
@@ -20,7 +20,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  
  	for (i = 0; i < ab->hw_params.num_rxdma_per_pdev; i++) {
  		ring_id = ar->dp.rx_mon_status_refill_ring[i].refill_buf_ring.ring_id;
-@@ -1107,6 +1108,7 @@ static ssize_t ath11k_write_pktlog_filte
+@@ -1109,6 +1110,7 @@ static ssize_t ath11k_write_pktlog_filte
  	}
  
  	/* Clear rx filter set for monitor mode and rx status */
@@ -408,7 +408,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  			ath11k_dbg_dump(ab, ATH11K_DBG_DATA, NULL, "", rx_desc,
  					sizeof(struct hal_rx_desc));
  			goto free_out;
-@@ -4058,6 +4180,7 @@ static int ath11k_dp_rx_h_verify_tkip_mi
+@@ -4054,6 +4176,7 @@ static int ath11k_dp_rx_h_verify_tkip_mi
  
  	hdr = (struct ieee80211_hdr *)(msdu->data + hal_rx_desc_sz);
  	hdr_len = ieee80211_hdrlen(hdr->frame_control);
@@ -416,7 +416,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  	head_len = hdr_len + hal_rx_desc_sz + IEEE80211_TKIP_IV_LEN;
  	tail_len = IEEE80211_CCMP_MIC_LEN + IEEE80211_TKIP_ICV_LEN + FCS_LEN;
  
-@@ -4338,8 +4461,8 @@ static void ath11k_dp_rx_h_sort_frags(st
+@@ -4334,8 +4457,8 @@ static void ath11k_dp_rx_h_sort_frags(st
  
  static u64 ath11k_dp_rx_h_get_pn(struct ath11k *ar, struct sk_buff *skb)
  {
@@ -426,7 +426,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  	u8 *ehdr;
  	u32 hal_rx_desc_sz = ar->ab->hw_params.hal_desc_sz;
  
-@@ -4569,8 +4692,9 @@ ath11k_dp_process_rx_err_buf(struct ath1
+@@ -4565,8 +4688,9 @@ ath11k_dp_process_rx_err_buf(struct ath1
  	if ((msdu_len + hal_rx_desc_sz) > DP_RX_BUFFER_SIZE) {
  		hdr_status = ath11k_dp_rx_h_80211_hdr(ar->ab, rx_desc);
  		ath11k_warn(ar->ab, "invalid msdu leng %u", msdu_len);
@@ -438,7 +438,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  		ath11k_dbg_dump(ar->ab, ATH11K_DBG_DATA, NULL, "", rx_desc,
  				sizeof(struct hal_rx_desc));
  		dev_kfree_skb_any(msdu);
-@@ -5196,6 +5320,47 @@ void ath11k_dp_rx_pdev_free(struct ath11
+@@ -5192,6 +5316,47 @@ void ath11k_dp_rx_pdev_free(struct ath11
  	ath11k_dp_rxdma_pdev_buf_free(ar);
  }
  
@@ -486,7 +486,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  int ath11k_dp_rx_pdev_alloc(struct ath11k_base *ab, int mac_id)
  {
  	struct ath11k *ar = ab->pdevs[mac_id].ar;
-@@ -5289,6 +5454,12 @@ config_refill_ring:
+@@ -5285,6 +5450,12 @@ config_refill_ring:
  		}
  	}
  
@@ -501,7 +501,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  
 --- a/drivers/net/wireless/ath/ath11k/dp_tx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_tx.c
-@@ -1281,6 +1281,8 @@ int ath11k_dp_tx_htt_rx_filter_setup(str
+@@ -1282,6 +1282,8 @@ int ath11k_dp_tx_htt_rx_filter_setup(str
  				 !!(params.flags & HAL_SRNG_FLAGS_MSI_SWAP));
  	cmd->info0 |= FIELD_PREP(HTT_RX_RING_SELECTION_CFG_CMD_INFO0_PS,
  				 !!(params.flags & HAL_SRNG_FLAGS_DATA_TLV_SWAP));
@@ -510,7 +510,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  
  	cmd->info1 = FIELD_PREP(HTT_RX_RING_SELECTION_CFG_CMD_INFO1_BUF_SIZE,
  				rx_buf_size);
-@@ -1290,6 +1292,26 @@ int ath11k_dp_tx_htt_rx_filter_setup(str
+@@ -1291,6 +1293,26 @@ int ath11k_dp_tx_htt_rx_filter_setup(str
  	cmd->pkt_type_en_flags3 = tlv_filter->pkt_filter_flags3;
  	cmd->rx_filter_tlv = tlv_filter->rx_filter;
  
@@ -537,7 +537,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  	ret = ath11k_htc_send(&ab->htc, ab->dp.eid, skb);
  	if (ret)
  		goto err_free;
-@@ -1368,6 +1390,7 @@ int ath11k_dp_tx_htt_monitor_mode_ring_c
+@@ -1369,6 +1391,7 @@ int ath11k_dp_tx_htt_monitor_mode_ring_c
  	}
  
  	ring_id = dp->rxdma_mon_buf_ring.refill_buf_ring.ring_id;

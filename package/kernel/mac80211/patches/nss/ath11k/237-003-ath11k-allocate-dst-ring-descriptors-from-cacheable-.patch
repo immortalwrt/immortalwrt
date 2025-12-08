@@ -24,15 +24,15 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
 
 --- a/drivers/net/wireless/ath/ath11k/dp_tx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_tx.c
-@@ -769,6 +769,7 @@ void ath11k_dp_tx_completion_handler(str
+@@ -770,6 +770,7 @@ void ath11k_dp_tx_completion_handler(str
  	struct sk_buff *msdu;
- 	struct hal_tx_status ts = { 0 };
+ 	struct hal_tx_status ts = {};
  	struct dp_tx_ring *tx_ring = &dp->tx_ring[ring_id];
 +	int valid_entries;
  	u32 *desc;
  	u32 msdu_id;
  	u8 mac_id;
-@@ -777,9 +778,18 @@ void ath11k_dp_tx_completion_handler(str
+@@ -778,9 +779,18 @@ void ath11k_dp_tx_completion_handler(str
  
  	ath11k_hal_srng_access_begin(ab, status_ring);
  
@@ -54,7 +54,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  		tx_ring->tx_status_head =
 --- a/drivers/net/wireless/ath/ath11k/hal.c
 +++ b/drivers/net/wireless/ath/ath11k/hal.c
-@@ -668,7 +668,8 @@ u32 *ath11k_hal_srng_dst_get_next_entry(
+@@ -670,7 +670,8 @@ u32 *ath11k_hal_srng_dst_get_next_entry(
  
  	desc = srng->ring_base_vaddr + srng->u.dst_ring.tp;
  
@@ -64,7 +64,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  
  	/* wrap around to start of ring*/
  	if (srng->u.dst_ring.tp == srng->ring_size)
-@@ -681,8 +682,63 @@ u32 *ath11k_hal_srng_dst_get_next_entry(
+@@ -683,8 +684,63 @@ u32 *ath11k_hal_srng_dst_get_next_entry(
  	return desc;
  }
  

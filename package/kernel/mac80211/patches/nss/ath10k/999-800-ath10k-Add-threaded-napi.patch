@@ -1,6 +1,6 @@
 --- a/drivers/net/wireless/ath/ath10k/pci.c
 +++ b/drivers/net/wireless/ath/ath10k/pci.c
-@@ -1976,6 +1976,7 @@ static int ath10k_pci_hif_start(struct a
+@@ -1977,6 +1977,7 @@ static int ath10k_pci_hif_start(struct a
  
  	ath10k_dbg(ar, ATH10K_DBG_BOOT, "boot hif start\n");
  
@@ -20,7 +20,7 @@
  	/* Sleep 20 ms before HIF interrupts are disabled.
 --- a/drivers/net/wireless/ath/ath10k/core.c
 +++ b/drivers/net/wireless/ath/ath10k/core.c
-@@ -3715,6 +3715,10 @@ struct ath10k *ath10k_core_create(size_t
+@@ -3755,6 +3755,10 @@ struct ath10k *ath10k_core_create(size_t
  	if (!ar->napi_dev)
  		goto err_free_tx_complete;
  

@@ -21,7 +21,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
 
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -151,6 +151,7 @@ struct ath11k_skb_rxcb {
+@@ -152,6 +152,7 @@ struct ath11k_skb_rxcb {
  	u8 tid;
  	u16 peer_id;
  	u16 seq_no;
@@ -29,7 +29,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  };
  
  enum ath11k_hw_rev {
-@@ -1162,6 +1163,7 @@ struct ath11k_base {
+@@ -1163,6 +1164,7 @@ struct ath11k_base {
  	u32 max_ast_index;
  	u32 num_ast_entries;
  
@@ -39,7 +39,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  };
 --- a/drivers/net/wireless/ath/ath11k/debugfs.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.c
-@@ -852,6 +852,79 @@ static const struct file_operations fops
+@@ -854,6 +854,79 @@ static const struct file_operations fops
  	.llseek = default_llseek,
  };
  
@@ -119,7 +119,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  int ath11k_debugfs_pdev_create(struct ath11k_base *ab)
  {
  	if (test_bit(ATH11K_FLAG_REGISTERED, &ab->dev_flags))
-@@ -901,6 +974,8 @@ int ath11k_debugfs_soc_create(struct ath
+@@ -903,6 +976,8 @@ int ath11k_debugfs_soc_create(struct ath
  		ret = PTR_ERR(ab->debugfs_soc);
  		goto out;
  	}
@@ -297,7 +297,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
 +	struct ath11k_skb_rxcb *rxcb;
  	struct sk_buff *msdu;
  	struct ath11k *ar;
- 	struct ieee80211_rx_status rx_status = {0};
+ 	struct ieee80211_rx_status rx_status = {};
  	int ret;
 +	bool fast_rx;
  
@@ -343,7 +343,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  
  	rx_status.flag |= RX_FLAG_SKIP_MONITOR | RX_FLAG_DUP_VALIDATED;
  
-@@ -4384,6 +4483,7 @@ static int ath11k_dp_rx_h_null_q_desc(st
+@@ -4380,6 +4479,7 @@ static int ath11k_dp_rx_h_null_q_desc(st
  				      struct ieee80211_rx_status *status,
  				      struct sk_buff_head *msdu_list)
  {
@@ -351,7 +351,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  	u16 msdu_len;
  	struct hal_rx_desc *desc = (struct hal_rx_desc *)msdu->data;
  	struct rx_attention *rx_attention;
-@@ -4433,7 +4533,8 @@ static int ath11k_dp_rx_h_null_q_desc(st
+@@ -4429,7 +4529,8 @@ static int ath11k_dp_rx_h_null_q_desc(st
  	}
  	ath11k_dp_rx_h_ppdu(ar, desc, status);
  
@@ -449,7 +449,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  	bool (*rx_desc_get_mpdu_fc_valid)(struct hal_rx_desc *desc);
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -10457,6 +10457,14 @@ static int ath11k_mac_op_sta_state(struc
+@@ -10461,6 +10461,14 @@ static int ath11k_mac_op_sta_state(struc
  		}
  	} else if (old_state == IEEE80211_STA_AUTHORIZED &&
  		   new_state == IEEE80211_STA_ASSOC) {

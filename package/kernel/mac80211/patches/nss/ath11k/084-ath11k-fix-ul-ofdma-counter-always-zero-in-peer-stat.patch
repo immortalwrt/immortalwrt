@@ -15,7 +15,7 @@ Signed-off-by: Miles Hu <milehu@codeaurora.org>
 
 --- a/drivers/net/wireless/ath/ath11k/debugfs_sta.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs_sta.c
-@@ -526,13 +526,6 @@ static ssize_t ath11k_dbg_sta_dump_rx_st
+@@ -527,13 +527,6 @@ static ssize_t ath11k_dbg_sta_dump_rx_st
  				rx_stats->byte_stats.rx_rate[i],
  				(i + 1) % (he_rates_avail ? 12 : 8) ? "\t" : "\n");
  
