@@ -80,10 +80,6 @@
 	pinctrl-0 = <&qpic_pins>;
 	pinctrl-names = "default";
 
-	partitions {
-		status = "disabled";
-	};
-
 	nand@0 {
 		compatible = "spi-nand";
 		reg = <0>;
