@@ -59,6 +59,44 @@
  			if(drop_msg) {
  			write_seqlock_bh(&rwnx_hw->txdata_reserved_seqlock);
  			rwnx_hw->txdata_reserved--;
+--- a/src/PCIE/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_gki.c
++++ b/src/PCIE/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_gki.c
+@@ -12,7 +12,11 @@
+ static struct genl_family rwnx_nl80211_fam;
+ 
+ static bool __rwnx_cfg80211_unexpected_frame(struct net_device *dev, u8 cmd,
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)) && !defined(BUILD_OPENWRT)
+ 				const u8 *addr, gfp_t gfp)
++#else
++				const u8 *addr, int link_id, gfp_t gfp)
++#endif
+ {
+ 	struct wireless_dev *wdev = dev->ieee80211_ptr;
+ 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
+@@ -48,7 +52,11 @@ static bool __rwnx_cfg80211_unexpected_f
+ }
+ 
+ bool rwnx_cfg80211_rx_spurious_frame(struct net_device *dev,
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)) && !defined(BUILD_OPENWRT)
+ 				const u8 *addr, gfp_t gfp)
++#else
++				const u8 *addr, int link_id, gfp_t gfp)
++#endif
+ {
+ 	struct wireless_dev *wdev = dev->ieee80211_ptr;
+ 	bool ret;
+@@ -63,7 +71,11 @@ bool rwnx_cfg80211_rx_spurious_frame(str
+ }
+ 
+ bool rwnx_cfg80211_rx_unexpected_4addr_frame(struct net_device *dev,
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)) && !defined(BUILD_OPENWRT)
+ 				const u8 *addr, gfp_t gfp)
++#else
++				const u8 *addr, int link_id, gfp_t gfp)
++#endif
+ {
+ 	struct wireless_dev *wdev = dev->ieee80211_ptr;
+ 	bool ret;
 --- a/src/PCIE/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_main.c
 +++ b/src/PCIE/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_main.c
 @@ -1619,7 +1619,11 @@ static struct rwnx_vif *rwnx_interface_a
@@ -119,17 +157,44 @@
  }
  
  /**
-@@ -3540,6 +3559,9 @@ static int rwnx_cfg80211_get_tx_power(st
+@@ -3495,7 +3514,11 @@ void rwnx_cfg80211_mgmt_frame_register(s
+  *	have changed. The actual parameter values are available in
+  *	struct wiphy. If returning an error, no value should be changed.
+  */
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)) && !defined(BUILD_OPENWRT)
+ static int rwnx_cfg80211_set_wiphy_params(struct wiphy *wiphy, u32 changed)
++#else
++static int rwnx_cfg80211_set_wiphy_params(struct wiphy *wiphy, int radio_idx, u32 changed)
++#endif
+ {
+ 	return 0;
+ }
+@@ -3509,7 +3532,11 @@ static int rwnx_cfg80211_set_wiphy_param
+  *	(as advertised by the nl80211 feature flag.)
+  */
+ static int rwnx_cfg80211_set_tx_power(struct wiphy *wiphy, struct wireless_dev *wdev,
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)) && !defined(BUILD_OPENWRT)
+ 									  enum nl80211_tx_power_setting type, int mbm)
++#else
++									  int radio_idx, enum nl80211_tx_power_setting type, int mbm)
++#endif
+ {
+ 	struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
+ 	struct rwnx_vif *vif;
+@@ -3540,6 +3567,12 @@ static int rwnx_cfg80211_get_tx_power(st
  #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0)
   struct wireless_dev *wdev,
  #endif
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION (6, 17, 0)) || defined(BUILD_OPENWRT)
++ int radio_idx,
++#endif
 +#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0)) || defined(BUILD_OPENWRT)
 + unsigned int link_id,
 +#endif
  	int *mbm)
  {
      #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
-@@ -3850,7 +3872,11 @@ static int rwnx_cfg80211_get_channel(str
+@@ -3850,7 +3883,11 @@ static int rwnx_cfg80211_get_channel(str
  
  	if (rwnx_vif->vif_index == rwnx_hw->monitor_vif) {
  		//retrieve channel from firmware
@@ -141,7 +206,7 @@
  	}
  
  	//Check if channel context is valid
-@@ -3986,6 +4012,9 @@ int rwnx_cfg80211_start_radar_detection(
+@@ -3986,6 +4023,9 @@ int rwnx_cfg80211_start_radar_detection(
  									#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0))
  										, u32 cac_time_ms
  									#endif
@@ -151,7 +216,7 @@
  										)
  {
  	struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
-@@ -4129,7 +4158,7 @@ int rwnx_cfg80211_channel_switch(struct
+@@ -4129,7 +4169,7 @@ int rwnx_cfg80211_channel_switch(struct
      } else {
          INIT_WORK(&csa->work, rwnx_csa_finish);
  
@@ -160,7 +225,7 @@
  		cfg80211_ch_switch_started_notify(dev, &csa->chandef, 0, params->count, false);
  #elif LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION4
  		cfg80211_ch_switch_started_notify(dev, &csa->chandef, 0, params->count, false, 0);
-@@ -4160,6 +4189,9 @@ rwnx_cfg80211_tdls_mgmt(struct wiphy *wi
+@@ -4160,6 +4200,9 @@ rwnx_cfg80211_tdls_mgmt(struct wiphy *wi
  #else
  	u8 *peer,
  #endif
@@ -170,7 +235,7 @@
  	u8 action_code,
  	u8 dialog_token,
  	u16 status_code,
-@@ -5830,7 +5862,11 @@ void rwnx_cfg80211_deinit(struct rwnx_hw
+@@ -5830,7 +5873,11 @@ void rwnx_cfg80211_deinit(struct rwnx_hw
  		list_for_each_entry(defrag_ctrl, &rwnx_hw->defrag_list, list) {
  			list_del_init(&defrag_ctrl->list);
  			if (timer_pending(&defrag_ctrl->defrag_timer))
@@ -232,7 +297,31 @@
  
  		count = skb_queue_len(&list);
  		if (count > ARRAY_SIZE(rwnx_hw->stats.amsdus_rx))
-@@ -1746,7 +1746,11 @@ int reord_flush_tid(struct aicwf_rx_priv
+@@ -1507,7 +1507,11 @@ check_len_update:
+         hdr = (struct ieee80211_hdr *)(skb->data + msdu_offset);
+         rwnx_vif = rwnx_rx_get_vif(rwnx_hw, hw_rxhdr->flags_vif_idx);
+         if (rwnx_vif) {
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)) && !defined(BUILD_OPENWRT)
+             cfg80211_rx_spurious_frame(rwnx_vif->ndev, hdr->addr2, GFP_ATOMIC);
++#else
++            cfg80211_rx_spurious_frame(rwnx_vif->ndev, hdr->addr2, -1, GFP_ATOMIC);
++#endif
+         }
+         rwnx_ipc_buf_e2a_sync_back(rwnx_hw, ipc_buf, sync_len);
+         rwnx_ipc_rxbuf_repush(rwnx_hw, ipc_buf);
+@@ -1555,7 +1559,11 @@ check_len_update:
+ 
+                 if (hw_rxhdr->flags_is_4addr && !rwnx_vif->use_4addr) {
+                     cfg80211_rx_unexpected_4addr_frame(rwnx_vif->ndev,
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)) && !defined(BUILD_OPENWRT)
+                                                        sta->mac_addr, GFP_ATOMIC);
++#else
++                                                       sta->mac_addr, -1, GFP_ATOMIC);
++#endif
+                 }
+             }
+ 
+@@ -1746,7 +1754,11 @@ int reord_flush_tid(struct aicwf_rx_priv
  	preorder_ctrl->enable = false;
  	spin_unlock_irqrestore(&preorder_ctrl->reord_list_lock, flags);
  	if (timer_pending(&preorder_ctrl->reord_timer))
@@ -244,7 +333,7 @@
  	cancel_work_sync(&preorder_ctrl->reord_timer_work);
  
  	return 0;
-@@ -1777,7 +1781,11 @@ void reord_deinit_sta(struct aicwf_rx_pr
+@@ -1777,7 +1789,11 @@ void reord_deinit_sta(struct aicwf_rx_pr
  		}
  		spin_unlock_irqrestore(&preorder_ctrl->reord_list_lock, flags);
  		if (timer_pending(&preorder_ctrl->reord_timer)) {
@@ -256,7 +345,7 @@
  		}
  		cancel_work_sync(&preorder_ctrl->reord_timer_work);
  	}
-@@ -1962,8 +1970,12 @@ void reord_timeout_handler (struct timer
+@@ -1962,8 +1978,12 @@ void reord_timeout_handler (struct timer
  #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
  	struct reord_ctrl *preorder_ctrl = (struct reord_ctrl *)data;
  #else
@@ -269,7 +358,7 @@
  
  #if 0
  	struct aicwf_rx_priv *rx_priv = preorder_ctrl->rx_priv;
-@@ -2109,7 +2121,11 @@ int reord_process_unit(struct aicwf_rx_p
+@@ -2109,7 +2129,11 @@ int reord_process_unit(struct aicwf_rx_p
  		}
  	} else {
  	if (timer_pending(&preorder_ctrl->reord_timer)) {
@@ -281,7 +370,7 @@
  	}
  	}
  	
-@@ -2208,8 +2224,12 @@ void defrag_timeout_cb(struct timer_list
+@@ -2208,8 +2232,12 @@ void defrag_timeout_cb(struct timer_list
  #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
  	defrag_ctrl = (struct defrag_ctrl_info *)data;
  #else
@@ -294,7 +383,19 @@
  
  	printk("%s:%p\r\n", __func__, defrag_ctrl);
  	spin_lock_bh(&defrag_ctrl->rwnx_hw->defrag_lock);
-@@ -2599,7 +2619,11 @@ check_len_update:
+@@ -2372,7 +2400,11 @@ check_len_update:
+ 		hdr = (struct ieee80211_hdr *)(skb->data + msdu_offset);
+ 		rwnx_vif = rwnx_rx_get_vif(rwnx_hw, hw_rxhdr->flags_vif_idx);
+ 		if (rwnx_vif) {
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)) && !defined(BUILD_OPENWRT)
+ 			rwnx_cfg80211_rx_spurious_frame(rwnx_vif->ndev, hdr->addr2, GFP_ATOMIC);
++#else
++			rwnx_cfg80211_rx_spurious_frame(rwnx_vif->ndev, hdr->addr2, -1, GFP_ATOMIC);
++#endif
+ 		}
+ 		goto end;
+ 	}
+@@ -2599,7 +2631,11 @@ check_len_update:
  							skb_tmp = defrag_info->skb;
  							list_del_init(&defrag_info->list);
  							if (timer_pending(&defrag_info->defrag_timer)) {
@@ -306,6 +407,18 @@
  							}
  							kfree(defrag_info);
  							spin_unlock_bh(&rwnx_hw->defrag_lock);
+@@ -2651,7 +2687,11 @@ check_len_update:
+ 
+ 				if (hw_rxhdr->flags_is_4addr && !rwnx_vif->use_4addr) {
+ 					rwnx_cfg80211_rx_unexpected_4addr_frame(rwnx_vif->ndev,
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)) && !defined(BUILD_OPENWRT)
+ 													   sta->mac_addr, GFP_ATOMIC);
++#else
++													   sta->mac_addr, -1, GFP_ATOMIC);
++#endif
+ 				}
+ 			}
+ 
 --- a/src/PCIE/driver_fw/driver/aic8800d80x2/aic8800_fdrv/rwnx_main.c
 +++ b/src/PCIE/driver_fw/driver/aic8800d80x2/aic8800_fdrv/rwnx_main.c
 @@ -4266,7 +4266,7 @@ int rwnx_cfg80211_channel_switch(struct
@@ -539,17 +652,44 @@
  }
  
  
-@@ -3558,6 +3581,9 @@ static int rwnx_cfg80211_get_tx_power(st
+@@ -3513,7 +3536,11 @@ void rwnx_cfg80211_mgmt_frame_register(s
+  *	have changed. The actual parameter values are available in
+  *	struct wiphy. If returning an error, no value should be changed.
+  */
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)) && !defined(BUILD_OPENWRT)
+ static int rwnx_cfg80211_set_wiphy_params(struct wiphy *wiphy, u32 changed)
++#else
++static int rwnx_cfg80211_set_wiphy_params(struct wiphy *wiphy, int radio_idx, u32 changed)
++#endif
+ {
+ 	return 0;
+ }
+@@ -3527,7 +3554,11 @@ static int rwnx_cfg80211_set_wiphy_param
+  *	(as advertised by the nl80211 feature flag.)
+  */
+ static int rwnx_cfg80211_set_tx_power(struct wiphy *wiphy, struct wireless_dev *wdev,
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)) && !defined(BUILD_OPENWRT)
+ 									  enum nl80211_tx_power_setting type, int mbm)
++#else
++									  int radio_idx, enum nl80211_tx_power_setting type, int mbm)
++#endif
+ {
+ 	struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
+ 	struct rwnx_vif *vif;
+@@ -3558,6 +3589,12 @@ static int rwnx_cfg80211_get_tx_power(st
  #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0)
   struct wireless_dev *wdev,
  #endif
++#if (LINUX_VERSION_CODE > KERNEL_VERSION(6, 17, 0)) || defined(BUILD_OPENWRT)
++ int radio_idx,
++#endif
 +#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0)) || defined(BUILD_OPENWRT)
 + unsigned int link_id,
 +#endif
  	int *mbm)
  {
      #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
-@@ -3875,7 +3901,11 @@ static int rwnx_cfg80211_get_channel(str
+@@ -3875,7 +3912,11 @@ static int rwnx_cfg80211_get_channel(str
  
  	if (rwnx_vif->vif_index == rwnx_hw->monitor_vif) {
  		//retrieve channel from firmware
@@ -561,7 +701,7 @@
  	}
  
  	//Check if channel context is valid
-@@ -4012,6 +4042,9 @@ int rwnx_cfg80211_start_radar_detection(
+@@ -4012,6 +4053,9 @@ int rwnx_cfg80211_start_radar_detection(
  									#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0))
  										, u32 cac_time_ms
  									#endif
@@ -571,7 +711,7 @@
  										)
  {
  	struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
-@@ -4152,7 +4185,9 @@ int rwnx_cfg80211_channel_switch (struct
+@@ -4152,7 +4196,9 @@ int rwnx_cfg80211_channel_switch (struct
  		goto end;
  	} else {
  		INIT_WORK(&csa->work, rwnx_csa_finish);
@@ -582,7 +722,7 @@
  		cfg80211_ch_switch_started_notify(dev, &csa->chandef, 0, params->count, false, 0);
  #elif LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION2
  		cfg80211_ch_switch_started_notify(dev, &csa->chandef, 0, params->count, false);
-@@ -4181,6 +4216,9 @@ rwnx_cfg80211_tdls_mgmt(struct wiphy *wi
+@@ -4181,6 +4227,9 @@ rwnx_cfg80211_tdls_mgmt(struct wiphy *wi
  #else
  	u8 *peer,
  #endif
@@ -592,7 +732,7 @@
  	u8 action_code,
  	u8 dialog_token,
  	u16 status_code,
-@@ -5915,7 +5953,11 @@ void rwnx_cfg80211_deinit(struct rwnx_hw
+@@ -5915,7 +5964,11 @@ void rwnx_cfg80211_deinit(struct rwnx_hw
  		list_for_each_entry(defrag_ctrl, &rwnx_hw->defrag_list, list) {
  			list_del_init(&defrag_ctrl->list);
  			if (timer_pending(&defrag_ctrl->defrag_timer))
@@ -604,7 +744,7 @@
  			dev_kfree_skb(defrag_ctrl->skb);
  			kfree(defrag_ctrl);
  		}
-@@ -6046,8 +6088,12 @@ static void __exit rwnx_mod_exit(void)
+@@ -6046,8 +6099,12 @@ static void __exit rwnx_mod_exit(void)
  
  
  #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
@@ -756,7 +896,19 @@
  
  	printk("%s:%p\r\n", __func__, defrag_ctrl);
  	spin_lock_bh(&defrag_ctrl->rwnx_hw->defrag_lock);
-@@ -2361,7 +2381,11 @@ check_len_update:
+@@ -2125,7 +2145,11 @@ check_len_update:
+ #ifdef CONFIG_GKI
+ 			rwnx_cfg80211_rx_spurious_frame(rwnx_vif->ndev, hdr->addr2, GFP_ATOMIC);
+ #else
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)) && !defined(BUILD_OPENWRT)
+             cfg80211_rx_spurious_frame(rwnx_vif->ndev, hdr->addr2, GFP_ATOMIC);
++#else
++            cfg80211_rx_spurious_frame(rwnx_vif->ndev, hdr->addr2, -1, GFP_ATOMIC);
++#endif
+ #endif
+ 		}
+ 		goto end;
+@@ -2361,7 +2385,11 @@ check_len_update:
  							skb_tmp = defrag_info->skb;
  							list_del_init(&defrag_info->list);
  							if (timer_pending(&defrag_info->defrag_timer)) {
@@ -768,6 +920,18 @@
  							}
  							kfree(defrag_info);
  							spin_unlock_bh(&rwnx_hw->defrag_lock);
+@@ -2417,7 +2445,11 @@ check_len_update:
+ 													   sta->mac_addr, GFP_ATOMIC);
+ #else
+                     cfg80211_rx_unexpected_4addr_frame(rwnx_vif->ndev,
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)) && !defined(BUILD_OPENWRT)
+                                                        sta->mac_addr, GFP_ATOMIC);
++#else
++                                                       sta->mac_addr, -1, GFP_ATOMIC);
++#endif
+ #endif
+ 				}
+ 			}
 --- a/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_wakelock.c
 +++ b/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_wakelock.c
 @@ -11,18 +11,24 @@
@@ -904,7 +1068,31 @@
  }
  
  
-@@ -4542,7 +4557,11 @@ static int rwnx_cfg80211_get_channel(str
+@@ -4127,7 +4142,11 @@ void rwnx_cfg80211_mgmt_frame_register(s
+  *	have changed. The actual parameter values are available in
+  *	struct wiphy. If returning an error, no value should be changed.
+  */
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(6,17,0)) && !defined(BUILD_OPENWRT)
+ static int rwnx_cfg80211_set_wiphy_params(struct wiphy *wiphy, u32 changed)
++#else
++static int rwnx_cfg80211_set_wiphy_params(struct wiphy *wiphy, int radio_idx, u32 changed)
++#endif
+ {
+     return 0;
+ }
+@@ -4144,7 +4163,11 @@ static int rwnx_cfg80211_set_tx_power(st
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0)
+  struct wireless_dev *wdev,
+ #endif
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)) && !defined(BUILD_OPENWRT)
+                                       enum nl80211_tx_power_setting type, int mbm)
++#else
++                                      int radio_idx, enum nl80211_tx_power_setting type, int mbm)
++#endif
+ {
+     #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0)
+     struct wireless_dev *wdev = NULL;
+@@ -4542,7 +4565,11 @@ static int rwnx_cfg80211_get_channel(str
      if (rwnx_vif->vif_index == rwnx_hw->monitor_vif)
      {
          //retrieve channel from firmware
@@ -916,7 +1104,7 @@
      }
  
      //Check if channel context is valid
-@@ -4727,6 +4746,9 @@ int rwnx_cfg80211_start_radar_detection(
+@@ -4727,6 +4754,9 @@ int rwnx_cfg80211_start_radar_detection(
                                      #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0))
                                          , u32 cac_time_ms
                                      #endif
@@ -926,7 +1114,7 @@
                                          )
  {
      struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
-@@ -4878,7 +4900,7 @@ int rwnx_cfg80211_channel_switch(struct
+@@ -4878,7 +4908,7 @@ int rwnx_cfg80211_channel_switch(struct
          goto end;
      } else {
          INIT_WORK(&csa->work, rwnx_csa_finish);
@@ -935,7 +1123,7 @@
  	cfg80211_ch_switch_started_notify(dev, &csa->chandef, 0, params->count, false);
  #elif LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION4
  	cfg80211_ch_switch_started_notify(dev, &csa->chandef, 0, params->count, false, 0);
-@@ -8706,7 +8728,11 @@ void rwnx_cfg80211_deinit(struct rwnx_hw
+@@ -8706,7 +8736,11 @@ void rwnx_cfg80211_deinit(struct rwnx_hw
          list_for_each_entry(defrag_ctrl, &rwnx_hw->defrag_list, list) {
              list_del_init(&defrag_ctrl->list);
              if (timer_pending(&defrag_ctrl->defrag_timer))
@@ -947,7 +1135,7 @@
              dev_kfree_skb(defrag_ctrl->skb);
              kfree(defrag_ctrl);
          }
-@@ -8823,8 +8849,12 @@ MODULE_PARM_DESC(wifi_mac_addr, "Configu
+@@ -8823,8 +8857,12 @@ MODULE_PARM_DESC(wifi_mac_addr, "Configu
  module_init(rwnx_mod_init);
  module_exit(rwnx_mod_exit);
  #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
@@ -1088,7 +1276,19 @@
  
  	printk("%s:%p\r\n", __func__, defrag_ctrl);
  	spin_lock_bh(&defrag_ctrl->rwnx_hw->defrag_lock);
-@@ -2397,7 +2422,11 @@ check_len_update:
+@@ -2202,7 +2227,11 @@ check_len_update:
+         hdr = (struct ieee80211_hdr *)(skb->data + msdu_offset);
+         rwnx_vif = rwnx_rx_get_vif(rwnx_hw, hw_rxhdr->flags_vif_idx);
+         if (rwnx_vif) {
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)) && !defined(BUILD_OPENWRT)
+             cfg80211_rx_spurious_frame(rwnx_vif->ndev, hdr->addr2, GFP_ATOMIC);
++#else
++            cfg80211_rx_spurious_frame(rwnx_vif->ndev, hdr->addr2, -1, GFP_ATOMIC);
++#endif
+         }
+         goto end;
+     }
+@@ -2397,7 +2426,11 @@ check_len_update:
  							skb_tmp = defrag_info->skb;
  							list_del_init(&defrag_info->list);
  							if (timer_pending(&defrag_info->defrag_timer)) {
@@ -1100,6 +1300,18 @@
  							}
  							kfree(defrag_info);
  							spin_unlock_bh(&rwnx_hw->defrag_lock);
+@@ -2449,7 +2482,11 @@ check_len_update:
+ 
+                 if (hw_rxhdr->flags_is_4addr && !rwnx_vif->use_4addr) {
+                     cfg80211_rx_unexpected_4addr_frame(rwnx_vif->ndev,
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 17, 0)) && !defined(BUILD_OPENWRT)
+                                                        sta->mac_addr, GFP_ATOMIC);
++#else
++                                                       sta->mac_addr, -1, GFP_ATOMIC);
++#endif
+                 }
+             }
+ 
 --- a/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/rwnx_wakelock.c
 +++ b/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/rwnx_wakelock.c
 @@ -11,18 +11,24 @@
