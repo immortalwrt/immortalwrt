@@ -68,7 +68,7 @@
 	cooling-maps {
 		map1 {
 			trip = <&cpu_passive>;
-			cooling-device = <&fan 0 1>;
+			cooling-device = <&fan THERMAL_NO_LIMIT 1>;
 		};
 
 		map2 {
