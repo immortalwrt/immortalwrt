@@ -31,7 +31,7 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
  	NFTNL_EXPR_REDIR_FLAGS,
 --- a/include/linux/netfilter/nf_tables.h
 +++ b/include/linux/netfilter/nf_tables.h
-@@ -1508,6 +1508,22 @@ enum nft_masq_attributes {
+@@ -1510,6 +1510,22 @@ enum nft_masq_attributes {
  #define NFTA_MASQ_MAX		(__NFTA_MASQ_MAX - 1)
  
  /**
