@@ -9,6 +9,7 @@ rockchip_setup_interfaces()
 	case "$board" in
 	9tripod,x3568-v4|\
 	ariaboard,photonicat|\
+	ariaboard,photonicat2|\
 	armsom,sige7|\
 	ezpro,mrkaio-m68s|\
 	firefly,rk3568-roc-pc|\
@@ -93,6 +94,7 @@ rockchip_setup_macs()
 	local label_mac=""
 
 	case "$board" in
+	ariaboard,photonicat2|\
 	armsom,sige3|\
 	armsom,sige7|\
 	cyber,cyber3588-aib|\
