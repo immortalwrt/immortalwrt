@@ -184,6 +184,13 @@ define U-Boot/rk3528/Default
   TPL:=$(RK3528_TPL)
 endef
 
+define U-Boot/mangopi-m28c-rk3528
+  $(U-Boot/rk3528/Default)
+  NAME:=MangoPi M28C
+  BUILD_DEVICES:= \
+    widora_mangopi-m28c
+endef
+
 define U-Boot/mangopi-m28k-rk3528
   $(U-Boot/rk3528/Default)
   NAME:=MangoPi M28K
@@ -522,6 +529,7 @@ UBOOT_TARGETS := \
   roc-cc-rk3328 \
   rock64-rk3328 \
   rock-pi-e-rk3328 \
+  mangopi-m28c-rk3528 \
   mangopi-m28k-rk3528 \
   radxa-e20c-rk3528 \
   rock-2-rk3528 \
