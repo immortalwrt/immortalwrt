@@ -33,15 +33,14 @@ Build/Compile=
 ifneq ($(CONFIG_USE_APK),)
 define Package/openwrt-keyring/install
 	$(INSTALL_DIR) $(1)/etc/apk/keys/
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/apk/openwrt-snapshots.pem $(1)/etc/apk/keys/
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/apk/immortalwrt-snapshots.pem $(1)/etc/apk/keys/
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/apk/openwrt-25.12.pem $(1)/etc/apk/keys/
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/apk/immortalwrt-25.12.pem $(1)/etc/apk/keys/
 endef
 else
 define Package/openwrt-keyring/install
 	$(INSTALL_DIR) $(1)/etc/opkg/keys/
-	# Public usign key for unattended snapshot builds
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/usign/b5043e70f9a75cde $(1)/etc/opkg/keys/
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/usign/8ead5420c4005b0d $(1)/etc/opkg/keys/
+	# Public usign key for 25.12 release builds
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/usign/467a35c14d7fbc5c$(1)/etc/opkg/keys/
 endef
 endif
 
