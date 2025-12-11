@@ -83,7 +83,7 @@
 
 		map4 {
 			trip = <&cpu_hot>;
-			cooling-device = <&fan 3 4>;
+			cooling-device = <&fan 3 THERMAL_NO_LIMIT>;
 		};
 	};
 };
