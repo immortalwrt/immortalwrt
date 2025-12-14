@@ -95,12 +95,14 @@ platform_do_upgrade() {
 		fw_setenv owrt_slotactive $((1 - active))
 		nand_do_upgrade "$1"
 		;;
-	jdcloud,re-ss-01|\
 	jdcloud,re-cs-02|\
 	jdcloud,re-cs-07|\
+	jdcloud,re-ss-01|\
 	link,nn6000-v1|\
 	link,nn6000-v2|\
-	redmi,ax5-jdcloud)
+	philips,ly1800|\
+	redmi,ax5-jdcloud|\
+	sy,y6010)
 		CI_KERNPART="0:HLOS"
 		CI_ROOTPART="rootfs"
 		emmc_do_upgrade "$1"

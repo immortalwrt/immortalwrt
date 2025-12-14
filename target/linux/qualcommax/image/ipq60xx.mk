@@ -287,54 +287,6 @@ define Device/zn_m2
 endef
 TARGET_DEVICES += zn_m2
 
-define Device/redmi_ax5-jdcloud
-	$(call Device/FitImage)
-	$(call Device/EmmcImage)
-	DEVICE_VENDOR := Redmi
-	DEVICE_MODEL := AX5 JDCloud
-	KERNEL_SIZE := 6144k
-	BLOCKSIZE := 128k
-	SOC := ipq6000
-	DEVICE_DTS_CONFIG := config@cp03-c1
-	DEVICE_PACKAGES := ipq-wifi-redmi_ax5-jdcloud
-	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | append-metadata
-endef
-TARGET_DEVICES += redmi_ax5-jdcloud
-
-define Device/link_nn6000-v1
-	$(call Device/FitImage)
-	$(call Device/EmmcImage)
-	DEVICE_VENDOR := Link
-	DEVICE_MODEL := NN6000 v1
-	KERNEL_SIZE := 6144k
-	BLOCKSIZE := 128k
-	SOC := ipq6000
-	DEVICE_DTS_CONFIG := config@cp03-c1
-	DEVICE_PACKAGES := ipq-wifi-link_nn6000
-	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | append-metadata
-endef
-TARGET_DEVICES += link_nn6000-v1
-
-define Device/link_nn6000-v2
-	$(Device/link_nn6000-v1)
-	DEVICE_MODEL := NN6000 v2
-endef
-TARGET_DEVICES += link_nn6000-v2
-
-define Device/jdcloud_re-ss-01
-	$(call Device/FitImage)
-	$(call Device/EmmcImage)
-	DEVICE_VENDOR := JDCloud
-	DEVICE_MODEL := RE-SS-01
-	KERNEL_SIZE := 6144k
-	BLOCKSIZE := 128k
-	SOC := ipq6000
-	DEVICE_DTS_CONFIG := config@cp03-c2
-	DEVICE_PACKAGES := ipq-wifi-jdcloud_re-ss-01
-	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | append-metadata
-endef
-TARGET_DEVICES += jdcloud_re-ss-01
-
 define Device/jdcloud_re-cs-02
 	$(call Device/FitImage)
 	$(call Device/EmmcImage)
@@ -362,3 +314,79 @@ define Device/jdcloud_re-cs-07
 	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | append-metadata
 endef
 TARGET_DEVICES += jdcloud_re-cs-07
+
+define Device/jdcloud_re-ss-01
+	$(call Device/FitImage)
+	$(call Device/EmmcImage)
+	DEVICE_VENDOR := JDCloud
+	DEVICE_MODEL := RE-SS-01
+	KERNEL_SIZE := 6144k
+	BLOCKSIZE := 128k
+	SOC := ipq6000
+	DEVICE_DTS_CONFIG := config@cp03-c2
+	DEVICE_PACKAGES := ipq-wifi-jdcloud_re-ss-01
+	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | append-metadata
+endef
+TARGET_DEVICES += jdcloud_re-ss-01
+
+define Device/link_nn6000-v1
+	$(call Device/FitImage)
+	$(call Device/EmmcImage)
+	DEVICE_VENDOR := Link
+	DEVICE_MODEL := NN6000 v1
+	KERNEL_SIZE := 6144k
+	BLOCKSIZE := 128k
+	SOC := ipq6000
+	DEVICE_DTS_CONFIG := config@cp03-c1
+	DEVICE_PACKAGES := ipq-wifi-link_nn6000
+	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | append-metadata
+endef
+TARGET_DEVICES += link_nn6000-v1
+
+define Device/link_nn6000-v2
+	$(Device/link_nn6000-v1)
+	DEVICE_MODEL := NN6000 v2
+endef
+TARGET_DEVICES += link_nn6000-v2
+
+define Device/philips_ly1800
+	$(call Device/FitImage)
+	$(call Device/EmmcImage)
+	DEVICE_VENDOR := Philips
+	DEVICE_MODEL := LY1800
+	KERNEL_SIZE := 6144k
+	BLOCKSIZE := 128k
+	SOC := ipq6010
+	DEVICE_DTS_CONFIG := config@cp01-c1
+	DEVICE_PACKAGES := ipq-wifi-philips_ly1800
+	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | append-metadata
+endef
+TARGET_DEVICES += philips_ly1800
+
+define Device/redmi_ax5-jdcloud
+	$(call Device/FitImage)
+	$(call Device/EmmcImage)
+	DEVICE_VENDOR := Redmi
+	DEVICE_MODEL := AX5 JDCloud
+	KERNEL_SIZE := 6144k
+	BLOCKSIZE := 128k
+	SOC := ipq6000
+	DEVICE_DTS_CONFIG := config@cp03-c1
+	DEVICE_PACKAGES := ipq-wifi-redmi_ax5-jdcloud
+	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | append-metadata
+endef
+TARGET_DEVICES += redmi_ax5-jdcloud
+
+define Device/sy_y6010
+	$(call Device/FitImage)
+	$(call Device/EmmcImage)
+	DEVICE_VENDOR := SY
+	DEVICE_MODEL := Y6010
+	KERNEL_SIZE := 6144k
+	BLOCKSIZE := 128k
+	SOC := ipq6010
+	DEVICE_DTS_CONFIG := config@cp03-c1
+	DEVICE_PACKAGES := ipq-wifi-sy_y6010
+	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | append-metadata
+endef
+TARGET_DEVICES += sy_y6010

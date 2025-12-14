@@ -32,10 +32,12 @@ ipq60xx_setup_interfaces()
 		;;
 	anysafe,e1|\
 	cmiot,ax18|\
-	jdcloud,re-ss-01|\
 	jdcloud,re-cs-07|\
+	jdcloud,re-ss-01|\
+	philips,ly1800|\
 	redmi,ax5|\
 	redmi,ax5-jdcloud|\
+	sy,y6010|\
 	xiaomi,ax1800|\
 	zn,m2|\
 	qihoo,360v6)

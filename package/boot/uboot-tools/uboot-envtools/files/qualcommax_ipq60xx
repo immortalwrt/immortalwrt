@@ -9,6 +9,8 @@ board=$(board_name)
 
 case "$board" in
 anysafe,e1|\
+philips,ly1800|\
+sy,y6010|\
 8devices,mango-dvk|\
 8devices,mango-dvk-sfp|\
 cambiumnetworks,xe3-4)
@@ -36,9 +38,9 @@ linksys,mr7500)
 yuncore,fap650)
 	ubootenv_add_mtd "0:appsblenv" "0x0" "0x10000" "0x10000"
 	;;
-jdcloud,re-ss-01|\
 jdcloud,re-cs-02|\
 jdcloud,re-cs-07|\
+jdcloud,re-ss-01|\
 link,nn6000-v1|\
 link,nn6000-v2|\
 redmi,ax5-jdcloud)

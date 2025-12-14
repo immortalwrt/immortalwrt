@@ -14,7 +14,9 @@ case "$FIRMWARE" in
 		caldata_extract "0:ART" 0x1000 0x20000
 		;;
 	anysafe,e1|\
-	cambiumnetworks,xe3-4)
+	cambiumnetworks,xe3-4|\
+	philips,ly1800|\
+	sy,y6010)
 		caldata_extract "0:ART" 0x1000 0x10000
 		;;
 	cmiot,ax18|\
@@ -39,8 +41,8 @@ case "$FIRMWARE" in
 	yuncore,fap650)
 		caldata_extract "0:art" 0x1000 0x20000
 		;;
-	jdcloud,re-ss-01|\
 	jdcloud,re-cs-02|\
+	jdcloud,re-ss-01|\
 	link,nn6000-v1|\
 	link,nn6000-v2|\
 	redmi,ax5-jdcloud)
