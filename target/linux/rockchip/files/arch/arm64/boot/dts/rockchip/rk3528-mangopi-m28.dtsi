@@ -168,6 +168,10 @@
 	status = "okay";
 };
 
+&i2c6 {
+	status = "okay";
+};
+
 &mdio1 {
 	rgmii_phy: ethernet-phy@1 {
 		compatible = "ethernet-phy-ieee802.3-c22";
@@ -197,10 +201,6 @@
 			};
 		};
 	};
-};
-
-&i2c6 {
-	status = "okay";
 };
 
 &pinctrl {
