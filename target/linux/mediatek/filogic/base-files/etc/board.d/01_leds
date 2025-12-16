@@ -14,6 +14,10 @@ abt,asr3000)
 asus,rt-ax52)
 	ucidef_set_led_netdev "wan" "wan" "blue:wan" "wan" "link tx rx"
 	;;
+asus,tuf-ax4200q)
+	ucidef_set_led_netdev "lan5" "LAN5" "mdio-bus:05:white:lan" "lan5" "link tx rx"
+	ucidef_set_led_netdev "wan" "WAN" "mdio-bus:06:white:wan" "eth1" "link tx rx"
+	;;
 bananapi,bpi-r3-mini)
 	ucidef_set_led_netdev "lan1" "LAN" "mdio-bus:0e:green:lan" "eth0" "link_2500 link_1000 tx rx"
 	ucidef_set_led_netdev "lan2" "LAN" "mdio-bus:0e:yellow:lan" "eth0" "link_2500 link_100 tx rx"
@@ -160,6 +164,9 @@ smartrg,sdg-8733a)
 	ucidef_set_led_netdev "wan-green" "WAN" "mdio-bus:08:green:wan" "wan" "link_2500 link_5000"
 	ucidef_set_led_netdev "wan-orange" "WAN" "mdio-bus:08:orange:wan" "wan" "link_100 link_1000"
 	ucidef_set_led_netdev "wan-white" "WAN" "mdio-bus:08:white:wan" "wan" "link_10000"
+	;;
+totolink,x6000r)
+	ucidef_set_led_netdev "wan" "wan" "green:wan" "wan" "link tx rx"
 	;;
 tplink,re6000xd)
 	ucidef_set_led_netdev "lan-1" "lan-1" "blue:lan-0" "lan1" "link tx rx"
