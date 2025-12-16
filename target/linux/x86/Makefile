@@ -22,7 +22,7 @@ DEFAULT_PACKAGES += fdisk mkf2fs partx-utils kmod-button-hotplug kmod-e1000e kmo
 		    kmod-8139cp kmod-8139too kmod-fs-f2fs kmod-usb-hid kmod-usb-net \
 		    kmod-usb-net-asix kmod-usb-net-asix-ax88179 kmod-usb-net-rtl8150 \
 		    kmod-usb-net-rtl8152-vendor grub2-bios-setup i915-firmware-dmc \
-		    automount
+		    automount autocore
 
 $(eval $(call BuildTarget))
 

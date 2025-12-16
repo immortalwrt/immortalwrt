@@ -60,12 +60,10 @@ DEFAULT_PACKAGES.router:=\
 	ppp-mod-pppoe
 # For easy usage
 DEFAULT_PACKAGES.tweak:=\
-	autocore \
 	block-mount \
 	default-settings-chn \
 	kmod-nf-nathelper \
-	luci \
-	luci-app-cpufreq
+	luci
 
 ifneq ($(DUMP),)
   all: dumpinfo
@@ -107,7 +105,7 @@ endif
 DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.$(DEVICE_TYPE))
 
 # Add tweaked packages
-# DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.tweak)
+DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.tweak)
 
 ##@
 # @brief Filter out packages, prepended with `-`.
