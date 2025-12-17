@@ -215,7 +215,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
 +	enum hal_wbm_rel_src_module buf_rel_source;
  	struct hal_wbm_release_ring *desc;
  	u32 msdu_id, desc_id;
-  	u8 mac_id;
+ 	u8 mac_id;
 @@ -864,14 +874,16 @@ void ath11k_dp_tx_completion_handler(str
  
  	while (count--) {

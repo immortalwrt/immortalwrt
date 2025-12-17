@@ -290,7 +290,7 @@ Signed-off-by: Yuvasree Sivasankaran <quic_ysivasan@quicinc.com>
  	}
  
 -	if (link_id < 0 && tid < IEEE80211_NUM_TIDS) {
-+	if (link_id < 0 && !ieee80211_hw_check(&local->hw, HAS_TX_QUEUE) && tid < IEEE80211_NUM_TIDS) {
++	if (!ieee80211_hw_check(&local->hw, HAS_TX_QUEUE) && link_id < 0 && tid < IEEE80211_NUM_TIDS) {
  		spin_lock_bh(&local->fq.lock);
  
  		tidstats->filled |= BIT(NL80211_TID_STATS_TXQ_STATS);

@@ -347,10 +347,9 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  	int valid_entries;
 -	u32 *desc;
 -	u32 msdu_id;
--	u8 mac_id;
 +	struct hal_wbm_release_ring *desc;
 +	u32 msdu_id, desc_id;
-+ 	u8 mac_id;
+ 	u8 mac_id;
 +	struct hal_wbm_release_ring *tx_status;
  
  	spin_lock_bh(&status_ring->lock);

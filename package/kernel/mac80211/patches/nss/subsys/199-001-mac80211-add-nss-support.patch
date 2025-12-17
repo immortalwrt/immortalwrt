@@ -56,14 +56,14 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
   */
  struct ieee80211_bss_conf {
  	struct ieee80211_vif *vif;
-@@ -856,6 +871,7 @@ struct ieee80211_bss_conf {
- 	bool eht_mu_beamformer;
- 	bool eht_80mhz_full_bw_ul_mumimo;
- 	bool eht_disable_mcs15;
-+	bool nss_ap_isolate;
- 
- 	u8 bss_param_ch_cnt;
+@@ -861,6 +876,7 @@ struct ieee80211_bss_conf {
  	u8 bss_param_ch_cnt_link_id;
+ 
+ 	u8 s1g_long_beacon_period;
++	bool nss_ap_isolate;
+ };
+ 
+ /**
 @@ -2155,6 +2171,16 @@ static inline bool lockdep_vif_wiphy_mut
  			      lockdep_vif_wiphy_mutex_held(vif))
  

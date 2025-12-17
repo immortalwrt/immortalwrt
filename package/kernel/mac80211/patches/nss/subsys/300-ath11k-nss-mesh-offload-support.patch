@@ -142,10 +142,11 @@ Signed-off-by: Gautham Kumar Senthilkumaran <quic_gauthamk@quicinc.com>
  	void (*add_twt_setup)(struct ieee80211_hw *hw,
  			      struct ieee80211_sta *sta,
  			      struct ieee80211_twt_setup *twt);
-@@ -7902,6 +7931,102 @@ int ieee80211_emulate_switch_vif_chanctx
- 					 int n_vifs,
- 					 enum ieee80211_chanctx_switch_mode mode);
- 
+@@ -7908,4 +7937,101 @@ int ieee80211_emulate_switch_vif_chanctx
+  * Return: %true iff the vif is a NAN interface and NAN is started
+  */
+ bool ieee80211_vif_nan_started(struct ieee80211_vif *vif);
++
 +/* Defines for Mesh NSS offload */
 +
 +enum ieee80211_mesh_path_offld_cmd {
@@ -242,9 +243,7 @@ Signed-off-by: Gautham Kumar Senthilkumaran <quic_gauthamk@quicinc.com>
 +}
 +#endif
 +
- /**
-  * ieee80211_vif_nan_started - Return whether a NAN vif is started
-  * @vif: the vif
+ #endif /* MAC80211_H */
 --- a/net/mac80211/cfg.c
 +++ b/net/mac80211/cfg.c
 @@ -2803,6 +2803,7 @@ static int ieee80211_update_mesh_config(

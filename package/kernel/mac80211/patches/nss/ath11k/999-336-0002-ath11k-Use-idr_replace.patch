@@ -125,9 +125,8 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  	int i;
  
 -	for (i = 0; i < MAX_RADIOS; i++)
--		__skb_queue_head_init(&msdu_list[i]);
 +	for (i = 0; i < MAX_RADIOS; i++) {
-+ 		__skb_queue_head_init(&msdu_list[i]);
+ 		__skb_queue_head_init(&msdu_list[i]);
 +		rx_buf_id[i] = kzalloc(sizeof(u32) * DP_RX_MAX_IDR_BUF, GFP_ATOMIC);
 +	}
  
@@ -185,9 +184,8 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  	int ret, i;
  
 -	for (i = 0; i < ab->num_radios; i++)
--		__skb_queue_head_init(&msdu_list[i]);
 +	for (i = 0; i < ab->num_radios; i++) {
-+ 		__skb_queue_head_init(&msdu_list[i]);
+ 		__skb_queue_head_init(&msdu_list[i]);
 +		wbm_err_buf_id[i] = kzalloc(sizeof(u32) * DP_RX_MAX_IDR_BUF, GFP_ATOMIC);
 +	}
  
