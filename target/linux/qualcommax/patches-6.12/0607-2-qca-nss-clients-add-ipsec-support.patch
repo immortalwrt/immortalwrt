@@ -149,7 +149,7 @@ Signed-off-by: Pavithra R <quic_pavir@quicinc.com>
  
  struct xfrm_input_afinfo {
  	u8			family;
-@@ -442,6 +459,8 @@ struct xfrm_type {
+@@ -441,6 +458,8 @@ struct xfrm_type {
  	int			(*output)(struct xfrm_state *, struct sk_buff *pskb);
  	int			(*reject)(struct xfrm_state *, struct sk_buff *,
  					  const struct flowi *);
@@ -158,7 +158,7 @@ Signed-off-by: Pavithra R <quic_pavir@quicinc.com>
  };
  
  int xfrm_register_type(const struct xfrm_type *type, unsigned short family);
-@@ -1670,6 +1689,7 @@ struct xfrm_state *xfrm_state_lookup_bya
+@@ -1663,6 +1682,7 @@ struct xfrm_state *xfrm_state_lookup_bya
  					    const xfrm_address_t *saddr,
  					    u8 proto,
  					    unsigned short family);
@@ -166,7 +166,7 @@ Signed-off-by: Pavithra R <quic_pavir@quicinc.com>
  #ifdef CONFIG_XFRM_SUB_POLICY
  void xfrm_tmpl_sort(struct xfrm_tmpl **dst, struct xfrm_tmpl **src, int n,
  		    unsigned short family);
-@@ -1714,7 +1734,7 @@ void xfrm_sad_getinfo(struct net *net, s
+@@ -1707,7 +1727,7 @@ void xfrm_sad_getinfo(struct net *net, s
  void xfrm_spd_getinfo(struct net *net, struct xfrmk_spdinfo *si);
  u32 xfrm_replay_seqhi(struct xfrm_state *x, __be32 net_seq);
  int xfrm_init_replay(struct xfrm_state *x, struct netlink_ext_ack *extack);
@@ -199,15 +199,15 @@ Signed-off-by: Pavithra R <quic_pavir@quicinc.com>
  #include "xfrm_hash.h"
  
  #define xfrm_state_deref_prot(table, net) \
-@@ -774,6 +772,7 @@ int __xfrm_state_delete(struct xfrm_stat
+@@ -771,6 +769,7 @@ int __xfrm_state_delete(struct xfrm_stat
  		spin_unlock(&net->xfrm.xfrm_state_lock);
  
  		xfrm_dev_state_delete(x);
 +		xfrm_state_change_notify(x, XFRM_EVENT_STATE_DEL);
  
- 		/* All xfrm_state objects are created by xfrm_state_alloc.
- 		 * The xfrm_state_alloc call gives a reference, and that
-@@ -3002,6 +3001,20 @@ struct xfrm_state_afinfo *xfrm_state_get
+ 		xfrm_state_delete_tunnel(x);
+ 
+@@ -2998,6 +2997,20 @@ struct xfrm_state_afinfo *xfrm_state_get
  	return afinfo;
  }
  
@@ -228,9 +228,9 @@ Signed-off-by: Pavithra R <quic_pavir@quicinc.com>
  void xfrm_flush_gc(void)
  {
  	flush_work(&xfrm_state_gc_work);
-@@ -3023,38 +3036,16 @@ void xfrm_state_delete_tunnel(struct xfr
+@@ -3016,38 +3029,16 @@ static void xfrm_state_delete_tunnel(str
+ 	}
  }
- EXPORT_SYMBOL(xfrm_state_delete_tunnel);
  
 -u32 xfrm_state_mtu(struct xfrm_state *x, int mtu)
 +int xfrm_state_mtu(struct xfrm_state *x, int mtu)
@@ -272,7 +272,7 @@ Signed-off-by: Pavithra R <quic_pavir@quicinc.com>
  
  int __xfrm_init_state(struct xfrm_state *x, bool init_replay, bool offload,
  		      struct netlink_ext_ack *extack)
-@@ -3399,3 +3390,39 @@ void xfrm_audit_state_icvfail(struct xfr
+@@ -3392,3 +3383,39 @@ void xfrm_audit_state_icvfail(struct xfr
  }
  EXPORT_SYMBOL_GPL(xfrm_audit_state_icvfail);
  #endif /* CONFIG_AUDITSYSCALL */
