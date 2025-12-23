@@ -1,0 +1,115 @@
+From 60087bcbd1206a546c570c453dee5f5d961ef5b3 Mon Sep 17 00:00:00 2001
+From: John Clark <inindev@gmail.com>
+Date: Tue, 22 Apr 2025 17:03:45 -0400
+Subject: [PATCH] arm64: dts: rockchip: fix usb-c port functionality on
+ rk3588-nanopc-t6
+
+The USB-C port on the NanoPC-T6 was not providing VBUS (vbus5v0_typec
+regulator disabled, gpio-58 out lo) due to misconfiguration. The
+original setup with regulator-always-on and regulator-boot-on forced
+the port on, masking the issue, but removing these properties revealed
+that the fusb302 driver was not enabling the regulator dynamically.
+
+Changes:
+- Removed regulator-always-on and regulator-boot-on from vbus5v0_typec
+  and vbus5v0_usb to allow driver control.
+- Changed power-role from "source" to "dual" in the usb-c-connector to
+  support OTG functionality.
+- Added pd-revision = /bits/ 8 <0x2 0x0 0x1 0x2> to the FUSB302MPX
+  node to specify USB Power Delivery (PD) Revision 2.0, Version 1.2,
+  ensuring the driver correctly advertises PD capabilities and
+  negotiates power roles (source/sink).
+- Added op-sink-microwatt and sink-pdos for proper sink mode
+  configuration (1W min, 15W max).
+- Added typec-power-opmode = "1.5A" to enable 1.5A fallback for non-PD
+  USB-C devices, aligning with the 5V/2A hardware limit.
+- Set try-power-role to "source" to prioritize VBUS enablement.
+- Adjusted usb_host0_xhci dr_mode from "host" to "otg" and added
+  usb-role-switch for dual-role support.
+
+Testing:
+- Verified VBUS (5V) delivery to a sink device (USB thumb drive).
+- Confirmed USB host mode with lsusb detecting connected devices.
+- Validated USB device mode with adb devices when connected to a PC.
+- Tested dual-role (OTG) functionality with try-power-role set to
+  "source" and "sink"; "source" prioritizes faster VBUS activation.
+- Validated functionality with a mobile device, including USB Power
+  Delivery, file transfer, USB tethering, MIDI, and image transfer.
+- Tested USB-C Ethernet adapter compatibility in host mode.
+- Tested USB-C hub compatibility in host mode.
+
+Signed-off-by: John Clark <inindev@gmail.com>
+Link: https://lore.kernel.org/r/20250422210345.196050-1-inindev@gmail.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ .../boot/dts/rockchip/rk3588-nanopc-t6.dtsi   | 21 ++++++++++---------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
+index cecfb788bf9e27..3d8b6f0c554188 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
+@@ -174,8 +174,6 @@
+ 		gpio = <&gpio1 RK_PD2 GPIO_ACTIVE_HIGH>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&typec5v_pwren>;
+-		regulator-always-on;
+-		regulator-boot-on;
+ 		regulator-name = "vbus5v0_typec";
+ 		regulator-min-microvolt = <5000000>;
+ 		regulator-max-microvolt = <5000000>;
+@@ -188,8 +186,6 @@
+ 		gpio = <&gpio4 RK_PB0 GPIO_ACTIVE_HIGH>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&usb5v_pwren>;
+-		regulator-always-on;
+-		regulator-boot-on;
+ 		regulator-name = "vbus5v0_usb";
+ 		regulator-min-microvolt = <5000000>;
+ 		regulator-max-microvolt = <5000000>;
+@@ -465,24 +461,30 @@
+ };
+ 
+ &i2c6 {
+-	clock-frequency = <200000>;
+ 	status = "okay";
+ 
+-	fusb302: typec-portc@22 {
++	usbc0: usb-typec@22 {
+ 		compatible = "fcs,fusb302";
+ 		reg = <0x22>;
+ 		interrupt-parent = <&gpio0>;
+ 		interrupts = <RK_PD3 IRQ_TYPE_LEVEL_LOW>;
+-		pinctrl-0 = <&usbc0_int>;
+ 		pinctrl-names = "default";
++		pinctrl-0 = <&usbc0_int>;
+ 		vbus-supply = <&vbus5v0_typec>;
++		status = "okay";
+ 
+ 		connector {
+ 			compatible = "usb-c-connector";
+ 			data-role = "dual";
+ 			label = "USB-C";
+-			power-role = "source";
++			op-sink-microwatt = <1000000>;
++			/* fusb302 supports PD Rev 2.0 Ver 1.2 */
++			pd-revision = /bits/ 8 <0x2 0x0 0x1 0x2>;
++			power-role = "dual";
++			sink-pdos = <PDO_FIXED(5000, 3000, PDO_FIXED_USB_COMM)>;
+ 			source-pdos = <PDO_FIXED(5000, 2000, PDO_FIXED_USB_COMM)>;
++			try-power-role = "source";
++			typec-power-opmode = "1.5A";
+ 
+ 			ports {
+ 				#address-cells = <1>;
+@@ -1135,9 +1137,8 @@
+ };
+ 
+ &usb_host0_xhci {
+-	dr_mode = "host";
+-	status = "okay";
+ 	usb-role-switch;
++	status = "okay";
+ 
+ 	port {
+ 		usb_host0_xhci_drd_sw: endpoint {
