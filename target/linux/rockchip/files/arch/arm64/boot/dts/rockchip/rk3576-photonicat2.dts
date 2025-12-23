@@ -981,6 +981,9 @@
 		charger {
 			monitored-battery = <&battery>;
 		};
+
+		fan {
+		};
 	};
 };
 
