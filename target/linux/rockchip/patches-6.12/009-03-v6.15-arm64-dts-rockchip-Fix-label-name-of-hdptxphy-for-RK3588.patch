@@ -1,0 +1,51 @@
+From 2efdb041019fd6c58abefba3eb6fdc4d659e576c Mon Sep 17 00:00:00 2001
+From: Damon Ding <damon.ding@rock-chips.com>
+Date: Thu, 6 Feb 2025 11:03:30 +0800
+Subject: [PATCH] arm64: dts: rockchip: Fix label name of hdptxphy for RK3588
+
+The hdptxphy is a combo transmit-PHY for HDMI2.1 TMDS Link, FRL Link, DP
+and eDP Link. Therefore, it is better to name it hdptxphy0 other than
+hdptxphy_hdmi0, which will be referenced by both hdmi0 and edp0 nodes.
+
+Signed-off-by: Damon Ding <damon.ding@rock-chips.com>
+Link: https://lore.kernel.org/r/20250206030330.680424-3-damon.ding@rock-chips.com
+[added armsom-sige7, where hdmi-support was added recently and also
+ the hdptxphy0-as-dclk source I just added]
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3588-armsom-sige7.dts        | 2 +-
+ arch/arm64/boot/dts/rockchip/rk3588-base.dtsi               | 6 +++---
+ arch/arm64/boot/dts/rockchip/rk3588-coolpi-cm5-evb.dts      | 2 +-
+ arch/arm64/boot/dts/rockchip/rk3588-coolpi-cm5-genbook.dts  | 2 +-
+ arch/arm64/boot/dts/rockchip/rk3588-evb1-v10.dts            | 2 +-
+ arch/arm64/boot/dts/rockchip/rk3588-firefly-itx-3588j.dts   | 2 +-
+ .../boot/dts/rockchip/rk3588-friendlyelec-cm3588-nas.dts    | 2 +-
+ arch/arm64/boot/dts/rockchip/rk3588-h96-max-v58.dts         | 2 +-
+ arch/arm64/boot/dts/rockchip/rk3588-jaguar.dts              | 2 +-
+ arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi          | 2 +-
+ arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-max.dts      | 2 +-
+ arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-plus.dts     | 2 +-
+ arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts             | 2 +-
+ arch/arm64/boot/dts/rockchip/rk3588-tiger-haikou.dts        | 2 +-
+ arch/arm64/boot/dts/rockchip/rk3588s-coolpi-4b.dts          | 2 +-
+ arch/arm64/boot/dts/rockchip/rk3588s-indiedroid-nova.dts    | 2 +-
+ arch/arm64/boot/dts/rockchip/rk3588s-nanopi-r6.dtsi         | 2 +-
+ arch/arm64/boot/dts/rockchip/rk3588s-odroid-m2.dts          | 2 +-
+ arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5.dtsi        | 2 +-
+ arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts            | 2 +-
+ arch/arm64/boot/dts/rockchip/rk3588s-rock-5c.dts            | 2 +-
+ 21 files changed, 23 insertions(+), 23 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
+index cb350727d11680..0d9b5020acc099 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
+@@ -360,7 +360,7 @@
+ 	};
+ };
+ 
+-&hdptxphy_hdmi0 {
++&hdptxphy0 {
+ 	status = "okay";
+ };
+ 

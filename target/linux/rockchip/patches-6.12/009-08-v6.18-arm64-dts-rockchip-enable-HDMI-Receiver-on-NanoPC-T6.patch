@@ -1,0 +1,49 @@
+From fdab01864390db7ef0bea28804c7a3147dc0a386 Mon Sep 17 00:00:00 2001
+From: Marcin Juszkiewicz <marcin@juszkiewicz.com.pl>
+Date: Fri, 5 Sep 2025 13:02:30 +0200
+Subject: [PATCH] arm64: dts: rockchip: enable HDMI Receiver on NanoPC T6
+
+Let enable HDMI input port.
+
+Signed-off-by: Marcin Juszkiewicz <marcin@juszkiewicz.com.pl>
+Link: https://lore.kernel.org/r/579370818ef3b70b57bc5b8846f3b330d091d9a4.1757068166.git.marcin@juszkiewicz.com.pl
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ .../boot/dts/rockchip/rk3588-nanopc-t6.dtsi     | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
+index 3d8b6f0c554188..e647a30dca624a 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
+@@ -391,6 +391,17 @@
+ 	status = "okay";
+ };
+ 
++&hdmi_receiver_cma {
++	status = "okay";
++};
++
++&hdmi_receiver {
++	hpd-gpios = <&gpio1 RK_PD5 GPIO_ACTIVE_LOW>;
++	pinctrl-0 = <&hdmim1_rx_cec &hdmim1_rx_hpdin &hdmim1_rx_scl &hdmim1_rx_sda &hdmirx_hpd>;
++	pinctrl-names = "default";
++	status = "okay";
++};
++
+ &hdptxphy0 {
+ 	status = "okay";
+ };
+@@ -629,6 +640,12 @@
+ 		};
+ 	};
+ 
++	hdmirx {
++		hdmirx_hpd: hdmirx-5v-detection {
++			rockchip,pins = <1 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
+ 	headphone {
+ 		hp_det: hp-det {
+ 			rockchip,pins = <1 RK_PC4 RK_FUNC_GPIO &pcfg_pull_none>;
