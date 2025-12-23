@@ -295,8 +295,9 @@
 };
 
 &gmac1 {
+	/delete-property/ snps,tso;
 	clock_in_out = "output";
-	phy-mode = "rgmii-rxid";
+	phy-mode = "rgmii-id";
 	phy-supply = <&vcc3v3_switch>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&gmac1_miim
@@ -304,8 +305,7 @@
 		     &gmac1_rx_bus2
 		     &gmac1_rgmii_clk
 		     &gmac1_rgmii_bus>;
-	tx_delay = <0x42>;
-	/* RK3588 GMAC is broken currently */
+	/* This switch (basically) has no user, disable for now */
 	status = "disabled";
 
 	fixed-link {
@@ -533,6 +533,31 @@
 		reg = <29>;
 		reset-gpios = <&gpio0 RK_PC0 GPIO_ACTIVE_LOW>;
 
+		mdio {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			phy0: ethernet-phy@0 {
+				reg = <0>;
+			};
+
+			phy1: ethernet-phy@1 {
+				reg = <1>;
+			};
+
+			phy2: ethernet-phy@2 {
+				reg = <2>;
+			};
+
+			phy3: ethernet-phy@3 {
+				reg = <3>;
+			};
+
+			phy4: ethernet-phy@4 {
+				reg = <4>;
+			};
+		};
+
 		ports {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -540,32 +565,39 @@
 			port@0 {
 				reg = <0>;
 				label = "lan2";
+				hy-handle = <&phy0>;
 			};
 
 			port@1 {
 				reg = <1>;
 				label = "lan3";
+				phy-handle = <&phy1>;
 			};
 
 			port@2 {
 				reg = <2>;
 				label = "lan4";
+				phy-handle = <&phy2>;
 			};
 
 			port@3 {
 				reg = <3>;
 				label = "lan5";
+				phy-handle = <&phy3>;
 			};
 
 			port@4 {
 				reg = <4>;
 				label = "lan6";
+				phy-handle = <&phy4>;
 			};
 
 			port@7 {
 				reg = <7>;
 				ethernet = <&gmac1>;
 				phy-mode = "rgmii";
+				rx-internal-delay-ps = <2000>;
+				tx-internal-delay-ps = <2000>;
 
 				fixed-link {
 					speed = <1000>;

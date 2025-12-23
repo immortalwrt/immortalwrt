@@ -909,11 +909,11 @@ define Device/cmcc_rax3000me
 	emmc-ddr4-preloader.bin emmc-ddr4-bl31-uboot.fip \
 	nand-ddr3-preloader.bin nand-ddr3-bl31-uboot.fip \
 	nand-ddr4-preloader.bin nand-ddr4-bl31-uboot.fip
-  ARTIFACT/emmc-ddr3-preloader.bin := mt7981-bl2 emmc-ddr3-1866mhz
+  ARTIFACT/emmc-ddr3-preloader.bin := mt7981-bl2 emmc-ddr3-1866
   ARTIFACT/emmc-ddr3-bl31-uboot.fip := mt7981-bl31-uboot cmcc_rax3000me-emmc-ddr3
   ARTIFACT/emmc-ddr4-preloader.bin := mt7981-bl2 emmc-ddr4
   ARTIFACT/emmc-ddr4-bl31-uboot.fip := mt7981-bl31-uboot cmcc_rax3000me-emmc-ddr4
-  ARTIFACT/nand-ddr3-preloader.bin := mt7981-bl2 spim-nand-ddr3-1866mhz
+  ARTIFACT/nand-ddr3-preloader.bin := mt7981-bl2 spim-nand-ddr3-1866
   ARTIFACT/nand-ddr3-bl31-uboot.fip := mt7981-bl31-uboot cmcc_rax3000me-nand-ddr3
   ARTIFACT/nand-ddr4-preloader.bin := mt7981-bl2 spim-nand-ddr4
   ARTIFACT/nand-ddr4-bl31-uboot.fip := mt7981-bl31-uboot cmcc_rax3000me-nand-ddr4
@@ -2611,7 +2611,8 @@ TARGET_DEVICES += totolink_x6000r
 
 define Device/tplink_archer-ax80-v1
   DEVICE_VENDOR := TP-Link
-  DEVICE_MODEL := Archer AX80V1
+  DEVICE_MODEL := Archer AX80
+  DEVICE_VARIANT := v1
   DEVICE_DTS := mt7986a-tplink-archer-ax80-v1
   DEVICE_DTS_DIR := ../dts
   DEVICE_PACKAGES := kmod-leds-lp5523 kmod-usb3 kmod-mt7915e \
@@ -2623,6 +2624,21 @@ define Device/tplink_archer-ax80-v1
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += tplink_archer-ax80-v1
+
+define Device/tplink_archer-ax80-v1-eu
+  DEVICE_VENDOR := TP-Link
+  DEVICE_MODEL := Archer AX80
+  DEVICE_VARIANT := v1 (EU)
+  DEVICE_DTS := mt7986b-tplink-archer-ax80-v1-eu
+  DEVICE_DTS_DIR := ../dts
+  DEVICE_PACKAGES := kmod-usb3 kmod-mt7915e kmod-mt7986-firmware mt7986-wo-firmware automount
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 51200k
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += tplink_archer-ax80-v1-eu
 
 define Device/tplink_fr365-v1
   DEVICE_VENDOR := TP-Link
