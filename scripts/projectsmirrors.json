@@ -24,7 +24,7 @@
 		"https://mirror.navercorp.com/apache",
 		"https://ftp.jaist.ac.jp/pub/apache",
 		"https://apache.cs.utah.edu",
-		"http://apache.mirrors.ovh.net/ftp.apache.org/dist"
+		"https://apache.mirrors.ovh.net/ftp.apache.org/dist"
 	],
         "@GITHUB": [
                 "https://raw.githubusercontent.com"
