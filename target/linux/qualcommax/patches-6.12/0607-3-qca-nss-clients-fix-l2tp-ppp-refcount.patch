@@ -1,0 +1,36 @@
+--- a/net/l2tp/l2tp_ppp.c
++++ b/net/l2tp/l2tp_ppp.c
+@@ -1774,13 +1774,13 @@ static int pppol2tp_get_channel_protocol
+ 
+ 	tunnel = session->tunnel;
+ 	if (!tunnel) {
+-		sock_put(sk);
++		l2tp_session_put(session);
+ 		return -1;
+ 	}
+ 
+ 	version = tunnel->version;
+ 
+-	sock_put(sk);
++	l2tp_session_put(session);
+ 
+ 	return version;
+ }
+@@ -1802,7 +1802,7 @@ static int pppol2tp_get_addressing(struc
+ 
+ 	tunnel = session->tunnel;
+ 	if (!tunnel) {
+-		sock_put(sk);
++		l2tp_session_put(session);
+ 		return err;
+ 	}
+ 	isk = inet_sk(tunnel->sock);
+@@ -1817,7 +1817,7 @@ static int pppol2tp_get_addressing(struc
+ 	addr->local_addr.sin_addr.s_addr = isk->inet_saddr;
+ 	addr->remote_addr.sin_addr.s_addr = isk->inet_daddr;
+ 
+-	sock_put(sk);
++	l2tp_session_put(session);
+ 	return 0;
+ }
+ 
