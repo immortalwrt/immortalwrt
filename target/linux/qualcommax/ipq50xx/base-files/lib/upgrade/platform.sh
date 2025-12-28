@@ -68,6 +68,11 @@ platform_do_upgrade() {
 		remove_oem_ubi_volume squashfs
 		nand_do_upgrade "$1"
 		;;
+	linksys,mx6200)
+		linksys_bootconfig_pre_upgrade "$1"
+		remove_oem_ubi_volume ubi_rootfs
+		nand_do_upgrade "$1"
+		;;
 	xiaomi,ax6000)
 		# Make sure that UART is enabled
 		fw_setenv boot_wait on
@@ -93,21 +98,8 @@ platform_do_upgrade() {
 		remove_oem_ubi_volume wifi_fw
 		nand_do_upgrade "$1"
 		;;
-	jdcloud,re-cs-03)
-		CI_KERNPART="0:HLOS"
-		CI_ROOTPART="rootfs"
-		emmc_do_upgrade "$1"
-		;;
 	*)
 		default_do_upgrade "$1"
-		;;
-	esac
-}
-
-platform_copy_config() {
-	case "$(board_name)" in
-	jdcloud,re-cs-03)
-		emmc_copy_config
 		;;
 	esac
 }

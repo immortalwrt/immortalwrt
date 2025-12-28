@@ -31,9 +31,6 @@ yuncore,ax830|\
 yuncore,ax850)
 	ubootenv_add_mtd "0:APPSBLENV" "0x0" "0x10000" "0x10000"
 	;;
-jdcloud,re-cs-03)
-	ubootenv_add_mmc "0:APPSBLENV" "" "0x0" "0x40000" "0x20000"
-	;;
 esac
 
 config_load ubootenv

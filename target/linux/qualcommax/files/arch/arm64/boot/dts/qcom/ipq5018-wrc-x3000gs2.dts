@@ -4,8 +4,7 @@
 
 #include "ipq5018.dtsi"
 #include "ipq5018-ess.dtsi"
-#include "ipq5018-nss.dtsi"
-#include "ipq5018-common.dtsi"
+#include "ipq5018-qcn6122.dtsi"
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
@@ -25,12 +24,14 @@
 	};
 
 	chosen {
+		bootargs-append = " root=/dev/ubiblock0_1 coherent_pool=2M";
 		stdout-path = "serial0:115200n8";
-		bootargs-append = " root=/dev/ubiblock0_1";
 	};
 
 	keys {
 		compatible = "gpio-keys";
+		pinctrl-0 = <&button_pins>;
+		pinctrl-names = "default";
 
 		switch-router {
 			label = "router";
@@ -54,6 +55,8 @@
 
 	leds {
 		compatible = "gpio-leds";
+		pinctrl-0 = <&led_pins>;
+		pinctrl-names = "default";
 
 		led-0 {
 			gpios = <&tlmm 12 GPIO_ACTIVE_HIGH>;
@@ -61,13 +64,13 @@
 			function = LED_FUNCTION_WPS;
 		};
 
-		led_power_green: power-green {
+		led_power_green: led-1 {
 			gpios = <&tlmm 13 GPIO_ACTIVE_HIGH>;
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_POWER;
 		};
 
-		led_power_red: power-red {
+		led_power_red: led-2 {
 			gpios = <&tlmm 16 GPIO_ACTIVE_HIGH>;
 			color = <LED_COLOR_ID_RED>;
 			function = LED_FUNCTION_POWER;
@@ -107,41 +110,72 @@
 	};
 };
 
-&qpic_nand {
+&sleep_clk {
+	clock-frequency = <32000>;
+};
+
+&xo_board_clk {
+	clock-div = <4>;
+	clock-mult = <1>;
+};
+
+&blsp1_uart1 {
 	status = "okay";
 
+	pinctrl-0 = <&serial_0_pins>;
+	pinctrl-names = "default";
+};
+
+&crypto {
+	status = "okay";
+};
+
+&cryptobam {
+	status = "okay";
+};
+
+&prng {
+	status = "okay";
+};
+
+&qfprom {
+	status = "okay";
+};
+
+&qpic_bam {
+	status = "okay";
+};
+
+&qpic_nand {
 	pinctrl-0 = <&qpic_pins>;
 	pinctrl-names = "default";
+	status = "okay";
 
-	nand@0 {
+	flash@0 {
 		compatible = "spi-nand";
 		reg = <0>;
-
 		nand-ecc-engine = <&qpic_nand>;
+
+		/* strength=8 breaks NAND I/O, use 4 instead */
 		nand-ecc-strength = <4>;
 		nand-ecc-step-size = <512>;
 		nand-bus-width = <8>;
 
 		partitions {
 			compatible = "qcom,smem-part";
-			#address-cells = <1>;
-			#size-cells = <1>;
 
 			partition-0-appsblenv {
 				compatible = "fixed-partitions";
+				label = "0:appsblenv";
 				#address-cells = <1>;
 				#size-cells = <1>;
 
-				label = "0:appsblenv";
-
 				partition@0 {
 					label = "env-data";
-					reg = <0x00000000 0x00040000>;
+					reg = <0x0 0x40000>;
 
 					nvmem-layout {
 						compatible = "u-boot,env";
-						#address-cells = <1>;
-						#size-cells = <1>;
 
 						macaddr_appsblenv_ethaddr: ethaddr {
 							compatible = "mac-base";
@@ -154,11 +188,31 @@
 	};
 };
 
+&switch {
+	status = "okay";
+
+	switch_mac_mode = <MAC_MODE_SGMII_CHANNEL0>;
+
+	qcom,port_phyinfo {
+		port@0 {
+			port_id = <1>;
+			mdiobus = <&mdio0>;
+			phy_address = <7>;
+		};
+
+		port@1 {
+			port_id = <2>;
+			forced-speed = <1000>;
+			forced-duplex = <1>;
+		};
+	};
+};
+
 &dp1 {
 	status = "okay";
 
 	label = "wan";
-	nvmem-cells = <&macaddr_appsblenv_ethaddr 2>;
+	nvmem-cells = <&macaddr_appsblenv_ethaddr 3>;
 	nvmem-cell-names = "mac-address";
 };
 
@@ -172,6 +226,10 @@
 		speed = <1000>;
 		full-duplex;
 	};
+};
+
+&mdio0 {
+	status = "okay";
 };
 
 &mdio1 {
@@ -197,11 +255,11 @@
 		reg = <3>;
 	};
 
-	qca8337: ethernet-switch@18 {
+	ethernet-switch@18 {
 		compatible = "qca,qca8337";
+		reg = <0x18>;
 		#address-cells = <1>;
 		#size-cells = <0>;
-		reg = <18>;
 
 		ports {
 			#address-cells = <1>;
@@ -247,7 +305,76 @@
 };
 
 &tlmm {
-	switch_reset_pins: switch-reset-pins {
+	button_pins: button-state {
+		button-pins {
+			pins = "gpio22", "gpio38";
+			function = "gpio";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
+
+		switch-pins {
+			pins = "gpio14";
+			function = "gpio";
+			drive-strength = <8>;
+			bias-pull-down;
+		};
+	};
+
+	led_pins: led-state {
+		pins = "gpio12", "gpio13", "gpio16", "gpio24",
+		       "gpio25", "gpio26", "gpio28", "gpio46";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-pull-down;
+	};
+
+	mdio1_pins: mdio-state {
+		mdc-pins {
+			pins = "gpio36";
+			function = "mdc";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
+
+		mdio-pins {
+			pins = "gpio37";
+			function = "mdio";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
+	};
+
+	qpic_pins: qpic-state {
+		clock-pins {
+			pins = "gpio9";
+			function = "qspi_clk";
+			drive-strength = <8>;
+			bias-disable;
+		};
+
+		cs-pins {
+			pins = "gpio8";
+			function = "qspi_cs";
+			drive-strength = <8>;
+			bias-disable;
+		};
+
+		data-pins {
+			pins = "gpio4", "gpio5", "gpio6", "gpio7";
+			function = "qspi_data";
+			drive-strength = <8>;
+			bias-disable;
+		};
+	};
+
+	serial_0_pins: uart0-state {
+		pins = "gpio20", "gpio21";
+		function = "blsp0_uart0";
+		bias-disable;
+	};
+
+	switch_reset_pins: switch-reset-state {
 		pins = "gpio39";
 		function = "gpio";
 		drive-strength = <8>;
@@ -255,22 +382,38 @@
 	};
 };
 
+/*
+ * ath11k Wi-Fi consumes too large memory spaces and too few spaces are
+ * available for users. To prevent OOM when using LuCI or other softwares,
+ * disable Wi-Fi related peripherals at the moment.
+ */
 &q6v5_wcss {
-	boot-args = <0x02 0x04 0x02 0x12 0x00 0x00>;
+	status = "disabled";
+
+	boot-args = <0x2 4 2 18 0 0>; /* pcie:1, len:4, updid:2, reset:gpio18 */
 };
 
 &wifi {
-	status = "okay";
+	status = "disabled";
 
 	qcom,rproc = <&q6_wcss_pd1>;
 	qcom,userpd-subsys-name = "q6v5_wcss_userpd1";
 	qcom,ath11k-calibration-variant = "ELECOM-WRC-X3000GS2";
+	qcom,ath11k-fw-memory-mode = <2>;
+	qcom,bdf-addr = <0x4c400000>;
+
+	ieee80211-freq-limit = <2400000 2483000>;
 };
 
 &wifi1 {
-	status = "okay";
+	status = "disabled";
 
 	qcom,rproc = <&q6_wcss_pd2>;
 	qcom,userpd-subsys-name = "q6v5_wcss_userpd2";
 	qcom,ath11k-calibration-variant = "ELECOM-WRC-X3000GS2";
+	qcom,ath11k-fw-memory-mode = <2>;
+	qcom,bdf-addr = <0x4d100000>;
+	qcom,m3-dump-addr = <0x4df00000>;
+
+	ieee80211-freq-limit = <5150000 5730000>;
 };
