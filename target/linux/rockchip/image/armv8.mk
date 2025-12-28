@@ -11,7 +11,6 @@ define Device/IfnameMigration
 endef
 
 define Device/9tripod_x3568-v4
-  $(Device/rk3568)
   DEVICE_VENDOR := 9Tripod
   DEVICE_MODEL := X3568
   DEVICE_VARIANT := v4
