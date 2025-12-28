@@ -436,6 +436,7 @@ struct p_hdr;
 struct dsa_tag;
 
 struct rtl838x_eth_reg {
+	int family_id;
 	irqreturn_t (*net_irq)(int irq, void *dev_id);
 	int (*mac_port_ctrl)(int port);
 	int dma_if_intr_sts;
@@ -467,8 +468,5 @@ struct rtl838x_eth_reg {
 	void (*create_tx_header)(struct p_hdr *h, unsigned int dest_port, int prio);
 	bool (*decode_tag)(struct p_hdr *h, struct dsa_tag *tag);
 };
-
-/* TODO actually from arch/mips/rtl838x/prom.c */
-extern struct rtl83xx_soc_info soc_info;
 
 #endif /* _RTL838X_ETH_H */

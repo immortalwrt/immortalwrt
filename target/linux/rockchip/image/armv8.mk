@@ -94,7 +94,7 @@ define Device/ariaboard_photonicat2
   $(Device/rk3576)
   DEVICE_VENDOR := Ariaboard
   DEVICE_MODEL := Photonicat2
-  DEVICE_PACKAGES := kmod-aic8800-usb wpad-openssl kmod-usb-net-cdc-mbim \
+  DEVICE_PACKAGES := kmod-photonicat-pm kmod-aic8800-usb wpad-openssl kmod-usb-net-cdc-mbim \
 	kmod-usb-net-qmi-wwan kmod-usb-serial-option uqmi
 endef
 TARGET_DEVICES += ariaboard_photonicat2
