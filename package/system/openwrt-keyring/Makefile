@@ -40,7 +40,7 @@ else
 define Package/openwrt-keyring/install
 	$(INSTALL_DIR) $(1)/etc/opkg/keys/
 	# Public usign key for 25.12 release builds
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/usign/467a35c14d7fbc5c$(1)/etc/opkg/keys/
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/usign/467a35c14d7fbc5c $(1)/etc/opkg/keys/
 endef
 endif
 
