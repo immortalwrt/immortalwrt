@@ -1,37 +1,48 @@
-From 152b46f9ad81fe60f2845c87b0298db84bbecdc9 Mon Sep 17 00:00:00 2001
+From f6469f024d69c9199aed3ecf167144b0fd748c96 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
 Date: Tue, 25 Jul 2023 18:35:56 +0200
-Subject: [PATCH] [BROKEN] arm64: dts: rockchip: rk3588-rock5b: add USB-C
- support
+Subject: [PATCH] arm64: dts: rockchip: rk3588-rock5b: add USB-C support
 
-Add support for using the Radxa Rock 5 Model B USB-C port for USB in
-OHCI, EHCI or XHCI mode. Displayport AltMode is not yet supported.
+Add hardware description for the USB-C port in the Radxa Rock 5 Model B.
+This describes the OHCI, EHCI and XHCI USB parts, but not yet the
+DisplayPort AltMode (bindings are not yet upstream).
 
-Note: Enabling support for the USB-C port results in a board reset
-when the system is supplied with a PD capable power-supply. Until
-this has been analyzed and fixed, let's disable support for the
-Type-C port.
+For now the fusb302 node is marked with status "fail", since the board
+is usually powered through the USB-C port. Handling of errors can result
+in hard resets, which removed the bus power for some time resulting in
+a board reset.
+
+The main problem right now is that devices are supposed to interact with
+the power-supply within 5 seconds after the plug event according to the
+USB PD specification. This is more or less impossible to achieve when
+the kernel is the first software communicating with the power-supply.
+
+Currently the most likely workaround will be USB-PD handling added to
+U-Boot. In that case U-Boot can update the status to "okay". That way
+booting a kernel with the updated DT on an old U-Boot avoids a reset
+loop.
 
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 ---
- .../boot/dts/rockchip/rk3588-rock-5b.dts      | 119 ++++++++++++++++++
- 1 file changed, 119 insertions(+)
+ .../boot/dts/rockchip/rk3588-rock-5b.dts      | 121 ++++++++++++++++++
+ 1 file changed, 121 insertions(+)
 
---- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
-@@ -4,6 +4,7 @@
+--- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dtsi
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
  
- #include <dt-bindings/gpio/gpio.h>
- #include <dt-bindings/leds/common.h>
+ /dts-v1/;
 +#include <dt-bindings/usb/pd.h>
- #include "rk3588.dtsi"
  
- / {
-@@ -69,6 +70,15 @@
+ #include "rk3588-rock-5b-5bp-5t.dtsi"
+ 
+@@ -41,6 +42,15 @@
+ 		radio-type = "wlan";
  		shutdown-gpios = <&gpio4 RK_PA2 GPIO_ACTIVE_HIGH>;
  	};
- 
-+	vcc12v_dcin: vcc12v-dcin-regulator {
++
++	vcc12v_dcin: regulator-vcc12v-dcin {
 +		compatible = "regulator-fixed";
 +		regulator-name = "vcc12v_dcin";
 +		regulator-always-on;
@@ -39,20 +50,11 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		regulator-min-microvolt = <12000000>;
 +		regulator-max-microvolt = <12000000>;
 +	};
-+
- 	vcc3v3_pcie2x1l0: vcc3v3-pcie2x1l0-regulator {
- 		compatible = "regulator-fixed";
- 		enable-active-high;
-@@ -127,6 +137,7 @@
- 		regulator-boot-on;
- 		regulator-min-microvolt = <5000000>;
- 		regulator-max-microvolt = <5000000>;
-+		vin-supply = <&vcc12v_dcin>;
- 	};
+ };
  
- 	vcc_1v1_nldo_s3: vcc-1v1-nldo-s3-regulator {
-@@ -229,6 +240,61 @@
- 	};
+ &hdmi_receiver {
+@@ -48,6 +58,67 @@
+ 	status = "okay";
  };
  
 +&i2c4 {
@@ -68,7 +70,13 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&usbc0_int>;
 +		vbus-supply = <&vcc12v_dcin>;
-+		status = "disabled";
++		/*
++		 * When the board is starting to send power-delivery messages
++		 * too late (5 seconds according to the specification), the
++		 * power-supply reacts with a hard-reset. That removes the
++		 * power from VBUS for some time, which resets te whole board.
++		 */
++		status = "fail";
 +
 +		usb_con: connector {
 +			compatible = "usb-c-connector";
@@ -87,22 +95,22 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +
 +				port@0 {
 +					reg = <0>;
-+					usbc0_hs: endpoint {
-+						remote-endpoint = <&usb_host0_xhci_drd_sw>;
++					usbc0_role_sw: endpoint {
++						remote-endpoint = <&dwc3_0_role_switch>;
 +					};
 +				};
 +
 +				port@1 {
 +					reg = <1>;
-+					usbc0_ss: endpoint {
-+						remote-endpoint = <&usbdp_phy0_typec_ss>;
++					usbc0_orien_sw: endpoint {
++						remote-endpoint = <&usbdp_phy0_orientation_switch>;
 +					};
 +				};
 +
 +				port@2 {
 +					reg = <2>;
-+					usbc0_sbu: endpoint {
-+						remote-endpoint = <&usbdp_phy0_typec_sbu>;
++					dp_altmode_mux: endpoint {
++						remote-endpoint = <&usbdp_phy0_dp_altmode_mux>;
 +					};
 +				};
 +			};
@@ -110,24 +118,21 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	};
 +};
 +
- &i2c6 {
- 	status = "okay";
- 
-@@ -388,6 +454,10 @@
- 		vcc5v0_host_en: vcc5v0-host-en {
- 			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
+ &pinctrl {
+ 	hdmirx {
+ 		hdmirx_hpd: hdmirx-5v-detection {
+@@ -72,6 +143,57 @@
+ 			rockchip,pins = <1 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
  		};
+ 	};
 +
++	usb {
 +		usbc0_int: usbc0-int {
 +			rockchip,pins = <3 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>;
 +		};
- 	};
- };
- 
-@@ -799,6 +869,14 @@
- 	status = "okay";
- };
- 
++	};
++};
++
 +&u2phy0 {
 +	status = "okay";
 +};
@@ -136,16 +141,9 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +	status = "okay";
 +};
 +
- &u2phy1 {
- 	status = "okay";
- };
-@@ -830,6 +908,29 @@
- 	status = "okay";
- };
- 
 +&usbdp_phy0 {
-+	orientation-switch;
 +	mode-switch;
++	orientation-switch;
 +	sbu1-dc-gpios = <&gpio4 RK_PA6 GPIO_ACTIVE_HIGH>;
 +	sbu2-dc-gpios = <&gpio4 RK_PA7 GPIO_ACTIVE_HIGH>;
 +	status = "okay";
@@ -154,25 +152,18 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		#address-cells = <1>;
 +		#size-cells = <0>;
 +
-+		usbdp_phy0_typec_ss: endpoint@0 {
++		usbdp_phy0_orientation_switch: endpoint@0 {
 +			reg = <0>;
-+			remote-endpoint = <&usbc0_ss>;
++			remote-endpoint = <&usbc0_orien_sw>;
 +		};
 +
-+		usbdp_phy0_typec_sbu: endpoint@1 {
++		usbdp_phy0_dp_altmode_mux: endpoint@1 {
 +			reg = <1>;
-+			remote-endpoint = <&usbc0_sbu>;
++			remote-endpoint = <&dp_altmode_mux>;
 +		};
 +	};
 +};
 +
- &usb_host0_ehci {
- 	status = "okay";
- };
-@@ -838,6 +939,20 @@
- 	status = "okay";
- };
- 
 +&usb_host0_xhci {
 +	usb-role-switch;
 +	status = "okay";
@@ -181,12 +172,18 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 +		#address-cells = <1>;
 +		#size-cells = <0>;
 +
-+		usb_host0_xhci_drd_sw: endpoint {
-+			remote-endpoint = <&usbc0_hs>;
++		dwc3_0_role_switch: endpoint {
++			remote-endpoint = <&usbc0_role_sw>;
 +		};
 +	};
-+};
-+
- &usb_host1_ehci {
+ };
+ 
+ &usb_host2_xhci {
+@@ -84,3 +206,7 @@
+ 	pinctrl-0 = <&pcie2_0_vcc3v3_en>;
  	status = "okay";
  };
++
++&vcc5v0_sys {
++	vin-supply = <&vcc12v_dcin>;
++};
