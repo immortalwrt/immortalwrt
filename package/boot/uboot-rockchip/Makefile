@@ -94,18 +94,18 @@ define U-Boot/roc-cc-rk3328
     firefly_roc-rk3328-cc
 endef
 
-define U-Boot/rock-pi-e-rk3328
-  $(U-Boot/rk3328/Default)
-  NAME:=ROCK Pi E
-  BUILD_DEVICES:= \
-    radxa_rock-pi-e
-endef
-
 define U-Boot/rock64-rk3328
   $(U-Boot/rk3328/Default)
   NAME:=Rock64
   BUILD_DEVICES:= \
     pine64_rock64
+endef
+
+define U-Boot/rock-pi-e-rk3328
+  $(U-Boot/rk3328/Default)
+  NAME:=ROCK Pi E
+  BUILD_DEVICES:= \
+    radxa_rock-pi-e
 endef
 
 
@@ -353,7 +353,7 @@ define U-Boot/rk358x/Default
 endef
 
 define U-Boot/cyber3588-aib-rk3588
-  $(U-Boot/rk3588/Default)
+  $(U-Boot/rk358x/Default)
   NAME:=Cyber3588 AIB
   BUILD_DEVICES:= \
     cyber_cyber3588-aib
@@ -368,8 +368,6 @@ define U-Boot/generic-rk3588
     radxa_rock-5t
 endef
 
-# RK3588 boards
-
 define U-Boot/nanopc-t6-rk3588
   $(U-Boot/rk358x/Default)
   NAME:=NanoPC T6
@@ -378,7 +376,7 @@ define U-Boot/nanopc-t6-rk3588
 endef
 
 define U-Boot/orangepi-5-plus-rk3588
-  $(U-Boot/rk3588/Default)
+  $(U-Boot/rk358x/Default)
   NAME:=OrangePi 5 Plus
   BUILD_DEVICES:= \
     xunlong_orangepi-5-plus
@@ -423,7 +421,7 @@ define U-Boot/nanopi-r6s-rk3588s
 endef
 
 define U-Boot/orangepi-5-rk3588s
-  $(U-Boot/rk3588/Default)
+  $(U-Boot/rk358x/Default)
   NAME:=OrangePi 5
   BUILD_DEVICES:= \
     xunlong_orangepi-5
@@ -459,8 +457,8 @@ UBOOT_TARGETS := \
   orangepi-r1-plus-rk3328 \
   orangepi-r1-plus-lts-rk3328 \
   roc-cc-rk3328 \
-  rock-pi-e-rk3328 \
   rock64-rk3328 \
+  rock-pi-e-rk3328 \
   nanopi-r3s-rk3566 \
   radxa-cm3-io-rk3566 \
   radxa-zero-3-rk3566 \
