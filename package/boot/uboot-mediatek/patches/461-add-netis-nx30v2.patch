@@ -332,10 +332,10 @@
 +return_bootmenu=askenv - Press ENTER to return to menu ; bootmenu 60
 +
 +#file name defines
-+bootfile_bl2=openwrt-mediatek-filogic-netis_nx30v2-spim-nand-preloader.bin
-+bootfile_fip=openwrt-mediatek-filogic-netis_nx30v2-spim-nand-bl31-uboot.fip
-+bootfile_rec=openwrt-mediatek-filogic-netis_nx30v2-initramfs.itb
-+bootfile_fw=openwrt-mediatek-filogic-netis_nx30v2-squashfs-sysupgrade.itb
++bootfile_bl2=immortalwrt-mediatek-filogic-netis_nx30v2-spim-nand-preloader.bin
++bootfile_fip=immortalwrt-mediatek-filogic-netis_nx30v2-spim-nand-bl31-uboot.fip
++bootfile_rec=immortalwrt-mediatek-filogic-netis_nx30v2-initramfs.itb
++bootfile_fw=immortalwrt-mediatek-filogic-netis_nx30v2-squashfs-sysupgrade.itb
 +
 +#boot commands
 +bootconf=config-1
