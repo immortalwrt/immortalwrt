@@ -25,7 +25,7 @@
  {
  	struct net *net = dev_net(vxlan->dev);
  	struct sk_buff *skb;
-+   struct vxlan_fdb_event vfe;
++	struct vxlan_fdb_event vfe;
  	int err = -ENOBUFS;
  
  	skb = nlmsg_new(vxlan_nlmsg_size(), GFP_ATOMIC);
