@@ -944,7 +944,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  
  		io-led {
  			color = <LED_COLOR_ID_BLUE>;
-@@ -365,8 +375,9 @@
+@@ -366,8 +376,9 @@
  
  &pinctrl {
  	leds {
