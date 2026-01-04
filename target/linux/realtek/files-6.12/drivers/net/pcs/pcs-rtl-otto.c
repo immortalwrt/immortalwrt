@@ -12,6 +12,7 @@
 
 #define RTPCS_SDS_CNT				14
 #define RTPCS_PORT_CNT				57
+#define RTPCS_MAX_LINKS_PER_SDS			8
 
 #define RTPCS_SPEED_10				0
 #define RTPCS_SPEED_100				1
@@ -110,6 +111,7 @@ enum rtpcs_sds_mode {
 	RTPCS_SDS_MODE_OFF = 0,
 
 	/* fiber modes */
+	RTPCS_SDS_MODE_100BASEX,
 	RTPCS_SDS_MODE_1000BASEX,
 	RTPCS_SDS_MODE_2500BASEX,
 	RTPCS_SDS_MODE_10GBASER,
@@ -133,8 +135,9 @@ struct rtpcs_ctrl;
 
 struct rtpcs_serdes {
 	struct rtpcs_ctrl *ctrl;
-	u8 id;
 	enum rtpcs_sds_mode hw_mode;
+	u8 id;
+	u8 num_of_links;
 
 	bool rx_pol_inv;
 	bool tx_pol_inv;
@@ -282,9 +285,20 @@ static int rtpcs_sds_determine_hw_mode(struct rtpcs_serdes *sds,
                                        phy_interface_t if_mode,
                                        enum rtpcs_sds_mode *hw_mode)
 {
+	u8 n_links = sds->num_of_links;
+
+	/* turn off SerDes when there are no links */
+	if (!n_links) {
+		*hw_mode = RTPCS_SDS_MODE_OFF;
+		return 0;
+	}
+
 	switch (if_mode) {
 	case PHY_INTERFACE_MODE_NA:
 		*hw_mode = RTPCS_SDS_MODE_OFF;
+		break;
+	case PHY_INTERFACE_MODE_100BASEX:
+		*hw_mode = RTPCS_SDS_MODE_100BASEX;
 		break;
 	case PHY_INTERFACE_MODE_1000BASEX:
 		*hw_mode = RTPCS_SDS_MODE_1000BASEX;
@@ -302,8 +316,18 @@ static int rtpcs_sds_determine_hw_mode(struct rtpcs_serdes *sds,
 		*hw_mode = RTPCS_SDS_MODE_QSGMII;
 		break;
 	case PHY_INTERFACE_MODE_USXGMII:
-		/* TODO: set this depending on number of links on SerDes */
-		*hw_mode = RTPCS_SDS_MODE_USXGMII_10GSXGMII;
+		if (n_links == 1)
+			*hw_mode = RTPCS_SDS_MODE_USXGMII_10GSXGMII;
+		else if (n_links == 2)
+			*hw_mode = RTPCS_SDS_MODE_USXGMII_10GDXGMII;
+		else if (n_links <= 4)
+			*hw_mode = RTPCS_SDS_MODE_USXGMII_10GQXGMII;
+		else if (n_links <= 8)
+			*hw_mode = RTPCS_SDS_MODE_XSGMII;
+
+		break;
+	case PHY_INTERFACE_MODE_10G_QXGMII:
+		*hw_mode = RTPCS_SDS_MODE_USXGMII_10GQXGMII;
 		break;
 	default:
 		return -ENOTSUPP;
@@ -2882,6 +2906,13 @@ static int rtpcs_931x_setup_serdes(struct rtpcs_serdes *sds,
 	u32 sds_id = sds->id;
 	int ret, chiptype = 0;
 
+	ret = rtpcs_sds_determine_hw_mode(sds, mode, &hw_mode);
+	if (ret < 0) {
+		dev_err(ctrl->dev, "SerDes %u doesn't support %s mode\n", sds_id,
+			phy_modes(mode));
+		return -ENOTSUPP;
+	}
+
 	/*
 	 * TODO: USXGMII is currently the swiss army knife to declare 10G
 	 * multi port PHYs. Real devices use other modes instead. Especially
@@ -2889,9 +2920,12 @@ static int rtpcs_931x_setup_serdes(struct rtpcs_serdes *sds,
 	 * - RTL8224 is driven in 10G_QXGMII
 	 * - RTL8218D/E are driven in (Realtek proprietary) XSGMII (10G SGMII)
 	 *
-	 * For now disable all USXGMII SerDes handling and rely on U-Boot setup.
+	 * For now, disable "USXGMII" modes we cannot configure properly. Only
+	 * USXGMII_10GSXGMII is configured properly for now.
 	 */
-	if (mode == PHY_INTERFACE_MODE_USXGMII)
+	if (hw_mode == RTPCS_SDS_MODE_USXGMII_10GDXGMII ||
+	    hw_mode == RTPCS_SDS_MODE_USXGMII_10GQXGMII ||
+	    hw_mode == RTPCS_SDS_MODE_XSGMII)
 		return 0;
 
 	pr_info("%s: set sds %d to mode %d\n", __func__, sds_id, mode);
@@ -2924,13 +2958,6 @@ static int rtpcs_931x_setup_serdes(struct rtpcs_serdes *sds,
 
 	/* this was in rtl931x_phylink_mac_config in dsa/rtl83xx/dsa.c before */
 	band = rtpcs_931x_sds_cmu_band_get(sds, mode);
-
-	ret = rtpcs_sds_determine_hw_mode(sds, mode, &hw_mode);
-	if (ret < 0) {
-		dev_err(ctrl->dev, "SerDes %u doesn't support %s mode\n", sds_id,
-			phy_modes(mode));
-		return -ENOTSUPP;
-	}
 
 	ret = rtpcs_931x_sds_config_hw_mode(sds, hw_mode, chiptype);
 	if (ret < 0)
@@ -3083,6 +3110,7 @@ struct phylink_pcs *rtpcs_create(struct device *dev, struct device_node *np, int
 {
 	struct platform_device *pdev;
 	struct device_node *pcs_np;
+	struct rtpcs_serdes *sds;
 	struct rtpcs_ctrl *ctrl;
 	struct rtpcs_link *link;
 	u32 sds_id;
@@ -3117,8 +3145,12 @@ struct phylink_pcs *rtpcs_create(struct device *dev, struct device_node *np, int
 		return ERR_PTR(-EINVAL);
 	if (sds_id >= ctrl->cfg->serdes_count)
 		return ERR_PTR(-EINVAL);
-	if (rtpcs_sds_read(&ctrl->serdes[sds_id], 0, 0) < 0)
+
+	sds = &ctrl->serdes[sds_id];
+	if (rtpcs_sds_read(sds, 0, 0) < 0)
 		return ERR_PTR(-EINVAL);
+	if (sds->num_of_links >= RTPCS_MAX_LINKS_PER_SDS)
+		return ERR_PTR(-ERANGE);
 
 	link = kzalloc(sizeof(*link), GFP_KERNEL);
 	if (!link) {
@@ -3128,9 +3160,10 @@ struct phylink_pcs *rtpcs_create(struct device *dev, struct device_node *np, int
 
 	device_link_add(dev, ctrl->dev, DL_FLAG_AUTOREMOVE_CONSUMER);
 
+	sds->num_of_links++;
 	link->ctrl = ctrl;
 	link->port = port;
-	link->sds = &ctrl->serdes[sds_id];
+	link->sds = sds;
 	link->pcs.ops = ctrl->cfg->pcs_ops;
 	link->pcs.neg_mode = true;
 

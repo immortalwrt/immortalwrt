@@ -34,7 +34,7 @@ Signed-off-by: Mark Brown <broonie@kernel.org>
 
 --- a/drivers/regulator/core.c
 +++ b/drivers/regulator/core.c
-@@ -1959,8 +1959,8 @@ static struct regulator_dev *regulator_d
+@@ -1966,8 +1966,8 @@ static struct regulator_dev *regulator_d
  	regulator_supply_alias(&dev, &supply);
  
  	/* first do a dt based lookup */

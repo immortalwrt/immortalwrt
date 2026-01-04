@@ -886,7 +886,7 @@
 	bus-width = <8>;
 	cap-mmc-highspeed;
 	full-pwr-cycle-in-suspend;
-	max-frequency = <150000000>;
+	max-frequency = <100000000>;
 	mmc-hs400-1_8v;
 	mmc-hs400-enhanced-strobe;
 	no-sdio;

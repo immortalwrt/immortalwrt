@@ -21,7 +21,7 @@ define KernelPackage/r8168
   DEPENDS:=@PCI_SUPPORT +kmod-libphy
   FILES:=$(PKG_BUILD_DIR)/src/r8168.ko
   AUTOLOAD:=$(call AutoProbe,r8168,1)
-  PROVIDES:=kmod-r8169 kmod-r8168-rss
+  PROVIDES:=@kmod-r8169-any @kmod-r8168-rss
 endef
 
 define Build/Compile
