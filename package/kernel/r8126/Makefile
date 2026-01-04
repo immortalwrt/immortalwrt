@@ -21,7 +21,7 @@ define KernelPackage/r8126
   DEPENDS:=@PCI_SUPPORT +kmod-libphy
   FILES:=$(PKG_BUILD_DIR)/src/r8126.ko
   AUTOLOAD:=$(call AutoProbe,r8126,1)
-  PROVIDES:=kmod-r8169 kmod-r8126-rss
+  PROVIDES:=@kmod-r8169-any @kmod-r8126-rss
 endef
 
 define Build/Compile
