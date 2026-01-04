@@ -652,7 +652,7 @@ Signed-off-by: Manikanta Pubbisetty <mpubbise@codeaurora.org>
  #define ATH11K_TX_RING_MASK_0 BIT(0)
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
-@@ -277,6 +277,7 @@ struct ath11k_hw_ops {
+@@ -276,6 +276,7 @@ struct ath11k_hw_ops {
  	bool (*rx_desc_mac_addr2_valid)(struct hal_rx_desc *desc);
  	u8* (*rx_desc_mpdu_start_addr2)(struct hal_rx_desc *desc);
  	u32 (*get_ring_selector)(struct sk_buff *skb);

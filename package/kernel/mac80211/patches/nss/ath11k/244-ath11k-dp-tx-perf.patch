@@ -59,7 +59,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  		ath11k_dp_shadow_stop_timer(ab, &ab->dp.tx_ring_timer[i]);
  
  	ath11k_dp_shadow_stop_timer(ab, &ab->dp.reo_cmd_timer);
-@@ -430,7 +430,7 @@ static void ath11k_dp_srng_common_cleanu
+@@ -376,7 +376,7 @@ static void ath11k_dp_srng_common_cleanu
  	ath11k_dp_srng_cleanup(ab, &dp->wbm_desc_rel_ring);
  	ath11k_dp_srng_cleanup(ab, &dp->tcl_cmd_ring);
  	ath11k_dp_srng_cleanup(ab, &dp->tcl_status_ring);
@@ -68,7 +68,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  		ath11k_dp_srng_cleanup(ab, &dp->tx_ring[i].tcl_data_ring);
  		ath11k_dp_srng_cleanup(ab, &dp->tx_ring[i].tcl_comp_ring);
  	}
-@@ -466,6 +466,11 @@ static int ath11k_dp_srng_common_setup(s
+@@ -410,6 +410,11 @@ static int ath11k_dp_srng_common_setup(s
  		goto err;
  	}
  
@@ -80,7 +80,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  	ret = ath11k_dp_srng_setup(ab, &dp->tcl_status_ring, HAL_TCL_STATUS,
  				   0, 0, DP_TCL_STATUS_RING_SIZE);
  	if (ret) {
-@@ -473,7 +478,7 @@ static int ath11k_dp_srng_common_setup(s
+@@ -417,7 +422,7 @@ static int ath11k_dp_srng_common_setup(s
  		goto err;
  	}
  
@@ -89,7 +89,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  		tcl_num = ab->hw_params.hal_params->tcl2wbm_rbm_map[i].tcl_ring_num;
  		wbm_num = ab->hw_params.hal_params->tcl2wbm_rbm_map[i].wbm_ring_num;
  
-@@ -496,7 +501,7 @@ static int ath11k_dp_srng_common_setup(s
+@@ -440,7 +445,7 @@ static int ath11k_dp_srng_common_setup(s
  		}
  
  		srng = &ab->hal.srng_list[dp->tx_ring[i].tcl_data_ring.ring_id];
@@ -98,7 +98,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  
  		ath11k_dp_shadow_init_timer(ab, &dp->tx_ring_timer[i],
  					    ATH11K_SHADOW_DP_TIMER_INTERVAL,
-@@ -1110,7 +1115,7 @@ void ath11k_dp_free(struct ath11k_base *
+@@ -1054,7 +1059,7 @@ void ath11k_dp_free(struct ath11k_base *
  
  	ath11k_dp_reo_cmd_list_cleanup(ab);
  
@@ -107,7 +107,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  		spin_lock_bh(&dp->tx_ring[i].tx_idr_lock);
  		idr_for_each(&dp->tx_ring[i].txbuf_idr,
  			     ath11k_dp_tx_pending_cleanup, ab);
-@@ -1161,7 +1166,7 @@ int ath11k_dp_alloc(struct ath11k_base *
+@@ -1105,7 +1110,7 @@ int ath11k_dp_alloc(struct ath11k_base *
  
  	size = sizeof(struct hal_wbm_release_ring) * DP_TX_COMP_RING_SIZE;
  
@@ -503,7 +503,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
  		.hal_params = &ath11k_hw_hal_params_ipq8074,
  		.supports_dynamic_smps_6ghz = true,
  		.alloc_cacheable_memory = true,
-@@ -2680,6 +2683,9 @@ int ath11k_core_pre_init(struct ath11k_b
+@@ -2679,6 +2682,9 @@ int ath11k_core_pre_init(struct ath11k_b
  	if (nss_offload)
  		ab->nss.stats_enabled = 1;
  

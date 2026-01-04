@@ -46,7 +46,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  };
 --- a/drivers/net/wireless/ath/ath11k/dp.h
 +++ b/drivers/net/wireless/ath/ath11k/dp.h
-@@ -1112,13 +1112,16 @@ struct htt_t2h_peer_map_event {
+@@ -1106,13 +1106,16 @@ struct htt_t2h_peer_map_event {
  #define HTT_T2H_PEER_UNMAP_INFO_PEER_ID	HTT_T2H_PEER_MAP_INFO_PEER_ID
  #define HTT_T2H_PEER_UNMAP_INFO1_MAC_ADDR_H16 \
  					HTT_T2H_PEER_MAP_INFO1_MAC_ADDR_H16

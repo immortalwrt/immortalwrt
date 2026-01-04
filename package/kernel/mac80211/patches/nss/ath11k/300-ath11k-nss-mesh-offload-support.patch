@@ -1014,7 +1014,7 @@ Signed-off-by: Vasanthakumar Thiagarajan <vthiagar@codeaurora.org>
 +#endif
 --- a/drivers/net/wireless/ath/ath11k/dp.h
 +++ b/drivers/net/wireless/ath/ath11k/dp.h
-@@ -1437,15 +1437,29 @@ struct htt_ppdu_stats_user_common {
+@@ -1431,15 +1431,29 @@ struct htt_ppdu_stats_user_common {
  	u32 host_opaque_cookie;
  } __packed;
  

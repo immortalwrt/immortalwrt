@@ -1,6 +1,6 @@
 --- a/crypto/authenc.c
 +++ b/crypto/authenc.c
-@@ -408,6 +408,8 @@ static int crypto_authenc_create(struct
+@@ -433,6 +433,8 @@ static int crypto_authenc_create(struct
  		     enc->base.cra_driver_name) >= CRYPTO_MAX_ALG_NAME)
  		goto err_free_inst;
  

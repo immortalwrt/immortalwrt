@@ -38,7 +38,7 @@ Signed-off-by: Aditya Kumar Singh <quic_adisi@quicinc.com>
 
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -2359,6 +2359,11 @@ static int ath11k_core_reconfigure_on_cr
+@@ -2358,6 +2358,11 @@ static int ath11k_core_reconfigure_on_cr
  
  	clear_bit(ATH11K_FLAG_CRASH_FLUSH, &ab->dev_flags);
  

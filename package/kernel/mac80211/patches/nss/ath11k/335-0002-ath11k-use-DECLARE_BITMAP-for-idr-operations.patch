@@ -18,7 +18,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
 
 --- a/drivers/net/wireless/ath/ath11k/dp.c
 +++ b/drivers/net/wireless/ath/ath11k/dp.c
-@@ -433,6 +433,8 @@ static void ath11k_dp_srng_common_cleanu
+@@ -379,6 +379,8 @@ static void ath11k_dp_srng_common_cleanu
  	for (i = 0; i < DP_TCL_NUM_RING_MAX; i++) {
  		ath11k_dp_srng_cleanup(ab, &dp->tx_ring[i].tcl_data_ring);
  		ath11k_dp_srng_cleanup(ab, &dp->tx_ring[i].tcl_comp_ring);
@@ -27,7 +27,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
  	}
  	ath11k_dp_srng_cleanup(ab, &dp->reo_reinject_ring);
  	ath11k_dp_srng_cleanup(ab, &dp->rx_rel_ring);
-@@ -445,7 +447,7 @@ static int ath11k_dp_srng_common_setup(s
+@@ -391,7 +393,7 @@ static int ath11k_dp_srng_common_setup(s
  {
  	struct ath11k_dp *dp = &ab->dp;
  	struct hal_srng *srng;
@@ -35,8 +35,8 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
 +	int i, ret, j;
  	u8 tcl_num, wbm_num;
  
- 	ath11k_dp_init_reo_status_timer(ab);
-@@ -506,6 +508,18 @@ static int ath11k_dp_srng_common_setup(s
+ 	ret = ath11k_dp_srng_setup(ab, &dp->wbm_desc_rel_ring,
+@@ -450,6 +452,18 @@ static int ath11k_dp_srng_common_setup(s
  		ath11k_dp_shadow_init_timer(ab, &dp->tx_ring_timer[i],
  					    ATH11K_SHADOW_DP_TIMER_INTERVAL,
  					    dp->tx_ring[i].tcl_data_ring.ring_id);
@@ -55,7 +55,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
  	}
  
  	ret = ath11k_dp_srng_setup(ab, &dp->reo_reinject_ring, HAL_REO_REINJECT,
-@@ -1090,9 +1104,8 @@ void ath11k_dp_vdev_tx_attach(struct ath
+@@ -1034,9 +1048,8 @@ void ath11k_dp_vdev_tx_attach(struct ath
  	ath11k_dp_update_vdev_search(arvif);
  }
  
@@ -66,7 +66,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
  	struct sk_buff *msdu = skb;
  
  	dma_unmap_single(ab->dev, ATH11K_SKB_CB(msdu)->paddr, msdu->len,
-@@ -1106,21 +1119,28 @@ static int ath11k_dp_tx_pending_cleanup(
+@@ -1050,21 +1063,28 @@ static int ath11k_dp_tx_pending_cleanup(
  void ath11k_dp_free(struct ath11k_base *ab)
  {
  	struct ath11k_dp *dp = &ab->dp;
@@ -111,7 +111,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
  
  #define MAX_RXDMA_PER_PDEV     2
  
-@@ -82,6 +83,13 @@ struct dp_rxdma_ring {
+@@ -80,6 +81,13 @@ struct dp_rxdma_ring {
  
  #define ATH11K_TX_COMPL_NEXT(x)	(((x) + 1) % DP_TX_COMP_RING_SIZE)
  
@@ -125,7 +125,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
  struct dp_tx_ring {
  	u8 tcl_data_ring_id;
  	struct dp_srng tcl_data_ring;
-@@ -92,6 +100,8 @@ struct dp_tx_ring {
+@@ -90,6 +98,8 @@ struct dp_tx_ring {
  	struct hal_wbm_release_ring *tx_status;
  	int tx_status_head;
  	int tx_status_tail;
@@ -134,7 +134,7 @@ Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
  };
  
  enum dp_mon_status_buf_state {
-@@ -210,7 +220,6 @@ struct ath11k_pdev_dp {
+@@ -208,7 +218,6 @@ struct ath11k_pdev_dp {
  #define DP_TCL_DATA_RING_SIZE		512
  #define DP_TCL_DATA_RING_SIZE_WCN6750	2048
  #define DP_TX_COMP_RING_SIZE		ATH11K_DP_TX_COMP_RING_SIZE

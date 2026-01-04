@@ -40,7 +40,7 @@ Signed-off-by: Tamizh Chelvam <quic_tamizhr@quicinc.com>
  struct ath11k_band_cap {
 --- a/drivers/net/wireless/ath/ath11k/dp.c
 +++ b/drivers/net/wireless/ath/ath11k/dp.c
-@@ -955,7 +955,7 @@ int ath11k_dp_service_srng(struct ath11k
+@@ -899,7 +899,7 @@ int ath11k_dp_service_srng(struct ath11k
  
  				hal_params = ab->hw_params.hal_params;
  				ath11k_dp_rxbufs_replenish(ab, id, rx_ring, 0,

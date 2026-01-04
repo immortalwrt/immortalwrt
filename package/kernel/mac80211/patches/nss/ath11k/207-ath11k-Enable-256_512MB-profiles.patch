@@ -95,7 +95,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
 +	const struct ath11k_num_vdevs_peers *num_vdevs_peers;
  	bool support_dual_stations;
  	bool pdev_suspend;
- 	bool reo_status_poll;
+ };
 --- a/drivers/net/wireless/ath/ath11k/qmi.h
 +++ b/drivers/net/wireless/ath/ath11k/qmi.h
 @@ -30,6 +30,12 @@
@@ -159,7 +159,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  		u32 data_pos;
 --- a/drivers/net/wireless/ath/ath11k/dp.h
 +++ b/drivers/net/wireless/ath/ath11k/dp.h
-@@ -209,8 +209,9 @@ struct ath11k_pdev_dp {
+@@ -207,8 +207,9 @@ struct ath11k_pdev_dp {
  #define DP_WBM_RELEASE_RING_SIZE	64
  #define DP_TCL_DATA_RING_SIZE		512
  #define DP_TCL_DATA_RING_SIZE_WCN6750	2048
@@ -170,7 +170,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  #define DP_TCL_CMD_RING_SIZE		32
  #define DP_TCL_STATUS_RING_SIZE		32
  #define DP_REO_DST_RING_MAX		4
-@@ -223,9 +224,9 @@ struct ath11k_pdev_dp {
+@@ -221,9 +222,9 @@ struct ath11k_pdev_dp {
  #define DP_RXDMA_BUF_RING_SIZE		4096
  #define DP_RXDMA_REFILL_RING_SIZE	2048
  #define DP_RXDMA_ERR_DST_RING_SIZE	1024
@@ -313,8 +313,8 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
 +		.num_vdevs_peers = ath11k_vdevs_peers,
  		.support_dual_stations = false,
  		.pdev_suspend = false,
- 		.reo_status_poll = true,
-@@ -875,7 +881,7 @@ static struct ath11k_hw_params ath11k_hw
+ 	},
+@@ -874,7 +880,7 @@ static struct ath11k_hw_params ath11k_hw
  		.coldboot_cal_mm = false,
  		.coldboot_cal_ftm = false,
  		.cbcal_restart_fw = false,
@@ -323,7 +323,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  		.num_vdevs = 2 + 1,
  		.num_peers = 512,
  		.supports_suspend = true,
-@@ -911,6 +917,7 @@ static struct ath11k_hw_params ath11k_hw
+@@ -910,6 +916,7 @@ static struct ath11k_hw_params ath11k_hw
  		.tx_ring_size = DP_TCL_DATA_RING_SIZE,
  		.smp2p_wow_exit = false,
  		.support_fw_mac_sequence = true,
@@ -331,7 +331,7 @@ Signed-off-by: Ramya Gnanasekar <rgnanase@codeaurora.org>
  		.support_dual_stations = true,
  		.pdev_suspend = false,
  	},
-@@ -2697,6 +2704,21 @@ static int ath11k_core_pm_notify(struct
+@@ -2696,6 +2703,21 @@ static int ath11k_core_pm_notify(struct
  	return NOTIFY_OK;
  }
  
