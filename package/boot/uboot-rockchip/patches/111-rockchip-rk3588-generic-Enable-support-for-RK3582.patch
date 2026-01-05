@@ -51,7 +51,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  	aliases {
 --- a/configs/generic-rk3588_defconfig
 +++ b/configs/generic-rk3588_defconfig
-@@ -16,6 +16,7 @@ CONFIG_SPL_FIT_SIGNATURE=y
+@@ -17,6 +17,7 @@ CONFIG_SPL_FIT_SIGNATURE=y
  CONFIG_SPL_LOAD_FIT=y
  # CONFIG_BOOTMETH_VBE is not set
  CONFIG_LEGACY_IMAGE_FORMAT=y
