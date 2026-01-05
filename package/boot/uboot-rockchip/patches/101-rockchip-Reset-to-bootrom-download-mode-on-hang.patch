@@ -1,7 +1,11 @@
-From ca57b9120d82a8a55b7d29ae43c8189c1be69ad6 Mon Sep 17 00:00:00 2001
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH RFC] rockchip: Reset to bootrom download mode on hang
 From: Jonas Karlman <jonas@kwiboo.se>
-Date: Fri, 2 Feb 2024 00:12:18 +0000
-Subject: [PATCH 1/2] rockchip: Reset to bootrom download mode on hang
+Date: Fri, 02 Feb 2024 00:12:18 +0000
+Message-Id: <20240202001221.531207-1-jonas@kwiboo.se>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 
 Add support to reset to bootrom download mode on hang in U-Boot SPL and
 proper. ROCKCHIP_HANG_TO_BROM can be used to enable this feature.
@@ -38,12 +42,19 @@ however the RK3588 TF-A blobs does not seem to clear SOC_CON1.
 
 Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
 ---
+- Is reset to bootrom download mode on hang a feature of intereset to
+  anyone else?
+- How can we best handle the issue with BOOT_MODE_REG being reset?
+- Should we instead enable SYSRESET_PSCI and relay on TF-A to properly
+  reset without loosing value in BOOT_MODE_REG? Currently works on
+  RK356x bl31 blobs but not on the RK3588 bl31 blobs.
+---
  arch/arm/mach-rockchip/Kconfig     |  9 +++++++
- arch/arm/mach-rockchip/Makefile    |  7 +++---
+ arch/arm/mach-rockchip/Makefile    |  9 ++++---
  arch/arm/mach-rockchip/boot_mode.c | 38 ++++++++++++++++++++++++++----
  configs/generic-rk3568_defconfig   |  1 +
  configs/generic-rk3588_defconfig   |  1 +
- 5 files changed, 47 insertions(+), 9 deletions(-)
+ 5 files changed, 48 insertions(+), 10 deletions(-)
 
 --- a/arch/arm/mach-rockchip/Kconfig
 +++ b/arch/arm/mach-rockchip/Kconfig
