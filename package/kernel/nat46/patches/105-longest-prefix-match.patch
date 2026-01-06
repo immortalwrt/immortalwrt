@@ -613,7 +613,7 @@ Signed-off-by: Pavithra R <pavir@codeaurora.org>
    int debug;
  
    int npairs;
--  nat46_xlate_rulepair_t pairs[0]; /* npairs */
+-  nat46_xlate_rulepair_t pairs[]; /* npairs */
 +  nat46_xlate_rulepair_t pairs[NUM_RULE_PAIRS_MAX]; /* npairs */
 +  nat46_xlate_rulepair_t sorted_ipv4_local_pairs[NUM_RULE_PAIRS_MAX]; /* npairs */
 +  nat46_xlate_rulepair_t sorted_ipv4_remote_pairs[NUM_RULE_PAIRS_MAX]; /* npairs */

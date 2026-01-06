@@ -12,7 +12,7 @@ Date:   Thu Nov 16 15:30:04 2023 +0530
      return err;
    }
  
-+  tclass = ip_tos_ignore ? 0 : hdr4->tos; /* traffic class */
++  tclass = ip_tos_ignore ? 0 : ipv4_get_dsfield(hdr4); /* traffic class */
 +
    memset(v6saddr, 1, 16);
    memset(v6daddr, 2, 16);
@@ -21,7 +21,7 @@ Date:   Thu Nov 16 15:30:04 2023 +0530
    memset(hdr6, 0, sizeof(*hdr6) + (add_frag_header?8:0));
  
    /* build IPv6 header */
--  tclass = ip_tos_ignore ? 0 : hdr4->tos; /* traffic class */
+-  tclass = ip_tos_ignore ? 0 : ipv4_get_dsfield(hdr4); /* traffic class */
    *(__be32 *)hdr6 = htonl(0x60000000 | (tclass << 20)) | flowlabel; /* version, priority, flowlabel */
  
    /* IPv6 length is a payload length, IPv4 is hdr+payload */

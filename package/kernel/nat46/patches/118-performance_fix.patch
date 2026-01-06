@@ -66,18 +66,23 @@ Date: Fri Dec 17 13:37:15 2021 -0800
  /* Update ICMPv6 type/code with incremental checksum adjustment */
  static void update_icmp6_type_code(nat46_instance_t *nat46, struct icmp6hdr *icmp6h, u8 type, u8 code) {
    u16 old_tc = *((u16 *)icmp6h);
-@@ -1051,9 +1073,8 @@ static void *get_next_header_ptr6(void *
+@@ -1051,13 +1073,12 @@ static void *get_next_header_ptr6(void *
    return ret;
  }
  
 -static void fill_v4hdr_from_v6hdr(struct iphdr * iph, struct ipv6hdr *ip6h, __u32 v4saddr, __u32 v4daddr, __u16 id, __u16 frag_off, __u16 proto, int l3_payload_len) {
--  uint32_t ver_class_flow = ntohl(*(__be32 *)ip6h);
+-  int tos = ip_tos_ignore ? 0 : ipv6_get_dsfield(ip6h);
 -  iph->ttl = ip6h->hop_limit;
 +static void fill_v4hdr_from_v6hdr(struct iphdr * iph, uint32_t ver_class_flow, uint8_t hop_limit, __u32 v4saddr, __u32 v4daddr, __u16 id, __u16 frag_off, __u16 proto, int l3_payload_len) {
 +  iph->ttl = hop_limit;
    iph->saddr = v4saddr;
    iph->daddr = v4daddr;
    iph->protocol = proto;
+-  *((__be16 *)iph) = htons((4 << 12) | (5 << 8) | (tos & 0xff));
++  *((__be16 *)iph) = htons((4 << 12) | (5 << 8) | ((ver_class_flow >> 20) & 0xff));
+   iph->frag_off = frag_off;
+   iph->id = id;
+   iph->tot_len = htons( l3_payload_len + IPV4HDRSIZE );
 @@ -1206,6 +1227,8 @@ static void pairs_xlate_v6_to_v4_inner(n
   */
  static int xlate_payload6_to4(nat46_instance_t *nat46, void *pv6, void *ptrans_hdr, int v6_len, u16 *ul_sum, int *ptailTruncSize) {
@@ -231,7 +236,7 @@ Date: Fri Dec 17 13:37:15 2021 -0800
        udp->check = sum2;
  
        break;
-@@ -2361,7 +2386,6 @@ static uint16_t nat46_get_ce_port(nat46_
+@@ -2361,11 +2386,10 @@ static uint16_t nat46_get_ce_port(nat46_
  int nat46_ipv4_input(struct sk_buff *old_skb) {
    nat46_instance_t *nat46 = get_nat46_instance(old_skb);
    nat46_xlate_rulepair_t apair;
@@ -239,6 +244,11 @@ Date: Fri Dec 17 13:37:15 2021 -0800
    uint16_t sport = 0, dport = 0, ret = 0;
  
    int err = 0;
+-  int tclass = 0;
++  uint8_t tclass = 0;
+   int flowlabel = 0;
+   int check_for_l4 = 0;
+   int having_l4 = 0;
 @@ -2373,10 +2397,15 @@ int nat46_ipv4_input(struct sk_buff *old
  
    struct ipv6hdr * hdr6;
