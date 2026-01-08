@@ -42,5 +42,6 @@ define Device/netgear_dm200
   NETGEAR_BOARD_ID := DM200
   NETGEAR_HW_ID := 29765233+8+0+64+0+0
   DEVICE_PACKAGES := xrx200-rev1.1-phy22f-firmware xrx200-rev1.2-phy22f-firmware
+  DEFAULT := n
 endef
 TARGET_DEVICES += netgear_dm200
