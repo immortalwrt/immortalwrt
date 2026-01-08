@@ -84,7 +84,7 @@ define Device/asus_rt-ax89x
 		sysupgrade-tar kernel=$$$$@ | append-metadata
 ifeq ($(IB),)
 ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
-	ARTIFACTS := initramfs-factory.trx initramfs-uImage.itb
+	ARTIFACTS := initramfs-uImage.itb #initramfs-factory.trx
 	ARTIFACT/initramfs-uImage.itb := \
 		append-image-stage initramfs-kernel.bin | fit gzip $$(KDIR)/image-$$(DEVICE_DTS).dtb
 	ARTIFACT/initramfs-factory.trx := \
