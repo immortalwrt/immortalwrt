@@ -1,0 +1,67 @@
+--- /dev/null
++++ b/arch/arm/boot/dts/hisilicon/hi3798-s5.dtsi
+@@ -0,0 +1,64 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/*
++ * Copyright (c) 2023 David Yang
++ */
++
++#include "hi3798.dtsi"
++
++/ {
++	#address-cells = <1>;
++	#size-cells = <1>;
++
++	cpus {
++		#address-cells = <1>;
++		#size-cells = <0>;
++		enable-method = "hisilicon,hi3798-smp";
++
++		cpu0: cpu@0 {
++			compatible = "arm,cortex-a7";
++			device_type = "cpu";
++			reg = <0>;
++		};
++
++		cpu1: cpu@1 {
++			compatible = "arm,cortex-a7";
++			device_type = "cpu";
++			reg = <1>;
++		};
++
++		cpu2: cpu@2 {
++			compatible = "arm,cortex-a7";
++			device_type = "cpu";
++			reg = <2>;
++		};
++
++		cpu3: cpu@3 {
++			compatible = "arm,cortex-a7";
++			device_type = "cpu";
++			reg = <3>;
++		};
++	};
++
++	gic: interrupt-controller@f8a01000 {
++		compatible = "arm,cortex-a7-gic";
++		#interrupt-cells = <3>;
++		#address-cells = <0>;
++		interrupt-controller;
++		/* gic dist base, gic cpu base */
++		reg = <0xf8a01000 0x1000>, <0xf8a02000 0x100>;
++	};
++
++	pmu: pmu {
++		compatible = "arm,cortex-a7-pmu";
++		interrupts = <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
++			<GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>,
++			<GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>,
++			<GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>;
++		interrupt-parent = <&gic>;
++	};
++};
++
++&hash0 {
++	status = "okay";
++};
