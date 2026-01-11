@@ -1,0 +1,26 @@
+--- a/drivers/dma/Kconfig
++++ b/drivers/dma/Kconfig
+@@ -253,6 +253,14 @@ config HISI_DMA
+ 	help
+ 	  Support HiSilicon Kunpeng DMA engine.
+ 
++config HISTB_DMA
++	tristate "HiSilicon STB SoCs DMA Controller support"
++	depends on ARCH_HISI || COMPILE_TEST
++	select DMA_ENGINE
++	select DMA_VIRTUAL_CHANNELS
++	help
++	  Support HiSilicon STB SoCs DMA Controller.
++
+ config IMG_MDC_DMA
+ 	tristate "IMG MDC support"
+ 	depends on MIPS || COMPILE_TEST
+@@ -464,7 +472,7 @@ config MOXART_DMA
+ 	select DMA_VIRTUAL_CHANNELS
+ 	help
+ 	  Enable support for the MOXA ART SoC DMA controller.
+- 
++
+ 	  Say Y here if you enabled MMP ADMA, otherwise say N.
+ 
+ config MPC512X_DMA

@@ -1,0 +1,43 @@
+--- a/drivers/clk/hisilicon/clk-hisi-phase.c
++++ b/drivers/clk/hisilicon/clk-hisi-phase.c
+@@ -5,11 +5,11 @@
+  * Simple HiSilicon phase clock implementation.
+  */
+ 
++#include <linux/device.h>
+ #include <linux/err.h>
+ #include <linux/io.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+-#include <linux/slab.h>
+ 
+ #include "clk.h"
+ 
+@@ -90,12 +90,13 @@ static const struct clk_ops clk_phase_op
+ 	.set_phase = hisi_clk_set_phase,
+ };
+ 
+-struct clk *clk_register_hisi_phase(struct device *dev,
++struct clk_hw *devm_clk_hw_register_hisi_phase(struct device *dev,
+ 		const struct hisi_phase_clock *clks,
+ 		void __iomem *base, spinlock_t *lock)
+ {
+ 	struct clk_hisi_phase *phase;
+ 	struct clk_init_data init;
++	int ret;
+ 
+ 	phase = devm_kzalloc(dev, sizeof(struct clk_hisi_phase), GFP_KERNEL);
+ 	if (!phase)
+@@ -116,6 +117,10 @@ struct clk *clk_register_hisi_phase(stru
+ 	phase->phase_num = clks->phase_num;
+ 	phase->hw.init = &init;
+ 
+-	return devm_clk_register(dev, &phase->hw);
++	ret = devm_clk_hw_register(dev, &phase->hw);
++	if (ret)
++		return ERR_PTR(ret);
++
++	return &phase->hw;
+ }
+-EXPORT_SYMBOL_GPL(clk_register_hisi_phase);
++EXPORT_SYMBOL_GPL(devm_clk_hw_register_hisi_phase);
