@@ -1,0 +1,44 @@
+From: ZqinKing <zqinking23@gmail.com>
+Date: Sun, 12 Jan 2026 16:00:00 +0800
+Subject: [PATCH] libopkg: fix Provides field version parsing
+
+The parse_providelist function was not correctly handling version
+information in the Provides field. When a package declares
+"Provides: foo=1.0", opkg was creating an abstract package named
+"foo=1.0" instead of "foo", causing dependency resolution to fail.
+
+This patch strips the version suffix from Provides entries before
+creating the abstract package, ensuring that dependencies on
+virtual packages are correctly resolved.
+
+Signed-off-by: ZqinKing <zqinking23@gmail.com>
+---
+ libopkg/pkg_depends.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+--- a/libopkg/pkg_depends.c
++++ b/libopkg/pkg_depends.c
+@@ -624,6 +624,7 @@ abstract_pkg_t **init_providelist(pkg_t
+ void parse_providelist(pkg_t *pkg, char *list)
+ {
+ 	int count = 0;
++	char *version_sep;
+ 	char *item, *tok;
+ 	abstract_pkg_t *ab_pkg, *provided_abpkg, **tmp, **provides;
+ 
+@@ -640,6 +641,15 @@ void parse_providelist(pkg_t *pkg, char
+ 		if (!tmp)
+ 			break;
+ 
++		/* Strip version information from Provides entry.
++		 * Provides can be in format "pkgname" or "pkgname=version"
++		 * or "pkgname (= version)" or "pkgname (>= version)" etc.
++		 * We only care about the package name for virtual package resolution.
++		 */
++		version_sep = strpbrk(item, "=(<>");
++		if (version_sep)
++			*version_sep = '\0';
++
+ 		provided_abpkg = ensure_abstract_pkg_by_name(item);
+ 
+ 		if (provided_abpkg->state_flag & SF_NEED_DETAIL) {
