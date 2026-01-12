@@ -1,0 +1,16 @@
+baudrate=115200
+ethaddr=00:00:00:00:00:00
+ipaddr=192.168.1.10
+netmask=255.255.255.0
+gatewayip=192.168.1.1
+serverip=192.168.1.1
+bootcmd=mmc read 0 0x01000000 0x1000 0x8000;bootm 0x01000000
+bootargs_512M=mem=512M mmz=ddr,0,0,320M
+bootargs_768M=mem=768M mmz=ddr,0,0,400M
+bootargs_1G=mem=1G mmz=ddr,0,0,400M
+bootargs_2G=mem=2G mmz=ddr,0,0,600M
+bootargs=console=ttyAMA0,115200 root=/dev/mmcblk0p4 rootfstype=squashfs rootwait random.trust_cpu=on ip=dhcp blkdevparts=mmcblk0:1M(boot),1M(bootargs),16M(kernel),512M(rootfs),512M(rootfs_data),-(others)
+bootdelay=0
+stdin=serial
+stdout=serial
+stderr=serial

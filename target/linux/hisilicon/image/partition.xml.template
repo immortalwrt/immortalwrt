@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="GB2312" ?>
+<Partition_Info ProgrammerFile="">
+<Part Sel="0" PartitionName="fastboot" FlashType="emmc" FileSystem="none" Start="0" Length="1M" SelectFile="fastboot.bin"/>
+<Part Sel="1" PartitionName="bootargs" FlashType="emmc" FileSystem="none" Start="1M" Length="1M" SelectFile="@@BOOTARGS_FILE@@"/>
+<Part Sel="1" PartitionName="kernel" FlashType="emmc" FileSystem="none" Start="2M" Length="16M" SelectFile="@@KERNEL_FILE@@"/>
+<Part Sel="1" PartitionName="rootfs" FlashType="emmc" FileSystem="squashfs" Start="18M" Length="512M" SelectFile="@@ROOTFS_FILE@@"/>
+<Part Sel="1" PartitionName="rootfs_data" FlashType="emmc" FileSystem="f2fs" Start="530M" Length="512M" SelectFile=""/>
+</Partition_Info>
