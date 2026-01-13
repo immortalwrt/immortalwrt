@@ -86,7 +86,7 @@ lore.kernel.org/r/20260106185012.19551-3-krzysztof.kozlowski@oss.qualcomm.com
 
 --- a/arch/arm64/boot/dts/qcom/ipq5018.dtsi
 +++ b/arch/arm64/boot/dts/qcom/ipq5018.dtsi
-@@ -576,8 +576,12 @@
+@@ -586,8 +586,12 @@
  			compatible = "qcom,ipq5018-dwc3", "qcom,dwc3";
  			reg = <0x08af8800 0x400>;
  
