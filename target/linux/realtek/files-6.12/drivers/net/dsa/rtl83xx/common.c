@@ -255,7 +255,7 @@ static int rtldsa_bus_c45_write(struct mii_bus *bus, int addr, int devad, int re
 	return mdiobus_c45_write_nested(priv->parent_bus, addr, devad, regnum, val);
 }
 
-static int __init rtl83xx_mdio_probe(struct rtl838x_switch_priv *priv)
+static int rtl83xx_mdio_probe(struct rtl838x_switch_priv *priv)
 {
 	struct device_node *dn, *phy_node, *pcs_node, *led_node, *np, *mii_np;
 	struct device *dev = priv->dev;
@@ -405,7 +405,7 @@ static int __init rtl83xx_mdio_probe(struct rtl838x_switch_priv *priv)
 	return 0;
 }
 
-static int __init rtl83xx_get_l2aging(struct rtl838x_switch_priv *priv)
+static int rtl83xx_get_l2aging(struct rtl838x_switch_priv *priv)
 {
 	int t = sw_r32(priv->r->l2_ctrl_1);
 
@@ -1391,7 +1391,7 @@ static int rtldsa_ethernet_loaded(struct platform_device *pdev)
 	return ret;
 }
 
-static int __init rtl83xx_sw_probe(struct platform_device *pdev)
+static int rtl83xx_sw_probe(struct platform_device *pdev)
 {
 	struct rtl838x_switch_priv *priv;
 	struct device *dev = &pdev->dev;
@@ -1683,8 +1683,8 @@ static const struct of_device_id rtl83xx_switch_of_ids[] = {
 MODULE_DEVICE_TABLE(of, rtl83xx_switch_of_ids);
 
 static struct platform_driver rtl83xx_switch_driver = {
-	.probe = rtl83xx_sw_probe,
-	.remove_new = rtl83xx_sw_remove,
+	.probe  = rtl83xx_sw_probe,
+	.remove = rtl83xx_sw_remove,
 	.driver = {
 		.name = "rtl83xx-switch",
 		.pm = NULL,

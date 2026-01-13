@@ -1325,56 +1325,32 @@ static int rtl838x_set_mac_address(struct net_device *dev, void *p)
 	return 0;
 }
 
-static int rtl8390_init_mac(struct rtl838x_eth_priv *priv)
+static int rteth_838x_init_mac(struct rtl838x_eth_priv *priv)
 {
-	/* We will need to set-up EEE and the egress-rate limitation */
-	return 0;
-}
-
-static int rtl8380_init_mac(struct rtl838x_eth_priv *priv)
-{
-	if (priv->r->family_id == RTL8390_FAMILY_ID)
-		return rtl8390_init_mac(priv);
-
-	/* At present we do not know how to set up EEE on any other SoC than RTL8380 */
-	if (priv->r->family_id != RTL8380_FAMILY_ID)
-		return 0;
-
 	pr_info("%s\n", __func__);
 	/* fix timer for EEE */
 	sw_w32(0x5001411, RTL838X_EEE_TX_TIMER_GIGA_CTRL);
 	sw_w32(0x5001417, RTL838X_EEE_TX_TIMER_GELITE_CTRL);
 
 	/* Init VLAN. TODO: Understand what is being done, here */
-	if (priv->r->family_id == RTL8380_FAMILY_ID) {
-		for (int i = 0; i <= 28; i++)
-			sw_w32(0, 0xd57c + i * 0x80);
-	}
+	for (int i = 0; i <= 28; i++)
+		sw_w32(0, 0xd57c + i * 0x80);
 
 	return 0;
 }
 
-static int rteth_get_link_ksettings(struct net_device *ndev,
-				    struct ethtool_link_ksettings *cmd)
+static int rteth_839x_init_mac(struct rtl838x_eth_priv *priv)
 {
-	struct rtl838x_eth_priv *priv = netdev_priv(ndev);
-
-	pr_debug("%s called\n", __func__);
-
-	return phylink_ethtool_ksettings_get(priv->phylink, cmd);
+	/* We will need to set-up EEE and the egress-rate limitation */
+	return 0;
 }
 
-static int rteth_set_link_ksettings(struct net_device *ndev,
-				    const struct ethtool_link_ksettings *cmd)
+static int rteth_930x_init_mac(struct rtl838x_eth_priv *priv)
 {
-	struct rtl838x_eth_priv *priv = netdev_priv(ndev);
-
-	pr_debug("%s called\n", __func__);
-
-	return phylink_ethtool_ksettings_set(priv->phylink, cmd);
+	return 0;
 }
 
-static int rtl931x_chip_init(struct rtl838x_eth_priv *priv)
+static int rteth_931x_init_mac(struct rtl838x_eth_priv *priv)
 {
 	pr_info("In %s\n", __func__);
 
@@ -1405,6 +1381,26 @@ static int rtl931x_chip_init(struct rtl838x_eth_priv *priv)
 	sw_w32(0x1, RTL931X_MDX_CTRL_RSVD);
 
 	return 0;
+}
+
+static int rteth_get_link_ksettings(struct net_device *ndev,
+				    struct ethtool_link_ksettings *cmd)
+{
+	struct rtl838x_eth_priv *priv = netdev_priv(ndev);
+
+	pr_debug("%s called\n", __func__);
+
+	return phylink_ethtool_ksettings_get(priv->phylink, cmd);
+}
+
+static int rteth_set_link_ksettings(struct net_device *ndev,
+				    const struct ethtool_link_ksettings *cmd)
+{
+	struct rtl838x_eth_priv *priv = netdev_priv(ndev);
+
+	pr_debug("%s called\n", __func__);
+
+	return phylink_ethtool_ksettings_set(priv->phylink, cmd);
 }
 
 static netdev_features_t rtl838x_fix_features(struct net_device *dev,
@@ -1489,6 +1485,7 @@ static const struct rteth_config rteth_838x_cfg = {
 	.update_cntr = rtl838x_update_cntr,
 	.create_tx_header = rtl838x_create_tx_header,
 	.decode_tag = rtl838x_decode_tag,
+	.init_mac = &rteth_838x_init_mac,
 	.netdev_ops = &rteth_838x_netdev_ops,
 };
 
@@ -1531,6 +1528,7 @@ static const struct rteth_config rteth_839x_cfg = {
 	.update_cntr = rtl839x_update_cntr,
 	.create_tx_header = rtl839x_create_tx_header,
 	.decode_tag = rtl839x_decode_tag,
+	.init_mac = &rteth_839x_init_mac,
 	.netdev_ops = &rteth_839x_netdev_ops,
 };
 
@@ -1579,6 +1577,7 @@ static const struct rteth_config rteth_930x_cfg = {
 	.update_cntr = rtl930x_update_cntr,
 	.create_tx_header = rtl930x_create_tx_header,
 	.decode_tag = rtl930x_decode_tag,
+	.init_mac = &rteth_930x_init_mac,
 	.netdev_ops = &rteth_930x_netdev_ops,
 };
 
@@ -1626,6 +1625,7 @@ static const struct rteth_config rteth_931x_cfg = {
 	.update_cntr = rtl931x_update_cntr,
 	.create_tx_header = rtl931x_create_tx_header,
 	.decode_tag = rtl931x_decode_tag,
+	.init_mac = &rteth_931x_init_mac,
 	.netdev_ops = &rteth_931x_netdev_ops,
 };
 
@@ -1647,7 +1647,7 @@ static const struct ethtool_ops rteth_ethtool_ops = {
 	.set_link_ksettings = rteth_set_link_ksettings,
 };
 
-static int __init rtl838x_eth_probe(struct platform_device *pdev)
+static int rtl838x_eth_probe(struct platform_device *pdev)
 {
 	struct net_device *dev;
 	struct device_node *dn = pdev->dev.of_node;
@@ -1655,7 +1655,7 @@ static int __init rtl838x_eth_probe(struct platform_device *pdev)
 	const struct rteth_config *matchdata;
 	phy_interface_t phy_mode;
 	struct phylink *phylink;
-	u8 mac_addr[ETH_ALEN];
+	u8 mac_addr[ETH_ALEN] = {0};
 	int err = 0, rxrings, rxringlen;
 	struct ring_b *ring;
 
@@ -1704,9 +1704,6 @@ static int __init rtl838x_eth_probe(struct platform_device *pdev)
 	dev->hw_features = NETIF_F_RXCSUM;
 	dev->netdev_ops = priv->r->netdev_ops;
 
-	if (priv->r->family_id == RTL9310_FAMILY_ID)
-		rtl931x_chip_init(priv);
-
 	priv->rxringlen = rxringlen;
 	priv->rxrings = rxrings;
 
@@ -1723,7 +1720,7 @@ static int __init rtl838x_eth_probe(struct platform_device *pdev)
 		return err;
 	}
 
-	rtl8380_init_mac(priv);
+	priv->r->init_mac(priv);
 
 	/* Try to get mac address in the following order:
 	 * 1) from device tree data
@@ -1836,8 +1833,8 @@ static const struct of_device_id rtl838x_eth_of_ids[] = {
 MODULE_DEVICE_TABLE(of, rtl838x_eth_of_ids);
 
 static struct platform_driver rtl838x_eth_driver = {
-	.probe = rtl838x_eth_probe,
-	.remove_new = rtl838x_eth_remove,
+	.probe  = rtl838x_eth_probe,
+	.remove = rtl838x_eth_remove,
 	.driver = {
 		.name = "rtl838x-eth",
 		.pm = NULL,
