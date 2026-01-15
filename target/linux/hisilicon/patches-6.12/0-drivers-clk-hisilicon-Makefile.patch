@@ -1,0 +1,11 @@
+--- a/drivers/clk/hisilicon/Makefile
++++ b/drivers/clk/hisilicon/Makefile
+@@ -13,7 +13,7 @@ obj-$(CONFIG_COMMON_CLK_HI3519)	+= clk-h
+ obj-$(CONFIG_COMMON_CLK_HI3559A)	+= clk-hi3559a.o
+ obj-$(CONFIG_COMMON_CLK_HI3660) += clk-hi3660.o
+ obj-$(CONFIG_COMMON_CLK_HI3670) += clk-hi3670.o
+-obj-$(CONFIG_COMMON_CLK_HI3798CV200)	+= crg-hi3798cv200.o
++obj-$(CONFIG_COMMON_CLK_HI3798)	+= crg-hi3798.o
+ obj-$(CONFIG_COMMON_CLK_HI6220)	+= clk-hi6220.o
+ obj-$(CONFIG_RESET_HISI)	+= reset.o
+ obj-$(CONFIG_STUB_CLK_HI6220)	+= clk-hi6220-stub.o

@@ -1,0 +1,89 @@
+--- a/drivers/clk/hisilicon/clkdivider-hi6220.c
++++ b/drivers/clk/hisilicon/clkdivider-hi6220.c
+@@ -9,7 +9,7 @@
+ 
+ #include <linux/kernel.h>
+ #include <linux/clk-provider.h>
+-#include <linux/slab.h>
++#include <linux/device.h>
+ #include <linux/io.h>
+ #include <linux/err.h>
+ #include <linux/spinlock.h>
+@@ -55,13 +55,15 @@ static unsigned long hi6220_clkdiv_recal
+ 				   CLK_DIVIDER_ROUND_CLOSEST, dclk->width);
+ }
+ 
+-static long hi6220_clkdiv_round_rate(struct clk_hw *hw, unsigned long rate,
+-					unsigned long *prate)
++static int hi6220_clkdiv_determine_rate(struct clk_hw *hw,
++					struct clk_rate_request *req)
+ {
+ 	struct hi6220_clk_divider *dclk = to_hi6220_clk_divider(hw);
+ 
+-	return divider_round_rate(hw, rate, prate, dclk->table,
+-				  dclk->width, CLK_DIVIDER_ROUND_CLOSEST);
++	req->rate = divider_round_rate(hw, req->rate, &req->best_parent_rate, dclk->table,
++				       dclk->width, CLK_DIVIDER_ROUND_CLOSEST);
++
++	return 0;
+ }
+ 
+ static int hi6220_clkdiv_set_rate(struct clk_hw *hw, unsigned long rate,
+@@ -93,23 +95,23 @@ static int hi6220_clkdiv_set_rate(struct
+ 
+ static const struct clk_ops hi6220_clkdiv_ops = {
+ 	.recalc_rate = hi6220_clkdiv_recalc_rate,
+-	.round_rate = hi6220_clkdiv_round_rate,
++	.determine_rate = hi6220_clkdiv_determine_rate,
+ 	.set_rate = hi6220_clkdiv_set_rate,
+ };
+ 
+-struct clk *hi6220_register_clkdiv(struct device *dev, const char *name,
++struct clk_hw *devm_clk_hw_register_hi6220_divider(struct device *dev, const char *name,
+ 	const char *parent_name, unsigned long flags, void __iomem *reg,
+ 	u8 shift, u8 width, u32 mask_bit, spinlock_t *lock)
+ {
+ 	struct hi6220_clk_divider *div;
+-	struct clk *clk;
+ 	struct clk_init_data init;
+ 	struct clk_div_table *table;
+ 	u32 max_div, min_div;
+ 	int i;
++	int ret;
+ 
+ 	/* allocate the divider */
+-	div = kzalloc(sizeof(*div), GFP_KERNEL);
++	div = devm_kzalloc(dev, sizeof(*div), GFP_KERNEL);
+ 	if (!div)
+ 		return ERR_PTR(-ENOMEM);
+ 
+@@ -117,11 +119,9 @@ struct clk *hi6220_register_clkdiv(struc
+ 	max_div = div_mask(width) + 1;
+ 	min_div = 1;
+ 
+-	table = kcalloc(max_div + 1, sizeof(*table), GFP_KERNEL);
+-	if (!table) {
+-		kfree(div);
++	table = devm_kcalloc(dev, max_div + 1, sizeof(*table), GFP_KERNEL);
++	if (!table)
+ 		return ERR_PTR(-ENOMEM);
+-	}
+ 
+ 	for (i = 0; i < max_div; i++) {
+ 		table[i].div = min_div + i;
+@@ -144,11 +144,9 @@ struct clk *hi6220_register_clkdiv(struc
+ 	div->table = table;
+ 
+ 	/* register the clock */
+-	clk = clk_register(dev, &div->hw);
+-	if (IS_ERR(clk)) {
+-		kfree(table);
+-		kfree(div);
+-	}
++	ret = devm_clk_hw_register(dev, &div->hw);
++	if (ret)
++		return ERR_PTR(ret);
+ 
+-	return clk;
++	return &div->hw;
+ }

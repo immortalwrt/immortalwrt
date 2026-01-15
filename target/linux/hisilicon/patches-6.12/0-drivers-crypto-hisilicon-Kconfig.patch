@@ -1,0 +1,27 @@
+--- a/drivers/crypto/hisilicon/Kconfig
++++ b/drivers/crypto/hisilicon/Kconfig
+@@ -1,5 +1,16 @@
+ # SPDX-License-Identifier: GPL-2.0
+ 
++config CRYPTO_DEV_HISI_ADVCA
++	tristate "Support for Hisilicon ADVCA Subsystem"
++	depends on ARCH_HISI || COMPILE_TEST
++	select CRYPTO_SKCIPHER
++	select CRYPTO_HASH
++	select CRYPTO_SHA1
++	select CRYPTO_SHA256
++	help
++	  Support for Hisilicon ADVCA (Advanced Conditional Access) Subsystem,
++	  which can be found on HiSilicon STB SoCs, such as Hi37xx.
++
+ config CRYPTO_DEV_HISI_SEC
+ 	tristate "Support for Hisilicon SEC crypto block cipher accelerator"
+ 	select CRYPTO_SKCIPHER
+@@ -69,7 +80,6 @@ config CRYPTO_DEV_HISI_HPRE
+ 	select CRYPTO_DEV_HISI_QM
+ 	select CRYPTO_DH
+ 	select CRYPTO_RSA
+-	select CRYPTO_CURVE25519
+ 	select CRYPTO_ECDH
+ 	help
+ 	  Support for HiSilicon HPRE(High Performance RSA Engine)

@@ -1,0 +1,58 @@
+--- a/drivers/clk/hisilicon/clk-hi6220-stub.c
++++ b/drivers/clk/hisilicon/clk-hi6220-stub.c
+@@ -161,11 +161,11 @@ static int hi6220_stub_clk_set_rate(stru
+ 	return ret;
+ }
+ 
+-static long hi6220_stub_clk_round_rate(struct clk_hw *hw, unsigned long rate,
+-		unsigned long *parent_rate)
++static int hi6220_stub_clk_determine_rate(struct clk_hw *hw,
++					  struct clk_rate_request *req)
+ {
+ 	struct hi6220_stub_clk *stub_clk = to_stub_clk(hw);
+-	unsigned long new_rate = rate / 1000;  /* kHz */
++	unsigned long new_rate = req->rate / 1000;  /* kHz */
+ 
+ 	switch (stub_clk->id) {
+ 	case HI6220_STUB_ACPU0:
+@@ -181,12 +181,14 @@ static long hi6220_stub_clk_round_rate(s
+ 		break;
+ 	}
+ 
+-	return new_rate;
++	req->rate = new_rate;
++
++	return 0;
+ }
+ 
+ static const struct clk_ops hi6220_stub_clk_ops = {
+ 	.recalc_rate	= hi6220_stub_clk_recalc_rate,
+-	.round_rate	= hi6220_stub_clk_round_rate,
++	.determine_rate = hi6220_stub_clk_determine_rate,
+ 	.set_rate	= hi6220_stub_clk_set_rate,
+ };
+ 
+@@ -195,7 +197,6 @@ static int hi6220_stub_clk_probe(struct
+ 	struct device *dev = &pdev->dev;
+ 	struct clk_init_data init;
+ 	struct hi6220_stub_clk *stub_clk;
+-	struct clk *clk;
+ 	struct device_node *np = pdev->dev.of_node;
+ 	int ret;
+ 
+@@ -233,11 +234,11 @@ static int hi6220_stub_clk_probe(struct
+ 	init.num_parents = 0;
+ 	init.flags = 0;
+ 
+-	clk = devm_clk_register(dev, &stub_clk->hw);
+-	if (IS_ERR(clk))
+-		return PTR_ERR(clk);
++	ret = devm_clk_hw_register(dev, &stub_clk->hw);
++	if (ret)
++		return ret;
+ 
+-	ret = of_clk_add_provider(np, of_clk_src_simple_get, clk);
++	ret = devm_of_clk_add_hw_provider(dev, of_clk_hw_simple_get, &stub_clk->hw);
+ 	if (ret) {
+ 		dev_err(dev, "failed to register OF clock provider\n");
+ 		return ret;

@@ -1,0 +1,13 @@
+#!/bin/sh
+. /lib/functions/ucidefault.sh
+
+board_config_update
+
+case "$(board_name)" in
+    *ec6108v9c*)
+        # 强制指定网口为 eth0，防止系统识别成 eth1 导致进不了后台
+        ucidefault_set_interface_lan "eth0"
+        ;;
+esac
+
+board_config_commit
