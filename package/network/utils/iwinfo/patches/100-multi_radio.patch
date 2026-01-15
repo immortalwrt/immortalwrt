@@ -1408,7 +1408,7 @@
  static void nl80211_close(void)
  {
  	if (nls)
-@@ -862,7 +867,7 @@ static char * nl80211_phy2ifname(const c
+@@ -863,7 +868,7 @@ static char * nl80211_phy2ifname(const c
  
  static int nl80211_get_mode_cb(struct nl_msg *msg, void *arg)
  {
@@ -1417,7 +1417,7 @@
  	struct nlattr **tb = nl80211_parse(msg);
  	const int ifmodes[NL80211_IFTYPE_MAX + 1] = {
  		IWINFO_OPMODE_UNKNOWN,		/* unspecified */
-@@ -878,37 +883,57 @@ static int nl80211_get_mode_cb(struct nl
+@@ -879,37 +884,57 @@ static int nl80211_get_mode_cb(struct nl
  	};
  
  	if (tb[NL80211_ATTR_IFTYPE])
@@ -1484,7 +1484,7 @@
  		return 0;
  
  	phy = nl80211_ifname2phy(ifname);
-@@ -916,7 +941,10 @@ static int __nl80211_hostapd_query(const
+@@ -917,7 +942,10 @@ static int __nl80211_hostapd_query(const
  	if (!phy)
  		return 0;
  

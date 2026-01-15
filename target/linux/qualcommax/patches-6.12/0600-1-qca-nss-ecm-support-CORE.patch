@@ -1,16 +1,16 @@
 --- a/include/linux/if_bridge.h
 +++ b/include/linux/if_bridge.h
-@@ -71,6 +71,9 @@ void brioctl_set(int (*hook)(struct net
+@@ -69,6 +69,9 @@ struct net_bridge;
+ void brioctl_set(int (*hook)(struct net *net, unsigned int cmd,
  			     void __user *uarg));
- int br_ioctl_call(struct net *net, struct net_bridge *br, unsigned int cmd,
- 		  struct ifreq *ifr, void __user *uarg);
+ int br_ioctl_call(struct net *net, unsigned int cmd, void __user *uarg);
 +extern void br_dev_update_stats(struct net_device *dev,
 +				struct rtnl_link_stats64 *nlstats);
 +extern bool br_is_hairpin_enabled(struct net_device *dev);
  
  #if IS_ENABLED(CONFIG_BRIDGE) && IS_ENABLED(CONFIG_BRIDGE_IGMP_SNOOPING)
  int br_multicast_list_adjacent(struct net_device *dev,
-@@ -213,4 +216,42 @@ static inline clock_t br_get_ageing_time
+@@ -211,4 +214,42 @@ static inline clock_t br_get_ageing_time
  }
  #endif
  
@@ -665,7 +665,7 @@
  	fib_release_info(fa_to_delete->fa_info);
  	alias_free_mem_rcu(fa_to_delete);
  	return 0;
-@@ -2386,6 +2395,20 @@ void __init fib_trie_init(void)
+@@ -2387,6 +2396,20 @@ void __init fib_trie_init(void)
  					   0, SLAB_PANIC | SLAB_ACCOUNT, NULL);
  }
  
@@ -688,7 +688,7 @@
  	struct fib_table *tb;
 --- a/net/ipv6/ndisc.c
 +++ b/net/ipv6/ndisc.c
-@@ -670,6 +670,7 @@ void ndisc_send_ns(struct net_device *de
+@@ -672,6 +672,7 @@ void ndisc_send_ns(struct net_device *de
  	if (skb)
  		ndisc_send_skb(skb, daddr, saddr);
  }
@@ -708,7 +708,7 @@
  static inline const void *choose_neigh_daddr(const struct in6_addr *p,
  					     struct sk_buff *skb,
  					     const void *daddr)
-@@ -3917,6 +3920,10 @@ int ip6_route_add(struct fib6_config *cf
+@@ -3928,6 +3931,10 @@ int ip6_route_add(struct fib6_config *cf
  		return PTR_ERR(rt);
  
  	err = __ip6_ins_rt(rt, &cfg->fc_nlinfo, extack);
@@ -719,7 +719,7 @@
  	fib6_info_release(rt);
  
  	return err;
-@@ -3938,6 +3945,9 @@ static int __ip6_del_rt(struct fib6_info
+@@ -3949,6 +3956,9 @@ static int __ip6_del_rt(struct fib6_info
  	err = fib6_del(rt, info);
  	spin_unlock_bh(&table->tb6_lock);
  
@@ -729,7 +729,7 @@
  out:
  	fib6_info_release(rt);
  	return err;
-@@ -6409,6 +6419,20 @@ static int ip6_route_dev_notify(struct n
+@@ -6424,6 +6434,20 @@ static int ip6_route_dev_notify(struct n
  	return NOTIFY_OK;
  }
  
@@ -975,7 +975,7 @@
  
 --- a/net/ipv6/ip6_gre.c
 +++ b/net/ipv6/ip6_gre.c
-@@ -1933,6 +1933,7 @@ static void ip6gre_tap_setup(struct net_
+@@ -1942,6 +1942,7 @@ static void ip6gre_tap_setup(struct net_
  	dev->pcpu_stat_type = NETDEV_PCPU_STAT_TSTATS;
  	dev->priv_flags &= ~IFF_TX_SKB_SHARING;
  	dev->priv_flags |= IFF_LIVE_ADDR_CHANGE;

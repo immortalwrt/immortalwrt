@@ -1,6 +1,6 @@
 --- a/include/linux/if_bridge.h
 +++ b/include/linux/if_bridge.h
-@@ -258,4 +258,17 @@ extern br_get_dst_hook_t __rcu *br_get_d
+@@ -256,4 +256,17 @@ extern br_get_dst_hook_t __rcu *br_get_d
  extern struct net_device *br_fdb_bridge_dev_get_and_hold(struct net_bridge *br);
  /* QCA NSS bridge-mgr support - End */
  
@@ -39,7 +39,7 @@
   * added to the bridge private HW address list and all required ports
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -915,6 +915,7 @@ void br_manage_promisc(struct net_bridge
+@@ -916,6 +916,7 @@ void br_manage_promisc(struct net_bridge
  int nbp_backup_change(struct net_bridge_port *p, struct net_device *backup_dev);
  
  /* br_input.c */

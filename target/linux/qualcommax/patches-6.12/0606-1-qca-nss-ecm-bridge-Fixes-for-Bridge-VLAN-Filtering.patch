@@ -32,7 +32,7 @@ Signed-off-by: Vishnu Vardhan Bantanahal <quic_vishvard@quicinc.com>
 
 --- a/include/linux/if_bridge.h
 +++ b/include/linux/if_bridge.h
-@@ -128,6 +128,11 @@ int br_vlan_get_info_rcu(const struct ne
+@@ -126,6 +126,11 @@ int br_vlan_get_info_rcu(const struct ne
  bool br_mst_enabled(const struct net_device *dev);
  int br_mst_get_info(const struct net_device *dev, u16 msti, unsigned long *vids);
  int br_mst_get_state(const struct net_device *dev, u16 msti, u8 *state);
@@ -44,7 +44,7 @@ Signed-off-by: Vishnu Vardhan Bantanahal <quic_vishvard@quicinc.com>
  #else
  static inline bool br_vlan_enabled(const struct net_device *dev)
  {
-@@ -149,8 +154,22 @@ static inline int br_vlan_get_pvid_rcu(c
+@@ -147,8 +152,22 @@ static inline int br_vlan_get_pvid_rcu(c
  	return -EINVAL;
  }
  
