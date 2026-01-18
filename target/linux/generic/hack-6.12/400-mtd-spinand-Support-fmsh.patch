@@ -10,14 +10,14 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
 ---
  drivers/mtd/nand/spi/Makefile |   2 +-
  drivers/mtd/nand/spi/core.c   |   1 +
- drivers/mtd/nand/spi/fmsh.c   | 122 ++++++++++++++++++++++++++++++++++
+ drivers/mtd/nand/spi/fmsh.c   | 213 ++++++++++++++++++++++++++++++++++
  include/linux/mtd/spinand.h   |   1 +
- 4 files changed, 125 insertions(+), 1 deletion(-)
+ 4 files changed, 216 insertions(+), 1 deletion(-)
  create mode 100644 drivers/mtd/nand/spi/fmsh.c
 
 --- a/drivers/mtd/nand/spi/fmsh.c
 +++ b/drivers/mtd/nand/spi/fmsh.c
-@@ -50,6 +50,142 @@ static const struct mtd_ooblayout_ops fm
+@@ -50,6 +50,144 @@ static const struct mtd_ooblayout_ops fm
  	.free = fm25s01a_ooblayout_free,
  };
 
@@ -209,15 +209,6 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
 +					      &update_cache_variants),
 +		     SPINAND_HAS_QE_BIT,
 +		     SPINAND_ECCINFO(&fm25s01_ooblayout, fm25s01bi3_ecc_ecc_get_status)),
-+	SPINAND_INFO("FM25G02D",
-+		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0xF2),
-+		     NAND_MEMORG(1, 2048, 64, 64, 2048, 40, 1, 1, 1),
-+		     NAND_ECCREQ(4, 512),
-+		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
-+					      &write_cache_variants,
-+					      &update_cache_variants),
-+		     SPINAND_HAS_QE_BIT,
-+		     SPINAND_ECCINFO(&fm25g0xd_ooblayout, fm25g0xd_ecc_get_status)),
 +	SPINAND_INFO("FM25G02B",
 +		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0xD2),
 +		     NAND_MEMORG(1, 2048, 128, 64, 2048, 40, 1, 1, 1),
@@ -227,6 +218,15 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
 +					      &update_cache_variants),
 +		     SPINAND_HAS_QE_BIT,
 +		     SPINAND_ECCINFO(&fm25g02b_ooblayout, NULL)),
++	SPINAND_INFO("FM25G02D",
++		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0xF2),
++		     NAND_MEMORG(1, 2048, 64, 64, 2048, 40, 1, 1, 1),
++		     NAND_ECCREQ(4, 512),
++		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
++					      &write_cache_variants,
++					      &update_cache_variants),
++		     SPINAND_HAS_QE_BIT,
++		     SPINAND_ECCINFO(&fm25g0xd_ooblayout, fm25g0xd_ecc_get_status)),
  };
 
  static const struct spinand_manufacturer_ops fmsh_spinand_manuf_ops = {
