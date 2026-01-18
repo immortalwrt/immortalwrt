@@ -135,6 +135,7 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
 +{
 +	if (section >= 8)
 +		return -ERANGE;
++
 +	region->offset = 64 + section * 8;
 +	region->length = 8;
 +
@@ -146,6 +147,7 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
 +{
 +	if (section)
 +		return -ERANGE;
++
 +	region->offset = 2;
 +	region->length = 62;
 +
