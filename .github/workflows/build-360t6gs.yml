@@ -1,0 +1,276 @@
+name: Build ImmortalWrt for 360T6GS
+
+on:
+  push:
+    branches:
+      - openwrt-23.05
+    paths:
+      - 'target/linux/ramips/dts/mt7621_360_360t6gs.dts'
+      - 'target/linux/ramips/image/mt7621.mk'
+      - '.github/workflows/build-360t6gs.yml'
+  workflow_dispatch:
+
+env:
+  REPO_URL: https://github.com/immortalwrt/immortalwrt
+  REPO_BRANCH: openwrt-18.06
+  UPLOAD_BIN_DIR: true
+  UPLOAD_FIRMWARE: true
+  UPLOAD_RELEASE: true
+  TZ: Asia/Jakarta
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Initialization environment
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update
+        sudo -E apt-get -qq install build-essential clang flex bison g++ gawk gcc-multilib g++-multilib \
+        gettext git libncurses5-dev libssl-dev python3-distutils rsync unzip zlib1g-dev file wget
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        sudo timedatectl set-timezone "$TZ"
+
+    - name: Clone source code
+      run: |
+        df -hT $PWD
+        git clone --depth=1 $REPO_URL -b $REPO_BRANCH openwrt
+        cd openwrt
+        echo "OPENWRT_PATH=$PWD" >> $GITHUB_ENV
+
+    - name: Copy custom files
+      run: |
+        # Check if custom files exist
+        if [ -f target/linux/ramips/dts/mt7621_360_360t6gs.dts ]; then
+          cp -f target/linux/ramips/dts/mt7621_360_360t6gs.dts $OPENWRT_PATH/target/linux/ramips/dts/
+          echo "✓ DTS file copied"
+        else
+          echo "⚠ DTS file not found, using default"
+        fi
+        
+        if [ -f target/linux/ramips/image/mt7621.mk ]; then
+          cp -f target/linux/ramips/image/mt7621.mk $OPENWRT_PATH/target/linux/ramips/image/
+          echo "✓ Image makefile copied"
+        else
+          echo "⚠ Image makefile not found, using default"
+        fi
+
+    - name: Update feeds
+      run: |
+        cd $OPENWRT_PATH
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+
+    - name: Generate configuration file
+      run: |
+        cd $OPENWRT_PATH
+        cat > .config <<EOF
+        CONFIG_TARGET_ramips=y
+        CONFIG_TARGET_ramips_mt7621=y
+        CONFIG_TARGET_ramips_mt7621_DEVICE_360_360t6gs=y
+        
+        # Remove Luci (save space for 16MB flash)
+        # CONFIG_PACKAGE_luci is not set
+        # CONFIG_PACKAGE_luci-ssl-openssl is not set
+        
+        # WiFi drivers
+        CONFIG_PACKAGE_kmod-mt7915e=y
+        CONFIG_PACKAGE_kmod-mt7915-firmware=y
+        
+        # Captive portal & PHP
+        CONFIG_PACKAGE_opennds=y
+        CONFIG_PACKAGE_uhttpd=y
+        CONFIG_PACKAGE_php7-cgi=y
+        CONFIG_PACKAGE_php7-mod-openssl=y
+        
+        # DNS
+        # CONFIG_PACKAGE_dnsmasq is not set
+        CONFIG_PACKAGE_dnsmasq-full=y
+        
+        # Remove unnecessary packages
+        # CONFIG_PACKAGE_ppp is not set
+        # CONFIG_PACKAGE_ppp-mod-pppoe is not set
+        
+        EOF
+        
+        # Apply defconfig
+        make defconfig
+        
+        # Show final config
+        echo "=== Final configuration ==="
+        grep "CONFIG_TARGET" .config
+        grep "CONFIG_PACKAGE_kmod-mt79" .config
+        grep "CONFIG_PACKAGE_opennds" .config
+        grep "CONFIG_PACKAGE_php" .config
+        grep "CONFIG_PACKAGE_dnsmasq" .config
+
+    - name: Download package
+      id: package
+      run: |
+        cd $OPENWRT_PATH
+        make download -j8
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
+
+    - name: Compile firmware
+      id: compile
+      run: |
+        cd $OPENWRT_PATH
+        echo -e "$(nproc) thread compile"
+        make -j$(nproc) || make -j1 V=s
+        echo "status=success" >> $GITHUB_OUTPUT
+        grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
+        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=$(cat DEVICE_NAME)" >> $GITHUB_ENV
+        echo "FILE_DATE=$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+
+    - name: Check space usage
+      if: (!cancelled())
+      run: df -hT
+
+    - name: Upload bin directory
+      uses: actions/upload-artifact@v4
+      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+      with:
+        name: ImmortalWrt_bin_${{ env.DEVICE_NAME }}_${{ env.FILE_DATE }}
+        path: openwrt/bin
+
+    - name: Organize files
+      id: organize
+      if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      run: |
+        set -e
+        
+        echo "=== Checking build results ==="
+        if [ ! -d "$OPENWRT_PATH/bin/targets" ]; then
+          echo "::error::Build failed - bin/targets not found"
+          exit 1
+        fi
+        
+        # Find firmware directory
+        FIRMWARE_DIR=$(find $OPENWRT_PATH/bin/targets -type d -maxdepth 2 -mindepth 2 | head -n1)
+        
+        if [ -z "$FIRMWARE_DIR" ]; then
+          echo "::error::No firmware built. Check compile logs."
+          ls -la $OPENWRT_PATH/bin/targets/ || true
+          exit 1
+        fi
+        
+        echo "Found firmware at: $FIRMWARE_DIR"
+        cd "$FIRMWARE_DIR"
+        
+        # Remove packages to save space
+        rm -rf packages
+        
+        # List built firmware files
+        echo "=== Built firmware files ==="
+        ls -lh *.bin 2>/dev/null || echo "::warning::No .bin files found"
+        
+        # Check firmware size
+        for file in *.bin; do
+          if [ -f "$file" ]; then
+            SIZE=$(stat -c%s "$file")
+            SIZE_MB=$((SIZE / 1024 / 1024))
+            echo "  $file: ${SIZE_MB}MB"
+            if [ $SIZE_MB -gt 15 ]; then
+              echo "::warning::Firmware size (${SIZE_MB}MB) exceeds 15MB - may not fit in 16MB flash!"
+            fi
+          fi
+        done
+        
+        # Export for next steps
+        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: Upload firmware directory
+      uses: actions/upload-artifact@v4
+      if: steps.organize.outputs.status == 'success' && !cancelled()
+      with:
+        name: ImmortalWrt_firmware_${{ env.DEVICE_NAME }}_${{ env.FILE_DATE }}
+        path: ${{ env.FIRMWARE }}
+
+    - name: Generate release tag
+      id: tag
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      run: |
+        cd $FIRMWARE
+        
+        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
+        
+        cat > release.txt <<EOF
+        ## ImmortalWrt Firmware for 360T6GS
+        
+        ### Build Information
+        - **Build Date**: $(date +"%Y-%m-%d %H:%M:%S")
+        - **Branch**: $REPO_BRANCH
+        - **Target**: ramips/mt7621
+        
+        ### Included Packages
+        - WiFi: MT7915E driver + firmware
+        - Captive Portal: openNDS
+        - Web Server: uhttpd
+        - PHP: PHP7 with OpenSSL support
+        - DNS: dnsmasq-full
+        
+        ### Firmware Files
+        EOF
+        
+        for file in *.bin; do
+          if [ -f "$file" ]; then
+            SIZE=$(stat -c%s "$file")
+            SIZE_MB=$((SIZE / 1024 / 1024))
+            echo "- \`$file\` (${SIZE_MB}MB)" >> release.txt
+          fi
+        done
+        
+        cat >> release.txt <<EOF
+        
+        ### Installation Notes
+        ⚠️ **WARNING**: This device has only 16MB flash storage!
+        
+        1. Flash \`*-initramfs-kernel.bin\` via Breed bootloader first
+        2. Boot into OpenWrt (running from RAM)
+        3. Upload \`*-squashfs-sysupgrade.bin\` via SSH
+        4. Run: \`sysupgrade -n /tmp/sysupgrade.bin\`
+        
+        ### Default Settings
+        - IP: 192.168.1.1
+        - Username: root
+        - Password: (empty)
+        - LuCI: **NOT INCLUDED** (use SSH/CLI)
+        
+        EOF
+        
+        cat release.txt
+        echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: Upload firmware to release
+      uses: softprops/action-gh-release@v2
+      if: steps.tag.outputs.status == 'success' && !cancelled()
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.tag.outputs.release_tag }}
+        body_path: ${{ env.FIRMWARE }}/release.txt
+        files: ${{ env.FIRMWARE }}/*
+
+    - name: Delete workflow runs
+      uses: Mattraks/delete-workflow-runs@v2
+      with:
+        retain_days: 1
+        keep_minimum_runs: 3
+
+    - name: Remove old Releases
+      uses: dev-drprasad/delete-older-releases@v0.3.4
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      with:
+        keep_latest: 5
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
