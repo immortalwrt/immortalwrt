@@ -1,4 +1,4 @@
-name: Build ImmortalWrt for 360T6GS
+name: Build ImmortalWrt for 360T6GS 18
 
 on:
   push:
