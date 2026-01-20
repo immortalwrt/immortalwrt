@@ -62,6 +62,22 @@ jobs:
           echo "⚠ Image makefile not found, using default"
         fi
 
+    - name: Verify device support
+      run: |
+        cd $OPENWRT_PATH
+        echo "=== Checking for 360T6GS device support ==="
+        
+        # Search for device definition
+        if grep -r "360t6gs\|360_360t6gs" target/linux/ramips/; then
+          echo "✓ Device found in source tree"
+        else
+          echo "::warning::Device not found in default source. Listing available MT7621 devices:"
+          if [ -f target/linux/ramips/image/mt7621.mk ]; then
+            grep "^define Device/" target/linux/ramips/image/mt7621.mk | sed 's/define Device\///' | head -30
+          fi
+          echo "::warning::Continuing anyway - device may be added via custom files"
+        fi
+
     - name: Update feeds
       run: |
         cd $OPENWRT_PATH
@@ -71,14 +87,14 @@ jobs:
     - name: Generate configuration file
       run: |
         cd $OPENWRT_PATH
-        cat > .config <<EOF
+        
+        echo "=== Creating initial configuration ==="
+        cat > .config <<'EOF'
         CONFIG_TARGET_ramips=y
         CONFIG_TARGET_ramips_mt7621=y
         CONFIG_TARGET_ramips_mt7621_DEVICE_360_360t6gs=y
-        
-        # Remove Luci (save space for 16MB flash)
-        # CONFIG_PACKAGE_luci is not set
-        # CONFIG_PACKAGE_luci-ssl-openssl is not set
+        CONFIG_TARGET_ROOTFS_INITRAMFS=y
+        CONFIG_TARGET_ROOTFS_SQUASHFS=y
         
         # WiFi drivers
         CONFIG_PACKAGE_kmod-mt7915e=y
@@ -87,35 +103,73 @@ jobs:
         # Captive portal & PHP
         CONFIG_PACKAGE_opennds=y
         CONFIG_PACKAGE_uhttpd=y
+        CONFIG_PACKAGE_php7=y
         CONFIG_PACKAGE_php7-cgi=y
         CONFIG_PACKAGE_php7-mod-openssl=y
         
         # DNS
-        # CONFIG_PACKAGE_dnsmasq is not set
         CONFIG_PACKAGE_dnsmasq-full=y
+        CONFIG_PACKAGE_dnsmasq=n
+        
+        # Remove Luci to save space
+        CONFIG_PACKAGE_luci=n
+        CONFIG_PACKAGE_luci-ssl-openssl=n
         
         # Remove unnecessary packages
-        # CONFIG_PACKAGE_ppp is not set
-        # CONFIG_PACKAGE_ppp-mod-pppoe is not set
-        
+        CONFIG_PACKAGE_ppp=n
+        CONFIG_PACKAGE_ppp-mod-pppoe=n
         EOF
         
-        # Apply defconfig
-        make defconfig
+        echo "=== Running defconfig ==="
+        # Don't exit on defconfig warnings
+        set +e
+        make defconfig 2>&1 | tee defconfig.log
+        DEFCONFIG_EXIT=$?
+        set -e
         
-        # Show final config
-        echo "=== Final configuration ==="
-        grep "CONFIG_TARGET" .config
-        grep "CONFIG_PACKAGE_kmod-mt79" .config
-        grep "CONFIG_PACKAGE_opennds" .config
-        grep "CONFIG_PACKAGE_php" .config
-        grep "CONFIG_PACKAGE_dnsmasq" .config
+        # Check if defconfig had errors (not just warnings)
+        if [ $DEFCONFIG_EXIT -ne 0 ]; then
+          if grep -qi "error" defconfig.log; then
+            echo "::error::defconfig failed with errors"
+            cat defconfig.log
+            exit 1
+          else
+            echo "::warning::defconfig exited with code $DEFCONFIG_EXIT (may be just warnings)"
+          fi
+        fi
+        
+        # Verify .config was created
+        if [ ! -f .config ]; then
+          echo "::error::.config file not created!"
+          exit 1
+        fi
+        
+        echo "=== Verifying configuration ==="
+        # Check if device was properly configured
+        if grep -q "CONFIG_TARGET_ramips_mt7621_DEVICE_360_360t6gs=y" .config; then
+          echo "✓ Device 360_360t6gs is enabled"
+        else
+          echo "::warning::Device specific config not found, checking alternatives..."
+          grep "CONFIG_TARGET_ramips_mt7621" .config | grep "=y" || true
+        fi
+        
+        echo "=== Final Target Configuration ==="
+        grep "CONFIG_TARGET" .config | grep -v "^#" | head -30
+        
+        echo "=== Package Configuration ==="
+        echo "WiFi drivers:"
+        grep "CONFIG_PACKAGE_kmod-mt79" .config | grep -v "^#" || echo "  (none found)"
+        echo "Services:"
+        grep "CONFIG_PACKAGE_opennds\|CONFIG_PACKAGE_php\|CONFIG_PACKAGE_uhttpd" .config | grep -v "^#" || echo "  (none found)"
+        echo "DNS:"
+        grep "CONFIG_PACKAGE_dnsmasq" .config | grep -v "^#" || echo "  (none found)"
 
     - name: Download package
       id: package
       run: |
         cd $OPENWRT_PATH
-        make download -j8
+        echo "=== Downloading packages ==="
+        make download -j8 || make download -j1 V=s
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
@@ -123,9 +177,20 @@ jobs:
       id: compile
       run: |
         cd $OPENWRT_PATH
-        echo -e "$(nproc) thread compile"
-        make -j$(nproc) || make -j1 V=s
+        echo "=== Starting compilation with $(nproc) threads ==="
+        
+        # Try multi-threaded build first, fall back to single-threaded with verbose on failure
+        make -j$(nproc) || make -j1 V=s || {
+          echo "::error::Compilation failed!"
+          echo "=== Build Log Tail ==="
+          tail -100 build_dir/target-*/root-ramips/tmp/.packageinfo 2>/dev/null || true
+          exit 1
+        }
+        
+        echo "✓ Compilation successful"
         echo "status=success" >> $GITHUB_OUTPUT
+        
+        # Extract device name
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
@@ -158,6 +223,7 @@ jobs:
         
         if [ -z "$FIRMWARE_DIR" ]; then
           echo "::error::No firmware built. Check compile logs."
+          echo "Directory structure:"
           ls -la $OPENWRT_PATH/bin/targets/ || true
           exit 1
         fi
@@ -170,7 +236,14 @@ jobs:
         
         # List built firmware files
         echo "=== Built firmware files ==="
-        ls -lh *.bin 2>/dev/null || echo "::warning::No .bin files found"
+        if ls *.bin 2>/dev/null; then
+          ls -lh *.bin
+        else
+          echo "::error::No .bin files found!"
+          echo "Available files:"
+          ls -lh
+          exit 1
+        fi
         
         # Check firmware size
         for file in *.bin; do
