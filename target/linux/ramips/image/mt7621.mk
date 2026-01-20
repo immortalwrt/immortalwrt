@@ -1084,3 +1084,12 @@ define Device/zio_freezio
 	kmod-usb-ledtrig-usbport wpad-openssl
 endef
 TARGET_DEVICES += zio_freezio
+
+define Device/360_360t6gs
+  $(Device/dsa-migration)
+  IMAGE_SIZE := 15872k
+  DEVICE_VENDOR := 360
+  DEVICE_MODEL := 360T6GS
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7915-firmware -uboot-envtools
+endef
+TARGET_DEVICES += 360_360t6gs
