@@ -1,56 +1,57 @@
 name: Build ImmortalWrt Complete
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 env:
   DEVICE: "360_360t6gs"
+  OPENWRT_PATH: "openwrt"
 
 jobs:
   build:
     runs-on: ubuntu-22.04
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Setup Build Environment
         run: |
           sudo apt update
           sudo apt install -y build-essential clang flex bison g++ gawk \
             gcc-multilib g++-multilib gettext git libncurses5-dev \
             libssl-dev python3 python3-distutils rsync unzip zlib1g-dev \
-            file wget ccache
-      
+            file wget ccache || sudo apt install -y python3.10-distutils
+
       - name: Clone Source
         run: |
-          git clone --depth=1 https://github.com/immortalwrt/immortalwrt -b openwrt-18.06 openwrt
-          echo "OPENWRT_PATH=$PWD/openwrt" >> $GITHUB_ENV
-      
-      - name: Configure
+          git clone --depth=1 https://github.com/immortalwrt/immortalwrt -b openwrt-18.06 $OPENWRT_PATH
+
+      - name: Configure Build
         run: |
           cd $OPENWRT_PATH
           ./scripts/feeds update -a
           ./scripts/feeds install -a
-          cat > .config << EOF
-          CONFIG_TARGET_ramips=y
-          CONFIG_TARGET_ramips_mt7621=y
-          CONFIG_TARGET_ramips_mt7621_DEVICE_${DEVICE}=y
-          CONFIG_TARGET_ROOTFS_SQUASHFS=y
-          CONFIG_PACKAGE_kmod-mt7915e=y
-          CONFIG_PACKAGE_kmod-mt7915-firmware=y
-          EOF
-          make defconfig
       
+          echo "CONFIG_TARGET_ramips=y" > .config
+          echo "CONFIG_TARGET_ramips_mt7621=y" >> .config
+          echo "CONFIG_TARGET_ramips_mt7621_DEVICE_${DEVICE}=y" >> .config
+          echo "CONFIG_TARGET_ROOTFS_SQUASHFS=y" >> .config
+          echo "CONFIG_PACKAGE_kmod-mt7915e=y" >> .config
+          echo "CONFIG_PACKAGE_kmod-mt7915-firmware=y" >> .config
+      
+          make defconfig
+
       - name: Download & Build
         run: |
           cd $OPENWRT_PATH
-          make -j$(nproc) download
+          make -j$(nproc) download || true
           make -j$(($(nproc) + 1))
-      
+
+      - name: Verify Firmware
+        run: |
+          ls -lh $OPENWRT_PATH/bin/targets/ramips/mt7621/
+
       - name: Upload Firmware
         uses: actions/upload-artifact@v4
         with:
