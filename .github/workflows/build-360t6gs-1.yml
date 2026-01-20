@@ -32,10 +32,10 @@ jobs:
           cd $OPENWRT_PATH
           ./scripts/feeds update -a
           ./scripts/feeds install -a
-          cat > .config << 'EOF'
+          cat > .config << EOF
           CONFIG_TARGET_ramips=y
           CONFIG_TARGET_ramips_mt7621=y
-          CONFIG_TARGET_ramips_mt7621_DEVICE_${{ env.DEVICE }}=y
+          CONFIG_TARGET_ramips_mt7621_DEVICE_${DEVICE}=y
           CONFIG_TARGET_ROOTFS_SQUASHFS=y
           CONFIG_PACKAGE_kmod-mt7915e=y
           CONFIG_PACKAGE_kmod-mt7915-firmware=y
