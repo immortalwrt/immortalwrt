@@ -1,6 +1,9 @@
 name: Build ImmortalWrt Complete
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 env:
