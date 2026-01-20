@@ -3,7 +3,7 @@ name: Build ImmortalWrt for 360T6GS
 on:
   push:
     branches:
-      - openwrt-23.05
+      - openwrt-18.06
     paths:
       - 'target/linux/ramips/dts/mt7621_360_360t6gs.dts'
       - 'target/linux/ramips/image/mt7621.mk'
