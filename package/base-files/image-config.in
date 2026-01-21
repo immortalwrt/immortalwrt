@@ -198,7 +198,7 @@ if VERSIONOPT
 	config VERSION_REPO
 		string
 		prompt "Release repository"
-		default "https://downloads.immortalwrt.org/snapshots"
+		default "https://immortalwrt.kyarucloud.moe/snapshots"
 		help
 			This is the repository address embedded in the image, it defaults
 			to the trunk snapshot repo; the url may contain the following placeholders:

@@ -27,6 +27,6 @@ if [ -z "$opkg_mirror" ]; then
 	EOF
 fi
 
-sed -i.bak "s,https://downloads.immortalwrt.org,$opkg_mirror,g" "/etc/opkg/distfeeds.conf"
+sed -i.bak "s,https://immortalwrt.kyarucloud.moe,$opkg_mirror,g" "/etc/opkg/distfeeds.conf"
 
 exit 0
