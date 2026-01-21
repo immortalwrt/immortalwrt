@@ -37,7 +37,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  	leds {
  		compatible = "gpio-leds";
  		pinctrl-names = "default";
-@@ -300,6 +312,31 @@
+@@ -301,6 +313,31 @@
  	status = "okay";
  };
  
@@ -69,7 +69,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  &mdio1 {
  	rgmii_phy1: ethernet-phy@1 {
  		/* RTL8211F */
-@@ -812,3 +849,18 @@
+@@ -813,3 +850,18 @@
  &usb_host2_xhci {
  	status = "okay";
  };
