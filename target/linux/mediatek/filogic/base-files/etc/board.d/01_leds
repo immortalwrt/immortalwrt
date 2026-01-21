@@ -6,6 +6,10 @@ board=$(board_name)
 board_config_update
 
 case $board in
+airpi,ap3000m)
+	ucidef_set_led_netdev "wlan2g" "WLAN2G" "orange:wlan-2ghz" "phy0-ap0" "link tx rx"
+	ucidef_set_led_netdev "wlan5g" "WLAN5G" "white:wlan-5ghz" "phy1-ap0" "link tx rx"
+	;;
 abt,asr3000)
 	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth1"
 	ucidef_set_led_netdev "wlan2g" "WLAN2G" "green:wlan-2ghz" "phy0-ap0"
@@ -272,6 +276,9 @@ teltonika,rutc50)
 totolink,x6000r)
 	ucidef_set_led_netdev "wan" "wan" "green:wan" "wan" "link tx rx"
 	;;
+tplink,archer-ax80-v1-eu)
+	ucidef_set_led_netdev "lan" "LAN" "white:lan" "br-lan" "link tx rx"
+	;;
 tplink,be450)
 	ucidef_set_led_netdev "br-lan" "lan" "blue:lan" "br-lan" "link tx rx"
 	ucidef_set_led_netdev "wlan2g" "WLAN2G" "blue:wlan-2ghz" "phy0.0-ap0"
@@ -323,7 +330,8 @@ xiaomi,redmi-router-ax6000-stock|\
 xiaomi,redmi-router-ax6000-ubootmod)
 	ucidef_set_led_netdev "wan" "wan" "rgb:network" "wan" "link"
 	;;
-zbtlink,zbt-z8103ax)
+zbtlink,zbt-z8103ax|\
+zbtlink,zbt-z8103ax-c)
 	ucidef_set_led_netdev "wan" "wan" "green:wan" "eth1" "link tx rx"
 	;;
 zyxel,ex5601-t0-stock|\

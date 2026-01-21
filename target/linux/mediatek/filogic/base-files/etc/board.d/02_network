@@ -20,7 +20,8 @@ mediatek_setup_interfaces()
 	nokia,ea0326gmp|\
 	mercusys,mr80x-v3|\
 	routerich,ax3000-v1|\
-	zbtlink,zbt-z8103ax)
+	zbtlink,zbt-z8103ax|\
+	zbtlink,zbt-z8103ax-c)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" eth1
 		;;
 	acelink,ew-7886cax)
@@ -92,12 +93,6 @@ mediatek_setup_interfaces()
 	bananapi,bpi-r3)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 sfp2" "sfp1 wan"
 		;;
-	bananapi,bpi-r3-mini|\
-	edgecore,eap111|\
-	huasifei,wh3000-emmc|\
-	huasifei,wh3000-pro)
-		ucidef_set_interfaces_lan_wan eth0 eth1
-		;;
 	bananapi,bpi-r4)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 sfp-lan" "wan sfp-wan"
 		;;
@@ -123,6 +118,13 @@ mediatek_setup_interfaces()
 	widelantech,wap430x|\
 	zyxel,nwa50ax-pro)
 		ucidef_set_interface_lan "eth0"
+		;;
+	airpi,ap3000m|\
+	bananapi,bpi-r3-mini|\
+	edgecore,eap111|\
+	huasifei,wh3000-emmc|\
+	huasifei,wh3000-pro)
+		ucidef_set_interfaces_lan_wan eth0 eth1
 		;;
 	cudy,m3000-v1|\
 	cudy,tr3000-256mb-v1|\
@@ -179,7 +181,8 @@ mediatek_setup_interfaces()
 	wavlink,wl-wn586x3b)
 		ucidef_set_interfaces_lan_wan "lan1 lan2" eth1
 		;;
-	tplink,archer-ax80-v1)
+	tplink,archer-ax80-v1|\
+	tplink,archer-ax80-v1-eu)
 		ucidef_set_interfaces_lan_wan "lan0 lan1 lan2 lan3" eth1
 		;;
 	tplink,be450)
@@ -214,6 +217,11 @@ mediatek_setup_macs()
 	local label_mac=""
 
 	case $board in
+	airpi,ap3000m)
+		base_mac=$(macaddr_generate_from_mmc_cid mmcblk0)
+		lan_mac="$base_mac"
+		wan_mac="$(macaddr_add "$base_mac" 1)"
+		;;
 	acer,predator-w6|\
 	acer,predator-w6d|\
 	acer,vero-w6m)
@@ -246,6 +254,7 @@ mediatek_setup_macs()
 		;;
 	mercusys,mr90x-v1|\
 	tplink,archer-ax80-v1|\
+	tplink,archer-ax80-v1-eu|\
 	tplink,re6000xd)
 		label_mac=$(get_mac_binary "/tmp/tp_data/default-mac" 0)
 		lan_mac=$label_mac

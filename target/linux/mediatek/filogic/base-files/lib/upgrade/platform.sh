@@ -130,6 +130,7 @@ platform_do_upgrade() {
 	acer,predator-w6|\
 	acer,predator-w6d|\
 	acer,vero-w6m|\
+	airpi,ap3000m|\
 	arcadyan,mozart|\
 	glinet,gl-mt2500|\
 	glinet,gl-mt6000|\
@@ -198,6 +199,7 @@ platform_do_upgrade() {
 	mercusys,mr85x|\
 	mercusys,mr90x-v1|\
 	tplink,archer-ax80-v1|\
+	tplink,archer-ax80-v1-eu|\
 	tplink,be450|\
 	tplink,re6000xd)
 		CI_UBIPART="ubi0"
@@ -346,6 +348,7 @@ platform_copy_config() {
 	acer,predator-w6|\
 	acer,predator-w6d|\
 	acer,vero-w6m|\
+	airpi,ap3000m|\
 	arcadyan,mozart|\
 	glinet,gl-mt2500|\
 	glinet,gl-mt6000|\
