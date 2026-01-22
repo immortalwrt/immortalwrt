@@ -1,0 +1,65 @@
+name: Build ImmortalWrt BT R320 (ccache)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Singapore
+      CCACHE_DIR: ${{ github.workspace }}/.ccache
+      CCACHE_MAXSIZE: 5G
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup ccache
+        run: |
+          sudo apt update
+          sudo apt install -y ccache
+          ccache -M 5G
+          ccache -s
+
+      - name: Install build dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential git libncurses5-dev zlib1g-dev gawk flex \
+          gettext wget unzip python3-distutils python3-setuptools rsync bc file bzip2 \
+          perl make libssl-dev subversion libncurses-dev
+
+      - name: Update feeds
+        run: |
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+      - name: Configure BT R320
+        run: |
+          cat > .config <<EOF
+  CONFIG_TARGET_mediatek=y
+  CONFIG_TARGET_mediatek_filogic=y
+  CONFIG_TARGET_mediatek_filogic_DEVICE_bt_r320=y
+  CONFIG_DEVEL=y
+  EOF
+
+- name: Compile with ccache
+  run: |
+    # 使用 ccache 加速
+    export PATH="/usr/lib/ccache:$PATH"
+    make -j$(nproc) V=s
+
+- name: Show ccache stats
+  run: |
+    ccache -s
+
+- name: Upload Artifacts
+  uses: actions/upload-artifact@v3
+  with:
+    name: bt_r320-build
+    path: |
+      bin/targets/mediatek/filogic/*bt_r320*.bin

@@ -674,6 +674,21 @@ define Device/cmcc_rax3000m
 endef
 TARGET_DEVICES += cmcc_rax3000m
 
+define Device/bt_r320
+  DEVICE_VENDOR := BT
+  DEVICE_MODEL := R320
+  DEVICE_DTS := mt7981b-bt-r320
+  SUPPORTED_DEVICES := bt,r320
+  DEVICE_PACKAGES := \
+	kmod-mt7981-firmware \
+	kmod-mt7915e \
+	kmod-usb3 \
+	kmod-mmc \
+	f2fsck mkf2fs \
+	luci-app-samba4
+endef
+TARGET_DEVICES += bt_r320
+
 define Device/cmcc_rax3000me
   DEVICE_VENDOR := CMCC
   DEVICE_MODEL := RAX3000Me

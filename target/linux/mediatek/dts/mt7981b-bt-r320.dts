@@ -1,0 +1,106 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+/dts-v1/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+
+#include "mt7981.dtsi"
+
+/ {
+	model = "BT R320";
+	compatible = "bt,r320", "mediatek,mt7981";
+
+	chosen {
+		bootargs = "console=ttyS0,115200n1";
+	};
+
+	memory {
+		reg = <0x0 0x40000000 0x0 0x40000000>;
+	};
+
+	gpio-keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			linux,code = <KEY_RESTART>;
+			gpios = <&pio 1 GPIO_ACTIVE_LOW>;
+		};
+
+		wps {
+			label = "wps";
+			linux,code = <KEY_WPS_BUTTON>;
+			gpios = <&pio 0 GPIO_ACTIVE_LOW>;
+		};
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		wlan2g {
+			label = "wlan2g";
+			gpios = <&pio 34 GPIO_ACTIVE_LOW>;
+		};
+
+		wlan5g {
+			label = "wlan5g";
+			gpios = <&pio 35 GPIO_ACTIVE_LOW>;
+		};
+	};
+};
+
+&eth {
+	status = "okay";
+};
+
+&gsw {
+	status = "okay";
+
+	port@0 {
+		status = "okay";
+		label = "lan1";
+	};
+
+	port@1 {
+		status = "okay";
+		label = "lan2";
+	};
+
+	port@2 {
+		status = "okay";
+		label = "lan3";
+	};
+
+	port@4 {
+		status = "okay";
+		label = "wan";
+	};
+};
+
+&hnat {
+	mtketh-wan = "wan";
+	mtketh-lan = "lan";
+	status = "okay";
+};
+
+&xhci {
+	status = "okay";
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&watchdog {
+	status = "okay";
+};
+
+&mmc0 {
+	bus-width = <8>;
+	cap-mmc-highspeed;
+	max-frequency = <52000000>;
+	non-removable;
+	no-sd;
+	no-sdio;
+	status = "okay";
+};
