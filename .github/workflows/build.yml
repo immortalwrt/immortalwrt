@@ -41,25 +41,25 @@ jobs:
       - name: Configure BT R320
         run: |
           cat > .config <<EOF
-  CONFIG_TARGET_mediatek=y
-  CONFIG_TARGET_mediatek_filogic=y
-  CONFIG_TARGET_mediatek_filogic_DEVICE_bt_r320=y
-  CONFIG_DEVEL=y
-  EOF
+            CONFIG_TARGET_mediatek=y
+            CONFIG_TARGET_mediatek_filogic=y
+            CONFIG_TARGET_mediatek_filogic_DEVICE_bt_r320=y
+            CONFIG_DEVEL=y
+            EOF
 
-- name: Compile with ccache
-  run: |
-    # 使用 ccache 加速
-    export PATH="/usr/lib/ccache:$PATH"
-    make -j$(nproc) V=s
+      - name: Compile with ccache
+        run: |
+          # 使用 ccache 加速
+          export PATH="/usr/lib/ccache:$PATH"
+          make -j$(nproc) V=s
 
-- name: Show ccache stats
-  run: |
-    ccache -s
+      - name: Show ccache stats
+        run: |
+          ccache -s
 
-- name: Upload Artifacts
-  uses: actions/upload-artifact@v3
-  with:
-    name: bt_r320-build
-    path: |
-      bin/targets/mediatek/filogic/*bt_r320*.bin
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: bt_r320-build
+          path: |
+            bin/targets/mediatek/filogic/*bt_r320*.bin
