@@ -60,17 +60,43 @@
          cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0);
  #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0))
          cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0, 0);
-@@ -4018,6 +4018,9 @@ static int cfg80211_rtw_get_txpower(stru
+@@ -3113,7 +3113,11 @@ exit:
+ 
+ }
+ 
+-static int cfg80211_rtw_set_wiphy_params(struct wiphy *wiphy, u32 changed)
++static int cfg80211_rtw_set_wiphy_params(struct wiphy *wiphy,
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0)) || defined(BUILD_OPENWRT)
++                                         int radio_idx,
++#endif
++                                         u32 changed)
+ {
+ #if 0
+ 	struct iwm_priv *iwm = wiphy_to_iwm(wiphy);
+@@ -3958,6 +3962,9 @@ static int cfg80211_rtw_set_txpower(stru
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
  	struct wireless_dev *wdev,
  #endif
-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0)) || defined (BUILD_OPENWRT)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0)) || defined(BUILD_OPENWRT)
++        int radio_idx,
++#endif
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 36)) || defined(COMPAT_KERNEL_RELEASE)
+ 	enum nl80211_tx_power_setting type, int mbm)
+ #else
+@@ -4018,6 +4025,12 @@ static int cfg80211_rtw_get_txpower(stru
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
+ 	struct wireless_dev *wdev,
+ #endif
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0)) || defined(BUILD_OPENWRT)
++	int radio_idx,
++#endif
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0)) || defined(BUILD_OPENWRT)
 +	unsigned int link_id,
 +#endif
  	int *dbm)
  {
  	_adapter *padapter = wiphy_to_adapter(wiphy);
-@@ -4897,7 +4900,7 @@ exit:
+@@ -4897,7 +4910,7 @@ exit:
  	return ret;
  }
  
@@ -79,7 +105,7 @@
  static int cfg80211_rtw_change_beacon(struct wiphy *wiphy, struct net_device *ndev,
  		struct cfg80211_ap_update *ap_update)
  {
-@@ -5659,6 +5662,9 @@ static int	cfg80211_rtw_set_channel(stru
+@@ -5659,6 +5672,9 @@ static int	cfg80211_rtw_set_channel(stru
  }
  
  static int cfg80211_rtw_set_monitor_channel(struct wiphy *wiphy
