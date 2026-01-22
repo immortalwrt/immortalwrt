@@ -1,13 +1,13 @@
 --- a/drivers/watchdog/Makefile
 +++ b/drivers/watchdog/Makefile
-@@ -56,3 +56,4 @@ obj-$(CONFIG_WDT_TANGIER) += tangier_wdt
+@@ -57,3 +57,4 @@ obj-$(CONFIG_WDT_TEGRA) += tegra_wdt.o
  obj-$(CONFIG_WDT_XILINX) += xilinx_wwdt.o
  obj-$(CONFIG_WDT_ADI) += adi_wdt.o
  obj-$(CONFIG_WDT_QCOM) += qcom-wdt.o
 +obj-$(CONFIG_WDT_PCAT) += pcat_wdt.o
 --- a/drivers/watchdog/Kconfig
 +++ b/drivers/watchdog/Kconfig
-@@ -477,4 +477,10 @@ config WDT_FTWDT010
+@@ -485,4 +485,10 @@ config WDT_FTWDT010
  	help
  	  Faraday Technology ftwdt010 watchdog is an architecture independent
  	  watchdog. It is usually used in SoC chip design.

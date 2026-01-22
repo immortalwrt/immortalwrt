@@ -17,7 +17,7 @@ PKG_BUILD_PARALLEL:=1
 include $(INCLUDE_DIR)/package.mk
 
 define KernelPackage/nat46
-  DEPENDS:=@IPV6 +kmod-nf-conntrack6
+  DEPENDS:=@IPV6 +kmod-nf-conntrack
   TITLE:=Stateless NAT46 translation kernel module
   SECTION:=kernel
   SUBMENU:=Network Support

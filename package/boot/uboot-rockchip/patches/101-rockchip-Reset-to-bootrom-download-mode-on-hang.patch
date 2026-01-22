@@ -77,7 +77,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
 --- a/arch/arm/mach-rockchip/Makefile
 +++ b/arch/arm/mach-rockchip/Makefile
 @@ -16,16 +16,15 @@ obj-tpl-$(CONFIG_ROCKCHIP_PX30) += px30-
- obj-spl-$(CONFIG_ROCKCHIP_RK3036) += rk3036-board-spl.o
+ obj-spl-$(CONFIG_ROCKCHIP_RK3036) += rk3036-board-spl.o spl_common.o
  
  ifeq ($(CONFIG_XPL_BUILD)$(CONFIG_TPL_BUILD),)
 +obj-$(CONFIG_ROCKCHIP_COMMON_BOARD) += board.o

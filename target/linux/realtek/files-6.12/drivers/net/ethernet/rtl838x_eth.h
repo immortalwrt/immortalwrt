@@ -418,7 +418,7 @@ inline u32 rtl931x_get_mac_tx_pause_sts(int p)
 
 struct p_hdr;
 struct dsa_tag;
-struct rtl838x_eth_priv;
+struct rteth_ctrl;
 
 struct rteth_config {
 	int family_id;
@@ -450,10 +450,11 @@ struct rteth_config {
 	u32 (*get_mac_tx_pause_sts)(int port);
 	int mac;
 	int l2_tbl_flush_ctrl;
-	void (*update_cntr)(int r, int work_done);
 	void (*create_tx_header)(struct p_hdr *h, unsigned int dest_port, int prio);
 	bool (*decode_tag)(struct p_hdr *h, struct dsa_tag *tag);
-	int (*init_mac)(struct rtl838x_eth_priv *priv);
+	void (*hw_reset)(struct rteth_ctrl *ctrl);
+	int (*init_mac)(struct rteth_ctrl *ctrl);
+	void (*update_counter)(int r, int work_done);
 	const struct net_device_ops *netdev_ops;
 };
 

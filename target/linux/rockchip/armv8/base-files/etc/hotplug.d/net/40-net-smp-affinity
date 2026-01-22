@@ -42,10 +42,8 @@ linkease,easepi-r1|\
 lunzn,fastrhino-r66s|\
 mmbox,anas3035|\
 nlnet,xiguapi-v3|\
-radxa,e20c|\
 radxa,e25|\
 sinovoip,rk3568-bpi-r2pro|\
-widora,mangopi-m28k|\
 xunlong,orangepi-5-plus)
 	set_interface_core 2 "eth0"
 	set_interface_core 4 "eth1"
@@ -89,6 +87,12 @@ radxa,rock-5c)
 	set_interface_core 20 "eth1"
 	set_interface_core 40 "eth2"
 	;;
+hinlink,h28k|\
+radxa,e20c|\
+widora,mangopi-m28c|\
+widora,mangopi-m28k)
+	set_interface_core 2 "eth0"
+	;;
 lunzn,fastrhino-r68s)
 	set_interface_core 1 "eth0"
 	set_interface_core 2 "eth1"
@@ -104,8 +108,5 @@ lyt,t68m)
 radxa,e52c)
 	set_interface_core 10 "lan"
 	set_interface_core 20 "wan"
-	;;
-widora,mangopi-m28c)
-	set_interface_core 2 "eth0"
 	;;
 esac

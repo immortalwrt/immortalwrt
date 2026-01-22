@@ -18,36 +18,20 @@
 
 struct phylink_pcs *rtpcs_create(struct device *dev, struct device_node *np, int port);
 
-int rtl83xx_port_get_stp_state(struct rtl838x_switch_priv *priv, int port)
+int rtldsa_port_get_stp_state(struct rtl838x_switch_priv *priv, int port)
 {
+	u32 table[4];
 	u32 msti = 0;
-	u32 port_state[4];
-	int index, bit;
-	int pos = port;
-	int n = priv->port_width << 1;
+	int state;
 
-	/* Ports above or equal CPU port can never be configured */
 	if (port >= priv->cpu_port)
-		return -1;
+		return -EINVAL;
 
 	mutex_lock(&priv->reg_mutex);
-
-	/* For the RTL839x and following, the bits are left-aligned in the 64/128 bit field */
-	if (priv->family_id == RTL8390_FAMILY_ID)
-		pos += 12;
-	if (priv->family_id == RTL9300_FAMILY_ID)
-		pos += 3;
-	if (priv->family_id == RTL9310_FAMILY_ID)
-		pos += 8;
-
-	index = n - (pos >> 4) - 1;
-	bit = (pos << 1) % 32;
-
-	priv->r->stp_get(priv, msti, port_state);
-
+	state = priv->r->stp_get(priv, msti, port, table);
 	mutex_unlock(&priv->reg_mutex);
 
-	return (port_state[index] >> bit) & 3;
+	return state;
 }
 
 static struct table_reg rtl838x_tbl_regs[] = {
@@ -257,31 +241,22 @@ static int rtldsa_bus_c45_write(struct mii_bus *bus, int addr, int devad, int re
 
 static int rtl83xx_mdio_probe(struct rtl838x_switch_priv *priv)
 {
-	struct device_node *dn, *phy_node, *pcs_node, *led_node, *np, *mii_np;
+	struct device_node *dn, *phy_node, *pcs_node, *led_node;
 	struct device *dev = priv->dev;
 	struct mii_bus *bus;
 	int ret;
 	u32 pn;
 
-	np = of_find_compatible_node(NULL, NULL, "realtek,otto-mdio");
-	if (!np) {
-		dev_err(priv->dev, "mdio controller node not found");
+	dn = of_find_compatible_node(NULL, NULL, "realtek,otto-mdio");
+	if (!dn)
 		return -ENODEV;
-	}
 
-	mii_np = of_get_child_by_name(np, "mdio-bus");
-	if (!mii_np) {
-		dev_err(priv->dev, "mdio-bus subnode not found");
-		return -ENODEV;
-	}
-
-	priv->parent_bus = of_mdio_find_bus(mii_np);
-	if (!priv->parent_bus) {
-		dev_dbg(priv->dev, "Deferring probe of mdio bus\n");
-		return -EPROBE_DEFER;
-	}
-	if (!of_device_is_available(mii_np))
+	if (!of_device_is_available(dn))
 		ret = -ENODEV;
+
+	priv->parent_bus = of_mdio_find_bus(dn);
+	if (!priv->parent_bus)
+		return -EPROBE_DEFER;
 
 	bus = devm_mdiobus_alloc(priv->ds->dev);
 	if (!bus)
@@ -300,10 +275,8 @@ static int rtl83xx_mdio_probe(struct rtl838x_switch_priv *priv)
 	priv->ds->user_mii_bus->priv = priv;
 
 	ret = mdiobus_register(priv->ds->user_mii_bus);
-	if (ret && mii_np) {
-		of_node_put(dn);
+	if (ret)
 		return ret;
-	}
 
 	dn = of_find_compatible_node(NULL, NULL, "realtek,rtl83xx-switch");
 	if (!dn) {
