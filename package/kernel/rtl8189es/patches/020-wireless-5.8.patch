@@ -9,16 +9,38 @@
  	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0, 0);
  #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(5,19, 2))
  	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0);
-@@ -4223,7 +4223,7 @@ static int cfg80211_rtw_get_txpower(stru
+@@ -3253,7 +3253,7 @@ exit:
+ 	return ret;
+ }
+ 
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,17,0)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6,17,0)) || defined(BUILD_OPENWRT)
+ static int cfg80211_rtw_set_wiphy_params(struct wiphy *wiphy, int ifindex, u32 changed)
+ #else
+ static int cfg80211_rtw_set_wiphy_params(struct wiphy *wiphy, u32 changed)
+@@ -4165,7 +4165,7 @@ static int cfg80211_rtw_set_txpower(stru
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
  	struct wireless_dev *wdev,
+ #endif
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,17,0)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6,17,0)) || defined(BUILD_OPENWRT)
+ 	int ifindex,
+ #endif
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 36)) || defined(COMPAT_KERNEL_RELEASE)
+@@ -4230,10 +4230,10 @@ static int cfg80211_rtw_get_txpower(stru
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
+ 	struct wireless_dev *wdev,
+ #endif
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,17,0)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6,17,0)) || defined(BUILD_OPENWRT)
+ 	int ifindex,
  #endif
 -#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
 +#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0)) || defined(BUILD_OPENWRT)
  	unsigned int link_id,
  #endif
  	int *dbm)
-@@ -5151,7 +5151,7 @@ exit:
+@@ -5161,7 +5161,7 @@ exit:
  	return ret;
  }
  
@@ -27,7 +49,7 @@
  static int cfg80211_rtw_change_beacon(struct wiphy *wiphy, struct net_device *ndev,
  		struct cfg80211_ap_update *params)
  {
-@@ -6081,7 +6081,7 @@ static int	cfg80211_rtw_set_channel(stru
+@@ -6091,7 +6091,7 @@ static int	cfg80211_rtw_set_channel(stru
  #endif /*#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0))*/
  
  static int cfg80211_rtw_set_monitor_channel(struct wiphy *wiphy
