@@ -22,9 +22,9 @@ ipq60xx_setup_interfaces()
 	cambiumnetworks,xe3-4)
 		ucidef_set_interface_lan "lan1 lan2" "dhcp"
 		;;
-	jdcloud,re-cs-02|\
 	link,nn6000-v2|\
 	glinet,gl-ax1800|\
+	jdcloud,re-cs-02|\
 	linksys,mr7350|\
 	linksys,mr7500|\
 	yuncore,fap650)

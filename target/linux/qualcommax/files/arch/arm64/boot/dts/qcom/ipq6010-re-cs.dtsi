@@ -2,6 +2,8 @@
 
 #include "ipq6018.dtsi"
 #include "ipq6018-ess.dtsi"
+#include "ipq6018-nss.dtsi"
+#include "ipq6018-common.dtsi"
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
@@ -9,10 +11,13 @@
 
 / {
 	aliases {
-		led-boot = &led_status_red;
+		serial0 = &blsp1_uart3;
+		serial1 = &blsp1_uart6;
+
+		led-boot = &led_status_blue;
 		led-failsafe = &led_status_red;
 		led-running = &led_status_green;
-		led-upgrade = &led_status_blue;
+		led-upgrade = &led_status_red;
 	};
 
 	chosen {
@@ -22,19 +27,19 @@
 	leds {
 		compatible = "gpio-leds";
 
-		led_status_red: red {
+		led_status_red: status-red {
 			color = <LED_COLOR_ID_RED>;
 			function = LED_FUNCTION_STATUS;
 			gpios = <&tlmm 57 GPIO_ACTIVE_HIGH>;
 		};
 
-		led_status_green: green {
+		led_status_green: status-green {
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_STATUS;
 			gpios = <&tlmm 58 GPIO_ACTIVE_HIGH>;
 		};
 
-		led_status_blue: blue {
+		led_status_blue: status-blue {
 			color = <LED_COLOR_ID_BLUE>;
 			function = LED_FUNCTION_STATUS;
 			gpios = <&tlmm 79 GPIO_ACTIVE_HIGH>;
@@ -52,55 +57,35 @@
 	};
 };
 
-&tlmm {
-	gpio-reserved-ranges = <20 1>;
-
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio64";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio65";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-};
-
-&blsp1_uart3 {
-	pinctrl-0 = <&serial_3_pins>;
-	pinctrl-names = "default";
-	status = "okay";
-};
-
 &qusb_phy_0 {
-	vdd-supply = <&usb_vbus>;
 	status = "okay";
-};
-
-&rpm {
-	status = "disabled";
+	vdd-supply = <&usb_vbus>;
 };
 
 &sdhc {
+	status = "okay";
+
 	bus-width = <8>;
 	mmc-ddr-1_8v;
 	mmc-hs200-1_8v;
-	non-removable;
-	status = "okay";
+
+	/delete-property/ mmc-hs400-1_8v;
 };
 
-&ssphy_0 {
-	status = "okay";
+&tlmm {
+	btuart_pins: btuart-pins {
+		pins = "gpio48", "gpio49";
+		function = "blsp5_uart";
+		drive-strength = <8>;
+		bias-pull-up;
+	};
 };
 
-&usb3 {
+&blsp1_uart6 {
 	status = "okay";
+
+	pinctrl-0 = <&btuart_pins>;
+	pinctrl-names = "default";
 };
 
 &mdio {
@@ -110,30 +95,56 @@
 	pinctrl-names = "default";
 	reset-gpios = <&tlmm 75 GPIO_ACTIVE_LOW>;
 
-	ethernet-phy-package@24 {
+	ethernet-phy-package@0 {
 		compatible = "qcom,qca8075-package";
 		#address-cells = <1>;
 		#size-cells = <0>;
-		reg = <24>;
+		reg = <0>;
 
-		qca8075_0: ethernet-phy@24 {
+		qca8075_24: ethernet-phy@24 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <24>;
 		};
 
-		qca8075_1: ethernet-phy@25 {
+		qca8075_25: ethernet-phy@25 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <25>;
 		};
 
-		qca8075_2: ethernet-phy@26 {
+		qca8075_26: ethernet-phy@26 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <26>;
 		};
 
-		qca8075_3: ethernet-phy@27 {
+		qca8075_27: ethernet-phy@27 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <27>;
+		};
+	};
+};
+
+&switch {
+	status = "okay";
+
+	qcom,port_phyinfo {
+		port@1 {
+			port_id = <1>;
+			phy_address = <24>;
+		};
+
+		port@2 {
+			port_id = <2>;
+			phy_address = <25>;
+		};
+
+		port@3 {
+			port_id = <3>;
+			phy_address = <26>;
+		};
+
+		port@4 {
+			port_id = <4>;
+			phy_address = <27>;
 		};
 	};
 };

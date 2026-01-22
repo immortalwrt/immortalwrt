@@ -112,9 +112,7 @@ ALLWIFIBOARDS:= \
 	zyxel_scr50axe \
 	anysafe_e1 \
 	cmiot_ax18 \
-	jdcloud_re-cs-02 \
 	jdcloud_re-cs-03 \
-	jdcloud_re-ss-01 \
 	link_nn6000 \
 	philips_ly1800 \
 	redmi_ax5 \
@@ -310,9 +308,7 @@ $(eval $(call generate-ipq-wifi-package,zyxel_nwa210ax,Zyxel NWA210AX))
 $(eval $(call generate-ipq-wifi-package,zyxel_scr50axe,Zyxel SCR50AXE))
 $(eval $(call generate-ipq-wifi-package,anysafe_e1,AnySafe E1))
 $(eval $(call generate-ipq-wifi-package,cmiot_ax18,CMIOT AX18))
-$(eval $(call generate-ipq-wifi-package,jdcloud_re-cs-02,JDCloud RE-CS-02))
 $(eval $(call generate-ipq-wifi-package,jdcloud_re-cs-03,JDCloud RE-CS-03))
-$(eval $(call generate-ipq-wifi-package,jdcloud_re-ss-01,JDCloud RE-SS-01))
 $(eval $(call generate-ipq-wifi-package,link_nn6000,Link NN6000))
 $(eval $(call generate-ipq-wifi-package,philips_ly1800,Philips LY1800))
 $(eval $(call generate-ipq-wifi-package,redmi_ax5,Redmi AX5))
