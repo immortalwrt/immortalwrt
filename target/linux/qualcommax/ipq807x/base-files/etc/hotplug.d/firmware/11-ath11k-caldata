@@ -52,6 +52,9 @@ case "$FIRMWARE" in
 		caldata_extract "0:art" 0x1000 0x20000
 		ath11k_remove_regdomain
 		;;
+	tcl,linkhub-hh500v)
+		caldata_extract "0:ART" 0x1000 0x20000
+		;;
 	prpl,haze|\
 	spectrum,sax1v1k|\
 	verizon,cr1000a)

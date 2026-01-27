@@ -23,6 +23,7 @@ preinit_mount_factory_partitions() {
 		;;
 	tplink,eap610od|\
 	tplink,eap620hd-v1|\
+	tplink,eap620hd-v3|\
 	tplink,eap623od-hd-v1|\
 	tplink,eap625od-hd-v1|\
 	tplink,eap660hd-v1)

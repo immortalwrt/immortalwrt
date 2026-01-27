@@ -78,6 +78,7 @@ platform_do_upgrade() {
 		nand_do_upgrade "$1"
 		;;
 	tplink,eap610od|\
+	tplink,eap620hd-v3|\
 	tplink,eap623od-hd-v1|\
 	tplink,eap625od-hd-v1)
 		remove_oem_ubi_volume ubi_rootfs

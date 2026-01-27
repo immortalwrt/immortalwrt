@@ -1,18 +1,7 @@
-# based on target/linux/qualcommax/ipq50xx/base-files/lib/upgrade/elecom.sh
-
 . /lib/functions.sh
+. /lib/upgrade/common.sh
 . /lib/functions/bootconfig.sh
 
-# Read or update an entry in Qualcomm bootconfig partition
-#
-# parameters:
-#   $1: partition name of bootconfig (ex.: "0:bootconfig", "0:bootconfig1", etc)
-#   $2: entry name in bootconfig (ex.: "0:hlos", "rootfs", etc)
-#   $3: index to set for the entry (0/1)
-#
-# operations:
-#   read : bootconfig_rw_index <bootconfig> <entry>
-#   write: bootconfig_rw_index <bootconfig> <entry> <index>
 bootconfig_rw_index() {
 	local bootcfg="$1"
 	local partname="$2"
@@ -56,7 +45,7 @@ bootconfig_rw_index() {
 			return 1
 		}
 	fi
-	
+
 	rm "$tempfile"
 }
 

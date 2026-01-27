@@ -79,13 +79,6 @@
 		bias-pull-up;
 	};
 
-	button_pins: button-pins {
-		pins = "gpio30";
-		function = "gpio";
-		drive-strength = <8>;
-		bias-pull-up;
-	};
-
 	i2c_6_pins: i2c-6-state {
 		pins = "gpio0", "gpio2";
 		drive-strength = <8>;

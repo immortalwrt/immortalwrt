@@ -27,6 +27,7 @@ netgear,wax214|\
 netgear,wax610|\
 netgear,wax610y|\
 tplink,eap610od|\
+tplink,eap620hd-v3|\
 tplink,eap623od-hd-v1|\
 tplink,eap625od-hd-v1)
 	ubootenv_add_mtd "0:appsblenv" "0x0" "0x40000" "0x20000"

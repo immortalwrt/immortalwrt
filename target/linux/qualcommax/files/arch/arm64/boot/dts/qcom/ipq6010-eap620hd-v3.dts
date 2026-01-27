@@ -2,7 +2,7 @@
 
 /dts-v1/;
 
-#include "ipq6018-tplink-eap6xx-outdoor.dtsi"
+#include "ipq6010-tplink.dtsi"
 
 / {
 	model = "TP-Link EAP620HD v3";
@@ -36,15 +36,8 @@
 	};
 };
 
-&tlmm {
-	gpio-reserved-ranges = <20 1>;
-};
-
-&switch {
-	switch_mac_mode1 = <MAC_MODE_SGMII_PLUS>;
-};
-
 &wifi {
-	qcom,ath11k-calibration-variant = "TP-Link-EAP620-HD-v3";
 	status = "okay";
+	qcom,ath11k-fw-memory-mode = <1>;
+	qcom,ath11k-calibration-variant = "TP-Link-EAP620-HD-v3";
 };
