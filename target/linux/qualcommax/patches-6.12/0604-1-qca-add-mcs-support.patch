@@ -176,7 +176,7 @@
  		break;
  	}
 @@ -212,6 +241,13 @@ int br_handle_frame_finish(struct net *n
- 			dst->used = now;
+ 			WRITE_ONCE(dst->used, now);
  		br_forward(dst->dst, skb, local_rcv, false);
  	} else {
 +	  /* QCA qca-mcs support - Start */

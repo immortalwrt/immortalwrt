@@ -272,7 +272,7 @@ Signed-off-by: Pavithra R <quic_pavir@quicinc.com>
  
  int __xfrm_init_state(struct xfrm_state *x, bool init_replay, bool offload,
  		      struct netlink_ext_ack *extack)
-@@ -3392,3 +3383,39 @@ void xfrm_audit_state_icvfail(struct xfr
+@@ -3393,3 +3384,39 @@ void xfrm_audit_state_icvfail(struct xfr
  }
  EXPORT_SYMBOL_GPL(xfrm_audit_state_icvfail);
  #endif /* CONFIG_AUDITSYSCALL */
