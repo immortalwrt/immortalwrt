@@ -339,10 +339,6 @@ define BuildPackage
   # default, so wget-ssl can explicitly provide @wget-any as well.
   $(eval PROVIDES:=$(strip @$(1)-any $(PROVIDES)))
 
-ifdef DESCRIPTION
-$$(error DESCRIPTION:= is obsolete, use Package/PKG_NAME/description)
-endif
-
 ifndef Package/$(1)/description
 define Package/$(1)/description
 	$(TITLE)
@@ -395,7 +391,7 @@ prepare-package-install:
 $(PACKAGE_DIR):
 	mkdir -p $@
 
-compile:
+compile: prepare-package-install
 .install: .compile
 install: compile
 

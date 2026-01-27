@@ -17,23 +17,23 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
 
 --- a/drivers/mtd/nand/spi/Makefile
 +++ b/drivers/mtd/nand/spi/Makefile
-@@ -2,5 +2,5 @@
- 
- spinand-objs := core.o esmt.o foresee.o gigadevice.o macronix.o micron.o paragon.o
- spinand-objs += toshiba.o winbond.o xtx.o
+@@ -3,5 +3,5 @@
+ spinand-objs := core.o otp.o
+ spinand-objs += alliancememory.o ato.o esmt.o fmsh.o foresee.o gigadevice.o macronix.o
+ spinand-objs += micron.o paragon.o skyhigh.o toshiba.o winbond.o xtx.o
 -spinand-objs += etron.o
 +spinand-objs += dosilicon.o etron.o
  obj-$(CONFIG_MTD_SPI_NAND) += spinand.o
 --- a/drivers/mtd/nand/spi/core.c
 +++ b/drivers/mtd/nand/spi/core.c
-@@ -886,6 +886,7 @@ static const struct nand_ops spinand_ops
- };
- 
+@@ -1286,6 +1286,7 @@ static const struct nand_ops spinand_ops
  static const struct spinand_manufacturer *spinand_manufacturers[] = {
+ 	&alliancememory_spinand_manufacturer,
+ 	&ato_spinand_manufacturer,
 +	&dosilicon_spinand_manufacturer,
+ 	&esmt_c8_spinand_manufacturer,
+ 	&esmt_8c_spinand_manufacturer,
  	&etron_spinand_manufacturer,
- 	&gigadevice_spinand_manufacturer,
- 	&macronix_spinand_manufacturer,
 --- /dev/null
 +++ b/drivers/mtd/nand/spi/dosilicon.c
 @@ -0,0 +1,280 @@
@@ -57,17 +57,17 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
 +#define DOSICON_STATUS_ECC_7TO8_BITFLIPS	(5 << 4)
 +
 +static SPINAND_OP_VARIANTS(read_cache_variants,
-+		SPINAND_PAGE_READ_FROM_CACHE_X4_OP(0, 1, NULL, 0),
-+		SPINAND_PAGE_READ_FROM_CACHE_OP(true, 0, 1, NULL, 0),
-+		SPINAND_PAGE_READ_FROM_CACHE_OP(false, 0, 1, NULL, 0));
++		SPINAND_PAGE_READ_FROM_CACHE_1S_1S_4S_OP(0, 1, NULL, 0, 0),
++		SPINAND_PAGE_READ_FROM_CACHE_FAST_1S_1S_1S_OP(0, 1, NULL, 0, 0),
++		SPINAND_PAGE_READ_FROM_CACHE_1S_1S_1S_OP(0, 0, 1, NULL, 0));
 +
 +static SPINAND_OP_VARIANTS(write_cache_variants,
-+		SPINAND_PROG_LOAD_X4(true, 0, NULL, 0),
-+		SPINAND_PROG_LOAD(true, 0, NULL, 0));
++		SPINAND_PROG_LOAD_1S_1S_4S_OP(true, 0, NULL, 0),
++		SPINAND_PROG_LOAD_1S_1S_1S_OP(true, 0, NULL, 0));
 +
 +static SPINAND_OP_VARIANTS(update_cache_variants,
-+		SPINAND_PROG_LOAD_X4(true, 0, NULL, 0),
-+		SPINAND_PROG_LOAD(true, 0, NULL, 0));
++		SPINAND_PROG_LOAD_1S_1S_4S_OP(true, 0, NULL, 0),
++		SPINAND_PROG_LOAD_1S_1S_1S_OP(true, 0, NULL, 0));
 +
 +static int ds35xxga_ooblayout_ecc(struct mtd_info *mtd, int section,
 +				  struct mtd_oob_region *region)
@@ -319,11 +319,11 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
 +};
 --- a/include/linux/mtd/spinand.h
 +++ b/include/linux/mtd/spinand.h
-@@ -297,6 +297,7 @@ struct spinand_manufacturer {
- };
- 
+@@ -413,6 +413,7 @@ struct spinand_manufacturer {
  /* SPI NAND manufacturers */
+ extern const struct spinand_manufacturer alliancememory_spinand_manufacturer;
+ extern const struct spinand_manufacturer ato_spinand_manufacturer;
 +extern const struct spinand_manufacturer dosilicon_spinand_manufacturer;
+ extern const struct spinand_manufacturer esmt_c8_spinand_manufacturer;
+ extern const struct spinand_manufacturer esmt_8c_spinand_manufacturer;
  extern const struct spinand_manufacturer etron_spinand_manufacturer;
- extern const struct spinand_manufacturer gigadevice_spinand_manufacturer;
- extern const struct spinand_manufacturer macronix_spinand_manufacturer;

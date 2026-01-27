@@ -107,7 +107,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  }
  
  static unsigned long
-@@ -1431,9 +1456,13 @@ static int rockchip_usb2phy_probe(struct
+@@ -1432,9 +1457,13 @@ static int rockchip_usb2phy_probe(struct
  
  	if (!dev->parent || !dev->parent->of_node ||
  	    of_property_present(np, "rockchip,usbgrf")) {

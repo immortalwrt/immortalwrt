@@ -184,13 +184,6 @@ define U-Boot/rk3528/Default
   TPL:=$(RK3528_TPL)
 endef
 
-define U-Boot/hinlink-h28k-rk3528
-  $(U-Boot/rk3528/Default)
-  NAME:=HINLINK H28K
-  BUILD_DEVICES:= \
-    hinlink_h28k
-endef
-
 define U-Boot/mangopi-m28c-rk3528
   $(U-Boot/rk3528/Default)
   NAME:=MangoPi M28C
@@ -536,7 +529,6 @@ UBOOT_TARGETS := \
   roc-cc-rk3328 \
   rock64-rk3328 \
   rock-pi-e-rk3328 \
-  hinlink-h28k-rk3528 \
   mangopi-m28c-rk3528 \
   mangopi-m28k-rk3528 \
   radxa-e20c-rk3528 \
