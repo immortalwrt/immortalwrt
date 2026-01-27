@@ -29,7 +29,6 @@ rockchip_setup_interfaces()
 	armsom,sige3|\
 	friendlyarm,nanopi-r5c|\
 	friendlyarm,nanopi-r76s|\
-	hinlink,h28k|\
 	lunzn,fastrhino-r66s|\
 	mmbox,anas3035|\
 	nlnet,xiguapi-v3|\
@@ -104,7 +103,6 @@ rockchip_setup_macs()
 	friendlyarm,nanopi-r2c|\
 	friendlyarm,nanopi-r2s|\
 	friendlyarm,nanopi-r76s|\
-	hinlink,h28k|\
 	linkease,easepi-r1|\
 	lunzn,fastrhino-r66s|\
 	lunzn,fastrhino-r68s|\
