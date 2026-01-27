@@ -11,7 +11,6 @@
 
 	gpio-export {
 		compatible = "gpio-export";
-		#size-cells = <0>;
 
 		modem-reset {
 			gpio-export,name = "MODEM-RST";
@@ -93,6 +92,14 @@
 			cooling-device = <&fan 3 THERMAL_NO_LIMIT>;
 		};
 	};
+};
+
+&rgmii_led1 {
+	color = <LED_COLOR_ID_GREEN>;
+};
+
+&rgmii_led2 {
+	color = <LED_COLOR_ID_AMBER>;
 };
 
 &usb_host0_xhci {

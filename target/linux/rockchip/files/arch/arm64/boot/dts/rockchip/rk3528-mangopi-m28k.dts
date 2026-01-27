@@ -78,6 +78,14 @@
 	};
 };
 
+&rgmii_led1 {
+	color = <LED_COLOR_ID_AMBER>;
+};
+
+&rgmii_led2 {
+	color = <LED_COLOR_ID_GREEN>;
+};
+
 &usb_host0_xhci {
 	maximum-speed = "high-speed";
 	phys = <&usb2phy_otg>;
