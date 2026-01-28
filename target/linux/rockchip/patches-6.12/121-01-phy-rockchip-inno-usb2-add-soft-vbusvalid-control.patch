@@ -89,7 +89,7 @@ Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
  };
  
  /**
-@@ -498,6 +505,13 @@ static int rockchip_usb2phy_init(struct
+@@ -495,6 +502,13 @@ static int rockchip_usb2phy_init(struct
  	mutex_lock(&rport->mutex);
  
  	if (rport->port_id == USB2PHY_PORT_OTG) {
@@ -103,7 +103,7 @@ Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
  		if (rport->mode != USB_DR_MODE_HOST &&
  		    rport->mode != USB_DR_MODE_UNKNOWN) {
  			/* clear bvalid status and enable bvalid detect irq */
-@@ -538,8 +552,7 @@ static int rockchip_usb2phy_init(struct
+@@ -535,8 +549,7 @@ static int rockchip_usb2phy_init(struct
  			if (ret)
  				goto out;
  
@@ -113,7 +113,7 @@ Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
  		} else {
  			/* If OTG works in host only mode, do nothing. */
  			dev_dbg(&rport->phy->dev, "mode %d\n", rport->mode);
-@@ -669,8 +682,12 @@ static void rockchip_usb2phy_otg_sm_work
+@@ -666,8 +679,12 @@ static void rockchip_usb2phy_otg_sm_work
  	unsigned long delay;
  	bool vbus_attach, sch_work, notify_charger;
  
@@ -128,7 +128,7 @@ Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
  
  	sch_work = false;
  	notify_charger = false;
-@@ -1279,6 +1296,83 @@ static int rockchip_otg_event(struct not
+@@ -1280,6 +1297,83 @@ static int rockchip_otg_event(struct not
  	return NOTIFY_DONE;
  }
  
@@ -212,7 +212,7 @@ Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
  static int rockchip_usb2phy_otg_port_init(struct rockchip_usb2phy *rphy,
  					  struct rockchip_usb2phy_port *rport,
  					  struct device_node *child_np)
-@@ -1300,6 +1394,8 @@ static int rockchip_usb2phy_otg_port_ini
+@@ -1301,6 +1395,8 @@ static int rockchip_usb2phy_otg_port_ini
  
  	mutex_init(&rport->mutex);
  
@@ -221,7 +221,7 @@ Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
  	rport->mode = of_usb_get_dr_mode_by_phy(child_np, -1);
  	if (rport->mode == USB_DR_MODE_HOST ||
  	    rport->mode == USB_DR_MODE_UNKNOWN) {
-@@ -1985,6 +2081,8 @@ static const struct rockchip_usb2phy_cfg
+@@ -1982,6 +2078,8 @@ static const struct rockchip_usb2phy_cfg
  		.port_cfgs	= {
  			[USB2PHY_PORT_OTG] = {
  				.phy_sus	= { 0x0000, 8, 0, 0, 0x1d1 },
@@ -230,7 +230,7 @@ Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
  				.bvalid_det_en	= { 0x00c0, 1, 1, 0, 1 },
  				.bvalid_det_st	= { 0x00c4, 1, 1, 0, 1 },
  				.bvalid_det_clr = { 0x00c8, 1, 1, 0, 1 },
-@@ -2022,6 +2120,8 @@ static const struct rockchip_usb2phy_cfg
+@@ -2019,6 +2117,8 @@ static const struct rockchip_usb2phy_cfg
  		.port_cfgs	= {
  			[USB2PHY_PORT_OTG] = {
  				.phy_sus	= { 0x2000, 8, 0, 0, 0x1d1 },
