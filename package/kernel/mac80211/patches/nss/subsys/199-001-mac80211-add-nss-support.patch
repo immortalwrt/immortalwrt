@@ -244,7 +244,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  		ac = skb_get_queue_mapping(skb);
  		tx->sta->deflink.tx_stats.bytes[ac] += skb->len;
  	}
-@@ -2875,7 +2887,9 @@ static struct sk_buff *ieee80211_build_h
+@@ -2877,7 +2889,9 @@ static struct sk_buff *ieee80211_build_h
  
  	if (unlikely(!multicast &&
  		     (sk_requests_wifi_status(skb->sk) ||
@@ -255,7 +255,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  		info_id = ieee80211_store_ack_skb(local, skb, &info_flags,
  						  cookie);
  
-@@ -4671,7 +4685,8 @@ static void ieee80211_8023_xmit(struct i
+@@ -4673,7 +4687,8 @@ static void ieee80211_8023_xmit(struct i
  			memcpy(IEEE80211_SKB_CB(seg), info, sizeof(*info));
  	}
  
@@ -265,7 +265,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  		info->status_data = ieee80211_store_ack_skb(local, skb,
  							    &info->flags, NULL);
  		if (info->status_data)
-@@ -4679,8 +4694,10 @@ static void ieee80211_8023_xmit(struct i
+@@ -4681,8 +4696,10 @@ static void ieee80211_8023_xmit(struct i
  	}
  
  	dev_sw_netstats_tx_add(dev, skbs, len);
@@ -280,7 +280,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  
 --- a/net/wireless/util.c
 +++ b/net/wireless/util.c
-@@ -2685,6 +2685,9 @@ EXPORT_SYMBOL(cfg80211_link_sinfo_alloc_
+@@ -2664,6 +2664,9 @@ EXPORT_SYMBOL(cfg80211_link_sinfo_alloc_
  
  int cfg80211_sinfo_alloc_tid_stats(struct station_info *sinfo, gfp_t gfp)
  {
@@ -292,7 +292,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  				gfp);
 --- a/net/mac80211/cfg.c
 +++ b/net/mac80211/cfg.c
-@@ -2960,7 +2960,7 @@ static int ieee80211_change_bss(struct w
+@@ -2950,7 +2950,7 @@ static int ieee80211_change_bss(struct w
  	struct ieee80211_sub_if_data *sdata = IEEE80211_DEV_TO_SUB_IF(dev);
  	struct ieee80211_link_data *link;
  	struct ieee80211_supported_band *sband;
@@ -301,7 +301,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  
  	link = ieee80211_link_or_deflink(sdata, params->link_id, true);
  	if (IS_ERR(link))
-@@ -3010,6 +3010,8 @@ static int ieee80211_change_bss(struct w
+@@ -3000,6 +3000,8 @@ static int ieee80211_change_bss(struct w
  			sdata->flags |= IEEE80211_SDATA_DONT_BRIDGE_PACKETS;
  		else
  			sdata->flags &= ~IEEE80211_SDATA_DONT_BRIDGE_PACKETS;
@@ -310,7 +310,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  		ieee80211_check_fast_rx_iface(sdata);
  	}
  
-@@ -3038,6 +3040,8 @@ static int ieee80211_change_bss(struct w
+@@ -3028,6 +3030,8 @@ static int ieee80211_change_bss(struct w
  
  	ieee80211_link_info_change_notify(sdata, link, changed);
  

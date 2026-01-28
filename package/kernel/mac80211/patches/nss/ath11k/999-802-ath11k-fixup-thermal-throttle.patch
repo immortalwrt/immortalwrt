@@ -137,7 +137,7 @@
  #define ATH11K_HWMON_NAME_LEN           15
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -3239,6 +3239,7 @@ ath11k_wmi_send_thermal_mitigation_param
+@@ -3245,6 +3245,7 @@ ath11k_wmi_send_thermal_mitigation_param
  		lvl_conf->temp_hwm = param->levelconf[i].tmphwm;
  		lvl_conf->dc_off_percent = param->levelconf[i].dcoffpercent;
  		lvl_conf->prio = param->levelconf[i].priority;

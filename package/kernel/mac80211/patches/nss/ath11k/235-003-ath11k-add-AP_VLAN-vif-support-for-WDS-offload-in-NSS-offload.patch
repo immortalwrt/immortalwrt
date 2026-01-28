@@ -368,7 +368,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  #if IS_ENABLED(CONFIG_IPV6)
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
-@@ -5112,6 +5112,8 @@ enum wmi_vdev_subtype {
+@@ -5114,6 +5114,8 @@ enum wmi_vdev_subtype {
  	WMI_VDEV_SUBTYPE_MESH_11S,
  };
  

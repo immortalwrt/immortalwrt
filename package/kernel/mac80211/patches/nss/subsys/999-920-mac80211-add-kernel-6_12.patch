@@ -11,7 +11,7 @@
  	struct sk_buff *skb;
 --- a/net/mac80211/tx.c
 +++ b/net/mac80211/tx.c
-@@ -4565,7 +4565,7 @@ static void ieee80211_mlo_multicast_tx(s
+@@ -4567,7 +4567,7 @@ static void ieee80211_mlo_multicast_tx(s
  }
  
  #ifdef CPTCFG_MAC80211_NSS_SUPPORT
@@ -20,7 +20,7 @@
  			      struct net_device *dev)
  {
  	struct ieee80211_sub_if_data *sdata = IEEE80211_DEV_TO_SUB_IF(dev);
-@@ -4811,7 +4811,7 @@ out_free:
+@@ -4813,7 +4813,7 @@ out_free:
  	kfree_skb(skb);
  }
  
@@ -31,7 +31,7 @@
  			    u32 info_flags, u32 ctrl_flags, u64 *cookie)
 --- a/net/mac80211/cfg.c
 +++ b/net/mac80211/cfg.c
-@@ -2778,8 +2778,8 @@ static int copy_mesh_setup(struct ieee80
+@@ -2768,8 +2768,8 @@ static int copy_mesh_setup(struct ieee80
  		ifmsh->security |= IEEE80211_MESH_SEC_SECURED;
  
  	/* mcast rate setting in Mesh Node */

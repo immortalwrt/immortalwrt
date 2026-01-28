@@ -823,7 +823,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  	struct ieee80211_key_conf *keys[WMI_MAX_KEY_INDEX + 1];
 --- a/drivers/net/wireless/ath/ath11k/pci.c
 +++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -583,6 +583,7 @@ static int ath11k_pci_claim(struct ath11
+@@ -601,6 +601,7 @@ static int ath11k_pci_claim(struct ath11
  	}
  
  	ab->mem_ce = ab->mem;

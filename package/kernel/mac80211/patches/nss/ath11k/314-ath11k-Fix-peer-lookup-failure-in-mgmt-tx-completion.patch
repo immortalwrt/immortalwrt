@@ -36,7 +36,7 @@ Signed-off-by: Rameshkumar Sundaram <ramess@codeaurora.org>
  		spin_lock_bh(&ab->dp.tx_ring[i].tx_idr_lock);
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -6087,13 +6087,13 @@ static int wmi_process_tx_comp(struct at
+@@ -6093,13 +6093,13 @@ static int wmi_process_tx_comp(struct at
  	struct ieee80211_tx_info *info;
  	struct ath11k_skb_cb *skb_cb;
  	struct ieee80211_hdr *hdr;
@@ -51,7 +51,7 @@ Signed-off-by: Rameshkumar Sundaram <ramess@codeaurora.org>
  	spin_lock_bh(&ar->txmgmt_idr_lock);
  	msdu = idr_find(&ar->txmgmt_idr, tx_compl_param->desc_id);
  
-@@ -6101,6 +6101,7 @@ static int wmi_process_tx_comp(struct at
+@@ -6107,6 +6107,7 @@ static int wmi_process_tx_comp(struct at
  		ath11k_warn(ar->ab, "received mgmt tx compl for invalid msdu_id: %d\n",
  			    tx_compl_param->desc_id);
  		spin_unlock_bh(&ar->txmgmt_idr_lock);
@@ -59,7 +59,7 @@ Signed-off-by: Rameshkumar Sundaram <ramess@codeaurora.org>
  		return -ENOENT;
  	}
  
-@@ -6109,6 +6110,28 @@ static int wmi_process_tx_comp(struct at
+@@ -6115,6 +6116,28 @@ static int wmi_process_tx_comp(struct at
  
  	skb_cb = ATH11K_SKB_CB(msdu);
  	dma_unmap_single(ar->ab->dev, skb_cb->paddr, msdu->len, DMA_TO_DEVICE);
@@ -88,7 +88,7 @@ Signed-off-by: Rameshkumar Sundaram <ramess@codeaurora.org>
  
  	info = IEEE80211_SKB_CB(msdu);
  	memset(&info->status, 0, sizeof(info->status));
-@@ -6127,34 +6150,6 @@ static int wmi_process_tx_comp(struct at
+@@ -6133,34 +6156,6 @@ static int wmi_process_tx_comp(struct at
  	 */
  	info->status.rates[0].idx = -1;
  

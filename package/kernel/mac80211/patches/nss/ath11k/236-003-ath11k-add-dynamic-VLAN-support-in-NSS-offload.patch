@@ -519,7 +519,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  
  	if (arg->key_rsc_counter)
  		memcpy(&cmd->key_rsc_counter, &arg->key_rsc_counter,
-@@ -4324,6 +4325,7 @@ ath11k_wmi_copy_resource_config(struct w
+@@ -4330,6 +4331,7 @@ ath11k_wmi_copy_resource_config(struct w
  	wmi_cfg->flags2 = WMI_RSRC_CFG_FLAG2_CALC_NEXT_DTIM_COUNT_SET;
  	wmi_cfg->ema_max_vap_cnt = tg_cfg->ema_max_vap_cnt;
  	wmi_cfg->ema_max_profile_period = tg_cfg->ema_max_profile_period;
@@ -527,7 +527,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  }
  
  static int ath11k_init_cmd_send(struct ath11k_pdev_wmi *wmi,
-@@ -4546,6 +4548,9 @@ int ath11k_wmi_cmd_init(struct ath11k_ba
+@@ -4552,6 +4554,9 @@ int ath11k_wmi_cmd_init(struct ath11k_ba
  	memset(&init_param, 0, sizeof(init_param));
  	memset(&config, 0, sizeof(config));
  
@@ -547,7 +547,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  	u32 key_flags;
  	u32 key_cipher;
  	u32 key_len;
-@@ -5816,6 +5817,7 @@ struct target_resource_config {
+@@ -5818,6 +5819,7 @@ struct target_resource_config {
  	u32 bpf_instruction_size;
  	u32 max_bssid_rx_filters;
  	u32 use_pdev_id;

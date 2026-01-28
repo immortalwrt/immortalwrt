@@ -18,7 +18,7 @@ Signed-off-by: P Praneesh <ppranees@codeaurora.org>
 
 --- a/net/mac80211/tx.c
 +++ b/net/mac80211/tx.c
-@@ -6442,7 +6442,13 @@ int ieee80211_tx_control_port(struct wip
+@@ -6444,7 +6444,13 @@ int ieee80211_tx_control_port(struct wip
  
  start_xmit:
  	local_bh_disable();

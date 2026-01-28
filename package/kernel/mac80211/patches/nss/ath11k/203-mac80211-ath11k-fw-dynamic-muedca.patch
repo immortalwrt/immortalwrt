@@ -40,7 +40,7 @@ Signed-off-by: Muna Sinada <msinada@codeaurora.org>
  	[WMI_TAG_11D_NEW_COUNTRY_EVENT] = {
  		.min_len = sizeof(struct wmi_11d_new_cc_ev) },
  	[WMI_TAG_PER_CHAIN_RSSI_STATS] = {
-@@ -8850,6 +8852,74 @@ out:
+@@ -8856,6 +8858,74 @@ out:
  	kfree(tb);
  }
  
@@ -115,7 +115,7 @@ Signed-off-by: Muna Sinada <msinada@codeaurora.org>
  static void ath11k_wmi_tlv_op_rx(struct ath11k_base *ab, struct sk_buff *skb)
  {
  	struct wmi_cmd_hdr *cmd_hdr;
-@@ -8968,6 +9038,9 @@ static void ath11k_wmi_tlv_op_rx(struct
+@@ -8974,6 +9044,9 @@ static void ath11k_wmi_tlv_op_rx(struct
  	case WMI_11D_NEW_COUNTRY_EVENTID:
  		ath11k_reg_11d_new_cc_event(ab, skb);
  		break;
@@ -143,7 +143,7 @@ Signed-off-by: Muna Sinada <msinada@codeaurora.org>
  	WMI_TAG_FILS_DISCOVERY_TMPL_CMD = 0x344,
  	WMI_TAG_PDEV_SRG_BSS_COLOR_BITMAP_CMD = 0x37b,
  	WMI_TAG_PDEV_SRG_PARTIAL_BSSID_BITMAP_CMD,
-@@ -4897,6 +4899,16 @@ struct wmi_pdev_temperature_event {
+@@ -4899,6 +4901,16 @@ struct wmi_pdev_temperature_event {
  	u32 pdev_id;
  } __packed;
  
