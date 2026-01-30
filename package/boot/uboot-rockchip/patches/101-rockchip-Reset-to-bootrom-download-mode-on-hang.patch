@@ -106,7 +106,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  #include <command.h>
  #include <env.h>
  #include <log.h>
-@@ -22,11 +23,31 @@ int setup_boot_mode(void)
+@@ -22,11 +23,33 @@ int setup_boot_mode(void)
  
  #else
  
@@ -119,10 +119,12 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
 +	 * to reset to bootrom download mode once TF-A has been started.
 +	 *
 +	 * TF-A blobs for RK3568 already clear SOC_CON1 for PSCI reset.
-+	 * However, the TF-A blobs for RK3588 does not clear SOC_CON1.
++	 * However, the TF-A blobs for RK3576/RK3588 does not clear SOC_CON1.
 +	 */
 +	if (IS_ENABLED(CONFIG_ROCKCHIP_RK3568))
 +		writel(0x40000, 0xFDC20104);
++	if (IS_ENABLED(CONFIG_ROCKCHIP_RK3576))
++		writel(0xFFFF0000, 0x26024004);
 +	if (IS_ENABLED(CONFIG_ROCKCHIP_RK3588))
 +		writel(0xFFFF0000, 0xFD58A004);
 +
