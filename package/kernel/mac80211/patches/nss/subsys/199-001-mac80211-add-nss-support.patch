@@ -131,7 +131,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  
 --- a/net/mac80211/util.c
 +++ b/net/mac80211/util.c
-@@ -894,6 +894,22 @@ u32 ieee80211_chandef_radio_mask(struct
+@@ -941,6 +941,22 @@ u32 ieee80211_chandef_radio_mask(struct
  	return mask;
  }
  

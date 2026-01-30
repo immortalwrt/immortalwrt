@@ -12,7 +12,7 @@
  		have_80mhz = true;
 --- a/net/mac80211/util.c
 +++ b/net/mac80211/util.c
-@@ -1329,7 +1329,8 @@ static int ieee80211_put_preq_ies_band(s
+@@ -1376,7 +1376,8 @@ static int ieee80211_put_preq_ies_band(s
  	/* Check if any channel in this sband supports at least 80 MHz */
  	for (i = 0; i < sband->n_channels; i++) {
  		if (sband->channels[i].flags & (IEEE80211_CHAN_DISABLED |

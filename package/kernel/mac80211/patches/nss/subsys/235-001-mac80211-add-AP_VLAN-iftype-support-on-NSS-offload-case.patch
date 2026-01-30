@@ -168,7 +168,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  
 --- a/net/mac80211/util.c
 +++ b/net/mac80211/util.c
-@@ -1678,6 +1678,9 @@ static void ieee80211_assign_chanctx(str
+@@ -1725,6 +1725,9 @@ static void ieee80211_assign_chanctx(str
  
  	lockdep_assert_wiphy(local->hw.wiphy);
  
@@ -178,7 +178,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  	conf = rcu_dereference_protected(link->conf->chanctx_conf,
  					 lockdep_is_held(&local->hw.wiphy->mtx));
  	if (conf) {
-@@ -1898,7 +1901,8 @@ int ieee80211_reconfig(struct ieee80211_
+@@ -1945,7 +1948,8 @@ int ieee80211_reconfig(struct ieee80211_
  		if (sdata->vif.type == NL80211_IFTYPE_MONITOR &&
  		    !ieee80211_hw_check(&local->hw, NO_VIRTUAL_MONITOR))
  			continue;
@@ -188,7 +188,7 @@ Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
  		    ieee80211_sdata_running(sdata)) {
  			res = drv_add_interface(local, sdata);
  			if (WARN_ON(res))
-@@ -1915,7 +1919,8 @@ int ieee80211_reconfig(struct ieee80211_
+@@ -1962,7 +1966,8 @@ int ieee80211_reconfig(struct ieee80211_
  			if (sdata->vif.type == NL80211_IFTYPE_MONITOR &&
  			    !ieee80211_hw_check(&local->hw, NO_VIRTUAL_MONITOR))
  				continue;
