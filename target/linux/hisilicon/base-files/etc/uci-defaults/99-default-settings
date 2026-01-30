@@ -1,0 +1,15 @@
+#!/bin/sh
+
+uci set network.lan.device='eth0'
+uci set network.lan.proto='static'
+uci set network.lan.ipaddr='192.168.1.3'
+uci set network.lan.netmask='255.255.255.0'
+uci set network.lan.gateway='192.168.1.1'
+uci set network.lan.dns='223.5.5.5'
+uci commit network
+
+if [ -b /dev/mmcblk0p13 ]; then
+    mkfs.f2fs -f /dev/mmcblk0p13
+fi
+
+exit 0
