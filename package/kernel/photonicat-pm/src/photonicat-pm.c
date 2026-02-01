@@ -558,6 +558,10 @@ static void pcat_pm_uart_cmd_exec(struct pcat_pm_data *pm_data,
 		pm_data->poweroff_ok = true;
 		need_ack = false;
 		break;
+	case PCAT_PM_COMMAND_PMU_REQUEST_SHUTDOWN:
+		dev_info(&pm_data->serdev->dev, "PMU request shutdown.");
+		orderly_poweroff(true);
+		break;
 	case PCAT_PM_COMMAND_STATUS_REPORT:
 		pcat_pm_status_report_parse(
 			pm_data, extra_data, extra_data_len);
@@ -1209,6 +1213,10 @@ static void pcat_pm_ctl_cmd_exec(struct pcat_pm_data *pm_data,
 	case PCAT_PM_COMMAND_HOST_REQUEST_SHUTDOWN:
 		break;
 	case PCAT_PM_COMMAND_HOST_REQUEST_SHUTDOWN_ACK:
+		break;
+	case PCAT_PM_COMMAND_PMU_REQUEST_SHUTDOWN:
+		break;
+	case PCAT_PM_COMMAND_PMU_REQUEST_SHUTDOWN_ACK:
 		break;
 	case PCAT_PM_COMMAND_WATCHDOG_TIMEOUT_SET:
 		break;
