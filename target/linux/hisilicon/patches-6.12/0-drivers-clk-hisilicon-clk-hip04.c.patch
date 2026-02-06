@@ -1,0 +1,55 @@
+--- a/drivers/clk/hisilicon/clk-hip04.c
++++ b/drivers/clk/hisilicon/clk-hip04.c
+@@ -10,8 +10,8 @@
+ 
+ #include <linux/kernel.h>
+ #include <linux/clk-provider.h>
+-#include <linux/io.h>
+-#include <linux/slab.h>
++#include <linux/module.h>
++#include <linux/mod_devicetable.h>
+ 
+ #include <dt-bindings/clock/hip04-clock.h>
+ 
+@@ -24,16 +24,28 @@ static struct hisi_fixed_rate_clock hip0
+ 	{ HIP04_CLK_168M, "clk168m",  NULL, 0, 168750000, },
+ };
+ 
+-static void __init hip04_clk_init(struct device_node *np)
+-{
+-	struct hisi_clock_data *clk_data;
+-
+-	clk_data = hisi_clk_init(np, HIP04_NR_CLKS);
+-	if (!clk_data)
+-		return;
+-
+-	hisi_clk_register_fixed_rate(hip04_fixed_rate_clks,
+-				     ARRAY_SIZE(hip04_fixed_rate_clks),
+-				     clk_data);
+-}
+-CLK_OF_DECLARE(hip04_clk, "hisilicon,hip04-clock", hip04_clk_init);
++static const struct hisi_clocks hip04_clks = {
++	.fixed_rate_clks = hip04_fixed_rate_clks,
++	.fixed_factor_clks_num = ARRAY_SIZE(hip04_fixed_rate_clks),
++};
++
++static const struct of_device_id hip04_clk_match_table[] = {
++	{ .compatible = "hisilicon,hip04-clock",
++	  .data = &hip04_clks },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, hip04_clk_match_table);
++
++static struct platform_driver hip04_clk_driver = {
++	.probe = hisi_clk_probe,
++	.remove = hisi_clk_remove,
++	.driver		= {
++		.name	= "hip04-clock",
++		.of_match_table = hip04_clk_match_table,
++	},
++};
++
++module_platform_driver(hip04_clk_driver);
++
++MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("HiSilicon HiP04 Clock Driver");
