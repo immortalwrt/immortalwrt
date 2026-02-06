@@ -22,11 +22,11 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
  spinand-objs := core.o alliancememory.o ato.o esmt.o etron.o fmsh.o foresee.o gigadevice.o
 -spinand-objs += dosilicon.o
 +spinand-objs += dosilicon.o gsto.o
- spinand-objs += macronix.o micron.o paragon.o toshiba.o winbond.o xtx.o
+ spinand-objs += macronix.o micron.o paragon.o skyhigh.o toshiba.o winbond.o xtx.o
  obj-$(CONFIG_MTD_SPI_NAND) += spinand.o
 --- a/drivers/mtd/nand/spi/core.c
 +++ b/drivers/mtd/nand/spi/core.c
-@@ -1166,6 +1166,7 @@ static const struct spinand_manufacturer
+@@ -1184,6 +1184,7 @@ static const struct spinand_manufacturer
  	&fmsh_spinand_manufacturer,
  	&foresee_spinand_manufacturer,
  	&gigadevice_spinand_manufacturer,
