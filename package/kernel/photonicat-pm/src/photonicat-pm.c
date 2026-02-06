@@ -415,6 +415,7 @@ static int pcat_pm_do_poweroff(struct sys_off_data *data)
 {
 	struct pcat_pm_data *pm_data = data->cb_data;
 	unsigned int try_count;
+	u8 fan_off = 0;
 
 	dev_info(&pm_data->serdev->dev, "Shutdown process starts.\n");
 
@@ -434,6 +435,9 @@ static int pcat_pm_do_poweroff(struct sys_off_data *data)
 		dev_info(&pm_data->serdev->dev, "Shutdown request received.\n");
 	else
 		dev_err(&pm_data->serdev->dev, "Shutdown request timeout!\n");
+
+	pcat_pm_uart_write_data(pm_data, PCAT_PM_COMMAND_FAN_SET,
+		&fan_off, 1, false, msecs_to_jiffies(100));
 
 	if (!IS_ERR(pm_data->power_gpio))
 		gpiod_direction_output(pm_data->power_gpio, 0);
