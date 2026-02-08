@@ -1,0 +1,35 @@
+include $(TOPDIR)/rules.mk
+
+PKG_NAME:=r8127
+PKG_VERSION:=11.015.00
+PKG_RELEASE:=1
+
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
+PKG_SOURCE_URL:=https://github.com/openwrt/rtl8127/releases/download/$(PKG_VERSION)
+PKG_HASH:=ab21bf69368fb9de7f591b2e81cf1a815988bbf086ecbf41af7de9787b10594b
+
+PKG_BUILD_PARALLEL:=1
+PKG_LICENSE:=GPLv2
+PKG_MAINTAINER:=Alvaro Fernandez Rojas <noltari@gmail.com>
+
+include $(INCLUDE_DIR)/kernel.mk
+include $(INCLUDE_DIR)/package.mk
+
+define KernelPackage/r8127
+  SUBMENU:=Network Devices
+  TITLE:=Realtek RTL8127 PCI 10 Gigabit Ethernet driver
+  DEPENDS:=@PCI_SUPPORT +kmod-libphy
+  FILES:=$(PKG_BUILD_DIR)/src/r8127.ko
+  AUTOLOAD:=$(call AutoProbe,r8127,1)
+  PROVIDES:=@kmod-r8169-any @kmod-r8127-rss
+endef
+
+define Build/Compile
+	+$(KERNEL_MAKE) $(PKG_JOBS) \
+		M="$(PKG_BUILD_DIR)/src" \
+		ENABLE_MULTIPLE_TX_QUEUE=y \
+		ENABLE_RSS_SUPPORT=y \
+		modules
+endef
+
+$(eval $(call KernelPackage,r8127))

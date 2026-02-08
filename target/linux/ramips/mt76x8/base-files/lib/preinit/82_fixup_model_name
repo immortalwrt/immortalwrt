@@ -1,0 +1,12 @@
+. /lib/functions.sh
+
+preinit_fixup_model_name() {
+	case "$(board_name)" in
+	huasifei,shf283)
+		local model_name="$(fw_printenv -n model_name 2>/dev/null)"
+		[ -n "$model_name" ] && echo "$model_name" > "/tmp/sysinfo/model"
+		;;
+	esac
+}
+
+boot_hook_add preinit_main preinit_fixup_model_name

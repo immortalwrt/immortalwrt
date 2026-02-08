@@ -8,17 +8,16 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mbedtls
-PKG_VERSION:=3.6.0
+PKG_VERSION:=3.6.5
 PKG_RELEASE:=1
 PKG_BUILD_FLAGS:=no-mips16 gc-sections no-lto
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL=https://github.com/Mbed-TLS/mbedtls.git
-PKG_SOURCE_VERSION:=2ca6c285a0dd3f33982dd57299012dacab1ff206
-PKG_MIRROR_HASH:=a684012126590b4e0b6ab41e244cc2af0d2bcfc4b6c94bf42fc37d2d08f0553e
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
+PKG_SOURCE_URL=https://github.com/Mbed-TLS/$(PKG_NAME)/releases/download/$(PKG_NAME)-$(PKG_VERSION)
+PKG_HASH:=4a11f1777bb95bf4ad96721cac945a26e04bf19f57d905f241fe77ebeddf46d8
 
 PKG_LICENSE:=GPL-2.0-or-later
-PKG_LICENSE_FILES:=gpl-2.0.txt
+PKG_LICENSE_FILES:=LICENSE
 PKG_CPE_ID:=cpe:/a:arm:mbed_tls
 
 MBEDTLS_BUILD_OPTS_CURVES= \
@@ -38,6 +37,7 @@ MBEDTLS_BUILD_OPTS_CURVES= \
 
 MBEDTLS_BUILD_OPTS_CIPHERS= \
   CONFIG_MBEDTLS_AES_C \
+  CONFIG_MBEDTLS_ARIA_C \
   CONFIG_MBEDTLS_CAMELLIA_C \
   CONFIG_MBEDTLS_CCM_C \
   CONFIG_MBEDTLS_CMAC_C \
@@ -53,6 +53,7 @@ MBEDTLS_BUILD_OPTS_CIPHERS= \
   CONFIG_MBEDTLS_KEY_EXCHANGE_ECDHE_ECDSA_ENABLED \
   CONFIG_MBEDTLS_KEY_EXCHANGE_ECDH_ECDSA_ENABLED \
   CONFIG_MBEDTLS_KEY_EXCHANGE_ECDH_RSA_ENABLED \
+  CONFIG_MBEDTLS_KEY_EXCHANGE_ECJPAKE_ENABLED \
   CONFIG_MBEDTLS_NIST_KW_C \
   CONFIG_MBEDTLS_RIPEMD160_C \
   CONFIG_MBEDTLS_RSA_NO_CRT \
@@ -79,6 +80,8 @@ MBEDTLS_BUILD_OPTS= \
   CONFIG_MBEDTLS_VERSION_FEATURES \
   CONFIG_MBEDTLS_PSA_CRYPTO_CLIENT \
   CONFIG_MBEDTLS_DEPRECATED_WARNING \
+  CONFIG_MBEDTLS_SHA256_USE_ARMV8_A_CRYPTO_IF_PRESENT \
+  CONFIG_MBEDTLS_SHA512_USE_A64_CRYPTO_IF_PRESENT \
   CONFIG_MBEDTLS_SSL_PROTO_TLS1_2 \
   CONFIG_MBEDTLS_SSL_PROTO_TLS1_3 \
   CONFIG_MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE
@@ -90,7 +93,7 @@ include $(INCLUDE_DIR)/cmake.mk
 
 define Package/mbedtls/Default
   TITLE:=Embedded SSL
-  URL:=https://tls.mbed.org
+  URL:=https://www.trustedfirmware.org/projects/mbed-tls/
 endef
 
 define Package/mbedtls/Default/description
@@ -131,10 +134,7 @@ This package contains mbedtls helper programs for private key and
 CSR generation (gen_key, cert_req)
 endef
 
-TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS))
-ifneq ($(CONFIG_MBEDTLS_AESCE_C),)
-  TARGET_CFLAGS := $(filter-out -march=%,$(TARGET_CFLAGS)) -march=armv8-a+crypto
-endif
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Wno-unterminated-string-initialization
 
 CMAKE_OPTIONS += \
 	-DCMAKE_POSITION_INDEPENDENT_CODE=ON \
@@ -142,14 +142,14 @@ CMAKE_OPTIONS += \
 	-DENABLE_TESTING:Bool=OFF \
 	-DENABLE_PROGRAMS:Bool=ON
 
-define Build/Prepare
-       $(call Build/Prepare/Default)
+define Build/Configure
+	$(call Build/Configure/Default)
 
-       $(if $(strip $(foreach opt,$(MBEDTLS_BUILD_OPTS),$($(opt)))),
-	 $(foreach opt,$(MBEDTLS_BUILD_OPTS),
-	 $(PKG_BUILD_DIR)/scripts/config.py \
-	 -f $(PKG_BUILD_DIR)/include/mbedtls/mbedtls_config.h \
-	 $(if $($(opt)),set,unset) $(patsubst CONFIG_%,%,$(opt))),)
+	$(if $(strip $(foreach opt,$(MBEDTLS_BUILD_OPTS),$($(opt)))),
+		$(foreach opt,$(MBEDTLS_BUILD_OPTS),
+			$(PKG_BUILD_DIR)/scripts/config.py \
+			-f $(PKG_BUILD_DIR)/include/mbedtls/mbedtls_config.h \
+			$(if $($(opt)),set,unset) $(patsubst CONFIG_%,%,$(opt))),)
 endef
 
 define Build/InstallDev

@@ -1,0 +1,45 @@
+From c8ecda015eb4070ced887eba34cdb60737a9893b Mon Sep 17 00:00:00 2001
+From: Coia Prant <coiaprant@gmail.com>
+Date: Fri, 14 Nov 2025 17:21:15 +0800
+Subject: [PATCH] arm64: dts: rockchip: fix PCIe 3.3V regulator voltage on
+ 9Tripod X3568 v4
+
+The regulator type is "regulator-fixed" since its voltage always be
+3.3v, min and max should be 3300000 make the regulator has a voltage
+
+The regulator is supplied by dc_12v, so add the vin-supply.
+
+Link: https://github.com/rockchip-linux/kernel/commit/17e9559f67d26f3c602e38a24feb5194e51ac782
+Signed-off-by: Coia Prant <coiaprant@gmail.com>
+Link: https://patch.msgid.link/20251114092114.62664-2-coiaprant@gmail.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ .../boot/dts/rockchip/rk3568-9tripod-x3568-v4.dts  | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3568-9tripod-x3568-v4.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-9tripod-x3568-v4.dts
+@@ -170,16 +170,16 @@
+ 	};
+ 
+ 	vcc3v3_pcie: regulator-vcc3v3-pcie {
+-		compatible = "regulator-gpio";
+-		regulator-name = "vcc3v3_pcie";
+-		regulator-min-microvolt = <100000>;
+-		regulator-max-microvolt = <3300000>;
++		compatible = "regulator-fixed";
++		enable-active-high;
++		gpios = <&gpio3 RK_PC3 GPIO_ACTIVE_HIGH>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&vcc3v3_pcie_en_pin>;
+-		gpios = <&gpio3 RK_PC3 GPIO_ACTIVE_HIGH>;
+-		gpios-states = <1>;
+-		states = <100000 0>, <3300000 1>;
++		regulator-name = "vcc3v3_pcie";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
+ 		startup-delay-us = <5000>;
++		vin-supply = <&dc_12v>;
+ 	};
+ 
+ 	vcc5v0_sys: regulator-vcc5v0-sys {

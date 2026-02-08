@@ -1,7 +1,7 @@
 BOARDNAME:=Devices with NAND flash (Routers)
 FEATURES += nand pcie
 
-DEFAULT_PACKAGES += kmod-ath9k swconfig wpad-basic-openssl
+DEFAULT_PACKAGES += kmod-ath9k swconfig wpad-openssl
 
 define Target/Description
 	Build firmware images for APM821XX boards with NAND flash.

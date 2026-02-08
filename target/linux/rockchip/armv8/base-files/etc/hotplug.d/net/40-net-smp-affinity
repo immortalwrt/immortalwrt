@@ -29,21 +29,32 @@ set_interface_core() {
 }
 
 case "$(board_name)" in
+9tripod,x3568-v4|\
 ariaboard,photonicat|\
+ariaboard,photonicat2|\
+armsom,sige3|\
+armsom,sige7|\
 ezpro,mrkaio-m68s|\
 firefly,rk3568-roc-pc|\
+friendlyarm,nanopi-r3s|\
 friendlyarm,nanopi-r5c|\
-friendlyarm,nanopi-r6c|\
+linkease,easepi-r1|\
 lunzn,fastrhino-r66s|\
+mmbox,anas3035|\
+nlnet,xiguapi-v3|\
 radxa,e25|\
 sinovoip,rk3568-bpi-r2pro|\
 xunlong,orangepi-5-plus)
 	set_interface_core 2 "eth0"
 	set_interface_core 4 "eth1"
 	;;
+cyber,cyber3588-aib)
+	set_interface_core 4 "lan1"
+	set_interface_core 8 "wan"
+	;;
 friendlyarm,nanopc-t6)
-	set_interface_core 2 "eth1"
-	set_interface_core 4 "eth2"
+	set_interface_core 10 "eth1"
+	set_interface_core 20 "eth2"
 	;;
 friendlyarm,nanopi-r2c|\
 friendlyarm,nanopi-r2c-plus|\
@@ -56,20 +67,45 @@ xunlong,orangepi-r1-plus-lts)
 	;;
 friendlyarm,nanopi-r4s|\
 friendlyarm,nanopi-r4se|\
-friendlyarm,nanopi-r4s-enterprise)
+friendlyarm,nanopi-r4s-enterprise|\
+friendlyarm,nanopi-r6c|\
+friendlyarm,nanopi-r76s|\
+radxa,rock-5-itx|\
+radxa,rock-5t)
 	set_interface_core 10 "eth0"
 	set_interface_core 20 "eth1"
 	;;
-friendlyarm,nanopi-r5s|\
-friendlyarm,nanopi-r6s)
+friendlyarm,nanopi-r5s)
 	set_interface_core 2 "eth0"
 	set_interface_core 4 "eth1"
 	set_interface_core 8 "eth2"
+	;;
+friendlyarm,nanopi-r6s|\
+radxa,rock-5a|\
+radxa,rock-5c)
+	set_interface_core 10 "eth0"
+	set_interface_core 20 "eth1"
+	set_interface_core 40 "eth2"
 	;;
 lunzn,fastrhino-r68s)
 	set_interface_core 1 "eth0"
 	set_interface_core 2 "eth1"
 	set_interface_core 4 "eth2"
 	set_interface_core 8 "eth3"
+	;;
+lyt,t68m)
+	set_interface_core 1 "lan1"
+	set_interface_core 2 "lan2"
+	set_interface_core 4 "lan3"
+	set_interface_core 8 "lan4"
+	;;
+radxa,e20c|\
+widora,mangopi-m28c|\
+widora,mangopi-m28k)
+	set_interface_core 2 "eth0"
+	;;
+radxa,e52c)
+	set_interface_core 10 "lan"
+	set_interface_core 20 "wan"
 	;;
 esac

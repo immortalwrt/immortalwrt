@@ -6,10 +6,18 @@
 ifneq ($(__target_inc),1)
 __target_inc=1
 
-# default device type
+
+##@
+# @brief Default device type ( basic | nas | router ).
+##
 DEVICE_TYPE?=router
 
-# Default packages - the really basic set
+##@
+# @brief Default packages.
+#
+# The really basic set. Additional packages are added based on @DEVICE_TYPE and
+# @CONFIG_* values.
+##
 DEFAULT_PACKAGES:=\
 	base-files \
 	ca-bundle \
@@ -21,43 +29,33 @@ DEFAULT_PACKAGES:=\
 	logd \
 	mtd \
 	netifd \
-	opkg \
 	uci \
 	uclient-fetch \
 	urandom-seed \
 	urngd
 
-ifneq ($(CONFIG_SELINUX),)
-DEFAULT_PACKAGES+=busybox-selinux procd-selinux
-else
-DEFAULT_PACKAGES+=busybox procd
-endif
-
-# include ujail on systems with enough storage
-ifeq ($(CONFIG_SMALL_FLASH),)
-DEFAULT_PACKAGES+=procd-ujail
-endif
-
-# include seccomp ld-preload hooks if kernel supports it
-ifneq ($(CONFIG_SECCOMP),)
-DEFAULT_PACKAGES+=procd-seccomp
-endif
-
-# For the basic set
+##@
+# @brief Default packages for @DEVICE_TYPE basic.
+##
 DEFAULT_PACKAGES.basic:=
-# For nas targets
+##@
+# @brief Default packages for @DEVICE_TYPE nas.
+##
 DEFAULT_PACKAGES.nas:=\
 	block-mount \
 	fdisk \
 	lsblk \
 	mdadm
-# For router targets
+##@
+# @brief Default packages for @DEVICE_TYPE router.
+##
 DEFAULT_PACKAGES.router:=\
 	dnsmasq-full \
 	firewall4 \
 	nftables \
 	kmod-nft-offload \
-	ipv6helper \
+	odhcp6c \
+	odhcpd-ipv6only \
 	ppp \
 	ppp-mod-pppoe
 # For easy usage
@@ -66,13 +64,8 @@ DEFAULT_PACKAGES.tweak:=\
 	block-mount \
 	default-settings-chn \
 	kmod-nf-nathelper \
-	kmod-nf-nathelper-extra \
-	luci-light \
-	luci-app-cpufreq \
-	luci-app-opkg \
-	luci-compat \
-	luci-lib-base \
-	luci-lib-ipkg
+	luci \
+	luci-app-cpufreq
 
 ifneq ($(DUMP),)
   all: dumpinfo
@@ -105,14 +98,23 @@ else
   endif
 endif
 
-# Add tweaked packages
-# DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.tweak)
+# include ujail on systems with enough storage
+ifeq ($(filter small_flash,$(FEATURES)),)
+  DEFAULT_PACKAGES+=procd-ujail
+endif
 
 # Add device specific packages (here below to allow device type set from subtarget)
 DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.$(DEVICE_TYPE))
 
+# Add tweaked packages
+# DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.tweak)
+
+##@
+# @brief Filter out packages, prepended with `-`.
+#
+# @param 1: Package list.
+##
 filter_packages = $(filter-out -% $(patsubst -%,%,$(filter -%,$(1))),$(1))
-extra_packages = $(if $(filter wpad wpad-% nas,$(1)),iwinfo)
 
 define ProfileDefault
   NAME:=
@@ -130,7 +132,7 @@ define Profile
 	echo "Target-Profile: $(1)"; \
 	$(if $(PRIORITY), echo "Target-Profile-Priority: $(PRIORITY)"; ) \
 	echo "Target-Profile-Name: $(NAME)"; \
-	echo "Target-Profile-Packages: $(PACKAGES) $(call extra_packages,$(DEFAULT_PACKAGES) $(PACKAGES))"; \
+	echo "Target-Profile-Packages: $(PACKAGES)"; \
 	echo "Target-Profile-Description:"; \
 	echo "$$$$$$$$$(call shvar,Profile/$(1)/Description)"; \
 	echo "@@"; \
@@ -157,11 +159,12 @@ ifeq ($(TARGET_BUILD),1)
   endif
 endif
 
+GENERIC_PLATFORM_DIR := $(TOPDIR)/target/linux/generic
+
 ifneq ($(TARGET_BUILD)$(if $(DUMP),,1),)
   include $(INCLUDE_DIR)/kernel-version.mk
 endif
 
-GENERIC_PLATFORM_DIR := $(TOPDIR)/target/linux/generic
 GENERIC_BACKPORT_DIR := $(GENERIC_PLATFORM_DIR)/backport$(if $(wildcard $(GENERIC_PLATFORM_DIR)/backport-$(KERNEL_PATCHVER)),-$(KERNEL_PATCHVER))
 GENERIC_PATCH_DIR := $(GENERIC_PLATFORM_DIR)/pending$(if $(wildcard $(GENERIC_PLATFORM_DIR)/pending-$(KERNEL_PATCHVER)),-$(KERNEL_PATCHVER))
 GENERIC_HACK_DIR := $(GENERIC_PLATFORM_DIR)/hack$(if $(wildcard $(GENERIC_PLATFORM_DIR)/hack-$(KERNEL_PATCHVER)),-$(KERNEL_PATCHVER))
@@ -276,8 +279,8 @@ ifeq ($(DUMP),1)
     CPU_CFLAGS_archs = -mcpu=archs
   endif
   ifeq ($(ARCH),riscv64)
-    CPU_TYPE ?= riscv64
-    CPU_CFLAGS_riscv64:=-mabi=lp64d -march=rv64imafdc
+    CPU_TYPE ?= generic
+    CPU_CFLAGS_generic:=-mabi=lp64d -march=rv64gc
   endif
   ifeq ($(ARCH),loongarch64)
     CPU_TYPE ?= generic
@@ -316,6 +319,15 @@ ifeq ($(DUMP),1)
     ifneq ($(CONFIG_PCIEPORTBUS),)
       FEATURES += pcie
     endif
+    ifneq ($(CONFIG_PINCTRL),)
+      FEATURES += pinctrl
+    endif
+    ifneq ($(CONFIG_PM),)
+      FEATURES += pm
+    endif
+    ifneq ($(CONFIG_PWM),)
+      FEATURES += pwm
+    endif
     ifneq ($(CONFIG_USB)$(CONFIG_USB_SUPPORT),)
       ifneq ($(CONFIG_USB_ARCH_HAS_HCD)$(CONFIG_USB_EHCI_HCD),)
         FEATURES += usb
@@ -336,7 +348,15 @@ ifeq ($(DUMP),1)
     ifneq ($(CONFIG_CPU_MIPS32_R2),)
       FEATURES += mips16
     endif
-    FEATURES += $(foreach v,6 7,$(if $(CONFIG_CPU_V$(v)),arm_v$(v)))
+    ifneq ($(CONFIG_CPU_V6),)
+      FEATURES += arm_v6
+    endif
+    ifneq ($(CONFIG_CPU_V6K),)
+      FEATURES += arm_v6
+    endif
+    ifneq ($(CONFIG_CPU_V7),)
+      FEATURES += arm_v7
+    endif
 
     # remove duplicates
     FEATURES:=$(sort $(FEATURES))
@@ -350,7 +370,7 @@ endif
 
 define BuildTargets/DumpCurrent
   .PHONY: dumpinfo
-  dumpinfo : export DESCRIPTION=$$(Target/Description)
+  dumpinfo: $(call shexport,Target/Description)
   dumpinfo:
 	@echo 'Target: $(TARGETID)'; \
 	 echo 'Target-Board: $(BOARD)'; \
@@ -367,12 +387,13 @@ define BuildTargets/DumpCurrent
 	 echo 'Linux-Kernel-Arch: $(LINUX_KARCH)'; \
 	$(if $(SUBTARGET),,$(if $(DEFAULT_SUBTARGET), echo 'Default-Subtarget: $(DEFAULT_SUBTARGET)'; )) \
 	 echo 'Target-Description:'; \
-	 echo "$$$$DESCRIPTION"; \
+	 echo "$$$$$(call shvar,Target/Description);"; \
 	 echo '@@'; \
-	 echo 'Default-Packages: $(DEFAULT_PACKAGES) $(call extra_packages,$(DEFAULT_PACKAGES))'; \
+	 $(if $(DEFAULT_PROFILE),echo 'Target-Default-Profile: $(DEFAULT_PROFILE)';) \
+	 echo 'Default-Packages: $(DEFAULT_PACKAGES)'; \
 	 $(DUMPINFO)
 	$(if $(CUR_SUBTARGET),$(SUBMAKE) -r --no-print-directory -C image -s DUMP=1 SUBTARGET=$(CUR_SUBTARGET))
-	$(if $(SUBTARGET),,@$(foreach SUBTARGET,$(SUBTARGETS),$(SUBMAKE) -s DUMP=1 SUBTARGET=$(SUBTARGET); ))
+	$(if $(SUBTARGET),,@$(foreach SUBTARGET,$(SUBTARGETS),$(SUBMAKE) --no-print-directory -s DUMP=1 SUBTARGET=$(SUBTARGET); ))
 endef
 
 include $(INCLUDE_DIR)/kernel.mk

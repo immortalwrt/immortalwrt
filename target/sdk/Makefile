@@ -41,13 +41,13 @@ SDK_DIRS = \
 GIT_URL:=$(shell git config --get remote.origin.url 2>/dev/null)
 GIT_URL:=$(if $(CONFIG_BUILDBOT),$(filter git://% http://% https://%,$(GIT_URL)),$(GIT_URL))
 GIT_COMMIT:=$(shell git rev-parse HEAD 2>/dev/null)
-GIT_BRANCH:=$(filter-out master HEAD,$(shell git rev-parse --abbrev-ref HEAD 2>/dev/null))
+GIT_BRANCH:=$(filter-out master main HEAD,$(shell git rev-parse --abbrev-ref HEAD 2>/dev/null))
 GIT_TAGNAME:=$(shell git show-ref --tags --dereference 2>/dev/null | sed -ne '/^$(GIT_COMMIT) / { s|^.*/||; s|\^.*||; p }')
 
-BASE_FEED:=$(if $(GIT_URL),src-git-full base $(GIT_URL)$(if $(GIT_BRANCH),;$(GIT_BRANCH),$(if $(GIT_TAGNAME),;$(GIT_TAGNAME))))
-BASE_FEED:=$(if $(BASE_FEED),$(BASE_FEED),$(shell cd $(TOPDIR); LC_ALL=C git svn info 2>/dev/null | sed -ne 's/^URL: /src-gitsvn base /p'))
-BASE_FEED:=$(if $(BASE_FEED),$(BASE_FEED),$(shell cd $(TOPDIR); LC_ALL=C svn info 2>/dev/null | sed -ne 's/^URL: /src-svn base /p'))
-BASE_FEED:=$(if $(BASE_FEED),$(BASE_FEED),src-git-full base $(PROJECT_GIT)/openwrt/openwrt.git$(if $(GIT_BRANCH),;$(GIT_BRANCH),$(if $(GIT_TAGNAME),;$(GIT_TAGNAME))))
+BASE_FEED:=$(if $(GIT_URL),src-git --root=package base $(GIT_URL)$(if $(CONFIG_BUILDBOT),^$(GIT_COMMIT),$(if $(GIT_TAGNAME),;$(GIT_TAGNAME),$(if $(GIT_BRANCH),;$(GIT_BRANCH)))))
+BASE_FEED:=$(if $(BASE_FEED),$(BASE_FEED),$(shell cd $(TOPDIR); LC_ALL=C git svn info 2>/dev/null | sed -ne 's/^URL: /src-gitsvn --root=package base /p'))
+BASE_FEED:=$(if $(BASE_FEED),$(BASE_FEED),$(shell cd $(TOPDIR); LC_ALL=C svn info 2>/dev/null | sed -ne 's/^URL: /src-svn --root=package base /p'))
+BASE_FEED:=$(if $(BASE_FEED),$(BASE_FEED),src-git --root=package base https://github.com/immortalwrt/immortalwrt.git$(if $(CONFIG_BUILDBOT),^$(GIT_COMMIT),$(if $(GIT_TAGNAME),;$(GIT_TAGNAME),$(if $(GIT_BRANCH),;$(GIT_BRANCH)))))
 
 KDIR_BASE = $(patsubst $(TOPDIR)/%,%,$(LINUX_DIR))
 KDIR_ARCHES = $(LINUX_KARCH)
@@ -121,6 +121,7 @@ $(BIN_DIR)/$(SDK_NAME).tar.zst: clean
 		$(TAR) -xf - -C $(SDK_BUILD_DIR)
 
 	(cd $(SDK_BUILD_DIR); find $(STAGING_SUBDIR_HOST)/bin $(STAGING_SUBDIR_HOST)/usr/bin \
+		$(STAGING_SUBDIR_HOST)/llvm-bpf/bin $(STAGING_SUBDIR_HOST)/llvm-bpf/libexec \
 		$(STAGING_SUBDIR_TOOLCHAIN)/bin $(STAGING_SUBDIR_TOOLCHAIN)/*/bin $(STAGING_SUBDIR_TOOLCHAIN)/libexec \
 		$(KDIR_BASE) \
 		-type f | $(BUNDLER_COMMAND))
@@ -129,12 +130,15 @@ $(BIN_DIR)/$(SDK_NAME).tar.zst: clean
 		find \
 			$(SDK_BUILD_DIR)/$(STAGING_SUBDIR_HOST)/bin \
 			$(SDK_BUILD_DIR)/$(STAGING_SUBDIR_HOST)/usr/bin \
+			$(SDK_BUILD_DIR)/$(STAGING_SUBDIR_HOST)/llvm-bpf/bin \
+			$(SDK_BUILD_DIR)/$(STAGING_SUBDIR_HOST)/llvm-bpf/libexec \
 			$(SDK_BUILD_DIR)/$(STAGING_SUBDIR_TOOLCHAIN)/bin \
 			$(SDK_BUILD_DIR)/$(STAGING_SUBDIR_TOOLCHAIN)/*/bin \
 			$(SDK_BUILD_DIR)/$(STAGING_SUBDIR_TOOLCHAIN)/libexec \
 			-type f; \
 		find \
 			$(SDK_BUILD_DIR)/$(STAGING_SUBDIR_HOST)/lib \
+			$(SDK_BUILD_DIR)/$(STAGING_SUBDIR_HOST)/llvm-bpf/lib \
 			$(SDK_BUILD_DIR)/$(STAGING_SUBDIR_HOST)/usr/lib \
 			-type f -name \*.so\*; \
 	) | xargs strip 2>/dev/null >/dev/null

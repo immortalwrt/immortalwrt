@@ -1,14 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/*
- * Copyright (C) 2023 Tianling Shen <cnsztl@immortalwrt.org>
- */
 
 /dts-v1/;
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
 
-#include "mt7981.dtsi"
+#include "mt7981b.dtsi"
 
 / {
 	aliases {
@@ -20,12 +17,13 @@
 		led-upgrade = &led_status_green;
 	};
 
-	chosen {
+	chosen: chosen {
 		stdout-path = "serial0:115200n8";
 	};
 
-	memory {
+	memory@40000000 {
 		reg = <0 0x40000000 0 0x10000000>;
+		device_type = "memory";
 	};
 
 	gpio-keys {
@@ -98,24 +96,12 @@
 	status = "okay";
 
 	spi_nand: flash@0 {
-		#address-cells = <1>;
-		#size-cells = <1>;
 		compatible = "spi-nand";
 		reg = <0>;
+
 		spi-max-frequency = <52000000>;
-
-		spi-cal-enable;
-		spi-cal-mode = "read-data";
-		spi-cal-datalen = <7>;
-		spi-cal-data = /bits/ 8 <0x53 0x50 0x49 0x4E 0x41 0x4E 0x44>;
-		spi-cal-addrlen = <5>;
-		spi-cal-addr = /bits/ 32 <0x0 0x0 0x0 0x0 0x0>;
-
 		spi-tx-bus-width = <4>;
 		spi-rx-bus-width = <4>;
-		mediatek,nmbm;
-		mediatek,bmt-max-ratio = <1>;
-		mediatek,bmt-max-reserved-blocks = <64>;
 
 		partitions: partitions {
 			compatible = "fixed-partitions";
@@ -138,7 +124,6 @@
 				reg = <0x180000 0x100000>;
 				read-only;
 
-				compatible = "nvmem-cells";
 				nvmem-layout {
 					compatible = "fixed-layout";
 					#address-cells = <1>;
@@ -152,9 +137,19 @@
 				};
 			};
 
-			factory: partition@280000 {
+			partition@280000 {
 				label = "Factory";
 				reg = <0x280000 0x100000>;
+
+				nvmem-layout {
+					compatible = "fixed-layout";
+					#address-cells = <1>;
+					#size-cells = <1>;
+
+					eeprom_factory_0: eeprom@0 {
+						reg = <0x0 0x1000>;
+					};
+				};
 			};
 
 			partition@380000 {
@@ -237,7 +232,21 @@
 };
 
 &wifi {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	nvmem-cells = <&eeprom_factory_0>;
+	nvmem-cell-names = "eeprom";
 	status = "okay";
 
-	mediatek,mtd-eeprom = <&factory 0x0>;
+	band@0 {
+		reg = <0>;
+		nvmem-cells = <&macaddr_art_0 1>;
+		nvmem-cell-names = "mac-address";
+	};
+
+	band@1 {
+		reg = <1>;
+		nvmem-cells = <&macaddr_art_0 2>;
+		nvmem-cell-names = "mac-address";
+	};
 };

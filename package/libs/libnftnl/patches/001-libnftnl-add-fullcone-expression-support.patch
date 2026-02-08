@@ -15,13 +15,14 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
 
 --- a/include/libnftnl/expr.h
 +++ b/include/libnftnl/expr.h
-@@ -245,6 +245,12 @@ enum {
+@@ -273,6 +273,13 @@ enum {
  };
  
  enum {
 +	NFTNL_EXPR_FULLCONE_FLAGS		= NFTNL_EXPR_BASE,
 +	NFTNL_EXPR_FULLCONE_REG_PROTO_MIN,
 +	NFTNL_EXPR_FULLCONE_REG_PROTO_MAX,
++	__NFTNL_EXPR_FULLCONE_MAX
 +};
 +
 +enum {
@@ -30,7 +31,7 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
  	NFTNL_EXPR_REDIR_FLAGS,
 --- a/include/linux/netfilter/nf_tables.h
 +++ b/include/linux/netfilter/nf_tables.h
-@@ -1464,6 +1464,22 @@ enum nft_masq_attributes {
+@@ -1510,6 +1510,22 @@ enum nft_masq_attributes {
  #define NFTA_MASQ_MAX		(__NFTA_MASQ_MAX - 1)
  
  /**
@@ -55,7 +56,7 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
   * @NFTA_REDIR_REG_PROTO_MIN: source register of proto range start (NLA_U32: nft_registers)
 --- a/src/Makefile.am
 +++ b/src/Makefile.am
-@@ -55,6 +55,7 @@ libnftnl_la_SOURCES = utils.c		\
+@@ -56,6 +56,7 @@ libnftnl_la_SOURCES = utils.c		\
  		      expr/target.c	\
  		      expr/tunnel.c	\
  		      expr/masq.c	\
@@ -65,9 +66,9 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
  		      expr/socket.c	\
 --- /dev/null
 +++ b/src/expr/fullcone.c
-@@ -0,0 +1,167 @@
+@@ -0,0 +1,174 @@
 +/*
-+ * (C) 2022 wongsyrone
++ * (C) 2022-2025 wongsyrone
 + *
 + * This program is free software; you can redistribute it and/or modify
 + * it under the terms of the GNU General Public License as published
@@ -102,13 +103,13 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
 +
 +	switch (type) {
 +	case NFTNL_EXPR_FULLCONE_FLAGS:
-+		memcpy(&fullcone->flags, data, sizeof(fullcone->flags));
++		memcpy(&fullcone->flags, data, data_len);
 +		break;
 +	case NFTNL_EXPR_FULLCONE_REG_PROTO_MIN:
-+		memcpy(&fullcone->sreg_proto_min, data, sizeof(fullcone->sreg_proto_min));
++		memcpy(&fullcone->sreg_proto_min, data, data_len);
 +		break;
 +	case NFTNL_EXPR_FULLCONE_REG_PROTO_MAX:
-+		memcpy(&fullcone->sreg_proto_max, data, sizeof(fullcone->sreg_proto_max));
++		memcpy(&fullcone->sreg_proto_max, data, data_len);
 +		break;
 +	default:
 +		return -1;
@@ -223,10 +224,17 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
 +	return offset;
 +}
 +
++static struct attr_policy fullcone_attr_policy[__NFTNL_EXPR_FULLCONE_MAX] = {
++	[NFTNL_EXPR_FULLCONE_FLAGS]         = { .maxlen = sizeof(uint32_t) },
++	[NFTNL_EXPR_FULLCONE_REG_PROTO_MIN] = { .maxlen = sizeof(uint32_t) },
++	[NFTNL_EXPR_FULLCONE_REG_PROTO_MAX] = { .maxlen = sizeof(uint32_t) },
++};
++
 +struct expr_ops expr_ops_fullcone = {
 +	.name		= "fullcone",
 +	.alloc_len	= sizeof(struct nftnl_expr_fullcone),
-+	.max_attr	= NFTA_FULLCONE_MAX,
++	.nftnl_max_attr	= __NFTNL_EXPR_FULLCONE_MAX - 1,
++	.attr_policy	= fullcone_attr_policy,
 +	.set		= nftnl_expr_fullcone_set,
 +	.get		= nftnl_expr_fullcone_get,
 +	.parse		= nftnl_expr_fullcone_parse,

@@ -3,7 +3,6 @@
 /dts-v1/;
 #include <dt-bindings/input/input.h>
 #include "rk3399.dtsi"
-#include "rk3399-opp.dtsi"
 
 / {
 	model = "Huake-Cloud GuangMiao G4C";

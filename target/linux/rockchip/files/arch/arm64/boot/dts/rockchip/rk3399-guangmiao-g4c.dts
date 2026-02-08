@@ -4,7 +4,6 @@
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
 #include "rk3399.dtsi"
-#include "rk3399-opp.dtsi"
 
 / {
 	model = "Huake-Cloud GuangMiao G4C";
@@ -569,6 +568,7 @@
 	disable-wp;
 	pinctrl-names = "default";
 	pinctrl-0 = <&sdmmc_bus4 &sdmmc_clk &sdmmc_cmd &sdmmc0_det_l>;
+	sd-uhs-sdr50;
 	vqmmc-supply = <&vcc_sdio>;
 	status = "okay";
 };

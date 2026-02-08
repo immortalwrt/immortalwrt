@@ -131,7 +131,7 @@
 		regulator-name = "vbus";
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
-		gpio = <&tlmm 64 GPIO_ACTIVE_HIGH>;
+		gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 		regulator-always-on;
 	};
@@ -195,11 +195,14 @@
 				#size-cells = <1>;
 
 				partition@0 {
-					compatible = "u-boot,env";
 					label = "env-data";
 					reg = <0x0 0x40000>;
 
-					macaddr_appsblenv_ethaddr: ethaddr {
+					nvmem-layout {
+						compatible = "u-boot,env";
+
+						macaddr_appsblenv_ethaddr: ethaddr {
+						};
 					};
 				};
 			};

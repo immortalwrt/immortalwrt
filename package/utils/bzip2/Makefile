@@ -20,6 +20,8 @@ PKG_LICENSE:=bzip2-1.0.8
 PKG_LICENSE_FILES:=LICENSE
 PKG_CPE_ID:=cpe:/a:bzip:bzip2
 
+PKG_BUILD_FLAGS:=no-lto
+
 include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk
 

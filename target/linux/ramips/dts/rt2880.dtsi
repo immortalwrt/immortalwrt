@@ -87,8 +87,12 @@
 			gpio-controller;
 			#gpio-cells = <2>;
 
+			interrupt-parent = <&intc>;
+			interrupts = <6>;
+			interrupt-controller;
+			#interrupt-cells = <2>;
+
 			ngpios = <24>;
-			ralink,gpio-base = <0>;
 			ralink,register-map = [ 00 04 08 0c
 						20 24 28 2c
 						30 34 ];
@@ -101,8 +105,12 @@
 			gpio-controller;
 			#gpio-cells = <2>;
 
+			interrupt-parent = <&intc>;
+			interrupts = <6>;
+			interrupt-controller;
+			#interrupt-cells = <2>;
+
 			ngpios = <16>;
-			ralink,gpio-base = <24>;
 			ralink,register-map = [ 00 04 08 0c
 						10 14 18 1c
 						20 24 ];
@@ -117,8 +125,12 @@
 			gpio-controller;
 			#gpio-cells = <2>;
 
+			interrupt-parent = <&intc>;
+			interrupts = <6>;
+			interrupt-controller;
+			#interrupt-cells = <2>;
+
 			ngpios = <32>;
-			ralink,gpio-base = <40>;
 			ralink,register-map = [ 00 04 08 0c
 						10 14 18 1c
 						20 24 ];
@@ -218,7 +230,7 @@
 		status = "disabled";
 
 		port@0 {
-			compatible = "ralink,rt2880-port", "mediatek,eth-port";
+			compatible = "mediatek,eth-port";
 			reg = <0>;
 		};
 
@@ -231,7 +243,7 @@
 	};
 
 	wmac: wmac@480000 {
-		compatible = "ralink,rt2880-wmac";
+		compatible = "ralink,rt2880-wifi";
 		reg = <0x480000 0x40000>;
 
 		clocks = <&sysc 9>;

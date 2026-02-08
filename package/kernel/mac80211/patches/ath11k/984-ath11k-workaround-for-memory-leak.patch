@@ -1,6 +1,6 @@
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -370,8 +370,8 @@ int ath11k_dp_rxbufs_replenish(struct at
+@@ -371,8 +371,8 @@ int ath11k_dp_rxbufs_replenish(struct at
  	num_remain = req_entries;
  
  	while (num_remain > 0) {

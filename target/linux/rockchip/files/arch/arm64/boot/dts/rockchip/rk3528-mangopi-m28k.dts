@@ -1,0 +1,94 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+/dts-v1/;
+#include "rk3528-mangopi-m28.dtsi"
+
+/ {
+	model = "Widora MangoPi M28K";
+	compatible = "widora,mangopi-m28k", "rockchip,rk3528";
+
+	ir-receiver {
+		compatible = "gpio-ir-receiver";
+		gpios = <&gpio4 RK_PC6 GPIO_ACTIVE_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pwm3_m0_ir_rx>;
+	};
+};
+
+&gpio_leds {
+	pinctrl-names = "default";
+	pinctrl-0 = <&lan_led_pin>, <&work_led_pin>, <&wan_led_pin>;
+
+	led-0 {
+		color = <LED_COLOR_ID_WHITE>;
+		function = LED_FUNCTION_LAN;
+		gpios = <&gpio4 RK_PB5 GPIO_ACTIVE_LOW>;
+	};
+
+	led-2 {
+		color = <LED_COLOR_ID_WHITE>;
+		function = LED_FUNCTION_WAN;
+		gpios = <&gpio4 RK_PC0 GPIO_ACTIVE_LOW>;
+	};
+};
+
+&pcie {
+	pinctrl-names = "default";
+	pinctrl-0 = <&rtl8111hs_isolateb_l>;
+	reset-gpios = <&gpio4 RK_PA3 GPIO_ACTIVE_HIGH>;
+	vpcie3v3-supply = <&vcc_3v3>;
+	status = "okay";
+
+	pcie@0,0 {
+		reg = <0x000000 0 0 0 0>;
+		#address-cells = <3>;
+		#size-cells = <2>;
+		device_type = "pci";
+		ranges;
+
+		rtl8168: pcie-eth@0,0 {
+			compatible = "pci10ec,8168";
+			reg = <0x000000 0 0 0 0>;
+			realtek,led-data = <0x870>;
+		};
+	};
+};
+
+&pinctrl {
+	gpio-leds {
+		lan_led_pin: lan-led-pin {
+			rockchip,pins = <4 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		wan_led_pin: wan-led-pin {
+			rockchip,pins = <4 RK_PC0 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
+	ir {
+		pwm3_m0_ir_rx: pwm3-m0-ir-rx {
+			rockchip,pins = <4 RK_PC6 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+
+	pcie {
+		rtl8111hs_isolateb_l: rtl8111hs-isolateb-l {
+			rockchip,pins = <4 RK_PA6 RK_FUNC_GPIO &pcfg_pull_down>;
+		};
+	};
+};
+
+&rgmii_led1 {
+	color = <LED_COLOR_ID_AMBER>;
+};
+
+&rgmii_led2 {
+	color = <LED_COLOR_ID_GREEN>;
+};
+
+&usb_host0_xhci {
+	maximum-speed = "high-speed";
+	phys = <&usb2phy_otg>;
+	phy-names = "usb2-phy";
+	snps,dis_u2_susphy_quirk;
+};

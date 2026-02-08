@@ -118,7 +118,7 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  
  return {
  	read_kernel_version: function() {
-@@ -832,6 +853,18 @@ return {
+@@ -855,6 +876,18 @@ return {
  			warn(`[!] ${msg}\n`);
  	},
  
@@ -137,7 +137,7 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  	get: function(sid, opt) {
  		return this.cursor.get("firewall", sid, opt);
  	},
-@@ -1013,6 +1046,21 @@ return {
+@@ -1036,6 +1069,21 @@ return {
  		}
  	},
  
@@ -159,7 +159,7 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  	parse_policy: function(val) {
  		return this.parse_enum(val, [
  			"accept",
-@@ -1452,6 +1500,7 @@ return {
+@@ -1475,6 +1523,7 @@ return {
  			"dnat",
  			"snat",
  			"masquerade",
@@ -167,7 +167,7 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  			"accept",
  			"reject",
  			"drop"
-@@ -1923,6 +1972,8 @@ return {
+@@ -1946,6 +1995,8 @@ return {
  		}
  
  		let defs = this.parse_options(data, {
@@ -176,7 +176,7 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  			input: [ "policy", "drop" ],
  			output: [ "policy", "drop" ],
  			forward: [ "policy", "drop" ],
-@@ -1957,6 +2008,11 @@ return {
+@@ -1980,6 +2031,11 @@ return {
  
  		delete defs.syn_flood;
  
@@ -188,7 +188,7 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  		this.state.defaults = defs;
  	},
  
-@@ -2182,10 +2238,23 @@ return {
+@@ -2205,10 +2261,23 @@ return {
  		zone.related_subnets = related_subnets;
  		zone.related_physdevs = related_physdevs;
  

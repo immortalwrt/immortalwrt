@@ -182,8 +182,11 @@ define Device/sercomm_cpj
   IMAGE/sysupgrade.bin := append-kernel | append-rootfs | \
 	sercomm-sysupgrade-cpj | pad-rootfs | check-size | \
 	append-metadata
+ifeq ($(IB),)
   ARTIFACTS := initramfs-factory.img
+endif
   DEVICE_PACKAGES := kmod-mt76x2
+  DEFAULT := n
 endef
 
 define Device/sercomm_cxx_dxx

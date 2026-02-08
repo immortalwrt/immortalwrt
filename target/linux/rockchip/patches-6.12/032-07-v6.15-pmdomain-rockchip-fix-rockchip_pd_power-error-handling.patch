@@ -1,0 +1,69 @@
+From 6b2690df3f032d91546841dcca44d5acdb7ace1e Mon Sep 17 00:00:00 2001
+From: Peter Geis <pgwipeout@gmail.com>
+Date: Thu, 20 Feb 2025 19:58:08 +0100
+Subject: [PATCH] pmdomain: rockchip: fix rockchip_pd_power error handling
+
+The calls rockchip_pd_power makes to rockchip_pmu_set_idle_request lack
+any return error handling, causing device drivers to incorrectly believe
+the hardware idle requests succeed when they may have failed. This leads
+to software possibly accessing hardware that is powered off and the
+subsequent SError panic that follows.
+
+Add error checking and return errors to the calling function to prevent
+such crashes.
+
+gst-launch-1.0 videotestsrc num-buffers=2000 ! v4l2jpegenc ! fakesink
+Setting pipeline to PAUSED ...er-x64
+Pipeline is PREROLLING ...
+Redistribute latency...
+rockchip-pm-domain ff100000.syscon:power-controller: failed to get ack on domain 'hevc', val=0x98260
+SError Interrupt on CPU2, code 0x00000000bf000002 -- SError
+
+Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+Link: https://lore.kernel.org/r/20241214215802.23989-1-pgwipeout@gmail.com
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20250220-rk3588-gpu-pwr-domain-regulator-v6-5-a4f9c24e5b81@kernel.org
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+---
+ drivers/pmdomain/rockchip/pm-domains.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
+
+--- a/drivers/pmdomain/rockchip/pm-domains.c
++++ b/drivers/pmdomain/rockchip/pm-domains.c
+@@ -607,26 +607,29 @@ static int rockchip_pd_power(struct rock
+ 		rockchip_pmu_save_qos(pd);
+ 
+ 		/* if powering down, idle request to NIU first */
+-		rockchip_pmu_set_idle_request(pd, true);
++		ret = rockchip_pmu_set_idle_request(pd, true);
++		if (ret < 0)
++			goto out;
+ 	}
+ 
+ 	ret = rockchip_do_pmu_set_power_domain(pd, power_on);
+-	if (ret < 0) {
+-		clk_bulk_disable(pd->num_clks, pd->clks);
+-		return ret;
+-	}
++	if (ret < 0)
++		goto out;
+ 
+ 	if (power_on) {
+ 		/* if powering up, leave idle mode */
+-		rockchip_pmu_set_idle_request(pd, false);
++		ret = rockchip_pmu_set_idle_request(pd, false);
++		if (ret < 0)
++			goto out;
+ 
+ 		rockchip_pmu_restore_qos(pd);
+ 	}
+ 
++out:
+ 	rockchip_pmu_ungate_clk(pd, false);
+ 	clk_bulk_disable(pd->num_clks, pd->clks);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ static int rockchip_pd_power_on(struct generic_pm_domain *domain)

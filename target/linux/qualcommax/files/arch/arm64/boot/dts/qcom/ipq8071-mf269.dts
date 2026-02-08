@@ -51,7 +51,7 @@
 		led_power: power {
 			function = LED_FUNCTION_POWER;
 			color = <LED_COLOR_ID_WHITE>;
-			gpio = <&tlmm 56 GPIO_ACTIVE_HIGH>;
+			gpios = <&tlmm 56 GPIO_ACTIVE_HIGH>;
 		};
 	};
 };
@@ -108,8 +108,6 @@
 
 	flash@0 {
 		compatible = "jedec,spi-nor";
-		#address-cells = <1>;
-		#size-cells = <1>;
 		reg = <0>;
 		spi-max-frequency = <50000000>;
 

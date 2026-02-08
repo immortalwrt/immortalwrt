@@ -4,8 +4,17 @@ START=99
 
 boot() {
 	case "$(board_name)" in
+	9tripod,x3568-v4)
+		( sleep 120s; wifi; ) &
+		;;
 	ariaboard,photonicat)
-		( sleep 15s; wifi; ) &
+		( modprobe ath10k_sdio; sleep 5s; wifi config; wifi; ) &
+		;;
+	armsom,sige3)
+		( sleep 50s; wifi; ) &
+		;;
+	armsom,sige7)
+		( sleep 100s; wifi; ) &
 		;;
 	esac
 }

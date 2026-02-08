@@ -8,6 +8,7 @@ define Build/boot-img-ext4
 	rm -fR $@.boot
 	mkdir -p $@.boot
 	$(foreach dts,$(DEVICE_DTS), $(CP) $(KDIR)/image-$(dts).dtb $@.boot/$(dts).dtb;)
+	$(foreach dtbo,$(DEVICE_DTS_OVERLAY), $(CP) $(KDIR)/image-$(dtbo).dtbo $@.boot/$(dtbo).dtbo;)
 	$(CP) $(IMAGE_KERNEL) $@.boot/$(KERNEL_NAME)
 	-$(CP) $@-boot.scr $@.boot/boot.scr
 	make_ext4fs -J -L kernel -l $(CONFIG_TARGET_KERNEL_PARTSIZE)M \
@@ -46,9 +47,25 @@ define Device/gateworks_venice
   FILESYSTEMS := squashfs ext4
   DEVICE_VENDOR := Gateworks
   DEVICE_MODEL := i.MX8M Venice
+  SUPPORTED_DEVICES := \
+	gw,imx8mm-gw71xx-0x \
+	gw,imx8mm-gw72xx-0x \
+	gw,imx8mp-gw72xx-2x \
+	gw,imx8mm-gw73xx-0x \
+	gw,imx8mp-gw73xx-2x \
+	gw,imx8mm-gw7901 \
+	gw,imx8mm-gw7902 \
+	gw,imx8mn-gw7902 \
+	gw,imx8mm-gw7903 \
+	gateworks,imx8mp-gw71xx-2x \
+	gateworks,imx8mp-gw74xx \
+	gateworks,imx8mm-gw7904 \
+	gateworks,imx8mm-gw7905-0x \
+	gateworks,imx8mp-gw7905-2x
   BOOT_SCRIPT := gateworks_venice
   PARTITION_OFFSET := 16M
   DEVICE_DTS := $(basename $(notdir $(wildcard $(DTS_DIR)/freescale/imx8m*-venice*.dts)))
+  DEVICE_DTS_OVERLAY := $(basename $(notdir $(wildcard $(DTS_DIR)/freescale/imx8m*-venice*.dtso)))
   DEVICE_PACKAGES := \
 	kmod-hwmon-gsc kmod-rtc-ds1672 kmod-eeprom-at24 \
 	kmod-gpio-button-hotplug kmod-leds-gpio kmod-pps-gpio \

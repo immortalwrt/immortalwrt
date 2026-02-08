@@ -18,6 +18,7 @@ sub target_config_features(@) {
 		/^dt$/ and $ret .= "\tselect USES_DEVICETREE\n";
 		/^dt-overlay$/ and $ret .= "\tselect HAS_DT_OVERLAY_SUPPORT\n";
 		/^emmc$/ and $ret .= "\tselect EMMC_SUPPORT\n";
+		/^erofs$/ and $ret .= "\tselect USES_EROFS\n";
 		/^ext4$/ and $ret .= "\tselect USES_EXT4\n";
 		/^fpu$/ and $ret .= "\tselect HAS_FPU\n";
 		/^gpio$/ and $ret .= "\tselect GPIO_SUPPORT\n";
@@ -32,6 +33,8 @@ sub target_config_features(@) {
 		/^pci$/ and $ret .= "\tselect PCI_SUPPORT\n";
 		/^pcie$/ and $ret .= "\tselect PCIE_SUPPORT\n";
 		/^pcmcia$/ and $ret .= "\tselect PCMCIA_SUPPORT\n";
+		/^pinctrl$/ and $ret .= "\tselect PINCTRL_SUPPORT\n";
+		/^pm$/ and $ret .= "\tselect USES_PM\n";
 		/^powerpc64$/ and $ret .= "\tselect powerpc64\n";
 		/^pwm$/ and $ret .= "\select PWM_SUPPORT\n";
 		/^ramdisk$/ and $ret .= "\tselect USES_INITRAMFS\n";
@@ -146,7 +149,7 @@ sub merge_package_lists($$) {
 	my %pkgs;
 
 	foreach my $pkg (@$list1, @$list2) {
-		$pkgs{$pkg} = 1;
+		$pkgs{$pkg =~ s/^~//r} = 1;
 	}
 	foreach my $pkg (keys %pkgs) {
 		push @l, $pkg unless ($pkg =~ /^-/ or $pkgs{"-$pkg"});
@@ -179,7 +182,7 @@ EOF
 	print <<EOF;
 choice
 	prompt "Target System"
-	default TARGET_x86
+	default TARGET_mediatek
 	reset if !DEVEL
 	
 EOF
@@ -219,6 +222,14 @@ choice
 EOF
 	foreach my $target (@target) {
 		my $profile = $target->{profiles}->[0];
+		foreach my $p (@{$target->{profiles}}) {
+			last unless $target->{default_profile};
+			my $name = $p->{id};
+			$name =~ s/^DEVICE_//;
+			next unless $name eq $target->{default_profile};
+			$profile = $p;
+			last;
+		}
 		$profile or next;
 		print <<EOF;
 	default TARGET_$target->{conf}_$profile->{id} if TARGET_$target->{conf} && !BUILDBOT
@@ -433,7 +444,7 @@ sub gen_profile_mk() {
 	my @targets = parse_target_metadata($file);
 	foreach my $cur (@targets) {
 		next unless $cur->{id} eq $target;
-		my @profile_ids_unique =  do { my %seen; grep { !$seen{$_}++} map { $_->{id} } @{$cur->{profiles}}};
+		my @profile_ids_unique =  do { my %seen; grep { !$seen{$_}++} map { $_->{id} } grep { $_->{default} !~ /^n/ } @{$cur->{profiles}}};
 		print "PROFILE_NAMES = ".join(" ", @profile_ids_unique)."\n";
 		foreach my $profile (@{$cur->{profiles}}) {
 			print $profile->{id}.'_NAME:='.$profile->{name}."\n";

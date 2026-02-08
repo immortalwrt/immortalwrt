@@ -12,8 +12,6 @@
 #include <linux/gpio/consumer.h>
 #include <linux/gpio/driver.h>
 #include <linux/platform_device.h>
-#include <linux/of_platform.h>
-#include <linux/of_gpio.h>
 
 #define GPIO_LATCH_DRIVER_NAME  "gpio-latch-mikrotik"
 #define GPIO_LATCH_LINES 9
@@ -27,11 +25,6 @@ struct gpio_latch_chip {
 	bool le_active_low;
 	struct gpio_desc *gpios[GPIO_LATCH_LINES];
 };
-
-static inline struct gpio_latch_chip *to_gpio_latch_chip(struct gpio_chip *gc)
-{
-	return container_of(gc, struct gpio_latch_chip, gc);
-}
 
 static void gpio_latch_lock(struct gpio_latch_chip *glc, bool enable)
 {
@@ -58,7 +51,7 @@ static void gpio_latch_unlock(struct gpio_latch_chip *glc, bool disable)
 static int
 gpio_latch_get(struct gpio_chip *gc, unsigned offset)
 {
-	struct gpio_latch_chip *glc = to_gpio_latch_chip(gc);
+	struct gpio_latch_chip *glc = gpiochip_get_data(gc);
 	int ret;
 
 	gpio_latch_lock(glc, false);
@@ -71,7 +64,7 @@ gpio_latch_get(struct gpio_chip *gc, unsigned offset)
 static void
 gpio_latch_set(struct gpio_chip *gc, unsigned offset, int value)
 {
-	struct gpio_latch_chip *glc = to_gpio_latch_chip(gc);
+	struct gpio_latch_chip *glc = gpiochip_get_data(gc);
 	bool enable_latch = false;
 	bool disable_latch = false;
 
@@ -88,7 +81,7 @@ gpio_latch_set(struct gpio_chip *gc, unsigned offset, int value)
 static int
 gpio_latch_direction_output(struct gpio_chip *gc, unsigned offset, int value)
 {
-	struct gpio_latch_chip *glc = to_gpio_latch_chip(gc);
+	struct gpio_latch_chip *glc = gpiochip_get_data(gc);
 	bool enable_latch = false;
 	bool disable_latch = false;
 	int ret;
@@ -110,35 +103,34 @@ static int gpio_latch_probe(struct platform_device *pdev)
 	struct gpio_latch_chip *glc;
 	struct gpio_chip *gc;
 	struct device *dev = &pdev->dev;
-	struct fwnode_handle *fwnode = dev->fwnode;
-	int i, n;
+	int err, i, n;
 
 	glc = devm_kzalloc(dev, sizeof(*glc), GFP_KERNEL);
 	if (!glc)
 		return -ENOMEM;
 
-	mutex_init(&glc->mutex);
-	mutex_init(&glc->latch_mutex);
+	err = devm_mutex_init(&pdev->dev, &glc->mutex);
+	if (err)
+		return err;
+
+	err = devm_mutex_init(&pdev->dev, &glc->latch_mutex);
+	if (err)
+		return err;
 
 	n = gpiod_count(dev, NULL);
-	if (n <= 0) {
-		dev_err(dev, "failed to get gpios: %d\n", n);
-		return n;
-	} else if (n != GPIO_LATCH_LINES) {
-		dev_err(dev, "expected %d gpios\n", GPIO_LATCH_LINES);
+	if (n <= 0)
+		return dev_err_probe(dev, n, "failed to get gpios");
+	if (n != GPIO_LATCH_LINES) {
+		dev_err(dev, "expected %d gpios", GPIO_LATCH_LINES);
 		return -EINVAL;
 	}
 
 	for (i = 0; i < n; i++) {
 		glc->gpios[i] = devm_gpiod_get_index_optional(dev, NULL, i,
 			GPIOD_OUT_LOW);
-		if (IS_ERR(glc->gpios[i])) {
-			if (PTR_ERR(glc->gpios[i]) != -EPROBE_DEFER) {
-				dev_err(dev, "failed to get gpio %d: %ld\n", i,
-					PTR_ERR(glc->gpios[i]));
-			}
-			return PTR_ERR(glc->gpios[i]);
-		}
+		if (IS_ERR(glc->gpios[i]))
+			return dev_err_probe(dev, PTR_ERR(glc->gpios[i]),
+					     "failed to get gpio %d", i);
 	}
 
 	glc->le_gpio = 8;
@@ -152,31 +144,15 @@ static int gpio_latch_probe(struct platform_device *pdev)
 
 	gc = &glc->gc;
 	gc->label = GPIO_LATCH_DRIVER_NAME;
+	gc->parent = dev;
 	gc->can_sleep = true;
 	gc->base = -1;
 	gc->ngpio = GPIO_LATCH_LINES;
 	gc->get = gpio_latch_get;
 	gc->set = gpio_latch_set;
 	gc->direction_output = gpio_latch_direction_output;
-	gc->fwnode = fwnode;
 
-	platform_set_drvdata(pdev, glc);
-
-	i = gpiochip_add(&glc->gc);
-	if (i) {
-		dev_err(dev, "gpiochip_add() failed: %d\n", i);
-		return i;
-	}
-
-	return 0;
-}
-
-static int gpio_latch_remove(struct platform_device *pdev)
-{
-	struct gpio_latch_chip *glc = platform_get_drvdata(pdev);
-
-	gpiochip_remove(&glc->gc);
-	return 0;
+	return devm_gpiochip_add_data(dev, gc, glc);
 }
 
 static const struct of_device_id gpio_latch_match[] = {
@@ -188,10 +164,8 @@ MODULE_DEVICE_TABLE(of, gpio_latch_match);
 
 static struct platform_driver gpio_latch_driver = {
 	.probe = gpio_latch_probe,
-	.remove = gpio_latch_remove,
 	.driver = {
 		.name = GPIO_LATCH_DRIVER_NAME,
-		.owner = THIS_MODULE,
 		.of_match_table = gpio_latch_match,
 	},
 };

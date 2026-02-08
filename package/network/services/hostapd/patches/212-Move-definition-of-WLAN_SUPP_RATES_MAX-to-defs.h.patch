@@ -30,7 +30,7 @@ Signed-off-by: Eneas U de Queiroz <cotequeiroz@gmail.com>
 
 --- a/src/ap/sta_info.h
 +++ b/src/ap/sta_info.h
-@@ -49,10 +49,6 @@
+@@ -50,10 +50,6 @@
  #define WLAN_STA_PENDING_DEAUTH_CB BIT(30)
  #define WLAN_STA_NONERP BIT(31)
  
@@ -43,7 +43,7 @@ Signed-off-by: Eneas U de Queiroz <cotequeiroz@gmail.com>
  struct mbo_non_pref_chan_info {
 --- a/src/common/defs.h
 +++ b/src/common/defs.h
-@@ -63,6 +63,10 @@
+@@ -62,6 +62,10 @@
  			 WPA_KEY_MGMT_FT_FILS_SHA256 | \
  			 WPA_KEY_MGMT_FT_FILS_SHA384)
  

@@ -109,7 +109,8 @@ define KernelPackage/gpio-pca953x
   SUBMENU:=$(GPIO_MENU)
   DEPENDS:=@GPIO_SUPPORT +kmod-i2c-core +kmod-regmap-i2c
   TITLE:=PCA95xx, TCA64xx, and MAX7310 I/O ports
-  KCONFIG:=CONFIG_GPIO_PCA953X
+  KCONFIG:=CONFIG_GPIO_PCA953X \
+	   CONFIG_GPIO_PCA953X_IRQ=y
   FILES:=$(LINUX_DIR)/drivers/gpio/gpio-pca953x.ko
   AUTOLOAD:=$(call AutoLoad,55,gpio-pca953x)
 endef
@@ -136,3 +137,20 @@ define KernelPackage/gpio-pcf857x/description
 endef
 
 $(eval $(call KernelPackage,gpio-pcf857x))
+
+
+define KernelPackage/gpio-pwm
+  SUBMENU:=$(GPIO_MENU)
+  DEPENDS:=@GPIO_SUPPORT @PWM_SUPPORT
+  TITLE:=PWM GPIO support
+  KCONFIG:=CONFIG_PWM_GPIO
+  FILES:=$(LINUX_DIR)/drivers/pwm/pwm-gpio.ko
+  AUTOLOAD:=$(call AutoProbe,pwm-gpio)
+endef
+
+define KernelPackage/gpio-pwm/description
+ Generic PWM framework driver for software PWM toggling a GPIO pin from
+ kernel high-resolution timers.
+endef
+
+$(eval $(call KernelPackage,gpio-pwm))

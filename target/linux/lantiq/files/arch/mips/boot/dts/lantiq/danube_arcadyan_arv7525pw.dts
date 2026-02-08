@@ -135,6 +135,10 @@
 					macaddr_boardconfig_16: macaddr@16 {
 						reg = <0x16 0x6>;
 					};
+
+					eeprom_boardconfig_410: eeprom@410 {
+						reg = <0x410 0x200>;
+					};
 				};
 			};
 		};
@@ -149,10 +153,11 @@
 
 	interrupt-map = <0x7000 0 0 1 &icu0 135 1>;
 
-	wifi@0,0 {
+	wifi@e,0 {
 		compatible = "pci0,0";
 		reg = <0x7000 0 0 0 0>;
-		ralink,mtd-eeprom = <&boardconfig 0x410>;
+		nvmem-cells = <&eeprom_boardconfig_410>;
+		nvmem-cell-names = "eeprom";
 	};
 };
 

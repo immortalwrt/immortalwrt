@@ -211,8 +211,14 @@ config_list_foreach() {
 
 default_prerm() {
 	local root="${IPKG_INSTROOT}"
-	local pkgname="$(basename ${1%.*})"
+	[ -z "$pkgname" ] && local pkgname="$(basename ${1%.*})"
 	local ret=0
+	local filelist="${root}/usr/lib/opkg/info/${pkgname}.list"
+	[ -f "$root/lib/apk/packages/${pkgname}.list" ] && filelist="$root/lib/apk/packages/${pkgname}.list"
+
+	if [ -e "$root/lib/apk/packages/${pkgname}.alternatives" ]; then
+		update_alternatives remove "${pkgname}"
+	fi
 
 	if [ -f "$root/usr/lib/opkg/info/${pkgname}.prerm-pkg" ]; then
 		( . "$root/usr/lib/opkg/info/${pkgname}.prerm-pkg" )
@@ -220,7 +226,7 @@ default_prerm() {
 	fi
 
 	local shell="$(command -v bash)"
-	for i in $(grep -s "^/etc/init.d/" "$root/usr/lib/opkg/info/${pkgname}.list"); do
+	for i in $(grep -s "^/etc/init.d/" "$filelist"); do
 		if [ -n "$root" ]; then
 			${shell:-/bin/sh} "$root/etc/rc.common" "$root$i" disable
 		else
@@ -235,8 +241,11 @@ default_prerm() {
 }
 
 add_group_and_user() {
-	local pkgname="$1"
+	[ -z "$pkgname" ] && local pkgname="$(basename ${1%.*})"
 	local rusers="$(sed -ne 's/^Require-User: *//p' $root/usr/lib/opkg/info/${pkgname}.control 2>/dev/null)"
+	if [ -f "$root/lib/apk/packages/${pkgname}.rusers" ]; then
+		local rusers="$(cat $root/lib/apk/packages/${pkgname}.rusers)"
+	fi
 
 	if [ -n "$rusers" ]; then
 		local tuple oIFS="$IFS"
@@ -286,13 +295,70 @@ add_group_and_user() {
 	fi
 }
 
+update_alternatives() {
+	local root="${IPKG_INSTROOT}"
+	local action="$1"
+	local pkgname="$2"
+
+	if [ -f "$root/lib/apk/packages/${pkgname}.alternatives" ]; then
+		for pkg_alt in $(cat $root/lib/apk/packages/${pkgname}.alternatives); do
+			local best_prio=0;
+			local best_src="/bin/busybox";
+			pkg_prio=${pkg_alt%%:*};
+			pkg_target=${pkg_alt#*:};
+			pkg_target=${pkg_target%:*};
+			pkg_src=${pkg_alt##*:};
+
+			if [ -e "$root/$target" ]; then
+				for alts in $root/lib/apk/packages/*.alternatives; do
+					for alt in $(cat $alts); do
+						prio=${alt%%:*};
+						target=${alt#*:};
+						target=${target%:*};
+						src=${alt##*:};
+
+						if [ "$target" = "$pkg_target" ] &&
+						   [ "$src" != "$pkg_src" ] &&
+						   [ "$best_prio" -lt "$prio" ]; then
+							best_prio=$prio;
+							best_src=$src;
+						fi
+					done
+				done
+			fi
+			case "$action" in
+				install)
+					if [ "$best_prio" -lt "$pkg_prio" ]; then
+						ln -sf "$pkg_src" "$root/$pkg_target"
+						echo "add alternative: $pkg_target -> $pkg_src"
+					fi
+				;;
+				remove)
+					if [ "$best_prio" -lt "$pkg_prio" ]; then
+						ln -sf "$best_src" "$root/$pkg_target"
+						echo "add alternative: $pkg_target -> $best_src"
+					fi
+				;;
+			esac
+		done
+	fi
+}
+
 default_postinst() {
 	local root="${IPKG_INSTROOT}"
-	local pkgname="$(basename ${1%.*})"
-	local filelist="/usr/lib/opkg/info/${pkgname}.list"
+	[ -z "$pkgname" ] && local pkgname="$(basename ${1%.*})"
+	local filelist="${root}/usr/lib/opkg/info/${pkgname}.list"
+	[ -f "$root/lib/apk/packages/${pkgname}.list" ] && filelist="$root/lib/apk/packages/${pkgname}.list"
 	local ret=0
 
-	add_group_and_user "${pkgname}"
+	if [ -e "${root}/usr/lib/opkg/info/${pkgname}.list" ]; then
+		filelist="${root}/usr/lib/opkg/info/${pkgname}.list"
+		add_group_and_user "${pkgname}"
+	fi
+
+	if [ -e "${root}/lib/apk/packages/${pkgname}.alternatives" ]; then
+		update_alternatives install "${pkgname}"
+	fi
 
 	if [ -d "$root/rootfs-overlay" ]; then
 		cp -R $root/rootfs-overlay/. $root/
@@ -316,7 +382,7 @@ default_postinst() {
 			uci commit
 		fi
 
-		rm -f /tmp/luci-indexcache
+		rm -f /tmp/luci-indexcache.*
 	fi
 
 	if [ -f "$root/usr/lib/opkg/info/${pkgname}.postinst-pkg" ]; then
@@ -325,7 +391,7 @@ default_postinst() {
 	fi
 
 	local shell="$(command -v bash)"
-	for i in $(grep -s "^/etc/init.d/" "$root$filelist"); do
+	for i in $(grep -s "^/etc/init.d/" "$filelist"); do
 		if [ -n "$root" ]; then
 			${shell:-/bin/sh} "$root/etc/rc.common" "$root$i" enable
 		else
@@ -381,7 +447,7 @@ find_mmc_part() {
 	fi
 
 	for DEVNAME in /sys/block/$ROOTDEV/mmcblk*p*; do
-		PARTNAME="$(grep PARTNAME ${DEVNAME}/uevent | cut -f2 -d'=')"
+		PARTNAME="$(grep PARTNAME ${DEVNAME}/uevent | cut -f2 -d'=' 2>/dev/null)"
 		[ "$PARTNAME" = "$1" ] && echo "/dev/$(basename $DEVNAME)" && return 0
 	done
 }
@@ -470,4 +536,4 @@ cmdline_get_var() {
 	done
 }
 
-[ -z "$IPKG_INSTROOT" ] && [ -f /lib/config/uci.sh ] && . /lib/config/uci.sh
+[ -z "$IPKG_INSTROOT" ] && [ -f /lib/config/uci.sh ] && . /lib/config/uci.sh || true

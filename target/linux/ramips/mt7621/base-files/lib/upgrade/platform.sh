@@ -9,6 +9,18 @@ RAMFS_COPY_BIN='fw_printenv fw_setenv'
 RAMFS_COPY_DATA='/etc/fw_env.config /var/lock/fw_printenv.lock'
 
 platform_check_image() {
+	local board=$(board_name)
+	local magic="$(get_magic_long "$1")"
+
+	[ "$#" -gt 1 ] && return 1
+
+	case "$board" in
+	buffalo,wsr-2533dhpl2|\
+	buffalo,wsr-2533dhpls)
+		buffalo_check_image "$board" "$magic" "$1" || return 1
+		;;
+	esac
+
 	return 0
 }
 
@@ -33,6 +45,7 @@ platform_do_upgrade() {
 			fw_setenv --lock / bootImage 0 || exit 1
 		fi
 		;;
+	iptime,ax2002m|\
 	iptime,ax2004m)
 		if [ "$(fw_printenv -n boot_from 2>/dev/null)" != "firmware1" ]; then
 			fw_setenv boot_from firmware1 || exit 1
@@ -62,31 +75,44 @@ platform_do_upgrade() {
 	asus,rt-ac85p|\
 	asus,rt-ax53u|\
 	asus,rt-ax54|\
+	asus,4g-ax56|\
 	beeline,smartbox-flash|\
 	beeline,smartbox-giga|\
 	beeline,smartbox-pro|\
 	beeline,smartbox-turbo|\
 	beeline,smartbox-turbo-plus|\
 	belkin,rt1800|\
+	c-life,xg1|\
 	dlink,covr-x1860-a1|\
 	dlink,dap-x1860-a1|\
+	dlink,dir-1360-a1|\
 	dlink,dir-1960-a1|\
+	dlink,dir-2055-a1|\
 	dlink,dir-2150-a1|\
+	dlink,dir-2150-r1|\
 	dlink,dir-2640-a1|\
 	dlink,dir-2660-a1|\
 	dlink,dir-3040-a1|\
 	dlink,dir-3060-a1|\
 	dlink,dir-853-a3|\
+	dlink,dir-x1860-b1|\
+	edup,ep-rt2960s|\
+	elecom,wmc-x1800gst|\
+	elecom,wsc-x1800gs|\
 	etisalat,s3|\
 	h3c,tx1800-plus|\
 	h3c,tx1801-plus|\
 	h3c,tx1806|\
 	haier,har-20s2u1|\
 	hiwifi,hc5962|\
+	gemtek,wvrtm-127acn|\
+	gemtek,wvrtm-130acn|\
 	iptime,a3004t|\
+	iptime,ax2002m|\
 	iptime,ax2004m|\
 	iptime,t5004|\
 	jcg,q20|\
+	keenetic,kn-3510|\
 	linksys,e5600|\
 	linksys,e7350|\
 	linksys,ea6350-v4|\
@@ -109,6 +135,8 @@ platform_do_upgrade() {
 	netgear,wac104|\
 	netgear,wac124|\
 	netgear,wax202|\
+	netgear,wax214v2|\
+	netis,n6|\
 	netis,wf2881|\
 	raisecom,msg1500-x-00|\
 	rostelecom,rt-fe-1a|\
@@ -116,6 +144,7 @@ platform_do_upgrade() {
 	sercomm,na502|\
 	sercomm,na502s|\
 	sim,simax1800t|\
+	sim,simax1800u|\
 	tplink,ec330-g5u-v1|\
 	wifire,s1500-nbn|\
 	xiaomi,mi-router-3g|\
@@ -130,6 +159,20 @@ platform_do_upgrade() {
 	zte,e8820s|\
 	zyxel,nwa50ax|\
 	zyxel,nwa55axe)
+		nand_do_upgrade "$1"
+		;;
+	buffalo,wsr-2533dhpl2|\
+	buffalo,wsr-2533dhpls)
+		buffalo_do_upgrade "$1"
+		;;
+	dna,valokuitu-plus-ex400|\
+	genexis,pulse-ex400)
+		inteno_do_upgrade "$1"
+		;;
+	elecom,wrc-x1800gs)
+		[ "$(fw_printenv -n bootmenu_delay)" != "0" ] || \
+			fw_setenv bootmenu_delay 3
+		iodata_mstc_set_flag "bootnum" "persist" "0x4" "1,2" "1"
 		nand_do_upgrade "$1"
 		;;
 	iodata,wn-ax1167gr2|\
@@ -149,6 +192,9 @@ platform_do_upgrade() {
 		iodata_mstc_set_flag "bootnum" "persist" "0x4" "1,2" "1"
 		nand_do_upgrade "$1"
 		;;
+	plasmacloud,pax1800-lite)
+		platform_do_upgrade_dualboot_datachk "$1"
+		;;
 	tplink,er605-v2)
 		echo "Upgrading tplink,er605-v2"
 		CI_UBIPART="firmware"
@@ -161,6 +207,7 @@ platform_do_upgrade() {
 		;;
 	zyxel,lte3301-plus|\
 	zyxel,lte5398-m904|\
+	zyxel,lte7490-m904|\
 	zyxel,nr7101)
 		fw_setenv CheckBypass 0
 		fw_setenv Image1Stable 0

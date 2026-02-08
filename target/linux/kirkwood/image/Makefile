@@ -112,9 +112,7 @@ endef
 
 define Device/Default
   PROFILES := Default
-ifdef CONFIG_LINUX_6_6
   DEVICE_DTS_DIR := $(DTS_DIR)/marvell
-endif
   DEVICE_DTS = kirkwood-$(lastword $(subst _, ,$(1)))
   KERNEL_DEPENDS = $$(wildcard $(DTS_DIR)/$$(DEVICE_DTS).dts)
   KERNEL := kernel-bin | append-dtb | uImage none
@@ -134,7 +132,8 @@ define Device/checkpoint_l-50
   DEVICE_VENDOR := Check Point
   DEVICE_MODEL := L-50
   DEVICE_PACKAGES := kmod-ath9k kmod-gpio-button-hotplug kmod-mvsdio \
-	kmod-rtc-s35390a kmod-usb-ledtrig-usbport wpad-basic-openssl
+	kmod-rtc-s35390a kmod-usb-ledtrig-usbport wpad-openssl \
+	kmod-dsa-mv88e6xxx
   IMAGES := sysupgrade.bin
 endef
 TARGET_DEVICES += checkpoint_l-50
@@ -182,12 +181,33 @@ define Device/ctera_c200-v1
 endef
 TARGET_DEVICES += ctera_c200-v1
 
+define Device/dlink_dns320l
+  DEVICE_VENDOR := D-Link
+  DEVICE_MODEL := DNS-320L
+  DEVICE_PACKAGES := kmod-ata-marvell-sata kmod-fs-ext4 kmod-gpio-button-hotplug \
+	kmod-usb-storage kmod-usb-ledtrig-usbport dns320l-mcu kmod-rtc-mv
+endef
+TARGET_DEVICES += dlink_dns320l
+
+define Device/dlink_dns-325-a1
+  DEVICE_VENDOR := D-Link
+  DEVICE_MODEL := DNS-325
+  DEVICE_VARIANT := A1
+  DEVICE_DTS := kirkwood-dns325
+  DEVICE_PACKAGES := kmod-ata-marvell-sata kmod-hwmon-lm75 kmod-hwmon-gpiofan \
+	kmod-thermal kmod-usb-ledtrig-usbport kmod-gpio-button-hotplug block-mount \
+  mdadm kmod-md-linear kmod-usb-storage kmod-fs-ext4 e2fsprogs partx-utils \
+  fdisk kmod-rtc-mv
+endef
+TARGET_DEVICES += dlink_dns-325-a1
+
 define Device/endian_4i-edge-200
   DEVICE_VENDOR := Endian
   DEVICE_MODEL := 4i Edge 200
   DEVICE_ALT0_VENDOR := Endian
   DEVICE_ALT0_MODEL := UTM Mini Firewall
-  DEVICE_PACKAGES := kmod-ath9k kmod-mvsdio wpad-basic-openssl kmod-rtc-mv
+  DEVICE_PACKAGES := kmod-ath9k kmod-mvsdio wpad-openssl kmod-rtc-mv \
+	kmod-dsa-mv88e6xxx
   KERNEL_SIZE := 4096k
   IMAGES := sysupgrade.bin
 endef
@@ -232,7 +252,7 @@ define Device/iom_ix4-200d
   $(Device/kernel-size-migration-iomega)
   DEVICE_VENDOR := Iomega
   DEVICE_MODEL := StorCenter ix4-200d
-  DEVICE_PACKAGES := kmod-ata-marvell-sata kmod-fs-ext4 \
+  DEVICE_PACKAGES := kmod-ata-ahci kmod-ata-marvell-sata kmod-fs-ext4 \
 	kmod-gpio-button-hotplug kmod-gpio-nxp-74hc164 \
 	kmod-hwmon-adt7475 kmod-mvsdio kmod-spi-gpio kmod-rtc-mv
   PAGESIZE := 512
@@ -266,8 +286,8 @@ TARGET_DEVICES += iptime_nas1
 define Device/linksys
   $(Device/kernel-size-migration-linksys)
   DEVICE_VENDOR := Linksys
-  DEVICE_PACKAGES := kmod-mwl8k wpad-basic-openssl kmod-gpio-button-hotplug \
-	kmod-rtc-mv
+  DEVICE_PACKAGES := kmod-mwl8k wpad-openssl kmod-gpio-button-hotplug \
+	kmod-rtc-mv kmod-dsa-mv88e6xxx
   KERNEL_IN_UBI :=
   KERNEL_SIZE := 4096k
   UBINIZE_OPTS := -E 5
@@ -367,7 +387,7 @@ endef
 TARGET_DEVICES += seagate_goflexhome
 
 define Device/zyxel_nsa310b
-  DEVICE_VENDOR := ZyXEL
+  DEVICE_VENDOR := Zyxel
   DEVICE_MODEL := NSA310b
   DEVICE_PACKAGES := kmod-ata-marvell-sata kmod-r8169 kmod-fs-ext4 \
 	kmod-gpio-button-hotplug kmod-hwmon-lm85 kmod-rtc-mv
@@ -376,14 +396,15 @@ endef
 TARGET_DEVICES += zyxel_nsa310b
 
 define Device/zyxel_nsa310s
-  DEVICE_VENDOR := ZyXEL
+  DEVICE_VENDOR := Zyxel
   DEVICE_MODEL := NSA310S
-  DEVICE_PACKAGES := kmod-ata-marvell-sata kmod-fs-ext4 kmod-gpio-button-hotplug
+  DEVICE_PACKAGES := kmod-ata-marvell-sata kmod-fs-ext4 \
+	kmod-gpio-button-hotplug kmod-rtc-mv
 endef
 TARGET_DEVICES += zyxel_nsa310s
 
 define Device/zyxel_nsa325
-  DEVICE_VENDOR := ZyXEL
+  DEVICE_VENDOR := Zyxel
   DEVICE_MODEL := NSA325
   DEVICE_VARIANT := v1/v2
   DEVICE_PACKAGES := kmod-ata-marvell-sata kmod-fs-ext4 \

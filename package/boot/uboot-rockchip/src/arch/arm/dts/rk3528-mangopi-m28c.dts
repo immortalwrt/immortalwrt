@@ -1,0 +1,53 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+/dts-v1/;
+#include <dt-bindings/thermal/thermal.h>
+
+#include "rk3528-mangopi-m28.dtsi"
+
+/ {
+	model = "Widora MangoPi M28C";
+	compatible = "widora,mangopi-m28c", "rockchip,rk3528";
+
+	gpio-export {
+		compatible = "gpio-export";
+
+		modem-reset {
+			gpio-export,name = "MODEM-RST";
+			gpio-export,output = <0>;
+			gpios = <&gpio4 RK_PA3 GPIO_ACTIVE_LOW>;
+		};
+
+		modem-power {
+			gpio-export,name = "MODEM-PWR";
+			gpio-export,output = <1>;
+			gpios = <&gpio4 RK_PB1 GPIO_ACTIVE_HIGH>;
+		};
+	};
+
+	fan: pwm-fan {
+		compatible = "pwm-fan";
+		cooling-levels = <0 100 150 200 255>;
+		#cooling-cells = <2>;
+		pwms = <&pwm3 0 1000000 0>;
+	};
+};
+
+&gpio_leds {
+	pinctrl-names = "default";
+	pinctrl-0 = <&work_led_pin>;
+};
+
+&pwm3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pwm3m0_pins>;
+	status = "okay";
+};
+
+&rgmii_led1 {
+	color = <LED_COLOR_ID_AMBER>;
+};
+
+&rgmii_led2 {
+	color = <LED_COLOR_ID_GREEN>;
+};

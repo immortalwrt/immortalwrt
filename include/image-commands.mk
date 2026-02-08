@@ -99,6 +99,64 @@ define Build/append-metadata
 	}
 endef
 
+metadata_gl_json = \
+	'{ $(if $(IMAGE_METADATA),$(IMAGE_METADATA)$(comma)) \
+		"metadata_version": "1.1", \
+		"compat_version": "$(call json_quote,$(compat_version))", \
+		$(if $(DEVICE_COMPAT_MESSAGE),"compat_message": "$(call json_quote,$(DEVICE_COMPAT_MESSAGE))"$(comma)) \
+		$(if $(filter-out 1.0,$(compat_version)),"new_supported_devices": \
+			[$(call metadata_devices,$(SUPPORTED_DEVICES))]$(comma) \
+			"supported_devices": ["$(call json_quote,$(legacy_supported_message))"]$(comma)) \
+		$(if $(filter 1.0,$(compat_version)),"supported_devices":[$(call metadata_devices,$(SUPPORTED_DEVICES))]$(comma)) \
+		"version": { \
+			"release": "$(call json_quote,$(VERSION_NUMBER))", \
+			"date": "$(shell TZ='Asia/Chongqing' date '+%Y%m%d%H%M%S')", \
+			"dist": "$(call json_quote,$(VERSION_DIST))", \
+			"version": "$(call json_quote,$(VERSION_NUMBER))", \
+			"revision": "$(call json_quote,$(REVISION))", \
+			"target": "$(call json_quote,$(TARGETID))", \
+			"board": "$(call json_quote,$(if $(BOARD_NAME),$(BOARD_NAME),$(DEVICE_NAME)))" \
+		} \
+	}'
+
+define Build/append-gl-metadata
+	$(if $(SUPPORTED_DEVICES),-echo $(call metadata_gl_json,$(SUPPORTED_DEVICES)) | fwtool -I - $@)
+	sha256sum "$@" | cut -d" " -f1 > "$@.sha256sum"
+	[ ! -s "$(BUILD_KEY)" -o ! -s "$(BUILD_KEY).ucert" -o ! -s "$@" ] || { \
+		cp "$(BUILD_KEY).ucert" "$@.ucert" ;\
+		usign -S -m "$@" -s "$(BUILD_KEY)" -x "$@.sig" ;\
+		ucert -A -c "$@.ucert" -x "$@.sig" ;\
+		fwtool -S "$@.ucert" "$@" ;\
+	}
+endef
+
+define Build/append-teltonika-metadata
+	echo \
+		'{$(if $(IMAGE_METADATA),$(IMAGE_METADATA)$(comma)) \
+			"metadata_version": "1.1", \
+			"compat_version": "$(call json_quote,$(compat_version))", \
+			"version":"$(call json_quote,$(VERSION_DIST))-$(call json_quote,$(VERSION_NUMBER))-$(call json_quote,$(REVISION))", \
+			"device_code": [".*"], \
+			"hwver": [".*"], \
+			"batch": [".*"], \
+			"serial": [".*"], \
+			$(if $(DEVICE_COMPAT_MESSAGE),"compat_message": "$(call json_quote,$(DEVICE_COMPAT_MESSAGE))"$(comma)) \
+			$(if $(filter-out 1.0,$(compat_version)),"new_supported_devices": \
+				[$(call metadata_devices,$(SUPPORTED_TELTONIKA_DEVICES))]$(comma) \
+				"supported_devices": ["$(call json_quote,$(legacy_supported_message))"]$(comma)) \
+			$(if $(filter 1.0,$(compat_version)),"supported_devices":[$(call metadata_devices,$(SUPPORTED_TELTONIKA_DEVICES))]$(comma)) \
+			"version_wrt": { \
+			"dist": "$(call json_quote,$(VERSION_DIST))", \
+			"version": "$(call json_quote,$(VERSION_NUMBER))", \
+			"revision": "$(call json_quote,$(REVISION))", \
+			"target": "$(call json_quote,$(TARGETID))", \
+			"board": "$(call json_quote,$(if $(BOARD_NAME),$(BOARD_NAME),$(DEVICE_NAME)))" \
+		}, \
+			"hw_support": {}, \
+			"hw_mods": {$(shell i=1; for mod in $(SUPPORTED_TELTONIKA_HW_MODS); do [ $$i -gt 1 ] && echo -n ,; echo -n "\"mod$$i\": \"$$mod\""; i=$$((i+1)); done)} \
+		}' | fwtool -I - $@
+endef
+
 define Build/append-rootfs
 	dd if=$(IMAGE_ROOTFS) >> $@
 endef
@@ -231,6 +289,27 @@ define Build/buffalo-tag-dhp
 	mv $@.new $@
 endef
 
+define Build/buffalo-trx
+	$(eval magic=$(word 1,$(1)))
+	$(eval kern_bin=$(if $(1),$(IMAGE_KERNEL),$@))
+	$(eval rtfs_bin=$(word 2,$(1)))
+	$(eval apnd_bin=$(word 3,$(1)))
+	$(eval kern_size=$(if $(KERNEL_SIZE),$(KERNEL_SIZE),0x400000))
+
+	$(if $(rtfs_bin),touch $(rtfs_bin))
+	$(STAGING_DIR_HOST)/bin/otrx create $@.new \
+		$(if $(magic),-M $(magic),) \
+		-f $(kern_bin) \
+		$(if $(rtfs_bin),\
+			-a 0x20000 \
+			-b $$(( $(call exp_units,$(kern_size)) )) \
+			-f $(rtfs_bin),) \
+		$(if $(apnd_bin),\
+			-A $(apnd_bin) \
+			-a 0x20000)
+	mv $@.new $@
+endef
+
 define Build/check-size
 	@imagesize="$$(stat -c%s $@)"; \
 	limitsize="$$(($(call exp_units,$(if $(1),$(1),$(IMAGE_SIZE)))))"; \
@@ -295,12 +374,12 @@ define Build/elecom-product-header
 	$(eval product=$(word 1,$(1)))
 	$(eval fw=$(if $(word 2,$(1)),$(word 2,$(1)),$@))
 
-	( \
+	-( \
 		echo -n -e "ELECOM\x00\x00$(product)" | dd bs=40 count=1 conv=sync; \
 		echo -n "0.00" | dd bs=16 count=1 conv=sync; \
 		dd if=$(fw); \
-	) > $(fw).new
-	mv $(fw).new $(fw)
+	) > $(fw).new \
+	&& mv $(fw).new $(fw) || rm -f $(fw)
 endef
 
 define Build/elecom-wrc-gs-factory
@@ -330,10 +409,10 @@ define Build/elx-header
 		echo -ne "$$($(MKHASH) md5 $@ | fold -s2 | xargs -I {} echo \\x{} | tr -d '\n')" | \
 			dd bs=58 count=1 conv=sync; \
 	) > $(KDIR)/tmp/$(DEVICE_NAME).header
-	$(call Build/xor-image,-p $(xor_pattern) -x)
-	cat $(KDIR)/tmp/$(DEVICE_NAME).header $@ > $@.new
-	mv $@.new $@
-	rm -rf $(KDIR)/tmp/$(DEVICE_NAME).header
+	-$(call Build/xor-image,-p $(xor_pattern) -x) \
+	&& cat $(KDIR)/tmp/$(DEVICE_NAME).header $@ > $@.new \
+	&& mv $@.new $@ \
+	&& rm -rf $(KDIR)/tmp/$(DEVICE_NAME).header
 endef
 
 define Build/eva-image
@@ -351,7 +430,10 @@ define Build/initrd_compression
 	$(if $(CONFIG_TARGET_INITRAMFS_COMPRESSION_ZSTD),.zstd)
 endef
 
-define Build/fit
+define Build/fit-its
+	$(if $(findstring with-rootfs,$(word 3,$(1))), \
+		$(call locked,dd if=$(IMAGE_ROOTFS) of=$(IMAGE_ROOTFS).pagesync bs=4096 conv=sync, \
+		  gen-cpio$(if $(TARGET_PER_DEVICE_ROOTFS),.$(ROOTFS_ID/$(DEVICE_NAME)))))
 	$(TOPDIR)/scripts/mkits.sh \
 		-D $(DEVICE_NAME) -o $@.its -k $@ \
 		-C $(word 1,$(1)) \
@@ -362,7 +444,7 @@ define Build/fit
 		$(if $(findstring with-rootfs,$(word 3,$(1))),-r $(IMAGE_ROOTFS)) \
 		$(if $(findstring with-initrd,$(word 3,$(1))), \
 			$(if $(CONFIG_TARGET_ROOTFS_INITRAMFS_SEPARATE), \
-				-i $(KERNEL_BUILD_DIR)/initrd.cpio$(strip $(call Build/initrd_compression)))) \
+				-i $(KERNEL_BUILD_DIR)/initrd$(if $(TARGET_PER_DEVICE_ROOTFS),.$(ROOTFS_ID/$(DEVICE_NAME))).cpio$(strip $(call Build/initrd_compression)))) \
 		-a $(KERNEL_LOADADDR) -e $(if $(KERNEL_ENTRY),$(KERNEL_ENTRY),$(KERNEL_LOADADDR)) \
 		$(if $(DEVICE_FDT_NUM),-n $(DEVICE_FDT_NUM)) \
 		$(if $(DEVICE_DTS_DELIMITER),-l $(DEVICE_DTS_DELIMITER)) \
@@ -370,9 +452,18 @@ define Build/fit
 		$(if $(DEVICE_DTS_OVERLAY),$(foreach dtso,$(DEVICE_DTS_OVERLAY), -O $(dtso):$(KERNEL_BUILD_DIR)/image-$(dtso).dtbo)) \
 		-c $(if $(DEVICE_DTS_CONFIG),$(DEVICE_DTS_CONFIG),"config-1") \
 		-A $(LINUX_KARCH) -v $(LINUX_VERSION)
-	PATH=$(LINUX_DIR)/scripts/dtc:$(PATH) mkimage $(if $(findstring external,$(word 3,$(1))),\
-		-E -B 0x1000 $(if $(findstring static,$(word 3,$(1))),-p 0x1000)) -f $@.its $@.new
+endef
+
+define Build/fit-image
+	$(call locked,PATH=$(LINUX_DIR)/scripts/dtc:$(PATH) mkimage $(if $(findstring external,$(word 3,$(1))),\
+		-E -B 0x1000 $(if $(findstring static,$(word 3,$(1))),-p 0x1000)) -f $@.its $@.new, \
+	  gen-cpio$(if $(TARGET_PER_DEVICE_ROOTFS),.$(ROOTFS_ID/$(DEVICE_NAME))))
 	@mv $@.new $@
+endef
+
+define Build/fit
+	$(call Build/fit-its,$(1))
+	$(call Build/fit-image,$(1))
 endef
 
 define Build/libdeflate-gzip
@@ -417,30 +508,70 @@ endef
 
 define Build/jffs2
 	rm -rf $(KDIR_TMP)/$(DEVICE_NAME)/jffs2 && \
-		mkdir -p $(KDIR_TMP)/$(DEVICE_NAME)/jffs2/$$(dirname $(1)) && \
-		cp $@ $(KDIR_TMP)/$(DEVICE_NAME)/jffs2/$(1) && \
+		mkdir -p $(KDIR_TMP)/$(DEVICE_NAME)/jffs2/$$(dirname $(word 1,$(1))) && \
+		cp $@ $(KDIR_TMP)/$(DEVICE_NAME)/jffs2/$(word 1,$(1)) && \
 		$(STAGING_DIR_HOST)/bin/mkfs.jffs2 --pad \
 			$(if $(CONFIG_BIG_ENDIAN),--big-endian,--little-endian) \
 			--squash-uids -v -e $(patsubst %k,%KiB,$(BLOCKSIZE)) \
 			-o $@.new \
 			-d $(KDIR_TMP)/$(DEVICE_NAME)/jffs2 \
+			$(wordlist 2,$(words $(1)),$(1)) \
 			2>&1 1>/dev/null | awk '/^.+$$$$/' && \
 		$(STAGING_DIR_HOST)/bin/padjffs2 $@.new -J $(patsubst %k,,$(BLOCKSIZE))
 	-rm -rf $(KDIR_TMP)/$(DEVICE_NAME)/jffs2/
 	@mv $@.new $@
 endef
 
-define Build/kernel2minor
-	$(eval temp_file := $(shell mktemp))
-	cp $@ $(temp_file)
-	kernel2minor -k $(temp_file) -r $(temp_file).new $(1)
-	mv $(temp_file).new $@
-	rm -f $(temp_file)
+define Build/yaffs-filesystem
+	let \
+		kernel_size="$$(stat -c%s $@)" \
+		kernel_chunks="(kernel_size / 1024) + 1" \
+		filesystem_chunks="kernel_chunks + 3" \
+		filesystem_blocks="(filesystem_chunks / 63) + 1" \
+		filesystem_size="filesystem_blocks * 64 * 1024" \
+		filesystem_size_with_reserve="(filesystem_blocks + 2) * 64 * 1024"; \
+		head -c $$filesystem_size_with_reserve /dev/zero | tr "\000" "\377" > $@.img \
+		&& yafut -d $@.img -w -i $@ -o $(if $(findstring v7,$@),bootimage,kernel) -C 1040 -B 64k -E -P -S $(1) \
+		&& truncate -s $$filesystem_size $@.img \
+		&& mv $@.img $@
 endef
 
 define Build/kernel-bin
 	rm -f $@
 	cp $< $@
+endef
+
+define Build/gl-qsdk-factory
+	$(eval GL_NAME := $(call param_get_default,type,$(1),$(DEVICE_NAME)))
+	$(eval GL_IMGK := $(KDIR_TMP)/$(DEVICE_IMG_PREFIX)-squashfs-factory.img)
+	$(eval GL_ITS := $(KDIR_TMP)/$(GL_NAME).its)
+	$(eval GL_UBI := "ubi")
+
+	$(CP) $(BOOT_SCRIPT) $(KDIR_TMP)/
+	$(shell mv $(GL_IMGK) $(GL_IMGK).tmp)
+
+	sed -i "s/rootfs_size/`wc -c $(GL_IMGK) | \
+	cut -d " " -f 1 | xargs printf "0x%x"`/g" $(KDIR_TMP)/$(BOOT_SCRIPT);
+
+	$(TOPDIR)/scripts/mkits-qsdk-ipq-image.sh \
+		$(GL_ITS) \
+		$(BOOT_SCRIPT) \
+		$(GL_UBI) \
+		$(GL_IMGK)
+
+	PATH=$(LINUX_DIR)/scripts/dtc:$(PATH) mkimage -f \
+		$(GL_ITS) \
+		$(GL_IMGK)
+
+	$(RM) \
+		$(GL_ITS) \
+		$(GL_IMGK).tmp \
+		$(KDIR_TMP)/$(notdir $(BOOT_SCRIPT))
+endef
+
+define Build/kernel-pack-npk
+	$(STAGING_DIR_HOST)/bin/npk_pack_kernel $@ $@.npk
+	mv $@.npk $@
 endef
 
 define Build/linksys-image
@@ -510,6 +641,19 @@ endef
 
 define Build/openmesh-image
 	$(TOPDIR)/scripts/om-fwupgradecfg-gen.sh \
+		"$(call param_get_default,ce_type,$(1),$(DEVICE_NAME))" \
+		"$@-fwupgrade.cfg" \
+		"$(call param_get_default,kernel,$(1),$(IMAGE_KERNEL))" \
+		"$(call param_get_default,rootfs,$(1),$@)"
+	$(TOPDIR)/scripts/combined-ext-image.sh \
+		"$(call param_get_default,ce_type,$(1),$(DEVICE_NAME))" "$@" \
+		"$@-fwupgrade.cfg" "fwupgrade.cfg" \
+		"$(call param_get_default,kernel,$(1),$(IMAGE_KERNEL))" "kernel" \
+		"$(call param_get_default,rootfs,$(1),$@)" "rootfs"
+endef
+
+define Build/dualboot-datachk-nand-image
+	$(TOPDIR)/scripts/nand-fwupgradecfg-gen.sh \
 		"$(call param_get_default,ce_type,$(1),$(DEVICE_NAME))" \
 		"$@-fwupgrade.cfg" \
 		"$(call param_get_default,kernel,$(1),$(IMAGE_KERNEL))" \
@@ -594,16 +738,26 @@ define Build/seama-seal
 endef
 
 define Build/senao-header
-	$(STAGING_DIR_HOST)/bin/mksenaofw $(1) -e $@ -o $@.new
-	mv $@.new $@
+	-$(STAGING_DIR_HOST)/bin/mksenaofw $(1) -e $@ -o $@.new \
+	&& mv $@.new $@ || rm -f $@
 endef
 
 define Build/sysupgrade-tar
+	$(eval dtb=$(call param_get,dtb,$(1)))
 	sh $(TOPDIR)/scripts/sysupgrade-tar.sh \
 		--board $(if $(BOARD_NAME),$(BOARD_NAME),$(DEVICE_NAME)) \
 		--kernel $(call param_get_default,kernel,$(1),$(IMAGE_KERNEL)) \
 		--rootfs $(call param_get_default,rootfs,$(1),$(IMAGE_ROOTFS)) \
+		$(if $(dtb),--dtb $(dtb)) \
 		$@
+endef
+
+define Build/tplink-image-2022
+	$(TOPDIR)/scripts/tplink-mkimage-2022.py  \
+		--create $@.new \
+		--rootfs $@ \
+		--support "$(TPLINK_SUPPORT_STRING)"
+	@mv $@.new $@
 endef
 
 define Build/tplink-safeloader
@@ -646,23 +800,22 @@ define Build/tplink-v1-image
 endef
 
 define Build/tplink-v2-header
-	$(STAGING_DIR_HOST)/bin/mktplinkfw2 \
+	-$(STAGING_DIR_HOST)/bin/mktplinkfw2 \
 		-c -H $(TPLINK_HWID) -W $(TPLINK_HWREV) -L $(KERNEL_LOADADDR) \
 		-E $(if $(KERNEL_ENTRY),$(KERNEL_ENTRY),$(KERNEL_LOADADDR))  \
 		-w $(TPLINK_HWREVADD) -F "$(TPLINK_FLASHLAYOUT)" \
 		-T $(TPLINK_HVERSION) -V "ver. 2.0" \
-		-k $@ -o $@.new $(1)
-	@mv $@.new $@
+		-k $@ -o $@.new $(1) \
+	&& mv $@.new $@ || rm -f $@
 endef
 
 define Build/tplink-v2-image
-	$(STAGING_DIR_HOST)/bin/mktplinkfw2 \
+	-$(STAGING_DIR_HOST)/bin/mktplinkfw2 \
 		-H $(TPLINK_HWID) -W $(TPLINK_HWREV) \
 		-w $(TPLINK_HWREVADD) -F "$(TPLINK_FLASHLAYOUT)" \
 		-T $(TPLINK_HVERSION) -V "ver. 2.0" -a 0x4 -j \
-		-k $(IMAGE_KERNEL) -r $(IMAGE_ROOTFS) -o $@.new $(1)
-	cat $@.new >> $@
-	rm -rf $@.new
+		-k $(IMAGE_KERNEL) -r $(IMAGE_ROOTFS) -o $@.new $(1) \
+	&& cat $@.new >> $@ && rm -rf $@.new || rm -f $@
 endef
 
 define Build/uImage
@@ -681,9 +834,26 @@ define Build/uImage
 	mv $@.new $@
 endef
 
+define Build/multiImage
+	$(if $(UIMAGE_TIME),SOURCE_DATE_EPOCH="$(UIMAGE_TIME)") \
+	mkimage \
+		-A $(LINUX_KARCH) \
+		-O linux \
+		-T multi \
+		-C $(word 1,$(1)) \
+		-a $(KERNEL_LOADADDR) \
+		-e $(if $(KERNEL_ENTRY),$(KERNEL_ENTRY),$(KERNEL_LOADADDR)) \
+		-n '$(if $(UIMAGE_NAME),$(UIMAGE_NAME),$(call toupper,$(LINUX_KARCH)) $(VERSION_DIST) Linux-$(LINUX_VERSION))' \
+		$(if $(UIMAGE_MAGIC),-M $(UIMAGE_MAGIC)) \
+		-d $@:$(word 2,$(1)):$(word 3,$(1)) \
+		$(wordlist 4,$(words $(1)),$(1)) \
+		$@.new
+	mv $@.new $@
+endef
+
 define Build/xor-image
-	$(STAGING_DIR_HOST)/bin/xorimage -i $@ -o $@.xor $(1)
-	mv $@.xor $@
+	-$(STAGING_DIR_HOST)/bin/xorimage -i $@ -o $@.xor $(1) \
+	&& mv $@.xor $@ || rm -f $@
 endef
 
 define Build/zip
@@ -694,6 +864,10 @@ define Build/zip
 		$(wordlist 2,$(words $(1)),$(1)) \
 		$@ $@.tmp/$(if $(word 1,$(1)),$(word 1,$(1)),$$(basename $@))
 	rm -rf $@.tmp
+endef
+
+define Build/zyimage
+	$(STAGING_DIR_HOST)/bin/zyimage $(1) $@
 endef
 
 define Build/zyxel-ras-image

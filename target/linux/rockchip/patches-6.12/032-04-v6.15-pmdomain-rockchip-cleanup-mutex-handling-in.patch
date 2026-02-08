@@ -1,0 +1,44 @@
+From 83b2fbac8982f7c15dc53b1f9a7b18a9b028fc77 Mon Sep 17 00:00:00 2001
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Thu, 20 Feb 2025 19:58:05 +0100
+Subject: [PATCH] pmdomain: rockchip: cleanup mutex handling in
+ rockchip_pd_power
+
+Use the cleanup infrastructure to handle the mutex, which
+slightly improve code readability for this function.
+
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+Tested-by: Heiko Stuebner <heiko@sntech.de>
+Tested-by: Adrian Larumbe <adrian.larumbe@collabora.com> # On Rock 5B
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20250220-rk3588-gpu-pwr-domain-regulator-v6-2-a4f9c24e5b81@kernel.org
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+---
+ drivers/pmdomain/rockchip/pm-domains.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+--- a/drivers/pmdomain/rockchip/pm-domains.c
++++ b/drivers/pmdomain/rockchip/pm-domains.c
+@@ -583,13 +583,12 @@ static int rockchip_pd_power(struct rock
+ 	struct rockchip_pmu *pmu = pd->pmu;
+ 	int ret;
+ 
+-	mutex_lock(&pmu->mutex);
++	guard(mutex)(&pmu->mutex);
+ 
+ 	if (rockchip_pmu_domain_is_on(pd) != power_on) {
+ 		ret = clk_bulk_enable(pd->num_clks, pd->clks);
+ 		if (ret < 0) {
+ 			dev_err(pmu->dev, "failed to enable clocks\n");
+-			mutex_unlock(&pmu->mutex);
+ 			return ret;
+ 		}
+ 
+@@ -615,7 +614,6 @@ static int rockchip_pd_power(struct rock
+ 		clk_bulk_disable(pd->num_clks, pd->clks);
+ 	}
+ 
+-	mutex_unlock(&pmu->mutex);
+ 	return 0;
+ }
+ 

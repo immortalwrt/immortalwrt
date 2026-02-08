@@ -1,0 +1,186 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+#include "mt7621.dtsi"
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/leds/common.h>
+
+/ {
+	compatible = "c-life,xg1", "mediatek,mt7621-soc";
+	model = "C-Life XG1";
+
+	aliases {
+		led-boot = &led_sys_red;
+		led-failsafe = &led_sys_red;
+		led-running = &led_sys_blue;
+		led-upgrade = &led_sys_green;
+		label-mac-device = &gmac0;
+	};
+
+	chosen {
+		bootargs = "console=ttyS0,115200";
+	};
+
+	gpio-keys {
+		compatible = "gpio-keys";
+
+		button-reset {
+			label = "reset";
+			gpios = <&gpio 17 GPIO_ACTIVE_HIGH>;
+			linux,code = <KEY_RESTART>;
+		};
+
+		button-wps {
+			label = "wps";
+			gpios = <&gpio 18 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_WPS_BUTTON>;
+		};
+	};
+
+	gpio-leds {
+		compatible = "gpio-leds";
+
+		led_sys_red: led-0 {
+			color = <LED_COLOR_ID_RED>;
+			function = LED_FUNCTION_STATUS;
+			gpios = <&gpio 14 GPIO_ACTIVE_HIGH>;
+		};
+
+		led_sys_green: led-1 {
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_STATUS;
+			gpios = <&gpio 15 GPIO_ACTIVE_HIGH>;
+		};
+
+		led_sys_blue: led-2 {
+			color = <LED_COLOR_ID_BLUE>;
+			function = LED_FUNCTION_STATUS;
+			gpios = <&gpio 16 GPIO_ACTIVE_HIGH>;
+		};
+	};
+};
+
+&ethphy0 {
+	/delete-property/ interrupts;
+};
+
+&gmac0 {
+	nvmem-cells = <&macaddr_factory_4>;
+	nvmem-cell-names = "mac-address";
+};
+
+&gmac1 {
+	label = "wan";
+	nvmem-cells = <&macaddr_factory_a>;
+	nvmem-cell-names = "mac-address";
+	phy-handle = <&ethphy0>;
+	status = "okay";
+};
+
+&nand {
+	status = "okay";
+
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		partition@0 {
+			label = "Bootloader";
+			reg = <0x0 0x80000>;
+			read-only;
+		};
+
+		partition@80000 {
+			label = "Config";
+			reg = <0x80000 0x40000>;
+			read-only;
+		};
+
+		partition@c0000 {
+			label = "ConfigData";
+			reg = <0xc0000 0x40000>;
+			read-only;
+		};
+
+		partition@100000 {
+			label = "Factory";
+			reg = <0x100000 0x80000>;
+			read-only;
+
+			nvmem-layout {
+				compatible = "fixed-layout";
+				#address-cells = <1>;
+				#size-cells = <1>;
+
+				eeprom_factory_0: eeprom@0 {
+					reg = <0x0 0xe00>;
+				};
+
+				macaddr_factory_4: macaddr@4 {
+					reg = <0x4 0x6>;
+				};
+
+				macaddr_factory_a: macaddr@a {
+					reg = <0xa 0x6>;
+				};
+			};
+		};
+
+		partition@180000 {
+			label = "kernel";
+			reg = <0x180000 0x400000>;
+		};
+
+		partition@580000 {
+			label = "ubi";
+			reg = <0x580000 0xf8c0000>;
+		};
+	};
+};
+
+&pcie {
+	status = "okay";
+};
+
+&pcie1 {
+	wifi@0,0 {
+		compatible = "mediatek,mt76";
+		reg = <0x0000 0 0 0 0>;
+		nvmem-cells = <&eeprom_factory_0>;
+		nvmem-cell-names = "eeprom";
+		mediatek,disable-radar-background;
+	};
+};
+
+&state_default {
+	gpio {
+		groups = "jtag", "wdt";
+		function = "gpio";
+	};
+};
+
+&switch0 {
+	ports {
+		port@1 {
+			status = "okay";
+			label = "lan1";
+		};
+
+		port@2 {
+			status = "okay";
+			label = "lan2";
+		};
+	};
+};
+
+&uartlite2 {
+	/* EFR32BG21 Ble */
+	status = "okay";
+};
+
+&uartlite3 {
+	/* EFR32MG21 Zigbee */
+	status = "okay";
+};

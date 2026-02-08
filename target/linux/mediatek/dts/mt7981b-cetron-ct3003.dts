@@ -1,0 +1,39 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+/dts-v1/;
+#include "mt7981b-cetron-ct3003.dtsi"
+
+/ {
+	model = "Cetron CT3003 (stock layout)";
+	compatible = "cetron,ct3003", "mediatek,mt7981";
+};
+
+&partitions {
+	partition@580000 {
+		label = "ubi";
+		reg = <0x0580000 0x2000000>;
+	};
+
+	partition@2580000 {
+		label = "ubi_backup";
+		reg = <0x2580000 0x2000000>;
+	};
+
+	partition@4580000 {
+		label = "Config_backup";
+		reg = <0x4580000 0x0400000>;
+	};
+};
+
+&spi_nand {
+	spi-cal-enable;
+	spi-cal-mode = "read-data";
+	spi-cal-datalen = <7>;
+	spi-cal-data = /bits/ 8 <0x53 0x50 0x49 0x4E 0x41 0x4E 0x44>;
+	spi-cal-addrlen = <5>;
+	spi-cal-addr = /bits/ 32 <0x0 0x0 0x0 0x0 0x0>;
+
+	mediatek,nmbm;
+	mediatek,bmt-max-ratio = <1>;
+	mediatek,bmt-max-reserved-blocks = <64>;
+};

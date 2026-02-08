@@ -8,10 +8,10 @@
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
-PKG_VERSION:=2024.04
+PKG_VERSION:=2026.01
 PKG_RELEASE:=1
 
-PKG_HASH:=18a853fe39fad7ad03a90cc2d4275aeaed6da69735defac3492b80508843dd4a
+PKG_HASH:=b60d5865cefdbc75da8da4156c56c458e00de75a49b80c1a2e58a96e30ad0d54
 
 include $(INCLUDE_DIR)/u-boot.mk
 include $(INCLUDE_DIR)/package.mk
@@ -20,6 +20,13 @@ include $(INCLUDE_DIR)/host-build.mk
 define U-Boot/Default
   BUILD_TARGET:=mvebu
   HIDDEN:=1
+endef
+
+define U-Boot/mox
+  NAME:=CZ.NIC Turris Mox
+  BUILD_DEVICES:=cznic_turris-mox
+  BUILD_SUBTARGET:=cortexa53
+  UBOOT_CONFIG:=turris_mox
 endef
 
 define U-Boot/clearfog
@@ -60,13 +67,26 @@ define U-Boot/eDPU
   BUILD_SUBTARGET:=cortexa53
 endef
 
+define U-Boot/rb5009
+  NAME:=MikroTik RB5009
+  BUILD_SUBTARGET:=cortexa72
+  BUILD_DEVICES:=mikrotik_rb5009
+  UBOOT_CONFIG:=mvebu_rb5009
+  UBOOT_IMAGE:=u-boot.elf
+endef
+
 UBOOT_TARGETS:= \
+	mox \
 	clearfog \
 	helios4 \
 	omnia \
 	espressobin \
 	uDPU \
-	eDPU
+	eDPU \
+	rb5009
+
+UBOOT_CUSTOMIZE_CONFIG := \
+	--disable TOOLS_MKEFICAPSULE
 
 define Package/u-boot/install
 	$(if $(findstring cortexa53,$(BUILD_SUBTARGET)),,$(Package/u-boot/install/default))

@@ -1,11 +1,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=meson
-PKG_VERSION:=1.3.2
+PKG_VERSION:=1.6.1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/mesonbuild/meson/releases/download/$(PKG_VERSION)
-PKG_HASH:=492eb450c8b073024276f916f5adbb3c4bb7e90e9e6ec124efda064f3d9b5baa
+PKG_HASH:=1eca49eb6c26d58bbee67fd3337d8ef557c0804e30a6d16bfdf269db997464de
 
 PKG_MAINTAINER:=Andre Heider <a.heider@gmail.com>
 PKG_LICENSE:=Apache-2.0
