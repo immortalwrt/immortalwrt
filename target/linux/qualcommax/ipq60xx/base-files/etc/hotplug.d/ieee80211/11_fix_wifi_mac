@@ -1,0 +1,66 @@
+[ "$ACTION" == "add" ] || exit 0
+
+PHYNBR=${DEVPATH##*/phy}
+
+[ -n $PHYNBR ] || exit 0
+
+. /lib/functions.sh
+. /lib/functions/system.sh
+
+board=$(board_name)
+
+case "$board" in
+	alfa-network,ap120c-ax)
+		label_mac=$(mtd_get_mac_binary 0:ART 0x12)
+		[ "$PHYNBR" = "0" ] && macaddr_add $label_mac 1 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && macaddr_add $label_mac 2 > /sys${DEVPATH}/macaddress
+		;;
+	anysafe,e1)
+		label_mac=$(mtd_get_mac_binary 0:ART 0x0)
+		[ "$PHYNBR" = "0" ] && macaddr_add $label_mac 1 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && macaddr_add $label_mac 2 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "2" ] && macaddr_add $label_mac 3 > /sys${DEVPATH}/macaddress
+		;;
+	cmiot,ax18|\
+	zn,m2)
+		label_mac=$(mtd_get_mac_binary 0:art 0x6)
+		[ "$PHYNBR" = "0" ] && macaddr_add $label_mac 1 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && macaddr_add $label_mac 2 > /sys${DEVPATH}/macaddress
+		;;
+	glinet,gl-ax1800|\
+	glinet,gl-axt1800)
+		label_mac=$(get_mac_label)
+		[ "$PHYNBR" = "0" ] && macaddr_add $label_mac 2 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && macaddr_add $label_mac 3 > /sys${DEVPATH}/macaddress
+		;;
+	link,nn6000-v1|\
+	link,nn6000-v2)
+		label_mac=$(mmc_get_mac_binary 0:ART 0x18)
+		[ "$PHYNBR" = "0" ] && macaddr_add $label_mac 1 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && macaddr_add $label_mac 2 > /sys${DEVPATH}/macaddress
+		;;
+	linksys,mr7350|\
+	linksys,mr7500)
+		label_mac=$(mtd_get_mac_ascii devinfo hw_mac_addr)
+		[ "$PHYNBR" = "0" ] && macaddr_add $label_mac 2 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && macaddr_add $label_mac 3 > /sys${DEVPATH}/macaddress
+		;;
+	qihoo,360v6)
+		label_mac=$(mtd_get_mac_ascii factory lanMac)
+		[ "$PHYNBR" = "0" ] && macaddr_add $label_mac 2 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && macaddr_add $label_mac 3 > /sys${DEVPATH}/macaddress
+		;;
+	netgear,wax610|\
+	netgear,wax610y)
+		label_mac=$(get_mac_label)
+		[ "$PHYNBR" = "0" ] && macaddr_add $label_mac 2 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && macaddr_add $label_mac 3 > /sys${DEVPATH}/macaddress
+		;;
+	tplink,eap610od|\
+	tplink,eap623od-hd-v1|\
+	tplink,eap625od-hd-v1)
+		label_mac=$(get_mac_binary /tmp/factory_data/default-mac 0)
+		[ "$PHYNBR" = "0" ] && macaddr_add $label_mac 1 > /sys${DEVPATH}/macaddress
+		[ "$PHYNBR" = "1" ] && macaddr_add $label_mac 2 > /sys${DEVPATH}/macaddress
+		;;
+esac

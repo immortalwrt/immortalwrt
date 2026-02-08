@@ -53,8 +53,8 @@ if [ ! -d "$TOOLCHAIN_SYSROOT" ]; then
 	exit 1
 fi
 
-# -Wl,--dynamic-linker=$TOOLCHAIN_SYSROOT/lib/ld-uClibc.so.0 
-# --dynamic-linker=$TOOLCHAIN_SYSROOT/lib/ld-uClibc.so.0 
+# -Wl,--dynamic-linker=$TOOLCHAIN_SYSROOT/lib/ld-uClibc.so.0
+# --dynamic-linker=$TOOLCHAIN_SYSROOT/lib/ld-uClibc.so.0
 
 case $TOOLCHAIN_PLATFORM in
 	gnu|glibc|uclibc|musl)

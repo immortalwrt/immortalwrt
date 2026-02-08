@@ -1,0 +1,14 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+
+start() {
+	for eth in $(jsonfilter -i "/etc/board.json" -e "@.network[*].device"); do
+		[ -d "/sys/class/net/$eth" ] || continue
+		for i in "/sys/class/net/$eth"/queues/rx-*/rps_cpus; do echo "f" > "$i"; done
+		for i in "/sys/class/net/$eth"/queues/rx-*/rps_flow_cnt; do echo "8192" > "$i"; done
+		for i in "/sys/class/net/$eth"/queues/tx-*/xps_cpus; do echo "f" > "$i"; done
+	done
+
+	echo "65535" > "/proc/sys/net/core/rps_sock_flow_entries"
+}

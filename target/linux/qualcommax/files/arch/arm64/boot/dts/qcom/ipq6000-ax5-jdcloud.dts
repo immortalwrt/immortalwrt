@@ -1,0 +1,28 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+/dts-v1/;
+
+#include "ipq6000-xiaomi.dtsi"
+
+/ {
+	model = "Redmi AX5 JDCloud";
+	compatible = "redmi,ax5-jdcloud", "qcom,ipq6018";
+
+	chosen {
+		/delete-property/ bootargs-append;
+	};
+};
+
+&sdhc {
+	status = "okay";
+
+	/delete-property/ mmc-hs400-1_8v;
+	mmc-hs200-1_8v;
+	mmc-ddr-1_8v;
+};
+
+&wifi {
+	status = "okay";
+	qcom,ath11k-fw-memory-mode = <1>;
+	qcom,ath11k-calibration-variant = "Redmi-AX5-JDCloud";
+};

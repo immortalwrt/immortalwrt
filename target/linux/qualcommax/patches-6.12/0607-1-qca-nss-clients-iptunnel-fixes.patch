@@ -1,0 +1,150 @@
+
+Includes iptunnel fixes by integrating the following patches:
+  0257-linux-fix-icmp-of-ipip6-tunnel-not-working-issue.patch
+  0261-linux-fix-ipv6-address-error-for-unusual-icmp-messag.patch
+  0265-net-Correct-FMR-Calculation-in-Linux-6.1.patch
+  0284-ip_tunnel_core-NULL-pointer-check-before-netif_is_vx.patch
+  0353-net-Enable-fast-path-support-for-6RD-DS-Lite.patch
+
+--- a/net/ipv6/ip6_tunnel.c
++++ b/net/ipv6/ip6_tunnel.c
+@@ -851,7 +851,7 @@ static void ip4ip6_fmr_calc(struct in6_a
+ 	use_dest_addr = (xmit && dsth == iph) || (!xmit && dsth != iph);
+ 
+ 	/* get dst port */
+-	if (((u8*)&dsth[1]) <= end && (
++	if (((u8 *)&dsth[1]) <= end && (
+ 		dsth->protocol == IPPROTO_UDP ||
+ 		dsth->protocol == IPPROTO_TCP ||
+ 		dsth->protocol == IPPROTO_SCTP ||
+@@ -866,9 +866,9 @@ static void ip4ip6_fmr_calc(struct in6_a
+ 		struct icmphdr *ih = (struct icmphdr*)(((u8*)dsth) + dsth->ihl * 4);
+ 
+ 		/* use icmp identifier as port */
+-		if (((u8*)&ih) <= end && (
+-		    (use_dest_addr && (
+-		    ih->type == ICMP_ECHOREPLY ||
++		if (((u8 *)ih) <= end && (
++			(use_dest_addr && (
++			ih->type == ICMP_ECHOREPLY ||
+ 			ih->type == ICMP_TIMESTAMPREPLY ||
+ 			ih->type == ICMP_INFO_REPLY ||
+ 			ih->type == ICMP_ADDRESSREPLY)) ||
+@@ -885,7 +885,7 @@ static void ip4ip6_fmr_calc(struct in6_a
+ 		int frombyte = fmr->ip6_prefix_len / 8;
+ 		int fromrem = fmr->ip6_prefix_len % 8;
+ 		int bytes = sizeof(struct in6_addr) - frombyte;
+-		const u32 *addr = (use_dest_addr) ? &iph->daddr : &iph->saddr;
++		const u32 *addr = (use_dest_addr) ? &dsth->daddr : &dsth->saddr;
+ 		u64 eabits = ((u64)ntohl(*addr)) << (32 + fmr->ip4_prefix_len);
+ 		u64 t = 0;
+ 
+@@ -1024,6 +1024,9 @@ static int __ip6_tnl_rcv(struct ip6_tnl
+ 	if (tun_dst)
+ 		skb_dst_set(skb, (struct dst_entry *)tun_dst);
+ 
++	/* Reset the skb_iif to Tunnels interface index */
++	skb->skb_iif = tunnel->dev->ifindex;
++
+ 	gro_cells_receive(&tunnel->gro_cells, skb);
+ 	return 0;
+ 
+@@ -1425,6 +1428,9 @@ route_lookup:
+ 	ipv6h->nexthdr = proto;
+ 	ipv6h->saddr = fl6->saddr;
+ 	ipv6h->daddr = fl6->daddr;
++
++	/* Reset the skb_iif to Tunnels interface index */
++	skb->skb_iif = dev->ifindex;
+ 	ip6tunnel_xmit(NULL, skb, dev);
+ 	return 0;
+ tx_err_link_failure:
+@@ -1541,17 +1547,19 @@ ipxip6_tnl_xmit(struct sk_buff *skb, str
+ 	fl6.flowi6_uid = sock_net_uid(dev_net(dev), NULL);
+ 	dsfield = INET_ECN_encapsulate(dsfield, orig_dsfield);
+ 
+-	/* try to find matching FMR */
+-	for (fmr = t->parms.fmrs; fmr; fmr = fmr->next) {
+-		unsigned mshift = 32 - fmr->ip4_prefix_len;
+-		if (ntohl(fmr->ip4_prefix.s_addr) >> mshift ==
+-				ntohl(ip_hdr(skb)->daddr) >> mshift)
+-			break;
+-	}
++	if (protocol == IPPROTO_IPIP) {
++		/* try to find matching FMR */
++		for (fmr = t->parms.fmrs; fmr; fmr = fmr->next) {
++			unsigned mshift = 32 - fmr->ip4_prefix_len;
++			if (ntohl(fmr->ip4_prefix.s_addr) >> mshift ==
++					ntohl(ip_hdr(skb)->daddr) >> mshift)
++				break;
++		}
+ 
+-	/* change dstaddr according to FMR */
+-	if (fmr)
+-		ip4ip6_fmr_calc(&fl6.daddr, ip_hdr(skb), skb_tail_pointer(skb), fmr, true);
++		/* change dstaddr according to FMR */
++		if (fmr)
++			ip4ip6_fmr_calc(&fl6.daddr, ip_hdr(skb), skb_tail_pointer(skb), fmr, true);
++	}
+ 
+ 	if (iptunnel_handle_offloads(skb, SKB_GSO_IPXIP6))
+ 		return -1;
+--- a/net/ipv4/ip_tunnel_core.c
++++ b/net/ipv4/ip_tunnel_core.c
+@@ -38,6 +38,7 @@
+ #include <net/geneve.h>
+ #include <net/vxlan.h>
+ #include <net/erspan.h>
++#include <net/vxlan.h>
+ 
+ const struct ip_tunnel_encap_ops __rcu *
+ 		iptun_encaps[MAX_IPTUN_ENCAP_OPS] __read_mostly;
+@@ -55,7 +56,12 @@ void iptunnel_xmit(struct sock *sk, stru
+ 	struct net *net = dev_net(rt->dst.dev);
+ 	struct net_device *dev = skb->dev;
+ 	struct iphdr *iph;
++	struct net_device *in_dev = NULL;
+ 	int err;
++	int skb_iif;
++
++	/* Save input interface index */
++	skb_iif = skb->skb_iif;
+ 
+ 	skb_scrub_packet(skb, xnet);
+ 
+@@ -79,6 +85,15 @@ void iptunnel_xmit(struct sock *sk, stru
+ 	iph->ttl	=	ttl;
+ 	__ip_select_ident(net, iph, skb_shinfo(skb)->gso_segs ?: 1);
+ 
++	/* Get input interface */
++	if (skb_iif) {
++		in_dev = __dev_get_by_index(&init_net, skb_iif);
++	}
++
++	if (proto == IPPROTO_IPV6 || proto == IPPROTO_GRE || (in_dev && netif_is_vxlan(in_dev))) {
++		skb->skb_iif = skb_iif;
++	}
++
+ 	err = ip_local_out(net, sk, skb);
+ 
+ 	if (dev) {
+--- a/net/ipv6/sit.c
++++ b/net/ipv6/sit.c
+@@ -725,6 +725,8 @@ static int ipip6_rcv(struct sk_buff *skb
+ 
+ 		dev_sw_netstats_rx_add(tunnel->dev, skb->len);
+ 
++		/* Reset the skb_iif to Tunnels interface index */
++		skb->skb_iif = tunnel->dev->ifindex;
+ 		netif_rx(skb);
+ 
+ 		return 0;
+@@ -1034,6 +1036,8 @@ static netdev_tx_t ipip6_tunnel_xmit(str
+ 
+ 	skb_set_inner_ipproto(skb, IPPROTO_IPV6);
+ 
++	/* Reset the skb_iif to Tunnels interface index */
++	skb->skb_iif = tunnel->dev->ifindex;
+ 	iptunnel_xmit(NULL, rt, skb, fl4.saddr, fl4.daddr, protocol, tos, ttl,
+ 		      df, !net_eq(tunnel->net, dev_net(dev)));
+ 	return NETDEV_TX_OK;

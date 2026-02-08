@@ -67,7 +67,7 @@ fwtool_check_image() {
 		# lets start with the original case [ "$dev" = "$device" ]
 		# if the evaluated firmware is vanila openwrt, this evals as true -ie
 		# [ ("$dev" == "glinet.gl-b3000") == ("$device" == "glinet,gl-b3000") ]
-		# however if the firmware is oem then $dev = b3000 and the above check fails resulting 
+		# however if the firmware is oem then $dev = b3000 and the above check fails resulting
 		# in the erroneous warnings.
 		# so we add the secondary check [ "$dev" = "$oem" ];
 		# If in Step 1 the oem_file was found and valid, the $oem == "b3000" so
@@ -86,7 +86,7 @@ fwtool_check_image() {
 			# so we add the check for [ "$dev" = "$oem" ]
 			if (([ "${devicecompat#.*}" != "${imagecompat#.*}" ] || [ "$dev" = "$oem" ])) && [ "$SAVE_CONFIG" = "1" ]; then
 				# Step 4.
-				# here we have to gaurd against the default case, oem may exsist and default will pass 
+				# here we have to gaurd against the default case, oem may exsist and default will pass
 				# the original check [ "${devicecompat#.*}" != "${imagecompat#.*}" ] so we must
 				# explicitly check $dev == $oem, if it is we update(reuse) the $devicecompat and imagecompat
 				# variable to reflect the case - ( Openwrt -> OEM )

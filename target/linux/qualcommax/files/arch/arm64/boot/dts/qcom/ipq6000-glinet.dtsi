@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
-#include "ipq6018-512m.dtsi"
+#include "ipq6018.dtsi"
 #include "ipq6018-ess.dtsi"
+#include "ipq6018-nss.dtsi"
+#include "ipq6018-common.dtsi"
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
@@ -68,45 +70,19 @@
 };
 
 &tlmm {
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio64";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio65";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
+	hsuart_pins: hsuart-pins {
+		pins = "gpio57", "gpio58";
+		function = "blsp4_uart";
+		drive-strength = <8>;
+		bias-disable;
 	};
 
 	tluart_pins: tluart-pins {
-		mux {
-			pins = "gpio75", "gpio76";
-			function = "blsp3_uart";
-			drive-strength = <8>;
-			bias-disable;
-		};
+		pins = "gpio75", "gpio76";
+		function = "blsp3_uart";
+		drive-strength = <8>;
+		bias-disable;
 	};
-
-	hsuart_pins: hsuart-pins {
-		mux {
-			pins = "gpio57", "gpio58";
-			function = "blsp4_uart";
-			drive-strength = <8>;
-			bias-disable;
-		};
-	};
-};
-
-&blsp1_uart3 {
-	pinctrl-0 = <&serial_3_pins>;
-	pinctrl-names = "default";
-	status = "okay";
 };
 
 &blsp1_uart4 {
@@ -121,20 +97,19 @@
 	status = "okay";
 };
 
-&qpic_bam {
-	status = "okay";
-};
-
 &qpic_nand {
 	status = "okay";
 
+	partitions {
+		status = "disabled";
+	};
+
 	nand@0 {
 		reg = <0>;
+
 		nand-ecc-strength = <4>;
 		nand-ecc-step-size = <512>;
 		nand-bus-width = <8>;
-		#address-cells = <1>;
-		#size-cells = <1>;
 
 		partitions: partitions {
 			compatible = "fixed-partitions";
@@ -143,54 +118,54 @@
 
 			partition@0 {
 				label = "0:sbl1";
-				reg = <0x0000000 0x0180000>;
+				reg = <0x00000000 0x00180000>;
 				read-only;
 			};
 
 			partition@180000 {
 				label = "0:mibib";
-				reg = <0x0180000 0x0100000>;
+				reg = <0x00180000 0x00100000>;
 				read-only;
 			};
 
 			partition@280000 {
 				label = "0:qsee";
-				reg = <0x0280000 0x0380000>;
+				reg = <0x00280000 0x00380000>;
 				read-only;
 			};
 
 			partition@600000 {
 				label = "0:devcfg";
-				reg = <0x0600000 0x0080000>;
+				reg = <0x00600000 0x00080000>;
 				read-only;
 			};
 
 			partition@680000 {
 				label = "0:rpm";
-				reg = <0x0680000 0x0080000>;
+				reg = <0x00680000 0x00080000>;
 				read-only;
 			};
 
 			partition@700000 {
 				label = "0:cdt";
-				reg = <0x0700000 0x0080000>;
+				reg = <0x00700000 0x00080000>;
 				read-only;
 			};
 
 			partition@780000 {
 				label = "0:appsblenv";
-				reg = <0x0780000 0x0080000>;
+				reg = <0x00780000 0x00080000>;
 			};
 
 			partition@800000 {
 				label = "0:appsbl";
-				reg = <0x0800000 0x0180000>;
+				reg = <0x00800000 0x00180000>;
 				read-only;
 			};
 
 			partition@980000 {
 				label = "0:art";
-				reg = <0x0980000 0x0080000>;
+				reg = <0x00980000 0x00080000>;
 				read-only;
 
 				nvmem-layout {
@@ -199,20 +174,18 @@
 					#size-cells = <1>;
 
 					macaddr_wan: macaddr@0 {
-						reg = <0x0 0x6>;
+						reg = <0x00 0x06>;
 					};
 
 					macaddr_lan: macaddr@6 {
-						reg = <0x6 0x6>;
+						reg = <0x06 0x06>;
 					};
 				};
 			};
 
-			/* rootfs defined in variant dts */
-
 			partition@7d00000 {
 				label = "0:ethphyfw";
-				reg = <0x7d00000 0x0080000>;
+				reg = <0x07d00000 0x00080000>;
 				read-only;
 			};
 		};
@@ -222,18 +195,6 @@
 &qusb_phy_0 {
 	vdd-supply = <&reg_usb_vbus>;
 	status = "okay";
-};
-
-&ssphy_0 {
-	status = "okay";
-};
-
-&usb3 {
-	status = "okay";
-};
-
-&rpm {
-	status = "disabled";
 };
 
 &mdio {
@@ -286,18 +247,22 @@
 			port_id = <1>;
 			phy_address = <0>;
 		};
+
 		port@2 {
 			port_id = <2>;
 			phy_address = <1>;
 		};
+
 		port@3 {
 			port_id = <3>;
 			phy_address = <2>;
 		};
+
 		port@4 {
 			port_id = <4>;
 			phy_address = <3>;
 		};
+
 		port@5 {
 			port_id = <5>;
 			phy_address = <4>;
@@ -307,10 +272,4 @@
 
 &edma {
 	status = "okay";
-};
-
-&wifi {
-	status = "okay";
-
-	qcom,ath11k-fw-memory-mode = <1>;
 };

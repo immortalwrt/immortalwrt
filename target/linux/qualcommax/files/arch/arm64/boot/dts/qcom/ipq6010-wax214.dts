@@ -1,10 +1,13 @@
-// SPDX-License-Identifier: (GPL-2.0+)
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
 /dts-v1/;
 
 #include "ipq6018.dtsi"
-#include "ipq6018-cp-cpu.dtsi"
 #include "ipq6018-ess.dtsi"
+#include "ipq6018-nss.dtsi"
+#include "ipq6018-common.dtsi"
+#include "ipq6018-cp-cpu.dtsi"
+
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
@@ -15,12 +18,15 @@
 
 	aliases {
 		serial0 = &blsp1_uart3;
-		ethernet0 = &dp3;
-		label-mac-device = &dp3;
+
 		led-boot = &pwr;
 		led-failsafe = &pwr;
 		led-running = &pwr;
 		led-upgrade = &pwr;
+
+		ethernet0 = &dp3;
+
+		label-mac-device = &dp3;
 	};
 
 	chosen {
@@ -47,13 +53,13 @@
 			gpios = <&tlmm 28 GPIO_ACTIVE_HIGH>;
 		};
 
-		lan  {
+		lan {
 			color = <LED_COLOR_ID_BLUE>;
 			function = LED_FUNCTION_LAN;
 			gpios = <&tlmm 29 GPIO_ACTIVE_HIGH>;
 		};
 
-		wlan2g  {
+		wlan2g {
 			color = <LED_COLOR_ID_BLUE>;
 			function = LED_FUNCTION_WLAN;
 			function-enumerator = <0>;
@@ -61,7 +67,7 @@
 			linux,default-trigger = "phy0radio";
 		};
 
-		wlan5g  {
+		wlan5g {
 			color = <LED_COLOR_ID_BLUE>;
 			function = LED_FUNCTION_WLAN;
 			function-enumerator = <1>;
@@ -71,56 +77,18 @@
 	};
 };
 
-&blsp1_uart3 {
-	pinctrl-0 = <&serial_3_pins>;
-	pinctrl-names = "default";
-	status = "okay";
-};
-
-&tlmm {
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio64";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio65";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-};
-
-&dp3 {
-	status = "okay";
-
-	phy-handle = <&qca8072_4>;
-	label = "lan";
-};
-
-&edma {
-	status = "okay";
-};
-
 &mdio {
 	status = "okay";
+
 	pinctrl-0 = <&mdio_pins>;
 	pinctrl-names = "default";
 	reset-gpios = <&tlmm 75 GPIO_ACTIVE_LOW>;
-	reset-delay-us = <10000>;
-	reset-post-delay-us = <50000>;
 
 	ethernet-phy-package@0 {
+		compatible = "qcom,qca8075-package";
 		#address-cells = <1>;
 		#size-cells = <0>;
-		compatible = "qcom,qca8075-package";
 		reg = <0>;
-
-		qcom,package-mode = "psgmii";
 
 		qca8072_4: ethernet-phy@4 {
 			compatible = "ethernet-phy-ieee802.3-c22";
@@ -144,10 +112,6 @@
 	};
 };
 
-&qpic_bam {
-	status = "okay";
-};
-
 &qpic_nand {
 	status = "okay";
 
@@ -164,9 +128,18 @@
 	};
 };
 
-
 &wifi {
 	status = "okay";
 	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "Netgear-WAX214";
+};
+
+&dp3 {
+	status = "okay";
+	phy-handle = <&qca8072_4>;
+	label = "lan";
+};
+
+&edma {
+	status = "okay";
 };

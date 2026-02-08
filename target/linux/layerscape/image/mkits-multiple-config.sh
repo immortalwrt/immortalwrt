@@ -438,7 +438,7 @@ emit_config() {
 	config_name="conf@${1}"
 	if [ ! -z "${11}" ]; then
 		config_name="${11}"
-	fi 
+	fi
 	if [ -z "${2}" ]; then
 		echo "Error: config has no kernel img, skipping conf node!"
 		return 0
@@ -512,7 +512,7 @@ emit_image_nodes()
 			img_key=$(array_get $a 9)
 			img_sign=$(array_get $a 10)
 			img_cname=$(array_get $a 11)
-			
+
 			img_conf=$(remove_prefix_space $img_conf)
 			img_hash=$(remove_prefix_space $img_hash)
 

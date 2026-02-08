@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/*
- * Copyright (c) 2022, Karol Przybylski <itor@o2.pl>
- * Copyright (c) 2023, Andre Valentin <avalentin@marcant.net>
- */
 
 /dts-v1/;
 
 #include "ipq8074.dtsi"
-#include "ipq8074-hk-cpu.dtsi"
 #include "ipq8074-ess.dtsi"
+#include "ipq8074-nss.dtsi"
+#include "ipq8074-common.dtsi"
+#include "ipq8074-hk-cpu.dtsi"
+
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/leds/common.h>
 #include <dt-bindings/input/input.h>
@@ -20,8 +19,9 @@
 	aliases {
 		serial0 = &blsp1_uart5;
 		serial1 = &blsp1_uart3;
-		/* Alias as required by u-boot to patch MAC addresses */
+
 		ethernet0 = &dp1;
+
 		label-mac-device = &dp1;
 	};
 
@@ -40,58 +40,13 @@
 	};
 };
 
-&tlmm {
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio68";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio69";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-};
-
-&blsp1_uart3 {
-	status = "okay";
-};
-
-&blsp1_uart5 {
-	status = "okay";
-};
-
-&prng {
-	status = "okay";
-};
-
-&cryptobam {
-	status = "okay";
-};
-
-&crypto {
-	status = "okay";
-};
-
-&qpic_bam {
-	status = "okay";
-};
-
-
 &blsp1_spi1 {
-	pinctrl-0 = <&spi_0_pins>;
-	pinctrl-names = "default";
 	status = "okay";
 
 	flash@0 {
-		reg = <0>;
 		compatible = "jedec,spi-nor";
 		spi-max-frequency = <50000000>;
+		reg = <0>;
 
 		partitions {
 			compatible = "fixed-partitions";
@@ -100,108 +55,111 @@
 
 			partition@0 {
 				label = "0:sbl1";
-				reg = <0x0 0x50000>;
+				reg = <0x00000000 0x00050000>;
 				read-only;
 			};
 
 			partition@50000 {
 				label = "0:mibib";
-				reg = <0x50000 0x10000>;
+				reg = <0x00050000 0x00010000>;
 				read-only;
 			};
 
 			partition@60000 {
 				label = "0:bootconfig";
-				reg = <0x60000 0x20000>;
+				reg = <0x00060000 0x00020000>;
 				read-only;
 			};
 
 			partition@80000 {
 				label = "0:bootconfig1";
-				reg = <0x80000 0x20000>;
+				reg = <0x00080000 0x00020000>;
 				read-only;
 			};
 
 			partition@a0000 {
 				label = "0:qsee";
-				reg = <0xa0000 0x180000>;
+				reg = <0x000a0000 0x00180000>;
 				read-only;
 			};
 
 			partition@220000 {
 				label = "0:qsee_1";
-				reg = <0x220000 0x180000>;
+				reg = <0x00220000 0x00180000>;
 				read-only;
 			};
 
 			partition@3a0000 {
 				label = "0:devcfg";
-				reg = <0x3a0000 0x10000>;
+				reg = <0x003a0000 0x00010000>;
 				read-only;
 			};
 
 			partition@3b0000 {
 				label = "0:devcfg_1";
-				reg = <0x3b0000 0x10000>;
+				reg = <0x003b0000 0x00010000>;
 				read-only;
 			};
 
 			partition@3c0000 {
 				label = "0:apdp";
-				reg = <0x3c0000 0x10000>;
+				reg = <0x003c0000 0x00010000>;
 				read-only;
 			};
 
 			partition@3d0000 {
 				label = "0:apdp_1";
-				reg = <0x3d0000 0x10000>;
+				reg = <0x003d0000 0x00010000>;
 				read-only;
 			};
 
 			partition@3e0000 {
 				label = "0:rpm";
-				reg = <0x3e0000 0x40000>;
+				reg = <0x003e0000 0x00040000>;
 				read-only;
 			};
 
 			partition@420000 {
 				label = "0:rpm_1";
-				reg = <0x420000 0x40000>;
+				reg = <0x00420000 0x00040000>;
 				read-only;
 			};
 
 			partition@460000 {
 				label = "0:cdt";
-				reg = <0x460000 0x10000>;
+				reg = <0x00460000 0x00010000>;
 				read-only;
 			};
 
 			partition@470000 {
 				label = "0:cdt_1";
-				reg = <0x470000 0x10000>;
+				reg = <0x00470000 0x00010000>;
 				read-only;
 			};
 
 			partition@480000 {
 				label = "0:appsbl";
-				reg = <0x480000 0xc0000>;
+				reg = <0x00480000 0x000c0000>;
 				read-only;
 			};
 
 			partition@540000 {
 				label = "0:appsbl_1";
-				reg = <0x540000 0xc0000>;
+				reg = <0x00540000 0x000c0000>;
 				read-only;
 			};
 
 			partition@600000 {
 				label = "0:appsblenv";
-				reg = <0x600000 0x10000>;
+				reg = <0x00600000 0x00010000>;
 
 				nvmem-layout {
 					compatible = "u-boot,env";
+					#address-cells = <1>;
+					#size-cells = <1>;
 
 					macaddr_lan: ethaddr {
+						compatible = "mac-base";
 						#nvmem-cell-cells = <1>;
 					};
 				};
@@ -209,13 +167,13 @@
 
 			partition@610000 {
 				label = "0:art";
-				reg = <0x610000 0x40000>;
+				reg = <0x00610000 0x00040000>;
 				read-only;
 			};
 
 			partition@650000 {
 				label = "0:ethphyfw";
-				reg = <0x650000 0x80000>;
+				reg = <0x00650000 0x00080000>;
 				read-only;
 
 				nvmem-layout {
@@ -225,25 +183,25 @@
 
 					aqr_fw: aqr-fw@0 {
 						/* Skip the QCOM MBN Header of 40 bytes */
-						reg = <0x28 0x5f402>;
+						reg = <0x00028 0x5f402>;
 					};
 				};
 			};
 
 			partition@6d0000 {
 				label = "0:crt";
-				reg = <0x6d0000 0x10000>;
+				reg = <0x006d0000 0x00010000>;
 				read-only;
 			};
 
 			partition@6e0000 {
 				label = "dual_flag";
-				reg = <0x6e0000 0x10000>;
+				reg = <0x006e0000 0x00010000>;
 			};
 
 			partition@6f0000 {
 				label = "reserved";
-				reg = <0x6f0000 0x110000>;
+				reg = <0x006f0000 0x00110000>;
 				read-only;
 			};
 		};
@@ -252,15 +210,18 @@
 
 &mdio {
 	status = "okay";
+
 	pinctrl-0 = <&mdio_pins>;
 	pinctrl-names = "default";
 	reset-gpios = <&tlmm 37 GPIO_ACTIVE_LOW>;
 
 	ethernet-phy-package@0 {
+		compatible = "qcom,qca8075-package";
 		#address-cells = <1>;
 		#size-cells = <0>;
-		compatible = "qcom,qca8075-package";
 		reg = <0>;
+
+		qcom,package-mode = "qsgmii";
 
 		qca8075_0: ethernet-phy@0 {
 			compatible = "ethernet-phy-ieee802.3-c22";
@@ -294,7 +255,6 @@
 		compatible = "ethernet-phy-ieee802.3-c45";
 		reg = <8>;
 		reset-gpios = <&tlmm 63 GPIO_ACTIVE_LOW>;
-
 		nvmem-cells = <&aqr_fw>;
 		nvmem-cell-names = "firmware";
 	};
@@ -305,8 +265,8 @@
 
 	switch_lan_bmp = <(ESS_PORT1 | ESS_PORT2 | ESS_PORT3 | ESS_PORT4 | ESS_PORT6)>;
 	switch_wan_bmp = <ESS_PORT5>;
-	switch_mac_mode = <MAC_MODE_PSGMII>;
-	switch_mac_mode1 = <MAC_MODE_SGMII_CHANNEL0>;
+	switch_mac_mode = <MAC_MODE_QSGMII>;
+	switch_mac_mode1 = <MAC_MODE_SGMII_PLUS>;
 	switch_mac_mode2 = <MAC_MODE_USXGMII>;
 
 	qcom,port_phyinfo {
@@ -399,8 +359,6 @@
 };
 
 &blsp1_i2c2 {
-	pinctrl-0 = <&i2c_0_pins>;
-	pinctrl-names = "default";
 	status = "okay";
 
 	tmp103@70 {
@@ -411,39 +369,15 @@
 
 &sdhc_1 {
 	status = "okay";
-	/* unstable, problem with the hs400 > h200 speed switch */
+
 	/delete-property/ mmc-hs400-1_8v;
 	mmc-hs200-1_8v;
 	mmc-ddr-1_8v;
 	vqmmc-supply = <&l11>;
 };
 
-&ssphy_0 {
-	status = "okay";
-};
-
-&qusb_phy_0 {
-	status = "okay";
-};
-
-&ssphy_1 {
-	status = "okay";
-};
-
-&qusb_phy_1 {
-	status = "okay";
-};
-
-&usb_0 {
-	status = "okay";
-};
-
-&usb_1 {
-	status = "okay";
-};
-
 &wifi {
 	status = "okay";
-
+	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "Zyxel-NBG7815";
 };

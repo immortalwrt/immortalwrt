@@ -1,0 +1,205 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+/dts-v1/;
+
+#include "ipq8074.dtsi"
+#include "ipq8074-ess.dtsi"
+#include "ipq8074-nss.dtsi"
+#include "ipq8074-common.dtsi"
+#include "ipq8074-hk-cpu.dtsi"
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/leds/common.h>
+
+/ {
+	model = "Verizon CR1000A";
+	compatible = "verizon,cr1000a", "qcom,ipq8074";
+
+	aliases {
+		serial0 = &blsp1_uart5;
+
+		ethernet4 = &dp5;
+		ethernet5 = &dp6;
+		label-mac-device = &dp5_syn;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+	keys {
+		compatible = "gpio-keys";
+
+		reset {
+			debounce-interval = <0x3c>;
+			gpios = <&tlmm 0x2c GPIO_ACTIVE_LOW>;
+			label = "reset";
+			linux,code = <KEY_RESTART>;
+		};
+
+		wps {
+			debounce-interval = <0x3c>;
+			gpios = <&tlmm 0x2a GPIO_ACTIVE_LOW>;
+			label = "wps";
+			linux,code = <KEY_WPS_BUTTON>;
+		};
+	};
+};
+
+&soc {
+	fan5646_vreg: dummy_reg {
+		compatible = "regulator-fixed";
+		regulator-name = "fan5646_vreg";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+	};
+
+	fan5646 {
+		status = "okay";
+		compatible = "fsi,leds-fan5646";
+		linux-name = "white";
+		rgb-name = "rgb";
+		gpios = <&tlmm 0x1d 0x2>; /* COMM GPIO, GPIOF_DIR_OUT | GPIOF_INIT_HIGH */
+		full-current = <0>; /* Default current 5 mA */
+		tsleep = <7>;
+		fan5646-supply = <&fan5646_vreg>; /* phandle of our regulator node */
+	};
+};
+
+&blsp1_i2c3 {
+	status = "okay";
+	pinctrl-0 = <&i2c_2_pins>;
+	pinctrl-names = "default";
+};
+
+&blsp1_spi1 {
+	status = "okay";
+
+	flash@0 {
+		compatible = "micron,n25q128a11", "jedec,spi-nor";
+		linux,modalias = "m25p80", "mx30uf2g18ac", "n25q128a11";
+		spi-max-frequency = <50000000>;
+		reg = <0>;
+	};
+};
+
+&blsp1_spi5 {
+	status = "okay";
+
+	pinctrl-0 = <&spi_4_pins>;
+	pinctrl-names = "default";
+
+	spi@4 {
+		// compatible = "qca,spidev";
+		compatible = "cisco,spi-petra";
+		reg = <0x00>;
+		spi-max-frequency = <12000000>;
+	};
+};
+
+&tlmm {
+	i2c_2_pins: i2c-2-pins {
+		pins = "gpio46", "gpio47";
+		function = "blsp2_i2c";
+		drive-strength = <8>;
+		bias-disable;
+	};
+
+	spi_4_pins: spi-4-pins {
+		pins = "gpio5", "gpio6", "gpio7", "gpio8";
+		function = "blsp4_spi0";
+		drive-strength = <8>;
+		bias-disable;
+	};
+};
+
+&mdio {
+	status = "okay";
+
+	pinctrl-0 = <&mdio_pins>;
+	pinctrl-names = "default";
+	reset-gpios = <&tlmm 37 GPIO_ACTIVE_LOW>;
+
+	aqr113c: ethernet-phy@8 {
+		compatible = "ethernet-phy-ieee802.3-c45";
+		reg = <0x08>;
+		// reset-gpios = <&tlmm 63 GPIO_ACTIVE_LOW>;
+	};
+
+	mxl3711: ethernet-phy@f {
+		//compatible = "ethernet-phy-ieee802.3-c45";
+		reg = <0x0f>;
+		// reset-gpios = <&tlmm 63 GPIO_ACTIVE_LOW>;
+	};
+};
+
+&switch {
+	status = "okay";
+
+	switch_lan_bmp = <ESS_PORT5>;
+	switch_wan_bmp = <ESS_PORT6>;
+	switch_mac_mode = <MAC_MODE_PSGMII>;
+	switch_mac_mode1 = <MAC_MODE_10GBASE_R>;
+	switch_mac_mode2 = <MAC_MODE_USXGMII>;
+
+	qcom,port_phyinfo {
+		rtl9303:port@5 {
+			port_id = <5>;
+			phy_address = <0x4>;
+		};
+
+		port@6 {
+			port_id = <6>;
+			phy_address = <0x8>;
+			ethernet-phy-ieee802.3-c45;
+		};
+	};
+};
+
+&wifi {
+	status = "okay";
+	qcom,ath11k-fw-memory-mode = <1>;
+	qcom,ath11k-calibration-variant = "Verizon-CR1000A";
+};
+
+&dp5_syn {
+	status = "okay";
+	phy-handle = <&rtl9303>;
+	label = "lan";
+};
+
+&dp6_syn {
+	status = "okay";
+	phy-handle = <&aqr113c>;
+	label = "wan";
+};
+
+&pcie0 {
+	status = "okay";
+	perst-gpios = <&tlmm 58 GPIO_ACTIVE_LOW>;
+
+	pcie@0 {
+		wifi@0,0 {
+			status = "okay";
+			compatible = "pci17cb,1104";
+			qcom,ath11k-fw-memory-mode = <1>;
+			qcom,ath11k-calibration-variant = "Verizon-CR1000A";
+			reg = <0x00010000 0 0 0 0>;
+		};
+	};
+};
+
+&edma {
+	status = "okay";
+};
+
+&pcie1 {
+	status = "okay";
+};
+
+&sdhc_1 {
+	status = "okay";
+
+	vqmmc-supply = <&l11>;
+};

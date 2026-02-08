@@ -1,0 +1,134 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/leds/common.h>
+
+&tlmm {
+	gpio-reserved-ranges = <20 1>;
+
+	mdio_pins: mdio-pins {
+		mdc {
+			pins = "gpio64";
+			function = "mdc";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
+
+		mdio {
+			pins = "gpio65";
+			function = "mdio";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
+	};
+
+	i2c_1_pins: i2c-1-state {
+		pins = "gpio42", "gpio43";
+		function = "blsp2_i2c";
+		drive-strength = <8>;
+	};
+
+	spi_0_pins: spi-0-state {
+		pins = "gpio38", "gpio39", "gpio40", "gpio41";
+		function = "blsp0_spi";
+		drive-strength = <8>;
+		bias-pull-down;
+	};
+};
+
+&blsp1_i2c3 {
+	status = "okay";
+	pinctrl-0 = <&i2c_1_pins>;
+	pinctrl-names = "default";
+};
+
+&blsp1_spi1 {
+	status = "okay";
+	pinctrl-0 = <&spi_0_pins>;
+	pinctrl-names = "default";
+};
+
+&blsp1_uart3 {
+	status = "okay";
+	pinctrl-0 = <&serial_3_pins>;
+	pinctrl-names = "default";
+};
+
+&rpm {
+	status = "disabled";
+};
+
+&crypto {
+	status = "okay";
+};
+
+&cryptobam {
+	status = "okay";
+};
+
+&pcie_phy {
+	status = "okay";
+};
+
+&prng {
+	status = "okay";
+};
+
+&qpic_bam {
+	status = "okay";
+};
+
+&qusb_phy_0 {
+	status = "okay";
+};
+
+&qusb_phy_1 {
+	status = "okay";
+};
+
+&ssphy_0 {
+	status = "okay";
+};
+
+&usb2 {
+	status = "okay";
+};
+
+&usb3 {
+	status = "okay";
+};
+
+&cpu_opp_table {
+	opp-864000000 {
+		opp-supported-hw = <0xf>;
+	};
+
+	opp-1056000000 {
+		opp-supported-hw = <0xf>;
+	};
+
+	opp-1200000000 {
+		opp-supported-hw = <0xf>;
+	};
+
+	opp-1320000000 {
+		opp-supported-hw = <0xf>;
+	};
+
+	opp-1440000000 {
+		opp-supported-hw = <0xf>;
+	};
+
+	opp-1512000000 {
+		opp-supported-hw = <0xf>;
+	};
+
+	opp-1608000000 {
+		opp-supported-hw = <0x1>;
+	};
+
+	opp-1800000000 {
+		opp-supported-hw = <0x1>;
+	};
+};

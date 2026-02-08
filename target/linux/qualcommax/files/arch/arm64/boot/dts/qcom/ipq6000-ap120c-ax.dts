@@ -2,8 +2,10 @@
 
 /dts-v1/;
 
-#include "ipq6018-512m.dtsi"
+#include "ipq6018.dtsi"
 #include "ipq6018-ess.dtsi"
+#include "ipq6018-nss.dtsi"
+#include "ipq6018-common.dtsi"
 #include "ipq6018-cp-cpu.dtsi"
 
 #include <dt-bindings/gpio/gpio.h>
@@ -17,6 +19,7 @@
 	aliases {
 		serial0 = &blsp1_uart3;
 		serial1 = &blsp1_uart2;
+
 		led-boot = &led_status_green;
 		led-failsafe = &led_status_green;
 		led-running = &led_status_green;
@@ -30,8 +33,6 @@
 
 	keys {
 		compatible = "gpio-keys";
-		pinctrl-0 = <&button_pins>;
-		pinctrl-names = "default";
 
 		reset {
 			label = "reset";
@@ -42,23 +43,21 @@
 
 	leds {
 		compatible = "gpio-leds";
-		pinctrl-0 = <&led_pins>;
-		pinctrl-names = "default";
 
-		led_status_green: status {
+		led_status_green: status-green {
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_STATUS;
 			gpios = <&tlmm 55 GPIO_ACTIVE_LOW>;
 		};
 
-		wlan2g {
+		led_status_wlan2g: status-wlan2g {
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_WLAN_2GHZ;
 			gpios = <&tlmm 37 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "phy1radio";
 		};
 
-		wlan5g {
+		led_status_wlan5g: status-wlan5g {
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_WLAN_5GHZ;
 			gpios = <&tlmm 35 GPIO_ACTIVE_LOW>;
@@ -68,7 +67,7 @@
 };
 
 &tlmm {
-	btcoex_pins: btcoex_pinmux {
+	btcoex_pins: btcoex-pins {
 		mux_0 {
 			pins = "gpio51";
 			function = "pta1_1";
@@ -91,69 +90,25 @@
 		};
 	};
 
-	btrstint_pins: btrstint_pinmux {
+	btrstint_pins: btrstint-pins {
 		pins = "gpio78", "gpio79";
 		function = "gpio";
 		drive-strength = <8>;
 		bias-disable;
 	};
 
-	button_pins: button_pinmux {
-		pins = "gpio9";
-		function = "gpio";
-		drive-strength = <8>;
-		bias-disable;
-	};
-
-	hsuart_pins: hsuart_pinmux {
-		pins = "gpio71", "gpio72", "gpio69", "gpio70";
+	hsuart_pins: hsuart-pins {
+		pins = "gpio69", "gpio70", "gpio71", "gpio72";
 		function = "blsp1_uart";
 		drive-strength = <8>;
 		bias-disable;
 	};
-
-	led_pins: led_pinmux {
-		pins = "gpio35", "gpio37", "gpio55";
-		function = "gpio";
-		drive-strength = <8>;
-		bias-pull-up;
-	};
-
-	mdio_pins: mdio_pinmux {
-		mdc {
-			pins = "gpio64";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio65";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
-	spi_pins: spi_pinmux {
-		pins = "gpio38", "gpio39", "gpio40", "gpio41";
-		function = "blsp0_spi";
-		drive-strength = <8>;
-		bias-pull-down;
-	};
-};
-
-&blsp1_uart3 {
-	status = "okay";
-
-	pinctrl-0 = <&serial_3_pins>;
-	pinctrl-names = "default";
 };
 
 &blsp1_uart2 {
 	status = "okay";
 
-	pinctrl-0 = <&hsuart_pins &btcoex_pins &btrstint_pins>;
+	pinctrl-0 = <&hsuart_pins>, <&btcoex_pins>, <&btrstint_pins>;
 	pinctrl-names = "default";
 
 	dmas = <&blsp_dma 2>, <&blsp_dma 3>;
@@ -163,13 +118,10 @@
 &blsp1_spi1 {
 	status = "okay";
 
-	pinctrl-0 = <&spi_pins>;
-	pinctrl-names = "default";
-
 	flash@0 {
-		reg = <0>;
 		compatible = "jedec,spi-nor";
 		spi-max-frequency = <25000000>;
+		reg = <0>;
 
 		partitions {
 			compatible = "fixed-partitions";
@@ -273,11 +225,11 @@
 					#size-cells = <1>;
 
 					macaddr_lan: macaddr@6 {
-						reg = <0x6 0x6>;
+						reg = <0x06 0x06>;
 					};
 
 					macaddr_wan: macaddr@0 {
-						reg = <0x0 0x6>;
+						reg = <0x00 0x06>;
 					};
 				};
 			};
@@ -285,39 +237,31 @@
 	};
 };
 
-&qpic_bam {
-	status = "okay";
-};
-
 &qpic_nand {
 	status = "okay";
 
-	/*
-	 * This board uses NOR+NAND configuration which is currently not
-	 * supported by 'qcomsmem' MTD parser. Let U-Boot find the NAND
-	 * dt node and populate MTD partitions from SMEM partition table.
-	 *
-	 * This makes it possible to use QCA 'runtime failsafe' and rotate
-	 * 'rootfs'/'rootfs_1' partitions between subsequent updates.
-	 */
-	compatible = "qcom,ipq6018-nand", "qcom,ebi2-nandc-bam-v1.5.0";
+	partitions {
+		status = "disabled";
+	};
 
 	nand@0 {
 		reg = <0>;
+
+		nand-ecc-strength = <4>;
+		nand-ecc-step-size = <512>;
 		nand-bus-width = <8>;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "rootfs";
+				reg = <0x0 0x0>;
+			};
+		};
 	};
-};
-
-&qusb_phy_0 {
-	status = "okay";
-};
-
-&ssphy_0 {
-	status = "okay";
-};
-
-&usb3 {
-	status = "okay";
 };
 
 &mdio {
@@ -334,8 +278,6 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 		reg = <0>;
-
-		qcom,package-mode = "psgmii";
 
 		qca8072_3: ethernet-phy@3 {
 			compatible = "ethernet-phy-ieee802.3-c22";
@@ -354,7 +296,6 @@
 
 	switch_lan_bmp = <ESS_PORT4>;
 	switch_wan_bmp = <ESS_PORT5>;
-
 	switch_mac_mode = <MAC_MODE_PSGMII>;
 
 	qcom,port_phyinfo {
@@ -370,8 +311,10 @@
 	};
 };
 
-&edma {
+&wifi {
 	status = "okay";
+	qcom,ath11k-fw-memory-mode = <1>;
+	qcom,ath11k-calibration-variant = "ALFA-Network-AP120C-AX";
 };
 
 &dp4 {
@@ -392,9 +335,6 @@
 	nvmem-cell-names = "mac-address";
 };
 
-&wifi {
+&edma {
 	status = "okay";
-
-	qcom,ath11k-fw-memory-mode = <1>;
-	qcom,ath11k-calibration-variant = "ALFA-Network-AP120C-AX";
 };

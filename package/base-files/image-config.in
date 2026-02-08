@@ -173,10 +173,10 @@ if VERSIONOPT
 	config VERSION_DIST
 		string
 		prompt "Release distribution"
-		default "ImmortalWrt"
+		default "ImmortalWRT"
 		help
 			This is the name of the release distribution.
-			If unspecified, it defaults to ImmortalWrt.
+			If unspecified, it defaults to ImmortalWRT.
 
 	config VERSION_NUMBER
 		string

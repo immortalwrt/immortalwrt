@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/* Copyright (c) 2021, Robert Marko <robimarko@gmail.com> */
 
 /dts-v1/;
 
 #include "ipq8074.dtsi"
-#include "ipq8074-hk-cpu.dtsi"
 #include "ipq8074-ess.dtsi"
+#include "ipq8074-nss.dtsi"
+#include "ipq8074-common.dtsi"
+#include "ipq8074-hk-cpu.dtsi"
+
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
@@ -16,10 +18,12 @@
 
 	aliases {
 		serial0 = &blsp1_uart5;
+
 		led-boot = &led_system_yellow;
 		led-failsafe = &led_system_yellow;
 		led-running = &led_system_blue;
 		led-upgrade = &led_system_yellow;
+
 		label-mac-device = &dp5;
 	};
 
@@ -38,7 +42,7 @@
 		};
 
 		wps {
-			label = "wps"; /* Labeled Mesh on the device */
+			label = "wps";
 			gpios = <&tlmm 46 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_WPS_BUTTON>;
 		};
@@ -88,32 +92,12 @@
 };
 
 &tlmm {
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio68";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio69";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
 	i2c_pins: i2c-pins {
 		pins = "gpio0", "gpio2";
 		function = "blsp5_i2c";
 		drive-strength = <8>;
 		bias-disable;
 	};
-};
-
-&blsp1_uart5 {
-	status = "okay";
 };
 
 &blsp1_i2c6 {
@@ -123,41 +107,16 @@
 	pinctrl-names = "default";
 };
 
-&prng {
-	status = "okay";
-};
-
-&cryptobam {
-	status = "okay";
-};
-
-&crypto {
-	status = "okay";
-};
-
-&qpic_bam {
-	status = "okay";
-};
-
 &qpic_nand {
 	status = "okay";
 
-	/*
-	 * Bootloader will find the NAND DT node by the compatible and
-	 * then "fixup" it by adding the partitions from the SMEM table
-	 * using the legacy bindings thus making it impossible for us
-	 * to change the partition table or utilize NVMEM for calibration.
-	 * So add a dummy partitions node that bootloader will populate
-	 * and set it as disabled so the kernel ignores it instead of
-	 * printing warnings due to the broken way bootloader adds the
-	 * partitions.
-	 */
 	partitions {
 		status = "disabled";
 	};
 
 	nand@0 {
 		reg = <0>;
+
 		nand-ecc-strength = <4>;
 		nand-ecc-step-size = <512>;
 		nand-bus-width = <8>;
@@ -169,108 +128,108 @@
 
 			partition@0 {
 				label = "0:sbl1";
-				reg = <0x0 0x100000>;
+				reg = <0x00000000 0x00100000>;
 				read-only;
 			};
 
 			partition@100000 {
 				label = "0:mibib";
-				reg = <0x100000 0x100000>;
+				reg = <0x00100000 0x00100000>;
 				read-only;
 			};
 
 			partition@200000 {
 				label = "0:bootconfig";
-				reg = <0x200000 0x80000>;
+				reg = <0x00200000 0x00080000>;
 				read-only;
 			};
 
 			partition@280000 {
 				label = "0:bootconfig1";
-				reg = <0x280000 0x80000>;
+				reg = <0x00280000 0x00080000>;
 				read-only;
 			};
 
 			partition@300000 {
 				label = "0:qsee";
-				reg = <0x300000 0x300000>;
+				reg = <0x00300000 0x00300000>;
 				read-only;
 			};
 
 			partition@600000 {
 				label = "0:qsee_1";
-				reg = <0x600000 0x300000>;
+				reg = <0x00600000 0x00300000>;
 				read-only;
 			};
 
 			partition@900000 {
 				label = "0:devcfg";
-				reg = <0x900000 0x80000>;
+				reg = <0x00900000 0x00080000>;
 				read-only;
 			};
 
 			partition@980000 {
 				label = "0:devcfg_1";
-				reg = <0x980000 0x80000>;
+				reg = <0x00980000 0x00080000>;
 				read-only;
 			};
 
 			partition@a00000 {
 				label = "0:apdp";
-				reg = <0xa00000 0x80000>;
+				reg = <0x00a00000 0x00080000>;
 				read-only;
 			};
 
 			partition@a80000 {
 				label = "0:apdp_1";
-				reg = <0xa80000 0x80000>;
+				reg = <0x00a80000 0x00080000>;
 				read-only;
 			};
 
 			partition@b00000 {
 				label = "0:rpm";
-				reg = <0xb00000 0x80000>;
+				reg = <0x00b00000 0x00080000>;
 				read-only;
 			};
 
 			partition@b80000 {
 				label = "0:rpm_1";
-				reg = <0xb80000 0x80000>;
+				reg = <0x00b80000 0x00080000>;
 				read-only;
 			};
 
 			partition@c00000 {
 				label = "0:cdt";
-				reg = <0xc00000 0x80000>;
+				reg = <0x00c00000 0x00080000>;
 				read-only;
 			};
 
 			partition@c80000 {
 				label = "0:cdt_1";
-				reg = <0xc80000 0x80000>;
+				reg = <0x00c80000 0x00080000>;
 				read-only;
 			};
 
 			partition@d00000 {
 				label = "0:appsblenv";
-				reg = <0xd00000 0x80000>;
+				reg = <0x00d00000 0x00080000>;
 			};
 
 			partition@d80000 {
 				label = "0:appsbl";
-				reg = <0xd80000 0x100000>;
+				reg = <0x00d80000 0x00100000>;
 				read-only;
 			};
 
 			partition@e80000 {
 				label = "0:appsbl_1";
-				reg = <0xe80000 0x100000>;
+				reg = <0x00e80000 0x00100000>;
 				read-only;
 			};
 
 			partition@f80000 {
 				label = "0:art";
-				reg = <0xf80000 0x80000>;
+				reg = <0x00f80000 0x00080000>;
 				read-only;
 
 				nvmem-layout {
@@ -279,65 +238,52 @@
 					#size-cells = <1>;
 
 					macaddr_dp1: macaddr@0 {
-						reg = <0x0 0x6>;
+						reg = <0x00 0x06>;
 					};
 
 					macaddr_dp2: macaddr@6 {
-						reg = <0x6 0x6>;
+						reg = <0x06 0x06>;
 					};
 
 					macaddr_dp3: macaddr@c {
-						reg = <0xc 0x6>;
+						reg = <0x0c 0x06>;
 					};
 
 					macaddr_dp4: macaddr@12 {
-						reg = <0x12 0x6>;
+						reg = <0x12 0x06>;
 					};
 
 					macaddr_dp5: macaddr@18 {
-						reg = <0x18 0x6>;
+						reg = <0x18 0x06>;
 					};
 
 					caldata_qca9889: caldata@4d000 {
-						reg = <0x4d000 0x844>;
+						reg = <0x0004d000 0x00000844>;
 					};
 				};
 			};
 
 			partition@1000000 {
 				label = "bdata";
-				reg = <0x1000000 0x80000>;
+				reg = <0x01000000 0x00080000>;
 			};
 
 			partition@1080000 {
-				/* This is crash + crash_syslog parts combined */
 				label = "pstore";
-				reg = <0x1080000 0x100000>;
+				reg = <0x01080000 0x00100000>;
 			};
 
 			partition@1180000 {
 				label = "ubi_kernel";
-				reg = <0x1180000 0x3800000>;
+				reg = <0x01180000 0x03800000>;
 			};
 
 			partition@4980000 {
 				label = "rootfs";
-				reg = <0x4980000 0xb680000>;
+				reg = <0x04980000 0x0b680000>;
 			};
 		};
 	};
-};
-
-&qusb_phy_0 {
-	status = "okay";
-};
-
-&ssphy_0 {
-	status = "okay";
-};
-
-&usb_0 {
-	status = "okay";
 };
 
 &mdio {
@@ -348,9 +294,9 @@
 	reset-gpios = <&tlmm 37 GPIO_ACTIVE_LOW>;
 
 	ethernet-phy-package@0 {
+		compatible = "qcom,qca8075-package";
 		#address-cells = <1>;
 		#size-cells = <0>;
-		compatible = "qcom,qca8075-package";
 		reg = <0>;
 
 		qcom,package-mode = "qsgmii";
@@ -358,69 +304,21 @@
 		qca8075_0: ethernet-phy@0 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <0>;
-
-			leds {
-				#address-cells = <1>;
-				#size-cells = <0>;
-
-				led@0 {
-					reg = <0>;
-					color = <LED_COLOR_ID_GREEN>;
-					function = LED_FUNCTION_LAN;
-					default-state = "keep";
-				};
-			};
 		};
 
 		qca8075_1: ethernet-phy@1 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <1>;
-
-			leds {
-				#address-cells = <1>;
-				#size-cells = <0>;
-
-				led@0 {
-					reg = <0>;
-					color = <LED_COLOR_ID_GREEN>;
-					function = LED_FUNCTION_LAN;
-					default-state = "keep";
-				};
-			};
 		};
 
 		qca8075_2: ethernet-phy@2 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <2>;
-
-			leds {
-				#address-cells = <1>;
-				#size-cells = <0>;
-
-				led@0 {
-					reg = <0>;
-					color = <LED_COLOR_ID_GREEN>;
-					function = LED_FUNCTION_LAN;
-					default-state = "keep";
-				};
-			};
 		};
 
 		qca8075_3: ethernet-phy@3 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <3>;
-
-			leds {
-				#address-cells = <1>;
-				#size-cells = <0>;
-
-				led@0 {
-					reg = <0>;
-					color = <LED_COLOR_ID_GREEN>;
-					function = LED_FUNCTION_LAN;
-					default-state = "keep";
-				};
-			};
 		};
 	};
 
@@ -429,46 +327,38 @@
 		reg = <24>;
 		reset-deassert-us = <10000>;
 		reset-gpios = <&tlmm 44 GPIO_ACTIVE_LOW>;
-
-		leds {
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			led@0 {
-				reg = <0>;
-				color = <LED_COLOR_ID_GREEN>;
-				function = LED_FUNCTION_WAN;
-				default-state = "keep";
-			};
-		};
 	};
 };
 
 &switch {
 	status = "okay";
 
-	switch_lan_bmp = <(ESS_PORT1 | ESS_PORT2 | ESS_PORT3 | ESS_PORT4)>; /* lan port bitmap */
-	switch_wan_bmp = <ESS_PORT5>; /* wan port bitmap */
-	switch_mac_mode = <MAC_MODE_QSGMII>; /* mac mode for uniphy instance0*/
-	switch_mac_mode1 = <MAC_MODE_SGMII_PLUS>; /* mac mode for uniphy instance1*/
+	switch_lan_bmp = <(ESS_PORT1 | ESS_PORT2 | ESS_PORT3 | ESS_PORT4)>;
+	switch_wan_bmp = <ESS_PORT5>;
+	switch_mac_mode = <MAC_MODE_QSGMII>;
+	switch_mac_mode1 = <MAC_MODE_SGMII_PLUS>;
 
 	qcom,port_phyinfo {
 		port@1 {
 			port_id = <1>;
 			phy_address = <0>;
 		};
+
 		port@2 {
 			port_id = <2>;
 			phy_address = <1>;
 		};
+
 		port@3 {
 			port_id = <3>;
 			phy_address = <2>;
 		};
+
 		port@4 {
 			port_id = <4>;
 			phy_address = <3>;
 		};
+
 		port@5 {
 			port_id = <5>;
 			phy_address = <24>;
@@ -526,45 +416,33 @@
 	nvmem-cell-names = "mac-address";
 };
 
-&pcie_qmp0 {
-	status = "okay";
-};
-
 &pcie0 {
 	status = "okay";
-
 	perst-gpios = <&tlmm 58 GPIO_ACTIVE_LOW>;
 
 	pcie@0 {
 		wifi@0,0 {
 			status = "okay";
-
-			/* ath11k has no DT compatible for PCI cards */
 			compatible = "pci17cb,1104";
-			reg = <0x00010000 0 0 0 0>;
-
+			qcom,ath11k-fw-memory-mode = <1>;
 			qcom,ath11k-calibration-variant = "Xiaomi-AX9000";
+			reg = <0x00010000 0 0 0 0>;
 		};
 	};
 };
 
-&pcie_qmp1 {
-	status = "okay";
-};
-
 &pcie1 {
 	status = "okay";
-
 	perst-gpios = <&tlmm 62 GPIO_ACTIVE_HIGH>;
 
 	pcie@0 {
 		wifi0: wifi@0,0 {
 			status = "okay";
-
 			compatible = "qcom,ath10k";
+			qcom,ath10k-fw-memory-mode = <1>;
+			qcom,ath10k-calibration-variant = "Xiaomi-AX9000";
 			reg = <0x00010000 0 0 0 0>;
 
-			qcom,ath10k-calibration-variant = "Xiaomi-AX9000";
 			nvmem-cell-names = "calibration";
 			nvmem-cells = <&caldata_qca9889>;
 		};
@@ -573,6 +451,6 @@
 
 &wifi {
 	status = "okay";
-
+	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "Xiaomi-AX9000";
 };

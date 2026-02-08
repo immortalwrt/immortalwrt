@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
 #include "pmp8074.dtsi"
 
@@ -25,7 +25,7 @@
 		qcom,cpr-idle-cycles = <15>;
 		qcom,cpr-step-quot-init-min = <12>;
 		qcom,cpr-step-quot-init-max = <14>;
-		qcom,cpr-count-mode = <0>;		/* All-at-once */
+		qcom,cpr-count-mode = <0>;
 		qcom,cpr-count-repeat = <14>;
 		qcom,cpr-down-error-step-limit = <1>;
 		qcom,cpr-up-error-step-limit = <1>;
@@ -57,15 +57,9 @@
 				qcom,allow-voltage-interpolation;
 				qcom,allow-quotient-interpolation;
 				qcom,cpr-scaled-open-loop-voltage-as-ceiling;
-				qcom,cpr-voltage-ceiling =
-					<840000 904000 944000
-					 984000 992000 1064000>;
-				qcom,cpr-voltage-floor =
-					<592000 648000 712000
-					 744000 784000 848000>;
-				qcom,corner-frequencies =
-					<1017600000 1382400000 1651200000
-					1843200000 1920000000 2208000000>;
+				qcom,cpr-voltage-ceiling = <840000 904000 944000 984000 992000 1064000>;
+				qcom,cpr-voltage-floor = <592000 648000 712000 744000 784000 848000>;
+				qcom,corner-frequencies = <1017600000 1382400000 1651200000 1843200000 1920000000 2208000000>;
 
 				/* TT/FF parts i.e. turbo L1 OL voltage < 1048 mV */
 				qcom,cpr-open-loop-voltage-fuse-adjustment-0 =
@@ -93,7 +87,7 @@
 
 				/* v2 - FF parts i.e. turbo L1 OL voltage < 992 mV */
 				qcom,cpr-open-loop-voltage-fuse-adjustment-v2-0 =
-                                        /* Speed bin 0; CPR rev 0..7 */
+					/* Speed bin 0; CPR rev 0..7 */
 					<     0      0      0     0>,
 					<     0      0      0     0>,
 					<     0      0      0     0>,
@@ -192,36 +186,27 @@
 				qcom,cpr-speed-bin-corners = <2>;
 				qcom,allow-voltage-interpolation;
 				qcom,cpr-corner-fmax-map = <1 2>;
-				qcom,cpr-voltage-ceiling =
-					<912000 992000>;
-				qcom,cpr-voltage-floor =
-					<752000 792000>;
-				qcom,corner-frequencies =
-					<1497600000 1689600000>;
+				qcom,cpr-voltage-ceiling = <912000 992000>;
+				qcom,cpr-voltage-floor = <752000 792000>;
+				qcom,corner-frequencies = <1497600000 1689600000>;
 
 				/* TT/FF parts i.e. turbo OL voltage < 968 mV */
-				qcom,cpr-open-loop-voltage-fuse-adjustment-0 =
-					< 40000   40000>;
+				qcom,cpr-open-loop-voltage-fuse-adjustment-0 = <40000 40000>;
 
 				/* SS parts i.e turbo OL voltage >= 968 mV */
-				qcom,cpr-open-loop-voltage-fuse-adjustment-1 =
-					< 24000   24000>;
+				qcom,cpr-open-loop-voltage-fuse-adjustment-1 = <24000 24000>;
 
 				/* FF parts i.e. turbo OL voltage <= 832 mV */
-				qcom,cpr-open-loop-voltage-fuse-adjustment-v2-0=
-					<40000   40000>;
+				qcom,cpr-open-loop-voltage-fuse-adjustment-v2-0= <40000 40000>;
 
 				 /* TT/SS parts i.e turbo OL voltage > 832 mV */
-				qcom,cpr-open-loop-voltage-fuse-adjustment-v2-1=
-					<40000   40000>;
+				qcom,cpr-open-loop-voltage-fuse-adjustment-v2-1= <40000 40000>;
 
 				/* FF parts i.e. turbo OL voltage <= 832 mV */
-				qcom,cpr-cold-temp-voltage-adjustment-v2-0 =
-					<0   0>;
+				qcom,cpr-cold-temp-voltage-adjustment-v2-0 = <0 0>;
 
 				/* TT/SS parts i.e turbo OL voltage > 832 mV */
-				qcom,cpr-cold-temp-voltage-adjustment-v2-1 =
-					<35000   27000>;
+				qcom,cpr-cold-temp-voltage-adjustment-v2-1 = <35000 27000>;
 			};
 		};
 	};

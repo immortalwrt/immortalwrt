@@ -1,0 +1,261 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+#include "ipq8074.dtsi"
+#include "ipq8074-ess.dtsi"
+#include "ipq8074-nss.dtsi"
+#include "ipq8074-common.dtsi"
+#include "ipq8074-ac-cpu.dtsi"
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/leds/common.h>
+
+/ {
+	aliases {
+		serial0 = &blsp1_uart5;
+
+		led-boot = &led_system_yellow;
+		led-failsafe = &led_system_yellow;
+		led-running = &led_system_blue;
+		led-upgrade = &led_system_yellow;
+
+		label-mac-device = &dp2;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+		bootargs-append = " root=/dev/ubiblock0_0";
+	};
+
+	keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			gpios = <&tlmm 34 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
+		};
+	};
+};
+
+&qpic_nand {
+	status = "okay";
+
+	partitions {
+		status = "disabled";
+	};
+
+	nand@0 {
+		reg = <0>;
+
+		nand-ecc-strength = <4>;
+		nand-ecc-step-size = <512>;
+		nand-bus-width = <8>;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "0:sbl1";
+				reg = <0x00000000 0x00100000>;
+				read-only;
+			};
+
+			partition@100000 {
+				label = "0:mibib";
+				reg = <0x00100000 0x00100000>;
+				read-only;
+			};
+
+			partition@200000 {
+				label = "0:qsee";
+				reg = <0x00200000 0x00300000>;
+				read-only;
+			};
+
+			partition@500000 {
+				label = "0:devcfg";
+				reg = <0x00500000 0x00080000>;
+				read-only;
+			};
+
+			partition@580000 {
+				label = "0:rpm";
+				reg = <0x00580000 0x00080000>;
+				read-only;
+			};
+
+			partition@600000 {
+				label = "0:cdt";
+				reg = <0x00600000 0x00080000>;
+				read-only;
+			};
+
+			partition@680000 {
+				label = "0:appsblenv";
+				reg = <0x00680000 0x00080000>;
+			};
+
+			partition@700000 {
+				label = "0:appsbl";
+				reg = <0x00700000 0x00100000>;
+				read-only;
+			};
+
+			partition@800000 {
+				label = "0:art";
+				reg = <0x00800000 0x00080000>;
+				read-only;
+
+				nvmem-layout {
+					compatible = "fixed-layout";
+					#address-cells = <1>;
+					#size-cells = <1>;
+
+					macaddr_dp2: macaddr@6 {
+						reg = <0x06 0x06>;
+					};
+
+					macaddr_dp3: macaddr@c {
+						reg = <0x0c 0x06>;
+					};
+
+					macaddr_dp4: macaddr@12 {
+						reg = <0x12 0x06>;
+					};
+
+					macaddr_dp5: macaddr@18 {
+						reg = <0x18 0x06>;
+					};
+
+					caldata_qca9889: caldata@4d000 {
+						reg = <0x33000 0x00844>;
+					};
+				};
+			};
+
+			partition@880000 {
+				label = "bdata";
+				reg = <0x00880000 0x00080000>;
+			};
+
+			partition@900000 {
+				label = "pstore";
+				reg = <0x00900000 0x00100000>;
+			};
+
+			partition@a00000 {
+				label = "ubi_kernel";
+				reg = <0x00a00000 0x023c0000>;
+			};
+
+			rootfs: partition@2dc0000 {
+				label = "rootfs";
+				reg = <0x02dc0000 0x0d240000>;
+			};
+		};
+	};
+};
+
+&mdio {
+	status = "okay";
+
+	pinctrl-0 = <&mdio_pins>;
+	pinctrl-names = "default";
+	reset-gpios = <&tlmm 37 GPIO_ACTIVE_LOW>;
+
+	ethernet-phy-package@0 {
+		compatible = "qcom,qca8075-package";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0>;
+
+		qca8075_1: ethernet-phy@1 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <1>;
+		};
+
+		qca8075_2: ethernet-phy@2 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <2>;
+		};
+
+		qca8075_3: ethernet-phy@3 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <3>;
+		};
+
+		qca8075_4: ethernet-phy@4 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <4>;
+		};
+	};
+};
+
+&switch {
+	status = "okay";
+
+	switch_lan_bmp = <(ESS_PORT3 | ESS_PORT4 | ESS_PORT5)>;
+	switch_wan_bmp = <ESS_PORT2>;
+	switch_mac_mode = <MAC_MODE_PSGMII>;
+
+	qcom,port_phyinfo {
+		port@2 {
+			port_id = <2>;
+			phy_address = <1>;
+		};
+
+		port@3 {
+			port_id = <3>;
+			phy_address = <2>;
+		};
+
+		port@4 {
+			port_id = <4>;
+			phy_address = <3>;
+		};
+
+		port@5 {
+			port_id = <5>;
+			phy_address = <4>;
+		};
+	};
+};
+
+&edma {
+	status = "okay";
+};
+
+&dp2 {
+	status = "okay";
+	phy-handle = <&qca8075_1>;
+	label = "wan";
+	nvmem-cells = <&macaddr_dp2>;
+	nvmem-cell-names = "mac-address";
+};
+
+&dp3 {
+	status = "okay";
+	phy-handle = <&qca8075_2>;
+	label = "lan1";
+	nvmem-cells = <&macaddr_dp3>;
+	nvmem-cell-names = "mac-address";
+};
+
+&dp4 {
+	status = "okay";
+	phy-handle = <&qca8075_3>;
+	label = "lan2";
+	nvmem-cells = <&macaddr_dp4>;
+	nvmem-cell-names = "mac-address";
+};
+
+&dp5 {
+	status = "okay";
+	phy-handle = <&qca8075_4>;
+	label = "lan3";
+	nvmem-cells = <&macaddr_dp5>;
+	nvmem-cell-names = "mac-address";
+};

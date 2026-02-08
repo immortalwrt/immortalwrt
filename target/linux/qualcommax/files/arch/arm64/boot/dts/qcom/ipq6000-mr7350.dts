@@ -3,8 +3,11 @@
 /dts-v1/;
 
 #include "ipq6018.dtsi"
-#include "ipq6018-cp-cpu.dtsi"
 #include "ipq6018-ess.dtsi"
+#include "ipq6018-nss.dtsi"
+#include "ipq6018-common.dtsi"
+#include "ipq6018-cp-cpu.dtsi"
+
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
@@ -16,6 +19,7 @@
 	aliases {
 		serial0 = &blsp1_uart3;
 		serial1 = &blsp1_uart2;
+
 		led-boot = &led_system_blue;
 		led-running = &led_system_blue;
 		led-failsafe = &led_system_red;
@@ -67,44 +71,14 @@
 
 &tlmm {
 	hsuart_pins: hsuart-pins {
-		mux {
-			pins = "gpio69", "gpio70",
-				"gpio71", "gpio72";
-			function = "blsp1_uart";
-			drive-strength = <8>;
-			bias-disable;
-		};
-	};
-
-	i2c_pins: i2c-pins {
-		mux {
-			pins = "gpio42", "gpio43";
-			function = "blsp2_i2c";
-			drive-strength = <8>;
-			bias-pull-down;
-		};
-	};
-
-	mdio_pins: mdio-state {
-		mdc-pins {
-			pins = "gpio64";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio-pins {
-			pins = "gpio65";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
+		pins = "gpio69", "gpio70", "gpio71", "gpio72";
+		function = "blsp1_uart";
+		drive-strength = <8>;
+		bias-disable;
 	};
 };
 
 &blsp1_i2c3 {
-	pinctrl-0 = <&i2c_pins>;
-	pinctrl-names = "default";
 	status = "okay";
 
 	led-controller@62 {
@@ -113,19 +87,19 @@
 		#size-cells = <0>;
 		reg = <0x62>;
 
-		led_system_red: led@0 {
+		led_system_red: system-red {
 			reg = <0>;
 			color = <LED_COLOR_ID_RED>;
 			function = LED_FUNCTION_STATUS;
 		};
 
-		led_system_green: led@1 {
+		led_system_green: system-green {
 			reg = <1>;
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_STATUS;
 		};
 
-		led_system_blue: led@2 {
+		led_system_blue: system-blue {
 			reg = <2>;
 			color = <LED_COLOR_ID_BLUE>;
 			function = LED_FUNCTION_STATUS;
@@ -135,12 +109,6 @@
 
 &blsp1_uart2 {
 	pinctrl-0 = <&hsuart_pins>;
-	pinctrl-names = "default";
-	status = "okay";
-};
-
-&blsp1_uart3 {
-	pinctrl-0 = <&serial_3_pins>;
 	pinctrl-names = "default";
 	status = "okay";
 };
@@ -160,15 +128,12 @@
 	};
 };
 
-&qpic_bam {
-	status = "okay";
-};
-
 &qpic_nand {
 	status = "okay";
 
 	nand@0 {
 		reg = <0>;
+
 		nand-ecc-strength = <4>;
 		nand-ecc-step-size = <512>;
 		nand-bus-width = <8>;
@@ -179,10 +144,11 @@
 			#size-cells = <1>;
 
 			partition-0-devinfo {
-				label = "devinfo";
-				read-only;
 				#address-cells = <1>;
 				#size-cells = <1>;
+
+				label = "devinfo";
+				read-only;
 
 				nvmem-layout {
 					compatible = "ascii-eq-delim-env";
@@ -201,17 +167,12 @@
 
 &qusb_phy_0 {
 	status = "okay";
-
 	vdd-supply = <&reg_usb_vbus>;
 };
 
-&ssphy_0 {
-	status = "okay";
-};
-
 &usb3 {
-	vbus-supply = <&reg_usb_vbus>;
 	status = "okay";
+	vbus-supply = <&reg_usb_vbus>;
 };
 
 &mdio {
@@ -230,121 +191,26 @@
 		qca8075_0: ethernet-phy@0 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <0>;
-
-			leds {
-				#address-cells = <1>;
-				#size-cells = <0>;
-
-				led@0 {
-					reg = <0>;
-					color = <LED_COLOR_ID_ORANGE>;
-					function = LED_FUNCTION_LAN;
-					default-state = "keep";
-				};
-
-				led@1 {
-					reg = <1>;
-					color = <LED_COLOR_ID_GREEN>;
-					function = LED_FUNCTION_LAN;
-					default-state = "keep";
-				};
-			};
 		};
 
 		qca8075_1: ethernet-phy@1 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <1>;
-
-			leds {
-				#address-cells = <1>;
-				#size-cells = <0>;
-
-				led@0 {
-					reg = <0>;
-					color = <LED_COLOR_ID_ORANGE>;
-					function = LED_FUNCTION_LAN;
-					default-state = "keep";
-				};
-
-				led@1 {
-					reg = <1>;
-					color = <LED_COLOR_ID_GREEN>;
-					function = LED_FUNCTION_LAN;
-					default-state = "keep";
-				};
-			};
 		};
 
 		qca8075_2: ethernet-phy@2 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <2>;
-
-			leds {
-				#address-cells = <1>;
-				#size-cells = <0>;
-
-				led@0 {
-					reg = <0>;
-					color = <LED_COLOR_ID_ORANGE>;
-					function = LED_FUNCTION_LAN;
-					default-state = "keep";
-				};
-
-				led@1 {
-					reg = <1>;
-					color = <LED_COLOR_ID_GREEN>;
-					function = LED_FUNCTION_LAN;
-					default-state = "keep";
-				};
-			};
 		};
 
 		qca8075_3: ethernet-phy@3 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <3>;
-
-			leds {
-				#address-cells = <1>;
-				#size-cells = <0>;
-
-				led@0 {
-					reg = <0>;
-					color = <LED_COLOR_ID_ORANGE>;
-					function = LED_FUNCTION_LAN;
-					default-state = "keep";
-				};
-
-				led@1 {
-					reg = <1>;
-					color = <LED_COLOR_ID_GREEN>;
-					function = LED_FUNCTION_LAN;
-					default-state = "keep";
-				};
-			};
 		};
 
 		qca8075_4: ethernet-phy@4 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <4>;
-
-			leds {
-				#address-cells = <1>;
-				#size-cells = <0>;
-
-				led@0 {
-					reg = <0>;
-					color = <LED_COLOR_ID_ORANGE>;
-					function = LED_FUNCTION_WAN;
-					default-state = "keep";
-				};
-
-				led@1 {
-					reg = <1>;
-					color = <LED_COLOR_ID_GREEN>;
-					function = LED_FUNCTION_WAN;
-					default-state = "keep";
-				};
-			};
 		};
 	};
 };
@@ -361,18 +227,22 @@
 			port_id = <1>;
 			phy_address = <0>;
 		};
+
 		port@2 {
 			port_id = <2>;
 			phy_address = <1>;
 		};
+
 		port@3 {
 			port_id = <3>;
 			phy_address = <2>;
 		};
+
 		port@4 {
 			port_id = <4>;
 			phy_address = <3>;
 		};
+
 		port@5 {
 			port_id = <5>;
 			phy_address = <4>;
@@ -380,8 +250,10 @@
 	};
 };
 
-&edma {
+&wifi {
 	status = "okay";
+	qcom,ath11k-fw-memory-mode = <1>;
+	qcom,ath11k-calibration-variant = "Linksys-MR7350";
 };
 
 &dp1 {
@@ -424,9 +296,6 @@
 	nvmem-cell-names = "mac-address";
 };
 
-&wifi {
+&edma {
 	status = "okay";
-
-	qcom,ath11k-calibration-variant = "Linksys-MR7350";
-	qcom,ath11k-fw-memory-mode = <1>;
 };

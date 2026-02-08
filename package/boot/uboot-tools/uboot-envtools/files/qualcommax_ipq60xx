@@ -8,28 +8,44 @@ touch /etc/config/ubootenv
 board=$(board_name)
 
 case "$board" in
+anysafe,e1|\
+philips,ly1800|\
+sy,y6010|\
 8devices,mango-dvk|\
 8devices,mango-dvk-sfp|\
 cambiumnetworks,xe3-4)
 	ubootenv_add_mtd "0:APPSBLENV" "0x0" "0x10000" "0x10000"
 	;;
+cmiot,ax18|\
+qihoo,360v6|\
+redmi,ax5|\
+xiaomi,ax1800|\
+zn,m2|\
 glinet,gl-ax1800|\
 glinet,gl-axt1800|\
+netgear,wax214|\
+netgear,wax610|\
+netgear,wax610y|\
+tplink,eap610od|\
+tplink,eap620hd-v3|\
+tplink,eap623od-hd-v1|\
+tplink,eap625od-hd-v1)
+	ubootenv_add_mtd "0:appsblenv" "0x0" "0x40000" "0x20000"
+	;;
 linksys,mr7350|\
 linksys,mr7500)
 	ubootenv_add_mtd "u_env" "0x0" "0x40000" "0x20000"
 	;;
-netgear,wax214|\
-netgear,wax610|\
-netgear,wax610y|\
-tplink,eap610-outdoor|\
-tplink,eap623od-hd-v1|\
-tplink,eap620-hd-v3|\
-tplink,eap625-outdoor-hd-v1)
-	ubootenv_add_mtd "0:appsblenv" "0x0" "0x40000" "0x20000"
-	;;
 yuncore,fap650)
 	ubootenv_add_mtd "0:appsblenv" "0x0" "0x10000" "0x10000"
+	;;
+jdcloud,re-cs-02|\
+jdcloud,re-cs-07|\
+jdcloud,re-ss-01|\
+link,nn6000-v1|\
+link,nn6000-v2|\
+redmi,ax5-jdcloud)
+	ubootenv_add_mmc "0:APPSBLENV" "" "0x0" "0x40000" "0x20000"
 	;;
 esac
 

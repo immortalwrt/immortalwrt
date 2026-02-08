@@ -1,12 +1,16 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
 /dts-v1/;
 
 #include "ipq8074.dtsi"
-#include "ipq8074-hk-cpu.dtsi"
 #include "ipq8074-ess.dtsi"
+#include "ipq8074-nss.dtsi"
+#include "ipq8074-common.dtsi"
+#include "ipq8074-hk-cpu.dtsi"
 
+#include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
-#include <dt-bindings/gpio/gpio.h>
 
 / {
 	model = "Netgear WAX218";
@@ -14,6 +18,7 @@
 
 	aliases {
 		serial0 = &blsp1_uart5;
+
 		led-boot = &led_power_amber;
 		led-failsafe = &led_power_amber;
 		led-running = &led_power_amber;
@@ -22,10 +27,6 @@
 
 	chosen {
 		stdout-path = "serial0:115200n8";
-		/*
-		 * Netgear's U-Boot adds "ubi.mtd=rootfs root=mtd:ubi_rootfs"
-		 * That fails to create a UBI block device, so add it here.
-		*/
 		bootargs-append = " ubi.block=0,rootfs root=/dev/ubiblock0_1";
 	};
 
@@ -47,21 +48,21 @@
 		sck-gpios = <&tlmm 18 GPIO_ACTIVE_HIGH>;
 		mosi-gpios = <&tlmm 19 GPIO_ACTIVE_HIGH>;
 
-		led_gpio: led_gpio@0 {
+		led_gpio: gpio {
 			compatible = "fairchild,74hc595";
 			reg = <0>;
 			gpio-controller;
 			#gpio-cells = <2>;
-			registers-number = <1>;
-			enable-gpios = <&tlmm 20 GPIO_ACTIVE_HIGH>;
+			registers-number = <2>;
 			spi-max-frequency = <1000000>;
+			enable-gpios = <&tlmm 20 GPIO_ACTIVE_HIGH>;
 		};
 	};
 
 	leds {
 		compatible = "gpio-leds";
 
-		led_power_amber: led_power {
+		led_power_amber: power-amber {
 			function = LED_FUNCTION_POWER;
 			color = <LED_COLOR_ID_AMBER>;
 			gpios = <&led_gpio 1 GPIO_ACTIVE_HIGH>;
@@ -94,31 +95,13 @@
 
 	switch_lan_bmp = <ESS_PORT6>;
 	switch_mac_mode = <MAC_MODE_PSGMII>;
-	switch_mac_mode2 = <MAC_MODE_SGMII_CHANNEL0>;
+	switch_mac_mode2 = <MAC_MODE_SGMII_PLUS>;
 
 	qcom,port_phyinfo {
 		port@6 {
 			port_id = <6>;
 			phy_address = <28>;
 			port_mac_sel = "QGMAC_PORT";
-		};
-	};
-};
-
-&tlmm {
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio68";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio69";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
 		};
 	};
 };
@@ -143,15 +126,12 @@
 	nvmem-cell-names = "mac-address";
 };
 
-&qpic_bam {
-	status = "okay";
-};
-
 &qpic_nand {
 	status = "okay";
 
 	nand@0 {
 		reg = <0>;
+
 		nand-ecc-strength = <4>;
 		nand-ecc-step-size = <512>;
 		nand-bus-width = <8>;
@@ -161,20 +141,22 @@
 
 			partition-0-appsblenv {
 				compatible = "fixed-partitions";
-				label = "0:appsblenv";
-				read-only;
 				#address-cells = <1>;
 				#size-cells = <1>;
 
+				label = "0:appsblenv";
+				read-only;
+
 				partition@0 {
 					label = "env-data";
-					reg = <0x0 0x40000>;
+					reg = <0x00000000 0x00040000>;
 
 					nvmem-layout {
 						compatible = "u-boot,env";
+						#address-cells = <1>;
+						#size-cells = <1>;
 
-						macaddr_ubootenv_ethaddr: ethaddr {
-						};
+						macaddr_ubootenv_ethaddr: ethaddr {};
 					};
 				};
 			};
@@ -182,12 +164,8 @@
 	};
 };
 
-&blsp1_uart5 {
-	status = "okay";
-};
-
 &wifi {
 	status = "okay";
-
+	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "Netgear-WAX218";
 };

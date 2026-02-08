@@ -1,6 +1,6 @@
 --- a/drivers/net/wireless/ath/ath10k/mac.c
 +++ b/drivers/net/wireless/ath/ath10k/mac.c
-@@ -5064,6 +5064,7 @@ static void ath10k_mac_setup_ht_vht_cap(
+@@ -5063,6 +5063,7 @@ static void ath10k_mac_setup_ht_vht_cap(
  	if (ar->phy_capability & WHAL_WLAN_11G_CAPABILITY) {
  		band = &ar->mac.sbands[NL80211_BAND_2GHZ];
  		band->ht_cap = ht_cap;

@@ -299,11 +299,11 @@ define KernelPackage/renesas-net-avb
   FILES=$(LINUX_DIR)/drivers/net/ethernet/renesas/ravb.ko
   AUTOLOAD:=$(call AutoProbe,ravb)
 endef
- 
+
 define KernelPackage/renesas-net-avb/description
   Support Renesas RZ platform Ethernet module
 endef
- 
+
 $(eval $(call KernelPackage,renesas-net-avb))
 
 define KernelPackage/wdt-sp805

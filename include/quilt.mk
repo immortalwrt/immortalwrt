@@ -174,7 +174,7 @@ define Quilt/Template
 		done; ! $(QUILT_CMD) next 2>/dev/null >/dev/null; \
 	}
 	$(Quilt/Refresh/$(4))
-	
+
   $(3)update: $(3)quilt-check
 	$(Quilt/Refresh/$(4))
 endef

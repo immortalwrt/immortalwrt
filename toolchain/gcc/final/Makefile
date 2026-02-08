@@ -17,7 +17,7 @@ ifndef CONFIG_USE_GLIBC
 endif
 
 ifdef CONFIG_USE_MUSL
-  GCC_MAKE += gcc_cv_libc_provides_ssp=yes
+  GCC_MAKE_VARS += gcc_cv_libc_provides_ssp=yes
 endif
 
 ifneq ($(CONFIG_SJLJ_EXCEPTIONS),)

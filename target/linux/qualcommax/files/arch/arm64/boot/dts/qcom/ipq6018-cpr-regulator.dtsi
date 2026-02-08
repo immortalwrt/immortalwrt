@@ -14,6 +14,8 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include "ipq6018-mp5496.dtsi"
+
 &soc {
 	apc_apm: apm@b111000 {
 		compatible = "qcom,ipq807x-apm";
@@ -37,7 +39,7 @@
 		qcom,cpr-idle-cycles = <15>;
 		qcom,cpr-step-quot-init-min = <0>;
 		qcom,cpr-step-quot-init-max = <15>;
-		qcom,cpr-count-mode = <0>;		/* All-at-once */
+		qcom,cpr-count-mode = <0>;
 		qcom,cpr-count-repeat = <1>;
 		qcom,cpr-down-error-step-limit = <1>;
 		qcom,cpr-up-error-step-limit = <1>;
@@ -56,24 +58,18 @@
 			apc_vreg: regulator {
 				regulator-name = "apc_corner";
 				regulator-min-microvolt = <1>;
-				regulator-max-microvolt = <6>;
+				regulator-max-microvolt = <8>;
 				qcom,cpr-fuse-corners = <4>;
 				qcom,cpr-fuse-combos = <8>;
-				qcom,cpr-corners = <6>;
+				qcom,cpr-corners = <8>;
 				qcom,cpr-speed-bins = <1>;
-				qcom,cpr-speed-bin-corners = <6>;
-				qcom,cpr-corner-fmax-map = <1 3 5 6>;
+				qcom,cpr-speed-bin-corners = <8>;
+				qcom,cpr-corner-fmax-map = <1 3 5 7>;
 				qcom,allow-voltage-interpolation;
 				qcom,allow-quotient-interpolation;
-				qcom,cpr-voltage-ceiling =
-					<725000 787500 862500
-					 925000 987500 1062500>;
-				qcom,cpr-voltage-floor =
-					<587500 650000 712500
-					 750000 787500 850000>;
-				qcom,corner-frequencies =
-					<864000000 1056000000 1320000000
-					1440000000 1608000000 1800000000>;
+				qcom,cpr-voltage-ceiling = <725000 787500 850000 862500 925000 937500 987500 1062500>;
+				qcom,cpr-voltage-floor = <587500 650000 700000 712500 750000 762500 787500 850000>;
+				qcom,corner-frequencies = <864000000 1056000000 1200000000 1320000000 1440000000 1512000000 1608000000 1800000000>;
 				qcom,cpr-ro-sel =
 					/* Speed bin 0; CPR rev 0..7 */
 					<     0      0      0     0>,

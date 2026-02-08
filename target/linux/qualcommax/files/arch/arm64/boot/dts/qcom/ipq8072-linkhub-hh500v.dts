@@ -3,8 +3,11 @@
 /dts-v1/;
 
 #include "ipq8074.dtsi"
-#include "ipq8074-hk-cpu.dtsi"
 #include "ipq8074-ess.dtsi"
+#include "ipq8074-nss.dtsi"
+#include "ipq8074-common.dtsi"
+#include "ipq8074-hk-cpu.dtsi"
+
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
@@ -61,8 +64,6 @@
 
 	keys {
 		compatible = "gpio-keys";
-		pinctrl-0 = <&button_pins>;
-		pinctrl-names = "default";
 
 		reset {
 			label = "reset";
@@ -85,8 +86,6 @@
 
 	leds {
 		compatible = "gpio-leds";
-		pinctrl-names = "default";
-		pinctrl-0 = <&led_pins>;
 
 		4g_green {
 			color = <LED_COLOR_ID_GREEN>;
@@ -145,29 +144,6 @@
 };
 
 &tlmm {
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio68";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio69";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
-	button_pins: button-pins {
-		bias-pull-up;
-		drive-strength = <8>;
-		function = "gpio";
-		pins = "gpio47", "gpio62", "gpio64";
-	};
-
 	hsuart_pins: hsuart-state {
 		pins = "gpio48", "gpio49";
 	};
@@ -193,10 +169,10 @@
 	};
 
 	pcie0_default_state: pcie0_wake_gpio {
-			bias-pull-up;
-			drive-strength = <8>;
-			function = "pcie0_wake";
-			pins = "gpio59";
+		bias-pull-up;
+		drive-strength = <8>;
+		function = "pcie0_wake";
+		pins = "gpio59";
 	};
 };
 
@@ -226,12 +202,9 @@
 	status = "okay";
 
 	flash@0 {
-		#address-cells = <1>;
-		#size-cells = <1>;
-		reg = <0x00>;
-		/* "n25q128a11" required for u-boot patching, see nand node */
 		compatible = "n25q128a11", "jedec,spi-nor";
 		spi-max-frequency = <50000000>;
+		reg = <0x0>;
 
 		partitions {
 			compatible = "fixed-partitions";
@@ -239,76 +212,18 @@
 	};
 };
 
-&blsp1_uart3 {
-	status = "okay";
-};
-
-&blsp1_uart5 {
-	status = "okay";
-};
-
-&cryptobam {
-	status = "okay";
-};
-
-&crypto {
-	status = "okay";
-};
-
-&prng {
-	status = "okay";
-};
-
-&qpic_bam {
-	status = "okay";
-};
-
 &qpic_nand {
 	status = "okay";
-	/*
-	 * Some variants of this board use NOR+NAND configuration which is
-	 * currently not supported by 'qcomsmem' MTD parser while other versions
-	 * have NAND alone. Let U-Boot find the NAND and SPI flash dt nodes and
-	 * populate partitions from SMEM partition table.
-	 *
-	 * This makes it possible to support both flash configurations with a
-	 * single image, and also to use QCA 'runtime failsafe' and rotate
-	 * 'rootfs'/'rootfs_1' partitions between subsequent updates.
-	 */
+
 	compatible = "qcom,ebi2-nandc-bam-v1.5.0", "qcom,ipq8074-nand";
 
 	nand@0 {
-		#address-cells = <0x01>;
-		#size-cells = <0x01>;
+		reg = <0>;
+
 		nand-bus-width = <8>;
 		nand-ecc-step-size = <512>;
 		nand-ecc-strength = <8>;
-		reg = <0>;
 	};
-};
-
-&qusb_phy_0 {
-	status = "okay";
-};
-
-&qusb_phy_1 {
-	status = "okay";
-};
-
-&ssphy_0 {
-	status = "okay";
-};
-
-&ssphy_1 {
-	status = "okay";
-};
-
-&usb_0 {
-	status = "okay";
-};
-
-&usb_1 {
-	status = "okay";
 };
 
 &mdio {
@@ -395,6 +310,6 @@
 
 &wifi {
 	status = "okay";
-
+	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "TCL-LINKHUB-HH500V";
 };

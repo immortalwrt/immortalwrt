@@ -1,0 +1,124 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+msgid "athena_led"
+msgstr "athena_led"
+
+msgid "Base Setting"
+msgstr "设置"
+
+msgid "Gift"
+msgstr "赞赏"
+
+msgid "Athena LED Ctrl"
+msgstr "雅典娜 LED 屏幕控制"
+
+msgid "JDCloud AX6600 LED Screen Ctrl"
+msgstr "京东云 AX6600 LED 屏幕控制"
+
+msgid "Enabled"
+msgstr "启用"
+
+msgid "Display interval time"
+msgstr "刷新时间"
+
+msgid "Enable carousel display and set interval time in seconds"
+msgstr "刷新时间"
+
+msgid "Display light level"
+msgstr "显示亮度调整"
+
+msgid "Display light level desc"
+msgstr "显示亮度调整，数字越大越亮"
+
+msgid "side led status"
+msgstr "侧边状态灯"
+
+msgid "status time"
+msgstr "时间"
+
+msgid "status medal"
+msgstr "奖牌"
+
+msgid "status upload"
+msgstr "上传"
+
+msgid "status download"
+msgstr "下载"
+
+msgid "side led status desc"
+msgstr "设置侧边状态灯"
+
+
+msgid "Display Type"
+msgstr "显示模式"
+
+msgid "Display Type Date"
+msgstr "日期"
+
+msgid "Display Type Time"
+msgstr "时间"
+
+msgid "Display Type Time Blink"
+msgstr "时间-闪烁"
+
+msgid "Display Type temp"
+msgstr "温度"
+
+msgid "Display Type String"
+msgstr "自定义文本"
+
+msgid "Display Type getByUrl"
+msgstr "远程文本"
+
+
+msgid "Specify comma-separated values for option"
+msgstr "显示模式"
+
+msgid "Custom Value"
+msgstr "自定义文本"
+
+msgid "Enter your message here"
+msgstr "输入你的自定义内容"
+
+msgid "Set the custom message to display on the LED screen, Only effective on 'Display Type String'"
+msgstr "设置显示在led屏幕上的自定义内容,选中'自定义文本'显示模式生效"
+
+msgid "api url for get content"
+msgstr "通过 http/get 请求获取显示内容"
+
+msgid "Enter your api url here"
+msgstr "在此处输入你的接口地址"
+
+msgid "api url for get content des"
+msgstr "通过 http/get 请求获取显示内容,选中'远程文本'显示模式生效"
+
+msgid "All features are free, and tipping is just to buy me a coffee."
+msgstr "所有功能都免费，打赏只是为了请我喝咖啡"
+
+msgid "tempFlag"
+msgstr "温度选项"
+
+msgid "nss-top"
+msgstr "网络子系统nss-top"
+
+msgid "nss"
+msgstr "网络子系统nss"
+
+msgid "wcss-phya0"
+msgstr "无线控制子系统-物理0"
+
+msgid "wcss-phya1"
+msgstr "无线控制子系统-物理1"
+
+msgid "cpu"
+msgstr "中央处理器cpu"
+
+msgid "lpass"
+msgstr "lpass"
+
+msgid "ddrss"
+msgstr "内存子系统ddr"
+
+msgid "Set the item display on the LED screen, Only effective on 'Display Type temp'"
+msgstr "设置显示在led屏幕上的温度,选中'温度'显示模式生效"

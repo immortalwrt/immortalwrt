@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/* Copyright (c) 2022, Robert Marko <robimarko@gmail.com>
-altered by Jonathan Brophy <professor_jonny@hotmail.com>
-to suit the TP-Link Deco X80-5G target */
 
 /dts-v1/;
 
 #include "ipq8074.dtsi"
-#include "ipq8074-hk-cpu.dtsi"
 #include "ipq8074-ess.dtsi"
+#include "ipq8074-nss.dtsi"
+#include "ipq8074-common.dtsi"
+#include "ipq8074-hk-cpu.dtsi"
+
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
@@ -17,8 +17,8 @@ to suit the TP-Link Deco X80-5G target */
 	compatible = "tplink,deco-x80-5g", "qcom,ipq8074";
 
 	aliases {
-		 serial0 = &blsp1_uart5;
- 	};
+		serial0 = &blsp1_uart5;
+	};
 
 	chosen {
 		stdout-path = "serial0:115200n8";
@@ -50,10 +50,8 @@ to suit the TP-Link Deco X80-5G target */
 		};
 	};
 
-	gpio_keys {
+	keys {
 		compatible = "gpio-keys";
-		pinctrl-0 = <&button_pins>;
-		pinctrl-names = "default";
 
 		reset_button {
 			label = "reset";
@@ -64,26 +62,24 @@ to suit the TP-Link Deco X80-5G target */
 
 	leds {
 		compatible = "gpio-leds";
-		pinctrl-0 = <&led_pins>;
-		pinctrl-names = "default";
 		/*note the LED's defined here are not individual they are a single combined RGB element used for status functions.
 		To mimic the OEM default behaviour green and red are switched on from boot to indicate yellow (power on).*/
 
-		led_system_green: green {
+		led_system_green: system-green {
 			gpios = <&tlmm 50 GPIO_ACTIVE_HIGH>;
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_STATUS;
 			default-state = "on";
 		};
 
-		led_system_red: red {
+		led_system_red: system-red {
 			gpios = <&tlmm 51 GPIO_ACTIVE_HIGH>;
 			color = <LED_COLOR_ID_RED>;
 			function = LED_FUNCTION_STATUS;
 			default-state = "on";
 		};
 
-		led_system_blue: blue {
+		led_system_blue: system-blue {
 			gpios = <&tlmm 52 GPIO_ACTIVE_HIGH>;
 			color = <LED_COLOR_ID_BLUE>;
 			function = LED_FUNCTION_STATUS;
@@ -294,76 +290,26 @@ to suit the TP-Link Deco X80-5G target */
 
 
 &tlmm {
-	button_pins: button-state {
-		pins = "gpio27";
-		function = "gpio";
-		drive-strength = <2>;
-		bias-pull-up;
-	};
-
-	fan_pins: fan-state {
-		pins = "gpio40", "gpio41", "gpio42";
-		function = "gpio";
-		drive-strength = <2>;
-		bias-disable;
-	};
-
-	antenna_pins: antenna-state {
+	antenna_pins: antenna-pins {
 		pins = "gpio56";
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
 	};
 
-	modem_pins: modem-state {
-		pins = "gpio29", "gpio55";
+	fan_pins: fan-pins {
+		pins = "gpio40", "gpio41", "gpio42";
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
 	};
 
-	led_pins: led-state {
-		pins = "gpio50", "gpio51", "gpio52";
+	modem_pins: modem-pins {
+		pins = "gpio29", "gpio55";
 		function = "gpio";
-		drive-strength = <8>;
+		drive-strength = <2>;
 		bias-disable;
 	};
-
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio68";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio69";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-};
-
-&blsp1_uart5 {
-	status = "okay";
-};
-
-&cryptobam {
-	status = "okay";
-};
-
-&crypto {
-	status = "okay";
-};
-
-&prng {
-	status = "okay";
-};
-
-&qpic_bam {
-	status = "okay";
 };
 
 &qpic_nand {
@@ -371,27 +317,15 @@ to suit the TP-Link Deco X80-5G target */
 
 	nand@0 {
 		reg = <0>;
+
 		nand-ecc-strength = <4>;
 		nand-ecc-step-size = <512>;
 		nand-bus-width = <8>;
 
 		partitions {
-			compatible = "qcom,smem-part"; /* define SMEM partition table */
-
+			compatible = "qcom,smem-part";
 		};
 	};
-};
-
-&qusb_phy_0 {
-	status = "okay";
-};
-
-&ssphy_0 {
-	status = "okay";
-};
-
-&usb_0 {
-	status = "okay";
 };
 
 &mdio {
@@ -421,7 +355,7 @@ to suit the TP-Link Deco X80-5G target */
 	switch_wan_bmp = <ESS_PORT5>; /* wan port bitmap */
 	switch_lan_bmp = <ESS_PORT6>; /* lan port bitmap */
 	switch_mac_mode1 = <MAC_MODE_SGMII_PLUS>; /* mac mode for uniphy instance1*/
-	switch_mac_mode2 = <MAC_MODE_SGMII_CHANNEL0>; /* mac mode for uniphy instance2*/
+	switch_mac_mode2 = <MAC_MODE_SGMII_PLUS>; /* mac mode for uniphy instance2*/
 
 	qcom,port_phyinfo {
 		port@5 {
@@ -454,5 +388,6 @@ to suit the TP-Link Deco X80-5G target */
 
 &wifi {
 	status = "okay";
+	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "tplink_deco-x80-5g";
 };

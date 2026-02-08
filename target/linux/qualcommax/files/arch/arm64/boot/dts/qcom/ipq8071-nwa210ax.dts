@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/*
- * Copyright (c) 2025 Pascal Beleiu <pascal@beleiu.de>
- * Copyright (c) 2025 Eric Schäfer <eric@es86.de>
- */
 
 /dts-v1/;
 
 #include "ipq8074.dtsi"
-#include "ipq8074-ac-cpu.dtsi"
 #include "ipq8074-ess.dtsi"
+#include "ipq8074-nss.dtsi"
+#include "ipq8074-common.dtsi"
+#include "ipq8074-ac-cpu.dtsi"
+
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
@@ -18,13 +17,16 @@
 	compatible = "zyxel,nwa210ax", "qcom,ipq8074";
 
 	aliases {
+		serial0 = &blsp1_uart5;
+
 		led-boot = &lp5562_blue;
 		led-failsafe = &lp5562_white;
 		led-running = &lp5562_green;
 		led-upgrade = &lp5562_red;
-		serial0 = &blsp1_uart5;
+
 		ethernet0 = &dp5;
 		ethernet1 = &dp1;
+
 		label-mac-device = &dp5;
 	};
 
@@ -70,45 +72,10 @@
 	};
 };
 
-&blsp1_uart5 {
-	status = "okay";
-};
-
-&crypto {
-	status = "okay";
-};
-
-&edma {
-	status = "okay";
-};
-
 &tlmm {
-	mdio_pins: mdio-pins {
-		mdc {
-			pins = "gpio68";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio {
-			pins = "gpio69";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
 	mdio_gpio_pins: mdio-gpio-pins {
 		pins = "gpio37", "gpio44";
 		function = "gpio";
-		bias-pull-up;
-	};
-
-	button_pins: button-pins {
-		pins = "gpio30";
-		function = "gpio";
-		drive-strength = <8>;
 		bias-pull-up;
 	};
 
@@ -186,8 +153,6 @@
 
 	flash@0 {
 		compatible = "jedec,spi-nor";
-		#address-cells = <1>;
-		#size-cells = <1>;
 		reg = <0>;
 		linux,modalias = "m25p80", "n25q128a11";
 		spi-max-frequency = <50000000>;
@@ -336,47 +301,47 @@
 	};
 };
 
-&qpic_bam {
-	status = "okay";
-};
-
 &qpic_nand {
 	status = "okay";
 
 	nand@0 {
 		reg = <0>;
+
+		nand-ecc-strength = <4>;
 		nand-ecc-step-size = <512>;
 		nand-bus-width = <8>;
-		nand-ecc-strength = <4>;
-		compatible = "fixed-partitions";
-		#address-cells = <1>;
-		#size-cells = <1>;
 
-		partition@0 {
-			reg = <0x00 0x3c00000>;
-			label = "rootfs";
-		};
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
 
-		partition@3c00000 {
-			reg = <0x3c00000 0x800000>;
-			label = "0:wififw";
-			read-only;
-		};
+			partition@0 {
+				label = "rootfs";
+				reg = <0x00 0x3c00000>;
+			};
 
-		partition@4400000 {
-			reg = <0x4400000 0x3c00000>;
-			label = "rootfs_1";
-		};
+			partition@3c00000 {
+				label = "0:wififw";
+				reg = <0x3c00000 0x800000>;
+				read-only;
+			};
 
-		partition@8000000 {
-			reg = <0x8000000 0x800000>;
-			label = "0:wififw_1";
-			read-only;
-		};
+			partition@4400000 {
+				label = "rootfs_1";
+				reg = <0x4400000 0x3c00000>;
+			};
 
-		partition@8800000 {
-			reg = <0x8800000 0x7800000>;
-			label = "logs";
+			partition@8000000 {
+				label = "0:wififw_1";
+				reg = <0x8000000 0x800000>;
+				read-only;
+			};
+
+			partition@8800000 {
+				label = "logs";
+				reg = <0x8800000 0x7800000>;
+			};
 		};
 	};
 };

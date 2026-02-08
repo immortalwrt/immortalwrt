@@ -534,7 +534,7 @@ config KERNEL_DEBUG_INFO
 
 config KERNEL_DEBUG_INFO_BTF
 	bool "Enable additional BTF type information"
-	default y if (TARGET_armsr || TARGET_bcm27xx_bcm2709 || TARGET_bcm27xx_bcm2710 || TARGET_bcm27xx_bcm2711 || TARGET_bcm27xx_bcm2712 || TARGET_ipq806x_chromium || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_qualcommax_ipq60xx || TARGET_rockchip || TARGET_sunxi_cortexa53 || TARGET_x86_64) && BUILDBOT
+	default y if (TARGET_armsr || TARGET_bcm27xx_bcm2709 || TARGET_bcm27xx_bcm2710 || TARGET_bcm27xx_bcm2711 || TARGET_bcm27xx_bcm2712 || TARGET_ipq806x_chromium || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_qualcommax || TARGET_rockchip || TARGET_sunxi_cortexa53 || TARGET_x86_64) && BUILDBOT
 	depends on !HOST_OS_MACOS
 	depends on KERNEL_DEBUG_INFO && !KERNEL_DEBUG_INFO_REDUCED
 	select DWARVES
@@ -562,7 +562,7 @@ config KERNEL_MODULE_ALLOW_BTF_MISMATCH
 
 config KERNEL_DEBUG_INFO_REDUCED
 	bool "Reduce debugging information"
-	default y if !(TARGET_armsr || TARGET_bcm27xx_bcm2709 || TARGET_bcm27xx_bcm2710 || TARGET_bcm27xx_bcm2711 || TARGET_bcm27xx_bcm2712 || TARGET_ipq806x_chromium || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_qualcommax_ipq60xx || TARGET_rockchip || TARGET_sunxi_cortexa53 || TARGET_x86_64) || !BUILDBOT
+	default y if !(TARGET_armsr || TARGET_bcm27xx_bcm2709 || TARGET_bcm27xx_bcm2710 || TARGET_bcm27xx_bcm2711 || TARGET_bcm27xx_bcm2712 || TARGET_ipq806x_chromium || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_qualcommax || TARGET_rockchip || TARGET_sunxi_cortexa53 || TARGET_x86_64) || !BUILDBOT
 	depends on KERNEL_DEBUG_INFO
 	help
 	  If you say Y here gcc is instructed to generate less debugging
@@ -591,7 +591,6 @@ config KERNEL_FRAME_WARN
 # kernel configurations and lead to devices that dont have working console
 config KERNEL_DEBUG_LL
 	bool
-	default n
 	depends on arm
 	help
 	  ARM low level debugging.
@@ -658,7 +657,6 @@ config KERNEL_PROBE_EVENTS_BTF_ARGS
 config KERNEL_BPF_KPROBE_OVERRIDE
 	bool
 	depends on KERNEL_KPROBES
-	default n
 
 config KERNEL_BPF_STREAM_PARSER
 	bool "Allow a TCP stream parser to be used with BPF_MAP_TYPE_SOCKMAP"
@@ -973,7 +971,6 @@ if KERNEL_CGROUPS
 	config KERNEL_CPUSETS_V1
 		bool "Legacy cgroup v1 cpusets controller"
 		depends on KERNEL_CPUSETS
-		default n
 		help
 		  Legacy cgroup v1 cpusets controller which has been deprecated by
 		  cgroup v2 implementation. The v1 is there for legacy applications
@@ -1029,7 +1026,6 @@ if KERNEL_CGROUPS
 	
 	config KERNEL_MEMCG_V1
 		bool "Legacy cgroup v1 memory controller"
-		default n
 		depends on KERNEL_MEMCG
 		help
 		  Legacy cgroup v1 memory controller which has been deprecated by

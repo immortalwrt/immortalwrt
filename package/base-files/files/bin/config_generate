@@ -313,9 +313,9 @@ generate_static_system() {
 	uci -q batch <<-EOF
 		delete system.@system[0]
 		add system system
-		set system.@system[-1].hostname='ImmortalWrt'
-		set system.@system[-1].timezone='GMT0'
-		set system.@system[-1].zonename='UTC'
+		set system.@system[-1].hostname='ImmortalWRT'
+		set system.@system[-1].timezone='CST-8'
+		set system.@system[-1].zonename='Asia/Shanghai'
 		set system.@system[-1].ttylogin='0'
 		set system.@system[-1].log_size='128'
 		set system.@system[-1].urandom_seed='0'
@@ -324,10 +324,10 @@ generate_static_system() {
 		set system.ntp='timeserver'
 		set system.ntp.enabled='1'
 		set system.ntp.enable_server='0'
-		add_list system.ntp.server='time.apple.com'
-		add_list system.ntp.server='time1.google.com'
-		add_list system.ntp.server='time.cloudflare.com'
-		add_list system.ntp.server='pool.ntp.org'
+		add_list system.ntp.server='ntp.tencent.com'
+		add_list system.ntp.server='ntp.aliyun.com'
+		add_list system.ntp.server='ntp.ntsc.ac.cn'
+		add_list system.ntp.server='cn.ntp.org.cn'
 	EOF
 
 	if json_is_a system object; then

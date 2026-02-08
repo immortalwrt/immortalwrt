@@ -1,0 +1,33 @@
+--- a/arch/arm64/boot/dts/qcom/ipq5018.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq5018.dtsi
+@@ -136,17 +136,27 @@
+ 		#size-cells = <2>;
+ 		ranges;
+ 
+-		bootloader@4a800000 {
++		nss_region: nss@40000000 {
++			reg = <0x0 0x40000000 0x0 0x1000000>;
++			no-map;
++		};
++
++		tz_apps_region: tz_apps@4a400000 {
++			reg = <0x0 0x4a400000 0x0 0x400000>;
++			no-map;
++		};
++
++		bootloader_region: bootloader@4a800000 {
+ 			reg = <0x0 0x4a800000 0x0 0x200000>;
+ 			no-map;
+ 		};
+ 
+-		sbl@4aa00000 {
++		sbl_region: sbl@4aa00000 {
+ 			reg = <0x0 0x4aa00000 0x0 0x100000>;
+ 			no-map;
+ 		};
+ 
+-		smem@4ab00000 {
++		smem_region: smem@4ab00000 {
+ 			compatible = "qcom,smem";
+ 			reg = <0x0 0x4ab00000 0x0 0x100000>;
+ 			no-map;

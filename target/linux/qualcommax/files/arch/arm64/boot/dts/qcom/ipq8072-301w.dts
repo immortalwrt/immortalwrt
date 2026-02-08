@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/* Copyright (c) 2021, Dirk Buchwalder <buchwalder@posteo.de> */
 
 /dts-v1/;
 
 #include "ipq8074.dtsi"
-#include "ipq8074-hk-cpu.dtsi"
 #include "ipq8074-ess.dtsi"
+#include "ipq8074-nss.dtsi"
+#include "ipq8074-common.dtsi"
+#include "ipq8074-hk-cpu.dtsi"
+
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
@@ -16,20 +18,19 @@
 
 	aliases {
 		serial0 = &blsp1_uart5;
-		/*
-		 * Aliases as required by u-boot
-		 * to patch MAC addresses
-		 */
+
 		led-boot = &led_system_red;
 		led-failsafe = &led_system_red;
 		led-running = &led_pwr_green;
 		led-upgrade = &led_system_red;
+
 		ethernet0 = &dp1;
 		ethernet1 = &dp2;
 		ethernet2 = &dp3;
 		ethernet3 = &dp4;
 		ethernet4 = &dp5;
 		ethernet5 = &dp6_syn;
+
 		label-mac-device = &dp1;
 	};
 
@@ -39,8 +40,6 @@
 
 	keys {
 		compatible = "gpio-keys";
-		pinctrl-0 = <&button_pins>;
-		pinctrl-names = "default";
 
 		wps-button {
 			label = "wps";
@@ -57,22 +56,20 @@
 
 	leds {
 		compatible = "gpio-leds";
-		pinctrl-0 = <&leds_pins>;
-		pinctrl-names = "default";
 
-		led_system_green: led-system-green {
+		led_system_green: system-green {
 			gpios = <&tlmm 1 GPIO_ACTIVE_HIGH>;
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_STATUS;
 		};
 
-		led_system_red: led-system-red {
+		led_system_red: system-red {
 			gpios = <&tlmm 3 GPIO_ACTIVE_HIGH>;
 			color = <LED_COLOR_ID_RED>;
 			function = LED_FUNCTION_STATUS;
 		};
 
-		led_pwr_green: led-pwr-green {
+		led_pwr_green: pwr-green {
 			gpios = <&tlmm 4 GPIO_ACTIVE_HIGH>;
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_POWER;
@@ -170,103 +167,13 @@
 	};
 };
 
-&tlmm {
-
-	mdio_pins: mdio-state {
-		mdc-pins {
-			pins = "gpio68";
-			function = "mdc";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		mdio-pins {
-			pins = "gpio69";
-			function = "mdio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
-	button_pins: button-state {
-		wps-pins {
-			pins = "gpio57";
-			function = "gpio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-
-		rst-pins {
-			pins = "gpio67";
-			function = "gpio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
-	leds_pins: leds-state {
-		pins = "gpio1", "gpio3", "gpio4", "gpio6", "gpio7", "gpio8",
-		       "gpio11", "gpio12", "gpio13", "gpio14", "gpio15", "gpio42",
-		       "gpio51", "gpio52", "gpio54", "gpio56";
-		function = "gpio";
-		drive-strength = <8>;
-		bias-pull-down;
-	};
-};
-
-&blsp1_uart5 {
-	status = "okay";
-};
-
-&prng {
-	status = "okay";
-};
-
-&ssphy_0 {
-	status = "okay";
-};
-
-&qusb_phy_0 {
-	status = "okay";
-};
-
-&ssphy_1 {
-	status = "okay";
-};
-
-&qusb_phy_1 {
-	status = "okay";
-};
-
-&usb_0 {
-	status = "okay";
-};
-
-&usb_1 {
-	status = "okay";
-};
-
-&cryptobam {
-	status = "okay";
-};
-
-&crypto {
-	status = "okay";
-};
-
-&qpic_bam {
-	status = "okay";
-};
-
-&blsp1_spi1 { /* BLSP1 QUP1 */
-	pinctrl-0 = <&spi_0_pins>;
-	pinctrl-names = "default";
+&blsp1_spi1 {
 	status = "okay";
 
 	flash@0 {
-		reg = <0>;
 		compatible = "jedec,spi-nor";
 		spi-max-frequency = <50000000>;
+		reg = <0>;
 
 		partitions {
 			compatible = "fixed-partitions";
@@ -275,66 +182,66 @@
 
 			partition@0 {
 				label = "0:sbl1";
-				reg = <0x0 0x50000>;
+				reg = <0x00000000 0x00050000>;
 				read-only;
 			};
 
 			partition@50000 {
 				label = "0:mibib";
-				reg = <0x50000 0x10000>;
+				reg = <0x00050000 0x00010000>;
 				read-only;
 			};
 
 			partition@60000 {
 				label = "0:qsee";
-				reg = <0x60000 0x180000>;
+				reg = <0x00060000 0x00180000>;
 				read-only;
 			};
 
 			partition@1e0000 {
 				label = "0:devcfg";
-				reg = <0x1e0000 0x10000>;
+				reg = <0x001e0000 0x00010000>;
 				read-only;
 			};
 
 			partition@1f0000 {
 				label = "0:apdp";
-				reg = <0x1f0000 0x10000>;
+				reg = <0x001f0000 0x00010000>;
 				read-only;
 			};
 
 			partition@200000 {
 				label = "0:rpm";
-				reg = <0x200000 0x40000>;
+				reg = <0x00200000 0x00040000>;
 				read-only;
 			};
 
 			partition@240000 {
 				label = "0:cdt";
-				reg = <0x240000 0x10000>;
+				reg = <0x00240000 0x00010000>;
 				read-only;
 			};
 
 			partition@250000 {
 				label = "0:appsblenv";
-				reg = <0x250000 0x20000>;
+				reg = <0x00250000 0x00020000>;
 			};
 
 			partition@270000 {
 				label = "0:appsbl";
-				reg = <0x250000 0x100000>;
+				reg = <0x00250000 0x00100000>;
 				read-only;
 			};
 
 			partition@370000 {
 				label = "0:art";
-				reg = <0x370000 0x40000>;
+				reg = <0x00370000 0x00040000>;
 				read-only;
 			};
 
 			partition@3b0000 {
 				label = "0:ethphyfw1";
-				reg = <0x3b0000 0x80000>;
+				reg = <0x003b0000 0x00080000>;
 
 				nvmem-layout {
 					compatible = "fixed-layout";
@@ -342,14 +249,14 @@
 					#size-cells = <1>;
 
 					aqr0_fw: firmware@0 {
-						reg = <0x0 0x5fc02>;
+						reg = <0x00000 0x5fc02>;
 					};
 				};
 			};
 
 			partition@430000 {
 				label = "0:ethphyfw2";
-				reg = <0x430000 0x80000>;
+				reg = <0x00430000 0x00080000>;
 
 				nvmem-layout {
 					compatible = "fixed-layout";
@@ -357,14 +264,14 @@
 					#size-cells = <1>;
 
 					aqr1_fw: firmware@0 {
-						reg = <0x0 0x5fc02>;
+						reg = <0x00000 0x5fc02>;
 					};
 				};
 			};
 
 			partition@4b0000 {
 				label = "reserved";
-				reg = <0x4b0000 0x350000>;
+				reg = <0x004b0000 0x00350000>;
 			};
 		};
 	};
@@ -381,7 +288,7 @@
 		compatible ="ethernet-phy-ieee802.3-c45";
 		reg = <0>;
 		reset-gpios = <&tlmm 44 GPIO_ACTIVE_LOW>;
-		firmware-name = "marvell/AQR-G4_v5.4.C-AQR_CIG_WF-1945_0x0_ID44778_VER1630.cld";
+		firmware-name = "marvell/AQR-G4_v5.4.C-AQR_CIG_WF-1945_0x00000000_ID44778_VER1630.cld";
 		nvmem-cell-names = "firmware";
 		nvmem-cells = <&aqr0_fw>;
 	};
@@ -390,15 +297,15 @@
 		compatible ="ethernet-phy-ieee802.3-c45";
 		reg = <8>;
 		reset-gpios = <&tlmm 59 GPIO_ACTIVE_LOW>;
-		firmware-name = "marvell/AQR-G4_v5.4.C-AQR_CIG_WF-1945_0x8_ID44776_VER1630.cld";
+		firmware-name = "marvell/AQR-G4_v5.4.C-AQR_CIG_WF-1945_0x00000008_ID44776_VER1630.cld";
 		nvmem-cell-names = "firmware";
 		nvmem-cells = <&aqr1_fw>;
 	};
 
 	ethernet-phy-package@16 {
+		compatible = "qcom,qca8075-package";
 		#address-cells = <1>;
 		#size-cells = <0>;
-		compatible = "qcom,qca8075-package";
 		reg = <16>;
 
 		qcom,package-mode = "qsgmii";
@@ -428,10 +335,6 @@
 &sdhc_1 {
 	status = "okay";
 
-	/* According to the stock dts from the QNAP gpl drop
-	 * the emmc has a problem with the hs400 > hs200 speed switch.
-	 * Therefore remove the mmc-hs400-1_8v property
-	*/
 	/delete-property/ mmc-hs400-1_8v;
 	mmc-hs200-1_8v;
 	mmc-ddr-1_8v;
@@ -441,35 +344,40 @@
 &switch {
 	status = "okay";
 
-	switch_lan_bmp = <(ESS_PORT1 | ESS_PORT2 | ESS_PORT3 | ESS_PORT4 | ESS_PORT6)>; /* lan port bitmap */
-	switch_wan_bmp = <ESS_PORT5>; /* wan port bitmap */
-	switch_mac_mode = <MAC_MODE_QSGMII>; /* mac mode for uniphy instance0*/
-	switch_mac_mode1 = <MAC_MODE_USXGMII>; /* mac mode for uniphy instance1*/
-	switch_mac_mode2 = <MAC_MODE_USXGMII>; /* mac mode for uniphy instance2*/
+	switch_lan_bmp = <(ESS_PORT1 | ESS_PORT2 | ESS_PORT3 | ESS_PORT4 | ESS_PORT6)>;
+	switch_wan_bmp = <ESS_PORT5>;
+	switch_mac_mode = <MAC_MODE_QSGMII>;
+	switch_mac_mode1 = <MAC_MODE_USXGMII>;
+	switch_mac_mode2 = <MAC_MODE_USXGMII>;
 
 	qcom,port_phyinfo {
 		port@0 {
 			port_id = <1>;
 			phy_address = <16>;
 		};
+
 		port@1 {
 			port_id = <2>;
 			phy_address = <17>;
 		};
+
 		port@2 {
 			port_id = <3>;
 			phy_address = <18>;
 		};
+
 		port@3 {
 			port_id = <4>;
 			phy_address = <19>;
 		};
+
 		port@4 {
 			port_id = <5>;
 			phy_address = <8>;
 			compatible = "ethernet-phy-ieee802.3-c45";
 			ethernet-phy-ieee802.3-c45;
 		};
+
 		port@5 {
 			port_id = <6>;
 			phy_address = <0>;
@@ -528,6 +436,6 @@
 
 &wifi {
 	status = "okay";
-
+	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "QNAP-301w";
 };

@@ -1,0 +1,44 @@
+--- a/net/mac80211/iface.c
++++ b/net/mac80211/iface.c
+@@ -1300,7 +1300,7 @@ void ieee80211_del_virtual_monitor(struc
+ /* This callback is registered for nss redirect to receive packet exceptioned from nss in Rx path.
+  * When packet does not match any of the ecm rules is redirected back here.
+  */
+-void receive_from_nss(struct net_device *dev, struct sk_buff *sk_buff, struct napi_struct *napi)
++static void receive_from_nss(struct net_device *dev, struct sk_buff *sk_buff, struct napi_struct *napi)
+ {
+ 	struct net_device *netdev;
+ 	struct sk_buff *skb;
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -4567,7 +4567,7 @@ static void ieee80211_mlo_multicast_tx(s
+ }
+ 
+ #ifdef CPTCFG_MAC80211_NSS_SUPPORT
+-void ieee80211_xmit_nss_fixup(struct sk_buff *skb,
++static void ieee80211_xmit_nss_fixup(struct sk_buff *skb,
+ 			      struct net_device *dev)
+ {
+ 	struct ieee80211_sub_if_data *sdata = IEEE80211_DEV_TO_SUB_IF(dev);
+@@ -4813,7 +4813,7 @@ out_free:
+ 	kfree_skb(skb);
+ }
+ 
+-void ieee80211_8023_xmit_ap(struct ieee80211_sub_if_data *sdata,
++static void ieee80211_8023_xmit_ap(struct ieee80211_sub_if_data *sdata,
+ 			    struct net_device *dev, struct sta_info *sta,
+ 			    struct ieee80211_key *key, struct sk_buff *skb,
+ 			    u32 info_flags, u32 ctrl_flags, u64 *cookie)
+--- a/net/mac80211/cfg.c
++++ b/net/mac80211/cfg.c
+@@ -2768,8 +2768,8 @@ static int copy_mesh_setup(struct ieee80
+ 		ifmsh->security |= IEEE80211_MESH_SEC_SECURED;
+ 
+ 	/* mcast rate setting in Mesh Node */
+-	memcpy(sdata->vif.bss_conf.mcast_rate, setup->mcast_rate,
+-						sizeof(setup->mcast_rate));
++	for (i = 0; i < NUM_NL80211_BANDS; i++)
++		sdata->vif.bss_conf.mcast_rate[i] = setup->mcast_rate[i];
+ 	sdata->vif.bss_conf.basic_rates = setup->basic_rates;
+ 
+ 	sdata->vif.bss_conf.beacon_int = setup->beacon_interval;

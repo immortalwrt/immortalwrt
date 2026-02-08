@@ -1,0 +1,86 @@
+# vim: set ft=kconfig
+menu "Qualcomm IPQ Options"
+
+comment "Kernel build options"
+
+choice KERNEL_IPQ_MEM_PROFILE
+	prompt "IPQ memory profile"
+	default IPQ_MEM_PROFILE_1024
+
+	config IPQ_MEM_PROFILE_1024
+			bool "1024"
+	config IPQ_MEM_PROFILE_512
+			bool "512"
+	config IPQ_MEM_PROFILE_256
+			bool "256"
+endchoice
+
+config KERNEL_IPQ_MEM_PROFILE
+	int
+	default 1024 if IPQ_MEM_PROFILE_1024
+	default 512 if IPQ_MEM_PROFILE_512
+	default 256 if IPQ_MEM_PROFILE_256
+
+	help
+	  This option select memory profile to used, which defines
+	  the reserved memory configuration used in device tree
+
+config KERNEL_SKB_RECYCLER
+	bool "Generic SKB recycling"
+	default y if KERNEL_IPQ_MEM_PROFILE > 256
+
+choice KERNEL_SKB_RECYCLE_SIZE
+	prompt "SKB recycler size"
+	default SKB_RECYCLE_SIZE_2304
+	default SKB_RECYCLE_SIZE_1856 if KERNEL_IPQ_MEM_PROFILE < 1024
+
+	depends on KERNEL_SKB_RECYCLER
+	config SKB_RECYCLE_SIZE_1856
+			bool "1856"
+	config SKB_RECYCLE_SIZE_2304
+			bool "2304"
+endchoice
+
+config KERNEL_SKB_RECYCLE_SIZE
+	int
+	depends on KERNEL_SKB_RECYCLER
+	default 2304 if SKB_RECYCLE_SIZE_2304
+	default 1856 if SKB_RECYCLE_SIZE_1856
+
+	help
+	  SKB recycler default size
+
+config KERNEL_SKB_RECYCLER_MULTI_CPU
+	bool "Cross-CPU recycling for CPU-locked workloads"
+	depends on KERNEL_SKB_RECYCLER
+	default y
+
+config KERNEL_SKB_RECYCLER_PREALLOC
+	bool "Enable preallocation of SKBs (For SFE not NSS)"
+	depends on KERNEL_SKB_RECYCLER
+	help
+	  NOTE: This is primarily for platforms utilizing SFE (Shortcut Forwarding Engine)
+	  and not NSS (Network Subsystem) offload.
+
+	  NSS offload platforms mostly utilize the SKB recycling feature when managing memory.
+	  Mostly when to "reclaim" it.
+
+	  This option enables preallocation of SKBs.
+	  The default is '16384' which means 16384 x 4096 (Size of SKB) = 64MB.
+
+config KERNEL_SKB_RECYCLE_MAX_PREALLOC_SKBS
+	int "Number of SKBs to be preallocated"
+	depends on KERNEL_SKB_RECYCLER_PREALLOC
+	default 16384
+
+config KERNEL_SKB_FIXED_SIZE_2K
+	bool "SKB size fixed at 2K"
+	default y if KERNEL_IPQ_MEM_PROFILE < 512
+	help
+	  SKB size fixed at 2K. Primarily for platforms with less than 512MB memory.
+
+config KERNEL_ALLOC_SKB_PAGE_FRAG_DISABLE
+	depends on KERNEL_SKB_RECYCLER
+	bool "Disable alloc skb page frag"
+
+endmenu

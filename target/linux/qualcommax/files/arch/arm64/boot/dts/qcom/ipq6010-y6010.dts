@@ -1,0 +1,16 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+/dts-v1/;
+
+#include "ipq6010-philips.dtsi"
+
+/ {
+	model = "SY Y6010";
+	compatible = "sy,y6010", "qcom,ipq6018";
+};
+
+&wifi {
+	status = "okay";
+	qcom,ath11k-fw-memory-mode = <1>;
+	qcom,ath11k-calibration-variant = "SY-Y6010";
+};

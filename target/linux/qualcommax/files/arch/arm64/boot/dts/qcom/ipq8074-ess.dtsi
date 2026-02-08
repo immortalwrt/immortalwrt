@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
 #include <dt-bindings/net/qcom-ipq-ess.h>
 
@@ -26,8 +26,8 @@
 			compatible = "qcom,ess-switch-ipq807x";
 			reg = <0x3a000000 0x1000000>;
 			switch_access_mode = "local bus";
-			switch_cpu_bmp = <ESS_PORT0>;  /* cpu port bitmap */
-			switch_inner_bmp = <ESS_PORT7>; /*inner port bitmap*/
+			switch_cpu_bmp = <ESS_PORT0>;
+			switch_inner_bmp = <ESS_PORT7>;
 			clocks = <&gcc GCC_CMN_12GPLL_AHB_CLK>,
 				 <&gcc GCC_CMN_12GPLL_SYS_CLK>,
 				 <&gcc GCC_UNIPHY0_AHB_CLK>,
@@ -146,12 +146,12 @@
 				      "nss_port6_rst";
 			mdio-bus = <&mdio>;
 
-			switch_mac_mode = <MAC_MODE_DISABLED>; /* MAC mode for UNIPHY instance 0 */
-			switch_mac_mode1 = <MAC_MODE_DISABLED>; /* MAC mode for UNIPHY instance 1 */
-			switch_mac_mode2 = <MAC_MODE_DISABLED>; /* MAC mode for UNIPHY instance 2 */
+			switch_mac_mode = <MAC_MODE_DISABLED>;
+			switch_mac_mode1 = <MAC_MODE_DISABLED>;
+			switch_mac_mode2 = <MAC_MODE_DISABLED>;
 
-			bm_tick_mode = <0>; /* bm tick mode */
-			tm_tick_mode = <0>; /* tm tick mode */
+			bm_tick_mode = <0>;
+			tm_tick_mode = <0>;
 
 			status = "disabled";
 
@@ -242,7 +242,7 @@
 					port_id = <0>;
 					l1scheduler {
 						group@0 {
-							sp = <0 1>; /*L0 SPs*/
+							sp = <0 1>;
 							/*cpri cdrr epri edrr*/
 							cfg = <0 0 0 0>;
 						};

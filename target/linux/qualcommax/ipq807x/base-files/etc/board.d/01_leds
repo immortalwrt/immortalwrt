@@ -6,6 +6,11 @@ board_config_update
 board=$(board_name)
 
 case "$board" in
+aliyun,ap8220|\
+edgecore,eap102)
+	ucidef_set_led_netdev "wlan2g" "WLAN2G" "2g:status" "phy1-ap0"
+	ucidef_set_led_netdev "wlan5g" "WLAN5G" "5g:status" "phy0-ap0"
+	;;
 arcadyan,aw1000)
 	ucidef_set_led_netdev "5g" "5G" "green:5g" "wwan0"
 	ucidef_set_led_netdev "wan" "WAN" "green:internet" "wan"
@@ -20,9 +25,6 @@ dynalink,dl-wrx36|\
 spectrum,sax1v1k)
 	ucidef_set_led_netdev "wan-port-link-green" "WAN-PORT-LINK-GREEN" "90000.mdio-1:1c:green:wan" "wan" "link_2500"
 	ucidef_set_led_netdev "wan-port-link-yellow" "WAN-PORT-LINK-YELLOW" "90000.mdio-1:1c:yellow:wan" "wan" "tx rx link_10 link_100 link_1000"
-	;;
-edgecore,eap102)
-	ucidef_set_led_netdev "wan" "WAN" "green:wanpoe" "wan"
 	;;
 netgear,rax120v2)
 	ucidef_set_led_netdev "aqr" "AQR" "white:aqr" "lan5"

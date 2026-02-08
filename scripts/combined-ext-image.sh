@@ -9,7 +9,7 @@
 # Write image header followed by all specified files
 # The header is padded to 64k, format is:
 #  CE               magic word ("Combined Extended Image") (2 bytes)
-#  <CE_VERSION>     file format version field (2 bytes) 
+#  <CE_VERSION>     file format version field (2 bytes)
 #  <TYPE>           short description of the target device (32 bytes)
 #  <NUM FILES>      number of files following the header (2 byte)
 #  <file1_name>     name of the first file (32 bytes)
@@ -20,7 +20,7 @@
 #  <fileN_md5>      md5 checksum of the Nth file (32 bytes)
 
 ## version history
-# * version 1: initial file format with num files / name / length / md5 checksum 
+# * version 1: initial file format with num files / name / length / md5 checksum
 
 set -e
 

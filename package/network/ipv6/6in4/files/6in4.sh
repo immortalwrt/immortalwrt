@@ -128,7 +128,7 @@ proto_6in4_setup() {
 		}
 
 		local url="$http://ipv4.tunnelbroker.net/nic/update?hostname=$tunnelid"
-		
+
 		test_6in4_rfc1918 "$ipaddr" && {
 			local url="${url}&myip=${ipaddr}"
 		}

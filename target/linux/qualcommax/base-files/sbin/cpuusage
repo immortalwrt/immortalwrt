@@ -1,0 +1,17 @@
+#!/bin/sh
+# Copyright (C) 2024 YumesomeZakura <1552037053@qq.com>
+
+cpu="$(top -bn1 | awk -F ' ' 'NR==2 {print $2}')"
+output="CPU: ${cpu}"
+
+if [ -f "/sys/kernel/debug/qca-nss-drv/stats/cpu_load_ubi" ]; then
+	hwe="$(cat "/sys/kernel/debug/qca-nss-drv/stats/cpu_load_ubi" | awk -F ' ' 'NR==6 {print $2}')"
+	[ -n "$hwe" ] && output="${output} HWE: ${hwe}"
+fi
+
+if [ -f "/sys/kernel/debug/ecm/ecm_db/connection_count_simple" ]; then
+	ecm="$(cat /sys/kernel/debug/ecm/ecm_db/connection_count_simple)"
+	[ -n "$ecm" ] && output="${output} ECM: ${ecm}"
+fi
+
+echo -n "$output"
