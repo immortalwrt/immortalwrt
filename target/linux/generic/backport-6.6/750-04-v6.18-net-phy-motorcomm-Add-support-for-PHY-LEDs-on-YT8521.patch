@@ -38,7 +38,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
  #define YTPHY_MISC_CONFIG_REG			0xA006
  #define YTPHY_MCR_FIBER_SPEED_MASK		BIT(0)
  #define YTPHY_MCR_FIBER_1000BX			(0x1 << 0)
-@@ -1605,6 +1619,106 @@ err_restore_page:
+@@ -1681,6 +1695,106 @@ err_restore_page:
  	return phy_restore_page(phydev, old_page, ret);
  }
  
@@ -145,7 +145,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
  static int yt8531_config_init(struct phy_device *phydev)
  {
  	struct device_node *node = phydev->mdio.dev.of_node;
-@@ -2278,6 +2392,9 @@ static struct phy_driver motorcomm_phy_d
+@@ -2920,6 +3034,9 @@ static struct phy_driver motorcomm_phy_d
  		.soft_reset	= yt8521_soft_reset,
  		.suspend	= yt8521_suspend,
  		.resume		= yt8521_resume,

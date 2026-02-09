@@ -19,7 +19,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
 --- a/drivers/net/phy/motorcomm.c
 +++ b/drivers/net/phy/motorcomm.c
-@@ -2406,6 +2406,9 @@ static struct phy_driver motorcomm_phy_d
+@@ -3048,6 +3048,9 @@ static struct phy_driver motorcomm_phy_d
  		.get_wol	= ytphy_get_wol,
  		.set_wol	= yt8531_set_wol,
  		.link_change_notify = yt8531_link_change_notify,
