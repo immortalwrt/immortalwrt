@@ -95,7 +95,22 @@ as adding/removing interfaces.
  
  
  #ifndef WPS_PIN_SCAN_IGNORE_SEL_REG
-@@ -401,6 +402,8 @@ static int wpa_supplicant_wps_cred(void
+@@ -371,6 +372,14 @@ static void wpas_wps_remove_dup_network(
+ }
+ 
+ 
++static int wpa_supplicant_wps_m8_rx(void *ctx, const u8 *data,
++				     size_t data_len)
++{
++	struct wpa_supplicant *wpa_s = ctx;
++	return wpas_ucode_wps_m8_rx(wpa_s, data, data_len);
++}
++
++
+ static int wpa_supplicant_wps_cred(void *ctx,
+ 				   const struct wps_credential *cred)
+ {
+@@ -401,6 +410,8 @@ static int wpa_supplicant_wps_cred(void
  	wpa_hexdump_key(MSG_DEBUG, "WPS: Received Credential attribute",
  			cred->cred_attr, cred->cred_attr_len);
  
@@ -104,6 +119,22 @@ as adding/removing interfaces.
  	if (wpa_s->conf->wps_cred_processing == 1)
  		return 0;
  
+@@ -1596,6 +1607,7 @@ int wpas_wps_init(struct wpa_supplicant
+ 	wps->cred_cb = wpa_supplicant_wps_cred;
+ 	wps->event_cb = wpa_supplicant_wps_event;
+ 	wps->rf_band_cb = wpa_supplicant_wps_rf_band;
++	wps->m8_rx_cb = wpa_supplicant_wps_m8_rx;
+ 	wps->cb_ctx = wpa_s;
+ 
+ 	wps->dev.device_name = wpa_s->conf->device_name;
+@@ -1713,6 +1725,7 @@ void wpas_wps_deinit(struct wpa_supplica
+ 	wpabuf_free(wpa_s->wps->dh_pubkey);
+ 	wpabuf_free(wpa_s->wps->dh_privkey);
+ 	wpabuf_free(wpa_s->wps->dev.vendor_ext_m1);
++	wpabuf_free(wpa_s->wps->m7_encr_extra);
+ 	os_free(wpa_s->wps->network_key);
+ 	os_free(wpa_s->wps);
+ 	wpa_s->wps = NULL;
 --- a/hostapd/Makefile
 +++ b/hostapd/Makefile
 @@ -169,9 +169,22 @@ OBJS += ../src/eapol_auth/eapol_auth_sm.
@@ -988,7 +1019,21 @@ as adding/removing interfaces.
  				       MULTI_AP_FRONTHAUL_BSS);
  	wpa_s->multi_ap_ie = 1;
  }
-@@ -6293,6 +6300,7 @@ void supplicant_event(void *ctx, enum wp
+@@ -5500,6 +5507,13 @@ static void wpas_event_rx_mgmt_action(st
+ 	}
+ #endif /* CONFIG_WNM */
+ 
++#if defined(CONFIG_GAS) && defined(CONFIG_DPP)
++	if ((mgmt->u.action.category == WLAN_ACTION_PUBLIC ||
++	     mgmt->u.action.category == WLAN_ACTION_PROTECTED_DUAL) &&
++	    wpas_ucode_dpp_gas_rx(wpa_s, mgmt->sa, payload, plen, freq))
++		return;
++#endif /* CONFIG_GAS && CONFIG_DPP */
++
+ #ifdef CONFIG_GAS
+ 	if ((mgmt->u.action.category == WLAN_ACTION_PUBLIC ||
+ 	     mgmt->u.action.category == WLAN_ACTION_PROTECTED_DUAL) &&
+@@ -6293,6 +6307,7 @@ void supplicant_event(void *ctx, enum wp
  		event_to_string(event), event);
  #endif /* CONFIG_NO_STDOUT_DEBUG */
  
@@ -1014,3 +1059,288 @@ as adding/removing interfaces.
  	gpriv = wpa_s->global->ctrl_iface;
  
  	if (type != WPA_MSG_NO_GLOBAL && gpriv &&
+--- a/src/ap/dpp_hostapd.c
++++ b/src/ap/dpp_hostapd.c
+@@ -23,6 +23,7 @@
+ #include "wpa_auth.h"
+ #include "beacon.h"
+ #include "dpp_hostapd.h"
++#include "ucode.h"
+ 
+ 
+ static void hostapd_dpp_reply_wait_timeout(void *eloop_ctx, void *timeout_ctx);
+@@ -3017,6 +3018,9 @@ void hostapd_dpp_rx_action(struct hostap
+ 	wpa_msg(hapd->msg_ctx, MSG_INFO, DPP_EVENT_RX "src=" MACSTR
+ 		" freq=%u type=%d", MAC2STR(src), freq, type);
+ 
++	if (hostapd_ucode_dpp_rx_action(hapd, src, type, freq, hdr, len + 6))
++		return;
++
+ #ifdef CONFIG_DPP2
+ 	if (dpp_relay_rx_action(hapd->iface->interfaces->dpp,
+ 				src, hdr, buf, len, freq, NULL, NULL,
+@@ -3116,13 +3120,19 @@ void hostapd_dpp_rx_action(struct hostap
+ 
+ struct wpabuf *
+ hostapd_dpp_gas_req_handler(struct hostapd_data *hapd, const u8 *sa,
+-			    const u8 *query, size_t query_len,
++			    u8 dialog_token, const u8 *query, size_t query_len,
+ 			    const u8 *data, size_t data_len)
+ {
+ 	struct dpp_authentication *auth = hapd->dpp_auth;
+ 	struct wpabuf *resp;
+ 
+ 	wpa_printf(MSG_DEBUG, "DPP: GAS request from " MACSTR, MAC2STR(sa));
++
++	resp = hostapd_ucode_dpp_gas_req(hapd, sa, dialog_token,
++					 query, query_len);
++	if (resp)
++		return resp;
++
+ 	eloop_cancel_timeout(hostapd_gas_req_wait, hapd, NULL);
+ 	if (!auth || (!auth->auth_success && !auth->reconfig_success) ||
+ 	    !ether_addr_equal(sa, auth->peer_mac_addr)) {
+--- a/src/ap/dpp_hostapd.h
++++ b/src/ap/dpp_hostapd.h
+@@ -25,7 +25,7 @@ void hostapd_dpp_tx_status(struct hostap
+ 			   const u8 *data, size_t data_len, int ok);
+ struct wpabuf *
+ hostapd_dpp_gas_req_handler(struct hostapd_data *hapd, const u8 *sa,
+-			    const u8 *query, size_t query_len,
++			    u8 dialog_token, const u8 *query, size_t query_len,
+ 			    const u8 *data, size_t data_len);
+ void hostapd_dpp_gas_status_handler(struct hostapd_data *hapd, int ok);
+ int hostapd_dpp_configurator_add(struct hostapd_data *hapd, const char *cmd);
+--- a/src/ap/gas_serv.c
++++ b/src/ap/gas_serv.c
+@@ -1402,8 +1402,8 @@ static void gas_serv_rx_gas_initial_req(
+ 	if (dpp) {
+ 		struct wpabuf *msg;
+ 
+-		msg = hostapd_dpp_gas_req_handler(hapd, sa, pos, slen,
+-						  data, len);
++		msg = hostapd_dpp_gas_req_handler(hapd, sa, dialog_token,
++						  pos, slen, data, len);
+ 		if (!msg)
+ 			return;
+ 		gas_serv_req_dpp_processing(hapd, sa, dialog_token, prot, msg,
+--- a/wpa_supplicant/dpp_supplicant.c
++++ b/wpa_supplicant/dpp_supplicant.c
+@@ -29,6 +29,7 @@
+ #include "scan.h"
+ #include "notify.h"
+ #include "dpp_supplicant.h"
++#include "ucode.h"
+ 
+ 
+ static int wpas_dpp_listen_start(struct wpa_supplicant *wpa_s,
+@@ -4118,6 +4119,9 @@ void wpas_dpp_rx_action(struct wpa_suppl
+ 		return;
+ 	}
+ 	wpa_hexdump(MSG_MSGDUMP, "DPP: Received message attributes", buf, len);
++	if (wpas_ucode_dpp_rx_action(wpa_s, src, type, freq, hdr, len + DPP_HDR_LEN))
++		return;
++
+ 	if (dpp_check_attrs(buf, len) < 0) {
+ 		wpa_msg(wpa_s, MSG_INFO, DPP_EVENT_RX "src=" MACSTR
+ 			" freq=%u type=%d ignore=invalid-attributes",
+--- a/src/ap/wps_hostapd.c
++++ b/src/ap/wps_hostapd.c
+@@ -27,6 +27,7 @@
+ #include "beacon.h"
+ #include "sta_info.h"
+ #include "wps_hostapd.h"
++#include "ucode.h"
+ 
+ 
+ #ifdef CONFIG_WPS_UPNP
+@@ -719,6 +720,17 @@ static int hostapd_wps_cred_cb(void *ctx
+ }
+ 
+ 
++static void hostapd_wps_m7_rx_cb(void *ctx, const u8 *addr,
++				  const u8 *data, size_t data_len,
++				  struct wpabuf **m8_encr_extra,
++				  int *skip_cred)
++{
++	struct hostapd_data *hapd = ctx;
++	hostapd_ucode_wps_m7_rx(hapd, addr, data, data_len,
++				m8_encr_extra, skip_cred);
++}
++
++
+ static void hostapd_wps_reenable_ap_pin(void *eloop_data, void *user_ctx)
+ {
+ 	struct hostapd_data *hapd = eloop_data;
+@@ -1096,6 +1108,7 @@ int hostapd_init_wps(struct hostapd_data
+ 		return -1;
+ 
+ 	wps->cred_cb = hostapd_wps_cred_cb;
++	wps->m7_rx_cb = hostapd_wps_m7_rx_cb;
+ 	wps->event_cb = hostapd_wps_event_cb;
+ 	wps->rf_band_cb = hostapd_wps_rf_band_cb;
+ 	wps->cb_ctx = hapd;
+--- a/src/wps/wps.c
++++ b/src/wps/wps.c
+@@ -182,6 +182,7 @@ void wps_deinit(struct wps_data *data)
+ 	bin_clear_free(data->new_psk, data->new_psk_len);
+ 	wps_device_data_free(&data->peer_dev);
+ 	bin_clear_free(data->new_ap_settings, sizeof(*data->new_ap_settings));
++	wpabuf_free(data->m8_encr_extra);
+ 	dh5_free(data->dh_ctx);
+ 	os_free(data);
+ }
+--- a/src/wps/wps.h
++++ b/src/wps/wps.h
+@@ -850,6 +850,14 @@ struct wps_context {
+ 	/* Whether to send WPA2-PSK passphrase as a passphrase instead of PSK
+ 	 * for WPA3-Personal transition mode needs. */
+ 	bool use_passphrase;
++
++	struct wpabuf *m7_encr_extra;
++
++	void (*m7_rx_cb)(void *ctx, const u8 *addr,
++			 const u8 *data, size_t data_len,
++			 struct wpabuf **m8_encr_extra, int *skip_cred);
++
++	int (*m8_rx_cb)(void *ctx, const u8 *data, size_t data_len);
+ };
+ 
+ struct wps_registrar *
+--- a/src/wps/wps_enrollee.c
++++ b/src/wps/wps_enrollee.c
+@@ -377,14 +377,17 @@ static int wps_build_ap_settings(struct
+ static struct wpabuf * wps_build_m7(struct wps_data *wps)
+ {
+ 	struct wpabuf *msg, *plain;
++	size_t extra_len;
+ 
+ 	wpa_printf(MSG_DEBUG, "WPS: Building Message M7");
+ 
+-	plain = wpabuf_alloc(500 + wps->wps->ap_settings_len);
++	extra_len = wps->wps->m7_encr_extra ?
++		wpabuf_len(wps->wps->m7_encr_extra) : 0;
++	plain = wpabuf_alloc(500 + wps->wps->ap_settings_len + extra_len);
+ 	if (plain == NULL)
+ 		return NULL;
+ 
+-	msg = wpabuf_alloc(1000 + wps->wps->ap_settings_len);
++	msg = wpabuf_alloc(1000 + wps->wps->ap_settings_len + extra_len);
+ 	if (msg == NULL) {
+ 		wpabuf_free(plain);
+ 		return NULL;
+@@ -394,8 +397,16 @@ static struct wpabuf * wps_build_m7(stru
+ 	    wps_build_msg_type(msg, WPS_M7) ||
+ 	    wps_build_registrar_nonce(wps, msg) ||
+ 	    wps_build_e_snonce2(wps, plain) ||
+-	    (wps->wps->ap && wps_build_ap_settings(wps, plain)) ||
+-	    wps_build_key_wrap_auth(wps, plain) ||
++	    (wps->wps->ap && wps_build_ap_settings(wps, plain))) {
++		wpabuf_clear_free(plain);
++		wpabuf_free(msg);
++		return NULL;
++	}
++
++	if (wps->wps->m7_encr_extra)
++		wpabuf_put_buf(plain, wps->wps->m7_encr_extra);
++
++	if (wps_build_key_wrap_auth(wps, plain) ||
+ 	    wps_build_encr_settings(wps, msg, plain) ||
+ 	    wps_build_wfa_ext(msg, 0, NULL, 0, 0) ||
+ 	    wps_build_authenticator(wps, msg)) {
+@@ -1258,8 +1269,22 @@ static enum wps_process_res wps_process_
+ 	wpa_printf(MSG_DEBUG, "WPS: Processing decrypted Encrypted Settings "
+ 		   "attribute");
+ 	if (wps_parse_msg(decrypted, &eattr) < 0 ||
+-	    wps_process_key_wrap_auth(wps, decrypted, eattr.key_wrap_auth) ||
+-	    wps_process_creds(wps, eattr.cred, eattr.cred_len,
++	    wps_process_key_wrap_auth(wps, decrypted, eattr.key_wrap_auth)) {
++		wpabuf_clear_free(decrypted);
++		wps->state = SEND_WSC_NACK;
++		return WPS_CONTINUE;
++	}
++
++	if (wps->wps->m8_rx_cb &&
++	    wps->wps->m8_rx_cb(wps->wps->cb_ctx,
++			       wpabuf_head(decrypted),
++			       wpabuf_len(decrypted))) {
++		wpabuf_clear_free(decrypted);
++		wps->state = WPS_MSG_DONE;
++		return WPS_CONTINUE;
++	}
++
++	if (wps_process_creds(wps, eattr.cred, eattr.cred_len,
+ 			      eattr.num_cred, attr->version2 != NULL) ||
+ 	    wps_process_ap_settings_e(wps, &eattr, decrypted,
+ 				      attr->version2 != NULL)) {
+--- a/src/wps/wps_i.h
++++ b/src/wps/wps_i.h
+@@ -128,6 +128,9 @@ struct wps_data {
+ 
+ 	int multi_ap_backhaul_sta;
+ 	int multi_ap_profile;
++
++	struct wpabuf *m8_encr_extra;
++	int skip_cred;
+ };
+ 
+ 
+--- a/src/wps/wps_registrar.c
++++ b/src/wps/wps_registrar.c
+@@ -2064,14 +2064,17 @@ static struct wpabuf * wps_build_m6(stru
+ static struct wpabuf * wps_build_m8(struct wps_data *wps)
+ {
+ 	struct wpabuf *msg, *plain;
++	size_t extra_len;
+ 
+ 	wpa_printf(MSG_DEBUG, "WPS: Building Message M8");
+ 
+-	plain = wpabuf_alloc(500);
++	extra_len = wps->m8_encr_extra ?
++		wpabuf_len(wps->m8_encr_extra) : 0;
++	plain = wpabuf_alloc(500 + extra_len);
+ 	if (plain == NULL)
+ 		return NULL;
+ 
+-	msg = wpabuf_alloc(1000);
++	msg = wpabuf_alloc(1000 + extra_len);
+ 	if (msg == NULL) {
+ 		wpabuf_free(plain);
+ 		return NULL;
+@@ -2080,9 +2083,19 @@ static struct wpabuf * wps_build_m8(stru
+ 	if (wps_build_version(msg) ||
+ 	    wps_build_msg_type(msg, WPS_M8) ||
+ 	    wps_build_enrollee_nonce(wps, msg) ||
+-	    ((wps->wps->ap || wps->er) && wps_build_cred(wps, plain)) ||
+-	    (!wps->wps->ap && !wps->er && wps_build_ap_settings(wps, plain)) ||
+-	    wps_build_key_wrap_auth(wps, plain) ||
++	    (!wps->skip_cred && (wps->wps->ap || wps->er) &&
++	     wps_build_cred(wps, plain)) ||
++	    (!wps->skip_cred && !wps->wps->ap && !wps->er &&
++	     wps_build_ap_settings(wps, plain))) {
++		wpabuf_clear_free(plain);
++		wpabuf_clear_free(msg);
++		return NULL;
++	}
++
++	if (wps->m8_encr_extra)
++		wpabuf_put_buf(plain, wps->m8_encr_extra);
++
++	if (wps_build_key_wrap_auth(wps, plain) ||
+ 	    wps_build_encr_settings(wps, msg, plain) ||
+ 	    wps_build_wfa_ext(msg, 0, NULL, 0, 0) ||
+ 	    wps_build_authenticator(wps, msg)) {
+@@ -3019,6 +3032,13 @@ static enum wps_process_res wps_process_
+ 		return WPS_CONTINUE;
+ 	}
+ 
++	if (wps->wps->m7_rx_cb)
++		wps->wps->m7_rx_cb(wps->wps->cb_ctx, wps->mac_addr_e,
++				    wpabuf_head(decrypted),
++				    wpabuf_len(decrypted),
++				    &wps->m8_encr_extra,
++				    &wps->skip_cred);
++
+ 	wpabuf_clear_free(decrypted);
+ 
+ 	wps->state = SEND_M8;

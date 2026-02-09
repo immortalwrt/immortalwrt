@@ -56,6 +56,12 @@ bananapi,bpi-r4-poe)
 bananapi,bpi-r4-lite)
 	ucidef_set_led_netdev "sfp0" "sfp0" "green:sfp" "sfp0" "link tx rx"
 	;;
+bazis,ax3000wm)
+	ucidef_set_led_netdev "wanact" "WANACT" "mdio-bus:05:amber:wan" "eth0" "rx tx"
+	ucidef_set_led_netdev "wanlink" "WANLINK" "mdio-bus:05:green:wan" "eth0" "link"
+	ucidef_set_led_netdev "lanlink" "LANLINK" "green:lan" "eth1" "link"
+	ucidef_set_led_netdev "internet" "internet" "blue:wan-online" "wan" "link"
+	;;
 confiabits,mt7981)
 	ucidef_set_led_netdev "lan1" "lan1" "blue:lan-1" "lan1" "link tx rx"
 	ucidef_set_led_netdev "lan2" "lan2" "blue:lan-2" "lan2" "link tx rx"
