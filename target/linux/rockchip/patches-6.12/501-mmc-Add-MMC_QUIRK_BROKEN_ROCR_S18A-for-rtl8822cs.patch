@@ -1,0 +1,60 @@
+From 5ec6234df74247f6526463d06927cf9524230e19 Mon Sep 17 00:00:00 2001
+From: Jensen Huang <jensenhuang@friendlyarm.com>
+Date: Tue, 28 Nov 2023 20:34:57 +0800
+Subject: [PATCH] mmc: Add MMC_QUIRK_BROKEN_ROCR_S18A for rtl8822cs
+
+Signed-off-by: Jensen Huang <jensenhuang@friendlyarm.com>
+---
+ drivers/mmc/core/card.h   | 5 +++++
+ drivers/mmc/core/quirks.h | 3 +++
+ drivers/mmc/core/sdio.c   | 4 ++++
+ include/linux/mmc/card.h  | 1 +
+ 4 files changed, 13 insertions(+)
+
+--- a/drivers/mmc/core/card.h
++++ b/drivers/mmc/core/card.h
+@@ -300,4 +300,9 @@ static inline int mmc_card_no_uhs_ddr50_
+ 	return c->quirks & MMC_QUIRK_NO_UHS_DDR50_TUNING;
+ }
+ 
++static inline int mmc_card_broken_rocr_s18a(const struct mmc_card *c)
++{
++	return c->quirks & MMC_QUIRK_BROKEN_ROCR_S18A;
++}
++
+ #endif
+--- a/drivers/mmc/core/quirks.h
++++ b/drivers/mmc/core/quirks.h
+@@ -207,6 +207,9 @@ static const struct mmc_fixup __maybe_un
+ 			      MMC_QUIRK_LENIENT_FN0 |
+ 			      MMC_QUIRK_BLKSZ_FOR_BYTE_MODE),
+ 
++	SDIO_FIXUP_COMPATIBLE("realtek,rtl8822cs", add_quirk,
++			      MMC_QUIRK_BROKEN_ROCR_S18A),
++
+ 	END_FIXUP
+ };
+ 
+--- a/drivers/mmc/core/sdio.c
++++ b/drivers/mmc/core/sdio.c
+@@ -728,6 +728,10 @@ try_again:
+ 
+ 	card->ocr = ocr_card;
+ 
++	if (mmc_card_broken_rocr_s18a(card)) {
++		rocr &= ~R4_18V_PRESENT;
++	}
++
+ 	/*
+ 	 * If the host and card support UHS-I mode request the card
+ 	 * to switch to 1.8V signaling level.  No 1.8v signalling if
+--- a/include/linux/mmc/card.h
++++ b/include/linux/mmc/card.h
+@@ -296,6 +296,7 @@ struct mmc_card {
+ #define MMC_QUIRK_BROKEN_CACHE_FLUSH	(1<<16)	/* Don't flush cache until the write has occurred */
+ #define MMC_QUIRK_BROKEN_SD_POWEROFF_NOTIFY	(1<<17) /* Disable broken SD poweroff notify support */
+ #define MMC_QUIRK_NO_UHS_DDR50_TUNING	(1<<18) /* Disable DDR50 tuning */
++#define MMC_QUIRK_BROKEN_ROCR_S18A	(1<<19)	/* Disable broken S18A (1) in the R4 response */
+ 
+ 	bool			written_flag;	/* Indicates eMMC has been written since power on */
+ 	bool			reenable_cmdq;	/* Re-enable Command Queue */
