@@ -1,0 +1,10 @@
+--- a/arch/arm64/boot/dts/rockchip/rk3576-nanopi-r76s.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3576-nanopi-r76s.dts
+@@ -783,6 +783,7 @@
+ 	status = "okay";
+ 
+ 	rtl8822cs: wifi@1 {
++		compatible = "realtek,rtl8822cs";
+ 		reg = <1>;
+ 		interrupt-parent = <&gpio0>;
+ 		interrupts = <RK_PB0 IRQ_TYPE_LEVEL_HIGH>;
