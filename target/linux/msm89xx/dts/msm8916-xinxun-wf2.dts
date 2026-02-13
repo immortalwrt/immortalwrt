@@ -1,0 +1,60 @@
+// SPDX-License-Identifier: GPL-2.0-only
+
+/dts-v1/;
+
+#include "msm8916-mifi.dtsi"
+
+/ {
+	model = "ufi-wf2 4G Modem Stick";
+	compatible = "xinxun,wf2", "qcom,msm8916";
+	leds: leds {
+		sim_sel {
+			label = "sim:sel";
+			gpios = <&tlmm 97 GPIO_ACTIVE_HIGH>;
+			default-state = "on";
+		};
+
+		sim_en {
+			label = "sim:en";
+			gpios = <&tlmm 108 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		sim_sel2 {
+			label = "sim:sel2";
+			gpios = <&tlmm 98 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		sim_en2 {
+			label = "sim:en2";
+			gpios = <&tlmm 38 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+	};
+};
+
+&button_restart {
+	gpios = <&tlmm 37 GPIO_ACTIVE_HIGH>;
+};
+
+&led_r {
+	gpios = <&tlmm 31 GPIO_ACTIVE_HIGH>;
+};
+
+&led_g {
+	gpios = <&tlmm 12 GPIO_ACTIVE_HIGH>;
+};
+
+&led_b {
+	gpios = <&tlmm 22 GPIO_ACTIVE_HIGH>;
+};
+
+&button_default {
+	pins = "gpio37";
+	bias-pull-down;
+};
+
+&gpio_leds_default {
+	pins = "gpio12","gpio22","gpio31","gpio38","gpio97","gpio98", "gpio108";
+};

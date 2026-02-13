@@ -1,0 +1,43 @@
+// SPDX-License-Identifier: GPL-2.0-only
+
+/dts-v1/;
+
+#include "msm8916-sp970.dtsi"
+
+/ {
+	model = "gexing-sp970 4G Modem Stick";
+	compatible = "gexing,sp970", "qcom,msm8916";
+	leds: leds {
+		sim_sel {
+			label = "sim:sel";
+			gpios = <&tlmm 114 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+	};
+};
+
+&button_restart {
+	gpios = <&tlmm 107 GPIO_ACTIVE_HIGH>;
+};
+
+&led_b {
+	gpios = <&tlmm 28 GPIO_ACTIVE_HIGH>;
+};
+
+&led_g {
+	gpios = <&tlmm 10 GPIO_ACTIVE_HIGH>;
+};
+
+&led_r {
+	gpios = <&tlmm 9 GPIO_ACTIVE_HIGH>;
+};
+
+&button_default {
+	pins = "gpio107";
+	bias-pull-down;
+};
+
+&gpio_leds_default {
+	pins = "gpio9","gpio10","gpio28","gpio114";
+};
+
