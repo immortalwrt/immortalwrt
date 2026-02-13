@@ -1,0 +1,65 @@
+Index: qcom/msm8916-ufi.dtsi
+===================================================================
+--- a/arch/arm64/boot/dts/qcom/msm8916-ufi.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8916-ufi.dtsi
+@@ -72,6 +72,12 @@
+ 			function = LED_FUNCTION_WAN;
+ 		};
+ 	};
++	usb_id: usb-id {
++		compatible = "linux,extcon-usb-gpio";
++		id-gpio = <&msmgpio 110 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&usb_id_default>;
++	};
+ };
+ 
+ &bam_dmux {
+@@ -111,17 +117,29 @@
+ 	status = "okay";
+ };
+ 
+-&usb {
+-	extcon = <&pm8916_usbin>;
+-	dr_mode = "peripheral";
++//&usb {
++//	extcon = <&pm8916_usbin>;
++//	dr_mode = "peripheral";
++//
++//	status = "okay";
++//};
++
++//&usb_hs_phy {
++//	extcon = <&pm8916_usbin>;
++//};
+ 
++&usb {
+ 	status = "okay";
++	extcon = <&usb_id>, <&usb_id>;
+ };
+ 
+ &usb_hs_phy {
+-	extcon = <&pm8916_usbin>;
++	v1p8-supply = <&pm8916_l7>;
++	v3p3-supply = <&pm8916_l13>;
++	extcon = <&usb_id>;
+ };
+ 
++
+ &smd_rpm_regulators {
+ 	vdd_l1_l2_l3-supply = <&pm8916_s3>;
+ 	vdd_l4_l5_l6-supply = <&pm8916_s4>;
+@@ -237,4 +255,13 @@
+ 		drive-strength = <2>;
+ 		bias-disable;
+ 	};
++	
++	usb_id_default: usb-id-default {
++		pins = "gpio110";
++		function = "gpio";
++
++		drive-strength = <8>;
++		input-enable;
++		bias-pull-up;
++	};
+ };

@@ -1,0 +1,203 @@
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/msm8916-ufi-mf32.dts
+@@ -0,0 +1,189 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++/dts-v1/;
++
++#include "msm8916-ufi.dtsi"
++
++/ {
++	model = "ufi-mf32 4G Modem Stick";
++	compatible = "thwc,ufi-mf32", "qcom,msm8916";
++
++    battery: battery {
++		compatible = "simple-battery";
++		voltage-min-design-microvolt = <3400000>;
++		voltage-max-design-microvolt = <4350000>;
++		charge-full-design-microamp-hours = <2100000>;
++
++		ocv-capacity-celsius = <25>;
++		ocv-capacity-table-0 = < 4327000 100 >,
++			< 4264000 95 >,
++			< 4187000 90 >,
++			< 4119000 85 >,
++			< 4069000 80 >,
++			< 4022000 75 >,
++			< 3964000 70 >,
++			< 9624000 65 >,
++			< 3890000 60 >,
++			< 3853000 55 >,
++			< 3801000 50 >,
++			< 3778000 45 >,
++			< 3769000 40 >,
++			< 3766000 35 >,
++			< 3760000 30 >,
++			< 3721000 25 >,
++			< 3660000 20 >,
++			< 3608000 16 >,
++			< 3579000 13 >,
++			< 3563000 11 >,
++			< 3548000 10 >,
++			< 3531000 9 >,
++			< 3520000 8 >,
++			< 3514000 7 >,
++			< 3502000 6 >,
++			< 3495000 5 >,
++			< 3489000 4 >,
++			< 3475000 3 >,
++			< 3460000 2 >,
++			< 3444000 1 >,
++			< 3400000 0 >;
++	};
++
++	usb_id: usb-id {
++		compatible = "linux,extcon-usb-gpio";
++		id-gpio = <&msmgpio 110 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&usb_id_default>;
++	};
++};
++
++&button_restart {
++	gpios = <&msmgpio 34 GPIO_ACTIVE_LOW>;
++};
++
++&led_r {
++	gpios = <&msmgpio 28 GPIO_ACTIVE_HIGH>;
++};
++
++&led_g {
++	gpios = <&msmgpio 30 GPIO_ACTIVE_HIGH>;
++};
++
++&led_b {
++	gpios = <&msmgpio 29 GPIO_ACTIVE_HIGH>;
++};
++
++&leds {
++	bat_1 {
++		label = "bat_1";
++		color = <LED_COLOR_ID_BLUE>;
++		default-state = "off";
++		gpios = <&msmgpio 19 GPIO_ACTIVE_HIGH>;
++	};
++
++	bat_2 {
++		label = "bat_2";
++		color = <LED_COLOR_ID_BLUE>;
++		default-state = "off";
++		gpios = <&msmgpio 22 GPIO_ACTIVE_HIGH>;
++	};
++
++	bat_3 {
++		label = "bat_3";
++		color = <LED_COLOR_ID_BLUE>;
++		default-state = "off";
++		gpios = <&msmgpio 21 GPIO_ACTIVE_HIGH>;
++	};
++
++	bat_4 {
++		label = "bat_4";
++		color = <LED_COLOR_ID_BLUE>;
++		default-state = "off";
++		gpios = <&msmgpio 20 GPIO_ACTIVE_HIGH>;
++	};
++
++	wifi_s: wifi_s {
++		color = <LED_COLOR_ID_BLUE>;
++		default-state = "off";
++		function = LED_FUNCTION_WLAN;
++		gpios = <&msmgpio 27 GPIO_ACTIVE_HIGH>;
++	};
++};
++
++&mpss {
++	pinctrl-0 = <&sim_ctrl_default>;
++	pinctrl-names = "default";
++};
++
++&button_default {
++	pins = "gpio34";
++	bias-pull-up;
++};
++
++&gpio_leds_default {
++	pins = "gpio19", "gpio20", "gpio21", "gpio22", "gpio27", "gpio28", "gpio29", "gpio30";
++};
++
++&pm8916_bms {
++	status = "okay";
++
++	monitored-battery = <&battery>;
++	power-supplies = <&pm8916_charger>;
++};
++
++&pm8916_charger {
++	status = "okay";
++
++	qcom,vdd-safe = <4380000>;
++	qcom,ibat-safe = <1000000>;
++
++	monitored-battery = <&battery>;
++};
++
++&sdhc_2 {
++	status = "okay";
++
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&sdc2_clk_on &sdc2_cmd_on &sdc2_data_on &sdc2_cd_on>;
++	pinctrl-1 = <&sdc2_clk_off &sdc2_cmd_off &sdc2_data_off &sdc2_cd_off>;
++};
++
++&usb {
++	dr_mode = "otg";
++	extcon = <&pm8916_charger>, <&usb_id>;
++};
++
++&usb_hs_phy {
++	extcon = <&pm8916_charger>;
++};
++
++/* This selects the external SIM card slot by default */
++&msmgpio {
++	sim_ctrl_default: sim-ctrl-default-state {
++		esim-sel-pins {
++			pins = "gpio50", "gpio51";
++			bias-disable;
++			output-low;
++		};
++
++		sim-en-pins {
++			pins = "gpio24";
++			bias-disable;
++			output-low;
++		};
++
++		sim-sel-pins {
++			pins = "gpio49";
++			bias-disable;
++			output-high;
++		};
++	};
++
++	usb_id_default: usb-id-default {
++		pins = "gpio110";
++		function = "gpio";
++
++		drive-strength = <8>;
++		input-enable;
++		bias-pull-up;
++	};
++};
+--- a/arch/arm64/boot/dts/qcom/msm8916-ufi.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8916-ufi.dtsi
+@@ -43,7 +43,7 @@
+ 		};
+ 	};
+ 
+-	leds {
++	leds: leds {
+ 		compatible = "gpio-leds";
+ 
+ 		pinctrl-0 = <&gpio_leds_default>;

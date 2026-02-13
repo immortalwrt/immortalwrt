@@ -1,0 +1,26 @@
+From 688af94b34ce6cd091c714d67b62227912ec504e Mon Sep 17 00:00:00 2001
+From: Nikita Travkin <nikita@trvn.ru>
+Date: Fri, 23 Oct 2020 20:09:14 +0500
+Subject: [PATCH] arm64: dts: qcom: pm8916: Add LBC
+
+Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+---
+ arch/arm64/boot/dts/qcom/pm8916.dtsi | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+--- a/arch/arm64/boot/dts/qcom/pm8916.dtsi
++++ b/arch/arm64/boot/dts/qcom/pm8916.dtsi
+@@ -41,6 +41,13 @@
+ 			};
+ 		};
+ 
++		pm8916_charger: charger@1000 {
++			compatible = "qcom,pm8916-lbc";
++			reg = <0x1000>, <0x1200>, <0x1300>, <0x1600>;
++			interrupts = <0x0 0x13 1 IRQ_TYPE_EDGE_BOTH>;
++			status = "disabled";
++		};
++
+ 		pm8916_usbin: extcon@1300 {
+ 			compatible = "qcom,pm8941-misc";
+ 			reg = <0x1300>;

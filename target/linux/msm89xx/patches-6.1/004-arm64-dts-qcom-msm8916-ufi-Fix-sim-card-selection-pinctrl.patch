@@ -1,0 +1,106 @@
+From eaba416688f4f074ea3bf2ef975c9e2dbb06712b Mon Sep 17 00:00:00 2001
+From: Yang Xiwen <forbidden405@foxmail.com>
+Date: Wed, 1 Mar 2023 16:53:50 +0800
+Subject: [PATCH] arm64: dts: qcom: msm8916-ufi: Fix sim card selection pinctrl
+
+The previous commit mistakenly introduced sim_ctrl_default as pinctrl,
+this is incorrect, the interface for sim card selection varies between
+different devices and should not be placed in the dtsi.
+
+This commit selects external SIM card slot for ufi001c as default.
+uf896 selects the correct SIM card slot automatically, thus does not need
+this pinctrl node.
+
+Fixes: faf69431464b ("arm64: dts: qcom: msm8916-thwc: Add initial device trees")
+Signed-off-by: Yang Xiwen <forbidden405@foxmail.com>
+Signed-off-by: Bjorn Andersson <andersson@kernel.org>
+Link: https://lore.kernel.org/r/tencent_7036BCA256055D05F8C49D86DF7F0E2D1A05@qq.com
+---
+ .../boot/dts/qcom/msm8916-thwc-uf896.dts      |  4 ---
+ .../boot/dts/qcom/msm8916-thwc-ufi001c.dts    | 28 +++++++++++++++++--
+ arch/arm64/boot/dts/qcom/msm8916-ufi.dtsi     | 10 -------
+ 3 files changed, 26 insertions(+), 16 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/msm8916-thwc-uf896.dts b/arch/arm64/boot/dts/qcom/msm8916-thwc-uf896.dts
+index c492db8561904e..82e260375174d1 100644
+--- a/arch/arm64/boot/dts/qcom/msm8916-thwc-uf896.dts
++++ b/arch/arm64/boot/dts/qcom/msm8916-thwc-uf896.dts
+@@ -33,7 +33,3 @@
+ &gpio_leds_default {
+ 	pins = "gpio81", "gpio82", "gpio83";
+ };
+-
+-&sim_ctrl_default {
+-	pins = "gpio1", "gpio2";
+-};
+diff --git a/arch/arm64/boot/dts/qcom/msm8916-thwc-ufi001c.dts b/arch/arm64/boot/dts/qcom/msm8916-thwc-ufi001c.dts
+index 700cf81cbf8c0c..8433c9710b1cfc 100644
+--- a/arch/arm64/boot/dts/qcom/msm8916-thwc-ufi001c.dts
++++ b/arch/arm64/boot/dts/qcom/msm8916-thwc-ufi001c.dts
+@@ -25,6 +25,11 @@
+ 	gpios = <&msmgpio 20 GPIO_ACTIVE_HIGH>;
+ };
+ 
++&mpss {
++	pinctrl-0 = <&sim_ctrl_default>;
++	pinctrl-names = "default";
++};
++
+ &button_default {
+ 	pins = "gpio37";
+ 	bias-pull-down;
+@@ -34,6 +39,25 @@
+ 	pins = "gpio20", "gpio21", "gpio22";
+ };
+ 
+-&sim_ctrl_default {
+-	pins = "gpio1", "gpio2";
++/* This selects the external SIM card slot by default */
++&msmgpio {
++	sim_ctrl_default: sim-ctrl-default-state {
++		esim-sel-pins {
++			pins = "gpio0", "gpio3";
++			bias-disable;
++			output-low;
++		};
++
++		sim-en-pins {
++			pins = "gpio1";
++			bias-disable;
++			output-low;
++		};
++
++		sim-sel-pins {
++			pins = "gpio2";
++			bias-disable;
++			output-high;
++		};
++	};
+ };
+diff --git a/arch/arm64/boot/dts/qcom/msm8916-ufi.dtsi b/arch/arm64/boot/dts/qcom/msm8916-ufi.dtsi
+index 790a9696da9de7..cdf34b74fa8faa 100644
+--- a/arch/arm64/boot/dts/qcom/msm8916-ufi.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8916-ufi.dtsi
+@@ -92,9 +92,6 @@
+ };
+ 
+ &mpss {
+-	pinctrl-0 = <&sim_ctrl_default>;
+-	pinctrl-names = "default";
+-
+ 	status = "okay";
+ };
+ 
+@@ -240,11 +237,4 @@
+ 		drive-strength = <2>;
+ 		bias-disable;
+ 	};
+-
+-	sim_ctrl_default: sim-ctrl-default-state {
+-		function = "gpio";
+-		drive-strength = <2>;
+-		bias-disable;
+-		output-low;
+-	};
+ };
+

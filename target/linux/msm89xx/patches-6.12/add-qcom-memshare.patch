@@ -1,0 +1,14 @@
+diff -ruaN qcom/qcom,memshare.h qcom1/qcom,memshare.h
+--- /dev/null	1970-01-01 08:00:00.000000000 +0800
++++ b/include/dt-bindings/soc/qcom,memshare.h	2025-06-04 20:23:52.000000000 +0800
+@@ -0,0 +1,10 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#ifndef __DT_QCOM_MEMSHARE_H__
++#define __DT_QCOM_MEMSHARE_H__
++
++#define MEMSHARE_PROC_MPSS_V01 0
++#define MEMSHARE_PROC_ADSP_V01 1
++#define MEMSHARE_PROC_WCNSS_V01 2
++
++#endif /* __DT_QCOM_MEMSHARE_H__ */
