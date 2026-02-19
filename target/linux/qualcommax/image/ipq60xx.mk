@@ -1,3 +1,4 @@
+DTS_DIR := $(DTS_DIR)/qcom
 DEVICE_VARS += TPLINK_SUPPORT_STRING
 
 define Build/wax610-netgear-tar
@@ -8,6 +9,17 @@ define Build/wax610-netgear-tar
 	echo "WAX610-610Y_V99.9.9.9" > $@.tmp/version
  	tar -C $@.tmp/ -cf $@ .
 	rm -rf $@.tmp
+endef
+
+define Build/netgear-rbx350-qsdk-ipq-factory
+	$(CP) $(FLASH_SCRIPT) $(KDIR_TMP)/
+
+	echo "VERSION : V5.0.0.0_$(LINUX_VERSION)" > $@.metadata
+	echo "MODEL_ID : $(DEVICE_MODEL)" >> $@.metadata
+
+	$(TOPDIR)/scripts/mkits-qsdk-ipq-image.sh $@.its $(FLASH_SCRIPT) txt $@.metadata ubi $@
+	PATH=$(LINUX_DIR)/scripts/dtc:$(PATH) mkimage -f $@.its $@.new
+	@mv $@.new $@
 endef
 
 define Device/8devices_mango-dvk
@@ -144,6 +156,31 @@ define Device/linksys_mr7500
 		kmod-leds-pwm kmod-phy-aquantia
 endef
 TARGET_DEVICES += linksys_mr7500
+
+define Device/netgear_rbx350
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	SOC := ipq6018
+	DEVICE_VENDOR := Netgear
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	DEVICE_PACKAGES := ipq-wifi-netgear_rbk350
+	FLASH_SCRIPT := netgear_rbx350.bootscript
+	IMAGES += factory.img
+	IMAGE/factory.img := append-ubi | netgear-rbx350-qsdk-ipq-factory
+endef
+
+define Device/netgear_rbr350
+	$(call Device/netgear_rbx350)
+	DEVICE_MODEL := RBR350
+endef
+TARGET_DEVICES += netgear_rbr350
+
+define Device/netgear_rbs350
+	$(call Device/netgear_rbx350)
+	DEVICE_MODEL := RBS350
+endef
+TARGET_DEVICES += netgear_rbs350
 
 define Device/netgear_wax214
 	$(call Device/FitImage)

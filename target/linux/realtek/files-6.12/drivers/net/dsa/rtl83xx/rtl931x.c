@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 
-#include <asm/mach-rtl838x/mach-rtl83xx.h>
+#include <asm/mach-rtl-otto/mach-rtl-otto.h>
 #include <linux/etherdevice.h>
 
 #include "rtl83xx.h"
@@ -385,7 +385,7 @@ irqreturn_t rtl931x_switch_irq(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-void rtl931x_print_matrix(void)
+void rtldsa_931x_print_matrix(void)
 {
 	struct table_reg *r = rtl_table_get(RTL9310_TBL_2, 1);
 
@@ -1830,6 +1830,7 @@ const struct rtldsa_config rtldsa_931x_cfg = {
 	.isr_port_link_sts_chg = RTL931X_ISR_PORT_LINK_STS_CHG,
 	.imr_port_link_sts_chg = RTL931X_IMR_PORT_LINK_STS_CHG,
 	/* imr_glb does not exist on RTL931X */
+	.port_ignore = 0x3f,
 	.vlan_tables_read = rtl931x_vlan_tables_read,
 	.vlan_set_tagged = rtl931x_vlan_set_tagged,
 	.vlan_set_untagged = rtl931x_vlan_set_untagged,
@@ -1845,6 +1846,7 @@ const struct rtldsa_config rtldsa_931x_cfg = {
 	.get_mirror_config = rtldsa_931x_get_mirror_config,
 	.port_rate_police_add = rtldsa_931x_port_rate_police_add,
 	.port_rate_police_del = rtldsa_931x_port_rate_police_del,
+	.print_matrix = rtldsa_931x_print_matrix,
 	.read_l2_entry_using_hash = rtl931x_read_l2_entry_using_hash,
 	.write_l2_entry_using_hash = rtl931x_write_l2_entry_using_hash,
 	.read_cam = rtl931x_read_cam,

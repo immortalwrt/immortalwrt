@@ -107,6 +107,7 @@ platform_do_upgrade() {
 	mercusys,mr90x-v1-ubi|\
 	netis,nx30v2|\
 	netis,nx31|\
+	netis,nx32u|\
 	nokia,ea0326gmp|\
 	openwrt,one|\
 	netcore,n60|\
@@ -134,6 +135,7 @@ platform_do_upgrade() {
 	airpi,ap3000m|\
 	arcadyan,mozart|\
 	glinet,gl-mt2500|\
+	glinet,gl-mt2500-airoha|\
 	glinet,gl-mt6000|\
 	glinet,gl-x3000|\
 	glinet,gl-xe3000|\
@@ -304,6 +306,7 @@ platform_check_image() {
 	mediatek,mt7988a-rfb|\
 	mercusys,mr90x-v1-ubi|\
 	nokia,ea0326gmp|\
+	netis,nx32u|\
 	openwrt,one|\
 	netcore,n60|\
 	netcore,n60-pro|\
@@ -353,6 +356,7 @@ platform_copy_config() {
 	airpi,ap3000m|\
 	arcadyan,mozart|\
 	glinet,gl-mt2500|\
+	glinet,gl-mt2500-airoha|\
 	glinet,gl-mt6000|\
 	glinet,gl-x3000|\
 	glinet,gl-xe3000|\

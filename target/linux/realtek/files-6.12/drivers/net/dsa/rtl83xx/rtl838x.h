@@ -3,7 +3,7 @@
 #ifndef _RTL838X_H
 #define _RTL838X_H
 
-#include <asm/mach-rtl838x/mach-rtl83xx.h>
+#include <asm/mach-rtl-otto/mach-rtl-otto.h>
 #include <net/dsa.h>
 
 /* Register definition */
@@ -1273,6 +1273,7 @@ struct rtldsa_config {
 	int isr_port_link_sts_chg;
 	int imr_port_link_sts_chg;
 	int imr_glb;
+	u8 port_ignore;
 	void (*vlan_tables_read)(u32 vlan, struct rtl838x_vlan_info *info);
 	void (*vlan_set_tagged)(u32 vlan, struct rtl838x_vlan_info *info);
 	void (*vlan_set_untagged)(u32 vlan, u64 portmask);
@@ -1301,6 +1302,7 @@ struct rtldsa_config {
 				    const struct flow_action_entry *act, bool ingress);
 	int (*port_rate_police_del)(struct dsa_switch *ds, int port, struct flow_cls_offload *cls,
 				    bool ingress);
+	void (*print_matrix)(void);
 	u64 (*read_l2_entry_using_hash)(u32 hash, u32 position, struct rtl838x_l2_entry *e);
 	void (*write_l2_entry_using_hash)(u32 hash, u32 pos, struct rtl838x_l2_entry *e);
 	u64 (*read_cam)(int idx, struct rtl838x_l2_entry *e);
@@ -1359,7 +1361,6 @@ struct rtl838x_switch_priv {
 	u8 cpu_port;
 	u8 port_mask;
 	u8 port_width;
-	u8 port_ignore;
 	u64 irq_mask;
 	u32 fib_entries;
 	int l2_bucket_size;

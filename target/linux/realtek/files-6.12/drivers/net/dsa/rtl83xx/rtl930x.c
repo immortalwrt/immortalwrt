@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 
-#include <asm/mach-rtl838x/mach-rtl83xx.h>
+#include <asm/mach-rtl-otto/mach-rtl-otto.h>
 #include <linux/etherdevice.h>
 #include <linux/inetdevice.h>
 
@@ -124,7 +124,7 @@ static enum template_field_id fixed_templates[N_FIXED_TEMPLATES][N_FIXED_FIELDS]
 	},
 };
 
-void rtl930x_print_matrix(void)
+void rtldsa_930x_print_matrix(void)
 {
 	struct table_reg *r = rtl_table_get(RTL9300_TBL_0, 6);
 
@@ -867,7 +867,7 @@ void rtl9300_dump_debug(void)
 	}
 	pr_debug("# %08x %08x %08x %08x %08x\n",
 		 sw_r32(r), sw_r32(r + 4), sw_r32(r + 8), sw_r32(r + 12), sw_r32(r + 16));
-	rtl930x_print_matrix();
+	rtldsa_930x_print_matrix();
 	pr_debug("RTL930X_L2_PORT_SABLK_CTRL: %08x, RTL930X_L2_PORT_DABLK_CTRL %08x\n",
 		 sw_r32(RTL930X_L2_PORT_SABLK_CTRL), sw_r32(RTL930X_L2_PORT_DABLK_CTRL)
 
@@ -2645,6 +2645,7 @@ const struct rtldsa_config rtldsa_930x_cfg = {
 	.isr_port_link_sts_chg = RTL930X_ISR_PORT_LINK_STS_CHG,
 	.imr_port_link_sts_chg = RTL930X_IMR_PORT_LINK_STS_CHG,
 	.imr_glb = RTL930X_IMR_GLB,
+	.port_ignore = 0x3f,
 	.vlan_tables_read = rtl930x_vlan_tables_read,
 	.vlan_set_tagged = rtl930x_vlan_set_tagged,
 	.vlan_set_untagged = rtl930x_vlan_set_untagged,
@@ -2662,6 +2663,7 @@ const struct rtldsa_config rtldsa_930x_cfg = {
 	.get_mirror_config = rtldsa_930x_get_mirror_config,
 	.port_rate_police_add = rtldsa_930x_port_rate_police_add,
 	.port_rate_police_del = rtldsa_930x_port_rate_police_del,
+	.print_matrix = rtldsa_930x_print_matrix,
 	.read_l2_entry_using_hash = rtl930x_read_l2_entry_using_hash,
 	.write_l2_entry_using_hash = rtl930x_write_l2_entry_using_hash,
 	.read_cam = rtl930x_read_cam,

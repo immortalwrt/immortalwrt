@@ -2,7 +2,11 @@ define Device/cznic_turris-mox
   $(call Device/Default-arm64)
   DEVICE_VENDOR := CZ.NIC
   DEVICE_MODEL := Turris MOX
-  DEVICE_PACKAGES := kmod-usb2 kmod-gpio-button-hotplug kmod-rtc-ds1307 kmod-i2c-pxa
+  DEVICE_PACKAGES += kmod-usb2 kmod-usb3 \
+    kmod-rtc-ds1307 kmod-i2c-pxa kmod-dsa kmod-dsa-mv88e6xxx kmod-sfp \
+    kmod-phy-marvell kmod-phy-marvell-10g kmod-ath10k ath10k-board-qca988x \
+    ath10k-firmware-qca988x kmod-mt7915e kmod-mt7915-firmware mwlwifi-firmware-88w8997 \
+    wpad-basic-mbedtls
   SOC := armada-3720
   BOOT_SCRIPT := turris-mox
 endef
@@ -103,6 +107,7 @@ define Device/methode_udpu
   KERNEL_INITRAMFS_SUFFIX := .itb
   DEVICE_PACKAGES += f2fs-tools fdisk kmod-i2c-pxa kmod-hwmon-lm75 kmod-dsa-mv88e6xxx
   DEVICE_IMG_NAME = $$(DEVICE_IMG_PREFIX)-$$(2)
+  FILESYSTEMS := targz
   IMAGES := firmware.tgz
   IMAGE/firmware.tgz := boot-scr | boot-img-ext4 | uDPU-firmware | append-metadata
   BOOT_SCRIPT := udpu
@@ -116,3 +121,12 @@ define Device/methode_edpu
   KERNEL_INITRAMFS := kernel-bin | gzip | fit gzip $$(KDIR)/image-$$(DEVICE_DTS).dtb
 endef
 TARGET_DEVICES += methode_edpu
+
+define Device/ripe_atlas-v5
+  $(call Device/Default-arm64)
+  DEVICE_VENDOR := RIPE
+  DEVICE_MODEL := Atlas v5
+  SOC := armada-3720
+  BOOT_SCRIPT := ripe-atlas
+endef
+TARGET_DEVICES += ripe_atlas-v5

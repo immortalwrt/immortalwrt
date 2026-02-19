@@ -1862,6 +1862,32 @@ define Device/kebidumei_ax3000-u22
 endef
 TARGET_DEVICES += kebidumei_ax3000-u22
 
+define Device/keenetic_kap-630-common
+  DEVICE_DTS_DIR := ../dts
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware \
+		kmod-phy-airoha-en8811h
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  KERNEL_SIZE := 6144k
+  IMAGE_SIZE := 108544k
+  KERNEL := kernel-bin | lzma | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb | \
+	append-squashfs4-fakeroot
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | \
+	append-ubi | check-size | zyimage -d $$(ZYIMAGE_ID) -v "$$(DEVICE_MODEL)"
+endef
+
+define Device/keenetic_kap-630
+  DEVICE_VENDOR := Keenetic
+  DEVICE_MODEL := KAP-630
+  DEVICE_DTS := mt7981b-keenetic-kap-630
+  ZYIMAGE_ID := 0x810630
+  $(call Device/keenetic_kap-630-common)
+endef
+TARGET_DEVICES += keenetic_kap-630
+
 define Device/keenetic_kn-1812-common
   DEVICE_DTS_DIR := ../dts
   DEVICE_PACKAGES := kmod-mt7992-firmware kmod-usb3 \
@@ -2363,6 +2389,15 @@ define Device/netcore_n60-pro
 endef
 TARGET_DEVICES += netcore_n60-pro
 
+define Device/netcraze_nap-630
+  DEVICE_VENDOR := Netcraze
+  DEVICE_MODEL := NAP-630
+  DEVICE_DTS := mt7981b-netcraze-nap-630
+  ZYIMAGE_ID := 0xC10630
+  $(call Device/keenetic_kap-630-common)
+endef
+TARGET_DEVICES += netcraze_nap-630
+
 define Device/netcraze_nc-1812
   DEVICE_VENDOR := Netcraze
   DEVICE_MODEL := NC-1812
@@ -2487,6 +2522,32 @@ define Device/netis_nx31
   ARTIFACT/bl31-uboot.fip := mt7981-bl31-uboot netis_nx31
 endef
 TARGET_DEVICES += netis_nx31
+
+define Device/netis_nx32u
+  DEVICE_VENDOR := netis
+  DEVICE_MODEL := NX32U
+  DEVICE_DTS := mt7981b-netis-nx32u
+  DEVICE_DTS_DIR := ../dts
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  KERNEL_IN_UBI := 1
+  UBOOTENV_IN_UBI := 1
+  IMAGES := sysupgrade.itb
+  KERNEL_INITRAMFS_SUFFIX := -recovery.itb
+  KERNEL := kernel-bin | gzip
+  KERNEL_INITRAMFS := kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
+  IMAGE/sysupgrade.itb := append-kernel | \
+	fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-static-with-rootfs | \
+	append-metadata
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware \
+	kmod-usb3 kmod-usb-ledtrig-usbport automount
+  ARTIFACTS := preloader.bin bl31-uboot.fip
+  ARTIFACT/preloader.bin := mt7981-bl2 spim-nand-ddr3
+  ARTIFACT/bl31-uboot.fip := mt7981-bl31-uboot netis_nx32u
+endef
+TARGET_DEVICES += netis_nx32u
 
 define Device/nokia_ea0326gmp
   DEVICE_VENDOR := Nokia
@@ -2876,6 +2937,25 @@ define Device/tplink_be450
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += tplink_be450
+
+define Device/tplink_eap683-lr
+  DEVICE_VENDOR := TP-Link
+  DEVICE_MODEL := EAP683-LR
+  DEVICE_ALT0_VENDOR := TP-Link
+  DEVICE_ALT0_MODEL := EAP683-UR
+  DEVICE_DTS := mt7986a-tplink-eap683-lr
+  DEVICE_DTS_DIR := ../dts
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7986-firmware mt7986-wo-firmware
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 39424k
+  KERNEL_IN_UBI := 1
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += tplink_eap683-lr
 
 define Device/tplink_re6000xd
   DEVICE_VENDOR := TP-Link

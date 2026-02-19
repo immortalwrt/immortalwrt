@@ -24,7 +24,8 @@ mediatek_setup_interfaces()
 	zbtlink,zbt-z8103ax-c)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" eth1
 		;;
-	acelink,ew-7886cax)
+	acelink,ew-7886cax|\
+	tplink,eap683-lr)
 		ucidef_set_interface_lan "eth0" "dhcp"
 		;;
 	acer,predator-w6|\
@@ -58,6 +59,7 @@ mediatek_setup_interfaces()
 	keenetic,kn-3811|\
 	livinet,zr-3020|\
 	livinet,zr-3020-ubootmod|\
+	netis,nx32u|\
 	qihoo,360t7|\
 	routerich,ax3000|\
 	routerich,ax3000-ubootmod|\
@@ -113,6 +115,8 @@ mediatek_setup_interfaces()
 	cudy,ap3000-v1|\
 	cudy,re3000-v1|\
 	kebidumei,ax3000-u22|\
+	keenetic,kap-630|\
+	netcraze,nap-630|\
 	netgear,eax17|\
 	netgear,wax220|\
 	openfi,6c|\
@@ -135,6 +139,7 @@ mediatek_setup_interfaces()
 	cudy,tr3000-v1|\
 	cudy,tr3000-v1-ubootmod|\
 	glinet,gl-mt2500|\
+	glinet,gl-mt2500-airoha|\
 	glinet,gl-mt3000|\
 	glinet,gl-x3000|\
 	glinet,gl-xe3000|\
@@ -284,6 +289,10 @@ mediatek_setup_macs()
 		label_mac=$(mtd_get_mac_ascii product_info ethaddr)
 		wan_mac=$label_mac
 		lan_mac=$(macaddr_add "$label_mac" 1)
+		;;
+	tplink,eap683-lr)
+		label_mac=$(get_mac_binary "/tmp/factory/default-mac" 0)
+		lan_mac=$label_mac
 		;;
 	tplink,fr365-v1)
 		lan_mac=$(strings /dev/mtd11 | grep 'option macaddr' | awk -F"'" '{print $2}')

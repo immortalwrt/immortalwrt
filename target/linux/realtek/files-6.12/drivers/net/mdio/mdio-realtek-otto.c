@@ -37,12 +37,14 @@
 #define RTMDIO_838X_CMD_WRITE_C22		BIT(2)
 #define RTMDIO_838X_CMD_WRITE_C45		BIT(1) | BIT(2)
 #define RTMDIO_838X_CMD_MASK			GENMASK(2, 0)
+#define RTMDIO_838X_PHY_PATCH_DONE		BIT(15)
 #define RTMDIO_838X_SMI_GLB_CTRL		(0xa100)
 #define RTMDIO_838X_SMI_ACCESS_PHY_CTRL_0	(0xa1b8)
 #define RTMDIO_838X_SMI_ACCESS_PHY_CTRL_1	(0xa1bc)
 #define RTMDIO_838X_SMI_ACCESS_PHY_CTRL_2	(0xa1c0)
 #define RTMDIO_838X_SMI_ACCESS_PHY_CTRL_3	(0xa1c4)
 #define RTMDIO_838X_SMI_POLL_CTRL		(0xa17c)
+#define RTMDIO_838X_SMI_PORT0_5_ADDR_CTRL	(0xa1c8)
 
 #define RTMDIO_839X_CMD_FAIL			BIT(1)
 #define RTMDIO_839X_CMD_READ_C22		0
@@ -76,7 +78,7 @@
 #define RTMDIO_930X_SMI_10G_POLLING_REG0_CFG	(0xCBB4)
 #define RTMDIO_930X_SMI_10G_POLLING_REG9_CFG	(0xCBB8)
 #define RTMDIO_930X_SMI_10G_POLLING_REG10_CFG	(0xCBBC)
-#define RTMDIO_930X_SMI_PORT0_5_ADDR		(0xCB80)
+#define RTMDIO_930X_SMI_PORT0_5_ADDR_CTRL	(0xCB80)
 
 #define RTMDIO_931X_CMD_FAIL			BIT(1)
 #define RTMDIO_931X_CMD_READ_C22		0
@@ -95,12 +97,16 @@
 #define RTMDIO_931X_SMI_INDRT_ACCESS_MMD_CTRL	(0x0C18)
 #define RTMDIO_931X_MAC_L2_GLOBAL_CTRL2		(0x1358)
 #define RTMDIO_931X_SMI_PORT_POLLING_SEL	(0x0C9C)
-#define RTMDIO_931X_SMI_PORT_ADDR		(0x0C74)
+#define RTMDIO_931X_SMI_PORT_ADDR_CTRL		(0x0C74)
 #define RTMDIO_931X_SMI_10GPHY_POLLING_SEL0	(0x0CF0)
 #define RTMDIO_931X_SMI_10GPHY_POLLING_SEL1	(0x0CF4)
 #define RTMDIO_931X_SMI_10GPHY_POLLING_SEL2	(0x0CF8)
 #define RTMDIO_931X_SMI_10GPHY_POLLING_SEL3	(0x0CFC)
 #define RTMDIO_931X_SMI_10GPHY_POLLING_SEL4	(0x0D00)
+
+#define for_each_port(ctrl, addr) \
+	for (int addr = 0; addr < (ctrl)->cfg->cpu_port; addr++) \
+		if ((ctrl)->smi_bus[addr] >= 0)
 
 /*
  * On all Realtek switch platforms the hardware periodically reads the link status of all
@@ -176,13 +182,14 @@ struct rtmdio_ctrl {
 	bool raw[RTMDIO_MAX_PORT];
 	int smi_bus[RTMDIO_MAX_PORT];
 	int smi_addr[RTMDIO_MAX_PORT];
-	struct device_node *dn[RTMDIO_MAX_PORT];
 	bool smi_bus_isc45[RTMDIO_MAX_SMI_BUS];
 };
 
 struct rtmdio_config {
 	int cpu_port;
 	int raw_page;
+	int bus_map_base;
+	int port_map_base;
 	int (*read_mmd_phy)(struct mii_bus *bus, u32 port, u32 addr, u32 reg, u32 *val);
 	int (*read_phy)(struct mii_bus *bus, u32 port, u32 page, u32 reg, u32 *val);
 	int (*reset)(struct mii_bus *bus);
@@ -192,8 +199,6 @@ struct rtmdio_config {
 };
 
 struct rtmdio_phy_info {
-	unsigned int phy_id;
-	bool phy_unknown;
 	int mac_type;
 	bool has_giga_lite;
 	bool has_res_reg;
@@ -503,6 +508,10 @@ static int rtmdio_read(struct mii_bus *bus, int addr, int regnum)
 	if (addr >= ctrl->cfg->cpu_port)
 		return -ENODEV;
 
+	/* prevent WARN_ONCE() during scan */
+	if (ctrl->smi_bus[addr] >=0 && ctrl->smi_bus_isc45[ctrl->smi_bus[addr]] && regnum == 2)
+		return -EIO;
+
 	if (regnum == RTMDIO_PAGE_SELECT && ctrl->page[addr] != ctrl->cfg->raw_page)
 		return ctrl->page[addr];
 
@@ -554,55 +563,50 @@ static int rtmdio_write(struct mii_bus *bus, int addr, int regnum, u16 val)
 	return 0;
 }
 
-static int rtmdio_read_phy_id(struct mii_bus *bus, u8 addr, unsigned int *phy_id)
+static void rtmdio_setup_smi_topology(struct mii_bus *bus)
 {
-	static const int common_mmds[] = {
-		MDIO_MMD_PMAPMD, MDIO_MMD_PCS, MDIO_MMD_AN,
-		MDIO_MMD_VEND1, MDIO_MMD_VEND2
-	};
 	struct rtmdio_ctrl *ctrl = bus->priv;
-	int devid1 = 0, devid2 = 0;
-	unsigned int id = 0;
+	u32 reg, mask, val;
 
-	/* Clause 22 */
-	if (!ctrl->smi_bus_isc45[ctrl->smi_bus[addr]]) {
-		devid1 = rtmdio_read(bus, addr, MDIO_DEVID1);
-		devid2 = rtmdio_read(bus, addr, MDIO_DEVID2);
-		if (devid1 < 0 || devid2 < 0)
-			return -EIO;
+	for_each_port(ctrl, addr) {
+		if (ctrl->cfg->bus_map_base) {
+			reg = (addr / 16) * 4;
+			mask = 0x3 << ((addr % 16) * 2);
+			val = ctrl->smi_bus[addr] << ((addr % 16) * 2);
+			regmap_update_bits(ctrl->map, ctrl->cfg->bus_map_base + reg, mask, val);
+		}
 
-		id = (devid1 << 16) | devid2;
-		if (!id || (id & 0x1fffffff) == 0x1fffffff)
-			return -ENODEV;
-
-		*phy_id = id;
-		return 0;
+		if (ctrl->cfg->port_map_base) {
+			reg = (addr / 6) * 4;
+			mask = 0x1f << ((addr % 6) * 5);
+			val = ctrl->smi_addr[addr] << ((addr % 6) * 5);
+			regmap_update_bits(ctrl->map, ctrl->cfg->port_map_base + reg, mask, val);
+		}
 	}
+}
 
+static u32 rtmdio_get_phy_id(struct phy_device *phydev)
+{
+	if (!phydev)
+		return 0;
 
-	/* Clause 45
-	 * only scan some MMDs which can be considered as common i.e.
-	 * implemented by most PHYs.
-	 */
-	for (int i = 0; i < ARRAY_SIZE(common_mmds); i++) {
-		devid1 = rtmdio_read_c45(bus, addr, common_mmds[i], MDIO_DEVID1);
-		devid2 = rtmdio_read_c45(bus, addr, common_mmds[i], MDIO_DEVID2);
-		if (devid1 < 0 || devid2 < 0)
-			continue;
+	if (phydev->is_c45) {
+		for (int devad = 0; devad < MDIO_MMD_NUM; devad++) {
+			u32 phyid = phydev->c45_ids.device_ids[devad];
 
-		id = (devid1 << 16) | devid2;
-		if (id && id != 0xffffffff) {
-			*phy_id = id;
-			return 0;
+			if (phyid && phyid != 0xffffffff)
+				return phyid;
 		}
 	}
 
-	return -ENODEV;
+	return phydev->phy_id;
 }
 
-static void rtmdio_get_phy_info(struct mii_bus *bus, int addr, struct rtmdio_phy_info *phyinfo)
+static int rtmdio_get_phy_info(struct mii_bus *bus, int addr, struct rtmdio_phy_info *phyinfo)
 {
-	struct rtmdio_ctrl *ctrl = bus->priv;
+	struct phy_device *phydev = mdiobus_get_phy(bus, addr);
+	u32 phyid = rtmdio_get_phy_id(phydev);
+	int ret = 0;
 
 	/*
 	 * Depending on the attached PHY the polling mechanism must be fine tuned. Basically
@@ -610,17 +614,8 @@ static void rtmdio_get_phy_info(struct mii_bus *bus, int addr, struct rtmdio_phy
 	 * features.
 	 */
 	memset(phyinfo, 0, sizeof(*phyinfo));
-	if (ctrl->smi_bus[addr] < 0) {
-		phyinfo->phy_unknown = true;
-		return;
-	}
 
-	if (rtmdio_read_phy_id(bus, addr, &phyinfo->phy_id) < 0) {
-		phyinfo->phy_unknown = true;
-		return;
-	}
-
-	switch(phyinfo->phy_id) {
+	switch(phyid) {
 	case RTMDIO_PHY_AQR113C_A:
 	case RTMDIO_PHY_AQR113C_B:
 	case RTMDIO_PHY_AQR813:
@@ -645,12 +640,29 @@ static void rtmdio_get_phy_info(struct mii_bus *bus, int addr, struct rtmdio_phy
 		phyinfo->poll_lpa_1000 = RTMDIO_PHY_POLL_MMD(31, 0xa414, 11);
 		break;
 	default:
-		phyinfo->phy_unknown = true;
+		pr_warn("skip polling setup for unknown PHY %08x on port %d\n", phyid, addr);
+		ret = -EINVAL;
 		break;
 	}
+
+	return ret;
 }
 
 static int rtmdio_838x_reset(struct mii_bus *bus)
+{
+	struct rtmdio_ctrl *ctrl = bus->priv;
+
+	/*
+	 * PHY_PATCH_DONE enables phy control via SoC. This is required for phy access,
+	 * including patching. Must always be set before the phys are probed.
+	 */
+	regmap_update_bits(ctrl->map, RTMDIO_838X_SMI_GLB_CTRL,
+			   RTMDIO_838X_PHY_PATCH_DONE, RTMDIO_838X_PHY_PATCH_DONE);
+
+	return 0;
+}
+
+static void rtmdio_838x_setup_polling(struct mii_bus *bus)
 {
 	struct rtmdio_ctrl *ctrl = bus->priv;
 	int combo_phy;
@@ -666,13 +678,6 @@ static int rtmdio_838x_reset(struct mii_bus *bus)
 	 */
 	combo_phy = ctrl->smi_bus[24] < 0 ? 0 : BIT(7);
 	regmap_update_bits(ctrl->map, RTMDIO_838X_SMI_GLB_CTRL, BIT(7), combo_phy);
-
-	/*
-	 * Bit 15, PHY_PATCH_DONE, enables phy control via SoC. This is required for phy
-	 * access, including patching. Must always be set before the phys are probed.
-	 */
-	regmap_update_bits(ctrl->map, RTMDIO_838X_SMI_GLB_CTRL, BIT(15), BIT(15));
-	return 0;
 }
 
 static int rtmdio_839x_reset(struct mii_bus *bus)
@@ -696,25 +701,9 @@ static int rtmdio_839x_reset(struct mii_bus *bus)
 static int rtmdio_930x_reset(struct mii_bus *bus)
 {
 	struct rtmdio_ctrl *ctrl = bus->priv;
-	unsigned int reg, mask, val;
+	unsigned int mask, val;
 
-	/* Define bus topology */
-	for (int addr = 0; addr < ctrl->cfg->cpu_port; addr++) {
-		if (ctrl->smi_bus[addr] < 0)
-			continue;
-
-		reg = (addr / 6) * 4;
-		mask = 0x1f << ((addr % 6) * 5);
-		val = ctrl->smi_addr[addr] << (ffs(mask) - 1);
-		regmap_update_bits(ctrl->map, RTMDIO_930X_SMI_PORT0_5_ADDR + reg, mask, val);
-
-		reg = (addr / 16) * 4;
-		mask = 0x3 << ((addr % 16) * 2);
-		val = ctrl->smi_bus[addr] << (ffs(mask) - 1);
-		regmap_update_bits(ctrl->map, RTMDIO_930X_SMI_PORT0_15_POLLING_SEL + reg, mask, val);
-	}
-
-	/* Define c22/c45 bus polling */
+	/* Define C22/C45 bus feature set */
 	for (int addr = 0; addr < RTMDIO_MAX_SMI_BUS; addr++) {
 		mask = BIT(16 + addr);
 		val = ctrl->smi_bus_isc45[addr] ? mask : 0;
@@ -730,17 +719,12 @@ static void rtmdio_930x_setup_polling(struct mii_bus *bus)
 	struct rtmdio_phy_info phyinfo;
 	unsigned int mask, val;
 
-	/* Define PHY specific polling parameters */
-	for (int addr = 0; addr < ctrl->cfg->cpu_port; addr++) {
-		if (ctrl->smi_bus[addr] < 0)
-			continue;
+	regmap_write(ctrl->map, RTMDIO_930X_SMI_MAC_TYPE_CTRL, 0);
 
-		rtmdio_get_phy_info(bus, addr, &phyinfo);
-		if (phyinfo.phy_unknown) {
-			pr_warn("skip polling setup for unknown PHY %08x on port %d\n",
-				phyinfo.phy_id, addr);
+	/* Define PHY specific polling parameters */
+	for_each_port(ctrl, addr) {
+		if (rtmdio_get_phy_info(bus, addr, &phyinfo))
 			continue;
-		}
 
 		/* port MAC type */
 		mask = addr > 23 ? 0x7 << ((addr - 24) * 3 + 12): 0x3 << ((addr / 4) * 2);
@@ -786,49 +770,18 @@ static void rtmdio_930x_setup_polling(struct mii_bus *bus)
 static int rtmdio_931x_reset(struct mii_bus *bus)
 {
 	struct rtmdio_ctrl *ctrl = bus->priv;
-	u32 poll_sel[4] = { 0 };
-	u32 poll_ctrl = 0;
 	u32 c45_mask = 0;
 
-	pr_info("%s called\n", __func__);
 	/* Disable port polling for configuration purposes */
 	regmap_write(ctrl->map, RTMDIO_931X_SMI_PORT_POLLING_CTRL, 0);
 	regmap_write(ctrl->map, RTMDIO_931X_SMI_PORT_POLLING_CTRL + 4, 0);
 	msleep(100);
 
-	/* Mapping of port to phy-addresses on an SMI bus */
-	for (int addr = 0; addr < ctrl->cfg->cpu_port; addr++) {
-		u32 pos;
-
-		if (ctrl->smi_bus[addr] < 0)
-			continue;
-
-		pos = (addr % 6) * 5;
-		regmap_update_bits(ctrl->map, RTMDIO_931X_SMI_PORT_ADDR + (addr / 6) * 4,
-				   0x1f << pos, ctrl->smi_addr[addr] << pos);
-		pos = (addr * 2) % 32;
-		poll_sel[addr / 16] |= ctrl->smi_bus[addr] << pos;
-		poll_ctrl |= BIT(20 + ctrl->smi_bus[addr]);
-	}
-
-	/* Configure which SMI bus is behind which port number */
+	/* Define C22/C45 bus feature set */
 	for (int i = 0; i < RTMDIO_MAX_SMI_BUS; i++) {
-		pr_info("poll sel %d, %08x\n", i, poll_sel[i]);
-		regmap_write(ctrl->map, RTMDIO_931X_SMI_PORT_POLLING_SEL + (i * 4), poll_sel[i]);
-	}
-
-	/* Configure c22/c45 polling (bit 1 of SMI_SETX_FMT_SEL)
-	 *
-	 * NOTE: this seems to be needed before accessing the bus though
-	 * it should only apply to the SMI polling. Not setting c22/c45 here
-	 * apparently causes garbage being read below.
-	 */
-	for (int i = 0; i < RTMDIO_MAX_SMI_BUS; i++) {
-		/* bus is polled in c45 */
 		if (ctrl->smi_bus_isc45[i])
 			c45_mask |= 0x2 << (i * 2);  /* Std. C45, non-standard is 0x3 */
 	}
-	pr_info("%s: c45_mask: %08x", __func__, c45_mask);
 	regmap_update_bits(ctrl->map, RTMDIO_931X_SMI_GLB_CTRL1, GENMASK(7, 0), c45_mask);
 
 	return 0;
@@ -847,19 +800,12 @@ static void rtmdio_931x_setup_polling(struct mii_bus *bus)
 	 * the existing hardware designs (i.e. only equally polled PHYs on
 	 * the same SMI bus or kind of PHYs).
 	 */
-	for (int addr = 0; addr < ctrl->cfg->cpu_port; addr++) {
-		unsigned int mask, val;
+	for_each_port(ctrl, addr) {
 		int smi = ctrl->smi_bus[addr];
+		unsigned int mask, val;
 		
-		if (smi < 0)
+		if (rtmdio_get_phy_info(bus, addr, &phyinfo))
 			continue;
-
-		rtmdio_get_phy_info(bus, addr, &phyinfo);
-		if (phyinfo.phy_unknown) {
-			pr_warn("skip polling setup for unknown PHY %08x on port %d\n",
-				phyinfo.phy_id, addr);
-			continue;
-		}
 
 		mask = val = 0;
 
@@ -925,6 +871,7 @@ static int rtmdio_probe(struct platform_device *pdev)
 	struct rtmdio_ctrl *ctrl;
 	struct device_node *dn;
 	struct mii_bus *bus;
+	u64 mask = 0ULL;
 	int ret, addr;
 
 	bus = devm_mdiobus_alloc_size(dev, sizeof(*ctrl));
@@ -944,24 +891,26 @@ static int rtmdio_probe(struct platform_device *pdev)
 		if (of_property_read_u32(dn, "reg", &addr))
 			continue;
 
-		if (addr >= ctrl->cfg->cpu_port) {
-			pr_err("%s: illegal port number %d\n", __func__, addr);
-			return -ENODEV;
+		if (addr < 0 || addr >= ctrl->cfg->cpu_port) {
+			dev_err(dev, "illegal port number %d\n", addr);
+			of_node_put(dn);
+			return -EINVAL;
 		}
 
 		of_property_read_u32(dn->parent, "reg", &ctrl->smi_bus[addr]);
 		if (of_property_read_u32(dn, "realtek,smi-address", &ctrl->smi_addr[addr]))
 			ctrl->smi_addr[addr] = addr;
 		
-		if (ctrl->smi_bus[addr] >= RTMDIO_MAX_SMI_BUS) {
-			pr_err("%s: illegal SMI bus number %d\n", __func__, ctrl->smi_bus[addr]);
-			return -ENODEV;
+		if (ctrl->smi_bus[addr] < 0 || ctrl->smi_bus[addr] >= RTMDIO_MAX_SMI_BUS) {
+			dev_err(dev, "illegal SMI bus number %d\n", ctrl->smi_bus[addr]);
+			of_node_put(dn);
+			return -EINVAL;
 		}
 
 		if (of_device_is_compatible(dn, "ethernet-phy-ieee802.3-c45"))
 			ctrl->smi_bus_isc45[ctrl->smi_bus[addr]] = true;
 
-		ctrl->dn[addr] = dn;
+		mask |= BIT_ULL(addr);
 	}
 
 	bus->name = "Realtek MDIO bus";
@@ -971,10 +920,12 @@ static int rtmdio_probe(struct platform_device *pdev)
 	bus->read_c45 = rtmdio_read_c45;
 	bus->write_c45 = rtmdio_write_c45;
 	bus->parent = dev;
-	bus->phy_mask = ~0;
+	bus->phy_mask = ~mask;
 	snprintf(bus->id, MII_BUS_ID_SIZE, "realtek-mdio");
 
 	device_set_node(&bus->dev, of_fwnode_handle(dev->of_node));
+
+	rtmdio_setup_smi_topology(bus);
 	ret = devm_mdiobus_register(dev, bus);
 	if (ret)
 		return ret;
@@ -982,23 +933,17 @@ static int rtmdio_probe(struct platform_device *pdev)
 	if (ctrl->cfg->setup_polling)
 		ctrl->cfg->setup_polling(bus);
 
-	for (addr = 0; addr < ctrl->cfg->cpu_port; addr++) {
-		if (ctrl->dn[addr]) {
-			ret = fwnode_mdiobus_register_phy(bus, of_fwnode_handle(ctrl->dn[addr]), addr);
-			if (ret)
-				return ret;
-		}
-	}
-
 	return 0;
 }
 
 static const struct rtmdio_config rtmdio_838x_cfg = {
 	.cpu_port	= 28,
 	.raw_page	= 4095,
+	.port_map_base	= RTMDIO_838X_SMI_PORT0_5_ADDR_CTRL,
 	.read_mmd_phy	= rtmdio_838x_read_mmd_phy,
 	.read_phy	= rtmdio_838x_read_phy,
 	.reset		= rtmdio_838x_reset,
+	.setup_polling	= rtmdio_838x_setup_polling,
 	.write_mmd_phy	= rtmdio_838x_write_mmd_phy,
 	.write_phy	= rtmdio_838x_write_phy,
 };
@@ -1016,6 +961,8 @@ static const struct rtmdio_config rtmdio_839x_cfg = {
 static const struct rtmdio_config rtmdio_930x_cfg = {
 	.cpu_port	= 28,
 	.raw_page	= 4095,
+	.bus_map_base	= RTMDIO_930X_SMI_PORT0_15_POLLING_SEL,
+	.port_map_base	= RTMDIO_930X_SMI_PORT0_5_ADDR_CTRL,
 	.read_mmd_phy	= rtmdio_930x_read_mmd_phy,
 	.read_phy	= rtmdio_930x_read_phy,
 	.reset		= rtmdio_930x_reset,
@@ -1027,6 +974,8 @@ static const struct rtmdio_config rtmdio_930x_cfg = {
 static const struct rtmdio_config rtmdio_931x_cfg = {
 	.cpu_port	= 56,
 	.raw_page	= 8191,
+	.bus_map_base	= RTMDIO_931X_SMI_PORT_POLLING_SEL,
+	.port_map_base	= RTMDIO_931X_SMI_PORT_ADDR_CTRL,
 	.read_mmd_phy	= rtmdio_931x_read_mmd_phy,
 	.read_phy	= rtmdio_931x_read_phy,
 	.reset		= rtmdio_931x_reset,

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 
-#include <asm/mach-rtl838x/mach-rtl83xx.h>
+#include <asm/mach-rtl-otto/mach-rtl-otto.h>
 #include <linux/etherdevice.h>
 #include <linux/iopoll.h>
 #include <net/nexthop.h>
@@ -111,7 +111,7 @@ static enum template_field_id fixed_templates[N_FIXED_TEMPLATES][N_FIXED_FIELDS]
 	},
 };
 
-void rtl838x_print_matrix(void)
+void rtldsa_838x_print_matrix(void)
 {
 	unsigned volatile int *ptr8;
 
@@ -1496,10 +1496,8 @@ static void rtl838x_pie_init(struct rtl838x_switch_priv *priv)
 	/* Delete all present rules */
 	rtl838x_pie_rule_del(priv, 0, priv->n_pie_blocks * PIE_BLOCK_SIZE - 1);
 
-	/* Routing bypasses source port filter: disable write-protection, first */
-	sw_w32_mask(0, 3, RTL838X_INT_RW_CTRL);
+	/* Routing bypasses source port filter */
 	sw_w32_mask(0, 1, RTL838X_DMY_REG27);
-	sw_w32_mask(3, 0, RTL838X_INT_RW_CTRL);
 
 	/* Enable predefined templates 0, 1 and 2 for even blocks */
 	template_selectors = 0 | (1 << 3) | (2 << 6);
@@ -1702,6 +1700,7 @@ const struct rtldsa_config rtldsa_838x_cfg = {
 	.isr_port_link_sts_chg = RTL838X_ISR_PORT_LINK_STS_CHG,
 	.imr_port_link_sts_chg = RTL838X_IMR_PORT_LINK_STS_CHG,
 	.imr_glb = RTL838X_IMR_GLB,
+	.port_ignore = 0x1f,
 	.vlan_tables_read = rtl838x_vlan_tables_read,
 	.vlan_set_tagged = rtl838x_vlan_set_tagged,
 	.vlan_set_untagged = rtl838x_vlan_set_untagged,
@@ -1722,6 +1721,7 @@ const struct rtldsa_config rtldsa_838x_cfg = {
 	.l2_port_new_salrn = rtl838x_l2_port_new_salrn,
 	.l2_port_new_sa_fwd = rtl838x_l2_port_new_sa_fwd,
 	.get_mirror_config = rtldsa_838x_get_mirror_config,
+	.print_matrix = rtldsa_838x_print_matrix,
 	.read_l2_entry_using_hash = rtl838x_read_l2_entry_using_hash,
 	.write_l2_entry_using_hash = rtl838x_write_l2_entry_using_hash,
 	.read_cam = rtl838x_read_cam,
