@@ -20,7 +20,7 @@ function radio_exists(path, macaddr, phy, radio) {
 			continue;
 		if (radio != null && int(s.radio) != radio)
 			continue;
-		if (s.macaddr & lc(s.macaddr) == lc(macaddr))
+		if (s.macaddr && lc(s.macaddr) == lc(macaddr))
 			return true;
 		if (s.phy == phy)
 			return true;
@@ -104,7 +104,6 @@ set ${s}.channel='${channel}'
 set ${s}.htmode='${htmode}'
 set ${s}.country='${country || "CN"}'
 set ${s}.num_global_macaddr='${num_global_macaddr || ''}'
-set ${s}.disabled='0'
 
 set ${si}=wifi-iface
 set ${si}.device='${name}'
@@ -113,6 +112,7 @@ set ${si}.mode='ap'
 set ${si}.ssid='${defaults?.ssid || "ImmortalWrt"}'
 set ${si}.encryption='${defaults?.encryption || encryption}'
 set ${si}.key='${defaults?.key || ""}'
+set ${si}.disabled='0'
 
 `);
 		config[name] = {};
