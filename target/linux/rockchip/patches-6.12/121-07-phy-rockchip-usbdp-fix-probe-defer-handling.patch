@@ -1,0 +1,34 @@
+From: https://github.com/ntbowen
+Date: Sun, 2 Feb 2025 17:00:00 +0800
+Subject: [PATCH] phy: rockchip: usbdp: fix probe defer handling in clock init
+
+The devm_clk_bulk_get_all() function returns a negative error code on
+failure, including -EPROBE_DEFER when a clock provider is not yet ready.
+However, rk_udphy_clk_init() only checks if the return value is less
+than 1 and returns -ENODEV, which prevents the deferred probe mechanism
+from retrying later.
+
+This causes USB initialization to fail on RK3576 boards like Photonicat2
+where the USBDP PHY depends on the 'utmi' clock from u2phy0, which may
+not be ready during the initial probe attempt.
+
+Fix this by properly propagating the error code from devm_clk_bulk_get_all().
+
+---
+ drivers/phy/rockchip/phy-rockchip-usbdp.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+--- a/drivers/phy/rockchip/phy-rockchip-usbdp.c
++++ b/drivers/phy/rockchip/phy-rockchip-usbdp.c
+@@ -431,8 +431,11 @@ static int rk_udphy_clk_init(struct rk_u
+ 	int i;
+ 
+ 	udphy->num_clks = devm_clk_bulk_get_all(dev, &udphy->clks);
+-	if (udphy->num_clks < 1)
++	if (udphy->num_clks < 0)
++		return dev_err_probe(dev, udphy->num_clks,
++				     "failed to get clocks\n");
++	if (udphy->num_clks == 0)
+ 		return -ENODEV;
+ 
+ 	/* used for configure phy reference clock frequency */
