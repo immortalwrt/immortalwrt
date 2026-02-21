@@ -1,0 +1,5 @@
+--- /dev/null
++++ b/drivers/crypto/hisilicon/advca/Makefile
+@@ -0,0 +1,2 @@
++obj-$(CONFIG_CRYPTO_DEV_HISI_ADVCA) += hisi-advca-muc.o
++obj-$(CONFIG_CRYPTO_DEV_HISI_ADVCA) += hisi-advca-sha.o

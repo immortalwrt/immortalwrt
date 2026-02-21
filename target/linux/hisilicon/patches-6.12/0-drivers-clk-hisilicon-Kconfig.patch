@@ -1,0 +1,19 @@
+--- a/drivers/clk/hisilicon/Kconfig
++++ b/drivers/clk/hisilicon/Kconfig
+@@ -37,13 +37,13 @@ config COMMON_CLK_HI3670
+ 	help
+ 	  Build the clock driver for hi3670.
+ 
+-config COMMON_CLK_HI3798CV200
+-	tristate "Hi3798CV200 Clock Driver"
++config COMMON_CLK_HI3798
++	tristate "Hi3798 Clock Driver"
+ 	depends on ARCH_HISI || COMPILE_TEST
+ 	select RESET_HISI
+ 	default ARCH_HISI
+ 	help
+-	  Build the clock driver for hi3798cv200.
++	  Build the clock driver for hi3798.
+ 
+ config COMMON_CLK_HI6220
+ 	bool "Hi6220 Clock Driver"

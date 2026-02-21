@@ -1,0 +1,32 @@
+#!/bin/sh
+
+. /lib/functions.sh
+
+inittab_add_console() {
+    local console
+
+    case $(board_name) in
+    # 匹配你的设备树 compatible 定义的名字
+    *ec6108v9c*)
+        # 海思主线内核的标准串口设备名
+        console="ttyAMA0"
+        ;;
+    *)
+        return
+        ;;
+    esac
+
+    # 如果检测到的 TTY 不是我们定义的，就退出
+    [ "$DEVNAME" != "$console" ] && return
+
+    # 检查 /etc/inittab 是否已经有了该串口的配置，防止重复写入
+    grep -q "^#\{0,1\}${console}::askfirst" "/etc/inittab" && return
+
+    # 追加登录条目：askfirst 表示按 Enter 键才进入 shell，防止启动杂讯乱弹
+    echo -e "\n${console}::askfirst:/usr/libexec/login.sh" >> /etc/inittab
+    
+    # 立即重载 init 进程，使配置生效
+    kill -HUP 1
+}
+
+[ "${ACTION}" = "add" ] && inittab_add_console

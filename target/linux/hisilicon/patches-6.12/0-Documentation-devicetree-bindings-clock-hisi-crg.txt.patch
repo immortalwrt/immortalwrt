@@ -1,0 +1,13 @@
+--- a/Documentation/devicetree/bindings/clock/hisi-crg.txt
++++ b/Documentation/devicetree/bindings/clock/hisi-crg.txt
+@@ -15,6 +15,10 @@ Required Properties:
+   - "hisilicon,hi3519-crg"
+   - "hisilicon,hi3798cv200-crg"
+   - "hisilicon,hi3798cv200-sysctrl"
++  - "hisilicon,hi3798mv100-crg"
++  - "hisilicon,hi3798mv100-sysctrl"
++  - "hisilicon,hi3798mv200-crg"
++  - "hisilicon,hi3798mv200-sysctrl"
+ 
+ - reg: physical base address of the controller and length of memory mapped
+   region.

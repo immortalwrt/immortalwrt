@@ -1,0 +1,14 @@
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -298,6 +298,11 @@ config DAVICOM_PHY
+ 	help
+ 	  Currently supports dm9161e and dm9131
+ 
++config HISI_FESTA_PHY
++	tristate "HiSilicon Festa PHYs"
++	help
++	  Supports the HiSilicon Festa PHYs.
++
+ config ICPLUS_PHY
+ 	tristate "ICPlus PHYs"
+ 	help

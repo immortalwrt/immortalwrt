@@ -1,0 +1,24 @@
+--- a/include/dt-bindings/clock/histb-clock.h
++++ b/include/dt-bindings/clock/histb-clock.h
+@@ -58,6 +58,21 @@
+ #define HISTB_USB3_UTMI_CLK1		48
+ #define HISTB_USB3_PIPE_CLK1		49
+ #define HISTB_USB3_SUSPEND_CLK1		50
++#define HISTB_USB2_UTMI_CLK1		51
++#define HISTB_USB2_2_BUS_CLK		52
++#define HISTB_USB2_2_PHY_CLK		53
++#define HISTB_USB2_2_UTMI_CLK		54
++#define HISTB_USB2_2_UTMI_CLK1		55
++#define HISTB_USB2_2_12M_CLK		56
++#define HISTB_USB2_2_48M_CLK		57
++#define HISTB_USB2_2_OTG_UTMI_CLK	58
++#define HISTB_USB2_2_PHY1_REF_CLK	59
++#define HISTB_USB2_2_PHY2_REF_CLK	60
++#define HISTB_FEPHY_CLK			61
++#define HISTB_GPU_BUS_CLK		62
++#define HISTB_GPU_CORE_CLK		63
++#define HISTB_DMAC_CLK			64
++#define HISTB_MMC_SAP_DLL_MODE_CLK	65
+ 
+ /* clocks provided by mcu CRG */
+ #define HISTB_MCE_CLK			1

@@ -1,0 +1,11 @@
+--- a/drivers/clk/Makefile
++++ b/drivers/clk/Makefile
+@@ -102,7 +102,7 @@ obj-$(CONFIG_CLK_BAIKAL_T1)		+= baikal-t
+ obj-y					+= bcm/
+ obj-$(CONFIG_ARCH_BERLIN)		+= berlin/
+ obj-$(CONFIG_ARCH_DAVINCI)		+= davinci/
+-obj-$(CONFIG_ARCH_HISI)			+= hisilicon/
++obj-y			+= hisilicon/
+ obj-y					+= imgtec/
+ obj-y					+= imx/
+ obj-y					+= ingenic/
