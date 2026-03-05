@@ -2226,18 +2226,15 @@ static void rtpcs_930x_sds_do_rx_calibration_1(struct rtpcs_serdes *sds,
 
 	pr_info("start_1.1.5 LEQ and DFE setting\n");
 
-	/* TODO: make this work for DAC cables of different lengths */
-	/* For a 10GBit serdes wit Fibre, SDS 8 or 9 */
-	if (hw_mode == RTPCS_SDS_MODE_10GBASER ||
-	    hw_mode == RTPCS_SDS_MODE_1000BASEX ||
-	    hw_mode == RTPCS_SDS_MODE_SGMII)
-		rtpcs_sds_write_bits(sds, 0x2e, 0x16,  3,  2, 0x02);
-	else
-		pr_err("%s not PHY-based or SerDes, implement DAC!\n", __func__);
+	/* assume this is equivalent with (PHY_TYPE == SERDES && MEDIA == FIBER_10G) for now */
+	if (hw_mode == RTPCS_SDS_MODE_10GBASER) {
+		rtpcs_sds_write_bits(sds, 0x2e, 0x03, 13, 8, 0x1f);
+		rtpcs_sds_write_bits(sds, 0x2e, 0x00, 13, 13, 0x01);
+		rtpcs_sds_write_bits(sds, 0x2e, 0x16, 14, 8, 0x00);	/* REG0_FILTER_OUT */
+	}
 
-	/* No serdes, check for Aquantia PHYs */
-	rtpcs_sds_write_bits(sds, 0x2e, 0x16,  3,  2, 0x02);
-
+	/* REG0_LEQ_DC_GAIN */
+	rtpcs_sds_write_bits(sds, 0x2e, 0x16,  3,  2, 0x02); /* REG0_LEQ_DC_GAIN, 0x01 for short DACs */
 	rtpcs_sds_write_bits(sds, 0x2e, 0x0f,  6,  0, 0x5f);
 	rtpcs_sds_write_bits(sds, 0x2f, 0x05,  7,  2, 0x1f);
 	rtpcs_sds_write_bits(sds, 0x2e, 0x19,  9,  5, 0x1f);
