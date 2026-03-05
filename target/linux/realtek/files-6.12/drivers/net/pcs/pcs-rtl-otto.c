@@ -2276,7 +2276,7 @@ static void rtpcs_930x_sds_do_rx_calibration_2_3(struct rtpcs_serdes *sds)
 
 	pr_info("start_1.2.3 Foreground Calibration\n");
 
-	while (1) {
+	for (int run = 0; run < 10; run++) {
 		if (sds == even_sds)
 			rtpcs_sds_write(sds, 0x1f, 0x2, 0x2f);		/* REG_DBGO_SEL */
 		else
