@@ -58,7 +58,11 @@ define Device/gateworks_venice
 	gw,imx8mn-gw7902 \
 	gw,imx8mm-gw7903 \
 	gateworks,imx8mp-gw71xx-2x \
+	gateworks,imx8mp-gw72xx-2x \
+	gateworks,imx8mp-gw73xx-2x \
 	gateworks,imx8mp-gw74xx \
+	gateworks,imx8mm-gw75xx-0x \
+	gateworks,imx8mp-gw75xx-2x \
 	gateworks,imx8mm-gw7904 \
 	gateworks,imx8mm-gw7905-0x \
 	gateworks,imx8mp-gw7905-2x
