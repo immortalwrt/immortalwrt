@@ -2571,8 +2571,8 @@ static u32 rtpcs_930x_sds_sym_err_get(struct rtpcs_serdes *sds,
 	switch (hw_mode) {
 	case RTPCS_SDS_MODE_QSGMII:
 	case RTPCS_SDS_MODE_XSGMII:
-		v = rtpcs_sds_read_bits(sds, 0x1, 0x1, 15, 8) << 16;
-		v |= rtpcs_sds_read_bits(sds, 0x1, 0x0, 15, 0);
+		v = rtpcs_sds_read_bits(sds, 0x1, 0x1, 15, 8) << 16;	/* ALL_SYMBOLERR_CNT_NEW_23_16 */
+		v |= rtpcs_sds_read_bits(sds, 0x1, 0x0, 15, 0);		/* ALL_SYMBOLERR_CNT_NEW_15_0 */
 		break;
 
 	case RTPCS_SDS_MODE_USXGMII_10GQXGMII:
@@ -2583,10 +2583,14 @@ static u32 rtpcs_930x_sds_sym_err_get(struct rtpcs_serdes *sds,
 	case RTPCS_SDS_MODE_10GBASER:
 	case RTPCS_SDS_MODE_USXGMII_10GSXGMII:
 		v = rtpcs_sds_read(sds, 0x5, 0x1);
-		return v & 0xff;
+		v &= 0xff;
+		break;
 
 	default:
-		pr_info("%s unsupported PHY-mode\n", __func__);
+		rtpcs_sds_write_bits(sds, 0x1, 24, 2, 0, 0);
+
+		v = rtpcs_sds_read_bits(sds, 0x1, 0x3, 15, 8) << 16;	/* MUX_SYMBOLERR_CNT_NEW_23_16 */
+		v |= rtpcs_sds_read_bits(sds, 0x1, 0x2, 15, 0);		/* MUX_SYMBOLERR_CNT_NEW_15_0 */
 	}
 
 	return v;
