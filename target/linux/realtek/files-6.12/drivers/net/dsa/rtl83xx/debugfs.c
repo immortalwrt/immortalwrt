@@ -160,7 +160,7 @@ static ssize_t rtl838x_common_write(const char __user *buffer, size_t count,
 static ssize_t stp_state_read(struct file *filp, char __user *buffer, size_t count,
 			      loff_t *ppos)
 {
-	struct rtl838x_port *p = filp->private_data;
+	struct rtldsa_port *p = filp->private_data;
 	struct dsa_switch *ds = p->dp->ds;
 	int state = rtldsa_port_get_stp_state(ds->priv, p->dp->index);
 
@@ -173,7 +173,7 @@ static ssize_t stp_state_read(struct file *filp, char __user *buffer, size_t cou
 static ssize_t stp_state_write(struct file *filp, const char __user *buffer,
 			       size_t count, loff_t *ppos)
 {
-	struct rtl838x_port *p = filp->private_data;
+	struct rtldsa_port *p = filp->private_data;
 	u32 value;
 	size_t res = rtl838x_common_write(buffer, count, ppos, &value);
 
@@ -268,6 +268,13 @@ static void l2_table_print_entry(struct seq_file *m, struct rtl838x_switch_priv 
 			   e->vid, e->rvid);
 
 		seq_printf(m, "  port %d age %d", e->port, e->age);
+		if (e->is_trunk) {
+			seq_printf(m, "  trunk %d trunk_members: 0x%08llx non-primary: 0x%08llx primary-port: %d",
+				   e->trunk,
+				   priv->lags_port_members[e->trunk],
+				   priv->lag_non_primary,
+				   priv->lag_primary[e->trunk]);
+		}
 		if (e->is_static)
 			seq_puts(m, " static");
 		if (e->block_da)
@@ -586,7 +593,7 @@ static const struct file_operations rtldsa_vlan_table_fops = {
 static ssize_t age_out_read(struct file *filp, char __user *buffer, size_t count,
 			    loff_t *ppos)
 {
-	struct rtl838x_port *p = filp->private_data;
+	struct rtldsa_port *p = filp->private_data;
 	struct dsa_switch *ds = p->dp->ds;
 	struct rtl838x_switch_priv *priv = ds->priv;
 	int value = sw_r32(priv->r->l2_port_aging_out);
@@ -600,7 +607,7 @@ static ssize_t age_out_read(struct file *filp, char __user *buffer, size_t count
 static ssize_t age_out_write(struct file *filp, const char __user *buffer,
 			     size_t count, loff_t *ppos)
 {
-	struct rtl838x_port *p = filp->private_data;
+	struct rtldsa_port *p = filp->private_data;
 	u32 value;
 	size_t res = rtl838x_common_write(buffer, count, ppos, &value);
 
@@ -622,7 +629,7 @@ static const struct file_operations age_out_fops = {
 static ssize_t port_egress_rate_read(struct file *filp, char __user *buffer, size_t count,
 				     loff_t *ppos)
 {
-	struct rtl838x_port *p = filp->private_data;
+	struct rtldsa_port *p = filp->private_data;
 	struct dsa_switch *ds = p->dp->ds;
 	struct rtl838x_switch_priv *priv = ds->priv;
 	int value;
@@ -641,7 +648,7 @@ static ssize_t port_egress_rate_read(struct file *filp, char __user *buffer, siz
 static ssize_t port_egress_rate_write(struct file *filp, const char __user *buffer,
 				      size_t count, loff_t *ppos)
 {
-	struct rtl838x_port *p = filp->private_data;
+	struct rtldsa_port *p = filp->private_data;
 	struct dsa_switch *ds = p->dp->ds;
 	struct rtl838x_switch_priv *priv = ds->priv;
 	u32 value;
