@@ -24,12 +24,12 @@
 #include <asm/mach-rtl-otto/mach-rtl-otto.h>
 #include "rtl838x_eth.h"
 
-#define RTETH_OWN_CPU		1
-#define RTETH_RX_RING_SIZE	128
-#define RTETH_RX_RINGS		2
-#define RTETH_TX_RING_SIZE	16
-#define RTETH_TX_RINGS		2
-#define RTETH_TX_TRIGGER	0x16
+#define RTETH_OWN_CPU			1
+#define RTETH_RX_RING_SIZE		128
+#define RTETH_RX_RINGS			2
+#define RTETH_TX_RING_SIZE		16
+#define RTETH_TX_RINGS			2
+#define RTETH_TX_TRIGGER(ctrl, ring)	((0x16 >> ring) & ctrl->r->tx_trigger_mask)
 
 #define NOTIFY_EVENTS	10
 #define NOTIFY_BLOCKS	10
@@ -121,47 +121,18 @@ static void rteth_839x_create_tx_header(struct rteth_packet *h, unsigned int des
 		h->cpu_tag[2] |= ((prio & 0x7) | BIT(3)) << 8;
 }
 
-static void rteth_930x_create_tx_header(struct rteth_packet *h, unsigned int dest_port, int prio)
+static void rteth_93xx_create_tx_header(struct rteth_packet *h, unsigned int dest_port, int prio)
 {
 	h->cpu_tag[0] = 0x8000;  /* CPU tag marker */
+	h->cpu_tag[1] = FIELD_PREP(RTL93XX_CPU_TAG1_FWD_MASK, RTL93XX_CPU_TAG1_FWD_PHYSICAL) |
+		        FIELD_PREP(RTL93XX_CPU_TAG1_IGNORE_STP_MASK, 1);
 
-	h->cpu_tag[1] = FIELD_PREP(RTL93XX_CPU_TAG1_FWD_MASK,
-				   RTL93XX_CPU_TAG1_FWD_PHYSICAL);
-	h->cpu_tag[1] |= FIELD_PREP(RTL93XX_CPU_TAG1_IGNORE_STP_MASK, 1);
-	h->cpu_tag[2] = 0;
+	h->cpu_tag[2] = (prio >= 0) ? (BIT(5) | (prio & 0x1f)) << 8 : 0;
 	h->cpu_tag[3] = 0;
-	h->cpu_tag[4] = 0;
-	h->cpu_tag[5] = 0;
-	h->cpu_tag[6] = BIT(dest_port) >> 16;
-	h->cpu_tag[7] = BIT(dest_port) & 0xffff;
-
-	/* Enable (AS_QID) and set priority queue (QID) */
-	if (prio >= 0)
-		h->cpu_tag[2] = (BIT(5) | (prio & 0x1f)) << 8;
-}
-
-static void rteth_931x_create_tx_header(struct rteth_packet *h, unsigned int dest_port, int prio)
-{
-	h->cpu_tag[0] = 0x8000;  /* CPU tag marker */
-
-	h->cpu_tag[1] = FIELD_PREP(RTL93XX_CPU_TAG1_FWD_MASK,
-				   RTL93XX_CPU_TAG1_FWD_PHYSICAL);
-	h->cpu_tag[1] |= FIELD_PREP(RTL93XX_CPU_TAG1_IGNORE_STP_MASK, 1);
-	h->cpu_tag[2] = 0;
-	h->cpu_tag[3] = 0;
-	h->cpu_tag[4] = h->cpu_tag[5] = h->cpu_tag[6] = h->cpu_tag[7] = 0;
-	if (dest_port >= 32) {
-		dest_port -= 32;
-		h->cpu_tag[4] = BIT(dest_port) >> 16;
-		h->cpu_tag[5] = BIT(dest_port) & 0xffff;
-	} else {
-		h->cpu_tag[6] = BIT(dest_port) >> 16;
-		h->cpu_tag[7] = BIT(dest_port) & 0xffff;
-	}
-
-	/* Enable (AS_QID) and set priority queue (QID) */
-	if (prio >= 0)
-		h->cpu_tag[2] = (BIT(5) | (prio & 0x1f)) << 8;
+	h->cpu_tag[4] = BIT_ULL(dest_port) >> 48;
+	h->cpu_tag[5] = BIT_ULL(dest_port) >> 32;
+	h->cpu_tag[6] = BIT_ULL(dest_port) >> 16;
+	h->cpu_tag[7] = BIT_ULL(dest_port) & 0xffff;
 }
 
 struct rtl838x_rx_q {
@@ -925,7 +896,7 @@ static void rteth_tx_timeout(struct net_device *ndev, unsigned int txqueue)
 static int rteth_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 {
 	struct rteth_ctrl *ctrl = netdev_priv(netdev);
-	int slot, len = skb->len, dest_port = -1;
+	int val, slot, len = skb->len, dest_port = -1;
 	int ring = skb_get_queue_mapping(skb);
 	struct device *dev = &ctrl->pdev->dev;
 	struct rteth_packet *packet;
@@ -990,18 +961,16 @@ static int rteth_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 
 	spin_lock(&ctrl->tx_lock);
 
-	/* Before starting TX, prevent a Lexra bus bug on RTL8380 SoCs */
-	if (ctrl->r->family_id == RTL8380_FAMILY_ID) {
-		for (int i = 0; i < 10; i++) {
-			u32 val = sw_r32(ctrl->r->dma_if_ctrl);
-			if ((val & ctrl->r->tx_rx_enable) == ctrl->r->tx_rx_enable)
-				break;
-		}
-	}
+	/*
+	 * Issue send for 1 or 2 triggers. On some SoCs (especially RTL838x) there is a known
+	 * bug, where the hardware sometimes reads empty values from the register. Work around
+	 * that with a poll that checks if TX/RX is enabled in the register.
+	 */
+	if (read_poll_timeout(sw_r32, val, val & ctrl->r->tx_rx_enable,
+			     0, 5000, false, ctrl->r->dma_if_ctrl))
+		dev_warn_once(dev, "DMA interface ctrl register read failed\n");
 
-	/* issue SoC independent send for 1 or 2 triggers with some bit vodoo */
-	sw_w32_mask(0, (RTETH_TX_TRIGGER >> ring) & ctrl->r->tx_trigger_mask,
-		    ctrl->r->dma_if_ctrl);
+	sw_w32(val | RTETH_TX_TRIGGER(ctrl, ring), ctrl->r->dma_if_ctrl);
 
 	netdev->stats.tx_packets++;
 	netdev->stats.tx_bytes += len;
@@ -1204,24 +1173,20 @@ static void rteth_mac_link_up(struct phylink_config *config,
 
 static void rteth_set_mac_hw(struct net_device *dev, u8 *mac)
 {
-	struct rteth_ctrl *ctrl = netdev_priv(dev);
+	u32 mac_lo = (mac[2] << 24) | (mac[3] << 16) | (mac[4] << 8) | mac[5];
+	u32 mac_hi = (mac[0] << 8) | mac[1];
+	struct rteth_ctrl *ctrl;
 	unsigned long flags;
 
+	ctrl = netdev_priv(dev);
 	spin_lock_irqsave(&ctrl->lock, flags);
-	pr_debug("In %s\n", __func__);
-	sw_w32((mac[0] << 8) | mac[1], ctrl->r->mac);
-	sw_w32((mac[2] << 24) | (mac[3] << 16) | (mac[4] << 8) | mac[5], ctrl->r->mac + 4);
 
-	if (ctrl->r->family_id == RTL8380_FAMILY_ID) {
-		/* 2 more registers, ALE/MAC block */
-		sw_w32((mac[0] << 8) | mac[1], RTL838X_MAC_ALE);
-		sw_w32((mac[2] << 24) | (mac[3] << 16) | (mac[4] << 8) | mac[5],
-		       (RTL838X_MAC_ALE + 4));
+	for (int i = 0; i < RTETH_MAX_MAC_REGS; i++)
+		if (ctrl->r->mac_reg[i]) {
+			sw_w32(mac_hi, ctrl->r->mac_reg[i]);
+			sw_w32(mac_lo, ctrl->r->mac_reg[i] + 4);
+		}
 
-		sw_w32((mac[0] << 8) | mac[1], RTL838X_MAC2);
-		sw_w32((mac[2] << 24) | (mac[3] << 16) | (mac[4] << 8) | mac[5],
-		       RTL838X_MAC2 + 4);
-	}
 	spin_unlock_irqrestore(&ctrl->lock, flags);
 }
 
@@ -1416,7 +1381,9 @@ static const struct rteth_config rteth_838x_cfg = {
 	.get_mac_link_spd_sts = rtl838x_get_mac_link_spd_sts,
 	.get_mac_rx_pause_sts = rtl838x_get_mac_rx_pause_sts,
 	.get_mac_tx_pause_sts = rtl838x_get_mac_tx_pause_sts,
-	.mac = RTL838X_MAC,
+	.mac_reg = { RTETH_838X_MAC_ADDR_CTRL,
+		     RTETH_838X_MAC_ADDR_CTRL_ALE,
+		     RTETH_838X_MAC_ADDR_CTRL_MAC },
 	.l2_tbl_flush_ctrl = RTL838X_L2_TBL_FLUSH_CTRL,
 	.update_counter = rteth_83xx_update_counter,
 	.create_tx_header = rteth_838x_create_tx_header,
@@ -1463,7 +1430,7 @@ static const struct rteth_config rteth_839x_cfg = {
 	.get_mac_link_spd_sts = rtl839x_get_mac_link_spd_sts,
 	.get_mac_rx_pause_sts = rtl839x_get_mac_rx_pause_sts,
 	.get_mac_tx_pause_sts = rtl839x_get_mac_tx_pause_sts,
-	.mac = RTL839X_MAC,
+	.mac_reg = { RTETH_839X_MAC_ADDR_CTRL },
 	.l2_tbl_flush_ctrl = RTL839X_L2_TBL_FLUSH_CTRL,
 	.update_counter = rteth_83xx_update_counter,
 	.create_tx_header = rteth_839x_create_tx_header,
@@ -1511,10 +1478,10 @@ static const struct rteth_config rteth_930x_cfg = {
 	.get_mac_link_spd_sts = rtl930x_get_mac_link_spd_sts,
 	.get_mac_rx_pause_sts = rtl930x_get_mac_rx_pause_sts,
 	.get_mac_tx_pause_sts = rtl930x_get_mac_tx_pause_sts,
-	.mac = RTL930X_MAC_L2_ADDR_CTRL,
+	.mac_reg = { RTETH_930X_MAC_L2_ADDR_CTRL },
 	.l2_tbl_flush_ctrl = RTL930X_L2_TBL_FLUSH_CTRL,
 	.update_counter = rteth_93xx_update_counter,
-	.create_tx_header = rteth_930x_create_tx_header,
+	.create_tx_header = rteth_93xx_create_tx_header,
 	.decode_tag = rteth_930x_decode_tag,
 	.hw_reset = &rteth_93xx_hw_reset,
 	.init_mac = &rteth_930x_init_mac,
@@ -1559,10 +1526,10 @@ static const struct rteth_config rteth_931x_cfg = {
 	.get_mac_link_spd_sts = rtl931x_get_mac_link_spd_sts,
 	.get_mac_rx_pause_sts = rtl931x_get_mac_rx_pause_sts,
 	.get_mac_tx_pause_sts = rtl931x_get_mac_tx_pause_sts,
-	.mac = RTL931X_MAC_L2_ADDR_CTRL,
+	.mac_reg = { RTETH_930X_MAC_L2_ADDR_CTRL },
 	.l2_tbl_flush_ctrl = RTL931X_L2_TBL_FLUSH_CTRL,
 	.update_counter = rteth_93xx_update_counter,
-	.create_tx_header = rteth_931x_create_tx_header,
+	.create_tx_header = rteth_93xx_create_tx_header,
 	.decode_tag = rteth_931x_decode_tag,
 	.hw_reset = &rteth_93xx_hw_reset,
 	.init_mac = &rteth_931x_init_mac,
@@ -1668,12 +1635,12 @@ static int rtl838x_eth_probe(struct platform_device *pdev)
 	if (is_valid_ether_addr(mac_addr)) {
 		rteth_set_mac_hw(dev, mac_addr);
 	} else {
-		mac_addr[0] = (sw_r32(ctrl->r->mac) >> 8) & 0xff;
-		mac_addr[1] = sw_r32(ctrl->r->mac) & 0xff;
-		mac_addr[2] = (sw_r32(ctrl->r->mac + 4) >> 24) & 0xff;
-		mac_addr[3] = (sw_r32(ctrl->r->mac + 4) >> 16) & 0xff;
-		mac_addr[4] = (sw_r32(ctrl->r->mac + 4) >> 8) & 0xff;
-		mac_addr[5] = sw_r32(ctrl->r->mac + 4) & 0xff;
+		mac_addr[0] = (sw_r32(ctrl->r->mac_reg[0]) >> 8) & 0xff;
+		mac_addr[1] = sw_r32(ctrl->r->mac_reg[0]) & 0xff;
+		mac_addr[2] = (sw_r32(ctrl->r->mac_reg[0] + 4) >> 24) & 0xff;
+		mac_addr[3] = (sw_r32(ctrl->r->mac_reg[0] + 4) >> 16) & 0xff;
+		mac_addr[4] = (sw_r32(ctrl->r->mac_reg[0] + 4) >> 8) & 0xff;
+		mac_addr[5] = sw_r32(ctrl->r->mac_reg[0] + 4) & 0xff;
 	}
 	dev_addr_set(dev, mac_addr);
 	/* if the address is invalid, use a random value */
