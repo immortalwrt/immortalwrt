@@ -1,0 +1,232 @@
+--- /dev/null
++++ b/arch/arm/boot/dts/hisilicon/hi3798mv100.dtsi
+@@ -0,0 +1,229 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/*
++ * Copyright (c) 2023 David Yang
++ */
++
++#include <dt-bindings/pinctrl/hisi.h>
++#include "hi3798-s5.dtsi"
++
++#define PINCTRL_REG(i) ((i) * 4)
++
++/* value, enable bits, disable bits, mask */
++#define PINCTRL_PULLDOWN(value, enable, disable, mask) \
++	(value << 12) (enable << 12) (disable << 12) (mask << 12)
++#define PINCTRL_PULLUP(value, enable, disable, mask) \
++	(value << 12) (enable << 12) (disable << 12) (mask << 12)
++#define PINCTRL_SLEW_RATE(value, mask)    (value << 8) (mask << 8)
++#define PINCTRL_DRV_STRENGTH(value, mask) (value << 9) (mask << 9)
++
++/ {
++	compatible = "hisilicon,hi3798mv100";
++};
++
++&soc {
++	eth0: ethernet@9840000 {
++		compatible = "hisilicon,hisi-femac-v2";
++		reg = <0x9840000 0x1000>, <0x9841300 0x200>;
++		interrupts = <GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&crg HISTB_ETH0_MAC_CLK>;
++		resets = <&crg 0xcc 4>, <&crg 0x120 4>;
++		reset-names = "mac", "phy";
++		status = "disabled";
++
++		phy-handle = <&phy1>;
++		phy-mode = "mii";
++		hisilicon,phy-reset-delays-us = <10000 10000 20000>;
++	};
++
++	mdio0: mdio@9841100 {
++		compatible = "hisilicon,hisi-femac-mdio";
++		reg = <0x9841100 0x10>;
++		clocks = <&crg HISTB_FEPHY_CLK>;
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		phy1: phy@1 {
++			reg = <1>;
++			/* Placeholder, overwritten by bootloader */
++			mac-address = [00 00 00 00 00 00];
++		};
++	};
++};
++
++&crg {
++	compatible = "hisilicon,hi3798mv100-crg", "hisilicon,cpuctrl", "syscon", "simple-mfd";
++};
++
++&sysctrl {
++	compatible = "hisilicon,hi3798mv100-sysctrl", "syscon";
++};
++
++&pmx0 {
++	pinctrl-single,gpio-range = <
++		&range  8 3 2  /* GPIO0_0..2 */
++		&range 79 1 0  /* GPIO0_3 */
++		&range 21 4 5  /* GPIO0_4..7 */
++		&range 25 1 5  /* GPIO2_0 */
++		&range 54 1 2  /* GPIO2_1 */
++		&range 55 2 0  /* GPIO2_2..3 */
++		&range 78 1 1  /* GPIO2_5 */
++		&range 31 1 6  /* GPIO2_6 */
++		&range 32 1 1  /* GPIO2_7 */
++		&range 57 8 0  /* GPIO3_0..7 */
++		&range 80 2 0  /* GPIO4_0..1 */
++		&range 43 1 2  /* GPIO4_2 */
++		&range 44 1 0  /* GPIO4_3 */
++		&range 45 4 2  /* GPIO4_4..7 */
++		&range 82 8 0  /* GPIO6_0..7 */
++	>;
++
++	emmc {
++		emmc_data: emmc-data {
++			pinctrl-single,pins = <
++				PINCTRL_REG(0) MUX_M1  /* SDIO1_CDATA7 */
++				PINCTRL_REG(1) MUX_M1  /* SDIO1_CDATA6 */
++				PINCTRL_REG(2) MUX_M1  /* SDIO1_CDATA5 */
++				PINCTRL_REG(3) MUX_M1  /* SDIO1_CDATA4 */
++				PINCTRL_REG(4) MUX_M1  /* SDIO1_CDATA3 */
++				PINCTRL_REG(5) MUX_M1  /* SDIO1_CDATA2 */
++				PINCTRL_REG(6) MUX_M1  /* SDIO1_CDATA1 */
++				PINCTRL_REG(7) MUX_M1  /* SDIO1_CDATA0 */
++			>;
++		};
++
++		emmc_detect: emmc-detect {
++			pinctrl-single,pins = <
++				PINCTRL_REG(8) MUX_M1  /* SDIO1_CARD_DETECT */
++				PINCTRL_REG(9) MUX_M1  /* SDIO1_CARD_POWER_EN */
++			>;
++		};
++
++		emmc_cwpr: emmc-cwpr {
++			pinctrl-single,pins = <
++				PINCTRL_REG(10) MUX_M1  /* SDIO1_CWPR */
++			>;
++		};
++
++		emmc_ccmd: emmc-ccmd {
++			pinctrl-single,pins = <
++				PINCTRL_REG(11) MUX_M1  /* SDIO1_CCMD */
++			>;
++		};
++
++		emmc_cclk_out: emmc-cclk-out {
++			pinctrl-single,pins = <
++				PINCTRL_REG(12) MUX_M1  /* SDIO1_CCLK_OUT */
++			>;
++		};
++
++		emmc_rst: emmc-rst {
++			pinctrl-single,pins = <
++				PINCTRL_REG(13) MUX_M1  /* SDIO1_RST */
++			>;
++		};
++	};
++
++	hdmi {
++		hdmi_hotplug: hdmi-hotplug {
++			pinctrl-single,pins = <
++				PINCTRL_REG(47) MUX_M1  /* HDMITX_HOTPLUG */
++			>;
++		};
++	};
++};
++
++/*
++ * Don't just copy gpio-ranges
++ * Some GPIO pins cannot coexist with other peripherals; check datasheet
++ * or pray for a proper bootloader
++ */
++&gpio0 {
++/*
++	gpio-ranges = <
++		&pmx0 0  8 3
++		&pmx0 3 79 1
++		&pmx0 4 21 4
++	>;
++*/
++	gpio-line-names =
++		"GPIO0_0", "GPIO0_1", "GPIO0_2", "GPIO0_3",
++		"GPIO0_4", "GPIO0_5", "GPIO0_6", "GPIO0_7";
++};
++
++&gpio2 {
++/*
++	gpio-ranges = <
++		&pmx0 0 25 1
++		&pmx0 1 54 1
++		&pmx0 2 55 2
++		&pmx0 5 78 1
++		&pmx0 6 31 2
++	>;
++*/
++	gpio-line-names =
++		"GPIO2_0", "GPIO2_1", "GPIO2_2", "GPIO2_3",
++		"", "GPIO2_5", "GPIO2_6", "GPIO2_7";
++};
++
++&gpio3 {
++/*
++	gpio-ranges = <
++		&pmx0 0 57 8
++	>;
++*/
++	gpio-line-names =
++		"GPIO3_0", "GPIO3_1", "GPIO3_2", "GPIO3_3",
++		"GPIO3_4", "GPIO3_5", "GPIO3_6", "GPIO3_7";
++};
++
++&gpio4 {
++/*
++	gpio-ranges = <
++		&pmx0 0 80 2
++		&pmx0 2 43 6
++	>;
++*/
++	gpio-line-names =
++		"GPIO4_0", "GPIO4_1", "GPIO4_2", "GPIO4_3",
++		"GPIO4_4", "GPIO4_5", "GPIO4_6", "GPIO4_7";
++	status = "okay";
++};
++
++&gpio5 {
++	gpio-line-names =
++		"GPIO5_0", "GPIO5_1", "GPIO5_2", "",
++		"", "GPIO5_5", "GPIO5_6", "";
++};
++
++&gpio6 {
++/*
++	gpio-ranges = <
++		&pmx0 0 82 8
++	>;
++*/
++	gpio-line-names =
++		"GPIO6_0", "GPIO6_1", "GPIO6_2", "GPIO6_3",
++		"GPIO6_4", "GPIO6_5", "GPIO6_6", "GPIO6_7";
++};
++
++&hdmi {
++	pinctrl-names = "default";
++	pinctrl-0 = <&hdmi_hotplug>;
++};
++
++&dmac {
++	status = "okay";
++};
++
++&usb2_phy1 {
++	status = "okay";
++};
++
++&usb2_phy2 {
++	status = "okay";
++};
++
++&wdt0 {
++	status = "okay";
++};

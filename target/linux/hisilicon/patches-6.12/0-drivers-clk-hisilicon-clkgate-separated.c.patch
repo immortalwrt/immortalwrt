@@ -1,0 +1,98 @@
+--- a/drivers/clk/hisilicon/clkgate-separated.c
++++ b/drivers/clk/hisilicon/clkgate-separated.c
+@@ -11,15 +11,15 @@
+ 
+ #include <linux/kernel.h>
+ #include <linux/clk-provider.h>
++#include <linux/device.h>
+ #include <linux/io.h>
+-#include <linux/slab.h>
+ 
+ #include "clk.h"
+ 
+ /* clock separated gate register offset */
+-#define CLKGATE_SEPERATED_ENABLE		0x0
+-#define CLKGATE_SEPERATED_DISABLE		0x4
+-#define CLKGATE_SEPERATED_STATUS		0x8
++#define CLKGATE_SEPARATED_ENABLE		0x0
++#define CLKGATE_SEPARATED_DISABLE		0x4
++#define CLKGATE_SEPARATED_STATUS		0x8
+ 
+ struct clkgate_separated {
+ 	struct clk_hw	hw;
+@@ -40,7 +40,7 @@ static int clkgate_separated_enable(stru
+ 		spin_lock_irqsave(sclk->lock, flags);
+ 	reg = BIT(sclk->bit_idx);
+ 	writel_relaxed(reg, sclk->enable);
+-	readl_relaxed(sclk->enable + CLKGATE_SEPERATED_STATUS);
++	readl_relaxed(sclk->enable + CLKGATE_SEPARATED_STATUS);
+ 	if (sclk->lock)
+ 		spin_unlock_irqrestore(sclk->lock, flags);
+ 	return 0;
+@@ -56,8 +56,8 @@ static void clkgate_separated_disable(st
+ 	if (sclk->lock)
+ 		spin_lock_irqsave(sclk->lock, flags);
+ 	reg = BIT(sclk->bit_idx);
+-	writel_relaxed(reg, sclk->enable + CLKGATE_SEPERATED_DISABLE);
+-	readl_relaxed(sclk->enable + CLKGATE_SEPERATED_STATUS);
++	writel_relaxed(reg, sclk->enable + CLKGATE_SEPARATED_DISABLE);
++	readl_relaxed(sclk->enable + CLKGATE_SEPARATED_STATUS);
+ 	if (sclk->lock)
+ 		spin_unlock_irqrestore(sclk->lock, flags);
+ }
+@@ -68,7 +68,7 @@ static int clkgate_separated_is_enabled(
+ 	u32 reg;
+ 
+ 	sclk = container_of(hw, struct clkgate_separated, hw);
+-	reg = readl_relaxed(sclk->enable + CLKGATE_SEPERATED_STATUS);
++	reg = readl_relaxed(sclk->enable + CLKGATE_SEPARATED_STATUS);
+ 	reg &= BIT(sclk->bit_idx);
+ 
+ 	return reg ? 1 : 0;
+@@ -80,17 +80,18 @@ static const struct clk_ops clkgate_sepa
+ 	.is_enabled	= clkgate_separated_is_enabled,
+ };
+ 
+-struct clk *hisi_register_clkgate_sep(struct device *dev, const char *name,
+-				      const char *parent_name,
+-				      unsigned long flags,
+-				      void __iomem *reg, u8 bit_idx,
+-				      u8 clk_gate_flags, spinlock_t *lock)
++struct clk_hw *
++devm_clk_hw_register_hisi_gate_sep(struct device *dev, const char *name,
++				   const char *parent_name,
++				   unsigned long flags,
++				   void __iomem *reg, u8 bit_idx,
++				   u8 clk_gate_flags, spinlock_t *lock)
+ {
+ 	struct clkgate_separated *sclk;
+-	struct clk *clk;
+ 	struct clk_init_data init;
++	int ret;
+ 
+-	sclk = kzalloc(sizeof(*sclk), GFP_KERNEL);
++	sclk = devm_kzalloc(dev, sizeof(*sclk), GFP_KERNEL);
+ 	if (!sclk)
+ 		return ERR_PTR(-ENOMEM);
+ 
+@@ -100,14 +101,15 @@ struct clk *hisi_register_clkgate_sep(st
+ 	init.parent_names = (parent_name ? &parent_name : NULL);
+ 	init.num_parents = (parent_name ? 1 : 0);
+ 
+-	sclk->enable = reg + CLKGATE_SEPERATED_ENABLE;
++	sclk->enable = reg + CLKGATE_SEPARATED_ENABLE;
+ 	sclk->bit_idx = bit_idx;
+ 	sclk->flags = clk_gate_flags;
+ 	sclk->hw.init = &init;
+ 	sclk->lock = lock;
+ 
+-	clk = clk_register(dev, &sclk->hw);
+-	if (IS_ERR(clk))
+-		kfree(sclk);
+-	return clk;
++	ret = devm_clk_hw_register(dev, &sclk->hw);
++	if (ret)
++		return ERR_PTR(ret);
++
++	return &sclk->hw;
+ }

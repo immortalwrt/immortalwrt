@@ -1,0 +1,12 @@
+--- a/arch/arm/boot/dts/hisilicon/Makefile
++++ b/arch/arm/boot/dts/hisilicon/Makefile
+@@ -6,7 +6,8 @@ dtb-$(CONFIG_ARCH_HIP01) += \
+ dtb-$(CONFIG_ARCH_HIP04) += \
+ 	hip04-d01.dtb
+ dtb-$(CONFIG_ARCH_HISI) += \
+-	hi3519-demb.dtb
++	hi3519-demb.dtb \
++	hi3798mv100-ec6108v9c.dtb
+ dtb-$(CONFIG_ARCH_HIX5HD2) += \
+ 	hisi-x5hd2-dkb.dtb
+ dtb-$(CONFIG_ARCH_SD5203) += \
