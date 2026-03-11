@@ -1649,6 +1649,7 @@ define Device/fortinet_fap-220-b
   FACTORY_IMG_NAME := FAP22B-9.99-AP-build999-999999-patch99
   DEVICE_PACKAGES := -uboot-envtools kmod-usb-ohci kmod-usb2 \
 	kmod-owl-loader
+  DEFAULT := n
 endef
 TARGET_DEVICES += fortinet_fap-220-b
 
