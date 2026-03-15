@@ -1,0 +1,40 @@
+From e086664e6a570630e8feba889482f174a9a8715e Mon Sep 17 00:00:00 2001
+From: Alexander Couzens <lynxis@fe80.eu>
+Date: Tue, 10 Feb 2026 13:42:26 +0100
+Subject: [PATCH] lexer: fix a minor memleak in jp_get_token()/match_token()
+
+jp_get_token() is using a stack allocated jp_opcode op and
+is not using jp_alloc_op() or jp_free().
+
+jp_get_token() is calling match_token() which might assign op->str
+and allocate it via strdup().
+
+Fixes: TOB-OWRT-3
+Reported-by: Trail of Bits
+Signed-off-by: Alexander Couzens <lynxis@fe80.eu>
+---
+ lexer.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+--- a/lexer.c
++++ b/lexer.c
+@@ -506,6 +506,7 @@ struct jp_opcode *
+ jp_get_token(struct jp_state *s, const char *input, int *mlen)
+ {
+ 	struct jp_opcode op = { 0 };
++	struct jp_opcode *newop;
+ 
+ 	*mlen = match_token(input, &op, s);
+ 
+@@ -519,5 +520,10 @@ jp_get_token(struct jp_state *s, const c
+ 		return NULL;
+ 	}
+ 
+-	return jp_alloc_op(s, op.type, op.num, op.str, NULL);
++	newop = jp_alloc_op(s, op.type, op.num, op.str, NULL);
++	/* match_token might alloced str using strdup() */
++	if (op.str)
++		free(op.str);
++
++	return newop;
+ }
