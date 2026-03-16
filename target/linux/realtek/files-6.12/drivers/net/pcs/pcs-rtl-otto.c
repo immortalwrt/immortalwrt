@@ -2610,8 +2610,6 @@ static int rtpcs_930x_sds_check_calibration(struct rtpcs_serdes *sds,
 	errors2 = rtpcs_930x_sds_sym_err_get(sds, hw_mode);
 
 	switch (hw_mode) {
-	case RTPCS_SDS_MODE_1000BASEX:
-	case RTPCS_SDS_MODE_SGMII:
 	case RTPCS_SDS_MODE_XSGMII:
 		if ((errors2 - errors1 > 100) ||
 		    (errors1 >= 0xffff00) || (errors2 >= 0xffff00)) {
@@ -2619,16 +2617,12 @@ static int rtpcs_930x_sds_check_calibration(struct rtpcs_serdes *sds,
 			return 1;
 		}
 		break;
-	case RTPCS_SDS_MODE_10GBASER:
-	case RTPCS_SDS_MODE_USXGMII_10GSXGMII:
-	case RTPCS_SDS_MODE_USXGMII_10GQXGMII:
+	default:
 		if (errors2 > 0) {
-			pr_info("%s: 10G error rate too high\n", __func__);
+			pr_info("%s: symbol error rate too high\n", __func__);
 			return 1;
 		}
 		break;
-	default:
-		return 1;
 	}
 
 	return 0;
