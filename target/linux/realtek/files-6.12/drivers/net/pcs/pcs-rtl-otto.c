@@ -2664,26 +2664,27 @@ static void rtpcs_930x_phy_enable_10g_1g(struct rtpcs_serdes *sds)
 static int rtpcs_930x_sds_10g_idle(struct rtpcs_serdes *sds)
 {
 	struct rtpcs_serdes *even_sds = rtpcs_sds_get_even(sds);
-	bool busy;
-	int i = 0;
+	ktime_t timeout;
+	int bit, busy;
+
+	bit = (sds == even_sds) ? 0 : 1;
+	timeout = ktime_add_us(ktime_get(), 10000); /* timeout after 10 msecs */
 
 	do {
-		if (sds == even_sds) {
-			rtpcs_sds_write_bits(sds, 0x1f, 0x2, 15, 0, 53);
-			busy = !!rtpcs_sds_read_bits(sds, 0x1f, 0x14, 0, 0);
-		} else {
-			rtpcs_sds_write_bits(even_sds, 0x1f, 0x2, 15, 0, 53);
-			busy = !!rtpcs_sds_read_bits(even_sds, 0x1f, 0x14, 1, 1);
-		}
-		i++;
-	} while (busy && i < 100);
+		rtpcs_sds_write(even_sds, 0x1f, 0x2, 53);
+		busy = rtpcs_sds_read_bits(even_sds, 0x1f, 0x14, bit, bit);
+		if (busy < 0)
+			return busy;
 
-	if (i < 100)
-		return 0;
+		if (!busy)
+			return 0;
 
-	pr_warn("%s WARNING: Waiting for RX idle timed out, SDS %d\n",
+		usleep_range(100, 200); /* wait ~100 usecs before retry */
+	} while (ktime_before(ktime_get(), timeout));
+
+	pr_warn("%s: WARNING Waiting for RX idle timed out, SDS %d\n",
 		__func__, sds->id);
-	return -EIO;
+	return -ETIMEDOUT;
 }
 
 static int rtpcs_930x_sds_set_polarity(struct rtpcs_serdes *sds,
