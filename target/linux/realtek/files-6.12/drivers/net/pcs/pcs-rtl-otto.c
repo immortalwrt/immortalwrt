@@ -1981,11 +1981,7 @@ static u32 rtpcs_930x_sds_rxcal_leq_read(struct rtpcs_serdes *sds)
 	u32 leq_gray, leq_bin;
 	bool leq_manual;
 
-	if (sds == even_sds)
-		rtpcs_sds_write(sds, 0x1f, 0x2, 0x2f);		/* REG_DBGO_SEL */
-	else
-		rtpcs_sds_write(even_sds, 0x1f, 0x2, 0x31);	/* REG_DBGO_SEL */
-
+	rtpcs_sds_write(even_sds, 0x1f, 0x2, (sds == even_sds) ? 0x2f : 0x31); /* REG_DBGO_SEL */
 	rtpcs_sds_write_bits(sds, 0x2e, 0x15, 9, 9, 0x1);	/* REG0_RX_EN_TEST */
 	rtpcs_sds_write_bits(sds, 0x21, 0x06, 11, 6, 0x10);	/* REG0_RX_DEBUG_SEL */
 	mdelay(1);
@@ -2020,11 +2016,7 @@ static void rtpcs_930x_sds_rxcal_vth_get(struct rtpcs_serdes *sds,
 	struct rtpcs_serdes *even_sds = rtpcs_sds_get_even(sds);
 	int vth_manual;
 
-	if (sds == even_sds)
-		rtpcs_sds_write(sds, 0x1f, 0x2, 0x2f);		/* REG_DBGO_SEL */
-	else
-		rtpcs_sds_write(even_sds, 0x1f, 0x2, 0x31);	/* REG_DBGO_SEL */
-
+	rtpcs_sds_write(even_sds, 0x1f, 0x2, (sds == even_sds) ? 0x2f : 0x31); /* REG_DBGO_SEL */
 	rtpcs_sds_write_bits(sds, 0x2e, 0x15, 9, 9, 0x1);	/* REG0_RX_EN_TEST */
 	rtpcs_sds_write_bits(sds, 0x21, 0x06, 11, 6, 0x20);	/* REG0_RX_DEBUG_SEL */
 	rtpcs_sds_write_bits(sds, 0x2f, 0x0c, 5, 0, 0xc);	/* REG0_COEF_SEL */
@@ -2100,11 +2092,7 @@ static void rtpcs_930x_sds_rxcal_tap_get(struct rtpcs_serdes *sds,
 	u32 tap_coef_bin_odd;
 	bool tap_manual;
 
-	if (sds == even_sds)
-		rtpcs_sds_write(sds, 0x1f, 0x2, 0x2f);		/* REG_DBGO_SEL */
-	else
-		rtpcs_sds_write(even_sds, 0x1f, 0x2, 0x31);	/* REG_DBGO_SEL */
-
+	rtpcs_sds_write(even_sds, 0x1f, 0x2, (sds == even_sds) ? 0x2f : 0x31); /* REG_DBGO_SEL */
 	rtpcs_sds_write_bits(sds, 0x2e, 0x15, 9, 9, 0x1);	/* REG0_RX_EN_TEST */
 	rtpcs_sds_write_bits(sds, 0x21, 0x06, 11, 6, 0x20);	/* REG0_RX_DEBUG_SEL */
 
@@ -2274,11 +2262,8 @@ static void rtpcs_930x_sds_do_rx_calibration_2_3(struct rtpcs_serdes *sds)
 	pr_info("start_1.2.3 Foreground Calibration\n");
 
 	for (int run = 0; run < 10; run++) {
-		if (sds == even_sds)
-			rtpcs_sds_write(sds, 0x1f, 0x2, 0x2f);		/* REG_DBGO_SEL */
-		else
-			rtpcs_sds_write(even_sds, 0x1f, 0x2, 0x31);	/* REG_DBGO_SEL */
-
+		/* REG_DBGO_SEL */
+		rtpcs_sds_write(even_sds, 0x1f, 0x2, (sds == even_sds) ? 0x2f : 0x31);
 		rtpcs_sds_write_bits(sds, 0x2e, 0x15, 9, 9, 0x1);	/* REG0_RX_EN_TEST */
 		rtpcs_sds_write_bits(sds, 0x21, 0x06, 11, 6, 0x20);	/* REG0_RX_DEBUG_SEL */
 		rtpcs_sds_write_bits(sds, 0x2f, 0x0c, 5, 0, 0xf);	/* REG0_COEF_SEL */
