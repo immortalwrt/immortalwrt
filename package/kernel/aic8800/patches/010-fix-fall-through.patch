@@ -1,6 +1,6 @@
 --- a/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_main.c
 +++ b/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_main.c
-@@ -1560,7 +1560,7 @@ static struct rwnx_vif *rwnx_interface_a
+@@ -1658,7 +1658,7 @@ static struct rwnx_vif *rwnx_interface_a
  		vif->ap.generation = 0;
  		vif->ap.mesh_pm = NL80211_MESH_POWER_ACTIVE;
  		vif->ap.next_mesh_pm = NL80211_MESH_POWER_ACTIVE;
@@ -9,7 +9,7 @@
  	case NL80211_IFTYPE_AP:
  		INIT_LIST_HEAD(&vif->ap.sta_list);
  		memset(&vif->ap.bcn, 0, sizeof(vif->ap.bcn));
-@@ -1971,7 +1971,7 @@ static int rwnx_cfg80211_change_iface(st
+@@ -2078,7 +2078,7 @@ static int rwnx_cfg80211_change_iface(st
  		INIT_LIST_HEAD(&vif->ap.proxy_list);
  		vif->ap.create_path = false;
  		vif->ap.generation = 0;
@@ -18,7 +18,7 @@
  	case NL80211_IFTYPE_AP:
  	case NL80211_IFTYPE_P2P_GO:
  		INIT_LIST_HEAD(&vif->ap.sta_list);
-@@ -3927,6 +3927,7 @@ static int rwnx_cfg80211_mgmt_tx(struct
+@@ -4124,6 +4124,7 @@ static int rwnx_cfg80211_mgmt_tx(struct
  	switch (RWNX_VIF_TYPE(rwnx_vif)) {
  	case NL80211_IFTYPE_AP_VLAN:
  		rwnx_vif = rwnx_vif->ap_vlan.master;
@@ -26,7 +26,7 @@
  	case NL80211_IFTYPE_AP:
  	case NL80211_IFTYPE_P2P_GO:
  	case NL80211_IFTYPE_MESH_POINT:
-@@ -4236,7 +4237,7 @@ rwnx_cfg80211_tdls_mgmt(struct wiphy *wi
+@@ -4456,7 +4457,7 @@ rwnx_cfg80211_tdls_mgmt(struct wiphy *wi
  			printk("%s: only one TDLS link is supported!\n", __func__);
  			status_code = WLAN_STATUS_REQUEST_DECLINED;
  		}
@@ -35,7 +35,7 @@
  	case WLAN_TDLS_SETUP_REQUEST:
  	case WLAN_TDLS_TEARDOWN:
  	case WLAN_TDLS_DISCOVERY_REQUEST:
-@@ -4565,6 +4566,7 @@ static int rwnx_fill_station_info(struct
+@@ -4785,6 +4786,7 @@ static int rwnx_fill_station_info(struct
  #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
  	case FORMATMOD_HE_MU:
  		sinfo->rxrate.he_ru_alloc = rx_vect1->he.ru_size;
@@ -45,7 +45,7 @@
  		sinfo->rxrate.flags = RATE_INFO_FLAGS_HE_MCS;
 --- a/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_msg_tx.c
 +++ b/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_msg_tx.c
-@@ -524,7 +524,7 @@ int rwnx_send_add_if (struct rwnx_hw *rw
+@@ -525,7 +525,7 @@ int rwnx_send_add_if (struct rwnx_hw *rw
  	//case NL80211_IFTYPE_P2P_DEVICE:
  	case NL80211_IFTYPE_P2P_CLIENT:
  		add_if_req_param->p2p = true;
@@ -54,7 +54,7 @@
  	#endif /* CONFIG_RWNX_FULLMAC */
  	case NL80211_IFTYPE_STATION:
  		add_if_req_param->type = MM_STA;
-@@ -537,7 +537,7 @@ int rwnx_send_add_if (struct rwnx_hw *rw
+@@ -538,7 +538,7 @@ int rwnx_send_add_if (struct rwnx_hw *rw
  	#ifdef CONFIG_RWNX_FULLMAC
  	case NL80211_IFTYPE_P2P_GO:
  		add_if_req_param->p2p = true;
@@ -94,7 +94,7 @@
  static void
 --- a/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_tx.c
 +++ b/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_tx.c
-@@ -332,6 +332,7 @@ u16 rwnx_select_txq(struct rwnx_vif *rwn
+@@ -334,6 +334,7 @@ u16 rwnx_select_txq(struct rwnx_vif *rwn
  		/* AP_VLAN interface is not used for a 4A STA,
  		   fallback searching sta amongs all AP's clients */
  		rwnx_vif = rwnx_vif->ap_vlan.master;
@@ -114,7 +114,7 @@
  	case NL80211_IFTYPE_P2P_GO:
 --- a/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/rwnx_main.c
 +++ b/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/rwnx_main.c
-@@ -1866,7 +1866,7 @@ static struct rwnx_vif *rwnx_interface_a
+@@ -1950,7 +1950,7 @@ static struct rwnx_vif *rwnx_interface_a
          vif->ap.generation = 0;
          vif->ap.mesh_pm = NL80211_MESH_POWER_ACTIVE;
          vif->ap.next_mesh_pm = NL80211_MESH_POWER_ACTIVE;
@@ -123,7 +123,7 @@
      case NL80211_IFTYPE_AP:
          INIT_LIST_HEAD(&vif->ap.sta_list);
          memset(&vif->ap.bcn, 0, sizeof(vif->ap.bcn));
-@@ -2465,7 +2465,7 @@ static int rwnx_cfg80211_change_iface(st
+@@ -2679,7 +2679,7 @@ static int rwnx_cfg80211_change_iface(st
          INIT_LIST_HEAD(&vif->ap.proxy_list);
          vif->ap.create_path = false;
          vif->ap.generation = 0;
@@ -132,7 +132,7 @@
      case NL80211_IFTYPE_AP:
      case NL80211_IFTYPE_P2P_GO:
          INIT_LIST_HEAD(&vif->ap.sta_list);
-@@ -4626,6 +4626,7 @@ static int rwnx_cfg80211_mgmt_tx(struct
+@@ -4984,6 +4984,7 @@ static int rwnx_cfg80211_mgmt_tx(struct
      switch (RWNX_VIF_TYPE(rwnx_vif)) {
          case NL80211_IFTYPE_AP_VLAN:
              rwnx_vif = rwnx_vif->ap_vlan.master;
@@ -140,7 +140,7 @@
          case NL80211_IFTYPE_AP:
          case NL80211_IFTYPE_P2P_GO:
          case NL80211_IFTYPE_MESH_POINT:
-@@ -5299,6 +5300,7 @@ static int rwnx_fill_station_info(struct
+@@ -5821,6 +5822,7 @@ int rwnx_fill_station_info(struct rwnx_s
  #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 19, 0)
  	case FORMATMOD_HE_MU:
  		sinfo->rxrate.he_ru_alloc = rx_vect1->he.ru_size;
@@ -150,7 +150,7 @@
  		sinfo->rxrate.flags = RATE_INFO_FLAGS_HE_MCS;
 --- a/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/rwnx_msg_tx.c
 +++ b/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/rwnx_msg_tx.c
-@@ -613,7 +613,7 @@ int rwnx_send_add_if(struct rwnx_hw *rwn
+@@ -618,7 +618,7 @@ int rwnx_send_add_if(struct rwnx_hw *rwn
      //case NL80211_IFTYPE_P2P_DEVICE:
      case NL80211_IFTYPE_P2P_CLIENT:
          add_if_req_param->p2p = true;
@@ -159,7 +159,7 @@
      #endif /* CONFIG_RWNX_FULLMAC */
      case NL80211_IFTYPE_STATION:
          add_if_req_param->type = MM_STA;
-@@ -626,7 +626,7 @@ int rwnx_send_add_if(struct rwnx_hw *rwn
+@@ -631,7 +631,7 @@ int rwnx_send_add_if(struct rwnx_hw *rwn
      #ifdef CONFIG_RWNX_FULLMAC
      case NL80211_IFTYPE_P2P_GO:
          add_if_req_param->p2p = true;
@@ -199,7 +199,7 @@
  static void
 --- a/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/rwnx_tx.c
 +++ b/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/rwnx_tx.c
-@@ -328,6 +328,7 @@ u16 rwnx_select_txq(struct rwnx_vif *rwn
+@@ -329,6 +329,7 @@ u16 rwnx_select_txq(struct rwnx_vif *rwn
          /* AP_VLAN interface is not used for a 4A STA,
             fallback searching sta amongs all AP's clients */
          rwnx_vif = rwnx_vif->ap_vlan.master;
@@ -217,36 +217,3 @@
      case NL80211_IFTYPE_AP:
      case NL80211_IFTYPE_MESH_POINT:
      case NL80211_IFTYPE_P2P_GO:
---- a/src/USB/driver_fw/drivers/aic_btusb/aic_btusb.c
-+++ b/src/USB/driver_fw/drivers/aic_btusb/aic_btusb.c
-@@ -1476,6 +1476,7 @@ static long btchr_ioctl(struct file *fil
-             return 1;
-         case DWFW_CMPLT:
-             AICBT_INFO(" btchr_ioctl DWFW_CMPLT");
-+            fallthrough;
- #if 1
- 	case SET_ISO_CFG:
-             AICBT_INFO("btchr_ioctl SET_ISO_CFG");
-@@ -1485,6 +1486,7 @@ static long btchr_ioctl(struct file *fil
- 		//hdev->voice_setting = *(uint16_t*)arg;
- 		AICBT_INFO(" voice settings = %d", hdev->voice_setting);
- 		//return 1;
-+        fallthrough;
- #endif
-         case GET_USB_INFO:
- 			//ret = download_patch(fw_info,1);
-@@ -1513,14 +1515,6 @@ static long btchr_ioctl(struct file *fil
- 
- }
- 
--#ifdef CONFIG_PLATFORM_UBUNTU//AIDEN
--typedef u32		compat_uptr_t;
--static inline void __user *compat_ptr(compat_uptr_t uptr)
--{
--	return (void __user *)(unsigned long)uptr;
--}
--#endif
--
- #ifdef CONFIG_COMPAT
- static long compat_btchr_ioctl (struct file *filp, unsigned int cmd, unsigned long arg)
- {

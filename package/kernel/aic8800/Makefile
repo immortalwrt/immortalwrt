@@ -5,13 +5,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=aic8800
-PKG_RELEASE:=2
+PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2025-09-30
 PKG_SOURCE_URL:=https://github.com/radxa-pkg/aic8800.git
-PKG_SOURCE_VERSION:=2bf2dc64bedaf3f0fcbcc206125afa5da8b3835b
-PKG_MIRROR_HASH:=0a2defc3a57e3c1007d719648c83ea5ee0becfb72b77ef30a2fa5833b7622ceb
+PKG_SOURCE_DATE:=2026-03-10
+PKG_SOURCE_VERSION:=89f865b80f5f2ba6c0711c560e1d0191e87a1bf0
+PKG_MIRROR_HASH:=fb54d2ac13109cf49c1b981424f26e3cc595826f033392284f6b3835a162e069
 
 PKG_CONFIG_DEPENDS:=CONFIG_AIC8800_SDIO_BT_SUPPORT
 PKG_FLAGS:=nonshared
@@ -139,6 +139,9 @@ define Package/aic8800-sdio-firmware/install
 		$(PKG_BUILD_DIR)/src/SDIO/driver_fw/fw/aic8800D80/* \
 		$(1)/lib/firmware/aic8800/sdio/
 	$(CP) \
+		$(PKG_BUILD_DIR)/src/SDIO/driver_fw/fw/aic8800D80N/* \
+		$(1)/lib/firmware/aic8800/sdio/
+	$(CP) \
 		$(PKG_BUILD_DIR)/src/SDIO/driver_fw/fw/aic8800D80X2/* \
 		$(1)/lib/firmware/aic8800/sdio/
 	$(CP) \
@@ -155,10 +158,16 @@ define Package/aic8800-usb-firmware/install
 		$(PKG_BUILD_DIR)/src/USB/driver_fw/fw/aic8800D80/* \
 		$(1)/lib/firmware/aic8800/usb/
 	$(CP) \
+		$(PKG_BUILD_DIR)/src/USB/driver_fw/fw/aic8800D80N/* \
+		$(1)/lib/firmware/aic8800/usb/
+	$(CP) \
 		$(PKG_BUILD_DIR)/src/USB/driver_fw/fw/aic8800D80X2/* \
 		$(1)/lib/firmware/aic8800/usb/
 	$(CP) \
 		$(PKG_BUILD_DIR)/src/USB/driver_fw/fw/aic8800DC/* \
+		$(1)/lib/firmware/aic8800/usb/
+	$(CP) \
+		$(PKG_BUILD_DIR)/src/USB/driver_fw/fw/aic8800DLN/* \
 		$(1)/lib/firmware/aic8800/usb/
 endef
 
