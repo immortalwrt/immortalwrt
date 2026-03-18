@@ -2266,6 +2266,7 @@ static void rtpcs_930x_sds_do_rx_calibration_2_3(struct rtpcs_serdes *sds)
 		rtpcs_sds_write(even_sds, 0x1f, 0x2, (sds == even_sds) ? 0x2f : 0x31);
 		rtpcs_sds_write_bits(sds, 0x2e, 0x15, 9, 9, 0x1);	/* REG0_RX_EN_TEST */
 		rtpcs_sds_write_bits(sds, 0x21, 0x06, 11, 6, 0x20);	/* REG0_RX_DEBUG_SEL */
+
 		rtpcs_sds_write_bits(sds, 0x2f, 0x0c, 5, 0, 0xf);	/* REG0_COEF_SEL */
 		/* ##FGCAL read gray */
 		fgcal_gray = rtpcs_sds_read_bits(sds, 0x1f, 0x14, 5, 0);
@@ -2273,14 +2274,13 @@ static void rtpcs_930x_sds_do_rx_calibration_2_3(struct rtpcs_serdes *sds)
 		/* ##FGCAL read binary */
 		fgcal_binary = rtpcs_sds_read_bits(sds, 0x1f, 0x14, 5, 0);
 
-		pr_info("%s: fgcal_gray: %d, fgcal_binary %d\n",
-			__func__, fgcal_gray, fgcal_binary);
-
-		offset_range = rtpcs_sds_read_bits(sds, 0x2e, 0x15, 15, 14);
-
 		if (fgcal_binary <= 60 && fgcal_binary >= 3)
 			break;
 
+		pr_info("%s: fgcal_gray = %d, fgcal_binary = %d\n", __func__, fgcal_gray,
+			fgcal_binary);
+
+		offset_range = rtpcs_sds_read_bits(sds, 0x2e, 0x15, 15, 14);
 		if (offset_range == 3) {
 			pr_info("%s: Foreground Calibration result marginal!", __func__);
 			break;
