@@ -2093,9 +2093,9 @@ void hostapd_ubus_notify_bss_transition_response(
 
 	blob_buf_init(&b, 0);
 	blobmsg_add_macaddr(&b, "address", addr);
-	blobmsg_add_u8(&b, "dialog-token", dialog_token);
-	blobmsg_add_u8(&b, "status-code", status_code);
-	blobmsg_add_u8(&b, "bss-termination-delay", bss_termination_delay);
+	blobmsg_add_u32(&b, "dialog-token", dialog_token);
+	blobmsg_add_u32(&b, "status-code", status_code);
+	blobmsg_add_u32(&b, "bss-termination-delay", bss_termination_delay);
 	if (target_bssid)
 		blobmsg_add_macaddr(&b, "target-bssid", target_bssid);
 
@@ -2122,8 +2122,8 @@ int hostapd_ubus_notify_bss_transition_query(
 
 	blob_buf_init(&b, 0);
 	blobmsg_add_macaddr(&b, "address", addr);
-	blobmsg_add_u8(&b, "dialog-token", dialog_token);
-	blobmsg_add_u8(&b, "reason", reason);
+	blobmsg_add_u32(&b, "dialog-token", dialog_token);
+	blobmsg_add_u32(&b, "reason", reason);
 	hostapd_ubus_notify_bss_transition_add_candidate_list(candidate_list, candidate_list_len);
 
 	if (!hapd->ubus.notify_response) {
