@@ -1,10 +1,10 @@
 --- a/src/PCIE/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_main.c
 +++ b/src/PCIE/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_main.c
-@@ -512,7 +512,7 @@ static const int rwnx_hwq2uapsd[NL80211_
+@@ -523,7 +523,7 @@ static const int rwnx_hwq2uapsd[NL80211_
  #endif
  
  extern uint8_t scanning;
--int aicwf_dbg_level = LOGERROR|LOGINFO|LOGDEBUG|LOGTRACE;
+-int aicwf_dbg_level = LOGERROR|LOGINFO|LOGDEBUG|LOGTRACE|LOGFW;
 +int aicwf_dbg_level = LOGDATA;
  module_param(aicwf_dbg_level, int, 0660);
  #ifdef CONFIG_DYNAMIC_PWR
@@ -43,18 +43,18 @@
  
 --- a/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_main.c
 +++ b/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_main.c
-@@ -512,7 +512,7 @@ static const int rwnx_hwq2uapsd[NL80211_
+@@ -535,7 +535,7 @@ static const int rwnx_hwq2uapsd[NL80211_
  
  
  extern uint8_t scanning;
--int aicwf_dbg_level = LOGERROR|LOGINFO|LOGDEBUG|LOGTRACE;
+-int aicwf_dbg_level = LOGERROR|LOGINFO|LOGDEBUG|LOGTRACE|LOGFW;
 +int aicwf_dbg_level = LOGWAKELOCK;
  module_param(aicwf_dbg_level, int, 0660);
- int testmode = 0;
- char aic_fw_path[200];
+ #ifdef CONFIG_DYNAMIC_PWR
+ int dynamic_pwr = 1;
 --- a/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_platform.c
 +++ b/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_platform.c
-@@ -1027,7 +1027,7 @@ s8_l get_txpwr_max(s8_l power)
+@@ -1073,7 +1073,7 @@ s8_l get_txpwr_max(s8_l power)
  	    }
  	}
  
@@ -65,11 +65,11 @@
  
 --- a/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/rwnx_main.c
 +++ b/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/rwnx_main.c
-@@ -536,7 +536,7 @@ static const int rwnx_hwq2uapsd[NL80211_
+@@ -548,7 +548,7 @@ static const int rwnx_hwq2uapsd[NL80211_
  struct semaphore aicwf_deinit_sem;
  atomic_t aicwf_deinit_atomic;
  
--int aicwf_dbg_level = LOGERROR|LOGINFO;
+-int aicwf_dbg_level = LOGERROR|LOGINFO|LOGFW;
 +int aicwf_dbg_level = LOGDATA;
  module_param(aicwf_dbg_level, int, 0660);
  #ifdef CONFIG_DYNAMIC_PWR
