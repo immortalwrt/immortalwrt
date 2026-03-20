@@ -351,7 +351,7 @@ function device_htmode_append(config) {
 		if (vht_capab & 0x800 && config.su_beamformer)
 			config.vht_capab += '[SOUNDING-DIMENSION-' + min(((vht_capab >> 16) & 3) + 1, config.beamformer_antennas) + ']';
 		if (vht_capab & 0x1000 && config.su_beamformee)
-			config.vht_capab += '[BF-ANTENNA-' + min(((vht_capab >> 13) & 3) + 1, config.beamformer_antennas) + ']';
+			config.vht_capab += '[BF-ANTENNA-' + min(((vht_capab >> 13) & 3) + 1, config.beamformee_antennas) + ']';
 
 		/* supported Channel widths */
 		if ((vht_capab & 0xc) == 8 && config.vht160 >= 2)
