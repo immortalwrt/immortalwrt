@@ -87,7 +87,7 @@ define Device/gemtek_w1700k-ubi
   DEVICE_PACKAGES := airoha-en7581-mt7996-npu-firmware \
 		    fitblk kmod-i2c-an7581 kmod-hwmon-nct7802 \
 		    kmod-mt7996-firmware kmod-phy-rtl8261n \
-		    wpad-basic-mbedtls
+		    wpad-openssl
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
   PAGESIZE := 2048
