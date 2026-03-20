@@ -1,0 +1,33 @@
+From 3650b847ca9dac1e38c09116321010f33c4dc194 Mon Sep 17 00:00:00 2001
+From: Nick Hainke <vincent@systemli.org>
+Date: Fri, 20 Mar 2026 11:08:19 +0100
+Subject: [PATCH] RSN: Fix pmksa_cache_flush prototype mismatch in
+ non-IEEE8021X_EAPOL case
+
+Fix compilation error caused by conflicting declarations of
+pmksa_cache_flush() when IEEE8021X_EAPOL is not enabled or
+CONFIG_NO_WPA is set. The function definition in pmksa_cache.c
+was missing the addr parameter present in the header declaration
+for this build configuration.
+
+Align the implementation with the header by adding the missing
+parameter.
+
+Fixes: e6dbaa673f39 ("SAE: Limit PMKSA flushing on failure to the current BSS")
+Signed-off-by: Nick Hainke <vincent@systemli.org>
+---
+ src/rsn_supp/pmksa_cache.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+--- a/src/rsn_supp/pmksa_cache.c
++++ b/src/rsn_supp/pmksa_cache.c
+@@ -955,7 +955,8 @@ int pmksa_cache_set_current(struct wpa_s
+ 
+ 
+ void pmksa_cache_flush(struct rsn_pmksa_cache *pmksa, void *network_ctx,
+-		       const u8 *pmk, size_t pmk_len, bool external_only)
++		       const u8 *pmk, size_t pmk_len, bool external_only,
++		       const u8 *addr)
+ {
+ }
+ 
