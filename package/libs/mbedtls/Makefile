@@ -134,7 +134,9 @@ This package contains mbedtls helper programs for private key and
 CSR generation (gen_key, cert_req)
 endef
 
-TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Wno-unterminated-string-initialization
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) \
+	-Wno-unterminated-string-initialization \
+	$(if $(findstring cortex-a53,$(CONFIG_CPU_TYPE)),-march=armv8-a)
 
 CMAKE_OPTIONS += \
 	-DCMAKE_POSITION_INDEPENDENT_CODE=ON \
