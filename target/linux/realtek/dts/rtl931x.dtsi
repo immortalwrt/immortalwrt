@@ -326,7 +326,7 @@
 			};
 		};
 
-		switch0: switch@1b000000 {
+		switch0: ethernet-switch {
 			compatible = "realtek,rtl9311-switch", "realtek,otto-switch";
 			status = "okay";
 
