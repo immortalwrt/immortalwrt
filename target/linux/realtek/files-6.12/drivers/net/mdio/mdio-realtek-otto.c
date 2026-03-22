@@ -861,6 +861,10 @@ static int rtmdio_map_ports(struct device *dev)
 			return dev_err_probe(dev, -EINVAL, "%pfwP illegal port number\n",
 					     of_fwnode_handle(port));
 
+		if (test_bit(addr, ctrl->valid_ports))
+			return dev_err_probe(dev, -EINVAL, "%pfwP duplicated port number\n",
+					     of_fwnode_handle(port));
+
 		if (of_property_read_u32(phy, "reg", &ctrl->smi_addr[addr]))
 			return dev_err_probe(dev, -EINVAL, "%pfwP no phy address\n",
 					     of_fwnode_handle(phy));
