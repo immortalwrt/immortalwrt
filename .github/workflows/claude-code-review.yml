@@ -31,6 +31,3 @@ jobs:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           trigger_phrase: "/claude"
-          prompt: >-
-            Review this PR for an OpenWrt embedded Linux project,
-            focusing on correctness, security, and coding conventions.
