@@ -750,23 +750,6 @@ static void rtmdio_930x_setup_polling(struct mii_bus *bus)
 			regmap_write(ctrl->map, RTMDIO_930X_SMI_10G_POLLING_REG10_CFG, phyinfo.poll_lpa_1000);
 		}
 	}
-
-	regmap_read(ctrl->map, RTMDIO_930X_SMI_GLB_CTRL, &val);
-	pr_debug("%s: RTMDIO_930X_SMI_GLB_CTRL %08x\n", __func__, val);
-	regmap_read(ctrl->map, RTMDIO_930X_SMI_PORT0_15_POLLING_SEL, &val);
-	pr_debug("%s: RTMDIO_930X_SMI_PORT0_15_POLLING_SEL %08x\n", __func__, val);
-	regmap_read(ctrl->map, RTMDIO_930X_SMI_PORT16_27_POLLING_SEL, &val);
-	pr_debug("%s: RTMDIO_930X_SMI_PORT16_27_POLLING_SEL %08x\n", __func__, val);
-	regmap_read(ctrl->map, RTMDIO_930X_SMI_MAC_TYPE_CTRL, &val);
-	pr_debug("%s: RTMDIO_930X_SMI_MAC_TYPE_CTRL %08x\n", __func__, val);
-	regmap_read(ctrl->map, RTMDIO_930X_SMI_10G_POLLING_REG0_CFG, &val);
-	pr_debug("%s: RTMDIO_930X_SMI_10G_POLLING_REG0_CFG %08x\n", __func__, val);
-	regmap_read(ctrl->map, RTMDIO_930X_SMI_10G_POLLING_REG9_CFG, &val);
-	pr_debug("%s: RTMDIO_930X_SMI_10G_POLLING_REG9_CFG %08x\n", __func__, val);
-	regmap_read(ctrl->map, RTMDIO_930X_SMI_10G_POLLING_REG10_CFG, &val);
-	pr_debug("%s: RTMDIO_930X_SMI_10G_POLLING_REG10_CFG %08x\n", __func__, val);
-	regmap_read(ctrl->map, RTMDIO_930X_SMI_PRVTE_POLLING_CTRL, &val);
-	pr_debug("%s: RTMDIO_930X_SMI_PRVTE_POLLING_CTRL %08x\n", __func__, val);
 }
 
 static int rtmdio_931x_reset(struct mii_bus *bus)
@@ -793,7 +776,6 @@ static void rtmdio_931x_setup_polling(struct mii_bus *bus)
 {
 	struct rtmdio_ctrl *ctrl = bus->priv;
 	struct rtmdio_phy_info phyinfo;
-	u32 val;
 
 	/* set everything to "SerDes driven" */
 	for (int reg = 0; reg < 4; reg++)
@@ -839,29 +821,6 @@ static void rtmdio_931x_setup_polling(struct mii_bus *bus)
 			regmap_write(ctrl->map, RTMDIO_931X_SMI_10GPHY_POLLING_SEL4, phyinfo.poll_lpa_1000);
 		}
 	}
-
-	regmap_read(ctrl->map, RTMDIO_931X_SMI_GLB_CTRL0, &val);
-	pr_debug("%s: RTMDIO_931X_SMI_GLB_CTRL0 %08x\n", __func__, val);
-	regmap_read(ctrl->map, RTMDIO_931X_SMI_GLB_CTRL1, &val);
-	pr_debug("%s: RTMDIO_931X_SMI_GLB_CTRL1 %08x\n", __func__, val);
-	regmap_read(ctrl->map, RTMDIO_931X_SMI_PORT_POLLING_SEL, &val);
-	pr_debug("%s: RTMDIO_931X_SMI_PORT_POLLING_SEL_0_15 %08x\n", __func__, val);
-	regmap_read(ctrl->map, RTMDIO_931X_SMI_PORT_POLLING_SEL + 4, &val);
-	pr_debug("%s: RTMDIO_931X_SMI_PORT_POLLING_SEL_16_27 %08x\n", __func__, val);
-	regmap_read(ctrl->map, RTMDIO_931X_SMI_PORT_POLLING_SEL + 8, &val);
-	pr_debug("%s: RTMDIO_931X_SMI_PORT_POLLING_SEL_28_43 %08x\n", __func__, val);
-	regmap_read(ctrl->map, RTMDIO_931X_SMI_PORT_POLLING_SEL + 12, &val);
-	pr_debug("%s: RTMDIO_931X_SMI_PORT_POLLING_SEL_44_55 %08x\n", __func__, val);
-	regmap_read(ctrl->map, RTMDIO_931X_SMI_10GPHY_POLLING_SEL0, &val);
-	pr_debug("%s: RTMDIO_931X_SMI_10GPHY_POLLING_SEL0 %08x\n", __func__, val);
-	regmap_read(ctrl->map, RTMDIO_931X_SMI_10GPHY_POLLING_SEL1, &val);
-	pr_debug("%s: RTMDIO_931X_SMI_10GPHY_POLLING_SEL1 %08x\n", __func__, val);
-	regmap_read(ctrl->map, RTMDIO_931X_SMI_10GPHY_POLLING_SEL2, &val);
-	pr_debug("%s: RTMDIO_931X_SMI_10GPHY_POLLING_SEL2 %08x\n", __func__, val);
-	regmap_read(ctrl->map, RTMDIO_931X_SMI_10GPHY_POLLING_SEL3, &val);
-	pr_debug("%s: RTMDIO_931X_SMI_10GPHY_POLLING_SEL3 %08x\n", __func__, val);
-	regmap_read(ctrl->map, RTMDIO_931X_SMI_10GPHY_POLLING_SEL4, &val);
-	pr_debug("%s: RTMDIO_931X_SMI_10GPHY_POLLING_SEL4 %08x\n", __func__, val);
 }
 
 static int rtmdio_reset(struct mii_bus *bus)
