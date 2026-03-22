@@ -1640,6 +1640,7 @@ define Device/fortinet_fap_common
 	check-size | pad-to $$$$(IMAGE_SIZE) | \
 	append-loader-okli-uimage $(1) | pad-to 10944k | \
 	gzip-filename $$$$(FACTORY_IMG_NAME)
+  DEFAULT := n
 endef
 
 define Device/fortinet_fap-220-b
@@ -1649,7 +1650,6 @@ define Device/fortinet_fap-220-b
   FACTORY_IMG_NAME := FAP22B-9.99-AP-build999-999999-patch99
   DEVICE_PACKAGES := -uboot-envtools kmod-usb-ohci kmod-usb2 \
 	kmod-owl-loader
-  DEFAULT := n
 endef
 TARGET_DEVICES += fortinet_fap-220-b
 
