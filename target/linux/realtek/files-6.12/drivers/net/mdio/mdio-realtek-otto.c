@@ -108,8 +108,7 @@
 #define RTMDIO_931X_SMI_10GPHY_POLLING_SEL4	(0x0D00)
 
 #define for_each_phy(ctrl, addr) \
-	for (int addr = 0; addr < (ctrl)->cfg->num_phys; addr++) \
-		if ((ctrl)->smi_bus[addr] >= 0)
+	for_each_set_bit(addr, ctrl->valid_ports, RTMDIO_MAX_PHY)
 
 /*
  * On all Realtek switch platforms the hardware periodically reads the link status of all
@@ -183,6 +182,7 @@ struct rtmdio_ctrl {
 	int smi_addr[RTMDIO_MAX_PHY];
 	struct device_node *phy_node[RTMDIO_MAX_PHY];
 	bool smi_bus_isc45[RTMDIO_MAX_SMI_BUS];
+	DECLARE_BITMAP(valid_ports, RTMDIO_MAX_PHY);
 };
 
 struct rtmdio_config {
@@ -562,7 +562,7 @@ static int rtmdio_write(struct mii_bus *bus, int addr, int regnum, u16 val)
 static void rtmdio_setup_smi_topology(struct mii_bus *bus)
 {
 	struct rtmdio_ctrl *ctrl = bus->priv;
-	u32 reg, mask, val;
+	u32 reg, mask, val, addr;
 
 	for_each_phy(ctrl, addr) {
 		if (ctrl->cfg->bus_map_base) {
@@ -677,7 +677,7 @@ static void rtmdio_838x_setup_polling(struct mii_bus *bus)
 	 * give the real media status (0=copper, 1=fibre). For now assume that if address 24 is
 	 * PHY driven, it must be a combo PHY and media detection is needed.
 	 */
-	combo_phy = ctrl->smi_bus[24] < 0 ? 0 : BIT(7);
+	combo_phy = test_bit(24, ctrl->valid_ports) ? BIT(7) : 0;
 	regmap_update_bits(ctrl->map, RTMDIO_838X_SMI_GLB_CTRL, BIT(7), combo_phy);
 }
 
@@ -718,7 +718,7 @@ static void rtmdio_930x_setup_polling(struct mii_bus *bus)
 {
 	struct rtmdio_ctrl *ctrl = bus->priv;
 	struct rtmdio_phy_info phyinfo;
-	unsigned int mask, val;
+	unsigned int mask, val, addr;
 
 	/* set everthing to "SerDes driven" */
 	regmap_write(ctrl->map, RTMDIO_930X_SMI_MAC_TYPE_CTRL, 0);
@@ -776,6 +776,7 @@ static void rtmdio_931x_setup_polling(struct mii_bus *bus)
 {
 	struct rtmdio_ctrl *ctrl = bus->priv;
 	struct rtmdio_phy_info phyinfo;
+	u32 addr;
 
 	/* set everything to "SerDes driven" */
 	for (int reg = 0; reg < 4; reg++)
@@ -847,9 +848,6 @@ static int rtmdio_map_ports(struct device *dev)
 		return dev_err_probe(dev, -ENODEV, "%pfwP missing ethernet-ports\n",
 				     of_fwnode_handle(switch_node));
 
-	for (addr = 0; addr < RTMDIO_MAX_PHY; addr++)
-		ctrl->smi_bus[addr] = -1;
-
 	for_each_child_of_node_scoped(ports, port) {
 		if (of_property_read_u32(port, "reg", &addr))
 			continue;
@@ -880,6 +878,7 @@ static int rtmdio_map_ports(struct device *dev)
 
 		ctrl->smi_bus[addr] = bus_addr;
 		ctrl->phy_node[addr] = of_node_get(phy);
+		__set_bit(addr, ctrl->valid_ports);
 	}
 
 	return 0;
@@ -890,7 +889,7 @@ static int rtmdio_probe(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 	struct rtmdio_ctrl *ctrl;
 	struct mii_bus *bus;
-	int ret;
+	int ret, addr;
 
 	bus = devm_mdiobus_alloc_size(dev, sizeof(*ctrl));
 	if (!bus)
