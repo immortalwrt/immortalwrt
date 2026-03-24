@@ -18,15 +18,15 @@ if ! uci -q get system.@imm_init[0].system_chn > "/dev/null"; then
 	EOF
 fi
 
-opkg_mirror="$(uci -q get system.@imm_init[0].opkg_mirror)"
-if [ -z "$opkg_mirror" ]; then
-	opkg_mirror="https://mirrors.vsean.net/openwrt"
+apk_mirror="$(uci -q get system.@imm_init[0].apk_mirror)"
+if [ -z "$apk_mirror" ]; then
+	apk_mirror="https://mirrors.vsean.net/openwrt"
 	uci -q batch <<-EOF
-		set system.@imm_init[0].opkg_mirror="$opkg_mirror"
+		set system.@imm_init[0].apk_mirror="$apk_mirror"
 		commit system
 	EOF
 fi
 
-sed -i.bak "s,https://downloads.immortalwrt.org,$opkg_mirror,g" "/etc/opkg/distfeeds.conf"
+sed -i.bak "s,https://downloads.immortalwrt.org,$apk_mirror,g" "/etc/apk/repositories.d/distfeeds.list"
 
 exit 0
