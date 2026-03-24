@@ -47,7 +47,7 @@ full device, e.g. in order to deal with hardware/driver limitations
  			   " since no room for additional STA",
 --- a/src/ap/hostapd.c
 +++ b/src/ap/hostapd.c
-@@ -259,6 +259,29 @@ static int hostapd_iface_conf_changed(st
+@@ -255,6 +255,29 @@ static int hostapd_iface_conf_changed(st
  	return 0;
  }
  

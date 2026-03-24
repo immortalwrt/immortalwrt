@@ -1851,11 +1851,8 @@ static void rtpcs_930x_sds_rxcal_dcvs_get(struct rtpcs_serdes *sds,
 	else
 		rtpcs_sds_write(even_sds, 0x1f, 0x2, 0x31);
 
-	/* ##Page0x2E, Reg0x15[9], REG0_RX_EN_TEST=[1] */
-	rtpcs_sds_write_bits(sds, 0x2e, 0x15, 9, 9, 0x1);
-
-	/* ##Page0x21, Reg0x06[11 6], REG0_RX_DEBUG_SEL=[1 0 x x x x] */
-	rtpcs_sds_write_bits(sds, 0x21, 0x06, 11, 6, 0x20);
+	rtpcs_sds_write_bits(sds, 0x2e, 0x15, 9, 9, 0x1);	/* REG0_RX_EN_TEST */
+	rtpcs_sds_write_bits(sds, 0x21, 0x06, 11, 6, 0x20);	/* REG0_RX_DEBUG_SEL */
 
 	switch (dcvs_id) {
 	case 0:
@@ -1921,13 +1918,8 @@ static void rtpcs_930x_sds_rxcal_dcvs_get(struct rtpcs_serdes *sds,
 		break;
 	}
 
-	if (dcvs_sign_out)
-		pr_info("%s DCVS %u Sign: -", __func__, dcvs_id);
-	else
-		pr_info("%s DCVS %u Sign: +", __func__, dcvs_id);
-
-	pr_info("DCVS %u even coefficient = %u", dcvs_id, dcvs_coef_bin);
-	pr_info("DCVS %u manual = %u", dcvs_id, dcvs_manual);
+	pr_info("%s: DCVS %u sign = %s, manual = %u, even coefficient = %u\n", __func__,
+		dcvs_id, dcvs_sign_out ? "-" : "+", dcvs_manual, dcvs_coef_bin);
 
 	dcvs_list[0] = dcvs_sign_out;
 	dcvs_list[1] = dcvs_coef_bin;
@@ -1989,16 +1981,9 @@ static u32 rtpcs_930x_sds_rxcal_leq_read(struct rtpcs_serdes *sds)
 	u32 leq_gray, leq_bin;
 	bool leq_manual;
 
-	if (sds == even_sds)
-		rtpcs_sds_write(sds, 0x1f, 0x2, 0x2f);
-	else
-		rtpcs_sds_write(even_sds, 0x1f, 0x2, 0x31);
-
-	/* ##Page0x2E, Reg0x15[9], REG0_RX_EN_TEST=[1] */
-	rtpcs_sds_write_bits(sds, 0x2e, 0x15, 9, 9, 0x1);
-
-	/* ##Page0x21, Reg0x06[11 6], REG0_RX_DEBUG_SEL=[0 1 x x x x] */
-	rtpcs_sds_write_bits(sds, 0x21, 0x06, 11, 6, 0x10);
+	rtpcs_sds_write(even_sds, 0x1f, 0x2, (sds == even_sds) ? 0x2f : 0x31); /* REG_DBGO_SEL */
+	rtpcs_sds_write_bits(sds, 0x2e, 0x15, 9, 9, 0x1);	/* REG0_RX_EN_TEST */
+	rtpcs_sds_write_bits(sds, 0x21, 0x06, 11, 6, 0x10);	/* REG0_RX_DEBUG_SEL */
 	mdelay(1);
 
 	/* ##LEQ Read Out */
@@ -2006,7 +1991,7 @@ static u32 rtpcs_930x_sds_rxcal_leq_read(struct rtpcs_serdes *sds)
 	leq_manual = !!rtpcs_sds_read_bits(sds, 0x2e, 0x18, 15, 15);
 	leq_bin = rtpcs_930x_sds_rxcal_gray_to_binary(leq_gray);
 
-	pr_info("LEQ_gray: %u, LEQ_bin: %u", leq_gray, leq_bin);
+	pr_info("LEQ gray: %u, LEQ bin: %u", leq_gray, leq_bin);
 	pr_info("LEQ manual: %u", leq_manual);
 
 	return leq_bin;
@@ -2029,33 +2014,22 @@ static void rtpcs_930x_sds_rxcal_vth_get(struct rtpcs_serdes *sds,
 					 u32 vth_list[])
 {
 	struct rtpcs_serdes *even_sds = rtpcs_sds_get_even(sds);
-	u32 vth_manual;
+	int vth_manual;
 
-	/* ##Page0x1F, Reg0x02[15 0], REG_DBGO_SEL=[0x002F]; */ /* Lane0 */
-	/* ##Page0x1F, Reg0x02[15 0], REG_DBGO_SEL=[0x0031]; */ /* Lane1 */
-	if (sds == even_sds)
-		rtpcs_sds_write(sds, 0x1f, 0x2, 0x2f);
-	else
-		rtpcs_sds_write(even_sds, 0x1f, 0x2, 0x31);
-
-	/* ##Page0x2E, Reg0x15[9], REG0_RX_EN_TEST=[1] */
-	rtpcs_sds_write_bits(sds, 0x2e, 0x15, 9, 9, 0x1);
-	/* ##Page0x21, Reg0x06[11 6], REG0_RX_DEBUG_SEL=[1 0 x x x x] */
-	rtpcs_sds_write_bits(sds, 0x21, 0x06, 11, 6, 0x20);
-	/* ##Page0x2F, Reg0x0C[5 0], REG0_COEF_SEL=[0 0 1 1 0 0] */
-	rtpcs_sds_write_bits(sds, 0x2f, 0x0c, 5, 0, 0xc);
+	rtpcs_sds_write(even_sds, 0x1f, 0x2, (sds == even_sds) ? 0x2f : 0x31); /* REG_DBGO_SEL */
+	rtpcs_sds_write_bits(sds, 0x2e, 0x15, 9, 9, 0x1);	/* REG0_RX_EN_TEST */
+	rtpcs_sds_write_bits(sds, 0x21, 0x06, 11, 6, 0x20);	/* REG0_RX_DEBUG_SEL */
+	rtpcs_sds_write_bits(sds, 0x2f, 0x0c, 5, 0, 0xc);	/* REG0_COEF_SEL */
 
 	mdelay(1);
 
 	/* ##VthP & VthN Read Out */
 	vth_list[0] = rtpcs_sds_read_bits(sds, 0x1f, 0x14, 2, 0); /* v_thp set bin */
 	vth_list[1] = rtpcs_sds_read_bits(sds, 0x1f, 0x14, 5, 3); /* v_thn set bin */
+	vth_manual = rtpcs_sds_read_bits(sds, 0x2e, 0x0f, 13, 13);
 
-	pr_info("vth_set_bin = %d", vth_list[0]);
-	pr_info("vth_set_bin = %d", vth_list[1]);
-
-	vth_manual = !!rtpcs_sds_read_bits(sds, 0x2e, 0x0f, 13, 13);
-	pr_info("Vth Maunal = %d", vth_manual);
+	pr_info("vthp_set_bin = %d, vthn_set_bin = %d, manual = %d\n", vth_list[0], vth_list[1],
+		vth_manual);
 }
 
 static void rtpcs_930x_sds_rxcal_tap_manual(struct rtpcs_serdes *sds,
@@ -2118,63 +2092,42 @@ static void rtpcs_930x_sds_rxcal_tap_get(struct rtpcs_serdes *sds,
 	u32 tap_coef_bin_odd;
 	bool tap_manual;
 
-	if (sds == even_sds)
-		rtpcs_sds_write(sds, 0x1f, 0x2, 0x2f);
-	else
-		rtpcs_sds_write(even_sds, 0x1f, 0x2, 0x31);
-
-	/* ##Page0x2E, Reg0x15[9], REG0_RX_EN_TEST=[1] */
-	rtpcs_sds_write_bits(sds, 0x2e, 0x15, 9, 9, 0x1);
-	/* ##Page0x21, Reg0x06[11 6], REG0_RX_DEBUG_SEL=[1 0 x x x x] */
-	rtpcs_sds_write_bits(sds, 0x21, 0x06, 11, 6, 0x20);
+	rtpcs_sds_write(even_sds, 0x1f, 0x2, (sds == even_sds) ? 0x2f : 0x31); /* REG_DBGO_SEL */
+	rtpcs_sds_write_bits(sds, 0x2e, 0x15, 9, 9, 0x1);	/* REG0_RX_EN_TEST */
+	rtpcs_sds_write_bits(sds, 0x21, 0x06, 11, 6, 0x20);	/* REG0_RX_DEBUG_SEL */
 
 	if (!tap_id) {
-		/* ##Page0x2F, Reg0x0C[5 0], REG0_COEF_SEL=[0 0 0 0 0 1] */
-		rtpcs_sds_write_bits(sds, 0x2f, 0x0c, 5, 0, 0);
+		rtpcs_sds_write_bits(sds, 0x2f, 0x0c, 5, 0, 0);	/* REG0_COEF_SEL */
 		/* ##Tap1 Even Read Out */
 		mdelay(1);
 		tap0_sign_out = rtpcs_sds_read_bits(sds, 0x1f, 0x14, 5, 5);
 		tap0_coef_bin = rtpcs_sds_read_bits(sds, 0x1f, 0x14, 4, 0);
 
-		if (tap0_sign_out == 1)
-			pr_info("Tap0 Sign : -");
-		else
-			pr_info("Tap0 Sign : +");
-
-		pr_info("tap0_coef_bin = %d", tap0_coef_bin);
+		pr_info("tap0: coef_bin = %d, sign = %s\n", tap0_coef_bin,
+			tap0_sign_out ? "-" : "+");
 
 		tap_list[0] = tap0_sign_out;
 		tap_list[1] = tap0_coef_bin;
 
 		tap_manual = !!rtpcs_sds_read_bits(sds, 0x2e, 0x0f, 7, 7);
-		pr_info("tap0 manual = %u", tap_manual);
+		pr_info("tap0: manual = %u\n", tap_manual);
 	} else {
-		/* ##Page0x2F, Reg0x0C[5 0], REG0_COEF_SEL=[0 0 0 0 0 1] */
-		rtpcs_sds_write_bits(sds, 0x2f, 0x0c, 5, 0, tap_id);
+		rtpcs_sds_write_bits(sds, 0x2f, 0x0c, 5, 0, tap_id);		/* REG0_COEF_SEL */
 		mdelay(1);
 		/* ##Tap1 Even Read Out */
 		tap_sign_out_even = rtpcs_sds_read_bits(sds, 0x1f, 0x14, 5, 5);
 		tap_coef_bin_even = rtpcs_sds_read_bits(sds, 0x1f, 0x14, 4, 0);
 
-		/* ##Page0x2F, Reg0x0C[5 0], REG0_COEF_SEL=[0 0 0 1 1 0] */
-		rtpcs_sds_write_bits(sds, 0x2f, 0x0c, 5, 0, (tap_id + 5));
+		rtpcs_sds_write_bits(sds, 0x2f, 0x0c, 5, 0, (tap_id + 5));	/* REG0_COEF_SEL */
 		/* ##Tap1 Odd Read Out */
 		tap_sign_out_odd = rtpcs_sds_read_bits(sds, 0x1f, 0x14, 5, 5);
 		tap_coef_bin_odd = rtpcs_sds_read_bits(sds, 0x1f, 0x14, 4, 0);
 
-		if (tap_sign_out_even == 1)
-			pr_info("Tap %u even sign: -", tap_id);
-		else
-			pr_info("Tap %u even sign: +", tap_id);
+		pr_info("tap%u: even coefficient = %u, sign = %s\n", tap_id, tap_coef_bin_even,
+			tap_sign_out_even ? "-" : "+");
 
-		pr_info("Tap %u even coefficient = %u", tap_id, tap_coef_bin_even);
-
-		if (tap_sign_out_odd == 1)
-			pr_info("Tap %u odd sign: -", tap_id);
-		else
-			pr_info("Tap %u odd sign: +", tap_id);
-
-		pr_info("Tap %u odd coefficient = %u", tap_id, tap_coef_bin_odd);
+		pr_info("tap%u: odd coefficient = %u, sign = %s\n", tap_id, tap_coef_bin_odd,
+			tap_sign_out_odd ? "-" : "+");
 
 		tap_list[0] = tap_sign_out_even;
 		tap_list[1] = tap_coef_bin_even;
@@ -2182,7 +2135,7 @@ static void rtpcs_930x_sds_rxcal_tap_get(struct rtpcs_serdes *sds,
 		tap_list[3] = tap_coef_bin_odd;
 
 		tap_manual = rtpcs_sds_read_bits(sds, 0x2e, 0x0f, tap_id + 7, tap_id + 7);
-		pr_info("tap %u manual = %d", tap_id, tap_manual);
+		pr_info("tap%u: manual = %d\n", tap_id, tap_manual);
 	}
 }
 
@@ -2191,7 +2144,7 @@ static void rtpcs_930x_sds_do_rx_calibration_1(struct rtpcs_serdes *sds,
 {
 	/* From both rtl9300_rxCaliConf_serdes_myParam and rtl9300_rxCaliConf_phy_myParam */
 	int tap0_init_val = 0x1f; /* Initial Decision Fed Equalizer 0 tap */
-	int vth_min       = 0x0;
+	int vth_min = 0x1;
 
 	pr_info("start_1.1.1 initial value for sds %d\n", sds->id);
 	rtpcs_sds_write(sds, 6,  0, 0);
@@ -2261,18 +2214,15 @@ static void rtpcs_930x_sds_do_rx_calibration_1(struct rtpcs_serdes *sds,
 
 	pr_info("start_1.1.5 LEQ and DFE setting\n");
 
-	/* TODO: make this work for DAC cables of different lengths */
-	/* For a 10GBit serdes wit Fibre, SDS 8 or 9 */
-	if (hw_mode == RTPCS_SDS_MODE_10GBASER ||
-	    hw_mode == RTPCS_SDS_MODE_1000BASEX ||
-	    hw_mode == RTPCS_SDS_MODE_SGMII)
-		rtpcs_sds_write_bits(sds, 0x2e, 0x16,  3,  2, 0x02);
-	else
-		pr_err("%s not PHY-based or SerDes, implement DAC!\n", __func__);
+	/* assume this is equivalent with (PHY_TYPE == SERDES && MEDIA == FIBER_10G) for now */
+	if (hw_mode == RTPCS_SDS_MODE_10GBASER) {
+		rtpcs_sds_write_bits(sds, 0x2e, 0x03, 13, 8, 0x1f);
+		rtpcs_sds_write_bits(sds, 0x2e, 0x00, 13, 13, 0x01);
+		rtpcs_sds_write_bits(sds, 0x2e, 0x16, 14, 8, 0x00);	/* REG0_FILTER_OUT */
+	}
 
-	/* No serdes, check for Aquantia PHYs */
-	rtpcs_sds_write_bits(sds, 0x2e, 0x16,  3,  2, 0x02);
-
+	/* REG0_LEQ_DC_GAIN */
+	rtpcs_sds_write_bits(sds, 0x2e, 0x16,  3,  2, 0x02); /* REG0_LEQ_DC_GAIN, 0x01 for short DACs */
 	rtpcs_sds_write_bits(sds, 0x2e, 0x0f,  6,  0, 0x5f);
 	rtpcs_sds_write_bits(sds, 0x2f, 0x05,  7,  2, 0x1f);
 	rtpcs_sds_write_bits(sds, 0x2e, 0x19,  9,  5, 0x1f);
@@ -2311,33 +2261,26 @@ static void rtpcs_930x_sds_do_rx_calibration_2_3(struct rtpcs_serdes *sds)
 
 	pr_info("start_1.2.3 Foreground Calibration\n");
 
-	while (1) {
-		if (sds == even_sds)
-			rtpcs_sds_write(sds, 0x1f, 0x2, 0x2f);
-		else
-			rtpcs_sds_write(even_sds, 0x1f, 0x2, 0x31);
+	for (int run = 0; run < 10; run++) {
+		/* REG_DBGO_SEL */
+		rtpcs_sds_write(even_sds, 0x1f, 0x2, (sds == even_sds) ? 0x2f : 0x31);
+		rtpcs_sds_write_bits(sds, 0x2e, 0x15, 9, 9, 0x1);	/* REG0_RX_EN_TEST */
+		rtpcs_sds_write_bits(sds, 0x21, 0x06, 11, 6, 0x20);	/* REG0_RX_DEBUG_SEL */
 
-		/* ##Page0x2E, Reg0x15[9], REG0_RX_EN_TEST=[1] */
-		rtpcs_sds_write_bits(sds, 0x2e, 0x15, 9, 9, 0x1);
-		/* ##Page0x21, Reg0x06[11 6], REG0_RX_DEBUG_SEL=[1 0 x x x x] */
-		rtpcs_sds_write_bits(sds, 0x21, 0x06, 11, 6, 0x20);
-		/* ##Page0x2F, Reg0x0C[5 0], REG0_COEF_SEL=[0 0 1 1 1 1] */
-		rtpcs_sds_write_bits(sds, 0x2f, 0x0c, 5, 0, 0xf);
+		rtpcs_sds_write_bits(sds, 0x2f, 0x0c, 5, 0, 0xf);	/* REG0_COEF_SEL */
 		/* ##FGCAL read gray */
 		fgcal_gray = rtpcs_sds_read_bits(sds, 0x1f, 0x14, 5, 0);
-		/* ##Page0x2F, Reg0x0C[5 0], REG0_COEF_SEL=[0 0 1 1 1 0] */
-		rtpcs_sds_write_bits(sds, 0x2f, 0x0c, 5, 0, 0xe);
+		rtpcs_sds_write_bits(sds, 0x2f, 0x0c, 5, 0, 0xe);	/* REG0_COEF_SEL */
 		/* ##FGCAL read binary */
 		fgcal_binary = rtpcs_sds_read_bits(sds, 0x1f, 0x14, 5, 0);
-
-		pr_info("%s: fgcal_gray: %d, fgcal_binary %d\n",
-			__func__, fgcal_gray, fgcal_binary);
-
-		offset_range = rtpcs_sds_read_bits(sds, 0x2e, 0x15, 15, 14);
 
 		if (fgcal_binary <= 60 && fgcal_binary >= 3)
 			break;
 
+		pr_info("%s: fgcal_gray = %d, fgcal_binary = %d\n", __func__, fgcal_gray,
+			fgcal_binary);
+
+		offset_range = rtpcs_sds_read_bits(sds, 0x2e, 0x15, 15, 14);
 		if (offset_range == 3) {
 			pr_info("%s: Foreground Calibration result marginal!", __func__);
 			break;
@@ -2544,8 +2487,8 @@ static void rtpcs_930x_sds_do_rx_calibration(struct rtpcs_serdes *sds,
 	rtpcs_930x_sds_do_rx_calibration_5(sds, hw_mode);
 	mdelay(20);
 
-	/* Do this only for 10GR mode, SDS active in mode 0x1a */
-	if (rtpcs_sds_read_bits(sds, 0x1f, 9, 11, 7) == RTPCS_930X_SDS_MODE_10GBASER) {
+	/* Do this only for 10GR mode */
+	if (hw_mode == RTPCS_SDS_MODE_10GBASER) {
 		pr_info("%s: SDS enabled\n", __func__);
 		latch_sts = rtpcs_sds_read_bits(sds, 0x4, 1, 2, 2);
 		mdelay(1);
@@ -2613,8 +2556,8 @@ static u32 rtpcs_930x_sds_sym_err_get(struct rtpcs_serdes *sds,
 	switch (hw_mode) {
 	case RTPCS_SDS_MODE_QSGMII:
 	case RTPCS_SDS_MODE_XSGMII:
-		v = rtpcs_sds_read_bits(sds, 0x1, 0x1, 15, 8) << 16;
-		v |= rtpcs_sds_read_bits(sds, 0x1, 0x0, 15, 0);
+		v = rtpcs_sds_read_bits(sds, 0x1, 0x1, 15, 8) << 16;	/* ALL_SYMBOLERR_CNT_NEW_23_16 */
+		v |= rtpcs_sds_read_bits(sds, 0x1, 0x0, 15, 0);		/* ALL_SYMBOLERR_CNT_NEW_15_0 */
 		break;
 
 	case RTPCS_SDS_MODE_USXGMII_10GQXGMII:
@@ -2625,10 +2568,14 @@ static u32 rtpcs_930x_sds_sym_err_get(struct rtpcs_serdes *sds,
 	case RTPCS_SDS_MODE_10GBASER:
 	case RTPCS_SDS_MODE_USXGMII_10GSXGMII:
 		v = rtpcs_sds_read(sds, 0x5, 0x1);
-		return v & 0xff;
+		v &= 0xff;
+		break;
 
 	default:
-		pr_info("%s unsupported PHY-mode\n", __func__);
+		rtpcs_sds_write_bits(sds, 0x1, 24, 2, 0, 0);
+
+		v = rtpcs_sds_read_bits(sds, 0x1, 0x3, 15, 8) << 16;	/* MUX_SYMBOLERR_CNT_NEW_23_16 */
+		v |= rtpcs_sds_read_bits(sds, 0x1, 0x2, 15, 0);		/* MUX_SYMBOLERR_CNT_NEW_15_0 */
 	}
 
 	return v;
@@ -2648,8 +2595,6 @@ static int rtpcs_930x_sds_check_calibration(struct rtpcs_serdes *sds,
 	errors2 = rtpcs_930x_sds_sym_err_get(sds, hw_mode);
 
 	switch (hw_mode) {
-	case RTPCS_SDS_MODE_1000BASEX:
-	case RTPCS_SDS_MODE_SGMII:
 	case RTPCS_SDS_MODE_XSGMII:
 		if ((errors2 - errors1 > 100) ||
 		    (errors1 >= 0xffff00) || (errors2 >= 0xffff00)) {
@@ -2657,16 +2602,12 @@ static int rtpcs_930x_sds_check_calibration(struct rtpcs_serdes *sds,
 			return 1;
 		}
 		break;
-	case RTPCS_SDS_MODE_10GBASER:
-	case RTPCS_SDS_MODE_USXGMII_10GSXGMII:
-	case RTPCS_SDS_MODE_USXGMII_10GQXGMII:
+	default:
 		if (errors2 > 0) {
-			pr_info("%s: 10G error rate too high\n", __func__);
+			pr_info("%s: symbol error rate too high\n", __func__);
 			return 1;
 		}
 		break;
-	default:
-		return 1;
 	}
 
 	return 0;
@@ -2702,26 +2643,27 @@ static void rtpcs_930x_phy_enable_10g_1g(struct rtpcs_serdes *sds)
 static int rtpcs_930x_sds_10g_idle(struct rtpcs_serdes *sds)
 {
 	struct rtpcs_serdes *even_sds = rtpcs_sds_get_even(sds);
-	bool busy;
-	int i = 0;
+	ktime_t timeout;
+	int bit, busy;
+
+	bit = (sds == even_sds) ? 0 : 1;
+	timeout = ktime_add_us(ktime_get(), 10000); /* timeout after 10 msecs */
 
 	do {
-		if (sds == even_sds) {
-			rtpcs_sds_write_bits(sds, 0x1f, 0x2, 15, 0, 53);
-			busy = !!rtpcs_sds_read_bits(sds, 0x1f, 0x14, 0, 0);
-		} else {
-			rtpcs_sds_write_bits(even_sds, 0x1f, 0x2, 15, 0, 53);
-			busy = !!rtpcs_sds_read_bits(even_sds, 0x1f, 0x14, 1, 1);
-		}
-		i++;
-	} while (busy && i < 100);
+		rtpcs_sds_write(even_sds, 0x1f, 0x2, 53);
+		busy = rtpcs_sds_read_bits(even_sds, 0x1f, 0x14, bit, bit);
+		if (busy < 0)
+			return busy;
 
-	if (i < 100)
-		return 0;
+		if (!busy)
+			return 0;
 
-	pr_warn("%s WARNING: Waiting for RX idle timed out, SDS %d\n",
+		usleep_range(100, 200); /* wait ~100 usecs before retry */
+	} while (ktime_before(ktime_get(), timeout));
+
+	pr_warn("%s: WARNING Waiting for RX idle timed out, SDS %d\n",
 		__func__, sds->id);
-	return -EIO;
+	return -ETIMEDOUT;
 }
 
 static int rtpcs_930x_sds_set_polarity(struct rtpcs_serdes *sds,
