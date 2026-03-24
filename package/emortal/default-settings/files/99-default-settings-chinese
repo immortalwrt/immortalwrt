@@ -18,6 +18,13 @@ if ! uci -q get system.@imm_init[0].system_chn > "/dev/null"; then
 	EOF
 fi
 
+if uci -q get system.@imm_init[0].opkg_mirror > "/dev/null"; then
+	uci -q batch <<-EOF
+		rename system.@imm_init[0].opkg_mirror="apk_mirror"
+		commit system
+	EOF
+fi
+
 apk_mirror="$(uci -q get system.@imm_init[0].apk_mirror)"
 if [ -z "$apk_mirror" ]; then
 	apk_mirror="https://mirrors.vsean.net/openwrt"
