@@ -1,3 +1,5 @@
+DTS_DIR := $(DTS_DIR)/microchip
+
 define Build/lan969x-fip
 	cat $(STAGING_DIR_IMAGE)/$1-fip.bin >> $@
 endef
@@ -25,6 +27,7 @@ define Device/microchip_ev23x71a
 	DEVICE_VENDOR := Microchip
 	DEVICE_MODEL := EV23X71A
 	SOC := lan9696
+	DEVICE_DTS_DIR := $(DTS_DIR)
 	DEVICE_PACKAGES := kmod-i2c-mux-gpio
 	IMAGES += emmc-atf-gpt.gz emmc-gpt.img.gz
 	IMAGE/emmc-atf-gpt.gz := lan969x-gpt-emmc |\
