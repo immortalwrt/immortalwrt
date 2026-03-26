@@ -1,12 +1,15 @@
-From 249b07e24d3d1d47b7ec23d5f09a56837b66d7f5 Mon Sep 17 00:00:00 2001
+From 85e2134182e21dc9550a1e316d690b1dda52d8cf Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
-Date: Sun, 16 Mar 2025 00:05:45 +0000
+Date: Thu, 5 Feb 2026 22:19:01 +0100
 Subject: [PATCH] nvmem: rockchip-otp: Add support for RK3528
 
 Add support for the OTP controller in RK3528. The OTPC is similar to the
 OTPC in RK3562 and RK3568, exept for a missing phy clock and reset.
 
 Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Tested-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Srinivas Kandagatla <srini@kernel.org>
 ---
  drivers/nvmem/rockchip-otp.c | 16 ++++++++++++++++
  1 file changed, 16 insertions(+)

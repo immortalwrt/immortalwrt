@@ -79,7 +79,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
  		qos_crypto_a: qos@ff200000 {
  			compatible = "rockchip,rk3528-qos", "syscon";
  			reg = <0x0 0xff200000 0x0 0x20>;
-@@ -1275,6 +1323,35 @@
+@@ -1273,6 +1321,35 @@
  			rockchip,pipe-phy-grf = <&pipe_phy_grf>;
  			status = "disabled";
  		};

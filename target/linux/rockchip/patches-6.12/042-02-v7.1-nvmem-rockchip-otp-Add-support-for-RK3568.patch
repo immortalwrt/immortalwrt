@@ -1,15 +1,16 @@
-From 24ddbf99c76a352cc1931ccb5118bca0656034b8 Mon Sep 17 00:00:00 2001
+From 11e01bcb827d369344f7f0e960698d33db9ced5a Mon Sep 17 00:00:00 2001
 From: Finley Xiao <finley.xiao@rock-chips.com>
-Date: Tue, 15 Apr 2025 18:32:02 +0800
+Date: Thu, 5 Feb 2026 22:18:59 +0100
 Subject: [PATCH] nvmem: rockchip-otp: Add support for RK3568
 
 This adds the necessary data for handling otp the rk3568.
 
 Signed-off-by: Finley Xiao <finley.xiao@rock-chips.com>
 Signed-off-by: Kever Yang <kever.yang@rock-chips.com>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 Reviewed-by: Heiko Stuebner <heiko@sntech.de>
 Tested-by: Heiko Stuebner <heiko@sntech.de>
-Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+Signed-off-by: Srinivas Kandagatla <srini@kernel.org>
 ---
  drivers/nvmem/rockchip-otp.c | 69 ++++++++++++++++++++++++++++++++++++
  1 file changed, 69 insertions(+)
