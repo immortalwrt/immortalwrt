@@ -248,7 +248,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 +
 +	ret = stmmac_suspend(dev);
 +	if (ret)
-+		return ret
++		return ret;
 +
 +	ret = pci_save_state(pdev);
 +	if (ret)
