@@ -638,6 +638,23 @@ endef
 $(eval $(call KernelPackage,phy-motorcomm))
 
 
+define KernelPackage/dwmac-motorcomm
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Motorcomm PCI DWMAC support
+  DEPENDS:=@PCI_SUPPORT +kmod-phy-motorcomm
+  KCONFIG:=CONFIG_DWMAC_MOTORCOMM
+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/stmicro/stmmac/dwmac-motorcomm.ko
+  AUTOLOAD:=$(call AutoProbe,dwmac-motorcomm,1)
+endef
+
+define KernelPackage/dwmac-motorcomm/description
+  Supports the Motorcomm DWMAC-based PCI Ethernet controllers.
+  Currently only YT6801 is supported.
+endef
+
+$(eval $(call KernelPackage,dwmac-motorcomm))
+
+
 define KernelPackage/dsa
   SUBMENU:=$(NETWORK_DEVICES_MENU)
   TITLE:=Distributed Switch Architecture support
