@@ -1,6 +1,6 @@
 --- a/arch/arm64/boot/dts/rockchip/rk3528.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3528.dtsi
-@@ -1363,6 +1363,16 @@
+@@ -1369,6 +1369,16 @@
  			};
  		};
  
