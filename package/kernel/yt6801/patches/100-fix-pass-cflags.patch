@@ -1,0 +1,12 @@
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -57,6 +57,9 @@ ifeq (,$(filter OFF off, $(FXGMAC_USE_ST
+ 	EXTRA_CFLAGS += -DFXGMAC_USE_STATIC_ALLOC
+ endif
+ 
++# Backward compatibility
++ccflags-y += $(EXTRA_CFLAGS)
++
+ yt6801-objs :=  fuxi-gmac-common.o fuxi-gmac-desc.o fuxi-gmac-ethtool.o fuxi-gmac-hw.o fuxi-gmac-net.o fuxi-gmac-pci.o fuxi-gmac-phy.o fuxi-efuse.o  fuxi-gmac-ioctl.o
+ 
+ BASEDIR := /lib/modules/$(shell uname -r)
