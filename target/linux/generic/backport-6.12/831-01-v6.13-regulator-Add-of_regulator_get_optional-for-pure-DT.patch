@@ -34,7 +34,7 @@ Signed-off-by: Mark Brown <broonie@kernel.org>
 
 --- a/drivers/regulator/core.c
 +++ b/drivers/regulator/core.c
-@@ -1966,8 +1966,8 @@ static struct regulator_dev *regulator_d
+@@ -1998,8 +1998,8 @@ static struct regulator_dev *regulator_d
  	regulator_supply_alias(&dev, &supply);
  
  	/* first do a dt based lookup */
@@ -65,7 +65,7 @@ Signed-off-by: Mark Brown <broonie@kernel.org>
  	return ERR_PTR(-ENODEV);
 --- a/drivers/regulator/of_regulator.c
 +++ b/drivers/regulator/of_regulator.c
-@@ -600,7 +600,8 @@ err_node_put:
+@@ -603,7 +603,8 @@ err_node_put:
  
  /**
   * of_get_regulator - get a regulator device node based on supply name
@@ -75,7 +75,7 @@ Signed-off-by: Mark Brown <broonie@kernel.org>
   * @supply: regulator supply name
   *
   * Extract the regulator device node corresponding to the supply name.
-@@ -608,15 +609,16 @@ err_node_put:
+@@ -611,15 +612,16 @@ err_node_put:
   * Return: Pointer to the &struct device_node corresponding to the regulator
   *	   if found, or %NULL if not found.
   */
@@ -95,7 +95,7 @@ Signed-off-by: Mark Brown <broonie@kernel.org>
  	if (regnode)
  		return regnode;
  
-@@ -640,6 +642,7 @@ static struct regulator_dev *of_find_reg
+@@ -643,6 +645,7 @@ static struct regulator_dev *of_find_reg
  /**
   * of_regulator_dev_lookup - lookup a regulator device with device tree only
   * @dev: Device pointer for regulator supply lookup.
@@ -103,7 +103,7 @@ Signed-off-by: Mark Brown <broonie@kernel.org>
   * @supply: Supply name or regulator ID.
   *
   * Return: Pointer to the &struct regulator_dev on success, or ERR_PTR()
-@@ -654,13 +657,13 @@ static struct regulator_dev *of_find_reg
+@@ -657,13 +660,13 @@ static struct regulator_dev *of_find_reg
   * * -%ENODEV if lookup fails permanently.
   * * -%EPROBE_DEFER if lookup could succeed in the future.
   */
@@ -119,7 +119,7 @@ Signed-off-by: Mark Brown <broonie@kernel.org>
  	if (node) {
  		r = of_find_regulator_by_node(node);
  		of_node_put(node);
-@@ -677,6 +680,42 @@ struct regulator_dev *of_regulator_dev_l
+@@ -680,6 +683,42 @@ struct regulator_dev *of_regulator_dev_l
  	return ERR_PTR(-ENODEV);
  }
  
@@ -184,7 +184,7 @@ Signed-off-by: Mark Brown <broonie@kernel.org>
  int regulator_register_supply_alias(struct device *dev, const char *id,
  				    struct device *alias_dev,
  				    const char *alias_id);
-@@ -349,6 +362,13 @@ devm_regulator_get_optional(struct devic
+@@ -354,6 +367,13 @@ devm_regulator_get_optional(struct devic
  {
  	return ERR_PTR(-ENODEV);
  }

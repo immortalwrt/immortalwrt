@@ -110,7 +110,7 @@ Signed-off-by: Mark Brown <broonie@kernel.org>
  				enum regulator_get_type get_type);
 --- a/drivers/regulator/of_regulator.c
 +++ b/drivers/regulator/of_regulator.c
-@@ -680,8 +680,8 @@ struct regulator_dev *of_regulator_dev_l
+@@ -683,8 +683,8 @@ struct regulator_dev *of_regulator_dev_l
  	return ERR_PTR(-ENODEV);
  }
  
@@ -147,7 +147,7 @@ Signed-off-by: Mark Brown <broonie@kernel.org>
  #endif
  
  int regulator_register_supply_alias(struct device *dev, const char *id,
-@@ -369,6 +379,13 @@ static inline struct regulator *__must_c
+@@ -374,6 +384,13 @@ static inline struct regulator *__must_c
  {
  	return ERR_PTR(-ENODEV);
  }

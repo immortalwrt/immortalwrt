@@ -36,8 +36,6 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
  arch/arm64/boot/dts/rockchip/rk3588s-rock-5c.dts            | 2 +-
  21 files changed, 23 insertions(+), 23 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
-index cb350727d11680..0d9b5020acc099 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-nanopc-t6.dtsi
 @@ -360,7 +360,7 @@
