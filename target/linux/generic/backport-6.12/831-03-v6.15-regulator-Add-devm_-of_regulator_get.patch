@@ -51,7 +51,7 @@ Signed-off-by: Mark Brown <broonie@kernel.org>
   * @node: device node for regulator "consumer"
 --- a/drivers/regulator/of_regulator.c
 +++ b/drivers/regulator/of_regulator.c
-@@ -695,6 +695,27 @@ struct regulator *_of_regulator_get(stru
+@@ -698,6 +698,27 @@ struct regulator *_of_regulator_get(stru
  }
  
  /**
