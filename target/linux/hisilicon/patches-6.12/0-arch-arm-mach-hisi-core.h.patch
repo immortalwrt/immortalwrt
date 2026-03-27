@@ -1,0 +1,21 @@
+--- a/arch/arm/mach-hisi/core.h
++++ b/arch/arm/mach-hisi/core.h
+@@ -4,6 +4,9 @@
+ 
+ #include <linux/reboot.h>
+ 
++extern volatile int hisi_pen_release;
++extern void hisi_secondary_startup(void);
++
+ extern void hi3xxx_set_cpu_jump(int cpu, void *jump_addr);
+ extern int hi3xxx_get_cpu_jump(int cpu);
+ extern void secondary_startup(void);
+@@ -16,4 +19,8 @@ extern void hix5hd2_set_cpu(int cpu, boo
+ extern void hix5hd2_cpu_die(unsigned int cpu);
+ 
+ extern void hip01_set_cpu(int cpu, bool enable);
++
++extern void hi3798_set_cpu(int cpu, bool enable);
++extern void hi3798_cpu_die(unsigned int cpu);
++extern int hi3798_cpu_kill(unsigned int cpu);
+ #endif

@@ -1,0 +1,283 @@
+--- a/drivers/clk/hisilicon/clk-hi3670.c
++++ b/drivers/clk/hisilicon/clk-hi3670.c
+@@ -9,8 +9,11 @@
+ 
+ #include <dt-bindings/clock/hi3670-clock.h>
+ #include <linux/clk-provider.h>
+-#include <linux/of.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/mod_devicetable.h>
+ #include <linux/platform_device.h>
++
+ #include "clk.h"
+ 
+ static const struct hisi_fixed_rate_clock hi3670_fixed_rate_clks[] = {
+@@ -822,195 +825,94 @@ static const struct hisi_gate_clock hi36
+ 	  CLK_SET_RATE_PARENT, 0x00, 2, 0, },
+ };
+ 
+-static void hi3670_clk_crgctrl_init(struct device_node *np)
+-{
+-	struct hisi_clock_data *clk_data;
+-
+-	int nr = ARRAY_SIZE(hi3670_fixed_rate_clks) +
+-		 ARRAY_SIZE(hi3670_crgctrl_gate_sep_clks) +
+-		 ARRAY_SIZE(hi3670_crgctrl_gate_clks) +
+-		 ARRAY_SIZE(hi3670_crgctrl_mux_clks) +
+-		 ARRAY_SIZE(hi3670_crg_fixed_factor_clks) +
+-		 ARRAY_SIZE(hi3670_crgctrl_divider_clks);
+-
+-	clk_data = hisi_clk_init(np, nr);
+-	if (!clk_data)
+-		return;
+-
+-	hisi_clk_register_fixed_rate(hi3670_fixed_rate_clks,
+-				     ARRAY_SIZE(hi3670_fixed_rate_clks),
+-				     clk_data);
+-	hisi_clk_register_gate_sep(hi3670_crgctrl_gate_sep_clks,
+-				   ARRAY_SIZE(hi3670_crgctrl_gate_sep_clks),
+-				   clk_data);
+-	hisi_clk_register_gate(hi3670_crgctrl_gate_clks,
+-			       ARRAY_SIZE(hi3670_crgctrl_gate_clks),
+-			       clk_data);
+-	hisi_clk_register_mux(hi3670_crgctrl_mux_clks,
+-			      ARRAY_SIZE(hi3670_crgctrl_mux_clks),
+-			      clk_data);
+-	hisi_clk_register_fixed_factor(hi3670_crg_fixed_factor_clks,
+-				       ARRAY_SIZE(hi3670_crg_fixed_factor_clks),
+-				       clk_data);
+-	hisi_clk_register_divider(hi3670_crgctrl_divider_clks,
+-				  ARRAY_SIZE(hi3670_crgctrl_divider_clks),
+-				  clk_data);
+-}
+-
+-static void hi3670_clk_pctrl_init(struct device_node *np)
+-{
+-	struct hisi_clock_data *clk_data;
+-	int nr = ARRAY_SIZE(hi3670_pctrl_gate_clks);
+-
+-	clk_data = hisi_clk_init(np, nr);
+-	if (!clk_data)
+-		return;
+-	hisi_clk_register_gate(hi3670_pctrl_gate_clks,
+-			       ARRAY_SIZE(hi3670_pctrl_gate_clks), clk_data);
+-}
+-
+-static void hi3670_clk_pmuctrl_init(struct device_node *np)
+-{
+-	struct hisi_clock_data *clk_data;
+-	int nr = ARRAY_SIZE(hi3670_pmu_gate_clks);
+-
+-	clk_data = hisi_clk_init(np, nr);
+-	if (!clk_data)
+-		return;
+-
+-	hisi_clk_register_gate(hi3670_pmu_gate_clks,
+-			       ARRAY_SIZE(hi3670_pmu_gate_clks), clk_data);
+-}
+-
+-static void hi3670_clk_sctrl_init(struct device_node *np)
+-{
+-	struct hisi_clock_data *clk_data;
+-	int nr = ARRAY_SIZE(hi3670_sctrl_gate_sep_clks) +
+-		 ARRAY_SIZE(hi3670_sctrl_gate_clks) +
+-		 ARRAY_SIZE(hi3670_sctrl_mux_clks) +
+-		 ARRAY_SIZE(hi3670_sctrl_divider_clks);
+-
+-	clk_data = hisi_clk_init(np, nr);
+-	if (!clk_data)
+-		return;
+-
+-	hisi_clk_register_gate_sep(hi3670_sctrl_gate_sep_clks,
+-				   ARRAY_SIZE(hi3670_sctrl_gate_sep_clks),
+-				   clk_data);
+-	hisi_clk_register_gate(hi3670_sctrl_gate_clks,
+-			       ARRAY_SIZE(hi3670_sctrl_gate_clks),
+-			       clk_data);
+-	hisi_clk_register_mux(hi3670_sctrl_mux_clks,
+-			      ARRAY_SIZE(hi3670_sctrl_mux_clks),
+-			      clk_data);
+-	hisi_clk_register_divider(hi3670_sctrl_divider_clks,
+-				  ARRAY_SIZE(hi3670_sctrl_divider_clks),
+-				  clk_data);
+-}
+-
+-static void hi3670_clk_iomcu_init(struct device_node *np)
+-{
+-	struct hisi_clock_data *clk_data;
+-	int nr = ARRAY_SIZE(hi3670_iomcu_gate_sep_clks) +
+-			ARRAY_SIZE(hi3670_iomcu_fixed_factor_clks);
+-
+-	clk_data = hisi_clk_init(np, nr);
+-	if (!clk_data)
+-		return;
+-
+-	hisi_clk_register_gate(hi3670_iomcu_gate_sep_clks,
+-			       ARRAY_SIZE(hi3670_iomcu_gate_sep_clks), clk_data);
+-
+-	hisi_clk_register_fixed_factor(hi3670_iomcu_fixed_factor_clks,
+-				       ARRAY_SIZE(hi3670_iomcu_fixed_factor_clks),
+-				       clk_data);
+-}
+-
+-static void hi3670_clk_media1_init(struct device_node *np)
+-{
+-	struct hisi_clock_data *clk_data;
+-
+-	int nr = ARRAY_SIZE(hi3670_media1_gate_sep_clks) +
+-		 ARRAY_SIZE(hi3670_media1_gate_clks) +
+-		 ARRAY_SIZE(hi3670_media1_mux_clks) +
+-		 ARRAY_SIZE(hi3670_media1_divider_clks);
+-
+-	clk_data = hisi_clk_init(np, nr);
+-	if (!clk_data)
+-		return;
+-
+-	hisi_clk_register_gate_sep(hi3670_media1_gate_sep_clks,
+-				   ARRAY_SIZE(hi3670_media1_gate_sep_clks),
+-				   clk_data);
+-	hisi_clk_register_gate(hi3670_media1_gate_clks,
+-			       ARRAY_SIZE(hi3670_media1_gate_clks),
+-			       clk_data);
+-	hisi_clk_register_mux(hi3670_media1_mux_clks,
+-			      ARRAY_SIZE(hi3670_media1_mux_clks),
+-			      clk_data);
+-	hisi_clk_register_divider(hi3670_media1_divider_clks,
+-				  ARRAY_SIZE(hi3670_media1_divider_clks),
+-				  clk_data);
+-}
+-
+-static void hi3670_clk_media2_init(struct device_node *np)
+-{
+-	struct hisi_clock_data *clk_data;
+-
+-	int nr = ARRAY_SIZE(hi3670_media2_gate_sep_clks);
+-
+-	clk_data = hisi_clk_init(np, nr);
+-	if (!clk_data)
+-		return;
+-
+-	hisi_clk_register_gate_sep(hi3670_media2_gate_sep_clks,
+-				   ARRAY_SIZE(hi3670_media2_gate_sep_clks),
+-				   clk_data);
+-}
++static const struct hisi_clocks hi3670_clk_crgctrl_clks = {
++	.fixed_rate_clks = hi3670_fixed_rate_clks,
++	.fixed_rate_clks_num = ARRAY_SIZE(hi3670_fixed_rate_clks),
++	.fixed_factor_clks = hi3670_crg_fixed_factor_clks,
++	.fixed_factor_clks_num = ARRAY_SIZE(hi3670_crg_fixed_factor_clks),
++	.mux_clks = hi3670_crgctrl_mux_clks,
++	.mux_clks_num = ARRAY_SIZE(hi3670_crgctrl_mux_clks),
++	.divider_clks = hi3670_crgctrl_divider_clks,
++	.divider_clks_num = ARRAY_SIZE(hi3670_crgctrl_divider_clks),
++	.gate_clks = hi3670_crgctrl_gate_clks,
++	.gate_clks_num = ARRAY_SIZE(hi3670_crgctrl_gate_clks),
++	.gate_sep_clks = hi3670_crgctrl_gate_sep_clks,
++	.gate_sep_clks_num = ARRAY_SIZE(hi3670_crgctrl_gate_sep_clks),
++};
++
++static const struct hisi_clocks hi3670_clk_pctrl_clks = {
++	.gate_clks = hi3670_pctrl_gate_clks,
++	.gate_clks_num = ARRAY_SIZE(hi3670_pctrl_gate_clks),
++};
++
++static const struct hisi_clocks hi3670_clk_pmuctrl_clks = {
++	.gate_clks = hi3670_pmu_gate_clks,
++	.gate_clks_num = ARRAY_SIZE(hi3670_pmu_gate_clks),
++};
++
++static const struct hisi_clocks hi3670_clk_sctrl_clks = {
++	.mux_clks = hi3670_sctrl_mux_clks,
++	.mux_clks_num = ARRAY_SIZE(hi3670_sctrl_mux_clks),
++	.divider_clks = hi3670_sctrl_divider_clks,
++	.divider_clks_num = ARRAY_SIZE(hi3670_sctrl_divider_clks),
++	.gate_clks = hi3670_sctrl_gate_clks,
++	.gate_clks_num = ARRAY_SIZE(hi3670_sctrl_gate_clks),
++	.gate_sep_clks = hi3670_sctrl_gate_sep_clks,
++	.gate_sep_clks_num = ARRAY_SIZE(hi3670_sctrl_gate_sep_clks),
++};
++
++static const struct hisi_clocks hi3670_clk_iomcu_clks = {
++	.fixed_factor_clks = hi3670_iomcu_fixed_factor_clks,
++	.fixed_factor_clks_num = ARRAY_SIZE(hi3670_iomcu_fixed_factor_clks),
++	.gate_clks = hi3670_iomcu_gate_sep_clks,
++	.gate_clks_num = ARRAY_SIZE(hi3670_iomcu_gate_sep_clks),
++};
++
++static const struct hisi_clocks hi3670_clk_media1_clks = {
++	.mux_clks = hi3670_media1_mux_clks,
++	.mux_clks_num = ARRAY_SIZE(hi3670_media1_mux_clks),
++	.divider_clks = hi3670_media1_divider_clks,
++	.divider_clks_num = ARRAY_SIZE(hi3670_media1_divider_clks),
++	.gate_clks = hi3670_media1_gate_clks,
++	.gate_clks_num = ARRAY_SIZE(hi3670_media1_gate_clks),
++	.gate_sep_clks = hi3670_media1_gate_sep_clks,
++	.gate_sep_clks_num = ARRAY_SIZE(hi3670_media1_gate_sep_clks),
++};
++
++static const struct hisi_clocks hi3670_clk_media2_clks = {
++	.gate_sep_clks = hi3670_media2_gate_sep_clks,
++	.gate_sep_clks_num = ARRAY_SIZE(hi3670_media2_gate_sep_clks),
++};
+ 
+ static const struct of_device_id hi3670_clk_match_table[] = {
+ 	{ .compatible = "hisilicon,hi3670-crgctrl",
+-	  .data = hi3670_clk_crgctrl_init },
++	  .data = &hi3670_clk_crgctrl_clks },
+ 	{ .compatible = "hisilicon,hi3670-pctrl",
+-	  .data = hi3670_clk_pctrl_init },
++	  .data = &hi3670_clk_pctrl_clks },
+ 	{ .compatible = "hisilicon,hi3670-pmuctrl",
+-	  .data = hi3670_clk_pmuctrl_init },
++	  .data = &hi3670_clk_pmuctrl_clks },
+ 	{ .compatible = "hisilicon,hi3670-sctrl",
+-	  .data = hi3670_clk_sctrl_init },
++	  .data = &hi3670_clk_sctrl_clks },
+ 	{ .compatible = "hisilicon,hi3670-iomcu",
+-	  .data = hi3670_clk_iomcu_init },
++	  .data = &hi3670_clk_iomcu_clks },
+ 	{ .compatible = "hisilicon,hi3670-media1-crg",
+-	  .data = hi3670_clk_media1_init },
++	  .data = &hi3670_clk_media1_clks },
+ 	{ .compatible = "hisilicon,hi3670-media2-crg",
+-	  .data = hi3670_clk_media2_init },
++	  .data = &hi3670_clk_media2_clks },
+ 	{ }
+ };
+-
+-static int hi3670_clk_probe(struct platform_device *pdev)
+-{
+-	struct device *dev = &pdev->dev;
+-	struct device_node *np = pdev->dev.of_node;
+-	void (*init_func)(struct device_node *np);
+-
+-	init_func = of_device_get_match_data(dev);
+-	if (!init_func)
+-		return -ENODEV;
+-
+-	init_func(np);
+-
+-	return 0;
+-}
++MODULE_DEVICE_TABLE(of, hi3670_clk_match_table);
+ 
+ static struct platform_driver hi3670_clk_driver = {
+-	.probe          = hi3670_clk_probe,
++	.probe = hisi_clk_probe,
++	.remove = hisi_clk_remove,
+ 	.driver         = {
+ 		.name   = "hi3670-clk",
+ 		.of_match_table = hi3670_clk_match_table,
+ 	},
+ };
+ 
+-static int __init hi3670_clk_init(void)
+-{
+-	return platform_driver_register(&hi3670_clk_driver);
+-}
+-core_initcall(hi3670_clk_init);
++module_platform_driver(hi3670_clk_driver);
++
++MODULE_LICENSE("GPL v2");
++MODULE_DESCRIPTION("HiSilicon Hi3670 Clock Driver");

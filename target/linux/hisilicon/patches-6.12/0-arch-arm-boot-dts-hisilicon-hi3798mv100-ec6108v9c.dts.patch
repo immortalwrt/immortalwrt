@@ -1,0 +1,195 @@
+--- /dev/null
++++ b/arch/arm/boot/dts/hisilicon/hi3798mv100-ec6108v9c.dts
+@@ -0,0 +1,192 @@
++// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
++/*
++ * Copyright (c) 2023 David Yang
++ */
++
++/dts-v1/;
++#include "hi3798mv100.dtsi"
++
++/ {
++	model = "Huawei EC6108V9C";
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	leds {
++		compatible = "gpio-leds";
++
++		network {
++			label = "green:network";
++			gpios = <&gpio0 4 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		network-activity {
++			label = "red:network";
++			gpios = <&gpio2 2 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		ir {
++			label = "green:ir";
++			gpios = <&gpio5 2 GPIO_ACTIVE_HIGH>;
++			panic-indicator;
++			default-state = "off";
++		};
++	};
++};
++
++&emmc_data {
++	pinctrl-single,bias-pulldown = <
++		PINCTRL_PULLDOWN(0, 1, 0, 1)
++	>;
++	pinctrl-single,slew-rate = <
++		PINCTRL_SLEW_RATE(1, 1)
++	>;
++	pinctrl-single,drive-strength = <
++		PINCTRL_DRV_STRENGTH(6, 7)
++	>;
++};
++
++&emmc_detect {
++	pinctrl-single,bias-pulldown = <
++		PINCTRL_PULLDOWN(0, 1, 0, 1)
++	>;
++	pinctrl-single,slew-rate = <
++		PINCTRL_SLEW_RATE(1, 1)
++	>;
++	pinctrl-single,drive-strength = <
++		PINCTRL_DRV_STRENGTH(3, 3)
++	>;
++};
++
++&emmc_ccmd {
++	pinctrl-single,bias-pullup = <
++		PINCTRL_PULLUP(0, 1, 0, 1)
++	>;
++	pinctrl-single,slew-rate = <
++		PINCTRL_SLEW_RATE(1, 1)
++	>;
++	pinctrl-single,drive-strength = <
++		PINCTRL_DRV_STRENGTH(6, 7)
++	>;
++};
++
++&emmc_cclk_out {
++	pinctrl-single,bias-pulldown = <
++		PINCTRL_PULLDOWN(0, 1, 0, 1)
++	>;
++	pinctrl-single,slew-rate = <
++		PINCTRL_SLEW_RATE(1, 1)
++	>;
++	pinctrl-single,drive-strength = <
++		PINCTRL_DRV_STRENGTH(5, 7)
++	>;
++};
++
++&emmc_rst {
++	pinctrl-single,bias-pullup = <
++		PINCTRL_PULLUP(0, 1, 0, 1)
++	>;
++	pinctrl-single,slew-rate = <
++		PINCTRL_SLEW_RATE(1, 1)
++	>;
++	pinctrl-single,drive-strength = <
++		PINCTRL_DRV_STRENGTH(3, 3)
++	>;
++};
++
++&timer1 {
++	status = "okay";
++};
++
++&uart0 {
++	status = "okay";
++};
++
++&gpio0 {
++	gpio-ranges = <
++		&pmx0 2 10 1
++		&pmx0 3 79 1
++		&pmx0 4 21 4
++	>;
++	status = "okay";
++};
++
++&gpio2 {
++	gpio-ranges = <
++		&pmx0 0 25 1
++		&pmx0 1 54 1
++		&pmx0 2 55 2
++	>;
++	status = "okay";
++};
++
++&gpio4 {
++	gpio-ranges = <
++		&pmx0 0 80 2
++/*		&pmx0 4 45 2 */
++	>;
++	status = "okay";
++};
++
++&gpio5 {
++	status = "okay";
++};
++
++&gpio6 {
++	gpio-ranges = <
++		&pmx0 0 82 2
++	>;
++	status = "okay";
++};
++
++&gpu {
++	status = "okay";
++};
++
++&emmc {
++	fifo-depth = <256>;
++	clock-frequency = <100000000>;
++	cap-mmc-highspeed;
++	mmc-ddr-1_8v;
++	mmc-hs200-1_8v;
++	non-removable;
++	status = "okay";
++};
++
++/*
++&sd {
++	status = "okay";
++};
++*/
++
++&eth0 {
++	status = "okay";
++};
++
++&ohci0 {
++	status = "okay";
++};
++
++&ehci0 {
++	status = "okay";
++};
++
++&ohci1 {
++	status = "okay";
++};
++
++&ehci1 {
++	status = "okay";
++};
++
++&ir {
++	status = "okay";
++};
++/*
++&i2c_hdmi {
++	status = "okay";
++};
++*/
