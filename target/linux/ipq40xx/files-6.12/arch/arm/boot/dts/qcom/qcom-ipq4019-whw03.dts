@@ -63,7 +63,7 @@
 			compatible = "block-device";
 			partitions {
 				block-partition-art {
-					partname = "art";
+					partname = "0:ART";
 
 					nvmem-layout {
 						compatible = "fixed-layout";
