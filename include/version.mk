@@ -26,36 +26,53 @@ PKG_CONFIG_DEPENDS += \
 
 sanitize = $(call tolower,$(subst _,-,$(subst $(space),-,$(1))))
 
+# 动态从 Git 获取版本号（仅标签，去掉v前缀）
 VERSION_NUMBER:=$(call qstrip,$(CONFIG_VERSION_NUMBER))
-VERSION_NUMBER:=$(if $(VERSION_NUMBER),$(VERSION_NUMBER),SNAPSHOT)
+ifeq ($(VERSION_NUMBER),)
+  ifneq ($(wildcard $(TOPDIR)/.git),)
+    # Git 环境：只获取最近的标签并去掉v前缀
+    GIT_TAG:=$(shell cd $(TOPDIR) && git describe --tags --abbrev=0 2>/dev/null)
+    ifneq ($(GIT_TAG),)
+      # 去掉标签开头的v或V前缀
+      VERSION_NUMBER:=$(patsubst v%,%,$(patsubst V%,%,$(GIT_TAG)))
+    else
+      # 没有标签时使用默认值
+      VERSION_NUMBER:=snapshot
+    endif
+  else
+    # 非 Git 环境：使用默认值
+    VERSION_NUMBER:=snapshot
+  endif
+endif
 
 VERSION_CODE:=$(call qstrip,$(CONFIG_VERSION_CODE))
 VERSION_CODE:=$(if $(VERSION_CODE),$(VERSION_CODE),$(REVISION))
 
+# 复用已获取的版本号
 VERSION_REPO:=$(call qstrip,$(CONFIG_VERSION_REPO))
-VERSION_REPO:=$(if $(VERSION_REPO),$(VERSION_REPO),https://downloads.immortalwrt.org/snapshots)
+VERSION_REPO:=$(if $(VERSION_REPO),$(VERSION_REPO),https://pcat.qsim.top/zagwrt/immortalwrt/releases/$(VERSION_NUMBER))
 
 VERSION_DIST:=$(call qstrip,$(CONFIG_VERSION_DIST))
-VERSION_DIST:=$(if $(VERSION_DIST),$(VERSION_DIST),ImmortalWrt)
+VERSION_DIST:=$(if $(VERSION_DIST),$(VERSION_DIST),ZagWrt)
 VERSION_DIST_SANITIZED:=$(call sanitize,$(VERSION_DIST))
 
 VERSION_MANUFACTURER:=$(call qstrip,$(CONFIG_VERSION_MANUFACTURER))
-VERSION_MANUFACTURER:=$(if $(VERSION_MANUFACTURER),$(VERSION_MANUFACTURER),ImmortalWrt)
+VERSION_MANUFACTURER:=$(if $(VERSION_MANUFACTURER),$(VERSION_MANUFACTURER),ZagWrt)
 
 VERSION_MANUFACTURER_URL:=$(call qstrip,$(CONFIG_VERSION_MANUFACTURER_URL))
-VERSION_MANUFACTURER_URL:=$(if $(VERSION_MANUFACTURER_URL),$(VERSION_MANUFACTURER_URL),https://immortalwrt.org/)
+VERSION_MANUFACTURER_URL:=$(if $(VERSION_MANUFACTURER_URL),$(VERSION_MANUFACTURER_URL),https://pcat.qsim.top/)
 
 VERSION_BUG_URL:=$(call qstrip,$(CONFIG_VERSION_BUG_URL))
-VERSION_BUG_URL:=$(if $(VERSION_BUG_URL),$(VERSION_BUG_URL),https://github.com/immortalwrt/immortalwrt/issues)
+VERSION_BUG_URL:=$(if $(VERSION_BUG_URL),$(VERSION_BUG_URL),https://github.com/ntbowen/zagwrt/issues)
 
 VERSION_HOME_URL:=$(call qstrip,$(CONFIG_VERSION_HOME_URL))
-VERSION_HOME_URL:=$(if $(VERSION_HOME_URL),$(VERSION_HOME_URL),https://immortalwrt.org/)
+VERSION_HOME_URL:=$(if $(VERSION_HOME_URL),$(VERSION_HOME_URL),https://pcat.qsim.top/)
 
 VERSION_SUPPORT_URL:=$(call qstrip,$(CONFIG_VERSION_SUPPORT_URL))
-VERSION_SUPPORT_URL:=$(if $(VERSION_SUPPORT_URL),$(VERSION_SUPPORT_URL),https://github.com/immortalwrt/immortalwrt/discussions)
+VERSION_SUPPORT_URL:=$(if $(VERSION_SUPPORT_URL),$(VERSION_SUPPORT_URL),https://github.com/ntbowen/zagwrt/discussions)
 
 VERSION_FIRMWARE_URL:=$(call qstrip,$(CONFIG_VERSION_FIRMWARE_URL))
-VERSION_FIRMWARE_URL:=$(if $(VERSION_FIRMWARE_URL),$(VERSION_FIRMWARE_URL),https://downloads.immortalwrt.org/)
+VERSION_FIRMWARE_URL:=$(if $(VERSION_FIRMWARE_URL),$(VERSION_FIRMWARE_URL),https://github.com/ntbowen/zagwrt/)
 
 VERSION_PRODUCT:=$(call qstrip,$(CONFIG_VERSION_PRODUCT))
 VERSION_PRODUCT:=$(if $(VERSION_PRODUCT),$(VERSION_PRODUCT),Generic)
@@ -93,6 +110,9 @@ $(subst &,\&,$(subst $(comma),\$(comma),$(subst ','\'',$(subst \,\\,$(1)))))
 endef
 #'
 
+# 定义构建时间戳（北京时间）
+BUILD_TIMESTAMP=$(shell TZ='Asia/Shanghai' date +%Y%m%d-%H%M)
+
 VERSION_SED_SCRIPT:=$(SED) 's,%U,$(call sed_escape,$(VERSION_REPO)),g' \
 	-e 's,%V,$(call sed_escape,$(VERSION_NUMBER)),g' \
 	-e 's,%v,\L$(call sed_escape,$(subst $(space),_,$(VERSION_NUMBER))),g' \
@@ -113,4 +133,5 @@ VERSION_SED_SCRIPT:=$(SED) 's,%U,$(call sed_escape,$(VERSION_REPO)),g' \
 	-e 's,%f,$(call sed_escape,$(VERSION_FIRMWARE_URL)),g' \
 	-e 's,%P,$(call sed_escape,$(VERSION_PRODUCT)),g' \
 	-e 's,%h,$(call sed_escape,$(VERSION_HWREV)),g' \
-	-e 's,%B,$(call sed_escape,$(SOURCE_DATE_EPOCH)),g'
+	-e 's,%B,$(call sed_escape,$(SOURCE_DATE_EPOCH)),g' \
+	-e 's,%E,$(call sed_escape,$(BUILD_TIMESTAMP)),g'
