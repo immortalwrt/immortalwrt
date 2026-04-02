@@ -13,7 +13,8 @@ include $(INCLUDE_DIR)/feeds.mk
 
 PKG_NAME:=base-files
 PKG_FLAGS:=nonshared
-PKG_RELEASE:=$(COMMITCOUNT)
+# 将 BUILD_TIMESTAMP 加入版本号，确保每次编译固件时 base-files 都会重新编译
+PKG_RELEASE:=$(COMMITCOUNT)-$(BUILD_TIMESTAMP)
 
 PKG_FILE_DEPENDS:=$(PLATFORM_DIR)/ $(GENERIC_PLATFORM_DIR)/base-files/
 PKG_BUILD_DEPENDS:=usign/host ucert/host
