@@ -1,0 +1,19 @@
+--- a/include/fortify-headers.h
++++ b/include/fortify-headers.h
+@@ -33,6 +33,16 @@
+ #warning _FORTIFY_SOURCE > 3 is treated as 3
+ #endif
+ 
++/* Define FORTIFY_USE_NATIVE_CHK if not already defined to avoid -Werror=undef */
++#ifndef FORTIFY_USE_NATIVE_CHK
++#define FORTIFY_USE_NATIVE_CHK 0
++#endif
++
++/* Define _REDIR_TIME64 if not already defined to avoid -Werror=undef */
++#ifndef _REDIR_TIME64
++#define _REDIR_TIME64 0
++#endif
++
+ #ifdef __clang__
+ 
+ #if _FORTIFY_SOURCE  > 2 && __fh_has_builtin (__builtin_dynamic_object_size) && __has_attribute(pass_dynamic_object_size)
