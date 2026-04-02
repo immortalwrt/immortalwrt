@@ -1,0 +1,25 @@
+Index: libiwinfo-2026.01.14~f5dd57a8/iwinfo_nl80211.c
+===================================================================
+--- libiwinfo-2026.01.14~f5dd57a8.orig/iwinfo_nl80211.c
++++ libiwinfo-2026.01.14~f5dd57a8/iwinfo_nl80211.c
+@@ -288,6 +288,20 @@ static const char *nl80211_phy_path_str(
+ 	if (!strncmp(link, prefix, prefix_len) && strstr(link, "/pci"))
+ 		link += prefix_len;
+ 
++	/* For USB WiFi devices under xhci-hcd, the platform device instance
++	 * number (xhci-hcd.N.auto) is dynamically assigned and can change
++	 * across reboots depending on driver registration order. Strip this
++	 * unstable component and keep only the stable USB topology path
++	 * starting from usb<N>/... */
++	{
++		char *xhci = strstr(link, "/xhci-hcd.");
++		if (xhci) {
++			char *usb = strchr(xhci + 1, '/');
++			if (usb)
++				link = usb + 1;
++		}
++	}
++
+ 	snprintf(buf + buf_len, sizeof(buf) - buf_len, "/ieee80211");
+ 	d = opendir(buf);
+ 	if (!d)

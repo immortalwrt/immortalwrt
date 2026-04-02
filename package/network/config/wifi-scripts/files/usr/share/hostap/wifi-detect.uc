@@ -18,6 +18,8 @@ function phy_path(name) {
 	devpath = replace(devpath, /^\/sys\/devices\//, "");
 	if (match(devpath, /^platform\/.*\/pci/))
 		devpath = replace(devpath, /^platform\//, "");
+	else if (match(devpath, /\/xhci-hcd\.[0-9]+\.auto\//))
+		devpath = replace(devpath, /^.*\/xhci-hcd\.[0-9]+\.auto\//, "");
 	let dev_phys = map(glob(`/sys/class/ieee80211/${name}/device/ieee80211/*`), basename);
 	sort(dev_phys, (a, b) => phy_idx(a) - phy_idx(b));
 
