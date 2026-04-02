@@ -48,7 +48,26 @@ IMG_PREFIX_EXTRA:=$(if $(EXTRA_IMAGE_NAME),$(call sanitize,$(EXTRA_IMAGE_NAME))-
 IMG_PREFIX_VERNUM:=$(if $(CONFIG_VERSION_FILENAMES),$(call sanitize,$(VERSION_NUMBER))-)
 IMG_PREFIX_VERCODE:=$(if $(CONFIG_VERSION_CODE_FILENAMES),$(call sanitize,$(VERSION_CODE))-)
 
-IMG_PREFIX:=$(VERSION_DIST_SANITIZED)-$(IMG_PREFIX_VERNUM)$(IMG_PREFIX_VERCODE)$(IMG_PREFIX_EXTRA)$(BOARD)-$(SUBTARGET)
+# 定义固件输出目录（当启用 private 设置时使用 private 子目录）
+FIRMWARE_BIN_DIR:=$(BIN_DIR)$(if $(CONFIG_PACKAGE_zagwrt-settings_INCLUDE_r86s_private),/private)
+
+# 定义固件文件复制函数
+define copy_firmware_file
+	@mkdir -p $(dir $(2))
+	cp $(1) $(2)
+endef
+
+# 添加固件内核版本
+KERNEL_VER:=$(LINUX_VERSION)
+ifeq ($(KERNEL_VER),)
+  KERNEL_VER:=$(shell grep -oE "LINUX_VERSION:=([0-9.]+)" $(TOPDIR)/target/linux/generic/kernel-$(KERNEL_PATCHVER) | cut -d'=' -f2)
+endif
+ifeq ($(KERNEL_VER),)
+  KERNEL_VER:=unknown
+endif
+
+# 自定义固件名
+IMG_PREFIX:=$(VERSION_DIST_SANITIZED)-$(IMG_PREFIX_VERNUM)$(IMG_PREFIX_VERCODE)$(IMG_PREFIX_EXTRA)$(KERNEL_VER)-$(BUILD_TIMESTAMP)-$(BOARD)-$(SUBTARGET)
 IMG_ROOTFS:=$(IMG_PREFIX)-rootfs
 IMG_COMBINED:=$(IMG_PREFIX)-combined
 ifeq ($(DUMP),)
@@ -117,7 +136,6 @@ fs-types-$(CONFIG_TARGET_ROOTFS_JFFS2_NAND) += $(addprefix jffs2-nand-,$(NAND_BL
 fs-types-$(CONFIG_TARGET_ROOTFS_EXT4FS) += ext4
 fs-types-$(CONFIG_TARGET_ROOTFS_UBIFS) += ubifs
 fs-types-$(CONFIG_TARGET_ROOTFS_EROFS) += erofs
-fs-types-$(CONFIG_TARGET_ROOTFS_TARGZ) += targz
 fs-subtypes-$(CONFIG_TARGET_ROOTFS_JFFS2) += $(addsuffix -raw,$(addprefix jffs2-,$(JFFS2_BLOCKSIZE)))
 
 TARGET_FILESYSTEMS := $(fs-types-y)
@@ -330,25 +348,20 @@ define Image/mkfs/erofs
 		$@ $(call mkfs_target_dir,$(1))
 endef
 
-define Image/mkfs/targz
-	$(TAR) -cp --numeric-owner --owner=0 --group=0 --mode=a-s --sort=name \
-		$(if $(SOURCE_DATE_EPOCH),--mtime="@$(SOURCE_DATE_EPOCH)") \
-		-C $(call mkfs_target_dir,$(1)) . | gzip -9n > $@
-endef
-
 define Image/Manifest
+	@mkdir -p $(FIRMWARE_BIN_DIR)
 	$(if $(CONFIG_USE_APK), \
 		$(call apk,$(TARGET_DIR_ORIG)) list --quiet --manifest --no-network \
 			--repositories-file /dev/null | sort | sed 's/ / - /'  > \
-			$(BIN_DIR)/$(IMG_PREFIX)$(if $(PROFILE_SANITIZED),-$(PROFILE_SANITIZED)).manifest, \
+			$(FIRMWARE_BIN_DIR)/$(IMG_PREFIX)$(if $(PROFILE_SANITIZED),-$(PROFILE_SANITIZED)).manifest, \
 		$(call opkg,$(TARGET_DIR_ORIG)) list-installed > \
-			$(BIN_DIR)/$(IMG_PREFIX)$(if $(PROFILE_SANITIZED),-$(PROFILE_SANITIZED)).manifest \
+			$(FIRMWARE_BIN_DIR)/$(IMG_PREFIX)$(if $(PROFILE_SANITIZED),-$(PROFILE_SANITIZED)).manifest \
 	)
 ifneq ($(CONFIG_JSON_CYCLONEDX_SBOM),)
 	$(SCRIPT_DIR)/package-metadata.pl imgcyclonedxsbom \
 		$(if $(IB),$(TOPDIR)/.packageinfo, $(TMP_DIR)/.packageinfo) \
-		$(BIN_DIR)/$(IMG_PREFIX)$(if $(PROFILE_SANITIZED),-$(PROFILE_SANITIZED)).manifest > \
-		$(BIN_DIR)/$(IMG_PREFIX)$(if $(PROFILE_SANITIZED),-$(PROFILE_SANITIZED)).bom.cdx.json
+		$(FIRMWARE_BIN_DIR)/$(IMG_PREFIX)$(if $(PROFILE_SANITIZED),-$(PROFILE_SANITIZED)).manifest > \
+		$(FIRMWARE_BIN_DIR)/$(IMG_PREFIX)$(if $(PROFILE_SANITIZED),-$(PROFILE_SANITIZED)).bom.cdx.json
 endif
 endef
 
@@ -371,15 +384,17 @@ endef
 
 ifdef CONFIG_TARGET_ROOTFS_TARGZ
   define Image/Build/targz
+	@mkdir -p $(FIRMWARE_BIN_DIR)
 	$(TAR) -cp --numeric-owner --owner=0 --group=0 --mode=a-s --sort=name \
 		$(if $(SOURCE_DATE_EPOCH),--mtime="@$(SOURCE_DATE_EPOCH)") \
-		-C $(TARGET_DIR)/ . | gzip -9n > $(BIN_DIR)/$(IMG_PREFIX)$(if $(PROFILE_SANITIZED),-$(PROFILE_SANITIZED))-rootfs.tar.gz
+		-C $(TARGET_DIR)/ . | gzip -9n > $(FIRMWARE_BIN_DIR)/$(IMG_PREFIX)$(if $(PROFILE_SANITIZED),-$(PROFILE_SANITIZED))-rootfs.tar.gz
   endef
 endif
 
 ifdef CONFIG_TARGET_ROOTFS_CPIOGZ
   define Image/Build/cpiogz
-	( cd $(TARGET_DIR); find . | $(STAGING_DIR_HOST)/bin/cpio -o -H newc -R 0:0 | gzip -9n >$(BIN_DIR)/$(IMG_ROOTFS).cpio.gz )
+	@mkdir -p $(FIRMWARE_BIN_DIR)
+	( cd $(TARGET_DIR); find . | $(STAGING_DIR_HOST)/bin/cpio -o -H newc -R 0:0 | gzip -9n >$(FIRMWARE_BIN_DIR)/$(IMG_ROOTFS).cpio.gz )
   endef
 endif
 
@@ -637,7 +652,7 @@ define Device/Build/initramfs
   .IGNORE: $(BIN_DIR)/$$(KERNEL_INITRAMFS_IMAGE)
 
   $(BIN_DIR)/$$(KERNEL_INITRAMFS_IMAGE): $(KDIR)/tmp/$$(KERNEL_INITRAMFS_IMAGE)
-	cp $$^ $$@
+	$(call copy_firmware_file,$$^,$(FIRMWARE_BIN_DIR)/$$(KERNEL_INITRAMFS_IMAGE))
 
   $(KDIR)/tmp/$$(KERNEL_INITRAMFS_IMAGE): $(KDIR)/$$(KERNEL_INITRAMFS_NAME)$$(strip \
 						$(if $(TARGET_PER_DEVICE_ROOTFS),.$$(ROOTFS_ID/$(1))) \
@@ -741,7 +756,7 @@ define Device/Build/kernel
   $$(_TARGET): $$(if $$(KERNEL_INSTALL),$(BIN_DIR)/$$(KERNEL_IMAGE))
   $(call Device/Export,$$(KDIR_KERNEL_IMAGE),$(1))
   $(BIN_DIR)/$$(KERNEL_IMAGE): $$(KDIR_KERNEL_IMAGE)
-	cp $$^ $$@
+	$(call copy_firmware_file,$$^,$(FIRMWARE_BIN_DIR)/$$(KERNEL_IMAGE))
   ifndef IB
     ifdef CONFIG_IB
       install: $$(KDIR_KERNEL_IMAGE)
@@ -778,10 +793,11 @@ define Device/Build/image
   .IGNORE: $(BIN_DIR)/$(call DEVICE_IMG_NAME,$(1),$(2))
 
   $(BIN_DIR)/$(call DEVICE_IMG_NAME,$(1),$(2)).gz: $(KDIR)/tmp/$(call DEVICE_IMG_NAME,$(1),$(2))
-	gzip -c -9n $$^ > $$@
+	@mkdir -p $(dir $(FIRMWARE_BIN_DIR)/$(call DEVICE_IMG_NAME,$(1),$(2)).gz)
+	gzip -c -9n $$^ > $(FIRMWARE_BIN_DIR)/$(call DEVICE_IMG_NAME,$(1),$(2)).gz
 
   $(BIN_DIR)/$(call DEVICE_IMG_NAME,$(1),$(2)): $(KDIR)/tmp/$(call DEVICE_IMG_NAME,$(1),$(2))
-	cp $$^ $$@
+	$(call copy_firmware_file,$$^,$(FIRMWARE_BIN_DIR)/$(call DEVICE_IMG_NAME,$(1),$(2)))
 
   $(BUILD_DIR)/json_info_files/$(call DEVICE_IMG_NAME,$(1),$(2)).json: $(BIN_DIR)/$(call DEVICE_IMG_NAME,$(1),$(2))$$(GZ_SUFFIX)
 	@mkdir -p $$(shell dirname $$@)
@@ -838,7 +854,7 @@ define Device/Build/artifact
   .IGNORE: $(BIN_DIR)/$(DEVICE_IMG_PREFIX)-$(1)
 
   $(BIN_DIR)/$(DEVICE_IMG_PREFIX)-$(1): $(KDIR)/tmp/$(DEVICE_IMG_PREFIX)-$(1)
-	cp $$^ $$@
+	$(call copy_firmware_file,$$^,$(FIRMWARE_BIN_DIR)/$(DEVICE_IMG_PREFIX)-$(1))
 
   $(BUILD_DIR)/json_info_files/$(DEVICE_IMG_PREFIX)-$(1).json: $(BIN_DIR)/$(DEVICE_IMG_PREFIX)-$(1)
 	@mkdir -p $$(shell dirname $$@)
