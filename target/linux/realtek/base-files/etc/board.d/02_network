@@ -52,6 +52,7 @@ realtek_setup_macs()
 	local label_mac=""
 
 	case $board in
+	datto,l8|\
 	edgecore,ecs4100-12ph|\
 	linksys,lgs310c|\
 	linksys,lgs328c|\
@@ -185,6 +186,9 @@ realtek_setup_poe()
 	edgecore,ecs4100-12ph|\
 	netgear,gs110tpp-v1)
 		ucidef_set_poe 130 "$(filter_port_list "$lan_list" "lan9 lan10")"
+		;;
+	datto,l8)
+		ucidef_set_poe 55 "lan5 lan6 lan7 lan8 lan4 lan3 lan2 lan1"
 		;;
 	engenius,ews2910p-v1|\
 	engenius,ews2910p-v3)
