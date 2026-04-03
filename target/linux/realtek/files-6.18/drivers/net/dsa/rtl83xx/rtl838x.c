@@ -737,7 +737,7 @@ static void rtl838x_init_eee(struct rtl838x_switch_priv *priv, bool enable)
 	sw_w32(0x5001417, RTL838X_EEE_TX_TIMER_GELITE_CTRL);
 
 	/* Enable EEE MAC support on ports */
-	for (int i = 0; i < priv->cpu_port; i++) {
+	for (int i = 0; i < priv->r->cpu_port; i++) {
 		if (priv->ports[i].phy)
 			priv->r->set_mac_eee(priv, i, enable);
 	}
@@ -1576,7 +1576,7 @@ static void rtl838x_pie_init(struct rtl838x_switch_priv *priv)
 	mutex_init(&priv->pie_mutex);
 
 	/* Enable ACL lookup on all ports, including CPU_PORT */
-	for (int i = 0; i <= priv->cpu_port; i++)
+	for (int i = 0; i <= priv->r->cpu_port; i++)
 		sw_w32(1, RTL838X_ACL_PORT_LOOKUP_CTRL(i));
 
 	/* Power on all PIE blocks */
@@ -1807,6 +1807,8 @@ int rtldsa_83xx_lag_setup_algomask(struct rtl838x_switch_priv *priv, int group,
 				   struct netdev_lag_upper_info *info);
 
 const struct rtldsa_config rtldsa_838x_cfg = {
+	.cpu_port = RTL838X_CPU_PORT,
+	.fib_entries = 8192,
 	.mask_port_reg_be = rtl838x_mask_port_reg,
 	.set_port_reg_be = rtl838x_set_port_reg,
 	.get_port_reg_be = rtl838x_get_port_reg,

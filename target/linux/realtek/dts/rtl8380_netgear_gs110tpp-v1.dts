@@ -55,8 +55,8 @@
 };
 
 &mdio_bus0 {
-	EXTERNAL_PHY(16)
-	EXTERNAL_PHY(17)
+	PHY_C22(16, 16)
+	PHY_C22(17, 17)
 };
 
 &switch0 {

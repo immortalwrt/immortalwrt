@@ -37,7 +37,7 @@ Signed-off-by: Jan Kantert <jan-kernel@kantert.net>
  struct rtl9300_i2c;
  
  struct rtl9300_i2c_chan {
-@@ -434,6 +440,12 @@ static int rtl9300_i2c_probe(struct plat
+@@ -433,6 +439,12 @@ static int rtl9300_i2c_probe(struct plat
  		case I2C_MAX_FAST_MODE_FREQ:
  			chan->bus_freq = RTL9300_I2C_FAST_FREQ;
  			break;

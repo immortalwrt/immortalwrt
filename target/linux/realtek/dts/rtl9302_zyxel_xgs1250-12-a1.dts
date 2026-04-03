@@ -38,3 +38,15 @@
 		#thermal-sensor-cells = <0>;
 	};
 };
+
+&port24 {
+	managed = "in-band-status";
+};
+
+&port25 {
+	managed = "in-band-status";
+};
+
+&port26 {
+	managed = "in-band-status";
+};

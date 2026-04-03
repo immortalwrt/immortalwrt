@@ -44,7 +44,7 @@ static void rtl839x_read_out_q_table(int port)
 
 u32 rtl838x_get_egress_rate(struct rtl838x_switch_priv *priv, int port)
 {
-	if (port > priv->cpu_port)
+	if (port > priv->r->cpu_port)
 		return 0;
 
 	return sw_r32(RTL838X_SCHED_P_EGR_RATE_CTRL(port)) & 0x3fff;
@@ -55,7 +55,7 @@ int rtl838x_set_egress_rate(struct rtl838x_switch_priv *priv, int port, u32 rate
 {
 	u32 old_rate;
 
-	if (port > priv->cpu_port)
+	if (port > priv->r->cpu_port)
 		return -1;
 
 	old_rate = sw_r32(RTL838X_SCHED_P_EGR_RATE_CTRL(port));
@@ -70,7 +70,7 @@ u32 rtl839x_get_egress_rate(struct rtl838x_switch_priv *priv, int port)
 	u32 rate;
 
 	pr_debug("%s: Getting egress rate on port %d to %d\n", __func__, port, rate);
-	if (port >= priv->cpu_port)
+	if (port >= priv->r->cpu_port)
 		return 0;
 
 	mutex_lock(&priv->reg_mutex);
@@ -92,7 +92,7 @@ int rtl839x_set_egress_rate(struct rtl838x_switch_priv *priv, int port, u32 rate
 	u32 old_rate;
 
 	pr_debug("%s: Setting egress rate on port %d to %d\n", __func__, port, rate);
-	if (port >= priv->cpu_port)
+	if (port >= priv->r->cpu_port)
 		return -1;
 
 	mutex_lock(&priv->reg_mutex);
@@ -197,7 +197,7 @@ static void rtl839x_set_scheduling_algorithm(struct rtl838x_switch_priv *priv, i
 
 	mutex_lock(&priv->reg_mutex);
 	/* Check whether we need to empty the egress queue of that port due to Errata E0014503 */
-	if (sched == WEIGHTED_FAIR_QUEUE && t == WEIGHTED_ROUND_ROBIN && port != priv->cpu_port) {
+	if (sched == WEIGHTED_FAIR_QUEUE && t == WEIGHTED_ROUND_ROBIN && port != priv->r->cpu_port) {
 		/* Read Operations, Adminstatrion and Management control register */
 		oam_state = sw_r32(RTL839X_OAM_CTRL);
 
@@ -231,7 +231,7 @@ static void rtl839x_set_scheduling_algorithm(struct rtl838x_switch_priv *priv, i
 	sw_w32_mask(BIT(19), sched ? BIT(19) : 0, RTL839X_TBL_ACCESS_DATA_2(8));
 	rtl839x_write_scheduling_table(port);
 
-	if (sched == WEIGHTED_FAIR_QUEUE && t == WEIGHTED_ROUND_ROBIN && port != priv->cpu_port) {
+	if (sched == WEIGHTED_FAIR_QUEUE && t == WEIGHTED_ROUND_ROBIN && port != priv->r->cpu_port) {
 		/* Restore OAM state to control register */
 		sw_w32(oam_state, RTL839X_OAM_CTRL);
 
