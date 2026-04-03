@@ -1187,7 +1187,7 @@ static void rtl930x_init_eee(struct rtl838x_switch_priv *priv, bool enable)
 	pr_debug("Setting up EEE, state: %d\n", enable);
 
 	/* Setup EEE on all ports */
-	for (int i = 0; i < priv->cpu_port; i++) {
+	for (int i = 0; i < priv->r->cpu_port; i++) {
 		if (priv->ports[i].phy)
 			priv->r->set_mac_eee(priv, i, enable);
 	}
@@ -2245,7 +2245,7 @@ static void rtl930x_pie_init(struct rtl838x_switch_priv *priv)
 
 	pr_debug("%s\n", __func__);
 	/* Enable ACL lookup on all ports, including CPU_PORT */
-	for (int i = 0; i <= priv->cpu_port; i++)
+	for (int i = 0; i <= priv->r->cpu_port; i++)
 		sw_w32(1, RTL930X_ACL_PORT_LOOKUP_CTRL(i));
 
 	/* Include IPG in metering */
@@ -2679,7 +2679,7 @@ static void rtl930x_led_init(struct rtl838x_switch_priv *priv)
 
 	rtldsa_930x_led_get_forced(node, leds_in_set, forced_leds_per_port);
 
-	for (int i = 0; i < priv->cpu_port; i++) {
+	for (int i = 0; i < priv->r->cpu_port; i++) {
 		int pos = (i << 1) % 32;
 		u32 set;
 
@@ -2793,6 +2793,8 @@ static void rtldsa_930x_qos_init(struct rtl838x_switch_priv *priv)
 }
 
 const struct rtldsa_config rtldsa_930x_cfg = {
+	.cpu_port = RTL930X_CPU_PORT,
+	.fib_entries = 16384,
 	.mask_port_reg_be = rtl838x_mask_port_reg,
 	.set_port_reg_be = rtl838x_set_port_reg,
 	.get_port_reg_be = rtl838x_get_port_reg,

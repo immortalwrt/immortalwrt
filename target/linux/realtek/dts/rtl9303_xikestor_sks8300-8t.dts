@@ -130,47 +130,17 @@
 };
 
 &mdio_bus0 {
-	phy0: ethernet-phy@0 {
-		compatible = "ethernet-phy-ieee802.3-c45";
-		reg = <0>;
-	};
-
-	phy8: ethernet-phy@1 {
-		compatible = "ethernet-phy-ieee802.3-c45";
-		reg = <1>;
-	};
-
-	phy16: ethernet-phy@2 {
-		compatible = "ethernet-phy-ieee802.3-c45";
-		reg = <2>;
-	};
-
-	phy20: ethernet-phy@3 {
-		compatible = "ethernet-phy-ieee802.3-c45";
-		reg = <3>;
-	};
+	PHY_C45(0, 0)
+	PHY_C45(8, 1)
+	PHY_C45(16, 2)
+	PHY_C45(20, 3)
 };
 
 &mdio_bus1 {
-	phy24: ethernet-phy@0 {
-		compatible = "ethernet-phy-ieee802.3-c45";
-		reg = <0>;
-	};
-
-	phy25: ethernet-phy@1 {
-		compatible = "ethernet-phy-ieee802.3-c45";
-		reg = <1>;
-	};
-
-	phy26: ethernet-phy@2 {
-		compatible = "ethernet-phy-ieee802.3-c45";
-		reg = <2>;
-	};
-
-	phy27: ethernet-phy@3 {
-		compatible = "ethernet-phy-ieee802.3-c45";
-		reg = <3>;
-	};
+	PHY_C45(24, 0)
+	PHY_C45(25, 1)
+	PHY_C45(26, 2)
+	PHY_C45(27, 3)
 };
 
 &ethernet0 {

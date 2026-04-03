@@ -787,7 +787,7 @@ static void rtl839x_init_eee(struct rtl838x_switch_priv *priv, bool enable)
 	sw_w32_mask(0xff << 20, 0x11 << 20, RTL839X_EEE_TX_TIMER_10G_CTRL);
 
 	/* Setup EEE on all ports */
-	for (int i = 0; i < priv->cpu_port; i++) {
+	for (int i = 0; i < priv->r->cpu_port; i++) {
 		if (priv->ports[i].phy)
 			priv->r->set_mac_eee(priv, i, enable);
 	}
@@ -1592,8 +1592,8 @@ static void rtl839x_setup_port_macs(struct rtl838x_switch_priv *priv)
 	struct net_device *dev;
 	u64 mac;
 
-	pr_debug("%s: got port %08x\n", __func__, (u32)priv->ports[priv->cpu_port].dp);
-	dev = priv->ports[priv->cpu_port].dp->user;
+	pr_debug("%s: got port %08x\n", __func__, (u32)priv->ports[priv->r->cpu_port].dp);
+	dev = priv->ports[priv->r->cpu_port].dp->user;
 	mac = ether_addr_to_u64(dev->dev_addr);
 
 	for (int i = 0; i < 15; i++) {
@@ -1722,6 +1722,8 @@ int rtldsa_83xx_lag_setup_algomask(struct rtl838x_switch_priv *priv, int group,
 				   struct netdev_lag_upper_info *info);
 
 const struct rtldsa_config rtldsa_839x_cfg = {
+	.cpu_port = RTL839X_CPU_PORT,
+	.fib_entries = 16384,
 	.mask_port_reg_be = rtl839x_mask_port_reg_be,
 	.set_port_reg_be = rtl839x_set_port_reg_be,
 	.get_port_reg_be = rtl839x_get_port_reg_be,

@@ -324,7 +324,7 @@ static int l2_table_show(struct seq_file *m, void *v)
 
 	mutex_lock(&priv->reg_mutex);
 
-	for (int i = 0; i < priv->fib_entries; i++) {
+	for (int i = 0; i < priv->r->fib_entries; i++) {
 		bucket = i >> 2;
 		index = i & 0x3;
 		priv->r->read_l2_entry_using_hash(bucket, index, &e);
@@ -827,7 +827,7 @@ void rtl838x_dbgfs_init(struct rtl838x_switch_priv *priv)
 			   (u32 *)(RTL838X_SW_BASE + RTL838X_MODEL_NAME_INFO));
 
 	/* Create one directory per port */
-	for (int i = 0; i < priv->cpu_port; i++) {
+	for (int i = 0; i < priv->r->cpu_port; i++) {
 		if (priv->ports[i].phy) {
 			ret = rtl838x_dbgfs_port_init(rtl838x_dir, priv, i);
 			if (ret)
@@ -845,9 +845,9 @@ void rtl838x_dbgfs_init(struct rtl838x_switch_priv *priv)
 
 	port_ctrl_regset->regs = port_ctrl_regs;
 	port_ctrl_regset->nregs = ARRAY_SIZE(port_ctrl_regs);
-	port_ctrl_regset->base = (void *)(RTL838X_SW_BASE + (priv->cpu_port << 2));
+	port_ctrl_regset->base = (void *)(RTL838X_SW_BASE + (priv->r->cpu_port << 2));
 	debugfs_create_regset32("port_ctrl", 0400, port_dir, port_ctrl_regset);
-	debugfs_create_u8("id", 0444, port_dir, &priv->cpu_port);
+	debugfs_create_u8("id", 0444, port_dir, (u8 *)&priv->r->cpu_port);
 
 	/* Create entries for LAGs */
 	for (int i = 0; i < priv->ds->num_lag_ids; i++) {

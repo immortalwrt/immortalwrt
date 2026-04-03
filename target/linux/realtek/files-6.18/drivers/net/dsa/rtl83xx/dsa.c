@@ -49,7 +49,7 @@ static void rtldsa_enable_phy_polling(struct rtl838x_switch_priv *priv)
 
 	msleep(1000);
 	/* Enable all ports with a PHY, including the SFP-ports */
-	for (int i = 0; i < priv->cpu_port; i++) {
+	for (int i = 0; i < priv->r->cpu_port; i++) {
 		if (priv->ports[i].phy || priv->ports[i].pcs)
 			v |= BIT_ULL(i);
 	}
@@ -130,26 +130,26 @@ static void rtldsa_vlan_setup(struct rtl838x_switch_priv *priv)
 	 * egress VLAN(s) must therefore be a member of VLAN 0 to support
 	 * CPU port as ingress when VLAN filtering is enabled.
 	 */
-	for (int i = 0; i <= priv->cpu_port; i++) {
+	for (int i = 0; i <= priv->r->cpu_port; i++) {
 		rtldsa_vlan_set_pvid(priv, i, 0);
 		info.member_ports |= BIT_ULL(i);
 	}
 	priv->r->vlan_set_tagged(0, &info);
 
 	/* Set forwarding action based on inner VLAN tag */
-	for (int i = 0; i < priv->cpu_port; i++)
+	for (int i = 0; i < priv->r->cpu_port; i++)
 		priv->r->vlan_fwd_on_inner(i, true);
 }
 
 static void rtldsa_setup_bpdu_traps(struct rtl838x_switch_priv *priv)
 {
-	for (int i = 0; i < priv->cpu_port; i++)
+	for (int i = 0; i < priv->r->cpu_port; i++)
 		priv->r->set_receive_management_action(i, BPDU, TRAP2CPU);
 }
 
 static void rtldsa_setup_lldp_traps(struct rtl838x_switch_priv *priv)
 {
-	for (int i = 0; i < priv->cpu_port; i++)
+	for (int i = 0; i < priv->r->cpu_port; i++)
 		priv->r->set_receive_management_action(i, LLDP, TRAP2CPU);
 }
 
@@ -174,24 +174,24 @@ static int rtldsa_83xx_setup(struct dsa_switch *ds)
 
 	for (int i = 0; i < ds->num_ports; i++)
 		priv->ports[i].enable = false;
-	priv->ports[priv->cpu_port].enable = true;
+	priv->ports[priv->r->cpu_port].enable = true;
 
 	/* Configure ports so they are disabled by default, but once enabled
 	 * they will work in isolated mode (only traffic between port and CPU).
 	 */
-	for (int i = 0; i < priv->cpu_port; i++) {
+	for (int i = 0; i < priv->r->cpu_port; i++) {
 		if (priv->ports[i].phy || priv->ports[i].pcs) {
-			priv->ports[i].pm = BIT_ULL(priv->cpu_port);
+			priv->ports[i].pm = BIT_ULL(priv->r->cpu_port);
 			priv->r->traffic_set(i, BIT_ULL(i));
 		}
 	}
-	priv->r->traffic_set(priv->cpu_port, BIT_ULL(priv->cpu_port));
+	priv->r->traffic_set(priv->r->cpu_port, BIT_ULL(priv->r->cpu_port));
 
 	/* For standalone ports, forward packets even if a static fdb
 	 * entry for the source address exists on another port.
 	 */
 	if (priv->r->set_static_move_action) {
-		for (int i = 0; i <= priv->cpu_port; i++)
+		for (int i = 0; i <= priv->r->cpu_port; i++)
 			priv->r->set_static_move_action(i, true);
 	}
 
@@ -209,7 +209,7 @@ static int rtldsa_83xx_setup(struct dsa_switch *ds)
 
 	priv->r->l2_learning_setup();
 
-	rtldsa_port_set_salrn(priv, priv->cpu_port, false);
+	rtldsa_port_set_salrn(priv, priv->r->cpu_port, false);
 	ds->assisted_learning_on_cpu_port = true;
 
 	/* Make sure all frames sent to the switch's MAC are trapped to the CPU-port
@@ -247,18 +247,18 @@ static int rtldsa_93xx_setup(struct dsa_switch *ds)
 	/* Disable all ports except CPU port */
 	for (int i = 0; i < ds->num_ports; i++)
 		priv->ports[i].enable = false;
-	priv->ports[priv->cpu_port].enable = true;
+	priv->ports[priv->r->cpu_port].enable = true;
 
 	/* Configure ports so they are disabled by default, but once enabled
 	 * they will work in isolated mode (only traffic between port and CPU).
 	 */
-	for (int i = 0; i < priv->cpu_port; i++) {
+	for (int i = 0; i < priv->r->cpu_port; i++) {
 		if (priv->ports[i].phy || priv->ports[i].pcs) {
-			priv->ports[i].pm = BIT_ULL(priv->cpu_port);
+			priv->ports[i].pm = BIT_ULL(priv->r->cpu_port);
 			priv->r->traffic_set(i, BIT_ULL(i));
 		}
 	}
-	priv->r->traffic_set(priv->cpu_port, BIT_ULL(priv->cpu_port));
+	priv->r->traffic_set(priv->r->cpu_port, BIT_ULL(priv->r->cpu_port));
 	priv->r->print_matrix();
 
 	/* TODO: Initialize statistics */
@@ -273,7 +273,7 @@ static int rtldsa_93xx_setup(struct dsa_switch *ds)
 
 	priv->r->l2_learning_setup();
 
-	rtldsa_port_set_salrn(priv, priv->cpu_port, false);
+	rtldsa_port_set_salrn(priv, priv->r->cpu_port, false);
 	ds->assisted_learning_on_cpu_port = true;
 
 	rtldsa_enable_phy_polling(priv);
@@ -377,7 +377,7 @@ static void rtldsa_93xx_phylink_mac_config(struct phylink_config *config,
 	int port = dp->index;
 
 	/* Nothing to be done for the CPU-port */
-	if (port == priv->cpu_port)
+	if (port == priv->r->cpu_port)
 		return;
 
 	/* Disable MAC completely */
@@ -526,7 +526,7 @@ static void rtldsa_93xx_phylink_mac_link_up(struct phylink_config *config,
 			mcr |= RTL930X_RX_PAUSE_EN;
 		if (duplex == DUPLEX_FULL || priv->lagmembers & BIT_ULL(port))
 			mcr |= RTL930X_DUPLEX_MODE;
-		if (dsa_port_is_cpu(dp) || !priv->ports[port].phy_is_integrated)
+		if (dsa_port_is_cpu(dp) || priv->ports[port].phy)
 			mcr |= RTL930X_FORCE_EN;
 	}
 
@@ -775,7 +775,7 @@ static void rtldsa_poll_counters(struct work_struct *work)
 							struct rtl838x_switch_priv,
 							counters_work);
 
-	for (int port = 0; port < priv->cpu_port; port++) {
+	for (int port = 0; port < priv->r->cpu_port; port++) {
 		if (!priv->ports[port].phy && !priv->ports[port].pcs)
 			continue;
 
@@ -792,7 +792,7 @@ static void rtldsa_init_counters(struct rtl838x_switch_priv *priv)
 {
 	struct rtldsa_counter_state *counters;
 
-	for (int port = 0; port < priv->cpu_port; port++) {
+	for (int port = 0; port < priv->r->cpu_port; port++) {
 		if (!priv->ports[port].phy && !priv->ports[port].pcs)
 			continue;
 
@@ -817,7 +817,7 @@ static void rtldsa_get_strings(struct dsa_switch *ds,
 	if (stringset != ETH_SS_STATS)
 		return;
 
-	if (port < 0 || port >= priv->cpu_port)
+	if (port < 0 || port >= priv->r->cpu_port)
 		return;
 
 	mib_desc = priv->r->mib_desc;
@@ -833,7 +833,7 @@ static void rtldsa_get_ethtool_stats(struct dsa_switch *ds, int port,
 	const struct rtldsa_mib_desc *mib_desc;
 	const struct rtldsa_mib_item *mib_item;
 
-	if (port < 0 || port >= priv->cpu_port)
+	if (port < 0 || port >= priv->r->cpu_port)
 		return;
 
 	mib_desc = priv->r->mib_desc;
@@ -850,7 +850,7 @@ static int rtldsa_get_sset_count(struct dsa_switch *ds, int port, int sset)
 	if (sset != ETH_SS_STATS)
 		return 0;
 
-	if (port < 0 || port >= priv->cpu_port)
+	if (port < 0 || port >= priv->r->cpu_port)
 		return 0;
 
 	return priv->r->mib_desc->list_count;
@@ -862,7 +862,7 @@ static void rtldsa_get_eth_phy_stats(struct dsa_switch *ds, int port,
 	struct rtl838x_switch_priv *priv = ds->priv;
 	struct rtldsa_counter_state *counters = &priv->ports[port].counters;
 
-	if (port < 0 || port >= priv->cpu_port)
+	if (port < 0 || port >= priv->r->cpu_port)
 		return;
 
 	rtldsa_counters_lock(priv, port);
@@ -880,7 +880,7 @@ static void rtldsa_get_eth_mac_stats(struct dsa_switch *ds, int port,
 	struct rtl838x_switch_priv *priv = ds->priv;
 	struct rtldsa_counter_state *counters = &priv->ports[port].counters;
 
-	if (port < 0 || port >= priv->cpu_port)
+	if (port < 0 || port >= priv->r->cpu_port)
 		return;
 
 	rtldsa_counters_lock(priv, port);
@@ -926,7 +926,7 @@ static void rtldsa_get_eth_ctrl_stats(struct dsa_switch *ds, int port,
 	struct rtl838x_switch_priv *priv = ds->priv;
 	struct rtldsa_counter_state *counters = &priv->ports[port].counters;
 
-	if (port < 0 || port >= priv->cpu_port)
+	if (port < 0 || port >= priv->r->cpu_port)
 		return;
 
 	rtldsa_counters_lock(priv, port);
@@ -946,7 +946,7 @@ static void rtldsa_get_rmon_stats(struct dsa_switch *ds, int port,
 	const struct rtldsa_mib_desc *mib_desc;
 	struct rtldsa_counter_state *counters = &priv->ports[port].counters;
 
-	if (port < 0 || port >= priv->cpu_port)
+	if (port < 0 || port >= priv->r->cpu_port)
 		return;
 
 	mib_desc = priv->r->mib_desc;
@@ -992,7 +992,7 @@ static void rtldsa_get_stats64(struct dsa_switch *ds, int port,
 	struct rtl838x_switch_priv *priv = ds->priv;
 	struct rtldsa_counter_state *counters = &priv->ports[port].counters;
 
-	if (port < 0 || port >= priv->cpu_port)
+	if (port < 0 || port >= priv->r->cpu_port)
 		return;
 
 	if (priv->r->stat_update_counters_atomically)
@@ -1010,7 +1010,7 @@ static void rtldsa_get_pause_stats(struct dsa_switch *ds, int port,
 	struct rtl838x_switch_priv *priv = ds->priv;
 	struct rtldsa_counter_state *counters = &priv->ports[port].counters;
 
-	if (port < 0 || port >= priv->cpu_port)
+	if (port < 0 || port >= priv->r->cpu_port)
 		return;
 
 	rtldsa_counters_lock(priv, port);
@@ -1078,7 +1078,7 @@ static int rtldsa_port_enable(struct dsa_switch *ds, int port, struct phy_device
 		return 0;
 
 	/* add port to switch mask of CPU_PORT */
-	priv->r->traffic_enable(priv->cpu_port, port);
+	priv->r->traffic_enable(priv->r->cpu_port, port);
 
 	/* add all other ports in the same bridge to switch mask of port */
 	priv->r->traffic_set(port, priv->ports[port].pm);
@@ -1103,7 +1103,7 @@ static void rtldsa_port_disable(struct dsa_switch *ds, int port)
 
 	/* BUG: This does not work on RTL931X */
 	/* remove port from switch mask of CPU_PORT */
-	priv->r->traffic_disable(priv->cpu_port, port);
+	priv->r->traffic_disable(priv->r->cpu_port, port);
 
 	/* remove all other ports from switch mask of port */
 	priv->r->traffic_set(port, 0);
@@ -1452,13 +1452,14 @@ static void rtldsa_port_xstp_state_set(struct rtl838x_switch_priv *priv, int por
 				       u8 state, u16 mst_slot)
 				       __must_hold(&priv->reg_mutex)
 {
+	/* 838x/930x have 28 ports and 2 bit fields other devices 4 bit fields. */
+	int n = priv->r->cpu_port == RTL838X_CPU_PORT ? 2 : 4;
 	u32 port_state[4];
 	int index, bit;
 	int pos = port;
-	int n = priv->port_width << 1;
 
 	/* Ports above or equal CPU port can never be configured */
-	if (port >= priv->cpu_port)
+	if (port >= priv->r->cpu_port)
 		return;
 
 	/* For the RTL839x and following, the bits are left-aligned, 838x and 930x
@@ -1557,7 +1558,7 @@ static int rtldsa_vlan_filtering(struct dsa_switch *ds, int port,
 		 * 2: Trap packet to CPU port
 		 * The Egress filter used 1 bit per state (0: DISABLED, 1: ENABLED)
 		 */
-		if (port != priv->cpu_port) {
+		if (port != priv->r->cpu_port) {
 			priv->r->set_vlan_igr_filter(port, IGR_DROP);
 			priv->r->set_vlan_egr_filter(port, EGR_ENABLE);
 		} else {
@@ -1567,7 +1568,7 @@ static int rtldsa_vlan_filtering(struct dsa_switch *ds, int port,
 
 	} else {
 		/* Disable ingress and egress filtering */
-		if (port != priv->cpu_port)
+		if (port != priv->r->cpu_port)
 			priv->r->set_vlan_igr_filter(port, IGR_FORWARD);
 
 		priv->r->set_vlan_egr_filter(port, EGR_DISABLE);
@@ -1638,7 +1639,7 @@ static int rtldsa_vlan_add(struct dsa_switch *ds, int port,
 	 * of now no such logic is in place. So for the CPU port keep the fixed
 	 * PVID=0 from initial setup in place and ignore all subsequent settings.
 	 */
-	if (port != priv->cpu_port) {
+	if (port != priv->r->cpu_port) {
 		if (vlan->flags & BRIDGE_VLAN_INFO_PVID)
 			rtldsa_vlan_set_pvid(priv, port, vlan->vid);
 		else if (priv->ports[port].pvid == vlan->vid)
@@ -2001,7 +2002,7 @@ static int rtldsa_port_fdb_dump(struct dsa_switch *ds, int port,
 
 	mutex_lock(&priv->reg_mutex);
 
-	for (int i = 0; i < priv->fib_entries; i++) {
+	for (int i = 0; i < priv->r->fib_entries; i++) {
 		priv->r->read_l2_entry_using_hash(i >> 2, i & 0x3, &e);
 
 		if (!e.valid)
@@ -2421,7 +2422,7 @@ static int rtldsa_port_lag_join(struct dsa_switch *ds,
 
 	mutex_lock(&priv->reg_mutex);
 
-	if (port >= priv->cpu_port) {
+	if (port >= priv->r->cpu_port) {
 		err = -EINVAL;
 		goto out;
 	}
@@ -2465,7 +2466,7 @@ static int rtldsa_port_lag_leave(struct dsa_switch *ds, int port,
 		goto out;
 	}
 
-	if (port >= priv->cpu_port) {
+	if (port >= priv->r->cpu_port) {
 		err = -EINVAL;
 		goto out;
 	}
