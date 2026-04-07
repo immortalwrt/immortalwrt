@@ -257,8 +257,7 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 			compatible = "lantiq,danube-usb";
-			reg = <0xe101000 0x1000
-				0xe120000 0x3f000>;
+			reg = <0xe101000 0x1000>, <0xe120000 0x3f000>;
 			interrupt-parent = <&icu0>;
 			interrupts = <62>;
 			dr_mode = "host";

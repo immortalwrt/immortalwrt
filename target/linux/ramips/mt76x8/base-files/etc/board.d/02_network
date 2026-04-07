@@ -100,6 +100,12 @@ ramips_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"4:lan" "6@eth0"
 		;;
+	cudy,lt300-v3)
+		ucidef_add_switch "switch0" "0:wan" "1:lan" "6@eth0"
+		ucidef_set_interface "wwan" device "usb0" protocol "dhcp"
+		uci add_list firewall.@zone[1].network='wwan'
+		uci add_list firewall.@zone[1].network='wwan6'
+		;;
 	cudy,lt400e-v1)
 		ucidef_add_switch "switch0" \
 			"3:lan:1" "2:lan:2" "1:lan:3" "0:lan:4" "6@eth0"
@@ -288,6 +294,13 @@ ramips_setup_macs()
 		lan_mac=$(mtd_get_mac_binary factory 0xe000)
 		wan_mac=$(macaddr_add "$lan_mac" 1)
                 ;;
+	cudy,lt300-v3|\
+	hiwifi,hc5611|\
+	hiwifi,hc5661a|\
+	hiwifi,hc5761a|\
+	hiwifi,hc5861b)
+		wan_mac=$(macaddr_add "$(cat /sys/class/net/eth0/address)" 1)
+		;;
 	cudy,wr1000|\
 	hilink,hlk-7628n|\
 	hilink,hlk-7688a|\
@@ -308,18 +321,12 @@ ramips_setup_macs()
 	wrtnode,wrtnode2r)
 		wan_mac=$(macaddr_add "$(mtd_get_mac_binary factory 0x4)" 1)
 		;;
-	hiwifi,hc5611|\
-	hiwifi,hc5661a|\
-	hiwifi,hc5761a|\
-	hiwifi,hc5861b)
-		wan_mac=$(macaddr_add "$(cat /sys/class/net/eth0/address)" 1)
+	huasifei,shf283|\
+	rakwireless,rak633|\
+	unielec,u7628-01-16m|\
+	wavlink,wl-wn575a3)
+		wan_mac=$(macaddr_add "$(mtd_get_mac_binary factory 0x28)" 1)
 		;;
-        huasifei,shf283|\
-        rakwireless,rak633|\
-        unielec,u7628-01-16m|\
-        wavlink,wl-wn575a3)
-                wan_mac=$(macaddr_add "$(mtd_get_mac_binary factory 0x28)" 1)
-                ;;
 	iptime,a3|\
 	iptime,a604m|\
 	totolink,a3)

@@ -118,7 +118,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  
  /* Parse tag=value strings from .modinfo section */
  char *module_next_tag_pair(char *string, unsigned long *secsize)
-@@ -2095,9 +2097,11 @@ static void module_augment_kernel_taints
+@@ -2102,9 +2104,11 @@ static void module_augment_kernel_taints
  
  static int check_modinfo(struct module *mod, struct load_info *info, int flags)
  {
@@ -131,7 +131,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	if (flags & MODULE_INIT_IGNORE_VERMAGIC)
  		modmagic = NULL;
  
-@@ -2111,6 +2115,7 @@ static int check_modinfo(struct module *
+@@ -2118,6 +2122,7 @@ static int check_modinfo(struct module *
  		       info->name, modmagic, vermagic);
  		return -ENOEXEC;
  	}

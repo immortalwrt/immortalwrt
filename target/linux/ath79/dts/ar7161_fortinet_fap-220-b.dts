@@ -135,12 +135,12 @@
 
 &eth1 {
 	status = "okay";
-	nvmem-cells = <&macaddr_uboot_3ff80 0>;
-	nvmem-cell-names = "mac-address";
 
-	pll-data = <0x00110000 0x00001099 0x00991099>;
 	phy-handle = <&phy0>;
 	phy-mode = "rgmii";
+
+	nvmem-cells = <&macaddr_uboot_3ff80 0>;
+	nvmem-cell-names = "mac-address";
 };
 
 &usb1 {

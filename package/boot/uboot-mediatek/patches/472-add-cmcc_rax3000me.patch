@@ -524,7 +524,7 @@
 +CONFIG_HEXDUMP=y
 --- /dev/null
 +++ b/arch/arm/dts/mt7981-cmcc-rax3000me-emmc.dts
-@@ -0,0 +1,9 @@
+@@ -0,0 +1,13 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +
 +/dts-v1/;
@@ -534,9 +534,13 @@
 +	model = "CMCC RAX3000Me";
 +	compatible = "cmcc,rax3000me", "mediatek,mt7981";
 +};
++
++&eth {
++	mediatek,switch = "auto";
++};
 --- /dev/null
 +++ b/arch/arm/dts/mt7981-cmcc-rax3000me-nand.dts
-@@ -0,0 +1,9 @@
+@@ -0,0 +1,13 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +
 +/dts-v1/;
@@ -545,6 +549,10 @@
 +/ {
 +	model = "CMCC RAX3000Me";
 +	compatible = "cmcc,rax3000me", "mediatek,mt7981";
++};
++
++&eth {
++	mediatek,switch = "auto";
 +};
 --- /dev/null
 +++ b/defenvs/cmcc_rax3000me-emmc-ddr3_env

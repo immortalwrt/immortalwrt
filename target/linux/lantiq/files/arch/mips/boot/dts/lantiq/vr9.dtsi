@@ -323,7 +323,7 @@
 				};
 			};
 
-			spi_pins: spi {
+			spi_pins: spi-pins {
 				mux-0 {
 					lantiq,groups = "spi_di";
 					lantiq,function = "spi";
@@ -398,8 +398,7 @@
 			#size-cells = <0>;
 			status = "disabled";
 			compatible = "lantiq,xrx200-usb";
-			reg = <0xe101000 0x1000
-				0xe120000 0x3f000>;
+			reg = <0xe101000 0x1000>, <0xe120000 0x3f000>;
 			interrupt-parent = <&icu0>;
 			interrupts = <62 91>;
 			dr_mode = "host";

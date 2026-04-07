@@ -283,7 +283,7 @@
 				};
 			};
 
-			spi_pins: spi {
+			spi_pins: spi-pins {
 				mux-0 {
 					lantiq,groups = "spi_di";
 					lantiq,function = "spi";
@@ -335,8 +335,7 @@
 
 		usb0: usb@e101000 {
 			compatible = "lantiq,arx100-usb";
-			reg = <0xe101000 0x1000
-				0xe120000 0x3f000>;
+			reg = <0xe101000 0x1000>, <0xe120000 0x3f000>;
 			interrupt-parent = <&icu0>;
 			interrupts = <62 91>;
 			dr_mode = "host";
@@ -347,8 +346,7 @@
 
 		usb1: usb@e106000 {
 			compatible = "lantiq,arx100-usb";
-			reg = <0xe106000 0x1000
-				0xe1e0000 0x3f000>;
+			reg = <0xe106000 0x1000>, <0xe1e0000 0x3f000>;
 			interrupt-parent = <&icu0>;
 			interrupts = <91>;
 			dr_mode = "host";
@@ -381,8 +379,7 @@
 
 		gsw: ethernet@e180000 {
 			compatible = "lantiq,etop-xway";
-			reg = <0xe180000 0x40000
-				0xe108000 0x200>;
+			reg = <0xe180000 0x40000>, <0xe108000 0x200>;
 			interrupt-parent = <&icu0>;
 			interrupts = <73 72>;
 			pinctrl-0 = <&mdio_pins>;
