@@ -272,7 +272,7 @@
 		SWITCH_PORT_LED(24, 9, 6, 1, usxgmii)
 		SWITCH_PORT_LED(25, 10, 7, 1, usxgmii)
 		SWITCH_PORT_LED(26, 11, 8, 1, usxgmii)
-		
+
 		port27: port@27 {
 			reg = <27>;
 			label = "lan12";

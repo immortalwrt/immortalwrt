@@ -815,7 +815,7 @@ static int rtpcs_838x_sds_patch(struct rtpcs_serdes *sds,
 	default:
 		break;
 	}
-	
+
 	return 0;
 }
 
@@ -851,7 +851,7 @@ static int rtpcs_838x_setup_serdes(struct rtpcs_serdes *sds,
 
 	rtpcs_838x_sds_patch(sds, hw_mode);
 	rtpcs_838x_sds_reset(sds);
-	
+
 	/* release reset */
 	rtpcs_sds_write(sds, 0, 3, 0x7106);
 
@@ -1282,7 +1282,7 @@ pll_setup:
 
 /* RTL930X */
 
-/* 
+/*
  * RTL930X needs a special mapping from logic SerDes ID to physical SerDes ID,
  * which takes the page into account. This applies to most of read/write calls.
  */
@@ -2814,10 +2814,6 @@ static int rtpcs_930x_sds_config_hw_mode(struct rtpcs_serdes *sds, enum rtpcs_sd
 
 	apply_fn = is_xsgmii ? rtpcs_sds_apply_config_xsg : rtpcs_sds_apply_config;
 
-	/* USXGMII-QX broken, rely on bootloader setup */
-	if (hw_mode == RTPCS_SDS_MODE_USXGMII_10GQXGMII)
-		return 0;
-
 	if (hw_mode == RTPCS_SDS_MODE_QSGMII) {
 		if (sds->id >= 2)
 			return -ENOTSUPP;
@@ -2893,6 +2889,7 @@ static int rtpcs_930x_sds_config_hw_mode(struct rtpcs_serdes *sds, enum rtpcs_sd
 
 	case RTPCS_SDS_MODE_XSGMII:
 	case RTPCS_SDS_MODE_USXGMII_10GSXGMII:
+	case RTPCS_SDS_MODE_USXGMII_10GQXGMII:
 		ret = apply_fn(sds, rtpcs_930x_sds_cfg_ana_10g,
 			       ARRAY_SIZE(rtpcs_930x_sds_cfg_ana_10g));
 		if (ret < 0)
@@ -2903,7 +2900,7 @@ static int rtpcs_930x_sds_config_hw_mode(struct rtpcs_serdes *sds, enum rtpcs_sd
 		if (ret < 0)
 			return ret;
 
-		if (hw_mode == RTPCS_SDS_MODE_USXGMII_10GSXGMII)
+		if (!is_xsgmii)
 			/* opcode 0x03: standard/generic USXGMII mode */
 			rtpcs_930x_sds_usxgmii_config(sds, true, 0x03, 0xa4, 0, 1, 0x1);
 		break;

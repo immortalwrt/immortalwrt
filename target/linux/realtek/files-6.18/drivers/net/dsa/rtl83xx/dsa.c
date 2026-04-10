@@ -2056,9 +2056,9 @@ static bool rtldsa_mac_is_unsnoop(const unsigned char *addr)
 	return false;
 }
 
-static int rtldsa_port_mdb_add(struct dsa_switch *ds, int port,
-					const struct switchdev_obj_port_mdb *mdb,
-					const struct dsa_db db)
+static int rtldsa_83xx_port_mdb_add(struct dsa_switch *ds, int port,
+				    const struct switchdev_obj_port_mdb *mdb,
+				    const struct dsa_db db)
 {
 	struct rtl838x_switch_priv *priv = ds->priv;
 	u64 mac = ether_addr_to_u64(mdb->addr);
@@ -2067,9 +2067,6 @@ static int rtldsa_port_mdb_add(struct dsa_switch *ds, int port,
 	int vid = mdb->vid;
 	u64 seed = priv->r->l2_hash_seed(mac, vid);
 	int mc_group;
-
-	if (priv->id >= 0x9300)
-		return -EOPNOTSUPP;
 
 	pr_debug("In %s port %d, mac %llx, vid: %d\n", __func__, port, mac, vid);
 
@@ -2137,6 +2134,12 @@ out:
 		dev_err(ds->dev, "failed to add MDB entry\n");
 
 	return err;
+}
+static int rtldsa_93xx_port_mdb_add(struct dsa_switch *ds, int port,
+				    const struct switchdev_obj_port_mdb *mdb,
+				    const struct dsa_db db)
+{
+	return -EOPNOTSUPP;
 }
 
 static int rtldsa_port_mdb_del(struct dsa_switch *ds, int port,
@@ -2498,20 +2501,6 @@ out:
 	return 0;
 }
 
-static int rtldsa_phy_read(struct dsa_switch *ds, int addr, int regnum)
-{
-	struct rtl838x_switch_priv *priv = ds->priv;
-
-	return mdiobus_read_nested(priv->parent_bus, addr, regnum);
-}
-
-static int rtldsa_phy_write(struct dsa_switch *ds, int addr, int regnum, u16 val)
-{
-	struct rtl838x_switch_priv *priv = ds->priv;
-
-	return mdiobus_write_nested(priv->parent_bus, addr, regnum, val);
-}
-
 static const struct flow_action_entry *rtldsa_rate_policy_extract(struct flow_cls_offload *cls)
 {
 	struct flow_rule *rule;
@@ -2635,9 +2624,6 @@ const struct dsa_switch_ops rtldsa_83xx_switch_ops = {
 	.get_tag_protocol	= rtldsa_get_tag_protocol,
 	.setup			= rtldsa_83xx_setup,
 
-	.phy_read		= rtldsa_phy_read,
-	.phy_write		= rtldsa_phy_write,
-
 	.phylink_get_caps	= rtldsa_83xx_phylink_get_caps,
 
 	.get_strings		= rtldsa_get_strings,
@@ -2673,7 +2659,7 @@ const struct dsa_switch_ops rtldsa_83xx_switch_ops = {
 	.port_fdb_del		= rtldsa_port_fdb_del,
 	.port_fdb_dump		= rtldsa_port_fdb_dump,
 
-	.port_mdb_add		= rtldsa_port_mdb_add,
+	.port_mdb_add		= rtldsa_83xx_port_mdb_add,
 	.port_mdb_del		= rtldsa_port_mdb_del,
 
 	.port_mirror_add	= rtldsa_port_mirror_add,
@@ -2697,9 +2683,6 @@ const struct phylink_mac_ops rtldsa_93xx_phylink_mac_ops = {
 const struct dsa_switch_ops rtldsa_93xx_switch_ops = {
 	.get_tag_protocol	= rtldsa_get_tag_protocol,
 	.setup			= rtldsa_93xx_setup,
-
-	.phy_read		= rtldsa_phy_read,
-	.phy_write		= rtldsa_phy_write,
 
 	.phylink_get_caps	= rtldsa_93xx_phylink_get_caps,
 
@@ -2736,7 +2719,7 @@ const struct dsa_switch_ops rtldsa_93xx_switch_ops = {
 	.port_fdb_del		= rtldsa_port_fdb_del,
 	.port_fdb_dump		= rtldsa_port_fdb_dump,
 
-	.port_mdb_add		= rtldsa_port_mdb_add,
+	.port_mdb_add		= rtldsa_93xx_port_mdb_add,
 	.port_mdb_del		= rtldsa_port_mdb_del,
 
 	.port_mirror_add	= rtldsa_port_mirror_add,

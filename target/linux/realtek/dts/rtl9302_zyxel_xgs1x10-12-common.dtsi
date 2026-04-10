@@ -128,7 +128,7 @@
 	ethernet-ports {
 		#address-cells = <1>;
 		#size-cells = <0>;
-		
+
 		SWITCH_PORT_LED(0, 1, 2, 0, usxgmii)
 		SWITCH_PORT_LED(1, 2, 2, 0, usxgmii)
 		SWITCH_PORT_LED(2, 3, 2, 0, usxgmii)

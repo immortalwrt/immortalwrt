@@ -73,10 +73,10 @@ Signed-off-by: Tianling Shen <cnsztl@immortalwrt.org>
  	if (last_ret) {
  		return last_ret;
  	}
-@@ -877,9 +888,13 @@ int spi_nand_init(unsigned long long *si
+@@ -909,9 +920,13 @@ int spi_nand_init(unsigned long long *si
+ 	goto success;
  
  fallback_pp:
- 	WARN("CASN page may not exist. Try to read parameter page.\n");
 +	ret = spi_nand_read_id(id);
 +	if (ret) {
 +		return ret;
@@ -88,14 +88,15 @@ Signed-off-by: Tianling Shen <cnsztl@immortalwrt.org>
  	if (ret) {
  		goto fallback_id;
  	}
-@@ -889,10 +904,6 @@ fallback_pp:
+@@ -920,11 +935,6 @@ fallback_pp:
+ 	goto success;
  
  fallback_id:
- 	WARN("Parameter page may not exist. Try to read ID.\n");
 -	ret = spi_nand_read_id(id);
 -	if (ret) {
 -		return ret;
 -	}
- 	spi_nand_set_data_via_id(&spinand_dev, id, &vendor_id);
- 
- success:
+-
+ 	ret = spi_nand_set_data_via_id(&spinand_dev, id, &vendor_id);
+ 	if (ret)
+ 		return ret;

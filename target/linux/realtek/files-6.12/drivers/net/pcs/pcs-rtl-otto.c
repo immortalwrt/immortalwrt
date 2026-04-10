@@ -820,7 +820,7 @@ static int rtpcs_838x_sds_patch(struct rtpcs_serdes *sds,
 	default:
 		break;
 	}
-	
+
 	return 0;
 }
 
@@ -856,7 +856,7 @@ static int rtpcs_838x_setup_serdes(struct rtpcs_serdes *sds,
 
 	rtpcs_838x_sds_patch(sds, hw_mode);
 	rtpcs_838x_sds_reset(sds);
-	
+
 	/* release reset */
 	rtpcs_sds_write(sds, 0, 3, 0x7106);
 
@@ -1287,7 +1287,7 @@ pll_setup:
 
 /* RTL930X */
 
-/* 
+/*
  * RTL930X needs a special mapping from logic SerDes ID to physical SerDes ID,
  * which takes the page into account. This applies to most of read/write calls.
  */

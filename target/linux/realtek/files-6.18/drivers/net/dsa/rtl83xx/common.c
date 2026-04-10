@@ -211,72 +211,27 @@ u64 rtl839x_get_port_reg_le(int reg)
 	return v;
 }
 
-static int rtldsa_bus_read(struct mii_bus *bus, int addr, int regnum)
-{
-	struct rtl838x_switch_priv *priv = bus->priv;
-
-	return mdiobus_read_nested(priv->parent_bus, addr, regnum);
-}
-
-static int rtldsa_bus_write(struct mii_bus *bus, int addr, int regnum, u16 val)
-{
-	struct rtl838x_switch_priv *priv = bus->priv;
-
-	return mdiobus_write_nested(priv->parent_bus, addr, regnum, val);
-}
-
-static int rtldsa_bus_c45_read(struct mii_bus *bus, int addr, int devad, int regnum)
-{
-	struct rtl838x_switch_priv *priv = bus->priv;
-
-	return mdiobus_c45_read_nested(priv->parent_bus, addr, devad, regnum);
-}
-
-static int rtldsa_bus_c45_write(struct mii_bus *bus, int addr, int devad, int regnum, u16 val)
-{
-	struct rtl838x_switch_priv *priv = bus->priv;
-
-	return mdiobus_c45_write_nested(priv->parent_bus, addr, devad, regnum, val);
-}
-
 static int rtl83xx_mdio_probe(struct rtl838x_switch_priv *priv)
 {
 	struct device_node *dn, *phy_node, *pcs_node, *led_node;
-	struct device *dev = priv->dev;
-	struct mii_bus *bus;
-	int ret;
 	u32 pn;
 
+	/* Check if all busses of Realtek mdio controller are registered */
 	dn = of_find_compatible_node(NULL, NULL, "realtek,otto-mdio");
-	if (!dn)
+	if (!of_device_is_available(dn)) {
+		of_node_put(dn);
 		return -ENODEV;
+	}
 
-	if (!of_device_is_available(dn))
-		ret = -ENODEV;
-
-	priv->parent_bus = of_mdio_find_bus(dn);
-	if (!priv->parent_bus)
-		return -EPROBE_DEFER;
-
-	bus = devm_mdiobus_alloc(priv->ds->dev);
-	if (!bus)
-		return -ENOMEM;
-
-	bus->name = "rtldsa_mdio";
-	bus->read = rtldsa_bus_read;
-	bus->write = rtldsa_bus_write;
-	bus->read_c45 = rtldsa_bus_c45_read;
-	bus->write_c45 = rtldsa_bus_c45_write;
-	bus->phy_mask = priv->parent_bus->phy_mask;
-	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-%d", bus->name, dev->id);
-
-	bus->parent = dev;
-	priv->ds->user_mii_bus = bus;
-	priv->ds->user_mii_bus->priv = priv;
-
-	ret = mdiobus_register(priv->ds->user_mii_bus);
-	if (ret)
-		return ret;
+	for_each_child_of_node_scoped(dn, bn) {
+		struct mii_bus *bus = of_mdio_find_bus(bn);
+		if (!bus) {
+			of_node_put(dn);
+			return -EPROBE_DEFER;
+		}
+		put_device(&bus->dev);
+	}
+	of_node_put(dn);
 
 	dn = of_find_compatible_node(NULL, NULL, "realtek,otto-switch");
 	if (!dn) {
@@ -1610,7 +1565,6 @@ static int rtl83xx_sw_probe(struct platform_device *pdev)
 		return err;
 
 	priv->family_id = soc_info.family;
-	priv->id = soc_info.id;
 	sw_w32(0, priv->r->spanning_tree_ctrl);
 	priv->irq_mask = GENMASK_ULL(priv->r->cpu_port - 1, 0);
 

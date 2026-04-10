@@ -1516,14 +1516,12 @@ struct rtl838x_switch_priv {
 	/* Switch operation */
 	struct dsa_switch *ds;
 	struct device *dev;
-	u16 id;
 	u16 family_id;
 	struct rtldsa_port ports[57];
 	struct mutex reg_mutex;		/* Mutex for individual register manipulations */
 	struct mutex pie_mutex;		/* Mutex for Packet Inspection Engine */
 	int link_state_irq;
 	int mirror_group_ports[4];
-	struct mii_bus *parent_bus;
 	const struct rtldsa_config *r;
 	u64 irq_mask;
 	struct dentry *dbgfs_dir;

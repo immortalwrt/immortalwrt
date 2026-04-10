@@ -25,7 +25,7 @@ Signed-off-by: Rany Hany <rany_hany@riseup.net>
  #include <asm/mips-cps.h>
  #include <asm/mmu_context.h>
  #include <asm/time.h>
-@@ -402,6 +403,8 @@ asmlinkage void start_secondary(void)
+@@ -413,6 +414,8 @@ asmlinkage void start_secondary(void)
  	cpu_startup_entry(CPUHP_AP_ONLINE_IDLE);
  }
  
@@ -34,7 +34,7 @@ Signed-off-by: Rany Hany <rany_hany@riseup.net>
  static void stop_this_cpu(void *dummy)
  {
  	/*
-@@ -411,13 +414,66 @@ static void stop_this_cpu(void *dummy)
+@@ -422,13 +425,66 @@ static void stop_this_cpu(void *dummy)
  	set_cpu_online(smp_processor_id(), false);
  	calculate_cpu_foreign_map();
  	local_irq_disable();

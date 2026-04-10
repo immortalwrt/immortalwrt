@@ -327,7 +327,7 @@ static void prepare_highmem(void)
 	 *
 	 * Whenever CPU accesses memory the normal MIPS translation is applied and afterwards
 	 * the bus adds the zone mapping. E.g. a read to 0x81230000 is converted to an cached
-	 * memory access to logical address 0x01230000. It is issued to the OCP bus and the 
+	 * memory access to logical address 0x01230000. It is issued to the OCP bus and the
 	 * mapping from zone 1 register is added. That allows for two memory topologies:
 	 *
 	 * Linear memory with a maximum of 320 MB:
