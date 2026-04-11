@@ -32,6 +32,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           trigger_phrase: "/claude"
           track_progress: true
+          include_fix_links: false
           claude_args: >-
             --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(grep:*)"
             --disallowedTools "Bash(git add:*),Bash(git commit:*),Bash(git rm:*),Bash(git push:*)"
