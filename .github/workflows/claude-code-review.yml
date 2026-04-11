@@ -33,3 +33,4 @@ jobs:
           trigger_phrase: "/claude"
           claude_args: >-
             --allowedTools "mcp__github_inline_comment__create_inline_comment"
+            --disallowedTools "Bash(git add:*),Bash(git commit:*),Bash(git rm:*),Bash(git push:*)"
