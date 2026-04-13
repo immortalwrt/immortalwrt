@@ -1,0 +1,11 @@
+--- a/examples/ezusb.c
++++ b/examples/ezusb.c
+@@ -275,7 +275,7 @@
+ 	 * allows segments of up to 64 KBytes (more than a loader could handle).
+ 	 */
+ 	for (;;) {
+-		char buf[512], *cp;
++		char buf[512] = {0}, *cp;
+ 		char tmp, type;
+ 		size_t len;
+ 		unsigned idx, off;
