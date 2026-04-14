@@ -400,7 +400,7 @@
 			pinctrl-single,bits = <0x0 0x200 0x200>;
 		};
 
-		/* Enable GPIO6 and GPIO7, possibly unknown others */
+		/* Enable GPIOs 3-7 */
 		pinmux_disable_jtag: disable_jtag {
 			pinctrl-single,bits = <0x0 0x0 0x8000>;
 		};

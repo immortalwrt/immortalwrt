@@ -23,7 +23,6 @@
 #include <linux/lockdep.h>
 #include <linux/workqueue.h>
 #include <linux/of.h>
-#include <linux/of_device.h>
 #include <linux/leds.h>
 #include <linux/mdio.h>
 

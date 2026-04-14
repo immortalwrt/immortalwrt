@@ -137,6 +137,7 @@ ramips_setup_interfaces()
 	hongdian,h8850-v20|\
 	keenetic,kn-1112|\
 	keenetic,kn-1212|\
+	keenetic,kn-1510|\
 	keenetic,kn-1613|\
 	keenetic,kn-1713|\
 	motorola,mwr03)
@@ -340,6 +341,7 @@ ramips_setup_macs()
 		wan_mac=$(mtd_get_mac_binary factory 0x2e)
 		;;
 	keenetic,kn-1221|\
+	keenetic,kn-1510|\
 	keenetic,kn-1613|\
 	keenetic,kn-3211|\
 	zyxel,keenetic-extra-ii)

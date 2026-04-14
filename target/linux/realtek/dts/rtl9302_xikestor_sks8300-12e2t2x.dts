@@ -23,6 +23,13 @@
 
 	keys {
 		compatible = "gpio-keys";
+
+		/* The following sets up the GPIO pin for the HC595 shift registers.
+		   Since there are no LED nodes defined for this switch, do the setup
+		   in the GPIO keys driver. */
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinmux_enable_led_sync>;
+
 		button-reset {
 			label = "reset";
 			gpios = <&gpio0 6 GPIO_ACTIVE_LOW>;
@@ -58,6 +65,7 @@
 		maximum-power-milliwatt = <1500>;
 		mod-def0-gpios = <&gpio0 12 GPIO_ACTIVE_LOW>;
 		los-gpios = <&gpio0 14 GPIO_ACTIVE_HIGH>;
+		tx-disable-gpio = <&gpio0 16 GPIO_ACTIVE_HIGH>;
 		#thermal-sensor-cells = <0>;
 	};
 
@@ -67,6 +75,7 @@
 		maximum-power-milliwatt = <1500>;
 		mod-def0-gpios = <&gpio0 13 GPIO_ACTIVE_LOW>;
 		los-gpios = <&gpio0 15 GPIO_ACTIVE_HIGH>;
+		tx-disable-gpio = <&gpio0 17 GPIO_ACTIVE_HIGH>;
 		#thermal-sensor-cells = <0>;
 
 	};

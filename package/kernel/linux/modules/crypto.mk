@@ -145,7 +145,7 @@ define KernelPackage/crypto-crc32
   HIDDEN:=1
   FILES:=$(LINUX_DIR)/crypto/crc32_generic.ko@lt6.18 \
 	$(LINUX_DIR)/crypto/crc32-cryptoapi.ko@ge6.18
-  AUTOLOAD:=$(call AutoLoad,04,LINUX_6_12:crc32_generic !LINUX_6_12:crc32-cryptoapi,1)
+  AUTOLOAD:=$(call AutoLoad,04,crc32_generic@lt6.18 crc32-cryptoapi@ge6.18,1)
   $(call AddDepends/crypto)
 endef
 
@@ -158,7 +158,7 @@ define KernelPackage/crypto-crc32c
   KCONFIG:=CONFIG_CRYPTO_CRC32C
   FILES:=$(LINUX_DIR)/crypto/crc32c_generic.ko@lt6.18 \
 	$(LINUX_DIR)/crypto/crc32c-cryptoapi.ko@ge6.18
-  AUTOLOAD:=$(call AutoLoad,04,LINUX_6_12:crc32c_generic !LINUX_6_12:crc32c-cryptoapi,1)
+  AUTOLOAD:=$(call AutoLoad,04,crc32c_generic@lt6.18 crc32c-cryptoapi@ge6.18,1)
   $(call AddDepends/crypto)
 endef
 
@@ -744,7 +744,7 @@ define KernelPackage/crypto-md5
 	CONFIG_CRYPTO_MD5_PPC
   FILES:=$(LINUX_DIR)/crypto/md5.ko \
 	$(LINUX_DIR)/lib/crypto/libmd5.ko@ge6.18
-  AUTOLOAD:=$(call AutoLoad,09,md5 !LINUX_6_12:libmd5)
+  AUTOLOAD:=$(call AutoLoad,09,md5 libmd5@ge6.18)
   $(call AddDepends/crypto)
 endef
 
@@ -838,7 +838,7 @@ ifndef CONFIG_TARGET_x86_64
 	$(LINUX_DIR)/arch/x86/crypto/serpent-sse2-i586.ko \
 	$(LINUX_DIR)/crypto/cryptd.ko@lt6.18 \
 	$(LINUX_DIR)/crypto/crypto_simd.ko@lt6.18
-    AUTOLOAD+= $(call AutoLoad,10,LINUX_6_12:cryptd \
+    AUTOLOAD+= $(call AutoLoad,10,cryptd@lt6.18 \
 	serpent-sse2-i586 twofish-i586 blowfish_generic)
   endef
 endif
@@ -983,7 +983,7 @@ define KernelPackage/crypto-sha1
 	CONFIG_CRYPTO_SHA1_SSSE3@lt6.18
   FILES:=$(LINUX_DIR)/crypto/sha1_generic.ko@lt6.18 \
 	$(LINUX_DIR)/crypto/sha1.ko@ge6.18
-  AUTOLOAD:=$(call AutoLoad,09,LINUX_6_12:sha1_generic !LINUX_6_12:sha1)
+  AUTOLOAD:=$(call AutoLoad,09,sha1_generic@lt6.18 sha1@ge6.18)
   $(call AddDepends/crypto)
 endef
 
@@ -1069,7 +1069,7 @@ define KernelPackage/crypto-sha256
 	$(LINUX_DIR)/crypto/sha256_generic.ko@lt6.18 \
 	$(LINUX_DIR)/crypto/sha256.ko@ge6.18 \
 	$(LINUX_DIR)/lib/crypto/libsha256.ko
-  AUTOLOAD:=$(call AutoLoad,09,LINUX_6_12:sha256_generic !LINUX_6_12:sha256)
+  AUTOLOAD:=$(call AutoLoad,09,sha256_generic@lt6.18 sha256@ge6.18)
   $(call AddDepends/crypto)
 endef
 
@@ -1130,7 +1130,7 @@ define KernelPackage/crypto-sha512
   FILES:=$(LINUX_DIR)/crypto/sha512_generic.ko@lt6.18 \
 	$(LINUX_DIR)/crypto/sha512.ko@ge6.18 \
 	$(LINUX_DIR)/lib/crypto/libsha512.ko@ge6.18
-  AUTOLOAD:=$(call AutoLoad,09,LINUX_6_12:sha512_generic !LINUX_6_12:sha512)
+  AUTOLOAD:=$(call AutoLoad,09,sha512_generic@lt6.18 sha512@ge6.18)
   $(call AddDepends/crypto)
 endef
 

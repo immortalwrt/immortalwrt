@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ethtool
 PKG_VERSION:=6.19
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
@@ -60,9 +60,6 @@ CONFIGURE_ARGS += --enable-netlink --enable-pretty-dump
 else
 CONFIGURE_ARGS += --disable-netlink --disable-pretty-dump
 endif
-
-# enable support for input_xfrm with kernels newer than 6.6
-CONFIGURE_ARGS += --enable-rss-input-xfrm
 
 define Package/ethtool/install
 	$(INSTALL_DIR) $(1)/usr/sbin

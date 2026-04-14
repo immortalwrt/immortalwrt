@@ -10,8 +10,9 @@
 #include <linux/regmap.h>
 #include <linux/types.h>
 
-#define RTMDIO_MAX_PHY				57
-#define RTMDIO_MAX_SMI_BUS			4
+#define RTMDIO_MAX_PORTS			57
+#define RTMDIO_MAX_SMI_BUSSES			4
+
 #define RTMDIO_PAGE_SELECT			0x1f
 
 #define RTMDIO_PHY_AQR113C_A			0x31c31c12
@@ -109,7 +110,7 @@
 #define RTMDIO_931X_SMI_10GPHY_POLLING_SEL4	(0x0D00)
 
 #define for_each_port(ctrl, pn) \
-	for_each_set_bit(pn, ctrl->valid_ports, RTMDIO_MAX_PHY)
+	for_each_set_bit(pn, ctrl->valid_ports, RTMDIO_MAX_PORTS)
 
 #define rtmdio_ctrl_from_bus(bus) \
 	(((struct rtmdio_chan *)(bus)->priv)->ctrl)
@@ -192,9 +193,9 @@ struct rtmdio_ctrl {
 	struct mutex lock;
 	struct regmap *map;
 	const struct rtmdio_config *cfg;
-	struct rtmdio_port port[RTMDIO_MAX_PHY];
-	struct rtmdio_bus bus[RTMDIO_MAX_SMI_BUS];
-	DECLARE_BITMAP(valid_ports, RTMDIO_MAX_PHY);
+	struct rtmdio_port port[RTMDIO_MAX_PORTS];
+	struct rtmdio_bus bus[RTMDIO_MAX_SMI_BUSSES];
+	DECLARE_BITMAP(valid_ports, RTMDIO_MAX_PORTS);
 };
 
 struct rtmdio_chan {
@@ -246,9 +247,9 @@ static int rtmdio_run_cmd(struct mii_bus *bus, int cmd, int mask, int regnum, in
 	ret = regmap_update_bits(ctrl->map, regnum, mask, cmd | RTMDIO_RUN);
 	ret = regmap_read_poll_timeout(ctrl->map, regnum, val, !(val & RTMDIO_RUN), 20, 500000);
 	if (ret)
-		WARN_ONCE(1, "mdio bus access timed out\n");
+		dev_warn_once(&bus->dev, "access timed out\n");
 	else if (val & fail) {
-		WARN_ONCE(1, "mdio bus access failed\n");
+		dev_warn_once(&bus->dev, "access failed\n");
 		ret = -EIO;
 	}
 
@@ -744,7 +745,7 @@ static int rtmdio_930x_setup_ctrl(struct rtmdio_ctrl *ctrl)
 	unsigned int mask, val;
 
 	/* Define C22/C45 bus feature set */
-	for (int smi_bus = 0; smi_bus < RTMDIO_MAX_SMI_BUS; smi_bus++) {
+	for (int smi_bus = 0; smi_bus < RTMDIO_MAX_SMI_BUSSES; smi_bus++) {
 		mask = BIT(16 + smi_bus);
 		val = ctrl->bus[smi_bus].is_c45 ? mask : 0;
 		regmap_update_bits(ctrl->map, RTMDIO_930X_SMI_GLB_CTRL, mask, val);
@@ -800,7 +801,7 @@ static int rtmdio_931x_setup_ctrl(struct rtmdio_ctrl *ctrl)
 	msleep(100);
 
 	/* Define C22/C45 bus feature set */
-	for (int smi_bus = 0; smi_bus < RTMDIO_MAX_SMI_BUS; smi_bus++) {
+	for (int smi_bus = 0; smi_bus < RTMDIO_MAX_SMI_BUSSES; smi_bus++) {
 		if (ctrl->bus[smi_bus].is_c45)
 			c45_mask |= 0x2 << (smi_bus * 2);  /* Std. C45, non-standard is 0x3 */
 	}
@@ -821,7 +822,7 @@ static void rtmdio_931x_setup_polling(struct rtmdio_ctrl *ctrl)
 
 	/* Define PHY specific polling parameters */
 	for_each_port(ctrl, pn) {
-		u8 smi = ctrl->port[pn].smi_bus;
+		u8 smi_bus = ctrl->port[pn].smi_bus;
 		unsigned int mask, val;
 
 		if (rtmdio_get_phy_info(ctrl, pn, &phyinfo))
@@ -835,19 +836,19 @@ static void rtmdio_931x_setup_polling(struct rtmdio_ctrl *ctrl)
 		mask = val = 0;
 
 		/* PRVTE0 polling */
-		mask |= BIT(20 + smi);
+		mask |= BIT(20 + smi_bus);
 		if (phyinfo.has_res_reg)
-			val |= BIT(20 + smi);
+			val |= BIT(20 + smi_bus);
 
 		/* PRVTE1 polling */
-		mask |= BIT(24 + smi);
+		mask |= BIT(24 + smi_bus);
 		if (phyinfo.force_res)
-			val |= BIT(24 + smi);
+			val |= BIT(24 + smi_bus);
 
 		regmap_update_bits(ctrl->map, RTMDIO_931X_SMI_GLB_CTRL0, mask, val);
 
 		/* polling std. or proprietary format (bit 0 of SMI_SETX_FMT_SEL) */
-		mask = BIT(smi * 2);
+		mask = BIT(smi_bus * 2);
 		val = phyinfo.force_res ? mask : 0;
 		regmap_update_bits(ctrl->map, RTMDIO_931X_SMI_GLB_CTRL1, mask, val);
 
@@ -907,7 +908,7 @@ static int rtmdio_map_ports(struct device *dev)
 			return dev_err_probe(dev, -EINVAL, "%pfwP no bus address\n",
 					     of_fwnode_handle(phy->parent));
 
-		if (smi_bus >= RTMDIO_MAX_SMI_BUS)
+		if (smi_bus >= RTMDIO_MAX_SMI_BUSSES)
 			return dev_err_probe(dev, -EINVAL, "%pfwP illegal bus number\n",
 					     of_fwnode_handle(phy->parent));
 
