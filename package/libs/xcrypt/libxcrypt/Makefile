@@ -27,7 +27,7 @@ CONFIGURE_ARGS += \
 	--with-pic \
 	--enable-year2038 \
 	--disable-xcrypt-compat-files \
-	--disable-shared \
+	--enable-shared \
 	--disable-failure-tokens \
 	--disable-obsolete-api \
 	--enable-hashes=solaris
