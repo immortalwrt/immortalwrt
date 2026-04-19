@@ -41,6 +41,7 @@ define Build/InstallDev
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/*.h $(1)/usr/include/
 	$(INSTALL_DIR) $(1)/usr/lib/libxcrypt
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libcrypt.{a,la} $(1)/usr/lib/libxcrypt
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libcrypt.so* $(1)/usr/lib/libxcrypt
 	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/libxcrypt.pc $(1)/usr/lib/pkgconfig/
 endef
