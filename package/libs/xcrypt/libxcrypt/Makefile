@@ -36,6 +36,15 @@ define Package/libxcrypt/install
 	true
 endef
 
+define Package/libxcrypt-shared
+$(Package/libxcrypt/Default)
+endef
+
+define Package/libxcrypt-shared/install
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libcrypt.so* $(1)/usr/lib/
+endef
+
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/*.h $(1)/usr/include/
@@ -47,3 +56,4 @@ define Build/InstallDev
 endef
 
 $(eval $(call BuildPackage,libxcrypt))
+$(eval $(call BuildPackage,libxcrypt-shared))
