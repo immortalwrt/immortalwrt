@@ -5,7 +5,7 @@
 #include <linux/iopoll.h>
 #include <net/nexthop.h>
 
-#include "rtl83xx.h"
+#include "rtl-otto.h"
 
 #define RTL838X_VLAN_PORT_TAG_STS_UNTAG				0x0
 #define RTL838X_VLAN_PORT_TAG_STS_TAGGED			0x1

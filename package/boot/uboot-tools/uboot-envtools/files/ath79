@@ -120,6 +120,10 @@ dell,apl27-0b1)
 domywifi,dw33d)
 	ubootenv_add_uci_config "/dev/mtd4" "0x0" "0x10000" "0x10000"
 	;;
+extreme-networks,ws-ap3805i)
+	ubootenv_add_uci_config "/dev/mtd2" "0x0" "0x1000" "0x4000" "1"
+	ubootenv_add_uci_config "/dev/mtd3" "0x0" "0x1000" "0x4000" "1"
+	;;
 glinet,gl-ar150)
 	ubootenv_add_uci_config "/dev/mtd1" "0x0" "0x8000" "0x10000"
 	;;

@@ -1837,7 +1837,7 @@ static int ltq_atm_probe(struct platform_device *pdev)
 
 	ifx_atm_version(ops, ver_str);
 	printk(KERN_INFO "%s", ver_str);
-	platform_set_drvdata(pdev, ops);
+	platform_set_drvdata(pdev, (void *)ops);
 	printk("ifxmips_atm: ATM init succeed\n");
 
 	return 0;

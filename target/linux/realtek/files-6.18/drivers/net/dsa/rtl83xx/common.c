@@ -14,7 +14,7 @@
 #include <linux/of_net.h>
 #include <asm/mach-rtl-otto/mach-rtl-otto.h>
 
-#include "rtl83xx.h"
+#include "rtl-otto.h"
 
 struct phylink_pcs *rtpcs_create(struct device *dev, struct device_node *np, int port);
 

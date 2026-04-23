@@ -4,7 +4,7 @@
 #include <linux/delay.h>
 #include <asm/mach-rtl-otto/mach-rtl-otto.h>
 
-#include "rtl83xx.h"
+#include "rtl-otto.h"
 
 enum scheduler_type {
 	WEIGHTED_FAIR_QUEUE = 0,

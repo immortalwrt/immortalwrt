@@ -224,8 +224,10 @@ build_list_of_backup_overlay_files() {
 		-e '\,^/etc/board.json$,d' \
 		-e '\,^/etc/luci-uploads/\.placeholder,d' \
 		-e '\,/[^/]*-opkg$,d' \
+		-e '\,/[^/]*\.apk-new$,d' \
 		-e '\,^/etc/urandom.seed$,d' \
 		-e '\,^/etc/apk/world$,d' \
+		-e '\,^/etc/apk/repositories\.d/distfeeds\.list$,d' \
 		-e "\,^$INSTALLED_PACKAGES$,d" \
 		-e '\,^/usr/lib/opkg/.*,d' \
 		-e '\,^/lib/apk/.*,d' \

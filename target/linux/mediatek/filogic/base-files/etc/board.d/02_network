@@ -20,6 +20,7 @@ mediatek_setup_interfaces()
 	nokia,ea0326gmp|\
 	mercusys,mr80x-v3|\
 	routerich,ax3000-v1|\
+	ruijie,rg-x60|\
 	zbtlink,zbt-z8103ax|\
 	zbtlink,zbt-z8103ax-c)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" eth1
@@ -46,6 +47,7 @@ mediatek_setup_interfaces()
 	asus,rt-ax59u|\
 	asus,zenwifi-bt8|\
 	asus,zenwifi-bt8-ubootmod|\
+	buffalo,wsr-3000ax4p|\
 	cetron,ct3003|\
 	cetron,ct3003-ubootmod|\
 	cmcc,a10-stock|\
@@ -81,7 +83,10 @@ mediatek_setup_interfaces()
 	wavlink,wl-wn536ax6-a|\
 	zbtlink,zbt-z8102ax|\
 	zbtlink,zbt-z8102ax-v2)
-		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" eth1
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" "eth1"
+		;;
+	zbtlink,zbt-z8106ax-t)
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" "eth1 wwan"
 		;;
 	asiarf,ap7986-003|\
 	asus,tuf-ax4200q|\
@@ -293,11 +298,6 @@ mediatek_setup_macs()
 		lan_mac=$(mtd_get_mac_ascii factory lanMac)
 		wan_mac=$(macaddr_add "$lan_mac" 1)
 		label_mac=$wan_mac
-		;;
-	ruijie,rg-x60-pro)
-		label_mac=$(mtd_get_mac_ascii product_info ethaddr)
-		wan_mac=$label_mac
-		lan_mac=$(macaddr_add "$label_mac" 1)
 		;;
 	tplink,eap683-lr)
 		label_mac=$(get_mac_binary "/tmp/factory/default-mac" 0)

@@ -58,7 +58,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 +obj-$(CONFIG_PCS_MTK_USXGMII)	+= pcs-mtk-usxgmii.o
 --- /dev/null
 +++ b/drivers/net/pcs/pcs-mtk-usxgmii.c
-@@ -0,0 +1,454 @@
+@@ -0,0 +1,453 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2023 MediaTek Inc.
@@ -328,7 +328,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 +	phylink_decode_usxgmii_word(state, lpa);
 +}
 +
-+static void mtk_usxgmii_pcs_get_state(struct phylink_pcs *pcs,
++static void mtk_usxgmii_pcs_get_state(struct phylink_pcs *pcs, unsigned int neg_mode,
 +				      struct phylink_link_state *state)
 +{
 +	struct mtk_usxgmii_pcs *mpcs = pcs_to_mtk_usxgmii_pcs(pcs);
@@ -406,7 +406,6 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 +	mpcs->dev = dev;
 +	mpcs->pcs.ops = &mtk_usxgmii_pcs_ops;
 +	mpcs->pcs.poll = true;
-+	mpcs->pcs.neg_mode = true;
 +	mpcs->interface = PHY_INTERFACE_MODE_NA;
 +	mpcs->neg_mode = -1;
 +

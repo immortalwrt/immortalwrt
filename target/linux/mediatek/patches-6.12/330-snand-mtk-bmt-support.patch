@@ -1,3 +1,15 @@
+From 68d5efaa10cf0689521fe05e386e3a1e11d8cb29 Mon Sep 17 00:00:00 2001
+From: Chuanhong Guo <gch981213@gmail.com>
+Date: Thu, 7 Apr 2022 10:16:47 +0800
+Subject: [PATCH] mtd: spinand: attach/detach MTK BMT on probe/remove
+
+Call mtk_bmt_attach() after the MTD device is registered in
+spinand_probe() and mtk_bmt_detach() before it is unregistered in
+spinand_remove() to enable the MediaTek bad block management table for
+SPI-NAND devices.
+
+Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
+---
 --- a/drivers/mtd/nand/spi/core.c
 +++ b/drivers/mtd/nand/spi/core.c
 @@ -19,6 +19,7 @@

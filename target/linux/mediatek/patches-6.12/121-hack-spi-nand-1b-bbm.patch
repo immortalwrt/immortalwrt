@@ -1,3 +1,14 @@
+From 2138956bdc3145fac26d2ba8ac966f31d33cd290 Mon Sep 17 00:00:00 2001
+From: Chuanhong Guo <gch981213@gmail.com>
+Date: Thu, 7 Apr 2022 10:05:56 +0800
+Subject: [PATCH] mediatek: spi-nand: check for 1 byte BBM only
+
+the OOB layout in MTK SNFI uses the 2nd byte, and anything using OOB
+will make the block a bad-block in spi-nand driver.
+Hack it for now. We need a proper solution upstream.
+
+Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
+---
 --- a/drivers/mtd/nand/spi/core.c
 +++ b/drivers/mtd/nand/spi/core.c
 @@ -924,7 +924,7 @@ static int spinand_mtd_write(struct mtd_

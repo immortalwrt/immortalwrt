@@ -241,10 +241,11 @@ static void rteth_83xx_update_counter(struct rteth_ctrl *ctrl, int ring, int rel
 
 static void rteth_93xx_update_counter(struct rteth_ctrl *ctrl, int ring, int released)
 {
-	int pos = (ring % 3) * 10;
+	int shift = (ring % 3) * 10;
+	int reg = (ring / 3) * 4;
 
 	/* writing x to the ring counter increases ring free space by x */
-	regmap_write(ctrl->map, ctrl->r->dma_if_rx_ring_cntr(ring), released << pos);
+	regmap_write(ctrl->map, ctrl->r->dma_if_rx_ring_cntr + reg, released << shift);
 }
 
 struct dsa_tag {
@@ -411,7 +412,7 @@ static void rteth_838x_hw_reset(struct rteth_ctrl *ctrl)
 	rteth_nic_reset(ctrl, 0xc);
 
 	/* Free floating rings without space tracking */
-	regmap_write(ctrl->map, RTL838X_DMA_IF_RX_RING_SIZE, 0);
+	regmap_write(ctrl->map, ctrl->r->dma_if_rx_ring_size, 0);
 }
 
 static void rteth_839x_hw_reset(struct rteth_ctrl *ctrl)
@@ -439,7 +440,7 @@ static void rteth_839x_hw_reset(struct rteth_ctrl *ctrl)
 	regmap_write(ctrl->map, RTL839X_DMA_IF_NBUF_BASE_DESC_ADDR_CTRL, nbuf);
 
 	/* Free floating rings without space tracking */
-	regmap_write(ctrl->map, RTL839X_DMA_IF_RX_RING_SIZE, 0);
+	regmap_write(ctrl->map, ctrl->r->dma_if_rx_ring_size, 0);
 }
 
 static void rteth_93xx_hw_reset(struct rteth_ctrl *ctrl)
@@ -447,16 +448,18 @@ static void rteth_93xx_hw_reset(struct rteth_ctrl *ctrl)
 	rteth_nic_reset(ctrl, 0x6);
 
 	/* Setup Head of Line */
-	for (int r = 0; r < RTETH_RX_RINGS; r++) {
+	for (int ring = 0; ring < RTETH_RX_RINGS; ring++) {
 		int cnt = min(RTETH_RX_RING_SIZE, 0x3ff);
-		int pos = (r % 3) * 10;
+		int shift = (ring % 3) * 10;
+		int reg = (ring / 3) * 4;
 		u32 v;
 
 		/* set ring size */
-		sw_w32_mask(0x3ff << pos, cnt << pos, ctrl->r->dma_if_rx_ring_size(r));
-		/* clear counters */
-		v = (sw_r32(ctrl->r->dma_if_rx_ring_cntr(r)) >> pos) & 0x3ff;
-		sw_w32_mask(0x3ff << pos, v, ctrl->r->dma_if_rx_ring_cntr(r));
+		regmap_update_bits(ctrl->map, ctrl->r->dma_if_rx_ring_size + reg,
+				   0x3ff << shift, cnt << shift);
+		/* clear counters by simply writing the current register values back */
+		regmap_read(ctrl->map, ctrl->r->dma_if_rx_ring_cntr + reg, &v);
+		regmap_write(ctrl->map, ctrl->r->dma_if_rx_ring_cntr + reg, v);
 	}
 }
 
@@ -1302,12 +1305,12 @@ static const struct rteth_config rteth_838x_cfg = {
 	.qm_rsn2cpuqid_cnt = RTETH_838X_QM_PKT2CPU_INTPRI_CNT,
 	.dma_if_intr_sts = RTETH_838X_DMA_IF_INTR_STS,
 	.dma_if_intr_msk = RTETH_838X_DMA_IF_INTR_MSK,
+	.dma_if_rx_ring_cntr = RTETH_838X_DMA_IF_RX_RING_CNTR,
+	.dma_if_rx_ring_size = RTETH_838X_DMA_IF_RX_RING_SIZE,
 	.dma_if_ctrl = RTL838X_DMA_IF_CTRL,
 	.mac_force_mode_ctrl = RTETH_838X_MAC_FORCE_MODE_CTRL,
 	.dma_rx_base = RTL838X_DMA_RX_BASE,
 	.dma_tx_base = RTL838X_DMA_TX_BASE,
-	.dma_if_rx_ring_size = rtl838x_dma_if_rx_ring_size,
-	.dma_if_rx_ring_cntr = rtl838x_dma_if_rx_ring_cntr,
 	.rst_glb_ctrl = RTL838X_RST_GLB_CTRL_0,
 	.mac_reg = { RTETH_838X_MAC_ADDR_CTRL,
 		     RTETH_838X_MAC_ADDR_CTRL_ALE,
@@ -1348,12 +1351,12 @@ static const struct rteth_config rteth_839x_cfg = {
 	.qm_rsn2cpuqid_cnt = RTETH_839X_QM_PKT2CPU_INTPRI_CNT,
 	.dma_if_intr_sts = RTETH_839X_DMA_IF_INTR_STS,
 	.dma_if_intr_msk = RTETH_839X_DMA_IF_INTR_MSK,
+	.dma_if_rx_ring_cntr = RTETH_839X_DMA_IF_RX_RING_CNTR,
+	.dma_if_rx_ring_size = RTETH_839X_DMA_IF_RX_RING_SIZE,
 	.dma_if_ctrl = RTL839X_DMA_IF_CTRL,
 	.mac_force_mode_ctrl = RTETH_839X_MAC_FORCE_MODE_CTRL,
 	.dma_rx_base = RTL839X_DMA_RX_BASE,
 	.dma_tx_base = RTL839X_DMA_TX_BASE,
-	.dma_if_rx_ring_size = rtl839x_dma_if_rx_ring_size,
-	.dma_if_rx_ring_cntr = rtl839x_dma_if_rx_ring_cntr,
 	.rst_glb_ctrl = RTL839X_RST_GLB_CTRL,
 	.mac_reg = { RTETH_839X_MAC_ADDR_CTRL },
 	.l2_tbl_flush_ctrl = RTL839X_L2_TBL_FLUSH_CTRL,
@@ -1392,14 +1395,14 @@ static const struct rteth_config rteth_930x_cfg = {
 	.qm_rsn2cpuqid_cnt = RTETH_930X_QM_RSN2CPUQID_CTRL_CNT,
 	.dma_if_intr_sts = RTETH_930X_DMA_IF_INTR_STS,
 	.dma_if_intr_msk = RTETH_930X_DMA_IF_INTR_MSK,
+	.dma_if_rx_ring_cntr = RTETH_930X_DMA_IF_RX_RING_CNTR,
+	.dma_if_rx_ring_size = RTETH_930X_DMA_IF_RX_RING_SIZE,
 	.l2_ntfy_if_intr_sts = RTL930X_L2_NTFY_IF_INTR_STS,
 	.l2_ntfy_if_intr_msk = RTL930X_L2_NTFY_IF_INTR_MSK,
 	.dma_if_ctrl = RTL930X_DMA_IF_CTRL,
 	.mac_force_mode_ctrl = RTETH_930X_MAC_FORCE_MODE_CTRL,
 	.dma_rx_base = RTL930X_DMA_RX_BASE,
 	.dma_tx_base = RTL930X_DMA_TX_BASE,
-	.dma_if_rx_ring_size = rtl930x_dma_if_rx_ring_size,
-	.dma_if_rx_ring_cntr = rtl930x_dma_if_rx_ring_cntr,
 	.rst_glb_ctrl = RTL930X_RST_GLB_CTRL_0,
 	.mac_reg = { RTETH_930X_MAC_L2_ADDR_CTRL },
 	.l2_tbl_flush_ctrl = RTL930X_L2_TBL_FLUSH_CTRL,
@@ -1437,14 +1440,14 @@ static const struct rteth_config rteth_931x_cfg = {
 	.qm_rsn2cpuqid_cnt = RTETH_931X_QM_RSN2CPUQID_CTRL_CNT,
 	.dma_if_intr_sts = RTETH_931X_DMA_IF_INTR_STS,
 	.dma_if_intr_msk = RTETH_931X_DMA_IF_INTR_MSK,
+	.dma_if_rx_ring_cntr = RTETH_931X_DMA_IF_RX_RING_CNTR,
+	.dma_if_rx_ring_size = RTETH_931X_DMA_IF_RX_RING_SIZE,
 	.l2_ntfy_if_intr_sts = RTL931X_L2_NTFY_IF_INTR_STS,
 	.l2_ntfy_if_intr_msk = RTL931X_L2_NTFY_IF_INTR_MSK,
 	.dma_if_ctrl = RTL931X_DMA_IF_CTRL,
 	.mac_force_mode_ctrl = RTETH_931X_MAC_FORCE_MODE_CTRL,
 	.dma_rx_base = RTL931X_DMA_RX_BASE,
 	.dma_tx_base = RTL931X_DMA_TX_BASE,
-	.dma_if_rx_ring_size = rtl931x_dma_if_rx_ring_size,
-	.dma_if_rx_ring_cntr = rtl931x_dma_if_rx_ring_cntr,
 	.rst_glb_ctrl = RTL931X_RST_GLB_CTRL,
 	.mac_reg = { RTETH_930X_MAC_L2_ADDR_CTRL },
 	.l2_tbl_flush_ctrl = RTL931X_L2_TBL_FLUSH_CTRL,
