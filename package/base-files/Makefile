@@ -47,7 +47,7 @@ define Package/base-files
 	+SELINUX:busybox-selinux +!SELINUX:busybox
   TITLE:=Base filesystem for OpenWrt
   URL:=https://openwrt.org/
-  VERSION:=$(PKG_RELEASE)_$(lastword $(subst -, ,$(REVISION)))
+  VERSION:=$(COMMITCOUNT)
 endef
 
 define Package/base-files/conffiles
@@ -257,7 +257,7 @@ ifneq ($(CONFIG_USE_APK),)
 
 	rm -f $(1)/etc/uci-defaults/13_fix-group-user
 	rm -f $(1)/sbin/pkg_check
-	echo $(PKG_RELEASE)_$(lastword $(subst -, ,$(REVISION))) >$(STAGING_DIR)/base-files.version
+	echo $(COMMITCOUNT) >$(STAGING_DIR)/base-files.version
 else
 	$(if $(CONFIG_CLEAN_IPKG),, \
 		mkdir -p $(1)/etc/opkg; \
