@@ -701,16 +701,13 @@ static int rtmdio_838x_setup_ctrl(struct rtmdio_ctrl *ctrl)
 	 * PHY_PATCH_DONE enables phy control via SoC. This is required for phy access,
 	 * including patching. Must always be set before the phys are probed.
 	 */
-	regmap_update_bits(ctrl->map, RTMDIO_838X_SMI_GLB_CTRL,
-			   RTMDIO_838X_PHY_PATCH_DONE, RTMDIO_838X_PHY_PATCH_DONE);
+	regmap_set_bits(ctrl->map, RTMDIO_838X_SMI_GLB_CTRL, RTMDIO_838X_PHY_PATCH_DONE);
 
 	return 0;
 }
 
 static void rtmdio_838x_setup_polling(struct rtmdio_ctrl *ctrl)
 {
-	int combo_phy;
-
 	/* Disable MAC polling for PHY config. It will be activated later in the DSA driver */
 	regmap_write(ctrl->map, RTMDIO_838X_SMI_POLL_CTRL, 0);
 
@@ -720,8 +717,8 @@ static void rtmdio_838x_setup_polling(struct rtmdio_ctrl *ctrl)
 	 * give the real media status (0=copper, 1=fibre). For now assume that if address 24 is
 	 * PHY driven, it must be a combo PHY and media detection is needed.
 	 */
-	combo_phy = test_bit(24, ctrl->valid_ports) ? BIT(7) : 0;
-	regmap_update_bits(ctrl->map, RTMDIO_838X_SMI_GLB_CTRL, BIT(7), combo_phy);
+	regmap_assign_bits(ctrl->map, RTMDIO_838X_SMI_GLB_CTRL, BIT(7),
+			   test_bit(24, ctrl->valid_ports));
 }
 
 static int rtmdio_839x_setup_ctrl(struct rtmdio_ctrl *ctrl)
@@ -734,7 +731,7 @@ static int rtmdio_839x_setup_ctrl(struct rtmdio_ctrl *ctrl)
 	regmap_write(ctrl->map, RTMDIO_839X_SMI_PORT_POLLING_CTRL, 0);
 	regmap_write(ctrl->map, RTMDIO_839X_SMI_PORT_POLLING_CTRL + 4, 0);
 	/* Disable PHY polling via SoC */
-	regmap_update_bits(ctrl->map, RTMDIO_839X_SMI_GLB_CTRL, BIT(7), 0);
+	regmap_clear_bits(ctrl->map, RTMDIO_839X_SMI_GLB_CTRL, BIT(7));
 
 	/* Probably should reset all PHYs here... */
 	return 0;
