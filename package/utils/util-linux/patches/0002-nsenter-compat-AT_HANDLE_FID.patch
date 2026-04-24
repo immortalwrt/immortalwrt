@@ -1,0 +1,13 @@
+--- a/sys-utils/nsenter.c
++++ b/sys-utils/nsenter.c
+@@ -24,6 +24,10 @@
+ #include <sys/stat.h>
+ #include <sys/statfs.h>
+ 
++#ifndef AT_HANDLE_FID
++# define AT_HANDLE_FID 0x200
++#endif
++
+ #include <sys/ioctl.h>
+ #include <linux/sockios.h>
+ #ifdef HAVE_LINUX_NSFS_H
