@@ -6,8 +6,9 @@
 #include <linux/of_mdio.h>
 #include <linux/of_platform.h>
 #include <linux/phy.h>
-#include <linux/platform_device.h>
+#include <linux/phy/phy-common-props.h>
 #include <linux/phylink.h>
+#include <linux/platform_device.h>
 #include <linux/regmap.h>
 
 #define RTPCS_SDS_CNT				14
@@ -188,6 +189,9 @@ struct rtpcs_sds_ops {
 	int (*reset_cmu)(struct rtpcs_serdes *sds, enum rtpcs_sds_pll_type pll);
 	/* online reconfiguration of a running SerDes to another PLL */
 	int (*reconfigure_to_pll)(struct rtpcs_serdes *sds, enum rtpcs_sds_pll_type pll);
+
+	int (*config_polarity)(struct rtpcs_serdes *sds, unsigned int tx_pol,
+			       unsigned int rx_pol);
 };
 
 struct rtpcs_sds_reg_field {
@@ -205,6 +209,7 @@ struct rtpcs_sds_regs {
 
 struct rtpcs_serdes {
 	struct rtpcs_ctrl *ctrl;
+	struct device_node *of_node;
 	const struct rtpcs_sds_ops *ops;
 	const struct rtpcs_sds_regs *regs;
 	enum rtpcs_sds_type type;
@@ -212,9 +217,6 @@ struct rtpcs_serdes {
 	u8 id;
 	u8 num_of_links;
 	bool first_start;
-
-	bool rx_pol_inv;
-	bool tx_pol_inv;
 };
 
 struct rtpcs_ctrl {
@@ -2768,11 +2770,11 @@ static int rtpcs_930x_sds_10g_idle(struct rtpcs_serdes *sds)
 	return -ETIMEDOUT;
 }
 
-static int rtpcs_930x_sds_set_polarity(struct rtpcs_serdes *sds,
-				       bool tx_inv, bool rx_inv)
+static int rtpcs_930x_sds_config_polarity(struct rtpcs_serdes *sds, unsigned int tx_pol,
+					  unsigned int rx_pol)
 {
-	u8 rx_val = rx_inv ? 1 : 0;
-	u8 tx_val = tx_inv ? 1 : 0;
+	u8 rx_val = (rx_pol == PHY_POL_INVERT) ? 1 : 0;
+	u8 tx_val = (tx_pol == PHY_POL_INVERT) ? 1 : 0;
 	u32 val;
 	int ret;
 
@@ -3013,9 +3015,6 @@ static int rtpcs_930x_setup_serdes(struct rtpcs_serdes *sds,
 
 	/* dal_longan_construct_serdesConfig_init */ /* Serdes Construct */
 	rtpcs_930x_phy_enable_10g_1g(sds);
-
-	/* Set SDS polarity */
-	rtpcs_930x_sds_set_polarity(sds, sds->tx_pol_inv, sds->rx_pol_inv);
 
 	/* Enable SDS in desired mode */
 	ret = rtpcs_930x_sds_set_mode(sds, hw_mode);
@@ -3526,11 +3525,11 @@ static int rtpcs_931x_sds_link_sts_get(struct rtpcs_serdes *sds)
 	return sts1;
 }
 
-static int rtpcs_931x_sds_set_polarity(struct rtpcs_serdes *sds,
-				       bool tx_inv, bool rx_inv)
+static int rtpcs_931x_sds_config_polarity(struct rtpcs_serdes *sds, unsigned int tx_pol,
+					  unsigned int rx_pol)
 {
-	u8 rx_val = rx_inv ? 1 : 0;
-	u8 tx_val = tx_inv ? 1 : 0;
+	u8 rx_val = (rx_pol == PHY_POL_INVERT) ? 1 : 0;
+	u8 tx_val = (tx_pol == PHY_POL_INVERT) ? 1 : 0;
 	u32 val;
 	int ret;
 
@@ -3901,8 +3900,6 @@ static int rtpcs_931x_setup_serdes(struct rtpcs_serdes *sds,
 		return ret;
 	}
 
-	rtpcs_931x_sds_set_polarity(sds, sds->tx_pol_inv, sds->rx_pol_inv);
-
 	rtpcs_931x_sds_power(sds, true);
 
 	ret = rtpcs_931x_sds_set_mode(sds, hw_mode);
@@ -3970,6 +3967,34 @@ static int rtpcs_931x_init(struct rtpcs_ctrl *ctrl)
 }
 
 /* Common functions */
+
+static int rtpcs_sds_config_polarity(struct rtpcs_serdes *sds, phy_interface_t if_mode)
+{
+	unsigned int rx_pol, tx_pol;
+	int ret;
+
+	if (!sds->of_node)
+		return 0;
+
+	ret = phy_get_manual_rx_polarity(of_fwnode_handle(sds->of_node), phy_modes(if_mode),
+					 &rx_pol);
+	if (ret < 0)
+		return ret;
+
+	ret = phy_get_manual_tx_polarity(of_fwnode_handle(sds->of_node), phy_modes(if_mode),
+					 &tx_pol);
+	if (ret < 0)
+		return ret;
+
+	if (!sds->ops->config_polarity) {
+		if (tx_pol != PHY_POL_NORMAL || rx_pol != PHY_POL_NORMAL)
+			dev_warn(sds->ctrl->dev,
+				 "Polarity change requested but not supported\n");
+		return 0;
+	}
+
+	return sds->ops->config_polarity(sds, tx_pol, rx_pol);
+}
 
 static void rtpcs_pcs_get_state(struct phylink_pcs *pcs, unsigned int neg_mode,
 				struct phylink_link_state *state)
@@ -4066,6 +4091,13 @@ static int rtpcs_pcs_config(struct phylink_pcs *pcs, unsigned int neg_mode,
 	if (sds->hw_mode != hw_mode) {
 		dev_info(ctrl->dev, "configure SerDes %u for mode %s\n", sds->id,
 			 phy_modes(interface));
+
+		ret = rtpcs_sds_config_polarity(sds, interface);
+		if (ret < 0) {
+			dev_err(ctrl->dev, "failed to configure polarity of SerDes %u\n",
+				sds->id);
+			goto out;
+		}
 
 		ret = ctrl->cfg->setup_serdes(sds, hw_mode);
 		if (ret < 0)
@@ -4179,11 +4211,17 @@ static struct mii_bus *rtpcs_probe_serdes_bus(struct rtpcs_ctrl *ctrl)
 	return bus;
 }
 
+static void rtpcs_sds_put_of_node(void *data)
+{
+	struct rtpcs_serdes *sds = data;
+
+	of_node_put(sds->of_node);
+}
+
 static int rtpcs_probe(struct platform_device *pdev)
 {
 	struct device_node *np = pdev->dev.of_node;
 	struct device *dev = &pdev->dev;
-	struct device_node *child;
 	struct rtpcs_serdes *sds;
 	struct rtpcs_ctrl *ctrl;
 	u32 sds_id;
@@ -4219,16 +4257,19 @@ static int rtpcs_probe(struct platform_device *pdev)
 			return ret;
 	}
 
-	for_each_child_of_node(dev->of_node, child) {
+	for_each_child_of_node_scoped(dev->of_node, child) {
 		ret = of_property_read_u32(child, "reg", &sds_id);
 		if (ret)
 			return ret;
+
 		if (sds_id >= ctrl->cfg->serdes_count)
 			return -EINVAL;
 
 		sds = &ctrl->serdes[sds_id];
-		sds->rx_pol_inv = of_property_read_bool(child, "realtek,pnswap-rx");
-		sds->tx_pol_inv = of_property_read_bool(child, "realtek,pnswap-tx");
+		sds->of_node = of_node_get(child);
+		ret = devm_add_action_or_reset(dev, rtpcs_sds_put_of_node, sds);
+		if (ret)
+			return ret;
 	}
 
 	if (ctrl->cfg->init) {
@@ -4336,6 +4377,7 @@ static const struct rtpcs_sds_ops rtpcs_930x_sds_ops = {
 	.set_pll_select		= rtpcs_930x_sds_set_pll_select,
 	.reset_cmu		= rtpcs_930x_sds_reset_cmu,
 	.reconfigure_to_pll	= rtpcs_930x_sds_reconfigure_to_pll,
+	.config_polarity	= rtpcs_930x_sds_config_polarity,
 };
 
 static const struct rtpcs_sds_regs rtpcs_930x_sds_regs = {
@@ -4376,6 +4418,7 @@ static const struct rtpcs_sds_ops rtpcs_931x_sds_ops = {
 	.get_pll_select		= rtpcs_931x_sds_get_pll_select,
 	.set_pll_select		= rtpcs_931x_sds_set_pll_select,
 	.reconfigure_to_pll	= rtpcs_931x_sds_reconfigure_to_pll,
+	.config_polarity	= rtpcs_931x_sds_config_polarity,
 };
 
 static const struct rtpcs_sds_regs rtpcs_931x_sds_regs = {
