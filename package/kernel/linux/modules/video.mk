@@ -355,7 +355,7 @@ $(eval $(call KernelPackage,drm-buddy))
 define KernelPackage/drm-client-lib
   SUBMENU:=$(VIDEO_MENU)
   TITLE:=DRM client library setup helper
-  DEPENDS:=@DISPLAY_SUPPORT +@LINUX_6_18 +kmod-drm +kmod-drm-kms-helper
+  DEPENDS:=@DISPLAY_SUPPORT @LINUX_6_18 +kmod-drm +kmod-drm-kms-helper
   KCONFIG:=CONFIG_DRM_CLIENT_LIB
   FILES:= $(LINUX_DIR)/drivers/gpu/drm/clients/drm_client_lib.ko
   AUTOLOAD:=$(call AutoProbe,drm_client_lib)
