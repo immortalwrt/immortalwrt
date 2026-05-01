@@ -32,20 +32,19 @@ Change-Id: I37221506f5166877c2b110753d39bb0757985e68
 --- a/net/ipv4/tcp_input.c
 +++ b/net/ipv4/tcp_input.c
 @@ -3991,6 +3991,7 @@ static int tcp_ack(struct sock *sk, cons
- 
+
  	prior_fack = tcp_is_sack(tp) ? tcp_highest_sack_seq(tp) : tp->snd_una;
  	rs.prior_in_flight = tcp_packets_in_flight(tp);
 +	tcp_rate_check_app_limited(sk);
- 
+
  	/* ts_recent update must be made after we are sure that the packet
  	 * is in window.
 --- a/net/ipv4/tcp_timer.c
 +++ b/net/ipv4/tcp_timer.c
-@@ -690,6 +690,7 @@ void tcp_write_timer_handler(struct sock
+@@ -703,5 +703,6 @@ void tcp_write_timer_handler(struct sock *sk)
  		return;
  	}
- 
 +	tcp_rate_check_app_limited(sk);
  	tcp_mstamp_refresh(tcp_sk(sk));
  	event = icsk->icsk_pending;
- 
+
