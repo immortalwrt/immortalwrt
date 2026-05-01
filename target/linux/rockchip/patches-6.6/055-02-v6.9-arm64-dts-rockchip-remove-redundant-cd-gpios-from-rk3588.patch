@@ -1,0 +1,55 @@
+From d859ad305ed19d9a77d8c8ecd22459b73da36ba6 Mon Sep 17 00:00:00 2001
+From: Kever Yang <kever.yang@rock-chips.com>
+Date: Thu, 1 Feb 2024 11:46:21 +0800
+Subject: [PATCH] arm64: dts: rockchip: remove redundant cd-gpios from rk3588
+ sdmmc nodes
+
+The sdmmc node already have a "&sdmmc_det" for pinctrl which switch the
+GPIO0A4 to sdmmc detect function, no need to define a separate "cd-gpios".
+
+RK3588 has force_jtage feature which is enable JTAG function via sdmmc
+pins automatically when there is no SD card insert, this feature will
+need the GPIO0A4 works in sdmmc_det function like other mmc signal instead
+of GPIO function, or else the force_jtag can not auto be disabled when
+SD card insert.
+
+Signed-off-by: Kever Yang <kever.yang@rock-chips.com>
+Link: https://lore.kernel.org/r/20240201034621.1970279-1-kever.yang@rock-chips.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-plus.dts | 1 -
+ arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dts     | 1 -
+ arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts         | 1 -
+ arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts        | 1 -
+ 4 files changed, 4 deletions(-)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-plus.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-plus.dts
+@@ -445,7 +445,6 @@
+ &sdmmc {
+ 	bus-width = <4>;
+ 	cap-sd-highspeed;
+-	cd-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_LOW>;
+ 	disable-wp;
+ 	max-frequency = <150000000>;
+ 	no-sdio;
+--- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts
+@@ -413,7 +413,6 @@
+ 	bus-width = <4>;
+ 	cap-mmc-highspeed;
+ 	cap-sd-highspeed;
+-	cd-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_LOW>;
+ 	disable-wp;
+ 	sd-uhs-sdr104;
+ 	vmmc-supply = <&vcc_3v3_s3>;
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-rock-5a.dts
+@@ -395,7 +395,6 @@
+ 	bus-width = <4>;
+ 	cap-mmc-highspeed;
+ 	cap-sd-highspeed;
+-	cd-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_LOW>;
+ 	disable-wp;
+ 	max-frequency = <150000000>;
+ 	no-sdio;
