@@ -27,16 +27,11 @@ jobs:
       - name: Clone ImmortalWrt
         run: |
           git clone --depth 1 --branch $REPO_BRANCH $REPO_URL immortalwrt
-          cd immortalwrt
-          echo "SRC_DIR=$PWD" >> $GITHUB_ENV
+          echo "SRC_DIR=$PWD/immortalwrt" >> $GITHUB_ENV
 
       - name: Copy custom files
         run: |
-          # 将你上传的修改同步到 ImmortalWrt 源码树中
           rsync -av custom-files/ immortalwrt/
-          # 如果有单独放 config 或者补丁，也可以在这里处理
-          # cp custom-files/target/linux/rockchip/patches-6.6/*.patch immortalwrt/target/linux/rockchip/patches-6.6/
-          # 等等
 
       - name: Install dependencies
         run: |
@@ -54,7 +49,7 @@ jobs:
       - name: Generate base config
         working-directory: immortalwrt
         run: |
-          # 生成最基本的 .config，指定目标平台和 sub target
+          # 写入最基础的平台和设备选项
           cat > .config <<EOF
           CONFIG_TARGET_rockchip=y
           CONFIG_TARGET_rockchip_armv8=y
@@ -62,13 +57,16 @@ jobs:
           EOF
           make defconfig
 
-      - name: Customize config (optional)
+      - name: Apply diff.config if present
         working-directory: immortalwrt
         run: |
-          # 将上一轮定好的极简配置注入
-          [ -e diff.config ] && mv diff.config openwrt/.config
-          cd openwrt
-          make defconfig
+          if [ -f diff.config ]; then
+            echo "Applying custom diff.config..."
+            cat diff.config >> .config
+            make defconfig
+          else
+            echo "No diff.config found, skipping."
+          fi
 
       - name: Download all sources
         working-directory: immortalwrt
@@ -76,7 +74,7 @@ jobs:
 
       - name: Build firmware
         working-directory: immortalwrt
-        run: make -j$(nproc) V=s || make -j1 V=s  # 若并行失败则单线程重试
+        run: make -j$(nproc) V=s || make -j1 V=s
 
       - name: Package artifacts
         run: |
