@@ -1,0 +1,57 @@
+From 45ad07c7053df0b67e13d8deb574920d11651fb2 Mon Sep 17 00:00:00 2001
+From: Andy Yan <andy.yan@rock-chips.com>
+Date: Wed, 18 Oct 2023 17:42:10 +0800
+Subject: [PATCH] drm/rockchip: vop: fix format bpp calculation
+
+We can't rely on cpp for bpp calculation as the cpp of
+some formats(DRM_FORMAT_YUV420_8BIT/10BIT, etc) is zero.
+
+Signed-off-by: Andy Yan <andy.yan@rock-chips.com>
+Acked-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20231018094210.2475771-1-andyshrk@163.com
+---
+ drivers/gpu/drm/rockchip/rockchip_drm_vop2.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
+@@ -282,6 +282,20 @@ static void vop2_win_disable(struct vop2
+ 		vop2_win_write(win, VOP2_WIN_CLUSTER_ENABLE, 0);
+ }
+ 
++static u32 vop2_get_bpp(const struct drm_format_info *format)
++{
++	switch (format->format) {
++	case DRM_FORMAT_YUV420_8BIT:
++		return 12;
++	case DRM_FORMAT_YUV420_10BIT:
++		return 15;
++	case DRM_FORMAT_VUY101010:
++		return 30;
++	default:
++		return drm_format_info_bpp(format, 0);
++	}
++}
++
+ static enum vop2_data_format vop2_convert_format(u32 format)
+ {
+ 	switch (format) {
+@@ -482,7 +496,7 @@ static u32 vop2_afbc_transform_offset(st
+ {
+ 	struct drm_rect *src = &pstate->src;
+ 	struct drm_framebuffer *fb = pstate->fb;
+-	u32 bpp = fb->format->cpp[0] * 8;
++	u32 bpp = vop2_get_bpp(fb->format);
+ 	u32 vir_width = (fb->pitches[0] << 3) / bpp;
+ 	u32 width = drm_rect_width(src) >> 16;
+ 	u32 height = drm_rect_height(src) >> 16;
+@@ -1082,7 +1096,7 @@ static void vop2_plane_atomic_update(str
+ 	struct drm_display_mode *adjusted_mode = &crtc->state->adjusted_mode;
+ 	struct vop2 *vop2 = win->vop2;
+ 	struct drm_framebuffer *fb = pstate->fb;
+-	u32 bpp = fb->format->cpp[0] * 8;
++	u32 bpp = vop2_get_bpp(fb->format);
+ 	u32 actual_w, actual_h, dsp_w, dsp_h;
+ 	u32 act_info, dsp_info;
+ 	u32 format;

@@ -1,0 +1,39 @@
+From 50decd493c8394c52d04561fe4ede34df27a46ba Mon Sep 17 00:00:00 2001
+From: Tianling Shen <cnsztl@gmail.com>
+Date: Mon, 21 Oct 2024 01:39:46 +0800
+Subject: [PATCH] arm64: dts: rockchip: Add FriendlyARM NanoPi R3S board
+
+The NanoPi R3S(as "R3S") is an open source platform with dual-Gbps
+Ethernet ports designed and developed by FriendlyElec for IoT
+applications.
+
+Specification:
+- Rockchip RK3566
+- 2GB LPDDR4X RAM
+- optional 32GB eMMC module
+- SD card slot
+- 2x 1000 Base-T
+- 3x LEDs (POWER, LAN, WAN)
+- 2x Buttons (Reset, MaskROM)
+- 1x USB 3.0 Port
+- Type-C 5V 2A Power
+
+Signed-off-by: Tianling Shen <cnsztl@gmail.com>
+Link: https://lore.kernel.org/r/20241020173946.225960-2-cnsztl@gmail.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/Makefile         |   1 +
+ .../boot/dts/rockchip/rk3566-nanopi-r3s.dts   | 554 ++++++++++++++++++
+ 2 files changed, 555 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3566-nanopi-r3s.dts
+
+--- a/arch/arm64/boot/dts/rockchip/Makefile
++++ b/arch/arm64/boot/dts/rockchip/Makefile
+@@ -90,6 +90,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-so
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-soquartz-model-a.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-box-demo.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-lubancat-1.dtb
++dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-nanopi-r3s.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-bpi-r2-pro.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-evb1-v10.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3568-fastrhino-r66s.dtb

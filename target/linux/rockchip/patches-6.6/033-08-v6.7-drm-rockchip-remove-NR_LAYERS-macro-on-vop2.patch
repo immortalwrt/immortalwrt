@@ -1,0 +1,36 @@
+From dc00748adcf03d754bf43035c668bc5b20fb6597 Mon Sep 17 00:00:00 2001
+From: Andy Yan <andy.yan@rock-chips.com>
+Date: Fri, 13 Oct 2023 20:20:51 +0800
+Subject: [PATCH] drm/rockchip: remove NR_LAYERS macro on vop2
+
+There are 8 layers on rk3588, so a fix defined macro is
+not appropriate.
+
+Signed-off-by: Andy Yan <andy.yan@rock-chips.com>
+Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20231013122051.1594164-1-andyshrk@163.com
+---
+ drivers/gpu/drm/rockchip/rockchip_drm_vop2.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
+@@ -2257,8 +2257,6 @@ static struct vop2_video_port *find_vp_w
+ 	return NULL;
+ }
+ 
+-#define NR_LAYERS 6
+-
+ static int vop2_create_crtcs(struct vop2 *vop2)
+ {
+ 	const struct vop2_data *vop2_data = vop2->data;
+@@ -2377,7 +2375,7 @@ static int vop2_create_crtcs(struct vop2
+ 		struct vop2_video_port *vp = &vop2->vps[i];
+ 
+ 		if (vp->crtc.port)
+-			vp->nlayers = NR_LAYERS / nvps;
++			vp->nlayers = vop2_data->win_size / nvps;
+ 	}
+ 
+ 	return 0;

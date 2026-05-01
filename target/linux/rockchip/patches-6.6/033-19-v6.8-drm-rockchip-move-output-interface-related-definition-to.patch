@@ -1,0 +1,189 @@
+From 8c8546546f256f834e9c7cab48e5946df340d1a8 Mon Sep 17 00:00:00 2001
+From: Andy Yan <andy.yan@rock-chips.com>
+Date: Mon, 11 Dec 2023 19:56:27 +0800
+Subject: [PATCH] drm/rockchip: move output interface related definition to
+ rockchip_drm_drv.h
+
+The output interface related definition can shared between
+vop and vop2, move them to rockchip_drm_drv.h can avoid duplicated
+definition.
+
+Signed-off-by: Andy Yan <andy.yan@rock-chips.com>
+Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20231211115627.1784735-1-andyshrk@163.com
+---
+ drivers/gpu/drm/rockchip/analogix_dp-rockchip.c |  1 -
+ drivers/gpu/drm/rockchip/cdn-dp-core.c          |  1 -
+ drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c |  1 -
+ drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c     |  1 -
+ drivers/gpu/drm/rockchip/inno_hdmi.c            |  1 -
+ drivers/gpu/drm/rockchip/rk3066_hdmi.c          |  1 -
+ drivers/gpu/drm/rockchip/rockchip_drm_drv.h     | 17 +++++++++++++++++
+ drivers/gpu/drm/rockchip/rockchip_drm_vop.h     | 12 ------------
+ drivers/gpu/drm/rockchip/rockchip_drm_vop2.h    | 16 +---------------
+ drivers/gpu/drm/rockchip/rockchip_lvds.c        |  1 -
+ drivers/gpu/drm/rockchip/rockchip_rgb.c         |  1 -
+ 11 files changed, 18 insertions(+), 35 deletions(-)
+
+--- a/drivers/gpu/drm/rockchip/analogix_dp-rockchip.c
++++ b/drivers/gpu/drm/rockchip/analogix_dp-rockchip.c
+@@ -30,7 +30,6 @@
+ #include <drm/drm_simple_kms_helper.h>
+ 
+ #include "rockchip_drm_drv.h"
+-#include "rockchip_drm_vop.h"
+ 
+ #define RK3288_GRF_SOC_CON6		0x25c
+ #define RK3288_EDP_LCDC_SEL		BIT(5)
+--- a/drivers/gpu/drm/rockchip/cdn-dp-core.c
++++ b/drivers/gpu/drm/rockchip/cdn-dp-core.c
+@@ -24,7 +24,6 @@
+ 
+ #include "cdn-dp-core.h"
+ #include "cdn-dp-reg.h"
+-#include "rockchip_drm_vop.h"
+ 
+ static inline struct cdn_dp_device *connector_to_dp(struct drm_connector *connector)
+ {
+--- a/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
++++ b/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
+@@ -26,7 +26,6 @@
+ #include <drm/drm_simple_kms_helper.h>
+ 
+ #include "rockchip_drm_drv.h"
+-#include "rockchip_drm_vop.h"
+ 
+ #define DSI_PHY_RSTZ			0xa0
+ #define PHY_DISFORCEPLL			0
+--- a/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
++++ b/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
+@@ -18,7 +18,6 @@
+ #include <drm/drm_simple_kms_helper.h>
+ 
+ #include "rockchip_drm_drv.h"
+-#include "rockchip_drm_vop.h"
+ 
+ #define RK3228_GRF_SOC_CON2		0x0408
+ #define RK3228_HDMI_SDAIN_MSK		BIT(14)
+--- a/drivers/gpu/drm/rockchip/inno_hdmi.c
++++ b/drivers/gpu/drm/rockchip/inno_hdmi.c
+@@ -23,7 +23,6 @@
+ #include <drm/drm_simple_kms_helper.h>
+ 
+ #include "rockchip_drm_drv.h"
+-#include "rockchip_drm_vop.h"
+ 
+ #include "inno_hdmi.h"
+ 
+--- a/drivers/gpu/drm/rockchip/rk3066_hdmi.c
++++ b/drivers/gpu/drm/rockchip/rk3066_hdmi.c
+@@ -18,7 +18,6 @@
+ #include "rk3066_hdmi.h"
+ 
+ #include "rockchip_drm_drv.h"
+-#include "rockchip_drm_vop.h"
+ 
+ #define DEFAULT_PLLA_RATE 30000000
+ 
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_drv.h
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_drv.h
+@@ -20,6 +20,23 @@
+ #define ROCKCHIP_MAX_CONNECTOR	2
+ #define ROCKCHIP_MAX_CRTC	4
+ 
++/*
++ * display output interface supported by rockchip lcdc
++ */
++#define ROCKCHIP_OUT_MODE_P888		0
++#define ROCKCHIP_OUT_MODE_BT1120	0
++#define ROCKCHIP_OUT_MODE_P666		1
++#define ROCKCHIP_OUT_MODE_P565		2
++#define ROCKCHIP_OUT_MODE_BT656		5
++#define ROCKCHIP_OUT_MODE_S888		8
++#define ROCKCHIP_OUT_MODE_S888_DUMMY	12
++#define ROCKCHIP_OUT_MODE_YUV420	14
++/* for use special outface */
++#define ROCKCHIP_OUT_MODE_AAAA		15
++
++/* output flags */
++#define ROCKCHIP_OUTPUT_DSI_DUAL	BIT(0)
++
+ struct drm_device;
+ struct drm_connector;
+ struct iommu_domain;
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.h
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.h
+@@ -278,18 +278,6 @@ struct vop_data {
+ /* dst alpha ctrl define */
+ #define DST_FACTOR_M0(x)		(((x) & 0x7) << 6)
+ 
+-/*
+- * display output interface supported by rockchip lcdc
+- */
+-#define ROCKCHIP_OUT_MODE_P888	0
+-#define ROCKCHIP_OUT_MODE_P666	1
+-#define ROCKCHIP_OUT_MODE_P565	2
+-/* for use special outface */
+-#define ROCKCHIP_OUT_MODE_AAAA	15
+-
+-/* output flags */
+-#define ROCKCHIP_OUTPUT_DSI_DUAL	BIT(0)
+-
+ enum alpha_mode {
+ 	ALPHA_STRAIGHT,
+ 	ALPHA_INVERSE,
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.h
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.h
+@@ -7,10 +7,9 @@
+ #ifndef _ROCKCHIP_DRM_VOP2_H
+ #define _ROCKCHIP_DRM_VOP2_H
+ 
+-#include "rockchip_drm_vop.h"
+-
+ #include <linux/regmap.h>
+ #include <drm/drm_modes.h>
++#include "rockchip_drm_vop.h"
+ 
+ #define VOP_FEATURE_OUTPUT_10BIT        BIT(0)
+ 
+@@ -166,19 +165,6 @@ struct vop2_data {
+ #define WB_YRGB_FIFO_FULL_INTR		BIT(18)
+ #define WB_COMPLETE_INTR		BIT(19)
+ 
+-/*
+- * display output interface supported by rockchip lcdc
+- */
+-#define ROCKCHIP_OUT_MODE_P888		0
+-#define ROCKCHIP_OUT_MODE_BT1120	0
+-#define ROCKCHIP_OUT_MODE_P666		1
+-#define ROCKCHIP_OUT_MODE_P565		2
+-#define ROCKCHIP_OUT_MODE_BT656		5
+-#define ROCKCHIP_OUT_MODE_S888		8
+-#define ROCKCHIP_OUT_MODE_S888_DUMMY	12
+-#define ROCKCHIP_OUT_MODE_YUV420	14
+-/* for use special outface */
+-#define ROCKCHIP_OUT_MODE_AAAA		15
+ 
+ enum vop_csc_format {
+ 	CSC_BT601L,
+--- a/drivers/gpu/drm/rockchip/rockchip_lvds.c
++++ b/drivers/gpu/drm/rockchip/rockchip_lvds.c
+@@ -27,7 +27,6 @@
+ #include <drm/drm_simple_kms_helper.h>
+ 
+ #include "rockchip_drm_drv.h"
+-#include "rockchip_drm_vop.h"
+ #include "rockchip_lvds.h"
+ 
+ #define DISPLAY_OUTPUT_RGB		0
+--- a/drivers/gpu/drm/rockchip/rockchip_rgb.c
++++ b/drivers/gpu/drm/rockchip/rockchip_rgb.c
+@@ -19,7 +19,6 @@
+ #include <drm/drm_simple_kms_helper.h>
+ 
+ #include "rockchip_drm_drv.h"
+-#include "rockchip_drm_vop.h"
+ #include "rockchip_rgb.h"
+ 
+ struct rockchip_rgb {

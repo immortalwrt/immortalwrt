@@ -1,0 +1,80 @@
+From 9d7fe7704d534c2d043aff2987f10671a8b4373d Mon Sep 17 00:00:00 2001
+From: Andy Yan <andy.yan@rock-chips.com>
+Date: Mon, 11 Dec 2023 19:59:31 +0800
+Subject: [PATCH] drm/rockchip: vop2: rename VOP_FEATURE_OUTPUT_10BIT to
+ VOP2_VP_FEATURE_OUTPUT_10BIT
+
+VOP2 has multiple independent video ports with different
+feature, so rename VOP_FEATURE_OUTPUT_10BIT to
+VOP2_VP_FEATURE_OUTPUT_10BIT for more clearly meaning.
+
+Signed-off-by: Andy Yan <andy.yan@rock-chips.com>
+Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20231211115931.1785495-1-andyshrk@163.com
+---
+ drivers/gpu/drm/rockchip/rockchip_drm_vop2.c | 2 +-
+ drivers/gpu/drm/rockchip/rockchip_drm_vop2.h | 2 +-
+ drivers/gpu/drm/rockchip/rockchip_vop2_reg.c | 8 ++++----
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
+@@ -1997,7 +1997,7 @@ static void vop2_crtc_atomic_enable(stru
+ 		return;
+ 
+ 	if (vcstate->output_mode == ROCKCHIP_OUT_MODE_AAAA &&
+-	    !(vp_data->feature & VOP_FEATURE_OUTPUT_10BIT))
++	    !(vp_data->feature & VOP2_VP_FEATURE_OUTPUT_10BIT))
+ 		out_mode = ROCKCHIP_OUT_MODE_P888;
+ 	else
+ 		out_mode = vcstate->output_mode;
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.h
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.h
+@@ -11,7 +11,7 @@
+ #include <drm/drm_modes.h>
+ #include "rockchip_drm_vop.h"
+ 
+-#define VOP_FEATURE_OUTPUT_10BIT        BIT(0)
++#define VOP2_VP_FEATURE_OUTPUT_10BIT        BIT(0)
+ 
+ #define VOP2_FEATURE_HAS_SYS_GRF	BIT(0)
+ #define VOP2_FEATURE_HAS_VO0_GRF	BIT(1)
+--- a/drivers/gpu/drm/rockchip/rockchip_vop2_reg.c
++++ b/drivers/gpu/drm/rockchip/rockchip_vop2_reg.c
+@@ -136,7 +136,7 @@ static const uint64_t format_modifiers_a
+ static const struct vop2_video_port_data rk3568_vop_video_ports[] = {
+ 	{
+ 		.id = 0,
+-		.feature = VOP_FEATURE_OUTPUT_10BIT,
++		.feature = VOP2_VP_FEATURE_OUTPUT_10BIT,
+ 		.gamma_lut_len = 1024,
+ 		.cubic_lut_len = 9 * 9 * 9,
+ 		.max_output = { 4096, 2304 },
+@@ -263,7 +263,7 @@ static const struct vop2_win_data rk3568
+ static const struct vop2_video_port_data rk3588_vop_video_ports[] = {
+ 	{
+ 		.id = 0,
+-		.feature = VOP_FEATURE_OUTPUT_10BIT,
++		.feature = VOP2_VP_FEATURE_OUTPUT_10BIT,
+ 		.gamma_lut_len = 1024,
+ 		.cubic_lut_len = 9 * 9 * 9, /* 9x9x9 */
+ 		.max_output = { 4096, 2304 },
+@@ -272,7 +272,7 @@ static const struct vop2_video_port_data
+ 		.offset = 0xc00,
+ 	}, {
+ 		.id = 1,
+-		.feature = VOP_FEATURE_OUTPUT_10BIT,
++		.feature = VOP2_VP_FEATURE_OUTPUT_10BIT,
+ 		.gamma_lut_len = 1024,
+ 		.cubic_lut_len = 729, /* 9x9x9 */
+ 		.max_output = { 4096, 2304 },
+@@ -280,7 +280,7 @@ static const struct vop2_video_port_data
+ 		.offset = 0xd00,
+ 	}, {
+ 		.id = 2,
+-		.feature = VOP_FEATURE_OUTPUT_10BIT,
++		.feature = VOP2_VP_FEATURE_OUTPUT_10BIT,
+ 		.gamma_lut_len = 1024,
+ 		.cubic_lut_len = 17 * 17 * 17, /* 17x17x17 */
+ 		.max_output = { 4096, 2304 },
