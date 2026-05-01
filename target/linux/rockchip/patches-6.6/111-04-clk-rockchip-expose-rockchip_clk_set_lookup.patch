@@ -1,0 +1,104 @@
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+To: Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	linux-clk@vger.kernel.org
+Cc: Elaine Zhang <zhangqing@rock-chips.com>,
+	Kever Yang <kever.yang@rock-chips.com>,
+	Heiko Stuebner <heiko@sntech.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	huangtao@rock-chips.com, andy.yan@rock-chips.com,
+	Michal Tomek <mtdev79b@gmail.com>, Ilya K <me@0upti.me>,
+	Chad LeClair <leclair@gmail.com>,
+	devicetree@vger.kernel.org, linux-rockchip@lists.infradead.org,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	kernel@collabora.com
+Subject: [PATCH v9 4/7] clk: rockchip: expose rockchip_clk_set_lookup
+Date: Mon, 25 Mar 2024 20:33:35 +0100	[thread overview]
+Message-ID: <20240325193609.237182-5-sebastian.reichel@collabora.com> (raw)
+In-Reply-To: <20240325193609.237182-1-sebastian.reichel@collabora.com>
+
+Move rockchip_clk_add_lookup to clk.h, so that it can be used
+by sub-devices with their own driver. These might also have to
+do a lookup, so rename the function to rockchip_clk_set_lookup
+and add a matching rockchip_clk_add_lookup.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ drivers/clk/rockchip/clk.c | 14 ++++----------
+ drivers/clk/rockchip/clk.h | 12 ++++++++++++
+ 2 files changed, 16 insertions(+), 10 deletions(-)
+
+--- a/drivers/clk/rockchip/clk.c
++++ b/drivers/clk/rockchip/clk.c
+@@ -197,12 +197,6 @@ static void rockchip_fractional_approxim
+ 	clk_fractional_divider_general_approximation(hw, rate, parent_rate, m, n);
+ }
+ 
+-static void rockchip_clk_add_lookup(struct rockchip_clk_provider *ctx,
+-				    struct clk *clk, unsigned int id)
+-{
+-	ctx->clk_data.clks[id] = clk;
+-}
+-
+ static struct clk *rockchip_clk_register_frac_branch(
+ 		struct rockchip_clk_provider *ctx, const char *name,
+ 		const char *const *parent_names, u8 num_parents,
+@@ -292,7 +286,7 @@ static struct clk *rockchip_clk_register
+ 			return mux_clk;
+ 		}
+ 
+-		rockchip_clk_add_lookup(ctx, mux_clk, child->id);
++		rockchip_clk_set_lookup(ctx, mux_clk, child->id);
+ 
+ 		/* notifier on the fraction divider to catch rate changes */
+ 		if (frac->mux_frac_idx >= 0) {
+@@ -424,7 +418,7 @@ void rockchip_clk_register_plls(struct r
+ 			continue;
+ 		}
+ 
+-		rockchip_clk_add_lookup(ctx, clk, list->id);
++		rockchip_clk_set_lookup(ctx, clk, list->id);
+ 	}
+ }
+ EXPORT_SYMBOL_GPL(rockchip_clk_register_plls);
+@@ -586,7 +580,7 @@ void rockchip_clk_register_branches(stru
+ 			continue;
+ 		}
+ 
+-		rockchip_clk_add_lookup(ctx, clk, list->id);
++		rockchip_clk_set_lookup(ctx, clk, list->id);
+ 	}
+ }
+ EXPORT_SYMBOL_GPL(rockchip_clk_register_branches);
+@@ -610,7 +604,7 @@ void rockchip_clk_register_armclk(struct
+ 		return;
+ 	}
+ 
+-	rockchip_clk_add_lookup(ctx, clk, lookup_id);
++	rockchip_clk_set_lookup(ctx, clk, lookup_id);
+ }
+ EXPORT_SYMBOL_GPL(rockchip_clk_register_armclk);
+ 
+--- a/drivers/clk/rockchip/clk.h
++++ b/drivers/clk/rockchip/clk.h
+@@ -970,6 +970,18 @@ struct rockchip_clk_branch {
+ #define SGRF_GATE(_id, cname, pname)				\
+ 		FACTOR(_id, cname, pname, 0, 1, 1)
+ 
++static inline struct clk *rockchip_clk_get_lookup(struct rockchip_clk_provider *ctx,
++						  unsigned int id)
++{
++	return ctx->clk_data.clks[id];
++}
++
++static inline void rockchip_clk_set_lookup(struct rockchip_clk_provider *ctx,
++					   struct clk *clk, unsigned int id)
++{
++	ctx->clk_data.clks[id] = clk;
++}
++
+ struct rockchip_clk_provider *rockchip_clk_init(struct device_node *np,
+ 			void __iomem *base, unsigned long nr_clks);
+ void rockchip_clk_of_add_provider(struct device_node *np,
