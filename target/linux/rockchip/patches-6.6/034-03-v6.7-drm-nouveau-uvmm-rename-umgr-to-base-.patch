@@ -1,0 +1,208 @@
+From 78f54469b871db5ba8ea49abd4e5994e97bd525b Mon Sep 17 00:00:00 2001
+From: Danilo Krummrich <dakr@redhat.com>
+Date: Wed, 20 Sep 2023 16:42:36 +0200
+Subject: [PATCH] drm/nouveau: uvmm: rename 'umgr' to 'base'
+
+Rename struct drm_gpuvm within struct nouveau_uvmm from 'umgr' to base.
+
+Reviewed-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Danilo Krummrich <dakr@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20230920144343.64830-4-dakr@redhat.com
+---
+ drivers/gpu/drm/nouveau/nouveau_debugfs.c |  2 +-
+ drivers/gpu/drm/nouveau/nouveau_exec.c    |  4 +--
+ drivers/gpu/drm/nouveau/nouveau_uvmm.c    | 32 +++++++++++------------
+ drivers/gpu/drm/nouveau/nouveau_uvmm.h    |  6 ++---
+ 4 files changed, 22 insertions(+), 22 deletions(-)
+
+--- a/drivers/gpu/drm/nouveau/nouveau_debugfs.c
++++ b/drivers/gpu/drm/nouveau/nouveau_debugfs.c
+@@ -231,7 +231,7 @@ nouveau_debugfs_gpuva(struct seq_file *m
+ 			continue;
+ 
+ 		nouveau_uvmm_lock(uvmm);
+-		drm_debugfs_gpuva_info(m, &uvmm->umgr);
++		drm_debugfs_gpuva_info(m, &uvmm->base);
+ 		seq_puts(m, "\n");
+ 		nouveau_debugfs_gpuva_regions(m, uvmm);
+ 		nouveau_uvmm_unlock(uvmm);
+--- a/drivers/gpu/drm/nouveau/nouveau_exec.c
++++ b/drivers/gpu/drm/nouveau/nouveau_exec.c
+@@ -107,8 +107,8 @@ nouveau_exec_job_submit(struct nouveau_j
+ 	drm_exec_until_all_locked(exec) {
+ 		struct drm_gpuva *va;
+ 
+-		drm_gpuvm_for_each_va(va, &uvmm->umgr) {
+-			if (unlikely(va == &uvmm->umgr.kernel_alloc_node))
++		drm_gpuvm_for_each_va(va, &uvmm->base) {
++			if (unlikely(va == &uvmm->base.kernel_alloc_node))
+ 				continue;
+ 
+ 			ret = drm_exec_prepare_obj(exec, va->gem.obj, 1);
+--- a/drivers/gpu/drm/nouveau/nouveau_uvmm.c
++++ b/drivers/gpu/drm/nouveau/nouveau_uvmm.c
+@@ -329,7 +329,7 @@ nouveau_uvma_region_create(struct nouvea
+ 	struct nouveau_uvma_region *reg;
+ 	int ret;
+ 
+-	if (!drm_gpuvm_interval_empty(&uvmm->umgr, addr, range))
++	if (!drm_gpuvm_interval_empty(&uvmm->base, addr, range))
+ 		return -ENOSPC;
+ 
+ 	ret = nouveau_uvma_region_alloc(&reg);
+@@ -384,7 +384,7 @@ nouveau_uvma_region_empty(struct nouveau
+ {
+ 	struct nouveau_uvmm *uvmm = reg->uvmm;
+ 
+-	return drm_gpuvm_interval_empty(&uvmm->umgr,
++	return drm_gpuvm_interval_empty(&uvmm->base,
+ 					reg->va.addr,
+ 					reg->va.range);
+ }
+@@ -589,7 +589,7 @@ op_map_prepare(struct nouveau_uvmm *uvmm
+ 	uvma->region = args->region;
+ 	uvma->kind = args->kind;
+ 
+-	drm_gpuva_map(&uvmm->umgr, &uvma->va, op);
++	drm_gpuva_map(&uvmm->base, &uvma->va, op);
+ 
+ 	/* Keep a reference until this uvma is destroyed. */
+ 	nouveau_uvma_gem_get(uvma);
+@@ -1194,7 +1194,7 @@ nouveau_uvmm_bind_job_submit(struct nouv
+ 				goto unwind_continue;
+ 			}
+ 
+-			op->ops = drm_gpuvm_sm_unmap_ops_create(&uvmm->umgr,
++			op->ops = drm_gpuvm_sm_unmap_ops_create(&uvmm->base,
+ 								op->va.addr,
+ 								op->va.range);
+ 			if (IS_ERR(op->ops)) {
+@@ -1205,7 +1205,7 @@ nouveau_uvmm_bind_job_submit(struct nouv
+ 			ret = nouveau_uvmm_sm_unmap_prepare(uvmm, &op->new,
+ 							    op->ops);
+ 			if (ret) {
+-				drm_gpuva_ops_free(&uvmm->umgr, op->ops);
++				drm_gpuva_ops_free(&uvmm->base, op->ops);
+ 				op->ops = NULL;
+ 				op->reg = NULL;
+ 				goto unwind_continue;
+@@ -1240,7 +1240,7 @@ nouveau_uvmm_bind_job_submit(struct nouv
+ 				}
+ 			}
+ 
+-			op->ops = drm_gpuvm_sm_map_ops_create(&uvmm->umgr,
++			op->ops = drm_gpuvm_sm_map_ops_create(&uvmm->base,
+ 							      op->va.addr,
+ 							      op->va.range,
+ 							      op->gem.obj,
+@@ -1256,7 +1256,7 @@ nouveau_uvmm_bind_job_submit(struct nouv
+ 							  op->va.range,
+ 							  op->flags & 0xff);
+ 			if (ret) {
+-				drm_gpuva_ops_free(&uvmm->umgr, op->ops);
++				drm_gpuva_ops_free(&uvmm->base, op->ops);
+ 				op->ops = NULL;
+ 				goto unwind_continue;
+ 			}
+@@ -1264,7 +1264,7 @@ nouveau_uvmm_bind_job_submit(struct nouv
+ 			break;
+ 		}
+ 		case OP_UNMAP:
+-			op->ops = drm_gpuvm_sm_unmap_ops_create(&uvmm->umgr,
++			op->ops = drm_gpuvm_sm_unmap_ops_create(&uvmm->base,
+ 								op->va.addr,
+ 								op->va.range);
+ 			if (IS_ERR(op->ops)) {
+@@ -1275,7 +1275,7 @@ nouveau_uvmm_bind_job_submit(struct nouv
+ 			ret = nouveau_uvmm_sm_unmap_prepare(uvmm, &op->new,
+ 							    op->ops);
+ 			if (ret) {
+-				drm_gpuva_ops_free(&uvmm->umgr, op->ops);
++				drm_gpuva_ops_free(&uvmm->base, op->ops);
+ 				op->ops = NULL;
+ 				goto unwind_continue;
+ 			}
+@@ -1406,7 +1406,7 @@ unwind:
+ 			break;
+ 		}
+ 
+-		drm_gpuva_ops_free(&uvmm->umgr, op->ops);
++		drm_gpuva_ops_free(&uvmm->base, op->ops);
+ 		op->ops = NULL;
+ 		op->reg = NULL;
+ 	}
+@@ -1511,7 +1511,7 @@ nouveau_uvmm_bind_job_free_work_fn(struc
+ 		}
+ 
+ 		if (!IS_ERR_OR_NULL(op->ops))
+-			drm_gpuva_ops_free(&uvmm->umgr, op->ops);
++			drm_gpuva_ops_free(&uvmm->base, op->ops);
+ 
+ 		if (obj)
+ 			drm_gem_object_put(obj);
+@@ -1838,7 +1838,7 @@ nouveau_uvmm_init(struct nouveau_uvmm *u
+ 	uvmm->kernel_managed_addr = kernel_managed_addr;
+ 	uvmm->kernel_managed_size = kernel_managed_size;
+ 
+-	drm_gpuvm_init(&uvmm->umgr, cli->name,
++	drm_gpuvm_init(&uvmm->base, cli->name,
+ 		       NOUVEAU_VA_SPACE_START,
+ 		       NOUVEAU_VA_SPACE_END,
+ 		       kernel_managed_addr, kernel_managed_size,
+@@ -1857,7 +1857,7 @@ nouveau_uvmm_init(struct nouveau_uvmm *u
+ 	return 0;
+ 
+ out_free_gpuva_mgr:
+-	drm_gpuvm_destroy(&uvmm->umgr);
++	drm_gpuvm_destroy(&uvmm->base);
+ out_unlock:
+ 	mutex_unlock(&cli->mutex);
+ 	return ret;
+@@ -1879,11 +1879,11 @@ nouveau_uvmm_fini(struct nouveau_uvmm *u
+ 	wait_event(entity->job.wq, list_empty(&entity->job.list.head));
+ 
+ 	nouveau_uvmm_lock(uvmm);
+-	drm_gpuvm_for_each_va_safe(va, next, &uvmm->umgr) {
++	drm_gpuvm_for_each_va_safe(va, next, &uvmm->base) {
+ 		struct nouveau_uvma *uvma = uvma_from_va(va);
+ 		struct drm_gem_object *obj = va->gem.obj;
+ 
+-		if (unlikely(va == &uvmm->umgr.kernel_alloc_node))
++		if (unlikely(va == &uvmm->base.kernel_alloc_node))
+ 			continue;
+ 
+ 		drm_gpuva_remove(va);
+@@ -1912,7 +1912,7 @@ nouveau_uvmm_fini(struct nouveau_uvmm *u
+ 
+ 	mutex_lock(&cli->mutex);
+ 	nouveau_vmm_fini(&uvmm->vmm);
+-	drm_gpuvm_destroy(&uvmm->umgr);
++	drm_gpuvm_destroy(&uvmm->base);
+ 	mutex_unlock(&cli->mutex);
+ 
+ 	dma_resv_fini(&uvmm->resv);
+--- a/drivers/gpu/drm/nouveau/nouveau_uvmm.h
++++ b/drivers/gpu/drm/nouveau/nouveau_uvmm.h
+@@ -8,8 +8,8 @@
+ #include "nouveau_drv.h"
+ 
+ struct nouveau_uvmm {
++	struct drm_gpuvm base;
+ 	struct nouveau_vmm vmm;
+-	struct drm_gpuvm umgr;
+ 	struct maple_tree region_mt;
+ 	struct mutex mutex;
+ 	struct dma_resv resv;
+@@ -41,10 +41,10 @@ struct nouveau_uvma {
+ 	u8 kind;
+ };
+ 
+-#define uvmm_from_mgr(x) container_of((x), struct nouveau_uvmm, umgr)
++#define uvmm_from_gpuvm(x) container_of((x), struct nouveau_uvmm, base)
+ #define uvma_from_va(x) container_of((x), struct nouveau_uvma, va)
+ 
+-#define to_uvmm(x) uvmm_from_mgr((x)->va.vm)
++#define to_uvmm(x) uvmm_from_gpuvm((x)->va.vm)
+ 
+ struct nouveau_uvmm_bind_job {
+ 	struct nouveau_job base;

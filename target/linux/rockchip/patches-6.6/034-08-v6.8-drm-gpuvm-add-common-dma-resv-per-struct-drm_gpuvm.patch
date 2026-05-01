@@ -1,0 +1,205 @@
+From bbe8458037e74b9887ba2f0f0b8084a13ade3a90 Mon Sep 17 00:00:00 2001
+From: Danilo Krummrich <dakr@redhat.com>
+Date: Wed, 8 Nov 2023 01:12:35 +0100
+Subject: [PATCH] drm/gpuvm: add common dma-resv per struct drm_gpuvm
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Provide a common dma-resv for GEM objects not being used outside of this
+GPU-VM. This is used in a subsequent patch to generalize dma-resv,
+external and evicted object handling and GEM validation.
+
+Acked-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Boris Brezillon <boris.brezillon@collabora.com>
+Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Signed-off-by: Danilo Krummrich <dakr@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-6-dakr@redhat.com
+---
+ drivers/gpu/drm/drm_gpuvm.c            | 53 ++++++++++++++++++++++++++
+ drivers/gpu/drm/nouveau/nouveau_uvmm.c | 13 ++++++-
+ include/drm/drm_gpuvm.h                | 33 ++++++++++++++++
+ 3 files changed, 97 insertions(+), 2 deletions(-)
+
+--- a/drivers/gpu/drm/drm_gpuvm.c
++++ b/drivers/gpu/drm/drm_gpuvm.c
+@@ -61,6 +61,15 @@
+  * contained within struct drm_gpuva already. Hence, for inserting &drm_gpuva
+  * entries from within dma-fence signalling critical sections it is enough to
+  * pre-allocate the &drm_gpuva structures.
++ *
++ * &drm_gem_objects which are private to a single VM can share a common
++ * &dma_resv in order to improve locking efficiency (e.g. with &drm_exec).
++ * For this purpose drivers must pass a &drm_gem_object to drm_gpuvm_init(), in
++ * the following called 'resv object', which serves as the container of the
++ * GPUVM's shared &dma_resv. This resv object can be a driver specific
++ * &drm_gem_object, such as the &drm_gem_object containing the root page table,
++ * but it can also be a 'dummy' object, which can be allocated with
++ * drm_gpuvm_resv_object_alloc().
+  */
+ 
+ /**
+@@ -664,11 +673,49 @@ drm_gpuvm_range_valid(struct drm_gpuvm *
+ }
+ EXPORT_SYMBOL_GPL(drm_gpuvm_range_valid);
+ 
++static void
++drm_gpuvm_gem_object_free(struct drm_gem_object *obj)
++{
++	drm_gem_object_release(obj);
++	kfree(obj);
++}
++
++static const struct drm_gem_object_funcs drm_gpuvm_object_funcs = {
++	.free = drm_gpuvm_gem_object_free,
++};
++
++/**
++ * drm_gpuvm_resv_object_alloc() - allocate a dummy &drm_gem_object
++ * @drm: the drivers &drm_device
++ *
++ * Allocates a dummy &drm_gem_object which can be passed to drm_gpuvm_init() in
++ * order to serve as root GEM object providing the &drm_resv shared across
++ * &drm_gem_objects local to a single GPUVM.
++ *
++ * Returns: the &drm_gem_object on success, NULL on failure
++ */
++struct drm_gem_object *
++drm_gpuvm_resv_object_alloc(struct drm_device *drm)
++{
++	struct drm_gem_object *obj;
++
++	obj = kzalloc(sizeof(*obj), GFP_KERNEL);
++	if (!obj)
++		return NULL;
++
++	obj->funcs = &drm_gpuvm_object_funcs;
++	drm_gem_private_object_init(drm, obj, 0);
++
++	return obj;
++}
++EXPORT_SYMBOL_GPL(drm_gpuvm_resv_object_alloc);
++
+ /**
+  * drm_gpuvm_init() - initialize a &drm_gpuvm
+  * @gpuvm: pointer to the &drm_gpuvm to initialize
+  * @name: the name of the GPU VA space
+  * @drm: the &drm_device this VM resides in
++ * @r_obj: the resv &drm_gem_object providing the GPUVM's common &dma_resv
+  * @start_offset: the start offset of the GPU VA space
+  * @range: the size of the GPU VA space
+  * @reserve_offset: the start of the kernel reserved GPU VA area
+@@ -683,6 +730,7 @@ EXPORT_SYMBOL_GPL(drm_gpuvm_range_valid)
+ void
+ drm_gpuvm_init(struct drm_gpuvm *gpuvm, const char *name,
+ 	       struct drm_device *drm,
++	       struct drm_gem_object *r_obj,
+ 	       u64 start_offset, u64 range,
+ 	       u64 reserve_offset, u64 reserve_range,
+ 	       const struct drm_gpuvm_ops *ops)
+@@ -693,6 +741,9 @@ drm_gpuvm_init(struct drm_gpuvm *gpuvm,
+ 	gpuvm->name = name ? name : "unknown";
+ 	gpuvm->ops = ops;
+ 	gpuvm->drm = drm;
++	gpuvm->r_obj = r_obj;
++
++	drm_gem_object_get(r_obj);
+ 
+ 	drm_gpuvm_check_overflow(gpuvm, start_offset, range);
+ 	gpuvm->mm_start = start_offset;
+@@ -727,6 +778,8 @@ drm_gpuvm_destroy(struct drm_gpuvm *gpuv
+ 
+ 	drm_WARN(gpuvm->drm, !RB_EMPTY_ROOT(&gpuvm->rb.tree.rb_root),
+ 		 "GPUVA tree is not empty, potentially leaking memory.\n");
++
++	drm_gem_object_put(gpuvm->r_obj);
+ }
+ EXPORT_SYMBOL_GPL(drm_gpuvm_destroy);
+ 
+--- a/drivers/gpu/drm/nouveau/nouveau_uvmm.c
++++ b/drivers/gpu/drm/nouveau/nouveau_uvmm.c
+@@ -1799,8 +1799,9 @@ nouveau_uvmm_init(struct nouveau_uvmm *u
+ 		  u64 kernel_managed_addr, u64 kernel_managed_size)
+ {
+ 	struct drm_device *drm = cli->drm->dev;
+-	int ret;
++	struct drm_gem_object *r_obj;
+ 	u64 kernel_managed_end = kernel_managed_addr + kernel_managed_size;
++	int ret;
+ 
+ 	mutex_init(&uvmm->mutex);
+ 	dma_resv_init(&uvmm->resv);
+@@ -1824,11 +1825,19 @@ nouveau_uvmm_init(struct nouveau_uvmm *u
+ 		goto out_unlock;
+ 	}
+ 
+-	drm_gpuvm_init(&uvmm->base, cli->name, drm,
++	r_obj = drm_gpuvm_resv_object_alloc(drm);
++	if (!r_obj) {
++		ret = -ENOMEM;
++		goto out_unlock;
++	}
++
++	drm_gpuvm_init(&uvmm->base, cli->name, drm, r_obj,
+ 		       NOUVEAU_VA_SPACE_START,
+ 		       NOUVEAU_VA_SPACE_END,
+ 		       kernel_managed_addr, kernel_managed_size,
+ 		       NULL);
++	/* GPUVM takes care from here on. */
++	drm_gem_object_put(r_obj);
+ 
+ 	ret = nvif_vmm_ctor(&cli->mmu, "uvmm",
+ 			    cli->vmm.vmm.object.oclass, RAW,
+--- a/include/drm/drm_gpuvm.h
++++ b/include/drm/drm_gpuvm.h
+@@ -244,10 +244,16 @@ struct drm_gpuvm {
+ 	 * @ops: &drm_gpuvm_ops providing the split/merge steps to drivers
+ 	 */
+ 	const struct drm_gpuvm_ops *ops;
++
++	/**
++	 * @r_obj: Resv GEM object; representing the GPUVM's common &dma_resv.
++	 */
++	struct drm_gem_object *r_obj;
+ };
+ 
+ void drm_gpuvm_init(struct drm_gpuvm *gpuvm, const char *name,
+ 		    struct drm_device *drm,
++		    struct drm_gem_object *r_obj,
+ 		    u64 start_offset, u64 range,
+ 		    u64 reserve_offset, u64 reserve_range,
+ 		    const struct drm_gpuvm_ops *ops);
+@@ -256,6 +262,33 @@ void drm_gpuvm_destroy(struct drm_gpuvm
+ bool drm_gpuvm_range_valid(struct drm_gpuvm *gpuvm, u64 addr, u64 range);
+ bool drm_gpuvm_interval_empty(struct drm_gpuvm *gpuvm, u64 addr, u64 range);
+ 
++struct drm_gem_object *
++drm_gpuvm_resv_object_alloc(struct drm_device *drm);
++
++/**
++ * drm_gpuvm_resv() - returns the &drm_gpuvm's &dma_resv
++ * @gpuvm__: the &drm_gpuvm
++ *
++ * Returns: a pointer to the &drm_gpuvm's shared &dma_resv
++ */
++#define drm_gpuvm_resv(gpuvm__) ((gpuvm__)->r_obj->resv)
++
++/**
++ * drm_gpuvm_resv_obj() - returns the &drm_gem_object holding the &drm_gpuvm's
++ * &dma_resv
++ * @gpuvm__: the &drm_gpuvm
++ *
++ * Returns: a pointer to the &drm_gem_object holding the &drm_gpuvm's shared
++ * &dma_resv
++ */
++#define drm_gpuvm_resv_obj(gpuvm__) ((gpuvm__)->r_obj)
++
++#define drm_gpuvm_resv_held(gpuvm__) \
++	dma_resv_held(drm_gpuvm_resv(gpuvm__))
++
++#define drm_gpuvm_resv_assert_held(gpuvm__) \
++	dma_resv_assert_held(drm_gpuvm_resv(gpuvm__))
++
+ static inline struct drm_gpuva *
+ __drm_gpuva_next(struct drm_gpuva *va)
+ {

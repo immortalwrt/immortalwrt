@@ -1,0 +1,104 @@
+From d72f049087d4f973f6332b599c92177e718107de Mon Sep 17 00:00:00 2001
+From: Boris Brezillon <boris.brezillon@collabora.com>
+Date: Thu, 29 Feb 2024 17:22:26 +0100
+Subject: [PATCH] drm/panthor: Allow driver compilation
+
+Now that all blocks are available, we can add/update Kconfig/Makefile
+files to allow compilation.
+
+v6:
+- Add Maxime's and Heiko's acks
+- Keep source files alphabetically ordered in the Makefile
+
+v4:
+- Add Steve's R-b
+
+v3:
+- Add a dep on DRM_GPUVM
+- Fix dependencies in Kconfig
+- Expand help text to (hopefully) describe which GPUs are to be
+  supported by this driver and which are for panfrost.
+
+Co-developed-by: Steven Price <steven.price@arm.com>
+Signed-off-by: Steven Price <steven.price@arm.com>
+Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
+Acked-by: Steven Price <steven.price@arm.com> # MIT+GPL2 relicensing,Arm
+Acked-by: Grant Likely <grant.likely@linaro.org> # MIT+GPL2 relicensing,Linaro
+Acked-by: Boris Brezillon <boris.brezillon@collabora.com> # MIT+GPL2 relicensing,Collabora
+Reviewed-by: Steven Price <steven.price@arm.com>
+Acked-by: Maxime Ripard <mripard@kernel.org>
+Acked-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20240229162230.2634044-13-boris.brezillon@collabora.com
+---
+ drivers/gpu/drm/Kconfig          |  2 ++
+ drivers/gpu/drm/Makefile         |  1 +
+ drivers/gpu/drm/panthor/Kconfig  | 23 +++++++++++++++++++++++
+ drivers/gpu/drm/panthor/Makefile | 14 ++++++++++++++
+ 4 files changed, 40 insertions(+)
+ create mode 100644 drivers/gpu/drm/panthor/Kconfig
+ create mode 100644 drivers/gpu/drm/panthor/Makefile
+
+--- a/drivers/gpu/drm/Kconfig
++++ b/drivers/gpu/drm/Kconfig
+@@ -381,6 +381,8 @@ source "drivers/gpu/drm/lima/Kconfig"
+ 
+ source "drivers/gpu/drm/panfrost/Kconfig"
+ 
++source "drivers/gpu/drm/panthor/Kconfig"
++
+ source "drivers/gpu/drm/aspeed/Kconfig"
+ 
+ source "drivers/gpu/drm/mcde/Kconfig"
+--- a/drivers/gpu/drm/Makefile
++++ b/drivers/gpu/drm/Makefile
+@@ -189,6 +189,7 @@ obj-$(CONFIG_DRM_XEN) += xen/
+ obj-$(CONFIG_DRM_VBOXVIDEO) += vboxvideo/
+ obj-$(CONFIG_DRM_LIMA)  += lima/
+ obj-$(CONFIG_DRM_PANFROST) += panfrost/
++obj-$(CONFIG_DRM_PANTHOR) += panthor/
+ obj-$(CONFIG_DRM_ASPEED_GFX) += aspeed/
+ obj-$(CONFIG_DRM_MCDE) += mcde/
+ obj-$(CONFIG_DRM_TIDSS) += tidss/
+--- /dev/null
++++ b/drivers/gpu/drm/panthor/Kconfig
+@@ -0,0 +1,23 @@
++# SPDX-License-Identifier: GPL-2.0 or MIT
++
++config DRM_PANTHOR
++	tristate "Panthor (DRM support for ARM Mali CSF-based GPUs)"
++	depends on DRM
++	depends on ARM || ARM64 || COMPILE_TEST
++	depends on !GENERIC_ATOMIC64  # for IOMMU_IO_PGTABLE_LPAE
++	depends on MMU
++	select DEVFREQ_GOV_SIMPLE_ONDEMAND
++	select DRM_EXEC
++	select DRM_GEM_SHMEM_HELPER
++	select DRM_GPUVM
++	select DRM_SCHED
++	select IOMMU_IO_PGTABLE_LPAE
++	select IOMMU_SUPPORT
++	select PM_DEVFREQ
++	help
++	  DRM driver for ARM Mali CSF-based GPUs.
++
++	  This driver is for Mali (or Immortalis) Valhall Gxxx GPUs.
++
++	  Note that the Mali-G68 and Mali-G78, while Valhall architecture, will
++	  be supported with the panfrost driver as they are not CSF GPUs.
+--- /dev/null
++++ b/drivers/gpu/drm/panthor/Makefile
+@@ -0,0 +1,14 @@
++# SPDX-License-Identifier: GPL-2.0 or MIT
++
++panthor-y := \
++	panthor_devfreq.o \
++	panthor_device.o \
++	panthor_drv.o \
++	panthor_fw.o \
++	panthor_gem.o \
++	panthor_gpu.o \
++	panthor_heap.o \
++	panthor_mmu.o \
++	panthor_sched.o
++
++obj-$(CONFIG_DRM_PANTHOR) += panthor.o

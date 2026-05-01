@@ -1,0 +1,58 @@
+From 2b2a26b3314210585ca6d552a421921a3936713b Mon Sep 17 00:00:00 2001
+From: Boris Brezillon <boris.brezillon@collabora.com>
+Date: Thu, 2 May 2024 20:38:09 +0200
+Subject: [PATCH] drm/panthor: Force an immediate reset on unrecoverable faults
+
+If the FW reports an unrecoverable fault, we need to reset the GPU
+before we can start re-using it again.
+
+Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
+Reviewed-by: Steven Price <steven.price@arm.com>
+Reviewed-by: Liviu Dudau <liviu.dudau@arm.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20240502183813.1612017-2-boris.brezillon@collabora.com
+---
+ drivers/gpu/drm/panthor/panthor_device.c |  1 +
+ drivers/gpu/drm/panthor/panthor_device.h |  1 +
+ drivers/gpu/drm/panthor/panthor_sched.c  | 11 ++++++++++-
+ 3 files changed, 12 insertions(+), 1 deletion(-)
+
+--- a/drivers/gpu/drm/panthor/panthor_device.c
++++ b/drivers/gpu/drm/panthor/panthor_device.c
+@@ -293,6 +293,7 @@ static const struct panthor_exception_in
+ 	PANTHOR_EXCEPTION(ACTIVE),
+ 	PANTHOR_EXCEPTION(CS_RES_TERM),
+ 	PANTHOR_EXCEPTION(CS_CONFIG_FAULT),
++	PANTHOR_EXCEPTION(CS_UNRECOVERABLE),
+ 	PANTHOR_EXCEPTION(CS_ENDPOINT_FAULT),
+ 	PANTHOR_EXCEPTION(CS_BUS_FAULT),
+ 	PANTHOR_EXCEPTION(CS_INSTR_INVALID),
+--- a/drivers/gpu/drm/panthor/panthor_device.h
++++ b/drivers/gpu/drm/panthor/panthor_device.h
+@@ -216,6 +216,7 @@ enum drm_panthor_exception_type {
+ 	DRM_PANTHOR_EXCEPTION_CS_RES_TERM = 0x0f,
+ 	DRM_PANTHOR_EXCEPTION_MAX_NON_FAULT = 0x3f,
+ 	DRM_PANTHOR_EXCEPTION_CS_CONFIG_FAULT = 0x40,
++	DRM_PANTHOR_EXCEPTION_CS_UNRECOVERABLE = 0x41,
+ 	DRM_PANTHOR_EXCEPTION_CS_ENDPOINT_FAULT = 0x44,
+ 	DRM_PANTHOR_EXCEPTION_CS_BUS_FAULT = 0x48,
+ 	DRM_PANTHOR_EXCEPTION_CS_INSTR_INVALID = 0x49,
+--- a/drivers/gpu/drm/panthor/panthor_sched.c
++++ b/drivers/gpu/drm/panthor/panthor_sched.c
+@@ -1281,7 +1281,16 @@ cs_slot_process_fatal_event_locked(struc
+ 	if (group)
+ 		group->fatal_queues |= BIT(cs_id);
+ 
+-	sched_queue_delayed_work(sched, tick, 0);
++	if (CS_EXCEPTION_TYPE(fatal) == DRM_PANTHOR_EXCEPTION_CS_UNRECOVERABLE) {
++		/* If this exception is unrecoverable, queue a reset, and make
++		 * sure we stop scheduling groups until the reset has happened.
++		 */
++		panthor_device_schedule_reset(ptdev);
++		cancel_delayed_work(&sched->tick_work);
++	} else {
++		sched_queue_delayed_work(sched, tick, 0);
++	}
++
+ 	drm_warn(&ptdev->base,
+ 		 "CSG slot %d CS slot: %d\n"
+ 		 "CS_FATAL.EXCEPTION_TYPE: 0x%x (%s)\n"

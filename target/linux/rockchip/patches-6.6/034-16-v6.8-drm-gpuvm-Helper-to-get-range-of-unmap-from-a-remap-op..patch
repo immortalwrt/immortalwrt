@@ -1,0 +1,60 @@
+From a191f73d85484f804284674c14f2d9f572c18adb Mon Sep 17 00:00:00 2001
+From: Donald Robson <donald.robson@imgtec.com>
+Date: Wed, 22 Nov 2023 16:34:23 +0000
+Subject: [PATCH] drm/gpuvm: Helper to get range of unmap from a remap op.
+
+Determining the start and range of the unmap stage of a remap op is a
+common piece of code currently implemented by multiple drivers. Add a
+helper for this.
+
+Changes since v7:
+- Renamed helper to drm_gpuva_op_remap_to_unmap_range()
+- Improved documentation
+
+Changes since v6:
+- Remove use of __always_inline
+
+Signed-off-by: Donald Robson <donald.robson@imgtec.com>
+Signed-off-by: Sarah Walker <sarah.walker@imgtec.com>
+Reviewed-by: Danilo Krummrich <dakr@redhat.com>
+Link: https://lore.kernel.org/r/8a0a5b5eeec459d3c60fcdaa5a638ad14a18a59e.1700668843.git.donald.robson@imgtec.com
+Signed-off-by: Maxime Ripard <mripard@kernel.org>
+---
+ include/drm/drm_gpuvm.h | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+--- a/include/drm/drm_gpuvm.h
++++ b/include/drm/drm_gpuvm.h
+@@ -1213,4 +1213,32 @@ void drm_gpuva_remap(struct drm_gpuva *p
+ 
+ void drm_gpuva_unmap(struct drm_gpuva_op_unmap *op);
+ 
++/**
++ * drm_gpuva_op_remap_to_unmap_range() - Helper to get the start and range of
++ * the unmap stage of a remap op.
++ * @op: Remap op.
++ * @start_addr: Output pointer for the start of the required unmap.
++ * @range: Output pointer for the length of the required unmap.
++ *
++ * The given start address and range will be set such that they represent the
++ * range of the address space that was previously covered by the mapping being
++ * re-mapped, but is now empty.
++ */
++static inline void
++drm_gpuva_op_remap_to_unmap_range(const struct drm_gpuva_op_remap *op,
++				  u64 *start_addr, u64 *range)
++{
++	const u64 va_start = op->prev ?
++			     op->prev->va.addr + op->prev->va.range :
++			     op->unmap->va->va.addr;
++	const u64 va_end = op->next ?
++			   op->next->va.addr :
++			   op->unmap->va->va.addr + op->unmap->va->va.range;
++
++	if (start_addr)
++		*start_addr = va_start;
++	if (range)
++		*range = va_end - va_start;
++}
++
+ #endif /* __DRM_GPUVM_H__ */

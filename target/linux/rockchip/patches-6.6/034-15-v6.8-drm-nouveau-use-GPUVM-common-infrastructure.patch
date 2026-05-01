@@ -1,0 +1,451 @@
+From 014f831abcb82738e57c0b00db66dfef0798ed67 Mon Sep 17 00:00:00 2001
+From: Danilo Krummrich <dakr@redhat.com>
+Date: Mon, 13 Nov 2023 23:12:00 +0100
+Subject: [PATCH] drm/nouveau: use GPUVM common infrastructure
+
+GPUVM provides common infrastructure to track external and evicted GEM
+objects as well as locking and validation helpers.
+
+Especially external and evicted object tracking is a huge improvement
+compared to the current brute force approach of iterating all mappings
+in order to lock and validate the GPUVM's GEM objects. Hence, make us of
+it.
+
+Signed-off-by: Danilo Krummrich <dakr@redhat.com>
+Reviewed-by: Dave Airlie <airlied@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20231113221202.7203-1-dakr@redhat.com
+---
+ drivers/gpu/drm/nouveau/nouveau_bo.c    |   4 +-
+ drivers/gpu/drm/nouveau/nouveau_exec.c  |  57 +++-------
+ drivers/gpu/drm/nouveau/nouveau_exec.h  |   4 -
+ drivers/gpu/drm/nouveau/nouveau_sched.c |   9 +-
+ drivers/gpu/drm/nouveau/nouveau_sched.h |   7 +-
+ drivers/gpu/drm/nouveau/nouveau_uvmm.c  | 134 +++++++++++++-----------
+ 6 files changed, 100 insertions(+), 115 deletions(-)
+
+--- a/drivers/gpu/drm/nouveau/nouveau_bo.c
++++ b/drivers/gpu/drm/nouveau/nouveau_bo.c
+@@ -1056,17 +1056,18 @@ nouveau_bo_move(struct ttm_buffer_object
+ {
+ 	struct nouveau_drm *drm = nouveau_bdev(bo->bdev);
+ 	struct nouveau_bo *nvbo = nouveau_bo(bo);
++	struct drm_gem_object *obj = &bo->base;
+ 	struct ttm_resource *old_reg = bo->resource;
+ 	struct nouveau_drm_tile *new_tile = NULL;
+ 	int ret = 0;
+ 
+-
+ 	if (new_reg->mem_type == TTM_PL_TT) {
+ 		ret = nouveau_ttm_tt_bind(bo->bdev, bo->ttm, new_reg);
+ 		if (ret)
+ 			return ret;
+ 	}
+ 
++	drm_gpuvm_bo_gem_evict(obj, evict);
+ 	nouveau_bo_move_ntfy(bo, new_reg);
+ 	ret = ttm_bo_wait_ctx(bo, ctx);
+ 	if (ret)
+@@ -1131,6 +1132,7 @@ out:
+ out_ntfy:
+ 	if (ret) {
+ 		nouveau_bo_move_ntfy(bo, bo->resource);
++		drm_gpuvm_bo_gem_evict(obj, !evict);
+ 	}
+ 	return ret;
+ }
+--- a/drivers/gpu/drm/nouveau/nouveau_exec.c
++++ b/drivers/gpu/drm/nouveau/nouveau_exec.c
+@@ -1,7 +1,5 @@
+ // SPDX-License-Identifier: MIT
+ 
+-#include <drm/drm_exec.h>
+-
+ #include "nouveau_drv.h"
+ #include "nouveau_gem.h"
+ #include "nouveau_mem.h"
+@@ -86,14 +84,12 @@
+  */
+ 
+ static int
+-nouveau_exec_job_submit(struct nouveau_job *job)
++nouveau_exec_job_submit(struct nouveau_job *job,
++			struct drm_gpuvm_exec *vme)
+ {
+ 	struct nouveau_exec_job *exec_job = to_nouveau_exec_job(job);
+ 	struct nouveau_cli *cli = job->cli;
+ 	struct nouveau_uvmm *uvmm = nouveau_cli_uvmm(cli);
+-	struct drm_exec *exec = &job->exec;
+-	struct drm_gem_object *obj;
+-	unsigned long index;
+ 	int ret;
+ 
+ 	/* Create a new fence, but do not emit yet. */
+@@ -102,52 +98,29 @@ nouveau_exec_job_submit(struct nouveau_j
+ 		return ret;
+ 
+ 	nouveau_uvmm_lock(uvmm);
+-	drm_exec_init(exec, DRM_EXEC_INTERRUPTIBLE_WAIT |
+-			    DRM_EXEC_IGNORE_DUPLICATES);
+-	drm_exec_until_all_locked(exec) {
+-		struct drm_gpuva *va;
+-
+-		drm_gpuvm_for_each_va(va, &uvmm->base) {
+-			if (unlikely(va == &uvmm->base.kernel_alloc_node))
+-				continue;
+-
+-			ret = drm_exec_prepare_obj(exec, va->gem.obj, 1);
+-			drm_exec_retry_on_contention(exec);
+-			if (ret)
+-				goto err_uvmm_unlock;
+-		}
++	ret = drm_gpuvm_exec_lock(vme);
++	if (ret) {
++		nouveau_uvmm_unlock(uvmm);
++		return ret;
+ 	}
+ 	nouveau_uvmm_unlock(uvmm);
+ 
+-	drm_exec_for_each_locked_object(exec, index, obj) {
+-		struct nouveau_bo *nvbo = nouveau_gem_object(obj);
+-
+-		ret = nouveau_bo_validate(nvbo, true, false);
+-		if (ret)
+-			goto err_exec_fini;
++	ret = drm_gpuvm_exec_validate(vme);
++	if (ret) {
++		drm_gpuvm_exec_unlock(vme);
++		return ret;
+ 	}
+ 
+ 	return 0;
+-
+-err_uvmm_unlock:
+-	nouveau_uvmm_unlock(uvmm);
+-err_exec_fini:
+-	drm_exec_fini(exec);
+-	return ret;
+-
+ }
+ 
+ static void
+-nouveau_exec_job_armed_submit(struct nouveau_job *job)
++nouveau_exec_job_armed_submit(struct nouveau_job *job,
++			      struct drm_gpuvm_exec *vme)
+ {
+-	struct drm_exec *exec = &job->exec;
+-	struct drm_gem_object *obj;
+-	unsigned long index;
+-
+-	drm_exec_for_each_locked_object(exec, index, obj)
+-		dma_resv_add_fence(obj->resv, job->done_fence, job->resv_usage);
+-
+-	drm_exec_fini(exec);
++	drm_gpuvm_exec_resv_add_fence(vme, job->done_fence,
++				      job->resv_usage, job->resv_usage);
++	drm_gpuvm_exec_unlock(vme);
+ }
+ 
+ static struct dma_fence *
+--- a/drivers/gpu/drm/nouveau/nouveau_exec.h
++++ b/drivers/gpu/drm/nouveau/nouveau_exec.h
+@@ -3,16 +3,12 @@
+ #ifndef __NOUVEAU_EXEC_H__
+ #define __NOUVEAU_EXEC_H__
+ 
+-#include <drm/drm_exec.h>
+-
+ #include "nouveau_drv.h"
+ #include "nouveau_sched.h"
+ 
+ struct nouveau_exec_job_args {
+ 	struct drm_file *file_priv;
+ 	struct nouveau_sched_entity *sched_entity;
+-
+-	struct drm_exec exec;
+ 	struct nouveau_channel *chan;
+ 
+ 	struct {
+--- a/drivers/gpu/drm/nouveau/nouveau_sched.c
++++ b/drivers/gpu/drm/nouveau/nouveau_sched.c
+@@ -263,6 +263,11 @@ nouveau_job_submit(struct nouveau_job *j
+ {
+ 	struct nouveau_sched_entity *entity = to_nouveau_sched_entity(job->base.entity);
+ 	struct dma_fence *done_fence = NULL;
++	struct drm_gpuvm_exec vm_exec = {
++		.vm = &nouveau_cli_uvmm(job->cli)->base,
++		.flags = DRM_EXEC_IGNORE_DUPLICATES,
++		.num_fences = 1,
++	};
+ 	int ret;
+ 
+ 	ret = nouveau_job_add_deps(job);
+@@ -282,7 +287,7 @@ nouveau_job_submit(struct nouveau_job *j
+ 	 * successfully.
+ 	 */
+ 	if (job->ops->submit) {
+-		ret = job->ops->submit(job);
++		ret = job->ops->submit(job, &vm_exec);
+ 		if (ret)
+ 			goto err_cleanup;
+ 	}
+@@ -315,7 +320,7 @@ nouveau_job_submit(struct nouveau_job *j
+ 	set_bit(DRM_SCHED_FENCE_DONT_PIPELINE, &job->done_fence->flags);
+ 
+ 	if (job->ops->armed_submit)
+-		job->ops->armed_submit(job);
++		job->ops->armed_submit(job, &vm_exec);
+ 
+ 	nouveau_job_fence_attach(job);
+ 
+--- a/drivers/gpu/drm/nouveau/nouveau_sched.h
++++ b/drivers/gpu/drm/nouveau/nouveau_sched.h
+@@ -5,7 +5,7 @@
+ 
+ #include <linux/types.h>
+ 
+-#include <drm/drm_exec.h>
++#include <drm/drm_gpuvm.h>
+ #include <drm/gpu_scheduler.h>
+ 
+ #include "nouveau_drv.h"
+@@ -54,7 +54,6 @@ struct nouveau_job {
+ 	struct drm_file *file_priv;
+ 	struct nouveau_cli *cli;
+ 
+-	struct drm_exec exec;
+ 	enum dma_resv_usage resv_usage;
+ 	struct dma_fence *done_fence;
+ 
+@@ -76,8 +75,8 @@ struct nouveau_job {
+ 		/* If .submit() returns without any error, it is guaranteed that
+ 		 * armed_submit() is called.
+ 		 */
+-		int (*submit)(struct nouveau_job *);
+-		void (*armed_submit)(struct nouveau_job *);
++		int (*submit)(struct nouveau_job *, struct drm_gpuvm_exec *);
++		void (*armed_submit)(struct nouveau_job *, struct drm_gpuvm_exec *);
+ 		struct dma_fence *(*run)(struct nouveau_job *);
+ 		void (*free)(struct nouveau_job *);
+ 		enum drm_gpu_sched_stat (*timeout)(struct nouveau_job *);
+--- a/drivers/gpu/drm/nouveau/nouveau_uvmm.c
++++ b/drivers/gpu/drm/nouveau/nouveau_uvmm.c
+@@ -438,8 +438,9 @@ nouveau_uvma_region_complete(struct nouv
+ static void
+ op_map_prepare_unwind(struct nouveau_uvma *uvma)
+ {
++	struct drm_gpuva *va = &uvma->va;
+ 	nouveau_uvma_gem_put(uvma);
+-	drm_gpuva_remove(&uvma->va);
++	drm_gpuva_remove(va);
+ 	nouveau_uvma_free(uvma);
+ }
+ 
+@@ -468,6 +469,7 @@ nouveau_uvmm_sm_prepare_unwind(struct no
+ 			break;
+ 		case DRM_GPUVA_OP_REMAP: {
+ 			struct drm_gpuva_op_remap *r = &op->remap;
++			struct drm_gpuva *va = r->unmap->va;
+ 
+ 			if (r->next)
+ 				op_map_prepare_unwind(new->next);
+@@ -475,7 +477,7 @@ nouveau_uvmm_sm_prepare_unwind(struct no
+ 			if (r->prev)
+ 				op_map_prepare_unwind(new->prev);
+ 
+-			op_unmap_prepare_unwind(r->unmap->va);
++			op_unmap_prepare_unwind(va);
+ 			break;
+ 		}
+ 		case DRM_GPUVA_OP_UNMAP:
+@@ -634,6 +636,7 @@ nouveau_uvmm_sm_prepare(struct nouveau_u
+ 					goto unwind;
+ 				}
+ 			}
++
+ 			break;
+ 		}
+ 		case DRM_GPUVA_OP_REMAP: {
+@@ -1135,12 +1138,53 @@ bind_link_gpuvas(struct bind_job_op *bop
+ }
+ 
+ static int
+-nouveau_uvmm_bind_job_submit(struct nouveau_job *job)
++bind_lock_validate(struct nouveau_job *job, struct drm_exec *exec,
++		   unsigned int num_fences)
++{
++	struct nouveau_uvmm_bind_job *bind_job = to_uvmm_bind_job(job);
++	struct bind_job_op *op;
++	int ret;
++
++	list_for_each_op(op, &bind_job->ops) {
++		struct drm_gpuva_op *va_op;
++
++		if (!op->ops)
++			continue;
++
++		drm_gpuva_for_each_op(va_op, op->ops) {
++			struct drm_gem_object *obj = op_gem_obj(va_op);
++
++			if (unlikely(!obj))
++				continue;
++
++			ret = drm_exec_prepare_obj(exec, obj, num_fences);
++			if (ret)
++				return ret;
++
++			/* Don't validate GEMs backing mappings we're about to
++			 * unmap, it's not worth the effort.
++			 */
++			if (va_op->op == DRM_GPUVA_OP_UNMAP)
++				continue;
++
++			ret = nouveau_bo_validate(nouveau_gem_object(obj),
++						  true, false);
++			if (ret)
++				return ret;
++		}
++	}
++
++	return 0;
++}
++
++static int
++nouveau_uvmm_bind_job_submit(struct nouveau_job *job,
++			     struct drm_gpuvm_exec *vme)
+ {
+ 	struct nouveau_uvmm *uvmm = nouveau_cli_uvmm(job->cli);
+ 	struct nouveau_uvmm_bind_job *bind_job = to_uvmm_bind_job(job);
+ 	struct nouveau_sched_entity *entity = job->entity;
+-	struct drm_exec *exec = &job->exec;
++	struct drm_exec *exec = &vme->exec;
+ 	struct bind_job_op *op;
+ 	int ret;
+ 
+@@ -1157,6 +1201,8 @@ nouveau_uvmm_bind_job_submit(struct nouv
+ 			dma_resv_unlock(obj->resv);
+ 			if (IS_ERR(op->vm_bo))
+ 				return PTR_ERR(op->vm_bo);
++
++			drm_gpuvm_bo_extobj_add(op->vm_bo);
+ 		}
+ 
+ 		ret = bind_validate_op(job, op);
+@@ -1179,6 +1225,7 @@ nouveau_uvmm_bind_job_submit(struct nouv
+ 	 * unwind all GPU VA space changes on failure.
+ 	 */
+ 	nouveau_uvmm_lock(uvmm);
++
+ 	list_for_each_op(op, &bind_job->ops) {
+ 		switch (op->op) {
+ 		case OP_MAP_SPARSE:
+@@ -1290,57 +1337,13 @@ nouveau_uvmm_bind_job_submit(struct nouv
+ 		}
+ 	}
+ 
+-	drm_exec_init(exec, DRM_EXEC_INTERRUPTIBLE_WAIT |
+-			    DRM_EXEC_IGNORE_DUPLICATES);
++	drm_exec_init(exec, vme->flags);
+ 	drm_exec_until_all_locked(exec) {
+-		list_for_each_op(op, &bind_job->ops) {
+-			struct drm_gpuva_op *va_op;
+-
+-			if (IS_ERR_OR_NULL(op->ops))
+-				continue;
+-
+-			drm_gpuva_for_each_op(va_op, op->ops) {
+-				struct drm_gem_object *obj = op_gem_obj(va_op);
+-
+-				if (unlikely(!obj))
+-					continue;
+-
+-				ret = drm_exec_prepare_obj(exec, obj, 1);
+-				drm_exec_retry_on_contention(exec);
+-				if (ret) {
+-					op = list_last_op(&bind_job->ops);
+-					goto unwind;
+-				}
+-			}
+-		}
+-	}
+-
+-	list_for_each_op(op, &bind_job->ops) {
+-		struct drm_gpuva_op *va_op;
+-
+-		if (IS_ERR_OR_NULL(op->ops))
+-			continue;
+-
+-		drm_gpuva_for_each_op(va_op, op->ops) {
+-			struct drm_gem_object *obj = op_gem_obj(va_op);
+-			struct nouveau_bo *nvbo;
+-
+-			if (unlikely(!obj))
+-				continue;
+-
+-			/* Don't validate GEMs backing mappings we're about to
+-			 * unmap, it's not worth the effort.
+-			 */
+-			if (unlikely(va_op->op == DRM_GPUVA_OP_UNMAP))
+-				continue;
+-
+-			nvbo = nouveau_gem_object(obj);
+-			nouveau_bo_placement_set(nvbo, nvbo->valid_domains, 0);
+-			ret = nouveau_bo_validate(nvbo, true, false);
+-			if (ret) {
+-				op = list_last_op(&bind_job->ops);
+-				goto unwind;
+-			}
++		ret = bind_lock_validate(job, exec, vme->num_fences);
++		drm_exec_retry_on_contention(exec);
++		if (ret) {
++			op = list_last_op(&bind_job->ops);
++			goto unwind;
+ 		}
+ 	}
+ 
+@@ -1415,21 +1418,17 @@ unwind:
+ 	}
+ 
+ 	nouveau_uvmm_unlock(uvmm);
+-	drm_exec_fini(exec);
++	drm_gpuvm_exec_unlock(vme);
+ 	return ret;
+ }
+ 
+ static void
+-nouveau_uvmm_bind_job_armed_submit(struct nouveau_job *job)
++nouveau_uvmm_bind_job_armed_submit(struct nouveau_job *job,
++				   struct drm_gpuvm_exec *vme)
+ {
+-	struct drm_exec *exec = &job->exec;
+-	struct drm_gem_object *obj;
+-	unsigned long index;
+-
+-	drm_exec_for_each_locked_object(exec, index, obj)
+-		dma_resv_add_fence(obj->resv, job->done_fence, job->resv_usage);
+-
+-	drm_exec_fini(exec);
++	drm_gpuvm_exec_resv_add_fence(vme, job->done_fence,
++				      job->resv_usage, job->resv_usage);
++	drm_gpuvm_exec_unlock(vme);
+ }
+ 
+ static struct dma_fence *
+@@ -1817,8 +1816,18 @@ nouveau_uvmm_free(struct drm_gpuvm *gpuv
+ 	kfree(uvmm);
+ }
+ 
++static int
++nouveau_uvmm_bo_validate(struct drm_gpuvm_bo *vm_bo, struct drm_exec *exec)
++{
++	struct nouveau_bo *nvbo = nouveau_gem_object(vm_bo->obj);
++
++	nouveau_bo_placement_set(nvbo, nvbo->valid_domains, 0);
++	return nouveau_bo_validate(nvbo, true, false);
++}
++
+ static const struct drm_gpuvm_ops gpuvm_ops = {
+ 	.vm_free = nouveau_uvmm_free,
++	.vm_bo_validate = nouveau_uvmm_bo_validate,
+ };
+ 
+ int

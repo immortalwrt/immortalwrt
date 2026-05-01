@@ -1,0 +1,42 @@
+From d33733263a550775c7574169f62bf144f74d8f9a Mon Sep 17 00:00:00 2001
+From: Dan Carpenter <dan.carpenter@linaro.org>
+Date: Tue, 2 Apr 2024 12:58:09 +0300
+Subject: [PATCH] drm/panthor: Fix a couple -ENOMEM error codes
+
+These error paths forgot to set the error code to -ENOMEM.
+
+Fixes: 647810ec2476 ("drm/panthor: Add the MMU/VM logical block")
+Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
+Reviewed-by: Boris Brezillon <boris.brezillon@collabora.com>
+Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/cf5bbba5-427e-4940-b91e-925f9fa71f8d@moroto.mountain
+---
+ drivers/gpu/drm/panthor/panthor_mmu.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+--- a/drivers/gpu/drm/panthor/panthor_mmu.c
++++ b/drivers/gpu/drm/panthor/panthor_mmu.c
+@@ -1264,8 +1264,10 @@ static int panthor_vm_prepare_map_op_ctx
+ 	op_ctx->rsvd_page_tables.pages = kcalloc(pt_count,
+ 						 sizeof(*op_ctx->rsvd_page_tables.pages),
+ 						 GFP_KERNEL);
+-	if (!op_ctx->rsvd_page_tables.pages)
++	if (!op_ctx->rsvd_page_tables.pages) {
++		ret = -ENOMEM;
+ 		goto err_cleanup;
++	}
+ 
+ 	ret = kmem_cache_alloc_bulk(pt_cache, GFP_KERNEL, pt_count,
+ 				    op_ctx->rsvd_page_tables.pages);
+@@ -1318,8 +1320,10 @@ static int panthor_vm_prepare_unmap_op_c
+ 		op_ctx->rsvd_page_tables.pages = kcalloc(pt_count,
+ 							 sizeof(*op_ctx->rsvd_page_tables.pages),
+ 							 GFP_KERNEL);
+-		if (!op_ctx->rsvd_page_tables.pages)
++		if (!op_ctx->rsvd_page_tables.pages) {
++			ret = -ENOMEM;
+ 			goto err_cleanup;
++		}
+ 
+ 		ret = kmem_cache_alloc_bulk(pt_cache, GFP_KERNEL, pt_count,
+ 					    op_ctx->rsvd_page_tables.pages);

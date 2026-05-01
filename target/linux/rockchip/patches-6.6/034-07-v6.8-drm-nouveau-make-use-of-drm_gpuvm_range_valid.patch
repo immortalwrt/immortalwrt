@@ -1,0 +1,66 @@
+From b41e297abd2347075ec640daf0e5da576e3d7418 Mon Sep 17 00:00:00 2001
+From: Danilo Krummrich <dakr@redhat.com>
+Date: Wed, 8 Nov 2023 01:12:34 +0100
+Subject: [PATCH] drm/nouveau: make use of drm_gpuvm_range_valid()
+
+Use drm_gpuvm_range_valid() in order to validate userspace requests.
+
+Reviewed-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Danilo Krummrich <dakr@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20231108001259.15123-5-dakr@redhat.com
+---
+ drivers/gpu/drm/nouveau/nouveau_uvmm.c | 17 +----------------
+ drivers/gpu/drm/nouveau/nouveau_uvmm.h |  3 ---
+ 2 files changed, 1 insertion(+), 19 deletions(-)
+
+--- a/drivers/gpu/drm/nouveau/nouveau_uvmm.c
++++ b/drivers/gpu/drm/nouveau/nouveau_uvmm.c
+@@ -929,25 +929,13 @@ nouveau_uvmm_sm_unmap_cleanup(struct nou
+ static int
+ nouveau_uvmm_validate_range(struct nouveau_uvmm *uvmm, u64 addr, u64 range)
+ {
+-	u64 end = addr + range;
+-	u64 kernel_managed_end = uvmm->kernel_managed_addr +
+-				 uvmm->kernel_managed_size;
+-
+ 	if (addr & ~PAGE_MASK)
+ 		return -EINVAL;
+ 
+ 	if (range & ~PAGE_MASK)
+ 		return -EINVAL;
+ 
+-	if (end <= addr)
+-		return -EINVAL;
+-
+-	if (addr < NOUVEAU_VA_SPACE_START ||
+-	    end > NOUVEAU_VA_SPACE_END)
+-		return -EINVAL;
+-
+-	if (addr < kernel_managed_end &&
+-	    end > uvmm->kernel_managed_addr)
++	if (!drm_gpuvm_range_valid(&uvmm->base, addr, range))
+ 		return -EINVAL;
+ 
+ 	return 0;
+@@ -1836,9 +1824,6 @@ nouveau_uvmm_init(struct nouveau_uvmm *u
+ 		goto out_unlock;
+ 	}
+ 
+-	uvmm->kernel_managed_addr = kernel_managed_addr;
+-	uvmm->kernel_managed_size = kernel_managed_size;
+-
+ 	drm_gpuvm_init(&uvmm->base, cli->name, drm,
+ 		       NOUVEAU_VA_SPACE_START,
+ 		       NOUVEAU_VA_SPACE_END,
+--- a/drivers/gpu/drm/nouveau/nouveau_uvmm.h
++++ b/drivers/gpu/drm/nouveau/nouveau_uvmm.h
+@@ -14,9 +14,6 @@ struct nouveau_uvmm {
+ 	struct mutex mutex;
+ 	struct dma_resv resv;
+ 
+-	u64 kernel_managed_addr;
+-	u64 kernel_managed_size;
+-
+ 	bool disabled;
+ };
+ 

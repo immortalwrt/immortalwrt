@@ -1,0 +1,40 @@
+From 00044169de061dac8d9da2cf930757c53006adff Mon Sep 17 00:00:00 2001
+From: Liviu Dudau <liviu.dudau@arm.com>
+Date: Tue, 2 Apr 2024 22:54:22 +0100
+Subject: [PATCH] drm/panthor: Cleanup unused variable 'cookie'
+
+Commit 962f88b9c916 ("drm/panthor: Drop the dev_enter/exit() sections in
+_irq_suspend/resume()") removed the code that used the 'cookie' variable
+but left the declaration in place. Remove it.
+
+Fixes: 962f88b9c916 ("drm/panthor: Drop the dev_enter/exit() sections in _irq_suspend/resume()")
+Cc: Boris Brezillon <boris.brezillon@collabora.com>
+Cc: Steven Price <steven.price@arm.com>
+Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
+Reviewed-by: Boris Brezillon <boris.brezillon@collabora.com>
+Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20240402215423.360341-1-liviu.dudau@arm.com
+---
+ drivers/gpu/drm/panthor/panthor_device.h | 4 ----
+ 1 file changed, 4 deletions(-)
+
+--- a/drivers/gpu/drm/panthor/panthor_device.h
++++ b/drivers/gpu/drm/panthor/panthor_device.h
+@@ -323,8 +323,6 @@ static irqreturn_t panthor_ ## __name ##
+ 												\
+ static inline void panthor_ ## __name ## _irq_suspend(struct panthor_irq *pirq)			\
+ {												\
+-	int cookie;										\
+-												\
+ 	pirq->mask = 0;										\
+ 	gpu_write(pirq->ptdev, __reg_prefix ## _INT_MASK, 0);					\
+ 	synchronize_irq(pirq->irq);								\
+@@ -333,8 +331,6 @@ static inline void panthor_ ## __name ##
+ 												\
+ static inline void panthor_ ## __name ## _irq_resume(struct panthor_irq *pirq, u32 mask)	\
+ {												\
+-	int cookie;										\
+-												\
+ 	atomic_set(&pirq->suspended, false);							\
+ 	pirq->mask = mask;									\
+ 	gpu_write(pirq->ptdev, __reg_prefix ## _INT_CLEAR, mask);				\
