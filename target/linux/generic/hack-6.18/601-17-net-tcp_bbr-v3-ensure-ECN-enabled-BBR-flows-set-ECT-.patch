@@ -24,7 +24,9 @@ Change-Id: I8b048eaab35e136fe6501ef6cd89fd9faa15e6d2
 
 --- a/include/net/tcp.h
 +++ b/include/net/tcp.h
-@@ -404,6 +404,7 @@
+@@ -402,7 +402,8 @@
+ #define	TCP_ECN_MODE_RFC3168	BIT(0)
+ #define	TCP_ECN_QUEUE_CWR	BIT(1)
  #define	TCP_ECN_DEMAND_CWR	BIT(2)
  #define	TCP_ECN_SEEN		BIT(3)
  #define	TCP_ECN_MODE_ACCECN	BIT(4)
@@ -33,7 +35,9 @@ Change-Id: I8b048eaab35e136fe6501ef6cd89fd9faa15e6d2
  #define	TCP_ECN_DISABLED	0
 --- a/net/ipv4/tcp_bbr.c
 +++ b/net/ipv4/tcp_bbr.c
-@@ -2152,6 +2152,9 @@ __bpf_kfunc static void bbr_init(struct
+@@ -2019,6 +2019,9 @@ __bpf_kfunc static void bbr_init(struct sock *sk)
+ 	bbr->alpha_last_delivered = 0;
+ 	bbr->alpha_last_delivered_ce = 0;
  	bbr->plb.pause_until = 0;
  
  	tp->fast_ack_mode = bbr_fast_ack_mode ? 1 : 0;
@@ -45,7 +49,7 @@ Change-Id: I8b048eaab35e136fe6501ef6cd89fd9faa15e6d2
  /* BBR marks the current round trip as a loss round. */
 --- a/net/ipv4/tcp_output.c
 +++ b/net/ipv4/tcp_output.c
-@@ -393,7 +393,8 @@ static void tcp_ecn_send(struct sock *sk
+@@ -347,7 +347,8 @@ static void tcp_ecn_send(struct sock *sk,
  				th->cwr = 1;
  				skb_shinfo(skb)->gso_type |= SKB_GSO_TCP_ECN;
  			}
