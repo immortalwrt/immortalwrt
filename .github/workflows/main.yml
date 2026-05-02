@@ -9,7 +9,7 @@ on:
       - 'README.md'           # 忽略非源码文件
 
 env:
-  REPO_URL: https://github.com/immortalwrt/immortalwrt.git
+  REPO_URL: https://github.com/dreak7/immortalwrt.git
   REPO_BRANCH: master         # 使用的 ImmortalWrt 主分支
 
 jobs:
