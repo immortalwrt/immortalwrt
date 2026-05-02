@@ -1,0 +1,17 @@
+From fc865561676e17d8ef3d8fa3358c8ead788caf61 Mon Sep 17 00:00:00 2001
+From: Adithya Abraham Philip <abrahamphilip@google.com>
+Date: Fri, 11 Jun 2021 21:56:10 +0000
+Subject: [PATCH 17/19] net-tcp_bbr: v3: ensure ECN-enabled BBR flows set ECT on retransmits
+
+Change-Id: I8b048eaab35e136fe6501ef6cd89fd9faa15e6d2
+---
+ include/net/tcp.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -407,3 +407,4 @@ enum tcp_ca_ack_event_flags {
+ #define	TCP_ECN_LOW		BIT(5)
+ 
++#define	TCP_ECN_ECT_PERMANENT	BIT(6)
+ #define	TCP_ECN_DISABLED	0

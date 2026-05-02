@@ -1,0 +1,19 @@
+From 0c3b772b2f701cefe6561f52cc1a9aa000398369 Mon Sep 17 00:00:00 2001
+From: David Morley <morleyd@google.com>
+Date: Fri, 14 Jul 2023 11:07:56 -0400
+Subject: [PATCH 15/19] tcp: introduce per-route feature RTAX_FEATURE_ECN_LOW
+
+Define and implement a new per-route feature, RTAX_FEATURE_ECN_LOW.
+
+Change-Id: I6bc06e9c6cb426fbae7243fc71c9a8c18175f5d3
+---
+ include/net/tcp.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -405,3 +405,4 @@ enum tcp_ca_ack_event_flags {
+ #define	TCP_ECN_SEEN		BIT(3)
+ #define	TCP_ECN_MODE_ACCECN	BIT(4)
++#define	TCP_ECN_LOW		BIT(5)
+ 
