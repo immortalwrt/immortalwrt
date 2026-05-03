@@ -32,8 +32,11 @@
 #define RTMDIO_PHY_POLL_MMD(dev, reg, bit)	((bit << 21) | (dev << 16) | (reg))
 
 /* MDIO bus registers/fields */
+#define RTMDIO_C45_DATA(devnum, regnum)		(((devnum) << 16) | ((regnum) & GENMASK(15, 0)))
+#define RTMDIO_DATA_MASK			GENMASK(15, 0)
 #define RTMDIO_RUN				BIT(0)
 
+#define RTMDIO_838X_C22_DATA(page, reg)		((reg) << 20 | 0x1f << 15 | (page) << 3)
 #define RTMDIO_838X_PHY_PATCH_DONE		BIT(15)
 #define RTMDIO_838X_SMI_GLB_CTRL		(0xa100)
 #define RTMDIO_838X_SMI_ACCESS_PHY_CTRL_0	(0xa1b8)
@@ -45,12 +48,11 @@
 #define   RTMDIO_838X_CMD_WRITE_C45		(BIT(1) | BIT(2))
 #define   RTMDIO_838X_CMD_MASK			GENMASK(2, 0)
 #define RTMDIO_838X_SMI_ACCESS_PHY_CTRL_2	(0xa1c0)
-#define RTMDIO_838X_SMI_ACCESS_PHY_CTRL_3	(0xa1c4)
 #define RTMDIO_838X_SMI_POLL_CTRL		(0xa17c)
 #define RTMDIO_838X_SMI_PORT0_5_ADDR_CTRL	(0xa1c8)
 
-#define RTMDIO_839X_PHYREG_CTRL			(0x03E0)
-#define RTMDIO_839X_PHYREG_PORT_CTRL		(0x03E4)
+#define RTMDIO_839X_C22_DATA(page, reg)		((reg) << 5 | (page) << 10 | \
+						 (((page) == 8191) ? 0x1f : 0) << 23)
 #define RTMDIO_839X_PHYREG_ACCESS_CTRL		(0x03DC)
 #define   RTMDIO_839X_CMD_FAIL			BIT(1)
 #define   RTMDIO_839X_CMD_READ_C22		0
@@ -59,10 +61,10 @@
 #define   RTMDIO_839X_CMD_WRITE_C45		(BIT(2) | BIT(3))
 #define   RTMDIO_839X_CMD_MASK			GENMASK(3, 0)
 #define RTMDIO_839X_PHYREG_DATA_CTRL		(0x03F0)
-#define RTMDIO_839X_PHYREG_MMD_CTRL		(0x03F4)
 #define RTMDIO_839X_SMI_PORT_POLLING_CTRL	(0x03fc)
 #define RTMDIO_839X_SMI_GLB_CTRL		(0x03f8)
 
+#define RTMDIO_930X_C22_DATA(page, reg)		((reg) << 20 | 0x1f << 15 | (page) << 3)
 #define RTMDIO_930X_SMI_GLB_CTRL		(0xCA00)
 #define RTMDIO_930X_SMI_ACCESS_PHY_CTRL_0	(0xCB70)
 #define RTMDIO_930X_SMI_ACCESS_PHY_CTRL_1	(0xCB74)
@@ -73,7 +75,6 @@
 #define   RTMDIO_930X_CMD_WRITE_C45		(BIT(1) | BIT(2))
 #define   RTMDIO_930X_CMD_MASK			(GENMASK(2, 0) | BIT(25))
 #define RTMDIO_930X_SMI_ACCESS_PHY_CTRL_2	(0xCB78)
-#define RTMDIO_930X_SMI_ACCESS_PHY_CTRL_3	(0xCB7C)
 #define RTMDIO_930X_SMI_PORT0_15_POLLING_SEL	(0xCA08)
 #define RTMDIO_930X_SMI_PORT16_27_POLLING_SEL	(0xCA0C)
 #define RTMDIO_930X_SMI_MAC_TYPE_CTRL		(0xCA04)
@@ -83,6 +84,7 @@
 #define RTMDIO_930X_SMI_10G_POLLING_REG10_CFG	(0xCBBC)
 #define RTMDIO_930X_SMI_PORT0_5_ADDR_CTRL	(0xCB80)
 
+#define RTMDIO_931X_C22_DATA(page, reg)		((reg) << 6 | (page) << 11)
 #define RTMDIO_931X_SMI_PORT_POLLING_CTRL	(0x0CCC)
 #define RTMDIO_931X_SMI_INDRT_ACCESS_BC_CTRL	(0x0C14)
 #define RTMDIO_931X_SMI_GLB_CTRL0		(0x0CC0)
@@ -94,10 +96,7 @@
 #define   RTMDIO_931X_CMD_WRITE_C22		BIT(4)
 #define   RTMDIO_931X_CMD_WRITE_C45		(BIT(3) | BIT(4))
 #define   RTMDIO_931X_CMD_MASK			GENMASK(4, 0)
-#define RTMDIO_931X_SMI_INDRT_ACCESS_CTRL_1	(0x0C04)
-#define RTMDIO_931X_SMI_INDRT_ACCESS_CTRL_2	(0x0C08)
 #define RTMDIO_931X_SMI_INDRT_ACCESS_CTRL_3	(0x0C10)
-#define RTMDIO_931X_SMI_INDRT_ACCESS_MMD_CTRL	(0x0C18)
 #define RTMDIO_931X_SMI_PHY_ABLTY_GET_SEL	(0x0CAC)
 #define   RTMDIO_931X_SMI_PHY_ABLTY_MDIO	0x0
 #define   RTMDIO_931X_SMI_PHY_ABLTY_SDS		0x2
@@ -206,12 +205,19 @@ struct rtmdio_chan {
 struct rtmdio_config {
 	int num_phys;
 	int raw_page;
+	u32 cmd_fail;
+	u32 cmd_mask;
+	u32 cmd_reg;
 	int bus_map_base;
 	int port_map_base;
 	int (*read_mmd_phy)(struct mii_bus *bus, u32 pn, u32 devnum, u32 regnum, u32 *val);
 	int (*read_phy)(struct mii_bus *bus, u32 pn, u32 page, u32 reg, u32 *val);
+	u32 ret_mask;
+	u32 ret_reg;
 	int (*setup_ctrl)(struct rtmdio_ctrl *ctrl);
 	void (*setup_polling)(struct rtmdio_ctrl *ctrl);
+	u32 smi_base;
+	u32 smi_size;
 	int (*write_mmd_phy)(struct mii_bus *bus, u32 pn, u32 devnum, u32 regnum, u32 val);
 	int (*write_phy)(struct mii_bus *bus, u32 pn, u32 page, u32 reg, u32 val);
 };
@@ -224,6 +230,40 @@ struct rtmdio_phy_info {
 	unsigned int poll_duplex;
 	unsigned int poll_adv_1000;
 	unsigned int poll_lpa_1000;
+};
+
+struct rtmdio_838x_smi_access {
+	u32 ctrl_0;
+	u32 ctrl_1;
+	u32 ctrl_2;
+	u32 ctrl_3;
+};
+
+struct rtmdio_839x_smi_access {
+	u32 accs_ctrl;
+	u32 main_ctrl;
+	u32 prt0_ctrl;
+	u32 prt1_ctrl;
+	u32 bcst_ctrl;
+	u32 data_ctrl;
+	u32 mmd0_ctrl;
+};
+
+struct rtmdio_930x_smi_access {
+	u32 ctrl_0;
+	u32 ctrl_1;
+	u32 ctrl_2;
+	u32 ctrl_3;
+};
+
+struct rtmdio_931x_smi_access {
+	u32 ctrl_0;
+	u32 ctrl_1;
+	u32 ctrl_2;
+	u32 ctrl_x;
+	u32 ctrl_3;
+	u32 b_ctrl;
+	u32 m_ctrl;
 };
 
 static int rtmdio_phy_to_port(struct mii_bus *bus, int phy)
@@ -239,282 +279,219 @@ static int rtmdio_phy_to_port(struct mii_bus *bus, int phy)
 	return -ENOENT;
 }
 
-static int rtmdio_run_cmd(struct mii_bus *bus, int cmd, int mask, int regnum, int fail)
+static int rtmdio_run_cmd(struct mii_bus *bus, int cmd, void *smi_access, u32 *val)
 {
 	struct rtmdio_ctrl *ctrl = rtmdio_ctrl_from_bus(bus);
-	int ret, val;
+	int ret, cmdstate;
 
-	ret = regmap_update_bits(ctrl->map, regnum, mask, cmd | RTMDIO_RUN);
-	ret = regmap_read_poll_timeout(ctrl->map, regnum, val, !(val & RTMDIO_RUN), 20, 500000);
+	ret = regmap_bulk_write(ctrl->map, ctrl->cfg->smi_base,
+				smi_access, ctrl->cfg->smi_size / sizeof(u32));
 	if (ret)
+		return ret;
+
+	ret = regmap_update_bits(ctrl->map, ctrl->cfg->cmd_reg,
+				 ctrl->cfg->cmd_mask, cmd | RTMDIO_RUN);
+	if (ret)
+		return ret;
+
+	ret = regmap_read_poll_timeout(ctrl->map, ctrl->cfg->cmd_reg,
+				       cmdstate, !(cmdstate & RTMDIO_RUN), 20, 500000);
+	if (ret) {
 		dev_warn_once(&bus->dev, "access timed out\n");
-	else if (val & fail) {
-		dev_warn_once(&bus->dev, "access failed\n");
-		ret = -EIO;
+		return ret;
 	}
+
+	if (cmdstate & ctrl->cfg->cmd_fail) {
+		dev_warn_once(&bus->dev, "access failed\n");
+		return -EIO;
+	}
+
+	if (!val)
+		return 0;
+
+	ret = regmap_read(ctrl->map, ctrl->cfg->ret_reg, val);
+	if (!ret)
+		*val = (*val & ctrl->cfg->ret_mask) >> __ffs(ctrl->cfg->ret_mask);
 
 	return ret;
 }
 
-static int rtmdio_838x_run_cmd(struct mii_bus *bus, int cmd)
-{
-	return rtmdio_run_cmd(bus, cmd, RTMDIO_838X_CMD_MASK,
-			      RTMDIO_838X_SMI_ACCESS_PHY_CTRL_1, RTMDIO_838X_CMD_FAIL);
-}
-
 static int rtmdio_838x_read_phy(struct mii_bus *bus, u32 pn, u32 page, u32 reg, u32 *val)
 {
-	struct rtmdio_ctrl *ctrl = rtmdio_ctrl_from_bus(bus);
-	u32 park_page = 31;
-	int err;
+	struct rtmdio_838x_smi_access smi_access = {
+		.ctrl_0 = BIT(pn),
+		.ctrl_1 = RTMDIO_838X_C22_DATA(page, reg),
+		.ctrl_2 = pn << 16,
+	};
 
-	regmap_write(ctrl->map, RTMDIO_838X_SMI_ACCESS_PHY_CTRL_0, BIT(pn));
-	regmap_write(ctrl->map, RTMDIO_838X_SMI_ACCESS_PHY_CTRL_2, pn << 16);
-	regmap_write(ctrl->map, RTMDIO_838X_SMI_ACCESS_PHY_CTRL_1,
-		     reg << 20 | park_page << 15 | page << 3);
-	err = rtmdio_838x_run_cmd(bus, RTMDIO_838X_CMD_READ_C22);
-	if (!err)
-		err = regmap_read(ctrl->map, RTMDIO_838X_SMI_ACCESS_PHY_CTRL_2, val);
-	if (!err)
-		*val &= GENMASK(15, 0);
-
-	return err;
+	return rtmdio_run_cmd(bus, RTMDIO_838X_CMD_READ_C22, &smi_access, val);
 }
 
 static int rtmdio_838x_write_phy(struct mii_bus *bus, u32 pn, u32 page, u32 reg, u32 val)
 {
-	struct rtmdio_ctrl *ctrl = rtmdio_ctrl_from_bus(bus);
-	u32 park_page = 31;
+	struct rtmdio_838x_smi_access smi_access = {
+		.ctrl_0 = BIT(pn),
+		.ctrl_1 = RTMDIO_838X_C22_DATA(page, reg),
+		.ctrl_2 = val << 16,
+	};
 
-	regmap_write(ctrl->map, RTMDIO_838X_SMI_ACCESS_PHY_CTRL_0, BIT(pn));
-	regmap_write(ctrl->map, RTMDIO_838X_SMI_ACCESS_PHY_CTRL_2, val << 16);
-	regmap_write(ctrl->map, RTMDIO_838X_SMI_ACCESS_PHY_CTRL_1,
-		     reg << 20 | park_page << 15 | page << 3);
-
-	return rtmdio_838x_run_cmd(bus, RTMDIO_838X_CMD_WRITE_C22);
+	return rtmdio_run_cmd(bus, RTMDIO_838X_CMD_WRITE_C22, &smi_access, NULL);
 }
 
 static int rtmdio_838x_read_mmd_phy(struct mii_bus *bus, u32 pn, u32 devnum, u32 regnum, u32 *val)
 {
-	struct rtmdio_ctrl *ctrl = rtmdio_ctrl_from_bus(bus);
-	int err;
+	struct rtmdio_838x_smi_access smi_access = {
+		.ctrl_0 = BIT(pn),
+		.ctrl_2 = pn << 16,
+		.ctrl_3 = RTMDIO_C45_DATA(devnum, regnum),
+	};
 
-	regmap_write(ctrl->map, RTMDIO_838X_SMI_ACCESS_PHY_CTRL_0, BIT(pn));
-	regmap_write(ctrl->map, RTMDIO_838X_SMI_ACCESS_PHY_CTRL_2, pn << 16);
-	regmap_write(ctrl->map, RTMDIO_838X_SMI_ACCESS_PHY_CTRL_3, devnum << 16 | regnum);
-	err = rtmdio_838x_run_cmd(bus, RTMDIO_838X_CMD_READ_C45);
-	if (!err)
-		err = regmap_read(ctrl->map, RTMDIO_838X_SMI_ACCESS_PHY_CTRL_2, val);
-	if (!err)
-		*val &= GENMASK(15, 0);
-
-	return err;
+	return rtmdio_run_cmd(bus, RTMDIO_838X_CMD_READ_C45, &smi_access, val);
 }
 
 static int rtmdio_838x_write_mmd_phy(struct mii_bus *bus, u32 pn, u32 devnum, u32 regnum, u32 val)
 {
-	struct rtmdio_ctrl *ctrl = rtmdio_ctrl_from_bus(bus);
+	struct rtmdio_838x_smi_access smi_access = {
+		.ctrl_0 = BIT(pn),
+		.ctrl_2 = val << 16,
+		.ctrl_3 = RTMDIO_C45_DATA(devnum, regnum),
+	};
 
-	regmap_write(ctrl->map, RTMDIO_838X_SMI_ACCESS_PHY_CTRL_0, BIT(pn));
-	regmap_write(ctrl->map, RTMDIO_838X_SMI_ACCESS_PHY_CTRL_2, val << 16);
-	regmap_write(ctrl->map, RTMDIO_838X_SMI_ACCESS_PHY_CTRL_3, devnum << 16 | regnum);
-
-	return rtmdio_838x_run_cmd(bus, RTMDIO_838X_CMD_WRITE_C45);
-}
-
-static int rtmdio_839x_run_cmd(struct mii_bus *bus, int cmd)
-{
-	return rtmdio_run_cmd(bus, cmd, RTMDIO_839X_CMD_MASK,
-			      RTMDIO_839X_PHYREG_ACCESS_CTRL, RTMDIO_839X_CMD_FAIL);
+	return rtmdio_run_cmd(bus, RTMDIO_838X_CMD_WRITE_C45, &smi_access, NULL);
 }
 
 static int rtmdio_839x_read_phy(struct mii_bus *bus, u32 pn, u32 page, u32 reg, u32 *val)
 {
-	struct rtmdio_ctrl *ctrl = rtmdio_ctrl_from_bus(bus);
-	int err;
+	struct rtmdio_839x_smi_access smi_access = {
+		.main_ctrl = 0x1ff,
+		.data_ctrl = pn << 16,
+		.accs_ctrl = RTMDIO_839X_C22_DATA(page, reg),
+	};
 
-	regmap_write(ctrl->map, RTMDIO_839X_PHYREG_CTRL, 0x1ff);
-	regmap_write(ctrl->map, RTMDIO_839X_PHYREG_DATA_CTRL, pn << 16);
-	regmap_write(ctrl->map, RTMDIO_839X_PHYREG_ACCESS_CTRL,
-		     reg << 5 | page << 10 | ((page == 0x1fff) ? 0x1f : 0) << 23);
-	err = rtmdio_839x_run_cmd(bus, RTMDIO_839X_CMD_READ_C22);
-	if (!err)
-		err = regmap_read(ctrl->map, RTMDIO_839X_PHYREG_DATA_CTRL, val);
-	if (!err)
-		*val &= GENMASK(15, 0);
-
-	return err;
+	return rtmdio_run_cmd(bus, RTMDIO_839X_CMD_READ_C22, &smi_access, val);
 }
 
 static int rtmdio_839x_write_phy(struct mii_bus *bus, u32 pn, u32 page, u32 reg, u32 val)
 {
-	struct rtmdio_ctrl *ctrl = rtmdio_ctrl_from_bus(bus);
+	struct rtmdio_839x_smi_access smi_access = {
+		.main_ctrl = 0x1ff,
+		.data_ctrl = val << 16,
+		.prt0_ctrl = (u32)(BIT_ULL(pn)),
+		.prt1_ctrl = (u32)(BIT_ULL(pn) >> 32),
+		.accs_ctrl = RTMDIO_839X_C22_DATA(page, reg),
+	};
 
-	regmap_write(ctrl->map, RTMDIO_839X_PHYREG_CTRL, 0x1ff);
-	regmap_write(ctrl->map, RTMDIO_839X_PHYREG_DATA_CTRL, val << 16);
-	regmap_write(ctrl->map, RTMDIO_839X_PHYREG_PORT_CTRL, BIT_ULL(pn));
-	regmap_write(ctrl->map, RTMDIO_839X_PHYREG_PORT_CTRL + 4, BIT_ULL(pn) >> 32);
-	regmap_write(ctrl->map, RTMDIO_839X_PHYREG_ACCESS_CTRL,
-		     reg << 5 | page << 10 | ((page == 0x1fff) ? 0x1f : 0) << 23);
-
-	return rtmdio_839x_run_cmd(bus, RTMDIO_839X_CMD_WRITE_C22);
+	return rtmdio_run_cmd(bus, RTMDIO_839X_CMD_WRITE_C22, &smi_access, NULL);
 }
 
 static int rtmdio_839x_read_mmd_phy(struct mii_bus *bus, u32 pn, u32 devnum, u32 regnum, u32 *val)
 {
-	struct rtmdio_ctrl *ctrl = rtmdio_ctrl_from_bus(bus);
-	int err;
+	struct rtmdio_839x_smi_access smi_access = {
+		.data_ctrl = pn << 16,
+		.mmd0_ctrl = RTMDIO_C45_DATA(devnum, regnum),
+	};
 
-	regmap_write(ctrl->map, RTMDIO_839X_PHYREG_DATA_CTRL,  pn << 16);
-	regmap_write(ctrl->map, RTMDIO_839X_PHYREG_MMD_CTRL, (devnum << 16) | (regnum & 0xffff));
-	err = rtmdio_839x_run_cmd(bus, RTMDIO_839X_CMD_READ_C45);
-	if (!err)
-		err = regmap_read(ctrl->map, RTMDIO_839X_PHYREG_DATA_CTRL, val);
-	if (!err)
-		*val &= GENMASK(15, 0);
-
-	return err;
+	return rtmdio_run_cmd(bus, RTMDIO_839X_CMD_READ_C45, &smi_access, val);
 }
 
 static int rtmdio_839x_write_mmd_phy(struct mii_bus *bus, u32 pn, u32 devnum, u32 regnum, u32 val)
 {
-	struct rtmdio_ctrl *ctrl = rtmdio_ctrl_from_bus(bus);
+	struct rtmdio_839x_smi_access smi_access = {
+		.data_ctrl = val << 16,
+		.prt0_ctrl = (u32)(BIT_ULL(pn)),
+		.prt1_ctrl = (u32)(BIT_ULL(pn) >> 32),
+		.mmd0_ctrl = RTMDIO_C45_DATA(devnum, regnum),
+	};
 
-	regmap_write(ctrl->map, RTMDIO_839X_PHYREG_PORT_CTRL, BIT_ULL(pn));
-	regmap_write(ctrl->map, RTMDIO_839X_PHYREG_PORT_CTRL + 4, BIT_ULL(pn) >> 32);
-	regmap_write(ctrl->map, RTMDIO_839X_PHYREG_DATA_CTRL, val << 16);
-	regmap_write(ctrl->map, RTMDIO_839X_PHYREG_MMD_CTRL, (devnum << 16) | (regnum & 0xffff));
-
-	return rtmdio_839x_run_cmd(bus, RTMDIO_839X_CMD_WRITE_C45);
-}
-
-static int rtmdio_930x_run_cmd(struct mii_bus *bus, int cmd)
-{
-	return rtmdio_run_cmd(bus, cmd, RTMDIO_930X_CMD_MASK,
-			      RTMDIO_930X_SMI_ACCESS_PHY_CTRL_1, RTMDIO_930X_CMD_FAIL);
-}
-
-static int rtmdio_930x_write_phy(struct mii_bus *bus, u32 pn, u32 page, u32 reg, u32 val)
-{
-	struct rtmdio_ctrl *ctrl = rtmdio_ctrl_from_bus(bus);
-	u32 park_page = 31;
-
-	regmap_write(ctrl->map, RTMDIO_930X_SMI_ACCESS_PHY_CTRL_0, BIT(pn));
-	regmap_write(ctrl->map, RTMDIO_930X_SMI_ACCESS_PHY_CTRL_2, val << 16);
-	regmap_write(ctrl->map, RTMDIO_930X_SMI_ACCESS_PHY_CTRL_1,
-		     reg << 20 | page << 3 | park_page << 15);
-
-	return rtmdio_930x_run_cmd(bus, RTMDIO_930X_CMD_WRITE_C22);
+	return rtmdio_run_cmd(bus, RTMDIO_839X_CMD_WRITE_C45, &smi_access, NULL);
 }
 
 static int rtmdio_930x_read_phy(struct mii_bus *bus, u32 pn, u32 page, u32 reg, u32 *val)
 {
-	struct rtmdio_ctrl *ctrl = rtmdio_ctrl_from_bus(bus);
-	u32 park_page = 31;
-	int err;
+	struct rtmdio_930x_smi_access smi_access = {
+		.ctrl_1 = RTMDIO_930X_C22_DATA(page, reg),
+		.ctrl_2 = pn << 16,
+	};
 
-	regmap_write(ctrl->map, RTMDIO_930X_SMI_ACCESS_PHY_CTRL_2, pn << 16);
-	regmap_write(ctrl->map, RTMDIO_930X_SMI_ACCESS_PHY_CTRL_1,
-		     reg << 20 | page << 3 | park_page << 15);
-	err = rtmdio_930x_run_cmd(bus, RTMDIO_930X_CMD_READ_C22);
-	if (!err)
-		err = regmap_read(ctrl->map, RTMDIO_930X_SMI_ACCESS_PHY_CTRL_2, val);
-	if (!err)
-		*val &= GENMASK(15, 0);
-
-	return err;
+	return rtmdio_run_cmd(bus, RTMDIO_930X_CMD_READ_C22, &smi_access, val);
 }
 
-static int rtmdio_930x_write_mmd_phy(struct mii_bus *bus, u32 pn, u32 devnum, u32 regnum, u32 val)
+static int rtmdio_930x_write_phy(struct mii_bus *bus, u32 pn, u32 page, u32 reg, u32 val)
 {
-	struct rtmdio_ctrl *ctrl = rtmdio_ctrl_from_bus(bus);
+	struct rtmdio_930x_smi_access smi_access = {
+		.ctrl_0 = BIT(pn),
+		.ctrl_1 = RTMDIO_930X_C22_DATA(page, reg),
+		.ctrl_2 = val << 16,
+	};
 
-	regmap_write(ctrl->map, RTMDIO_930X_SMI_ACCESS_PHY_CTRL_0, BIT(pn));
-	regmap_write(ctrl->map, RTMDIO_930X_SMI_ACCESS_PHY_CTRL_2, val << 16);
-	regmap_write(ctrl->map, RTMDIO_930X_SMI_ACCESS_PHY_CTRL_3, (devnum << 16) | (regnum & 0xffff));
-
-	return rtmdio_930x_run_cmd(bus, RTMDIO_930X_CMD_WRITE_C45);
+	return rtmdio_run_cmd(bus, RTMDIO_930X_CMD_WRITE_C22, &smi_access, NULL);
 }
 
 static int rtmdio_930x_read_mmd_phy(struct mii_bus *bus, u32 pn, u32 devnum, u32 regnum, u32 *val)
 {
-	struct rtmdio_ctrl *ctrl = rtmdio_ctrl_from_bus(bus);
-	int err;
+	struct rtmdio_930x_smi_access smi_access = {
+		.ctrl_2 = pn << 16,
+		.ctrl_3 = RTMDIO_C45_DATA(devnum, regnum),
+	};
 
-	regmap_write(ctrl->map, RTMDIO_930X_SMI_ACCESS_PHY_CTRL_2, pn << 16);
-	regmap_write(ctrl->map, RTMDIO_930X_SMI_ACCESS_PHY_CTRL_3, (devnum << 16) | (regnum & 0xffff));
-	err = rtmdio_930x_run_cmd(bus, RTMDIO_930X_CMD_READ_C45);
-	if (!err)
-		err = regmap_read(ctrl->map, RTMDIO_930X_SMI_ACCESS_PHY_CTRL_2, val);
-	if (!err)
-		*val &= GENMASK(15, 0);
-
-	return err;
+	return rtmdio_run_cmd(bus, RTMDIO_930X_CMD_READ_C45, &smi_access, val);
 }
 
-static int rtmdio_931x_run_cmd(struct mii_bus *bus, int cmd)
+static int rtmdio_930x_write_mmd_phy(struct mii_bus *bus, u32 pn, u32 devnum, u32 regnum, u32 val)
 {
-	return rtmdio_run_cmd(bus, cmd, RTMDIO_931X_CMD_MASK,
-			      RTMDIO_931X_SMI_INDRT_ACCESS_CTRL_0, RTMDIO_931X_CMD_FAIL);
-}
+	struct rtmdio_930x_smi_access smi_access = {
+		.ctrl_0 = BIT(pn),
+		.ctrl_2 = val << 16,
+		.ctrl_3 = RTMDIO_C45_DATA(devnum, regnum),
+	};
 
-static int rtmdio_931x_write_phy(struct mii_bus *bus, u32 pn, u32 page, u32 reg, u32 val)
-{
-	struct rtmdio_ctrl *ctrl = rtmdio_ctrl_from_bus(bus);
-	u64 mask = BIT_ULL(pn);
-
-	regmap_write(ctrl->map, RTMDIO_931X_SMI_INDRT_ACCESS_CTRL_2, (u32)mask);
-	regmap_write(ctrl->map, RTMDIO_931X_SMI_INDRT_ACCESS_CTRL_2 + 4, (u32)(mask >> 32));
-	regmap_write(ctrl->map, RTMDIO_931X_SMI_INDRT_ACCESS_CTRL_3, val);
-	regmap_write(ctrl->map, RTMDIO_931X_SMI_INDRT_ACCESS_CTRL_0, reg << 6 | page << 11);
-	regmap_write(ctrl->map, RTMDIO_931X_SMI_INDRT_ACCESS_CTRL_1, 0x1ff);
-
-	return rtmdio_931x_run_cmd(bus, RTMDIO_931X_CMD_WRITE_C22);
+	return rtmdio_run_cmd(bus, RTMDIO_930X_CMD_WRITE_C45, &smi_access, NULL);
 }
 
 static int rtmdio_931x_read_phy(struct mii_bus *bus, u32 pn, u32 page, u32 reg, u32 *val)
 {
-	struct rtmdio_ctrl *ctrl = rtmdio_ctrl_from_bus(bus);
-	int err;
+	struct rtmdio_931x_smi_access smi_access = {
+		.ctrl_0 = RTMDIO_931X_C22_DATA(page, reg),
+		.b_ctrl = pn << 5,
+	};
 
-	regmap_write(ctrl->map, RTMDIO_931X_SMI_INDRT_ACCESS_BC_CTRL, pn << 5);
-	regmap_write(ctrl->map, RTMDIO_931X_SMI_INDRT_ACCESS_CTRL_0, reg << 6 | page << 11);
-	err = rtmdio_931x_run_cmd(bus, RTMDIO_931X_CMD_READ_C22);
-	if (!err)
-		err = regmap_read(ctrl->map, RTMDIO_931X_SMI_INDRT_ACCESS_CTRL_3, val);
-	if (!err)
-		*val >>= 16;
+	return rtmdio_run_cmd(bus, RTMDIO_931X_CMD_READ_C22, &smi_access, val);
+}
 
-	return err;
+
+static int rtmdio_931x_write_phy(struct mii_bus *bus, u32 pn, u32 page, u32 reg, u32 val)
+{
+	struct rtmdio_931x_smi_access smi_access = {
+		.ctrl_0 = RTMDIO_931X_C22_DATA(page, reg),
+		.ctrl_1 = 0x1ff,
+		.ctrl_2 = (u32)(BIT_ULL(pn)),
+		.ctrl_x = (u32)(BIT_ULL(pn) >> 32),
+		.ctrl_3 = val,
+	};
+
+	return rtmdio_run_cmd(bus, RTMDIO_931X_CMD_WRITE_C22, &smi_access, NULL);
 }
 
 static int rtmdio_931x_read_mmd_phy(struct mii_bus *bus, u32 pn, u32 devnum, u32 regnum, u32 *val)
 {
-	struct rtmdio_ctrl *ctrl = rtmdio_ctrl_from_bus(bus);
-	int err;
+	struct rtmdio_931x_smi_access smi_access = {
+		.b_ctrl = pn << 5,
+		.m_ctrl = RTMDIO_C45_DATA(devnum, regnum),
+	};
 
-	regmap_write(ctrl->map, RTMDIO_931X_SMI_INDRT_ACCESS_BC_CTRL, pn << 5);
-	regmap_write(ctrl->map, RTMDIO_931X_SMI_INDRT_ACCESS_MMD_CTRL, (devnum << 16) | (regnum & 0xffff));
-	err = rtmdio_931x_run_cmd(bus, RTMDIO_931X_CMD_READ_C45);
-	if (!err)
-		err = regmap_read(ctrl->map, RTMDIO_931X_SMI_INDRT_ACCESS_CTRL_3, val);
-	if (!err)
-		*val >>= 16;
-
-	return err;
+	return rtmdio_run_cmd(bus, RTMDIO_931X_CMD_READ_C45, &smi_access, val);
 }
 
 static int rtmdio_931x_write_mmd_phy(struct mii_bus *bus, u32 pn, u32 devnum, u32 regnum, u32 val)
 {
-	struct rtmdio_ctrl *ctrl = rtmdio_ctrl_from_bus(bus);
-	u64 mask = BIT_ULL(pn);
+	struct rtmdio_931x_smi_access smi_access = {
+		.ctrl_2 = (u32)(BIT_ULL(pn)),
+		.ctrl_x = (u32)(BIT_ULL(pn) >> 32),
+		.ctrl_3 = val,
+		.m_ctrl = RTMDIO_C45_DATA(devnum, regnum),
+	};
 
-	regmap_write(ctrl->map, RTMDIO_931X_SMI_INDRT_ACCESS_CTRL_2, (u32)mask);
-	regmap_write(ctrl->map, RTMDIO_931X_SMI_INDRT_ACCESS_CTRL_2 + 4, (u32)(mask >> 32));
-	regmap_write(ctrl->map, RTMDIO_931X_SMI_INDRT_ACCESS_CTRL_3, val);
-	regmap_write(ctrl->map, RTMDIO_931X_SMI_INDRT_ACCESS_MMD_CTRL, (devnum << 16) | (regnum & 0xffff));
-
-	return rtmdio_931x_run_cmd(bus, RTMDIO_931X_CMD_WRITE_C45);
+	return rtmdio_run_cmd(bus, RTMDIO_931X_CMD_WRITE_C45, &smi_access, NULL);
 }
 
 static int rtmdio_read_c45(struct mii_bus *bus, int phy, int devnum, int regnum)
@@ -985,11 +962,18 @@ static int rtmdio_probe(struct platform_device *pdev)
 static const struct rtmdio_config rtmdio_838x_cfg = {
 	.num_phys	= 28,
 	.raw_page	= 4095,
+	.cmd_fail	= RTMDIO_838X_CMD_FAIL,
+	.cmd_mask	= RTMDIO_838X_CMD_MASK,
+	.cmd_reg	= RTMDIO_838X_SMI_ACCESS_PHY_CTRL_1,
 	.port_map_base	= RTMDIO_838X_SMI_PORT0_5_ADDR_CTRL,
 	.read_mmd_phy	= rtmdio_838x_read_mmd_phy,
 	.read_phy	= rtmdio_838x_read_phy,
+	.ret_mask	= GENMASK(15, 0),
+	.ret_reg	= RTMDIO_838X_SMI_ACCESS_PHY_CTRL_2,
 	.setup_ctrl	= rtmdio_838x_setup_ctrl,
 	.setup_polling	= rtmdio_838x_setup_polling,
+	.smi_base	= RTMDIO_838X_SMI_ACCESS_PHY_CTRL_0,
+	.smi_size	= sizeof(struct rtmdio_838x_smi_access),
 	.write_mmd_phy	= rtmdio_838x_write_mmd_phy,
 	.write_phy	= rtmdio_838x_write_phy,
 };
@@ -997,9 +981,16 @@ static const struct rtmdio_config rtmdio_838x_cfg = {
 static const struct rtmdio_config rtmdio_839x_cfg = {
 	.num_phys	= 52,
 	.raw_page	= 8191,
+	.cmd_fail	= RTMDIO_839X_CMD_FAIL,
+	.cmd_mask	= RTMDIO_839X_CMD_MASK,
+	.cmd_reg	= RTMDIO_839X_PHYREG_ACCESS_CTRL,
 	.read_mmd_phy	= rtmdio_839x_read_mmd_phy,
 	.read_phy	= rtmdio_839x_read_phy,
+	.ret_mask	= GENMASK(15, 0),
+	.ret_reg	= RTMDIO_839X_PHYREG_DATA_CTRL,
 	.setup_ctrl	= rtmdio_839x_setup_ctrl,
+	.smi_base	= RTMDIO_839X_PHYREG_ACCESS_CTRL,
+	.smi_size	= sizeof(struct rtmdio_839x_smi_access),
 	.write_mmd_phy	= rtmdio_839x_write_mmd_phy,
 	.write_phy	= rtmdio_839x_write_phy,
 };
@@ -1007,12 +998,19 @@ static const struct rtmdio_config rtmdio_839x_cfg = {
 static const struct rtmdio_config rtmdio_930x_cfg = {
 	.num_phys	= 28,
 	.raw_page	= 4095,
+	.cmd_fail	= RTMDIO_930X_CMD_FAIL,
+	.cmd_mask	= RTMDIO_930X_CMD_MASK,
+	.cmd_reg	= RTMDIO_930X_SMI_ACCESS_PHY_CTRL_1,
 	.bus_map_base	= RTMDIO_930X_SMI_PORT0_15_POLLING_SEL,
 	.port_map_base	= RTMDIO_930X_SMI_PORT0_5_ADDR_CTRL,
 	.read_mmd_phy	= rtmdio_930x_read_mmd_phy,
 	.read_phy	= rtmdio_930x_read_phy,
+	.ret_mask	= GENMASK(15, 0),
+	.ret_reg	= RTMDIO_930X_SMI_ACCESS_PHY_CTRL_2,
 	.setup_ctrl	= rtmdio_930x_setup_ctrl,
 	.setup_polling	= rtmdio_930x_setup_polling,
+	.smi_base	= RTMDIO_930X_SMI_ACCESS_PHY_CTRL_0,
+	.smi_size	= sizeof(struct rtmdio_930x_smi_access),
 	.write_mmd_phy	= rtmdio_930x_write_mmd_phy,
 	.write_phy	= rtmdio_930x_write_phy,
 };
@@ -1020,12 +1018,19 @@ static const struct rtmdio_config rtmdio_930x_cfg = {
 static const struct rtmdio_config rtmdio_931x_cfg = {
 	.num_phys	= 56,
 	.raw_page	= 8191,
+	.cmd_fail	= RTMDIO_931X_CMD_FAIL,
+	.cmd_mask	= RTMDIO_931X_CMD_MASK,
+	.cmd_reg	= RTMDIO_931X_SMI_INDRT_ACCESS_CTRL_0,
 	.bus_map_base	= RTMDIO_931X_SMI_PORT_POLLING_SEL,
 	.port_map_base	= RTMDIO_931X_SMI_PORT_ADDR_CTRL,
 	.read_mmd_phy	= rtmdio_931x_read_mmd_phy,
 	.read_phy	= rtmdio_931x_read_phy,
+	.ret_mask	= GENMASK(31, 16),
+	.ret_reg	= RTMDIO_931X_SMI_INDRT_ACCESS_CTRL_3,
 	.setup_ctrl	= rtmdio_931x_setup_ctrl,
 	.setup_polling	= rtmdio_931x_setup_polling,
+	.smi_base	= RTMDIO_931X_SMI_INDRT_ACCESS_CTRL_0,
+	.smi_size	= sizeof(struct rtmdio_931x_smi_access),
 	.write_mmd_phy	= rtmdio_931x_write_mmd_phy,
 	.write_phy	= rtmdio_931x_write_phy,
 };
