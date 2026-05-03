@@ -71,8 +71,6 @@ define Device/embedfire_doornet2
 endef
 TARGET_DEVICES += embedfire_doornet2
 
-
-
 define Device/firefly_roc-rk3328-cc
   $(Device/rk3328)
   DEVICE_VENDOR := Firefly
@@ -81,8 +79,6 @@ define Device/firefly_roc-rk3328-cc
   UBOOT_DEVICE_NAME := roc-cc-rk3328
 endef
 TARGET_DEVICES += firefly_roc-rk3328-cc
-
-
 
 define Device/friendlyarm_nanopi-r2c
   $(Device/rk3328)
