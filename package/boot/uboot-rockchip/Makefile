@@ -85,14 +85,8 @@ endef
 
 
 UBOOT_TARGETS := \
-  doornet1-rk3328 \
   doornet2-rk3399 \
-  lubancat-1-rk3566 \
-  lubancat-2-rk3568 \
-  lubancat-1n-rk3566 \
-  lubancat-2n-rk3568 \
-  lubancat-4-rk3588s \
-  lubancat-5-rk3588 \
+
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 
