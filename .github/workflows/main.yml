@@ -82,7 +82,10 @@ jobs:
 
       - name: Build U-Boot only (ensure it's compiled)
         working-directory: immortalwrt
-        run: make package/boot/uboot-rockchip/compile V=s   
+        run: 
+          make package/boot/uboot-rockchip/compile V=s  
+          echo "=== After U-Boot compilation ==="
+          find staging_dir build_dir -name "*doornet*" -o -name "*idbloader*" 2>/dev/null
 
       - name: Build firmware
         working-directory: immortalwrt
