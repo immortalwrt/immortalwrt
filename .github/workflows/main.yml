@@ -86,12 +86,33 @@ jobs:
           make tools/install -j$(nproc)
           make toolchain/install -j$(nproc)
 
-      - name: Build U-Boot only
+      - name: Create doornet2 U-Boot defconfig from EVB template
         working-directory: immortalwrt
         run: |
-          make package/boot/uboot-rockchip/compile V=s
-          echo "=== After U-Boot compilation ==="
-          find staging_dir build_dir -name "*doornet*" -o -name "*idbloader*" 2>/dev/null
+          EVB_CONF=$(find build_dir -name "rk3399-evb_defconfig" -path "*/u-boot-*/configs/*" | head -n1)
+          if [ ! -f "$EVB_CONF" ]; then
+            echo "ERROR: rk3399-evb_defconfig not found!"
+            find build_dir -name "rk3399*defconfig" -path "*/configs/*" | sort
+            exit 1
+          fi
+          cp "$EVB_CONF" package/boot/uboot-rockchip/src/configs/doornet2-rk3399_defconfig
+          cat >> package/boot/uboot-rockchip/src/configs/doornet2-rk3399_defconfig << 'EOF'
+          CONFIG_SYS_LOAD_ADDR=0x800800
+          CONFIG_SYS_TEXT_BASE=0x00200000
+          CONFIG_DEBUG_UART_BASE=0xFF1A0000
+          CONFIG_DEBUG_UART_CLOCK=24000000
+          CONFIG_BAUDRATE=1500000
+          CONFIG_DEBUG_UART=y
+          CONFIG_DEBUG_UART_SHIFT=2
+          EOF
+
+      - name: Patch U-Boot package to use olddefconfig
+        working-directory: immortalwrt
+        run: sed -i 's/oldconfig/olddefconfig/g' package/boot/uboot-rockchip/Makefile
+
+      - name: Build U-Boot only
+        working-directory: immortalwrt
+        run: make package/boot/uboot-rockchip/compile V=s
 
       - name: Build firmware
         working-directory: immortalwrt
