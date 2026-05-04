@@ -72,10 +72,12 @@ jobs:
         working-directory: immortalwrt
         run: make download -j$(nproc) V=s
 
-      - name: Show original DTS Makefile for context
+      - name: Prepare kernel and show DTS Makefile
         working-directory: immortalwrt
         run: |
-          find build_dir -name "Makefile" -path "*/dts/rockchip/Makefile" | head -1 | xargs cat
+          make target/linux/prepare V=s
+          echo "=== Kernel DTS Makefile content ==="
+          find build_dir -name "Makefile" -path "*/dts/rockchip/Makefile" 2>/dev/null | head -1 | xargs cat
 
       - name: Build firmware
         working-directory: immortalwrt
