@@ -106,6 +106,8 @@ jobs:
           echo ""
           echo "=== U-Boot build dir contents ==="
           find build_dir -name "*doornet*" -o -name "*idbloader*" 2>/dev/null || echo "  (none found)"
+          echo "=== Available rk3399 DTS files in U-Boot ==="
+          find build_dir -path "*/u-boot-*/dts/upstream/src/arm64" -name "rk3399*" 2>/dev/null || echo "  (none found)"
       
       - name: Package artifacts
         run: |
