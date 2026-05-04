@@ -86,6 +86,7 @@ endef
 
 UBOOT_TARGETS := \
   doornet2-rk3399 \
+  nanopi-r4se-rk3399
 
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
