@@ -80,13 +80,13 @@ jobs:
             echo "dtb-\$(CONFIG_ARCH_ROCKCHIP) += rk3399-doornet2.dtb" >> "$f"
           done
 
-      - name: Build U-Boot only (ensure it's compiled)
+      - name: Build U-Boot only
         working-directory: immortalwrt
-        run: 
-          make package/boot/uboot-rockchip/compile V=s  
+        run: |
+          make package/boot/uboot-rockchip/compile V=s
           echo "=== After U-Boot compilation ==="
           find staging_dir build_dir -name "*doornet*" -o -name "*idbloader*" 2>/dev/null
-
+          
       - name: Build firmware
         working-directory: immortalwrt
         run: make -j$(nproc) V=s || make -j1 V=s
