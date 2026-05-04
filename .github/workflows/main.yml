@@ -80,17 +80,34 @@ jobs:
             echo "dtb-\$(CONFIG_ARCH_ROCKCHIP) += rk3399-doornet2.dtb" >> "$f"
           done
 
+      - name: Build U-Boot only (ensure it's compiled)
+        working-directory: immortalwrt
+        run: make package/boot/uboot-rockchip/compile V=s   
+
       - name: Build firmware
         working-directory: immortalwrt
         run: make -j$(nproc) V=s || make -j1 V=s
 
+      - name: Debug U-Boot output (on failure)
+        if: failure()
+        working-directory: immortalwrt
+        run: |
+          echo "=== U-Boot staging dir contents ==="
+          find staging_dir -name "*doornet*" -o -name "*idbloader*" 2>/dev/null || echo "  (none found)"
+          echo ""
+          echo "=== U-Boot build dir contents ==="
+          find build_dir -name "*doornet*" -o -name "*idbloader*" 2>/dev/null || echo "  (none found)"
+          echo ""
+          echo "=== Searching for any U-Boot img files ==="
+          find . -name "*.img" -path "*/uboot*" 2>/dev/null || echo "  (none found)"
+      
       - name: Package artifacts
         run: |
           mkdir -p artifacts
           cp immortalwrt/bin/targets/rockchip/armv8/*doornet2*.img.gz artifacts/ 2>/dev/null || \
           cp immortalwrt/bin/targets/rockchip/armv8/*.img.gz artifacts/
           cp immortalwrt/bin/targets/rockchip/armv8/*.manifest artifacts/ 2>/dev/null || true
-
+    
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
