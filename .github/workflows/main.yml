@@ -72,14 +72,13 @@ jobs:
         working-directory: immortalwrt
         run: make download -j$(nproc) V=s
 
-      - name: Show DTS Makefile and reject file
+      - name: Prepare kernel and add DTS entry
         working-directory: immortalwrt
         run: |
-          echo "=== Makefile.rej (what was expected) ==="
-          find build_dir -name "Makefile.rej" -path "*/dts/rockchip/*" 2>/dev/null | head -1 | xargs cat
-          echo ""
-          echo "=== Makefile around line 42 ==="
-          find build_dir -name "Makefile" -path "*/dts/rockchip/Makefile" 2>/dev/null | head -1 | xargs sed -n '38,48p'
+          make target/linux/prepare V=s
+          find build_dir -name "Makefile" -path "*/dts/rockchip/Makefile" | while read f; do
+            echo "dtb-\$(CONFIG_ARCH_ROCKCHIP) += rk3399-doornet2.dtb" >> "$f"
+          done
 
       - name: Build firmware
         working-directory: immortalwrt
