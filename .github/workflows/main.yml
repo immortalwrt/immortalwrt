@@ -80,16 +80,22 @@ jobs:
             echo "dtb-\$(CONFIG_ARCH_ROCKCHIP) += rk3399-doornet2.dtb" >> "$f"
           done
 
+      - name: Install host tools and toolchain
+        working-directory: immortalwrt
+        run: |
+          make tools/install -j$(nproc)
+          make toolchain/install -j$(nproc)
+
       - name: Build U-Boot only
         working-directory: immortalwrt
         run: |
           make package/boot/uboot-rockchip/compile V=s
           echo "=== After U-Boot compilation ==="
           find staging_dir build_dir -name "*doornet*" -o -name "*idbloader*" 2>/dev/null
-          
+
       - name: Build firmware
         working-directory: immortalwrt
-        run: make -j$(nproc) V=s || make -j1 V=s
+        run: make -j1 V=s
 
       - name: Debug U-Boot output (on failure)
         if: failure()
@@ -100,9 +106,6 @@ jobs:
           echo ""
           echo "=== U-Boot build dir contents ==="
           find build_dir -name "*doornet*" -o -name "*idbloader*" 2>/dev/null || echo "  (none found)"
-          echo ""
-          echo "=== Searching for any U-Boot img files ==="
-          find . -name "*.img" -path "*/uboot*" 2>/dev/null || echo "  (none found)"
       
       - name: Package artifacts
         run: |
