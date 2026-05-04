@@ -72,12 +72,14 @@ jobs:
         working-directory: immortalwrt
         run: make download -j$(nproc) V=s
 
-      - name: Prepare kernel and show DTS Makefile
+      - name: Show DTS Makefile and reject file
         working-directory: immortalwrt
         run: |
-          make target/linux/prepare V=s
-          echo "=== Kernel DTS Makefile content ==="
-          find build_dir -name "Makefile" -path "*/dts/rockchip/Makefile" 2>/dev/null | head -1 | xargs cat
+          echo "=== Makefile.rej (what was expected) ==="
+          find build_dir -name "Makefile.rej" -path "*/dts/rockchip/*" 2>/dev/null | head -1 | xargs cat
+          echo ""
+          echo "=== Makefile around line 42 ==="
+          find build_dir -name "Makefile" -path "*/dts/rockchip/Makefile" 2>/dev/null | head -1 | xargs sed -n '38,48p'
 
       - name: Build firmware
         working-directory: immortalwrt
