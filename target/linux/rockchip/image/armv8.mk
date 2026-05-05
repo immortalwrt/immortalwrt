@@ -8,7 +8,6 @@ define Device/embedfire_doornet2
   SOC := rk3399
   BOOT_FLOW := pine64-bin
   UBOOT_DEVICE_NAME := doornet2-rk3399
-  IMAGE/sysupgrade.img.gz := boot-common | boot-script | pine64-img | gzip | append-metadata
   DEVICE_PACKAGES := kmod-r8168 -urngd
   KERNEL_LOADADDR := 0x800800
   KERNEL_ENTRY_POINT := 0x800800

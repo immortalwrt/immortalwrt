@@ -1,0 +1,9 @@
+--- a/arch/arm64/boot/dts/rockchip/Makefile
++++ b/arch/arm64/boot/dts/rockchip/Makefile
+@@ -37,6 +37,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3368-r8
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-eaidk-610.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-evb.dtb
++dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-doornet2.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-ficus.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-firefly.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-gru-bob.dtb

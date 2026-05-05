@@ -1,16 +1,13 @@
 name: Build ImmortalWrt for DoorNet2
 
 on:
-  workflow_dispatch:          # 允许手动触发
+  workflow_dispatch:
+  pull_request:
   push:
     branches:
-      - main                  # 推送到 main 分支自动编译
+      - master
     paths-ignore:
-      - 'README.md'           # 忽略非源码文件
-
-env:
-  REPO_URL: https://github.com/dreak7/immortalwrt.git
-  REPO_BRANCH: master         # 使用的 ImmortalWrt 主分支
+      - README.md
 
 jobs:
   build:
@@ -21,123 +18,61 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          path: custom-files   # 将当前仓库作为自定义文件检出
-
-      - name: Clone ImmortalWrt
-        run: |
-          git clone --depth 1 --branch $REPO_BRANCH $REPO_URL immortalwrt
-          echo "SRC_DIR=$PWD/immortalwrt" >> $GITHUB_ENV
-
-      - name: Copy custom files
-        run: |
-          rsync -av custom-files/ immortalwrt/
 
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential clang flex bison g++ gawk \
-          gcc-multilib gettext git libncurses5-dev libssl-dev \
-          python3-setuptools rsync unzip zlib1g-dev file wget
+            gcc-multilib gettext git libncurses5-dev libssl-dev \
+            python3-setuptools rsync unzip zlib1g-dev file wget
 
       - name: Update feeds
-        working-directory: immortalwrt
         run: |
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
-      - name: Generate base config
-        working-directory: immortalwrt
+      - name: Generate config
         run: |
-          # 写入最基础的平台和设备选项
-          cat > .config <<EOF
+          cat > .config <<'EOF'
           CONFIG_TARGET_rockchip=y
           CONFIG_TARGET_rockchip_armv8=y
           CONFIG_TARGET_rockchip_armv8_DEVICE_embedfire_doornet2=y
           EOF
+
+          if [ -f diff.config ]; then
+            cat diff.config >> .config
+          fi
+
           make defconfig
 
-      - name: Apply diff.config if present
-        working-directory: immortalwrt
-        run: |
-          if [ -f diff.config ]; then
-            echo "Applying custom diff.config..."
-            cat diff.config >> .config
-            make defconfig
-          else
-            echo "No diff.config found, skipping."
-          fi
-
       - name: Download all sources
-        working-directory: immortalwrt
         run: make download -j$(nproc) V=s
 
-      - name: Prepare kernel and add DTS entry
-        working-directory: immortalwrt
-        run: |
-          make target/linux/prepare V=s
-          find build_dir -name "Makefile" -path "*/dts/rockchip/Makefile" | while read f; do
-            echo "dtb-\$(CONFIG_ARCH_ROCKCHIP) += rk3399-doornet2.dtb" >> "$f"
-          done
-
-      - name: Install host tools and toolchain
-        working-directory: immortalwrt
-        run: |
-          make tools/install -j$(nproc)
-          make toolchain/install -j$(nproc)
-
-      - name: Create doornet2 U-Boot defconfig from EVB template
-        working-directory: immortalwrt
-        run: |
-          EVB_CONF=$(find build_dir -name "rk3399-evb_defconfig" -path "*/u-boot-*/configs/*" | head -n1)
-          if [ ! -f "$EVB_CONF" ]; then
-            echo "ERROR: rk3399-evb_defconfig not found!"
-            find build_dir -name "rk3399*defconfig" -path "*/configs/*" | sort
-            exit 1
-          fi
-          cp "$EVB_CONF" package/boot/uboot-rockchip/src/configs/doornet2-rk3399_defconfig
-          cat >> package/boot/uboot-rockchip/src/configs/doornet2-rk3399_defconfig << 'EOF'
-          CONFIG_SYS_LOAD_ADDR=0x800800
-          CONFIG_SYS_TEXT_BASE=0x00200000
-          CONFIG_DEBUG_UART_BASE=0xFF1A0000
-          CONFIG_DEBUG_UART_CLOCK=24000000
-          CONFIG_BAUDRATE=1500000
-          CONFIG_DEBUG_UART=y
-          CONFIG_DEBUG_UART_SHIFT=2
-          EOF
-
-      - name: Patch U-Boot package to use olddefconfig
-        working-directory: immortalwrt
-        run: sed -i 's/oldconfig/olddefconfig/g' package/boot/uboot-rockchip/Makefile
-
-      - name: Build U-Boot only
-        working-directory: immortalwrt
-        run: make package/boot/uboot-rockchip/compile V=s
-
       - name: Build firmware
-        working-directory: immortalwrt
         run: make -j1 V=s
 
-      - name: Debug U-Boot output (on failure)
+      - name: Debug build output on failure
         if: failure()
-        working-directory: immortalwrt
         run: |
-          echo "=== U-Boot staging dir contents ==="
-          find staging_dir -name "*doornet*" -o -name "*idbloader*" 2>/dev/null || echo "  (none found)"
+          echo "=== U-Boot staging output ==="
+          find staging_dir -name "*doornet*" -o -name "*rk3399*idbloader*" -o -name "*rk3399*trust*" 2>/dev/null || true
           echo ""
-          echo "=== U-Boot build dir contents ==="
-          find build_dir -name "*doornet*" -o -name "*idbloader*" 2>/dev/null || echo "  (none found)"
-          echo "=== Available rk3399 DTS files in U-Boot ==="
-          find build_dir -path "*/u-boot-*/dts/upstream/src/arm64" -name "rk3399*" 2>/dev/null || echo "  (none found)"
-      
+          echo "=== U-Boot build output ==="
+          find build_dir -name "*doornet*" -o -name "*u-boot*.log" 2>/dev/null || true
+          echo ""
+          echo "=== Rockchip target output ==="
+          find bin/targets/rockchip/armv8 -maxdepth 1 -type f 2>/dev/null || true
+
       - name: Package artifacts
+        if: success()
         run: |
           mkdir -p artifacts
-          cp immortalwrt/bin/targets/rockchip/armv8/*doornet2*.img.gz artifacts/ 2>/dev/null || \
-          cp immortalwrt/bin/targets/rockchip/armv8/*.img.gz artifacts/
-          cp immortalwrt/bin/targets/rockchip/armv8/*.manifest artifacts/ 2>/dev/null || true
-    
+          cp bin/targets/rockchip/armv8/*doornet2*.img.gz artifacts/
+          cp bin/targets/rockchip/armv8/*.manifest artifacts/ 2>/dev/null || true
+          cp bin/targets/rockchip/armv8/*.buildinfo artifacts/ 2>/dev/null || true
+
       - name: Upload artifacts
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: ImmortalWrt-DoorNet2

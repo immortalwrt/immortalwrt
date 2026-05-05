@@ -34,7 +34,7 @@ define U-Boot/rk3399/Default
 endef
 
 define U-Boot/doornet2-rk3399
-  $(U-Boot/Default/rk3399)
+  $(U-Boot/rk3399/Default)
   NAME:=DoorNet2
   BUILD_DEVICES:= \
     embedfire_doornet2

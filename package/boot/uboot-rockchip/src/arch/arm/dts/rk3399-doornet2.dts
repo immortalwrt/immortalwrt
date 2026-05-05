@@ -1,0 +1,9 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+/dts-v1/;
+#include "rk3399-guangmiao-g4c.dts"
+
+/ {
+	model = "EmbedFire DoorNet2";
+	compatible = "embedfire,doornet2", "rockchip,rk3399";
+};
