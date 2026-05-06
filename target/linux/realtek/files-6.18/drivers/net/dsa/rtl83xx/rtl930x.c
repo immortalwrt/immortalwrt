@@ -2610,6 +2610,7 @@ static void rtl930x_led_init(struct rtl838x_switch_priv *priv)
 	struct device_node *node;
 	struct device *dev = priv->dev;
 	u8 leds_in_set[4] = {};
+	u32 led_mode = 1;
 	u32 pm = 0;
 
 	node = of_find_compatible_node(NULL, NULL, "realtek,rtl9300-leds");
@@ -2683,8 +2684,9 @@ static void rtl930x_led_init(struct rtl838x_switch_priv *priv)
 		sw_w32_mask(0, set << pos, RTL930X_LED_PORT_FIB_SET_SEL_CTRL(i));
 	}
 
-	/* Set LED mode to serial (0x1) */
-	sw_w32_mask(0x3, 0x1, RTL930X_LED_GLB_CTRL);
+	/* Set LED mode */
+	of_property_read_u32(node, "realtek,led-mode", &led_mode);
+	sw_w32_mask(0x3, led_mode & 0x3, RTL930X_LED_GLB_CTRL);
 
 	/* Set LED active state */
 	if (of_property_read_bool(node, "active-low"))
