@@ -1,0 +1,264 @@
+--- /dev/null
++++ b/arch/arm64/boot/dts/allwinner/sun55i-a523-cpu-opp.dtsi
+@@ -0,0 +1,173 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++
++/ {
++	cpu0_opp_table: opp-table-cluster0 {
++		compatible = "operating-points-v2";
++		opp-shared;
++
++		opp-408000000 {
++			opp-hz = /bits/ 64 <408000000>;
++			opp-microvolt = <900000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-672000000 {
++			opp-hz = /bits/ 64 <672000000>;
++			opp-microvolt = <900000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-792000000 {
++			opp-hz = /bits/ 64 <792000000>;
++			opp-microvolt = <900000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-936000000 {
++			opp-hz = /bits/ 64 <936000000>;
++			opp-microvolt = <920000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1008000000 {
++			opp-hz = /bits/ 64 <1008000000>;
++			opp-microvolt = <920000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1104000000 {
++			opp-hz = /bits/ 64 <1104000000>;
++			opp-microvolt = <960000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1224000000 {
++			opp-hz = /bits/ 64 <1224000000>;
++			opp-microvolt = <1000000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1320000000 {
++			opp-hz = /bits/ 64 <1320000000>;
++			opp-microvolt = <1050000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1416000000 {
++			opp-hz = /bits/ 64 <1416000000>;
++			opp-microvolt = <1100000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++	};
++
++	cpu1_opp_table: opp-table-cluster1 {
++		compatible = "operating-points-v2";
++		opp-shared;
++
++		opp-408000000 {
++			opp-hz = /bits/ 64 <408000000>;
++			opp-microvolt = <900000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-672000000 {
++			opp-hz = /bits/ 64 <672000000>;
++			opp-microvolt = <900000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-840000000 {
++			opp-hz = /bits/ 64 <840000000>;
++			opp-microvolt = <900000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1008000000 {
++			opp-hz = /bits/ 64 <1008000000>;
++			opp-microvolt = <900000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1200000000 {
++			opp-hz = /bits/ 64 <1200000000>;
++			opp-microvolt = <920000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1344000000 {
++			opp-hz = /bits/ 64 <1344000000>;
++			opp-microvolt = <960000>;  //fixme
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1488000000 {
++			opp-hz = /bits/ 64 <1488000000>;
++			opp-microvolt = <1000000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1584000000 {
++			opp-hz = /bits/ 64 <1584000000>;
++			opp-microvolt = <1050000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1680000000 {
++			opp-hz = /bits/ 64 <1680000000>;
++			opp-microvolt = <1100000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1800000000 {
++			opp-hz = /bits/ 64 <1800000000>;
++			opp-microvolt = <1150000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++
++		opp-1992000000 {
++			opp-hz = /bits/ 64 <1992000000>;
++			opp-microvolt = <1220000>;
++			clock-latency-ns = <244144>; /* 8 32k periods */
++		};
++	};
++};
++
++&cpu0 {
++	capacity-dmips-mhz = <5>;
++	operating-points-v2 = <&cpu0_opp_table>;
++};
++
++&cpu1 {
++	capacity-dmips-mhz = <5>;
++	operating-points-v2 = <&cpu0_opp_table>;
++};
++
++&cpu2 {
++	capacity-dmips-mhz = <5>;
++	operating-points-v2 = <&cpu0_opp_table>;
++};
++
++&cpu3 {
++	capacity-dmips-mhz = <5>;
++	operating-points-v2 = <&cpu0_opp_table>;
++};
++
++&cpu4 {
++	capacity-dmips-mhz = <9>;
++	operating-points-v2 = <&cpu1_opp_table>;
++};
++
++&cpu5 {
++	capacity-dmips-mhz = <9>;
++	operating-points-v2 = <&cpu1_opp_table>;
++};
++
++&cpu6 {
++	capacity-dmips-mhz = <9>;
++	operating-points-v2 = <&cpu1_opp_table>;
++};
++
++&cpu7 {
++	capacity-dmips-mhz = <9>;
++	operating-points-v2 = <&cpu1_opp_table>;
++};
+--- a/arch/arm64/boot/dts/allwinner/sun55i-a523.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun55i-a523.dtsi
+@@ -4,6 +4,7 @@
+ #include <dt-bindings/interrupt-controller/arm-gic.h>
+ #include <dt-bindings/clock/sun6i-rtc.h>
+ #include <dt-bindings/clock/sun55i-a523-ccu.h>
++#include <dt-bindings/clock/sun55i-a523-ccu-cpu.h>
+ #include <dt-bindings/clock/sun55i-a523-mcu-ccu.h>
+ #include <dt-bindings/clock/sun55i-a523-r-ccu.h>
+ #include <dt-bindings/reset/sun55i-a523-ccu.h>
+@@ -27,6 +28,7 @@
+ 			device_type = "cpu";
+ 			reg = <0x000>;
+ 			enable-method = "psci";
++			clocks = <&ccu_cpu CLK_CPUL>;
+ 			#cooling-cells = <2>;
+ 		};
+ 
+@@ -35,6 +37,7 @@
+ 			device_type = "cpu";
+ 			reg = <0x100>;
+ 			enable-method = "psci";
++			clocks = <&ccu_cpu CLK_CPUL>;
+ 			#cooling-cells = <2>;
+ 		};
+ 
+@@ -43,6 +46,7 @@
+ 			device_type = "cpu";
+ 			reg = <0x200>;
+ 			enable-method = "psci";
++			clocks = <&ccu_cpu CLK_CPUL>;
+ 			#cooling-cells = <2>;
+ 		};
+ 
+@@ -51,6 +55,7 @@
+ 			device_type = "cpu";
+ 			reg = <0x300>;
+ 			enable-method = "psci";
++			clocks = <&ccu_cpu CLK_CPUL>;
+ 			#cooling-cells = <2>;
+ 		};
+ 
+@@ -59,6 +64,7 @@
+ 			device_type = "cpu";
+ 			reg = <0x400>;
+ 			enable-method = "psci";
++			clocks = <&ccu_cpu CLK_CPUB>;
+ 			#cooling-cells = <2>;
+ 		};
+ 
+@@ -67,6 +73,7 @@
+ 			device_type = "cpu";
+ 			reg = <0x500>;
+ 			enable-method = "psci";
++			clocks = <&ccu_cpu CLK_CPUB>;
+ 			#cooling-cells = <2>;
+ 		};
+ 
+@@ -75,6 +82,7 @@
+ 			device_type = "cpu";
+ 			reg = <0x600>;
+ 			enable-method = "psci";
++			clocks = <&ccu_cpu CLK_CPUB>;
+ 			#cooling-cells = <2>;
+ 		};
+ 
+@@ -83,6 +91,7 @@
+ 			device_type = "cpu";
+ 			reg = <0x700>;
+ 			enable-method = "psci";
++			clocks = <&ccu_cpu CLK_CPUB>;
+ 			#cooling-cells = <2>;
+ 		};
+ 	};
+@@ -622,6 +631,13 @@
+ 			#size-cells = <0>;
+ 		};
+ 
++		ccu_cpu: clock@8817000 {
++			compatible = "allwinner,sun55i-a523-ccu-cpu";
++			reg = <0x08817000 0x4000>;
++			#clock-cells = <1>;
++			#reset-cells = <1>;
++		};
++
+ 		mmc2: mmc@4022000 {
+ 			compatible = "allwinner,sun55i-a523-mmc",
+ 				     "allwinner,sun20i-d1-mmc";

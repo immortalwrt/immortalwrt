@@ -9,8 +9,8 @@
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
-PKG_VERSION:=2025.10
-PKG_HASH:=b4f032848e56cc8f213ad59f9132c084dbbb632bc29176d024e58220e0efdf4a
+PKG_VERSION:=2026.04
+PKG_HASH:=ac7c04b8b7004923b00a4e5d6699c5df4d21233bac9fda690d8cfbc209fff2fd
 
 PKG_MAINTAINER:=Zoltan HERPAI <wigyori@uid0.hu>
 
@@ -406,6 +406,15 @@ define U-Boot/bananapi_p2_zero
   BUILD_DEVICES:=sinovoip_bpi-p2-zero
 endef
 
+define U-Boot/radxa-cubie-a5e
+  BUILD_SUBTARGET:=cortexa53
+  NAME:=Radxa Cubie A5E
+  BUILD_DEVICES:=radxa_cubie-a5e
+  DEPENDS:=+PACKAGE_u-boot-radxa-cubie-a5e:trusted-firmware-a-sunxi-a523
+  UENV:=a523
+  ATF:=a523
+endef
+
 
 UBOOT_TARGETS := \
 	a64-olinuxino \
@@ -463,7 +472,8 @@ UBOOT_TARGETS := \
 	Sinovoip_BPI_M3 \
 	sopine_baseboard \
 	orangepi_zero_plus \
-	libretech_all_h3_cc_h5
+	libretech_all_h3_cc_h5 \
+	radxa-cubie-a5e
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
 

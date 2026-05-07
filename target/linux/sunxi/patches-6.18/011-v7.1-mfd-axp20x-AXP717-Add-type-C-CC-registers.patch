@@ -1,0 +1,59 @@
+From 7a4c13c592225cd6728ec33056bb8252ddef1617 Mon Sep 17 00:00:00 2001
+From: Chen-Yu Tsai <wens@kernel.org>
+Date: Thu, 25 Dec 2025 16:02:40 +0800
+Subject: [PATCH] mfd: axp20x: AXP717: Add type-C CC registers
+
+The AXP717 has some extra registers related to type-C CC pin
+negotiation. They were missing from the original submission.
+
+Add them for completeness.
+
+Signed-off-by: Chen-Yu Tsai <wens@kernel.org>
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Link: https://patch.msgid.link/20251225080241.3153453-1-wens@kernel.org
+Signed-off-by: Lee Jones <lee@kernel.org>
+---
+ drivers/mfd/axp20x.c       | 5 ++++-
+ include/linux/mfd/axp20x.h | 3 +++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+--- a/drivers/mfd/axp20x.c
++++ b/drivers/mfd/axp20x.c
+@@ -229,6 +229,8 @@ static const struct regmap_range axp717_
+ 	regmap_reg_range(AXP717_DCDC_OUTPUT_CONTROL, AXP717_CPUSLDO_CONTROL),
+ 	regmap_reg_range(AXP717_ADC_CH_EN_CONTROL, AXP717_ADC_CH_EN_CONTROL),
+ 	regmap_reg_range(AXP717_ADC_DATA_SEL, AXP717_ADC_DATA_SEL),
++	regmap_reg_range(AXP717_TYPEC_CC_AA_EN, AXP717_TYPEC_CC_AA_EN),
++	regmap_reg_range(AXP717_TYPEC_CC_MODE_CONTROL, AXP717_TYPEC_CC_MODE_CONTROL),
+ };
+ 
+ static const struct regmap_range axp717_volatile_ranges[] = {
+@@ -237,6 +239,7 @@ static const struct regmap_range axp717_
+ 	regmap_reg_range(AXP717_BATT_PERCENT_DATA, AXP717_BATT_PERCENT_DATA),
+ 	regmap_reg_range(AXP717_BATT_V_H, AXP717_BATT_CHRG_I_L),
+ 	regmap_reg_range(AXP717_ADC_DATA_H, AXP717_ADC_DATA_L),
++	regmap_reg_range(AXP717_TYPEC_CC_STATUS, AXP717_TYPEC_CC_STATUS),
+ };
+ 
+ static const struct regmap_access_table axp717_writeable_table = {
+@@ -458,7 +461,7 @@ static const struct regmap_config axp717
+ 	.val_bits = 8,
+ 	.wr_table = &axp717_writeable_table,
+ 	.volatile_table = &axp717_volatile_table,
+-	.max_register = AXP717_ADC_DATA_L,
++	.max_register = AXP717_TYPEC_CC_STATUS,
+ 	.cache_type = REGCACHE_MAPLE,
+ };
+ 
+--- a/include/linux/mfd/axp20x.h
++++ b/include/linux/mfd/axp20x.h
+@@ -174,6 +174,9 @@ enum axp20x_variants {
+ #define AXP717_ADC_DATA_SEL		0xcd
+ #define AXP717_ADC_DATA_H		0xce
+ #define AXP717_ADC_DATA_L		0xcf
++#define AXP717_TYPEC_CC_AA_EN		0xe1
++#define AXP717_TYPEC_CC_MODE_CONTROL	0xe3
++#define AXP717_TYPEC_CC_STATUS		0xe7
+ 
+ #define AXP806_STARTUP_SRC		0x00
+ #define AXP806_CHIP_ID			0x03

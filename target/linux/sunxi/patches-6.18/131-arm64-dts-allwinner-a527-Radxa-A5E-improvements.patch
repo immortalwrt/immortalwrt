@@ -1,0 +1,90 @@
+--- a/arch/arm64/boot/dts/allwinner/sun55i-a527-cubie-a5e.dts
++++ b/arch/arm64/boot/dts/allwinner/sun55i-a527-cubie-a5e.dts
+@@ -4,6 +4,7 @@
+ /dts-v1/;
+ 
+ #include "sun55i-a523.dtsi"
++#include "sun55i-a523-cpu-opp.dtsi"
+ 
+ #include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/leds/common.h>
+@@ -15,6 +16,8 @@
+ 	aliases {
+ 		ethernet0 = &gmac0;
+ 		ethernet1 = &gmac1;
++		mmc0 = &mmc0;
++		mmc1 = &mmc1;
+ 		serial0 = &uart0;
+ 	};
+ 
+@@ -46,6 +49,16 @@
+ 			      <&axp717_adc 4>; /* pmic_temp */
+ 	};
+ 
++	reg_3v3_wifi: 3v3-wifi {
++		compatible = "regulator-fixed";
++		regulator-name = "3v3-wifi";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		vin-supply = <&reg_vcc5v>;
++		gpio = <&r_pio 0 7 GPIO_ACTIVE_HIGH>; /* PL7 */
++		enable-active-high;
++	};
++
+ 	reg_vcc5v: vcc5v {
+ 		/* board wide 5V supply from the USB-C connector */
+ 		compatible = "regulator-fixed";
+@@ -66,6 +79,14 @@
+ 	};
+ };
+ 
++&cpu0 {
++	cpu-supply = <&reg_dcdc1>;
++};
++
++&cpu4 {
++	cpu-supply = <&reg_dcdc1_323>;
++};
++
+ &ehci0 {
+ 	status = "okay";
+ };
+@@ -128,6 +149,23 @@
+ 	status = "okay";
+ };
+ 
++&mmc1 {
++	vmmc-supply = <&reg_3v3_wifi>;
++	bus-width = <4>;
++	non-removable;
++	// todo: investigate why clock above 40MHz makes data errors
++	max-frequency = <35000000>;
++	status = "okay";
++
++	wlan: wifi@1 {
++		reg = <1>;
++	};
++};
++
++&mmc1_pins {
++	drive-strength = <40>;
++};
++
+ &ohci0 {
+ 	status = "okay";
+ };
+@@ -353,6 +391,14 @@
+ 	status = "okay";
+ };
+ 
++/* Bluetooth */
++&uart1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
++	uart-has-rtscts;
++	status = "okay";
++};
++
+ &usb_otg {
+ 	/*
+ 	 * The USB-C port is the primary power supply, so in this configuration

@@ -1,0 +1,91 @@
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH RFC 5/5] arm64: dts: allwinner: a523: Mark dual-phased
+ regulators
+From: Andre Przywara <andre.przywara@arm.com>
+Date: Fri, 19 Sep 2025 01:00:20 +0100
+Message-Id: <20250919000020.16969-6-andre.przywara@arm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+The X-Powers AXP323 PMIC on the boards with a SoC from the Allwinner
+A523 family typically uses DCDC1 and DCDC2 in a dual-phase setup to
+supply the "big" CPU cluster. For some reason this dual-phase
+configuration is not the PMIC's reset default, but needs to be actively
+programmed at runtime.
+
+Add the newly introduced x-powers,polyphased property in the board DTs,
+to mark this connection and let drivers program the dual-phase setup.
+
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+---
+ arch/arm64/boot/dts/allwinner/sun55i-a527-cubie-a5e.dts   | 5 ++++-
+ arch/arm64/boot/dts/allwinner/sun55i-h728-x96qpro+.dts    | 5 ++++-
+ arch/arm64/boot/dts/allwinner/sun55i-t527-avaota-a1.dts   | 5 ++++-
+ arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts | 5 ++++-
+ 4 files changed, 16 insertions(+), 4 deletions(-)
+
+--- a/arch/arm64/boot/dts/allwinner/sun55i-a527-cubie-a5e.dts
++++ b/arch/arm64/boot/dts/allwinner/sun55i-a527-cubie-a5e.dts
+@@ -320,9 +320,12 @@
+ 				regulator-min-microvolt = <900000>;
+ 				regulator-max-microvolt = <1160000>;
+ 				regulator-name = "vdd-cpub";
++				x-powers,polyphased = <&reg_dcdc2_323>;
+ 			};
+ 
+-			/* DCDC2 is polyphased with DCDC1 */
++			reg_dcdc2_323: dcdc2 {
++				/* dual-phased with DCDC1 */
++			};
+ 
+ 			/* RISC-V management core supply */
+ 			reg_dcdc3_323: dcdc3 {
+--- a/arch/arm64/boot/dts/allwinner/sun55i-h728-x96qpro+.dts
++++ b/arch/arm64/boot/dts/allwinner/sun55i-h728-x96qpro+.dts
+@@ -252,9 +252,12 @@
+ 				regulator-min-microvolt = <900000>;
+ 				regulator-max-microvolt = <1160000>;
+ 				regulator-name = "vdd-cpub";
++				x-powers,polyphased = <&reg_dcdc2_323>;
+ 			};
+ 
+-			/* DCDC2 is polyphased with DCDC1 */
++			reg_dcdc2_323: dcdc2 {
++				/* dual-phased with DCDC1 */
++			};
+ 
+ 			reg_dcdc3_323: dcdc3 {
+ 				regulator-always-on;
+--- a/arch/arm64/boot/dts/allwinner/sun55i-t527-avaota-a1.dts
++++ b/arch/arm64/boot/dts/allwinner/sun55i-t527-avaota-a1.dts
+@@ -308,9 +308,12 @@
+ 				regulator-min-microvolt = <900000>;
+ 				regulator-max-microvolt = <1160000>;
+ 				regulator-name = "vdd-cpub";
++				x-powers,polyphased = <&reg_dcdc2_323>;
+ 			};
+ 
+-			/* DCDC2 is polyphased with DCDC1 */
++			reg_dcdc2_323: dcdc2 {
++				/* dual-phased with DCDC1 */
++			};
+ 
+ 			/* Some RISC-V management core related voltage */
+ 			reg_dcdc3_323: dcdc3 {
+--- a/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
++++ b/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
+@@ -345,9 +345,12 @@
+ 				regulator-min-microvolt = <900000>;
+ 				regulator-max-microvolt = <1150000>;
+ 				regulator-name = "vdd-cpub";
++				x-powers,polyphased = <&reg_dcdc2_323>;
+ 			};
+ 
+-			/* DCDC2 is polyphased with DCDC1 */
++			reg_dcdc2_323: dcdc2 {
++				/* dual-phased with DCDC1 */
++			};
+ 
+ 			/* Some RISC-V management core related voltage */
+ 			reg_dcdc3_323: dcdc3 {

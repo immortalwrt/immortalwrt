@@ -21,7 +21,8 @@ case "$DISTRIB_TARGET" in
 	cpu_freq="$(( $(vcgencmd measure_clock arm | awk -F '=' '{print $2}') / 1000000 ))Mhz" ;;
 "bcm53xx"/*)
 	cpu_freq="$(nvram get clkfreq | awk -F ',' '{print $1}')MHz" ;;
-"rockchip"/*)
+"rockchip"/*|\
+"sunxi/cortexa53")
 	cpu_freq="$(awk '{printf("%.fMHz ", $0 / 1000)}' "$CPUFREQ_PATH"/policy*/cpuinfo_cur_freq | awk '$1=$1')" ;;
 "x86"/*)
 	cpu_freq="$(awk -F ': ' '/MHz/ {print $2}' "$CPUINFO_PATH" | head -n1)MHz" ;;

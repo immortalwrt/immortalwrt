@@ -1,0 +1,302 @@
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -186,6 +186,9 @@ config PHY_MARVELL_10G
+ 	help
+ 	  Support for the Marvell Alaska MV88X3310 and compatible PHYs.
+ 
++config PHY_MAXIO
++	bool "Maxio Ethernet PHYs support"
++
+ source "drivers/net/phy/mediatek/Kconfig"
+ 
+ source "drivers/net/phy/airoha/Kconfig"
+--- a/drivers/net/phy/Makefile
++++ b/drivers/net/phy/Makefile
+@@ -21,6 +21,7 @@ obj-$(CONFIG_PHY_ET1011C) += et1011c.o
+ obj-$(CONFIG_PHY_LXT) += lxt.o
+ obj-$(CONFIG_PHY_MARVELL) += marvell.o
+ obj-$(CONFIG_PHY_MARVELL_10G) += marvell10g.o
++obj-$(CONFIG_PHY_MAXIO) += maxio.o
+ obj-y += mediatek/
+ obj-y += airoha/
+ obj-$(CONFIG_PHY_MICREL_KSZ8XXX) += micrel_ksz8xxx.o
+--- /dev/null
++++ b/drivers/net/phy/maxio.c
+@@ -0,0 +1,277 @@
++/*
++ * drivers/net/phy/maxio.c
++ *
++ * Driver for maxio PHYs
++ *
++ * Author: zhao yang <yang_zhao@maxio-tech.com>
++ *
++ * Copyright (c) 2021 maxio technology, Inc.
++ *
++ * This program is free software; you can redistribute  it and/or modify it
++ * under  the terms of  the GNU General  Public License as published by the
++ * Free Software Foundation;  either version 2 of the  License, or (at your
++ * option) any later version.
++ *
++ */
++#include <config.h>
++#include <phy.h>
++#include <linux/delay.h>
++
++#define MAXIO_PHY_VER			"v1.8.1.11"
++#define MAXIO_PAGE_SELECT		0x1f
++#define MAXIO_MAE0621A_WORK_STATUS_REG	0x1d
++#define MAXIO_MAE0621A_CLK_MODE_REG	0x02
++
++#define MAXIO_PHYSR_P_A43		(0X1A)
++#define MAXIO_PHY_LINK			(1 << 2)
++#define MAXIO_PHY_DUPLEX		(1 << 3)
++#define MAXIO_PHY_SPEED			(3 << 4)
++#define MAXIO_PHY_1000M			(0X20)
++#define MAXIO_PHY_100M			(0X10)
++#define MAXIO_PHY_10M			(0X00)
++
++#define AUTONEG_COMPLETED_INT_EN	(0x8)
++#define LINKOK				(0x4)
++#define AUTONEG_COMPLETED		(0x8)
++
++#define PHY_READ(a, b)			phy_read((a), MDIO_DEVAD_NONE, (b))
++#define PHY_WRITE(a, b, c)		phy_write((a), MDIO_DEVAD_NONE, (b), (c))
++#define msleep(a)			udelay(a * 1000)
++
++int maxio_read_paged(struct phy_device *phydev, int page, u32 regnum)
++{
++	int ret = 0, oldpage;
++
++	oldpage = PHY_READ(phydev, MAXIO_PAGE_SELECT);
++	if (oldpage >= 0) {
++		PHY_WRITE(phydev, MAXIO_PAGE_SELECT, page);
++		ret = PHY_READ(phydev, regnum);
++	}
++	PHY_WRITE(phydev, MAXIO_PAGE_SELECT, oldpage);
++
++	return ret;
++}
++
++int maxio_write_paged(struct phy_device *phydev, int page, u32 regnum, u16 val)
++{
++	int ret = 0, oldpage;
++
++	oldpage = PHY_READ(phydev, MAXIO_PAGE_SELECT);
++	if (oldpage >= 0) {
++		PHY_WRITE(phydev, MAXIO_PAGE_SELECT, page);
++		ret = PHY_WRITE(phydev, regnum, val);
++	}
++	PHY_WRITE(phydev, MAXIO_PAGE_SELECT, oldpage);
++
++	return ret;
++}
++
++int maxio_adcc_check(struct phy_device *phydev)
++{
++	int ret = 0;
++	int adcvalue;
++	u32 regval;
++	int i;
++
++	maxio_write_paged(phydev, 0xd96, 0x2, 0x1fff);
++	maxio_write_paged(phydev, 0xd96, 0x2, 0x1000);
++
++	for (i = 0; i < 4; i++) {
++		regval = 0xf908 + i * 0x100;
++		maxio_write_paged(phydev, 0xd8f, 0xb, regval);
++		adcvalue = maxio_read_paged(phydev, 0xd92, 0xb);
++		if (adcvalue & 0x1ff) {
++			continue;
++		} else {
++			ret = -1;
++			break;
++		}
++	}
++
++	return ret;
++}
++
++int maxio_self_check(struct phy_device *phydev, int checknum)
++{
++	int ret = 0;
++	int i;
++
++	for (i = 0; i < checknum; i++) {
++		ret = maxio_adcc_check(phydev);
++		if (0 == ret) {
++			printk("MAE0621A READY\n");
++			break;
++		} else {
++			maxio_write_paged(phydev, 0x0, 0x0, 0x1940);
++			PHY_WRITE(phydev, MAXIO_PAGE_SELECT, 0x0);
++			msleep(10);
++			maxio_write_paged(phydev, 0x0, 0x0, 0x1140);
++			maxio_write_paged(phydev, 0x0, 0x0, 0x9140);
++		}
++	}
++
++	maxio_write_paged(phydev, 0xd96, 0x2, 0xfff);
++	maxio_write_paged(phydev, 0x0, 0x0, 0x9140);
++	PHY_WRITE(phydev, MAXIO_PAGE_SELECT, 0x0);
++
++	return ret;
++}
++
++static int maxio_mae0621a_resume(struct phy_device *phydev)
++{
++	int ret;
++
++	ret = genphy_startup(phydev);
++
++	ret |= PHY_WRITE(phydev, MII_BMCR,
++			 BMCR_RESET | PHY_READ(phydev, MII_BMCR));
++	msleep(20);
++
++	return ret;
++}
++
++static int maxio_mae0621a_suspend(struct phy_device *phydev)
++{
++	int ret = 0;
++
++	ret = genphy_shutdown(phydev);
++
++	ret |= PHY_WRITE(phydev, MAXIO_PAGE_SELECT, 0);
++
++	return ret;
++}
++
++static int maxio_mae0621a_config_init(struct phy_device *phydev)
++{
++	int ret = 0;
++
++	printk("MAXIO_PHY_VER: %s \n", MAXIO_PHY_VER);
++
++	ret |= maxio_write_paged(phydev, 0xda0, 0x10, 0xc13);
++	ret |= maxio_write_paged(phydev, 0x0, 0xd, 0x7);
++	ret |= maxio_write_paged(phydev, 0x0, 0xe, 0x3c);
++	ret |= maxio_write_paged(phydev, 0x0, 0xd, 0x4007);
++	ret |= maxio_write_paged(phydev, 0x0, 0xe, 0x0);
++	ret |= maxio_write_paged(phydev, 0xd96, 0x13, 0x7bc);
++	ret |= maxio_write_paged(phydev, 0xd8f, 0x8, 0x2500);
++	ret |= maxio_write_paged(phydev, 0xd90, 0x2, 0x1555);
++	ret |= maxio_write_paged(phydev, 0xd90, 0x5, 0x2b15);
++	ret |= maxio_write_paged(phydev, 0xd92, 0x14, 0xa);
++	ret |= maxio_write_paged(phydev, 0xd91, 0x7, 0x5b00);
++	ret |= maxio_write_paged(phydev, 0xd8f, 0x0, 0x300);
++	ret |= maxio_write_paged(phydev, 0xd92, 0xa, 0x8506);
++	ret |= maxio_write_paged(phydev, 0xd91, 0x6, 0x6870);
++	ret |= maxio_write_paged(phydev, 0xd91, 0x1, 0x940);
++	ret |= maxio_write_paged(phydev, 0xda0, 0x13, 0x1303);
++	ret |= maxio_write_paged(phydev, 0xd97, 0xc, 0x177);
++	ret |= maxio_write_paged(phydev, 0xd97, 0xb, 0x9a9);
++	ret |= maxio_write_paged(phydev, 0xa42, 0x12, 0x28);
++	ret |= maxio_write_paged(phydev, 0x0, 0x4, 0xde1);
++	ret |= maxio_write_paged(phydev, 0x0, 0x0, 0x9140);
++
++	PHY_WRITE(phydev, MAXIO_PAGE_SELECT, 0x0);
++
++	ret |= maxio_self_check(phydev, 50);
++	msleep(100);
++	return 0;
++}
++
++static int maxio_mae0621a_probe(struct phy_device *phydev)
++{
++	printk("maxio_mae0621a_probe clkmode(oscillator) PHY_ID: 0x%x\n",
++	       phydev->phy_id);
++	PHY_WRITE(phydev, MAXIO_PAGE_SELECT, 0x0);
++	mdelay(100);
++	return 0;
++}
++
++static int maxio_mae0621aq3ci_probe(struct phy_device *phydev)
++{
++	printk("maxio_mae0621aQ3C probe PHY_ID: 0x%x\n", phydev->phy_id);
++	return 0;
++}
++
++static int maxio_mae0621aq3ci_config_init(struct phy_device *phydev)
++{
++	int ret = 0;
++	printk("MAXIO_PHY_VER: %s \n", MAXIO_PHY_VER);
++
++	ret |= maxio_write_paged(phydev, 0xa43, 0x19, 0x823);
++
++	ret |= maxio_write_paged(phydev, 0xdab, 0x17, 0xC13);
++	ret |= maxio_write_paged(phydev, 0xd96, 0x15, 0xc08a);
++	ret |= maxio_write_paged(phydev, 0xda4, 0x12, 0x7bc);
++	ret |= maxio_write_paged(phydev, 0xd8f, 0x16, 0x2500);
++	ret |= maxio_write_paged(phydev, 0xd90, 0x16, 0x1555);
++	ret |= maxio_write_paged(phydev, 0xd92, 0x11, 0x2b15);
++	ret |= maxio_write_paged(phydev, 0xd96, 0x16, 0x4010);
++	ret |= maxio_write_paged(phydev, 0xda5, 0x11, 0x4a12);
++	ret |= maxio_write_paged(phydev, 0xda5, 0x12, 0x4a12);
++	ret |= maxio_write_paged(phydev, 0xd99, 0x16, 0xa);
++	ret |= maxio_write_paged(phydev, 0xd95, 0x13, 0x5b00);
++	ret |= maxio_write_paged(phydev, 0xd8f, 0x10, 0x300);
++	ret |= maxio_write_paged(phydev, 0xd98, 0x17, 0x8506);
++	ret |= maxio_write_paged(phydev, 0xd95, 0x12, 0x6870);
++	ret |= maxio_write_paged(phydev, 0xd93, 0x15, 0x940);
++	ret |= maxio_write_paged(phydev, 0xdad, 0x12, 0x1303);
++	ret |= maxio_write_paged(phydev, 0xda8, 0x11, 0x177);
++	ret |= maxio_write_paged(phydev, 0xda8, 0x10, 0x9a9);
++	ret |= maxio_write_paged(phydev, 0xda8, 0x12, 0x868);
++	ret |= maxio_write_paged(phydev, 0xa42, 0x12, 0x28);
++	ret |= maxio_write_paged(phydev, 0x0, 0x4, 0xde1);
++	ret |= maxio_write_paged(phydev, 0x0, 0x0, 0x9140);
++
++	ret |= PHY_WRITE(phydev, MAXIO_PAGE_SELECT, 0);
++
++	return 0;
++}
++
++static int maxio_mae0621aq3ci_resume(struct phy_device *phydev)
++{
++	int ret = 0;
++	ret = genphy_startup(phydev);
++	ret |= maxio_write_paged(phydev, 0xdaa, 0x17, 0x1001);
++
++	ret |= maxio_write_paged(phydev, 0xdab, 0x15, 0x0);
++	ret |= PHY_WRITE(phydev, MAXIO_PAGE_SELECT, 0);
++
++	return ret;
++}
++
++static int maxio_mae0621aq3ci_suspend(struct phy_device *phydev)
++{
++	int ret = 0;
++
++	ret = maxio_write_paged(phydev, 0xdaa, 0x17, 0x1011);
++
++	ret |= maxio_write_paged(phydev, 0xdab, 0x15, 0x5550);
++	ret |= PHY_WRITE(phydev, MAXIO_PAGE_SELECT, 0);
++
++	ret = genphy_shutdown(phydev);
++
++	ret |= PHY_WRITE(phydev, MAXIO_PAGE_SELECT, 0);
++
++	return ret;
++}
++
++U_BOOT_PHY_DRIVER(mae0621a) = {
++	.name		= "MAE0621A-Q2C Gigabit Ethernet",
++	.uid		= 0x7b744411,
++	.mask		= 0x7fffffff,
++	.features	= PHY_GBIT_FEATURES,
++	.probe		= &maxio_mae0621a_probe,
++	.config		= &maxio_mae0621a_config_init,
++	.startup	= &maxio_mae0621a_resume,
++	.shutdown	= &maxio_mae0621a_suspend,
++};
++
++U_BOOT_PHY_DRIVER(mae0621aq3ci) = {
++	.name		= "MAE0621A/B-Q3C(I) Gigabit Ethernet",
++	.uid		= 0x7b744412,
++	.mask		= 0x7fffffff,
++	.features	= PHY_GBIT_FEATURES,
++	.config		= &maxio_mae0621aq3ci_config_init,
++	.probe		= &maxio_mae0621aq3ci_probe,
++	.startup	= &maxio_mae0621aq3ci_resume,
++	.shutdown	= &maxio_mae0621aq3ci_suspend,
++};

@@ -1,0 +1,61 @@
+From fb20ccf70cf695f178d7c32e2d33b376560df0ff Mon Sep 17 00:00:00 2001
+From: Chen-Yu Tsai <wens@kernel.org>
+Date: Tue, 17 Feb 2026 17:30:03 +0800
+Subject: [PATCH] clk: sunxi-ng: sun55i-a523-r: Add missing r-spi module clock
+
+When the PRCM clk driver was added, somehow the r-spi module clock
+was skipped over.
+
+Add it so that r-spi can actually work.
+
+Fixes: 8cea339cfb81 ("clk: sunxi-ng: add support for the A523/T527 PRCM CCU")
+Reviewed-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Link: https://patch.msgid.link/20260217093004.3239051-1-wens@kernel.org
+Signed-off-by: Chen-Yu Tsai <wens@kernel.org>
+---
+ drivers/clk/sunxi-ng/ccu-sun55i-a523-r.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
+
+--- a/drivers/clk/sunxi-ng/ccu-sun55i-a523-r.c
++++ b/drivers/clk/sunxi-ng/ccu-sun55i-a523-r.c
+@@ -83,9 +83,22 @@ static SUNXI_CCU_MUX_DATA_WITH_GATE(r_pw
+ static SUNXI_CCU_GATE_HW(bus_r_pwmctrl_clk, "bus-r-pwmctrl",
+ 			 &r_apb0_clk.common.hw, 0x13c, BIT(0), 0);
+ 
+-/* SPI clock is /M/N (same as new MMC?) */
++static const struct clk_parent_data r_spi_parents[] = {
++	{ .fw_name = "hosc" },
++	{ .fw_name = "pll-periph" },
++	{ .name = "pll-periph0-300M" },
++	{ .name = "pll-periph1-300M" },
++	{ .name = "pll-audio" },
++};
++static SUNXI_CCU_DUALDIV_MUX_GATE(r_spi_clk, "r-spi", r_spi_parents, 0x150,
++				  0, 5,		/* M */
++				  8, 5,		/* P */
++				  24, 3,	/* mux */
++				  BIT(31),	/* gate */
++				  0);
+ static SUNXI_CCU_GATE_HW(bus_r_spi_clk, "bus-r-spi",
+ 			 &r_ahb_clk.common.hw, 0x15c, BIT(0), 0);
++
+ static SUNXI_CCU_GATE_HW(bus_r_spinlock_clk, "bus-r-spinlock",
+ 			 &r_ahb_clk.common.hw, 0x16c, BIT(0), 0);
+ static SUNXI_CCU_GATE_HW(bus_r_msgbox_clk, "bus-r-msgbox",
+@@ -138,6 +151,7 @@ static struct ccu_common *sun55i_a523_r_
+ 	&bus_r_twd_clk.common,
+ 	&r_pwmctrl_clk.common,
+ 	&bus_r_pwmctrl_clk.common,
++	&r_spi_clk.common,
+ 	&bus_r_spi_clk.common,
+ 	&bus_r_spinlock_clk.common,
+ 	&bus_r_msgbox_clk.common,
+@@ -169,6 +183,7 @@ static struct clk_hw_onecell_data sun55i
+ 		[CLK_BUS_R_TWD]		= &bus_r_twd_clk.common.hw,
+ 		[CLK_R_PWMCTRL]		= &r_pwmctrl_clk.common.hw,
+ 		[CLK_BUS_R_PWMCTRL]	= &bus_r_pwmctrl_clk.common.hw,
++		[CLK_R_SPI]		= &r_spi_clk.common.hw,
+ 		[CLK_BUS_R_SPI]		= &bus_r_spi_clk.common.hw,
+ 		[CLK_BUS_R_SPINLOCK]	= &bus_r_spinlock_clk.common.hw,
+ 		[CLK_BUS_R_MSGBOX]	= &bus_r_msgbox_clk.common.hw,

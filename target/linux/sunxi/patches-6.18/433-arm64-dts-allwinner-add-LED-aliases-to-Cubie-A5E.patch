@@ -1,0 +1,91 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Tianling Shen <cnsztl@gmail.com>
+Date: Wed, 6 May 2026 18:12:38 +0800
+Subject: [PATCH] arm64: dts: allwinner: add LED aliases to Cubie A5E
+
+Add OpenWrt's LED aliases for showing system status.
+
+Signed-off-by: Tianling Shen <cnsztl@gmail.com>
+---
+ .../boot/dts/allwinner/sun55i-a527-cubie-a5e.dts     | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+--- a/arch/arm64/boot/dts/allwinner/sun55i-a527-cubie-a5e.dts
++++ b/arch/arm64/boot/dts/allwinner/sun55i-a527-cubie-a5e.dts
+@@ -19,6 +19,10 @@
+ 		mmc0 = &mmc0;
+ 		mmc1 = &mmc1;
+ 		serial0 = &uart0;
++		led-boot = &power_led;
++		led-failsafe = &power_led;
++		led-running = &power_led;
++		led-upgrade = &power_led;
+ 	};
+ 
+ 	chosen {
+@@ -28,12 +32,10 @@
+ 	leds {
+ 		compatible = "gpio-leds";
+ 
+-		power-led {
++		power_led: power-led {
+ 			function = LED_FUNCTION_POWER;
+ 			color = <LED_COLOR_ID_GREEN>;
+ 			gpios = <&r_pio 0 4 GPIO_ACTIVE_LOW>; /* PL4 */
+-			default-state = "on";
+-			linux,default-trigger = "heartbeat";
+ 		};
+ 
+ 		use-led {
+@@ -129,6 +131,25 @@
+ 		reset-gpios = <&pio 7 8 GPIO_ACTIVE_LOW>; /* PH8 */
+ 		reset-assert-us = <10000>;
+ 		reset-deassert-us = <150000>;
++
++		leds {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			led@1 {
++				reg = <1>;
++				color = <LED_COLOR_ID_GREEN>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++
++			led@2 {
++				reg = <2>;
++				color = <LED_COLOR_ID_AMBER>;
++				function = LED_FUNCTION_LAN;
++				default-state = "keep";
++			};
++		};
+ 	};
+ };
+ 
+@@ -139,6 +160,25 @@
+ 		reset-gpios = <&pio 9 16 GPIO_ACTIVE_LOW>; /* PJ16 */
+ 		reset-assert-us = <10000>;
+ 		reset-deassert-us = <150000>;
++
++		leds {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			led@1 {
++				reg = <1>;
++				color = <LED_COLOR_ID_GREEN>;
++				function = LED_FUNCTION_WAN;
++				default-state = "keep";
++			};
++
++			led@2 {
++				reg = <2>;
++				color = <LED_COLOR_ID_AMBER>;
++				function = LED_FUNCTION_WAN;
++				default-state = "keep";
++			};
++		};
+ 	};
+ };
+ 

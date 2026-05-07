@@ -1,0 +1,93 @@
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH RFC 4/5] mfd: axp20x: Support tri-phase setup
+From: Andre Przywara <andre.przywara@arm.com>
+Date: Fri, 19 Sep 2025 01:00:19 +0100
+Message-Id: <20250919000020.16969-5-andre.przywara@arm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Of the PMICs that support multi-phased regulators, all but one just
+support a dual-phase setup, with exactly two regulators tied together.
+This allows for a simple data model, since just two is somewhat of a
+special case.
+
+However there is the AXP806, which supports a triple-phase setup, that is
+also used on at least one board: the Cubieboard 4, where DCDC-A+B+C
+together supply the Cortex-A15 CPU cluster.
+Since this is just one case, and a fairly old one now, let's not boil
+the ocean by coming up with a complex data structure that allows
+describing arbitrary combinations, but instead handle this as a special
+case. This is supported by the fact, that the AXP806 only supports two
+specific setups: DCDC-A+B or DCDC-A+B+C, but nothing else.
+
+Add a function that checks for the regulators on this PMIC, and handle
+the two cases, plus the one without any poly-phasing.
+
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Acked-by: Mark Brown <broonie@kernel.org>
+---
+ drivers/regulator/axp20x-regulator.c | 45 ++++++++++++++++++++++++++++
+ 1 file changed, 45 insertions(+)
+
+--- a/drivers/regulator/axp20x-regulator.c
++++ b/drivers/regulator/axp20x-regulator.c
+@@ -1569,6 +1569,39 @@ static int axp20x_find_polyphased_reg(co
+ 	return -ENODEV;
+ }
+ 
++static int axp20x_handle_triphase(struct axp20x_dev *axp20x,
++				  int reg1, int reg2, int reg3)
++{
++	if (axp20x->variant == AXP806_ID && reg1 == AXP806_DCDCA) {
++		/* no other regulator listed: single phase setup */
++		if (reg2 == -ENOENT && reg3 == -ENOENT) {
++			regmap_update_bits(axp20x->regmap,
++					   AXP806_DCDC_MODE_CTRL2,
++					   AXP806_DCDCABC_POLYPHASE_MASK, 0);
++			return 0;
++		}
++		/* only regulator listed is DCDC-B: dual phase setup */
++		if (reg2 == AXP806_DCDCB && reg3 == -ENOENT) {
++			regmap_update_bits(axp20x->regmap,
++					   AXP806_DCDC_MODE_CTRL2,
++					   AXP806_DCDCABC_POLYPHASE_MASK,
++					   AXP806_DCDCAB_POLYPHASE_DUAL);
++			return 0;
++		}
++		/* both DCDC-B+C regulators listed: tri phase setup */
++		if ((reg2 == AXP806_DCDCB && reg3 == AXP806_DCDCC) ||
++		    (reg2 == AXP806_DCDCC && reg3 == AXP806_DCDCB)) {
++			regmap_update_bits(axp20x->regmap,
++					   AXP806_DCDC_MODE_CTRL2,
++					   AXP806_DCDCABC_POLYPHASE_MASK,
++					   AXP806_DCDCABC_POLYPHASE_TRI);
++			return 0;
++		}
++	}
++
++	return 0;
++}
++
+ static int axp20x_parse_polyphase(struct axp20x_dev *axp20x, int primary_reg_id,
+ 				  const struct regulator_desc *regs,
+ 				  int nregulators, const struct device_node *np)
+@@ -1610,6 +1643,18 @@ static int axp20x_parse_polyphase(struct
+ 		}
+ 	}
+ 
++	/* Special handling for the AXP806 DCDC-A/B/C tri-phase regulator. */
++	if (axp20x->variant == AXP806_ID && primary_reg_id == AXP806_DCDCA) {
++		int reg3_id;
++
++		reg3_id = axp20x_find_polyphased_reg(regs, nregulators, np, 1);
++		if (reg3_id < 0 && reg3_id != -ENOENT)
++			return reg_id;
++
++		return axp20x_handle_triphase(axp20x, primary_reg_id,
++					      reg_id, reg3_id);
++	}
++
+ 	return 0;
+ }
+ 

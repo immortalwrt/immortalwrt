@@ -1,0 +1,439 @@
+
+From: iuncuim <iuncuim@gmail.com>
+Signed-off-by: Mikhail Kalashnikov <iuncuim@gmail.com>
+
+
+--- a/drivers/clk/sunxi-ng/Makefile
++++ b/drivers/clk/sunxi-ng/Makefile
+@@ -34,6 +34,7 @@ obj-$(CONFIG_SUN50I_H6_CCU)	+= sun50i-h6
+ obj-$(CONFIG_SUN50I_H6_R_CCU)	+= sun50i-h6-r-ccu.o
+ obj-$(CONFIG_SUN50I_H616_CCU)	+= sun50i-h616-ccu.o
+ obj-$(CONFIG_SUN55I_A523_CCU)	+= sun55i-a523-ccu.o
++obj-$(CONFIG_SUN55I_A523_CCU)	+= sun55i-a523-cpu-ccu.o
+ obj-$(CONFIG_SUN55I_A523_MCU_CCU)	+= sun55i-a523-mcu-ccu.o
+ obj-$(CONFIG_SUN55I_A523_R_CCU)	+= sun55i-a523-r-ccu.o
+ obj-$(CONFIG_SUN4I_A10_CCU)	+= sun4i-a10-ccu.o
+@@ -62,6 +63,7 @@ sun50i-h6-ccu-y			+= ccu-sun50i-h6.o
+ sun50i-h6-r-ccu-y		+= ccu-sun50i-h6-r.o
+ sun50i-h616-ccu-y		+= ccu-sun50i-h616.o
+ sun55i-a523-ccu-y		+= ccu-sun55i-a523.o
++sun55i-a523-cpu-ccu-y		+= ccu-sun55i-a523-cpu.o
+ sun55i-a523-mcu-ccu-y		+= ccu-sun55i-a523-mcu.o
+ sun55i-a523-r-ccu-y		+= ccu-sun55i-a523-r.o
+ sun4i-a10-ccu-y			+= ccu-sun4i-a10.o
+--- /dev/null
++++ b/drivers/clk/sunxi-ng/ccu-sun55i-a523-cpu.c
+@@ -0,0 +1,219 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (c) 2025
++ */
++
++#include <linux/clk.h>
++#include <linux/clk-provider.h>
++#include <linux/io.h>
++#include <linux/iopoll.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++ 
++#include "ccu_common.h"
++#include "ccu_reset.h"
++ 
++#include "ccu_div.h"
++#include "ccu_gate.h"
++#include "ccu_mp.h"
++#include "ccu_mult.h"
++#include "ccu_nk.h"
++#include "ccu_nkm.h"
++#include "ccu_nkmp.h"
++#include "ccu_nm.h"
++
++#include "ccu-sun55i-a523-cpu.h"
++
++#define SUN55I_A523_PLL_SSC_OFFSET   0x50
++
++#define SUN55I_A523_PLL_CPUL_REG	0x004
++static struct ccu_nkmp pll_cpul_clk = {
++	.enable		= BIT(27),
++	.lock		= BIT(28),
++	.n		= _SUNXI_CCU_MULT_OFFSET_MIN_MAX(8, 8, 0, 20, 108), /* form shc */
++	.p		= _SUNXI_CCU_DIV(16, 2), /* P in CPUL reg */
++	.p_reg		= 0x0060,
++	.common		= {
++		.reg		= 0x0004,
++		.features	= CCU_FEATURE_CLEAR_MOD | CCU_FEATURE_CLAC_CACHED,
++		.hw.init	= CLK_HW_INIT("pll-cpul", "osc24M",
++				&ccu_nkmp_ops,
++				CLK_GET_RATE_NOCACHE | CLK_IS_CRITICAL \
++				| CLK_SET_RATE_UNGATE),
++	},
++};
++
++#define SUN55I_A523_PLL_CPUB_REG	0x00c
++static struct ccu_nkmp pll_cpub_clk = {
++	.enable		= BIT(27),
++	.lock		= BIT(28),
++	.n		= _SUNXI_CCU_MULT_OFFSET_MIN_MAX(8, 8, 0, 20, 108),
++	.p		= _SUNXI_CCU_DIV(16, 2), /* P in CPUB reg */
++	.p_reg		= 0x0064,
++	.common		= {
++		.reg		= 0x000c,
++		.features	= CCU_FEATURE_CLEAR_MOD | CCU_FEATURE_CLAC_CACHED,
++		.hw.init	= CLK_HW_INIT("pll-cpub", "osc24M",
++				&ccu_nkmp_ops,
++				CLK_GET_RATE_NOCACHE | CLK_IS_CRITICAL \
++				| CLK_SET_RATE_UNGATE),
++	},
++};
++
++#define SUN55I_A523_CPUL_REG	0x0060
++#define SUN55I_A523_CPUB_REG	0x0064
++static const char * const cpul_parents[] = { "osc24M", "osc32k", "iosc", "pll-cpul", "pll-periph0-600M" };
++
++static SUNXI_CCU_MUX(cpul_clk, "cpul", cpul_parents,
++		     0x0060, 24, 3, CLK_SET_RATE_PARENT | CLK_IS_CRITICAL);
++
++static const char * const cpub_parents[] = { "osc24M", "osc32k", "iosc", "pll-cpub", "pll-periph0-600M" };
++
++static SUNXI_CCU_MUX(cpub_clk, "cpub", cpub_parents,
++		     0x0064, 24, 3, CLK_SET_RATE_PARENT | CLK_IS_CRITICAL);
++
++static struct ccu_common *sun55i_a523_ccu_cpu_clks[] = {
++	&pll_cpul_clk.common,
++	&pll_cpub_clk.common,
++	&cpul_clk.common,
++	&cpub_clk.common,
++};
++
++static struct clk_hw_onecell_data sun55i_a523_ccu_cpu_hw_clks = {
++	.hws	= {
++		[CLK_CPUL]		= &pll_cpul_clk.common.hw,
++		[CLK_CPUB]		= &pll_cpub_clk.common.hw,
++		[CLK_PLL_CPUL]		= &cpul_clk.common.hw,
++		[CLK_PLL_CPUB]		= &cpub_clk.common.hw,
++	},
++	.num = CLK_CPU_MAX_NO,
++};
++
++static const struct sunxi_ccu_desc sun55i_a523_ccu_cpu_desc = {
++	.ccu_clks	= sun55i_a523_ccu_cpu_clks,
++	.num_ccu_clks	= ARRAY_SIZE(sun55i_a523_ccu_cpu_clks),
++	.hw_clks	= &sun55i_a523_ccu_cpu_hw_clks,
++	.resets		= NULL,
++	.num_resets	= 0,
++};
++
++static const u32 pll_regs[] = {
++	SUN55I_A523_PLL_CPUL_REG,
++	SUN55I_A523_PLL_CPUB_REG,
++};
++
++static int cpupll_notifier_cb(struct notifier_block *nb,
++	unsigned long event, void *data)
++{
++	struct ccu_pll_nb *pll = to_ccu_pll_nb(nb);
++	int ret = 0;
++
++	if (event == PRE_RATE_CHANGE) {
++		/* Enable ssc function */
++		set_reg(pll->common->base + pll->common->reg + SUN55I_A523_PLL_SSC_OFFSET, 1, 1, pll->enable);
++	} else if (event == POST_RATE_CHANGE) {
++		/* Disable ssc function */
++		set_reg(pll->common->base + pll->common->reg + SUN55I_A523_PLL_SSC_OFFSET, 0, 1, pll->enable);
++	}
++
++	ccu_helper_wait_for_clear(pll->common, BIT(26));
++
++	return notifier_from_errno(ret);
++}
++
++static struct ccu_pll_nb sun55i_a523_pll_cpul_nb = {
++	.common = &pll_cpul_clk.common,
++	.enable = BIT(31), /* switch ssc mode */
++	.clk_nb = {
++		.notifier_call = cpupll_notifier_cb,
++	},
++};
++
++static struct ccu_pll_nb sun55i_a523_pll_cpub_nb = {
++	.common = &pll_cpub_clk.common,
++	.enable = BIT(31),
++	.clk_nb = {
++		.notifier_call = cpupll_notifier_cb,
++	},
++};
++
++static void ccupll_helper_wait_for_lock(void __iomem *addr, u32 lock)
++{
++	u32 reg;
++
++	WARN_ON(readl_relaxed_poll_timeout(addr, reg, reg & lock, 100, 70000));
++}
++
++static void cpupll_helper_wait_for_clear(void __iomem *addr, u32 clear)
++{
++	u32 reg;
++
++	reg = readl(addr);
++	writel(reg | clear, addr);
++
++	WARN_ON(readl_relaxed_poll_timeout_atomic(addr, reg, !(reg & clear), 100, 10000));
++}
++
++static inline unsigned int calc_pll_ssc(unsigned int step, unsigned int scale,
++	unsigned int ssc)
++{
++	return (unsigned int)(((1 << 17) * ssc) - (scale * (1 << step))) / scale;
++}
++
++static int sun55i_a523_ccu_cpu_probe(struct platform_device *pdev)
++{
++	void __iomem *reg;
++	u32 val;
++	int ret, i;
++	unsigned int step = 0x9, scale = 0xa, ssc = 0x1;
++
++	reg = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(reg))
++		return PTR_ERR(reg);
++
++	for (i = 0; i < ARRAY_SIZE(pll_regs); i++) {
++		val = readl(reg + pll_regs[i]);
++		val |= BIT(27) | BIT(29) | BIT(30) | BIT(31);
++		set_reg(reg + pll_regs[i], val, 32, 0);
++		cpupll_helper_wait_for_clear(reg + pll_regs[i], BIT(26));
++		ccupll_helper_wait_for_lock(reg + pll_regs[i], BIT(28));
++
++		val = 0;
++		ssc = calc_pll_ssc(step, scale, ssc);
++		val = (ssc << 12 | step << 0);
++		set_reg(reg + pll_regs[i] + SUN55I_A523_PLL_SSC_OFFSET, val, 29, 0);
++		cpupll_helper_wait_for_clear(reg + pll_regs[i], BIT(26));
++	}
++
++	set_reg(reg + SUN55I_A523_CPUL_REG, 0x3, 3, 24);
++	set_reg(reg + SUN55I_A523_CPUB_REG, 0x3, 3, 24);
++
++	ret = devm_sunxi_ccu_probe(&pdev->dev, reg, &sun55i_a523_ccu_cpu_desc);
++	if (ret)
++		return ret;
++
++	/* Re-lock the CPU PLL after any rate changes */
++	ccu_pll_notifier_register(&sun55i_a523_pll_cpul_nb);
++	ccu_pll_notifier_register(&sun55i_a523_pll_cpub_nb);
++
++	return 0;
++}
++
++static const struct of_device_id sun55i_a523_ccu_cpu_ids[] = {
++	{ .compatible = "allwinner,sun55i-a523-ccu-cpu" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, sun55i_a523_ccu_cpu_ids);
++
++static struct platform_driver sun55i_a523_ccu_cpu_driver = {
++	.probe	= sun55i_a523_ccu_cpu_probe,
++	.driver	= {
++		.name	= "sun55i-a523-ccu-cpu",
++		.of_match_table	= sun55i_a523_ccu_cpu_ids,
++	},
++};
++module_platform_driver(sun55i_a523_ccu_cpu_driver);
++
++MODULE_IMPORT_NS("SUNXI_CCU");
++MODULE_DESCRIPTION("Support for the Allwinner A523 CPU CCU");
++MODULE_LICENSE("GPL");
+--- /dev/null
++++ b/drivers/clk/sunxi-ng/ccu-sun55i-a523-cpu.h
+@@ -0,0 +1,11 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * Copyright 2025
++ */
++
++#ifndef _CCU_SUN55I_A523_CPU_H_
++#define _CCU_SUN55I_A523_CPU_H_
++
++#include <dt-bindings/clock/sun55i-a523-ccu-cpu.h>
++
++#endif /* _CCU_SUN55I_A523_CPU_H_ */
+--- a/drivers/clk/sunxi-ng/ccu_common.c
++++ b/drivers/clk/sunxi-ng/ccu_common.c
+@@ -39,6 +39,34 @@ void ccu_helper_wait_for_lock(struct ccu
+ }
+ EXPORT_SYMBOL_NS_GPL(ccu_helper_wait_for_lock, "SUNXI_CCU");
+ 
++void set_reg(char __iomem *addr, u32 val, u8 bw, u8 bs)
++{
++	u32 mask = (1UL << bw) - 1UL;
++	u32 tmp = 0;
++
++	tmp = readl(addr);
++	tmp &= ~(mask << bs);
++
++	writel(tmp | ((val & mask) << bs), addr);
++}
++EXPORT_SYMBOL_GPL(set_reg);
++
++void ccu_helper_wait_for_clear(struct ccu_common *common, u32 clear)
++{
++	void __iomem *addr;
++	u32 reg;
++
++	if (!clear)
++		return;
++
++	addr = common->base + common->reg;
++	reg = readl(addr);
++	writel(reg | clear, addr);
++
++	WARN_ON(readl_relaxed_poll_timeout_atomic(addr, reg, !(reg & clear), 100, 10000));
++}
++EXPORT_SYMBOL_GPL(ccu_helper_wait_for_clear);
++
+ bool ccu_is_better_rate(struct ccu_common *common,
+ 			unsigned long target_rate,
+ 			unsigned long current_rate,
+--- a/drivers/clk/sunxi-ng/ccu_common.h
++++ b/drivers/clk/sunxi-ng/ccu_common.h
+@@ -21,6 +21,10 @@
+ #define CCU_FEATURE_CLOSEST_RATE	BIT(9)
+ #define CCU_FEATURE_DUAL_DIV		BIT(10)
+ #define CCU_FEATURE_UPDATE_BIT		BIT(11)
++/* Write one bit update the cfg to displl, auto clear */
++#define CCU_FEATURE_CLEAR_MOD		BIT(12)
++/* Calculate the frequency and save it in the list first */
++#define CCU_FEATURE_CLAC_CACHED		BIT(15)
+ 
+ /* MMC timing mode switch bit */
+ #define CCU_MMC_NEW_TIMING_MODE		BIT(30)
+@@ -60,6 +64,7 @@ struct sunxi_ccu_desc {
+ };
+ 
+ void ccu_helper_wait_for_lock(struct ccu_common *common, u32 lock);
++void ccu_helper_wait_for_clear(struct ccu_common *common, u32 clear);
+ 
+ bool ccu_is_better_rate(struct ccu_common *common,
+ 			unsigned long target_rate,
+@@ -83,4 +88,6 @@ int devm_sunxi_ccu_probe(struct device *
+ void of_sunxi_ccu_probe(struct device_node *node, void __iomem *reg,
+ 			const struct sunxi_ccu_desc *desc);
+ 
++void set_reg(char __iomem *addr, u32 val, u8 bw, u8 bs);
++
+ #endif /* _COMMON_H_ */
+--- a/drivers/clk/sunxi-ng/ccu_nkmp.c
++++ b/drivers/clk/sunxi-ng/ccu_nkmp.c
+@@ -6,6 +6,7 @@
+ 
+ #include <linux/clk-provider.h>
+ #include <linux/io.h>
++#include <linux/iopoll.h>
+ 
+ #include "ccu_gate.h"
+ #include "ccu_nkmp.h"
+@@ -117,6 +118,8 @@ static unsigned long ccu_nkmp_recalc_rat
+ 	if (!m)
+ 		m++;
+ 
++	if (nkmp->p_reg)
++		reg = readl(nkmp->common.base + nkmp->p_reg);
+ 	p = reg >> nkmp->p.shift;
+ 	p &= (1 << nkmp->p.width) - 1;
+ 
+@@ -161,6 +164,25 @@ static int ccu_nkmp_determine_rate(struc
+ 	return 0;
+ }
+ 
++static __always_inline u32 get_data_field(u32 data, u32 bits)
++{
++	int i;
++
++	if (WARN_ON(!bits))
++		return 0;
++	/* @bits should always be greater than 0 */
++	for (i = 0; !(bits & (1 << i)); )
++		i++;
++
++	return (data & bits) >> i;
++}
++
++static __always_inline u32 get_field(const void volatile __iomem *addr, u32 bits)
++{
++	return get_data_field(readl(addr), bits);
++}
++
++#define BITS_WIDTH(bit_start, bit_width)	GENMASK((bit_start) + (bit_width) - 1, bit_start)
+ static int ccu_nkmp_set_rate(struct clk_hw *hw, unsigned long rate,
+ 			   unsigned long parent_rate)
+ {
+@@ -169,6 +191,7 @@ static int ccu_nkmp_set_rate(struct clk_
+ 	struct _ccu_nkmp _nkmp;
+ 	unsigned long flags;
+ 	u32 reg;
++	u32 back_p, new_p;
+ 
+ 	if (nkmp->common.features & CCU_FEATURE_FIXED_POSTDIV)
+ 		rate = rate * nkmp->fixed_post_div;
+@@ -211,9 +234,30 @@ static int ccu_nkmp_set_rate(struct clk_
+ 	reg |= ((_nkmp.n - nkmp->n.offset) << nkmp->n.shift) & n_mask;
+ 	reg |= ((_nkmp.k - nkmp->k.offset) << nkmp->k.shift) & k_mask;
+ 	reg |= ((_nkmp.m - nkmp->m.offset) << nkmp->m.shift) & m_mask;
+-	reg |= (ilog2(_nkmp.p) << nkmp->p.shift) & p_mask;
++	
++	if (!nkmp->p_reg) {
++		reg |= (ilog2(_nkmp.p) << nkmp->p.shift) & p_mask;
++		writel(reg, nkmp->common.base + nkmp->common.reg);
++	} else {
++		back_p = get_field(nkmp->common.base + nkmp->p_reg, BITS_WIDTH(nkmp->p.shift, nkmp->p.width));
++		new_p = ilog2(_nkmp.p);
++		if (new_p > back_p) {
++			set_reg(nkmp->common.base + nkmp->p_reg, new_p,
++				nkmp->p.width, nkmp->p.shift);
++			writel(reg, nkmp->common.base + nkmp->common.reg);
++		} else {
++			writel(reg, nkmp->common.base + nkmp->common.reg);
++		}
++	}
++
++	if (nkmp->common.features & CCU_FEATURE_CLEAR_MOD)
++		ccu_helper_wait_for_clear(&nkmp->common, BIT(26));
+ 
+-	writel(reg, nkmp->common.base + nkmp->common.reg);
++	if (nkmp->p_reg) {
++		if (new_p < back_p)
++			set_reg(nkmp->common.base + nkmp->p_reg, new_p,
++				nkmp->p.width, nkmp->p.shift);
++	}
+ 
+ 	spin_unlock_irqrestore(nkmp->common.lock, flags);
+ 
+--- a/drivers/clk/sunxi-ng/ccu_nkmp.h
++++ b/drivers/clk/sunxi-ng/ccu_nkmp.h
+@@ -20,6 +20,7 @@
+ struct ccu_nkmp {
+ 	u32			enable;
+ 	u32			lock;
++	u16			p_reg;
+ 
+ 	struct ccu_mult_internal	n;
+ 	struct ccu_mult_internal	k;
+--- /dev/null
++++ b/include/dt-bindings/clock/sun55i-a523-ccu-cpu.h
+@@ -0,0 +1,16 @@
++/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
++/*
++ * Copyright (C) 2025
++ */
++
++#ifndef _DT_BINDINGS_CLK_CPU_SUN55I_A523_H_
++#define _DT_BINDINGS_CLK_CPU_SUN55I_A523_H_
++
++#define CLK_CPUL		0
++#define CLK_CPUB		1
++#define CLK_PLL_CPUL		2
++#define CLK_PLL_CPUB		3
++
++#define CLK_CPU_MAX_NO	(CLK_PLL_CPUB + 1)
++
++#endif /* _DT_BINDINGS_CLK_CPU_SUN55I_A523_H_ */

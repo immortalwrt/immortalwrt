@@ -916,8 +916,7 @@ static int rtmdio_map_ports(struct device *dev)
 			return dev_err_probe(dev, -EINVAL, "%pfwP no phy address\n",
 					     of_fwnode_handle(phy));
 
-		/* relaxed check as RTL839x uses MDIO addresses 0..51 */
-		if (smi_addr >= ctrl->cfg->num_phys)
+		if (smi_addr >= PHY_MAX_ADDR)
 			return dev_err_probe(dev, -EINVAL, "%pfwP illegal phy address\n",
 					     of_fwnode_handle(phy));
 

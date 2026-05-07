@@ -1,0 +1,10 @@
+--- a/configs/radxa-cubie-a5e_defconfig
++++ b/configs/radxa-cubie-a5e_defconfig
+@@ -22,6 +22,7 @@ CONFIG_SYS_I2C_MVTWSI=y
+ CONFIG_SYS_I2C_SLAVE=0x7f
+ CONFIG_SYS_I2C_SPEED=400000
+ CONFIG_SUPPORT_EMMC_BOOT=y
++CONFIG_PHY_MAXIO=y
+ CONFIG_PHY_REALTEK=y
+ CONFIG_SUN8I_EMAC=y
+ CONFIG_REGULATOR_AXP=y

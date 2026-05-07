@@ -1,0 +1,15 @@
+--- a/drivers/pinctrl/sunxi/pinctrl-sunxi-dt.c
++++ b/drivers/pinctrl/sunxi/pinctrl-sunxi-dt.c
+@@ -81,6 +81,12 @@ static struct sunxi_desc_pin *init_pins_
+ 	int i, j;
+ 
+ 	/*
++	 * Ensure desc->npins is zeroed before accumulation to avoid
++	 * double-counting when the same desc is reused on a re-probe.
++	 */
++	desc->npins = 0;
++
++	/*
+ 	 * Find the total number of pins.
+ 	 * Also work out how much memory we need to store all the pin names.
+ 	 */
