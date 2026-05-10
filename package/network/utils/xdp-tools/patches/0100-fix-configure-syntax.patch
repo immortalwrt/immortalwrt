@@ -1,0 +1,16 @@
+--- a/configure
++++ b/configure
+@@ -109,11 +109,11 @@ check_toolchain()
+         exit 1
+     fi
+ 
+-    if ! command -v $BPFTOOL &>/dev/null; then
++    if ! command -v $BPFTOOL >/dev/null 2>&1; then
+         BPFTOOL=$(whereis -b bpftool | awk '{print $2}')
+     fi
+ 
+-    if command -v $BPFTOOL &>/dev/null && $BPFTOOL gen help 2>&1 | grep 'gen skeleton.*name' > /dev/null; then
++    if command -v $BPFTOOL >/dev/null 2>&1 && $BPFTOOL gen help 2>&1 | grep 'gen skeleton.*name' > /dev/null; then
+         bpftool_version=$($BPFTOOL version | head -n 1)
+         echo "using $bpftool_version"
+     else
