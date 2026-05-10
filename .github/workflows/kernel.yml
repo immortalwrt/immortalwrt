@@ -19,6 +19,7 @@ on:
       - 'target/linux/**'
     branches-ignore:
       - master
+  workflow_dispatch:
 
 permissions:
   contents: read
