@@ -319,6 +319,8 @@ MD5_hash(const void *data, size_t size, MD5_CTX *ctx)
 	ctx->hi += size >> 29;
 
 	used = saved_lo & 0x3f;
+	if (used >= sizeof(ctx->buffer))
+		return;
 
 	if (used) {
 		available = 64 - used;
@@ -339,6 +341,8 @@ MD5_hash(const void *data, size_t size, MD5_CTX *ctx)
 		size &= 0x3f;
 	}
 
+	if (size > sizeof(ctx->buffer))
+		return;
 	memcpy(ctx->buffer, data, size);
 }
 
@@ -508,7 +512,7 @@ SHA256_Transform(uint32_t * state, const unsigned char block[64])
 	be32dec_vect(W, block, 64);
 
 	/* 2. Initialize working variables. */
-	memcpy(S, state, 32);
+	memcpy(S, state, sizeof(S));
 
 	/* 3. Mix. */
 	for (i = 0; i < 64; i += 16) {
@@ -577,6 +581,8 @@ SHA256_Pad(SHA256_CTX * ctx)
 
 	/* Figure out how many bytes we have buffered. */
 	r = (ctx->count >> 3) & 0x3f;
+	if (r >= sizeof(ctx->buf))
+		return;
 
 	/* Pad to 56 mod 64, transforming if we finish a block en route. */
 	if (r < 56) {
@@ -627,6 +633,8 @@ SHA256_Update(SHA256_CTX * ctx, const void *in, size_t len)
 
 	/* Number of bytes left in the buffer from previous updates */
 	r = (ctx->count >> 3) & 0x3f;
+	if (r >= sizeof(ctx->buf))
+		return;
 
 	/* Convert the length into a number of bits */
 	bitlen = len << 3;
@@ -692,7 +700,7 @@ static char *hash_string(unsigned char *buf, int len)
 		return NULL;
 
 	for (i = 0; i < len; i++)
-		sprintf(&str[i * 2], "%02x", buf[i]);
+		snprintf(&str[i * 2], 3, "%02x", buf[i]);
 
 	return str;
 }
