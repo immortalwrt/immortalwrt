@@ -830,7 +830,7 @@ MODULE_DEVICE_TABLE(of, rk3328dmc_devfreq_of_match);
 
 static struct platform_driver rk3328_dmcfreq_driver = {
 	.probe	= rk3328_dmcfreq_probe,
-	.remove_new = rk3328_dmcfreq_remove,
+	.remove = rk3328_dmcfreq_remove,
 	.driver = {
 		.name	= "rk3328-dmc-freq",
 		.pm	= &rk3328_dmcfreq_pm,

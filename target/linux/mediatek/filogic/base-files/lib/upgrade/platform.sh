@@ -152,6 +152,7 @@ platform_do_upgrade() {
 	netcore,n60|\
 	netcore,n60-pro|\
 	qihoo,360t7|\
+	qihoo,360t7-ubi|\
 	routerich,ax3000-ubootmod|\
 	routerich,be7200|\
 	snr,snr-cpe-ax2|\
@@ -360,6 +361,7 @@ platform_check_image() {
 	netcore,n60|\
 	netcore,n60-pro|\
 	qihoo,360t7|\
+	qihoo,360t7-ubi|\
 	routerich,ax3000-ubootmod|\
 	tplink,tl-7dr7230-v1|\
 	tplink,tl-7dr7230-v2|\

@@ -82,6 +82,7 @@
 #define RTPCS_93XX_SDS_MODE_QSGMII		0x06
 #define RTPCS_93XX_SDS_MODE_USXGMII		0x0d
 #define RTPCS_93XX_SDS_MODE_XSGMII		0x10
+#define RTPCS_93XX_SDS_MODE_HISGMII		0x12
 #define RTPCS_93XX_SDS_MODE_2500BASEX		0x16
 #define RTPCS_93XX_SDS_MODE_10GBASER		0x1a
 #define RTPCS_93XX_SDS_MODE_OFF			0x1f
@@ -1196,6 +1197,7 @@ static const s16 rtpcs_93xx_sds_hw_mode_vals[RTPCS_SDS_MODE_MAX] = {
 	[RTPCS_SDS_MODE_2500BASEX]		= RTPCS_93XX_SDS_MODE_2500BASEX,
 	[RTPCS_SDS_MODE_10GBASER]		= RTPCS_93XX_SDS_MODE_10GBASER,
 	[RTPCS_SDS_MODE_QSGMII]			= RTPCS_93XX_SDS_MODE_QSGMII,
+	[RTPCS_SDS_MODE_HISGMII]		= RTPCS_93XX_SDS_MODE_HISGMII,
 	[RTPCS_SDS_MODE_XSGMII]			= RTPCS_93XX_SDS_MODE_XSGMII,
 	[RTPCS_SDS_MODE_USXGMII_10GSXGMII]	= RTPCS_93XX_SDS_MODE_USXGMII,
 	[RTPCS_SDS_MODE_USXGMII_10GDXGMII]	= RTPCS_93XX_SDS_MODE_USXGMII,
@@ -1483,6 +1485,42 @@ static int rtpcs_93xx_sds_set_mac_mode(struct rtpcs_serdes *sds, enum rtpcs_sds_
 	return 0;
 }
 
+/*
+ * Read/write the SerDes IP mode register: page 0x1f reg 0x09, bits 11:7
+ * hold the 5-bit mode value, bit 6 is the "force mode" enable. The same
+ * physical field is used on RTL930x and RTL931x.
+ */
+static int rtpcs_93xx_sds_get_ip_mode(struct rtpcs_serdes *sds)
+{
+	const s16 *vals = sds->ctrl->cfg->sds_hw_mode_vals;
+	int raw;
+
+	raw = rtpcs_sds_read_bits(sds, 0x1f, 0x09, 11, 7);
+	if (raw < 0)
+		return raw;
+
+	for (int i = 0; i < RTPCS_SDS_MODE_MAX; i++)
+		if (vals[i] == raw)
+			return i;
+
+	return -ENOENT;
+}
+
+static int rtpcs_93xx_sds_set_ip_mode(struct rtpcs_serdes *sds, enum rtpcs_sds_mode hw_mode)
+{
+	int raw;
+
+	if (hw_mode >= RTPCS_SDS_MODE_MAX)
+		return -EINVAL;
+
+	raw = sds->ctrl->cfg->sds_hw_mode_vals[hw_mode];
+	if (raw < 0)
+		return -EOPNOTSUPP;
+
+	/* BIT(0) is force mode enable bit */
+	return rtpcs_sds_write_bits(sds, 0x1f, 0x09, 11, 6, raw << 1 | BIT(0));
+}
+
 /* RTL930X */
 
 /* This mapping is not coherent so it cannot be expressed arithmetically */
@@ -1661,17 +1699,6 @@ static int rtpcs_930x_sds_wait_clock_ready(struct rtpcs_serdes *sds)
 	return -EBUSY;
 }
 
-static int __rtpcs_930x_sds_get_ip_mode(struct rtpcs_serdes *sds)
-{
-	return rtpcs_sds_read_bits(sds, 0x1f, 0x09, 11, 7);
-}
-
-static int __rtpcs_930x_sds_set_ip_mode(struct rtpcs_serdes *sds, u32 mode)
-{
-	/* BIT(0) is force mode enable bit */
-	return rtpcs_sds_write_bits(sds, 0x1f, 0x09, 11, 6, (mode & 0x1f) << 1 | BIT(0));
-}
-
 static void rtpcs_930x_sds_set_power(struct rtpcs_serdes *sds, bool on)
 {
 	int power_down = on ? 0x0 : 0x3;
@@ -1685,9 +1712,11 @@ static int rtpcs_930x_sds_reconfigure_to_pll(struct rtpcs_serdes *sds, enum rtpc
 {
 	enum rtpcs_sds_pll_speed speed;
 	enum rtpcs_sds_pll_type old_pll;
-	int mode, ret;
+	int hw_mode, ret;
 
-	mode = __rtpcs_930x_sds_get_ip_mode(sds);
+	hw_mode = rtpcs_93xx_sds_get_ip_mode(sds);
+	if (hw_mode < 0)
+		return hw_mode;
 
 	ret = rtpcs_930x_sds_get_pll_select(sds, &old_pll);
 	if (ret < 0)
@@ -1698,7 +1727,7 @@ static int rtpcs_930x_sds_reconfigure_to_pll(struct rtpcs_serdes *sds, enum rtpc
 		return ret;
 
 	rtpcs_930x_sds_set_power(sds, false);
-	__rtpcs_930x_sds_set_ip_mode(sds, RTPCS_93XX_SDS_MODE_OFF);
+	rtpcs_93xx_sds_set_ip_mode(sds, RTPCS_SDS_MODE_OFF);
 
 	ret = rtpcs_93xx_sds_set_pll_config(sds, pll, speed);
 	if (ret < 0)
@@ -1708,7 +1737,7 @@ static int rtpcs_930x_sds_reconfigure_to_pll(struct rtpcs_serdes *sds, enum rtpc
 	if (ret < 0)
 		return ret;
 
-	__rtpcs_930x_sds_set_ip_mode(sds, mode);
+	rtpcs_93xx_sds_set_ip_mode(sds, hw_mode);
 	if (rtpcs_930x_sds_wait_clock_ready(sds))
 		pr_err("%s: SDS %d could not sync clock\n", __func__, sds->id);
 
@@ -1753,10 +1782,10 @@ static int rtpcs_930x_sds_init_state_machine(struct rtpcs_serdes *sds,
 	return ret;
 }
 
-static int rtpcs_930x_sds_set_ip_mode(struct rtpcs_serdes *sds,
-				      enum rtpcs_sds_mode hw_mode)
+static int rtpcs_930x_sds_apply_ip_mode(struct rtpcs_serdes *sds,
+					enum rtpcs_sds_mode hw_mode)
 {
-	int mode_val, ret;
+	int ret;
 
 	/*
 	 * TODO: Usually one would expect that it is enough to modify the SDS_MODE_SEL_*
@@ -1765,18 +1794,8 @@ static int rtpcs_930x_sds_set_ip_mode(struct rtpcs_serdes *sds,
 	 * if this sequence should quit early in case of errors.
 	 */
 
-	if (hw_mode >= RTPCS_SDS_MODE_MAX)
-		return -EINVAL;
-
-	mode_val = sds->ctrl->cfg->sds_hw_mode_vals[hw_mode];
-	if (mode_val < 0) {
-		pr_err("%s: SDS %d does not support mode %d\n", __func__,
-		       sds->id, hw_mode);
-		return mode_val;
-	}
-
 	rtpcs_930x_sds_set_power(sds, false);
-	ret = __rtpcs_930x_sds_set_ip_mode(sds, RTPCS_93XX_SDS_MODE_OFF);
+	ret = rtpcs_93xx_sds_set_ip_mode(sds, RTPCS_SDS_MODE_OFF);
 	if (ret < 0)
 		return ret;
 
@@ -1788,7 +1807,7 @@ static int rtpcs_930x_sds_set_ip_mode(struct rtpcs_serdes *sds,
 		pr_err("%s: SDS %d could not configure PLL for mode %d: %d\n", __func__,
 		       sds->id, hw_mode, ret);
 
-	ret = __rtpcs_930x_sds_set_ip_mode(sds, mode_val);
+	ret = rtpcs_93xx_sds_set_ip_mode(sds, hw_mode);
 	if (ret < 0)
 		return ret;
 
@@ -1820,7 +1839,7 @@ static int rtpcs_930x_sds_set_mode(struct rtpcs_serdes *sds, enum rtpcs_sds_mode
 	case RTPCS_SDS_MODE_1000BASEX:
 	case RTPCS_SDS_MODE_2500BASEX:
 	case RTPCS_SDS_MODE_10GBASER:
-		return rtpcs_930x_sds_set_ip_mode(sds, hw_mode);
+		return rtpcs_930x_sds_apply_ip_mode(sds, hw_mode);
 
 	default:
 		break;
@@ -3213,14 +3232,12 @@ static int rtpcs_931x_sds_power(struct rtpcs_serdes *sds, bool power_on)
 }
 
 /*
- * rtpcs_931x_sds_set_ip_mode
- *
- * Set the SerDes mode in the SerDes IP block's registers.
+ * Set the SerDes mode in the SerDes IP block's registers, after clearing
+ * the symbol error counter and forcing the MAC mode off.
  */
-static int rtpcs_931x_sds_set_ip_mode(struct rtpcs_serdes *sds,
-				      enum rtpcs_sds_mode hw_mode)
+static int rtpcs_931x_sds_apply_ip_mode(struct rtpcs_serdes *sds,
+					enum rtpcs_sds_mode hw_mode)
 {
-	u32 mode_val;
 	int ret;
 
 	/* clear symbol error count before changing mode */
@@ -3229,51 +3246,7 @@ static int rtpcs_931x_sds_set_ip_mode(struct rtpcs_serdes *sds,
 	if (ret)
 		return ret;
 
-	switch (hw_mode) {
-	case RTPCS_SDS_MODE_OFF:
-		mode_val = 0x3f;
-		break;
-
-	case RTPCS_SDS_MODE_SGMII:
-		mode_val = 0x5;
-		break;
-
-	case RTPCS_SDS_MODE_1000BASEX:
-		/* serdes mode FIBER1G */
-		mode_val = 0x9;
-		break;
-
-	case RTPCS_SDS_MODE_2500BASEX:
-		/* available SDK code doesn't have this value. based on brute-forcing
-		 * the SerDes mode register field until the link is working
-		 */
-		mode_val = 0x2d;
-		break;
-
-	case RTPCS_SDS_MODE_10GBASER:
-		mode_val = 0x35;
-		break;
-/*      case MII_10GR1000BX_AUTO:
-                mode_val = 0x39;
-                break; */
-
-	case RTPCS_SDS_MODE_USXGMII_10GSXGMII:
-	case RTPCS_SDS_MODE_USXGMII_10GDXGMII:
-	case RTPCS_SDS_MODE_USXGMII_10GQXGMII:
-	case RTPCS_SDS_MODE_USXGMII_5GSXGMII:
-	case RTPCS_SDS_MODE_USXGMII_5GDXGMII:
-	case RTPCS_SDS_MODE_USXGMII_2_5GSXGMII:
-		mode_val = 0x1b;
-		break;
-	case RTPCS_SDS_MODE_HISGMII:
-		mode_val = 0x25;
-		break;
-	default:
-		return -ENOTSUPP;
-	}
-
-	pr_info("%s writing analog SerDes Mode value %02x\n", __func__, mode_val);
-	return rtpcs_sds_write_bits(sds, 0x1f, 0x9, 11, 6, mode_val);
+	return rtpcs_93xx_sds_set_ip_mode(sds, hw_mode);
 }
 
 static int rtpcs_931x_sds_set_mode(struct rtpcs_serdes *sds,
@@ -3284,7 +3257,7 @@ static int rtpcs_931x_sds_set_mode(struct rtpcs_serdes *sds,
 	if (hw_mode == RTPCS_SDS_MODE_XSGMII)
 		return rtpcs_93xx_sds_set_mac_mode(sds, hw_mode);
 
-	ret = rtpcs_931x_sds_set_ip_mode(sds, hw_mode);
+	ret = rtpcs_931x_sds_apply_ip_mode(sds, hw_mode);
 	if (ret)
 		return ret;
 
