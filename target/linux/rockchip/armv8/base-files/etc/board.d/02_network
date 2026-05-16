@@ -13,6 +13,7 @@ rockchip_setup_interfaces()
 	armsom,sige7|\
 	ezpro,mrkaio-m68s|\
 	firefly,rk3568-roc-pc|\
+	friendlyarm,nanopi-m5|\
 	friendlyarm,nanopi-r2c|\
 	friendlyarm,nanopi-r2c-plus|\
 	friendlyarm,nanopi-r2s|\
@@ -100,6 +101,7 @@ rockchip_setup_macs()
 	cyber,cyber3588-aib|\
 	ezpro,mrkaio-m68s|\
 	friendlyarm,nanopc-t6|\
+	friendlyarm,nanopi-m5|\
 	friendlyarm,nanopi-r2c|\
 	friendlyarm,nanopi-r2s|\
 	friendlyarm,nanopi-r76s|\
