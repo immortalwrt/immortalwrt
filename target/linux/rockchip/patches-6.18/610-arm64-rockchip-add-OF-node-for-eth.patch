@@ -158,9 +158,9 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  };
  
-@@ -314,6 +333,18 @@
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pwm1m0_pins>;
+@@ -268,6 +287,18 @@
+ 	reset-gpios = <&gpio1 RK_PA2 GPIO_ACTIVE_HIGH>;
+ 	vpcie3v3-supply = <&vcc_3v3>;
  	status = "okay";
 +
 +	pcie@0,0 {
@@ -176,7 +176,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +	};
  };
  
- &pwm2 {
+ &pinctrl {
 --- a/arch/arm64/boot/dts/rockchip/rk3566-nanopi-r3s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3566-nanopi-r3s.dts
 @@ -417,6 +417,25 @@
