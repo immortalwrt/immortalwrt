@@ -33,7 +33,7 @@ Signed-off-by: Mark Brown <broonie@kernel.org>
 
 --- a/drivers/spi/spi-sun6i.c
 +++ b/drivers/spi/spi-sun6i.c
-@@ -795,10 +795,13 @@ static const struct sun6i_spi_cfg sun50i
+@@ -801,10 +801,13 @@ static const struct sun6i_spi_cfg sun50i
  static const struct of_device_id sun6i_spi_match[] = {
  	{ .compatible = "allwinner,sun6i-a31-spi", .data = &sun6i_a31_spi_cfg },
  	{ .compatible = "allwinner,sun8i-h3-spi",  .data = &sun8i_h3_spi_cfg },

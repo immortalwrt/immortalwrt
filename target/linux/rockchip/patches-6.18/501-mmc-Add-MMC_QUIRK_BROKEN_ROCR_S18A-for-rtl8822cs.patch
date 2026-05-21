@@ -13,7 +13,7 @@ Signed-off-by: Jensen Huang <jensenhuang@friendlyarm.com>
 
 --- a/drivers/mmc/core/card.h
 +++ b/drivers/mmc/core/card.h
-@@ -316,4 +316,9 @@ static inline int mmc_card_no_uhs_ddr50_
+@@ -316,4 +316,9 @@ static inline int mmc_card_fixed_secure_
  	return c->quirks & MMC_QUIRK_FIXED_SECURE_ERASE_TRIM_TIME;
  }
  
