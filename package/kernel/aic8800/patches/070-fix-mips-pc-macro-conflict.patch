@@ -1,3 +1,23 @@
+--- a/src/PCIE/driver_fw/driver/aic8800d80x2/aic8800_fdrv/rwnx_msg_rx.c
++++ b/src/PCIE/driver_fw/driver/aic8800d80x2/aic8800_fdrv/rwnx_msg_rx.c
+@@ -403,7 +403,7 @@ struct fault_ctxt {
+     uint32_t reg_i[13];
+     uint32_t SP;
+     uint32_t LR;
+-    uint32_t PC;
++    uint32_t pc;
+     uint32_t xPSR;
+     uint32_t PSP;
+     uint32_t MSP;
+@@ -432,7 +432,7 @@ static inline int rwnx_fw_panic_ind(stru
+         printk("REG %d = [%x]\n", i, fault.reg_i[i]);
+     printk("SP = [%x]\n", fault.SP);
+     printk("LR = [%x]\n", fault.LR);
+-    printk("PC = [%x]\n", fault.PC);
++    printk("PC = [%x]\n", fault.pc);
+     printk("PSP = [%x]\n", fault.PSP);
+     printk("xPSR = [%x]\n", fault.xPSR);
+     printk("EXC_RETURN = [%x]\n", fault.EXC_RETURN);
 --- a/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_msg_rx.c
 +++ b/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_msg_rx.c
 @@ -409,7 +409,7 @@ struct fault_ctxt {
@@ -10,6 +30,26 @@
      uint32_t PSP;
      uint32_t MSP;
 @@ -438,7 +438,7 @@ static inline int rwnx_fw_panic_ind(stru
+         printk("REG %d = [%x]\n", i, fault.reg_i[i]);
+     printk("SP = [%x]\n", fault.SP);
+     printk("LR = [%x]\n", fault.LR);
+-    printk("PC = [%x]\n", fault.PC);
++    printk("PC = [%x]\n", fault.pc);
+     printk("PSP = [%x]\n", fault.PSP);
+     printk("xPSR = [%x]\n", fault.xPSR);
+     printk("EXC_RETURN = [%x]\n", fault.EXC_RETURN);
+--- a/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/rwnx_msg_rx.c
++++ b/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/rwnx_msg_rx.c
+@@ -1595,7 +1595,7 @@ struct fault_ctxt {
+     uint32_t reg_i[13];
+     uint32_t SP;
+     uint32_t LR;
+-    uint32_t PC;
++    uint32_t pc;
+     uint32_t xPSR;
+     uint32_t PSP;
+     uint32_t MSP;
+@@ -1624,7 +1624,7 @@ static inline int rwnx_fw_panic_ind(stru
          printk("REG %d = [%x]\n", i, fault.reg_i[i]);
      printk("SP = [%x]\n", fault.SP);
      printk("LR = [%x]\n", fault.LR);
