@@ -1,0 +1,211 @@
+--- a/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/aicwf_compat_8800d80n.c
++++ b/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/aicwf_compat_8800d80n.c
+@@ -41,7 +41,7 @@ int rwnx_request_firmware_common(struct
+ void rwnx_plat_userconfig_parsing(char *buffer, int size);
+ void rwnx_release_firmware_common(u32** buffer);
+ 
+-extern int get_adap_test(void);
++extern int aicusb_get_adap_test(void);
+ 
+ typedef u32 (*array2_tbl_t)[2];
+ typedef u32 (*array3_tbl_t)[3];
+@@ -206,7 +206,7 @@ void aicwf_patch_config_8800d80n(struct
+     int adap_test = 0;
+     int adap_patch_num = 0;
+ 
+-    adap_test = get_adap_test();
++    adap_test = aicusb_get_adap_test();
+ //adap test
+ 
+     if (testmode == 0) {
+--- a/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/aicwf_compat_8800dc.c
++++ b/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/aicwf_compat_8800dc.c
+@@ -2813,7 +2813,7 @@ int aicwf_patch_var_config_8800dc(struct
+ }
+ 
+ //adap test
+-extern int get_adap_test(void);
++extern int aicusb_get_adap_test(void);
+ //adap test
+ 
+ void aicwf_patch_config_8800dc(struct rwnx_hw *rwnx_hw)
+@@ -2826,7 +2826,7 @@ void aicwf_patch_config_8800dc(struct rw
+     int adap_test = 0;
+     int adap_patch_num = 0;
+ 
+-    adap_test = get_adap_test();
++    adap_test = aicusb_get_adap_test();
+ //adap test
+ 
+     if (testmode == 0) {
+--- a/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/aicwf_compat_8800dln.c
++++ b/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/aicwf_compat_8800dln.c
+@@ -24,7 +24,7 @@ int rwnx_request_firmware_common(struct
+ void rwnx_plat_userconfig_parsing(char *buffer, int size);
+ void rwnx_release_firmware_common(u32** buffer);
+ 
+-extern int get_adap_test(void);
++extern int aicusb_get_adap_test(void);
+ 
+ typedef u32 (*array2_tbl_t)[2];
+ typedef u32 (*array3_tbl_t)[3];
+@@ -106,7 +106,7 @@ void aicwf_patch_config_8800dln(struct r
+     int adap_test = 0;
+     int adap_patch_num = 0;
+ 
+-    adap_test = get_adap_test();
++    adap_test = aicusb_get_adap_test();
+ //adap test
+ 
+     if (testmode == 0) {
+--- a/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/rwnx_main.c
++++ b/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/rwnx_main.c
+@@ -8800,9 +8800,9 @@ void aic_ipc_setting(struct rwnx_vif *rw
+ 	rwnx_send_vendor_hwconfig_req(rwnx_hw, hw_edca, param, NULL);
+ 	rwnx_send_vendor_hwconfig_req(rwnx_hw, hw_cca, cca, NULL);
+ }
+-extern int get_adap_test(void);
++extern int aicusb_get_adap_test(void);
+ 
+-extern void *aicwf_prealloc_txq_alloc(size_t size);
++extern void *aicusb_prealloc_txq_alloc(size_t size);
+ extern char default_ccode[];
+ int rwnx_cfg80211_init(struct rwnx_plat *rwnx_plat, void **platform_data)
+ {
+@@ -8925,7 +8925,7 @@ if((g_rwnx_plat->usbdev->chipid == PRODU
+     rwnx_hwq_init(rwnx_hw);
+ 
+ #ifdef CONFIG_PREALLOC_TXQ
+-    rwnx_hw->txq = (struct rwnx_txq*)aicwf_prealloc_txq_alloc(sizeof(struct rwnx_txq)*NX_NB_TXQ);
++    rwnx_hw->txq = (struct rwnx_txq*)aicusb_prealloc_txq_alloc(sizeof(struct rwnx_txq)*NX_NB_TXQ);
+ #endif
+ 
+     for (i = 0; i < NX_NB_TXQ; i++) {
+@@ -9279,7 +9279,7 @@ if((g_rwnx_plat->usbdev->chipid == PRODU
+ #endif
+ 
+ #ifdef CONFIG_FOR_IPCAM
+-		if(!testmode && !get_adap_test()) {
++		if(!testmode && !aicusb_get_adap_test()) {
+ 			aic_ipc_setting(vif);
+ 		}
+ #endif
+--- a/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/rwnx_utils.c
++++ b/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/rwnx_utils.c
+@@ -15,8 +15,8 @@
+ #include "ipc_host.h"
+ 
+ 
+-extern int get_testmode(void);
+-extern void get_fw_path(char* fw_path);
++extern int aicusb_get_testmode(void);
++extern void aicusb_get_fw_path(char* fw_path);
+ extern int testmode;
+ extern char aic_fw_path[200];
+ 
+@@ -30,9 +30,9 @@ int rwnx_init_aic(struct rwnx_hw *rwnx_h
+ #endif
+     rwnx_cmd_mgr_init(rwnx_hw->cmd_mgr);
+ 
+-	testmode = get_testmode();
++	testmode = aicusb_get_testmode();
+ 	memset(aic_fw_path, 0, 200);
+-	get_fw_path(aic_fw_path);
++	aicusb_get_fw_path(aic_fw_path);
+ 	
+     return 0;
+ }
+--- a/src/USB/driver_fw/drivers/aic8800/aic_load_fw/aicbluetooth.c
++++ b/src/USB/driver_fw/drivers/aic8800/aic_load_fw/aicbluetooth.c
+@@ -865,7 +865,7 @@ int8_t rwnx_atoi(char *value){
+ 	return result;
+ }
+ 
+-void get_fw_path(char* fw_path){
++void aicusb_get_fw_path(char* fw_path){
+ 	if (strlen(aic_fw_path) > 0) {
+ 		memcpy(fw_path, aic_fw_path, strlen(aic_fw_path));
+ 	}else{
+@@ -877,7 +877,7 @@ void set_testmode(int val){
+ 	testmode = val;
+ }
+ 
+-int get_testmode(void){
++int aicusb_get_testmode(void){
+ 	return testmode;
+ }
+ 
+@@ -886,7 +886,7 @@ int get_hardware_info(void){
+ }
+ 
+ extern int adap_test;
+-int get_adap_test(void){
++int aicusb_get_adap_test(void){
+     return adap_test;
+ }
+ 
+@@ -900,15 +900,15 @@ u32 get_flash_bin_crc(void)
+     return flash_write_bin_crc;
+ }
+ 
+-EXPORT_SYMBOL(get_fw_path);
++EXPORT_SYMBOL(aicusb_get_fw_path);
+ 
+-EXPORT_SYMBOL(get_testmode);
++EXPORT_SYMBOL(aicusb_get_testmode);
+ 
+ EXPORT_SYMBOL(set_testmode);
+ 
+ EXPORT_SYMBOL(get_hardware_info);
+ 
+-EXPORT_SYMBOL(get_adap_test);
++EXPORT_SYMBOL(aicusb_get_adap_test);
+ 
+ EXPORT_SYMBOL(get_flash_bin_size);
+ EXPORT_SYMBOL(get_flash_bin_crc);
+--- a/src/USB/driver_fw/drivers/aic8800/aic_load_fw/aicbluetooth.h
++++ b/src/USB/driver_fw/drivers/aic8800/aic_load_fw/aicbluetooth.h
+@@ -44,11 +44,11 @@ typedef struct
+ } xtal_cap_conf_t;
+ 
+ u32 aic_crc32(u8 *p, u32 len, u32 crc);
+-void get_fw_path(char* fw_path);
++void aicusb_get_fw_path(char* fw_path);
+ void set_testmode(int val);
+-int get_testmode(void);
++int aicusb_get_testmode(void);
+ int get_hardware_info(void);
+-int get_adap_test(void);
++int aicusb_get_adap_test(void);
+ int get_flash_bin_size(void);
+ u32 get_flash_bin_crc(void);
+ void get_userconfig_xtal_cap(xtal_cap_conf_t *xtal_cap);
+--- a/src/USB/driver_fw/drivers/aic8800/aic_load_fw/aicwf_txq_prealloc.c
++++ b/src/USB/driver_fw/drivers/aic8800/aic_load_fw/aicwf_txq_prealloc.c
+@@ -11,7 +11,7 @@ struct prealloc_txq{
+ struct prealloc_txq prealloc_txq;
+ #define MAX_TXQ_SIZE 100 * 1024
+ 
+-void *aicwf_prealloc_txq_alloc(size_t size)
++void *aicusb_prealloc_txq_alloc(size_t size)
+ {
+ 
+     BUG_ON(size > MAX_TXQ_SIZE);
+@@ -58,5 +58,5 @@ void aicwf_prealloc_txq_free(void)
+     }
+ }
+ 
+-EXPORT_SYMBOL(aicwf_prealloc_txq_alloc);
++EXPORT_SYMBOL(aicusb_prealloc_txq_alloc);
+ 
+--- a/src/USB/driver_fw/drivers/aic8800/aic_load_fw/aicwf_txq_prealloc.h
++++ b/src/USB/driver_fw/drivers/aic8800/aic_load_fw/aicwf_txq_prealloc.h
+@@ -1,7 +1,7 @@
+ #ifndef __AICWF_TXQ_PREALLOC_H
+ #define __AICWF_TXQ_PREALLOC_H
+ 
+-void *aicwf_prealloc_txq_alloc(size_t size);
++void *aicusb_prealloc_txq_alloc(size_t size);
+ void aicwf_prealloc_txq_free(void);
+ 
+ #endif
