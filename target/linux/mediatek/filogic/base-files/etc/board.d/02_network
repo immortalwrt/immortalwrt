@@ -25,6 +25,10 @@ mediatek_setup_interfaces()
 	zbtlink,zbt-z8103ax-c)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" eth1
 		;;
+	zbtlink,zbt-z8803be)
+		ucidef_set_interfaces_lan_wan "lan0 lan1 lan2" eth1
+		ucidef_set_interface "wan_sfp" device "eth2" protocol "none"
+		;;
 	acelink,ew-7886cax|\
 	tplink,eap683-lr)
 		ucidef_set_interface_lan "eth0" "dhcp"
@@ -56,6 +60,8 @@ mediatek_setup_interfaces()
 	creatlentem,clt-r30b1|\
 	creatlentem,clt-r30b1-112m|\
 	cudy,wr3000-v1|\
+	globitel,bt-r320|\
+	huasifei,wh3000r-nand|\
 	jcg,q30-pro|\
 	keenetic,kn-3711|\
 	keenetic,kn-3811|\
