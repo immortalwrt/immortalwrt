@@ -88,7 +88,7 @@
 +};
 --- /dev/null
 +++ b/configs/myir_myd_t113x-emmc_defconfig
-@@ -0,0 +1,29 @@
+@@ -0,0 +1,30 @@
 +CONFIG_ARM=y
 +CONFIG_ARCH_SUNXI=y
 +CONFIG_DEFAULT_DEVICE_TREE="sun8i-t113s-myir-myd-yt113x-emmc"
@@ -118,9 +118,10 @@
 +CONFIG_SPL_MMC_IO_VOLTAGE=y
 +CONFIG_MMC_HS200_SUPPORT=y
 +CONFIG_SPL_MMC_HS200_SUPPORT=y
++# CONFIG_OF_UPSTREAM is not set
 --- /dev/null
 +++ b/configs/myir_myd_t113x-spi_defconfig
-@@ -0,0 +1,39 @@
+@@ -0,0 +1,40 @@
 +CONFIG_ARM=y
 +CONFIG_ARCH_SUNXI=y
 +CONFIG_DEFAULT_DEVICE_TREE="sun8i-t113s-myir-myd-yt113x-spi"
@@ -160,6 +161,7 @@
 +CONFIG_SPI_FLASH_MTD=y
 +CONFIG_SPI=y
 +CONFIG_MTD_UBI_FASTMAP=y
++# CONFIG_OF_UPSTREAM is not set
 --- /dev/null
 +++ b/arch/arm/dts/sun8i-t113s-myir-myd-yt113x.dtsi
 @@ -0,0 +1,144 @@

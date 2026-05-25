@@ -276,6 +276,25 @@ define Device/acer_vero-w6m
 endef
 TARGET_DEVICES += acer_vero-w6m
 
+define Device/alwaylink_m01k43
+  DEVICE_VENDOR := AlwayLink
+  DEVICE_MODEL := M01K43
+  DEVICE_DTS := mt7981b-alwaylink-m01k43
+  DEVICE_DTS_DIR := ../dts
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware \
+    kmod-usb3 kmod-usb-serial-option kmod-usb-net-qmi-wwan uqmi \
+    kmod-phy-realtek uboot-envtools
+  KERNEL_IN_UBI := 1
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  IMAGE_SIZE := 57344k
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += alwaylink_m01k43
+
 define Device/asiarf_ap7986-003
   DEVICE_VENDOR := AsiaRF
   DEVICE_MODEL := AP7986 003
@@ -1835,6 +1854,29 @@ define Device/glinet_gl-xe3000
 endef
 TARGET_DEVICES += glinet_gl-xe3000
 
+define Device/globitel_bt-r320
+  DEVICE_VENDOR := Globitel
+  DEVICE_MODEL := BT-R320
+  DEVICE_DTS := mt7981b-globitel-bt-r320
+  DEVICE_DTS_DIR := ../dts
+  DEVICE_PACKAGES := kmod-usb3 kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware f2fsck mkf2fs
+  KERNEL_LOADADDR := 0x44000000
+  KERNEL := kernel-bin | lzma
+  KERNEL_INITRAMFS := kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
+  KERNEL_INITRAMFS_SUFFIX := -initramfs-recovery.itb
+  IMAGES := sysupgrade.itb
+  IMAGE_SIZE := $$(shell expr 64 + $$(CONFIG_TARGET_ROOTFS_PARTSIZE))m
+  IMAGE/sysupgrade.itb := append-kernel | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-static-with-rootfs | \
+	pad-rootfs | append-metadata
+  ARTIFACTS := gpt.bin preloader.bin bl31-uboot.fip
+  ARTIFACT/gpt.bin := mt798x-gpt emmc
+  ARTIFACT/preloader.bin := mt7981-bl2 emmc-ddr4
+  ARTIFACT/bl31-uboot.fip := mt7981-bl31-uboot globitel_bt-r320
+endef
+TARGET_DEVICES += globitel_bt-r320
+
 define Device/h3c_magic-nx30-pro
   DEVICE_VENDOR := H3C
   DEVICE_MODEL := Magic NX30 Pro
@@ -1910,6 +1952,19 @@ define Device/huasifei_wh3000-pro-nand
 	kmod-usb3 kmod-hwmon-pwmfan automount
 endef
 TARGET_DEVICES += huasifei_wh3000-pro-nand
+
+define Device/huasifei_wh3000r-nand
+  DEVICE_VENDOR := Huasifei
+  DEVICE_MODEL := WH3000R
+  DEVICE_VARIANT := NAND
+  DEVICE_DTS := mt7981b-huasifei-wh3000r-nand
+  DEVICE_DTS_DIR := ../dts
+  IMAGE_SIZE := 231936k
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware \
+	kmod-usb3
+endef
+TARGET_DEVICES += huasifei_wh3000r-nand
 
 define Device/imou_hx21
   DEVICE_VENDOR := Imou
@@ -3834,6 +3889,23 @@ define Device/zbtlink_zbt-z8106ax-t
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += zbtlink_zbt-z8106ax-t
+
+define Device/zbtlink_zbt-z8803be
+  DEVICE_VENDOR := Zbtlink
+  DEVICE_MODEL := ZBT-Z8803BE
+  DEVICE_DTS := mt7988a-zbtlink-zbt-z8803be
+  DEVICE_DTS_DIR := ../dts
+  DEVICE_PACKAGES := kmod-sfp kmod-hwmon-pwmfan kmod-usb3 kmod-mt7996-firmware mt7988-2p5g-phy-firmware mt7988-wo-firmware
+  DEVICE_DTC_FLAGS := --pad 4096
+  SUPPORTED_DEVICES += zbtlink,zbt-z8803be,mt7988a-nand
+  KERNEL := kernel-bin | gzip | \
+	fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
+  KERNEL_INITRAMFS := kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
+  IMAGES := sysupgrade.bin
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += zbtlink_zbt-z8803be
 
 define Device/zyxel_ex5601-t0-stock
   DEVICE_VENDOR := Zyxel
