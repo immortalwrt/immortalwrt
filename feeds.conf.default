@@ -1,5 +1,5 @@
-src-git packages https://github.com/immortalwrt/packages.git;openwrt-25.12
-src-git luci https://github.com/immortalwrt/luci.git;openwrt-25.12
-src-git routing https://github.com/openwrt/routing.git;openwrt-25.12
-src-git telephony https://github.com/openwrt/telephony.git;openwrt-25.12
-src-git video https://github.com/openwrt/video.git;openwrt-25.12
+src-git packages https://github.com/immortalwrt/packages.git^881bc2200a61801edc8db88e7631f7e6468989a1
+src-git luci https://github.com/immortalwrt/luci.git^a701807e2e0051f342f9980fd85f90f6966af9b0
+src-git routing https://github.com/openwrt/routing.git^b2097c85bef85251364f59a6b2a3ed1f9f5c0c21
+src-git telephony https://github.com/openwrt/telephony.git^2618106d5846a4a542fdf5809f0d3ed228ce439b
+src-git video https://github.com/openwrt/video.git^094bf58da6682f895255a35a84349a79dab4bf95
