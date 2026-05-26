@@ -421,6 +421,19 @@ define U-Boot/mt7981_cudy_wr3000p-v1
   DEPENDS:=+trusted-firmware-a-mt7981-cudy-ddr4
 endef
 
+define U-Boot/mt7981_gatonetworks_gdsp
+  NAME:=GatoNetworks GDSP
+  BUILD_SUBTARGET:=filogic
+  BUILD_DEVICES:=gatonetworks_gdsp
+  UBOOT_CONFIG:=mt7981_gatonetworks_gdsp
+  UBOOT_IMAGE:=u-boot.fip
+  BL2_BOOTDEV:=nor
+  BL2_SOC:=mt7981
+  BL2_DDRTYPE:=ddr3
+  DEPENDS:=+trusted-firmware-a-mt7981-nor-ddr3
+  FIP_COMPRESS:=1
+endef
+
 define U-Boot/mt7981_glinet_gl-mt2500
   NAME:=GL.iNet GL-MT2500
   BUILD_SUBTARGET:=filogic
@@ -554,6 +567,18 @@ define U-Boot/mt7981_livinet_zr-3020
   DEPENDS:=+trusted-firmware-a-mt7981-spim-nand-ddr3
 endef
 
+define U-Boot/mt7981_netis_eap930-v1
+  NAME:=netis EAP930 V1
+  BUILD_SUBTARGET:=filogic
+  BUILD_DEVICES:=netis_eap930-v1
+  UBOOT_CONFIG:=mt7981_netis_eap930-v1
+  UBOOT_IMAGE:=u-boot.fip
+  BL2_BOOTDEV:=spim-nand
+  BL2_SOC:=mt7981
+  BL2_DDRTYPE:=ddr3
+  DEPENDS:=+trusted-firmware-a-mt7981-spim-nand-ddr3
+endef
+
 define U-Boot/mt7981_netis_nx30v2
   NAME:=netis NX30 V2
   BUILD_SUBTARGET:=filogic
@@ -649,19 +674,6 @@ define U-Boot/mt7981_rfb-emmc
   BL2_SOC:=mt7981
   BL2_DDRTYPE:=ddr3
   DEPENDS:=+trusted-firmware-a-mt7981-emmc-ddr3
-endef
-
-define U-Boot/mt7981_gatonetworks_gdsp
-  NAME:=GatoNetworks GDSP
-  BUILD_SUBTARGET:=filogic
-  BUILD_DEVICES:=gatonetworks_gdsp
-  UBOOT_CONFIG:=mt7981_gatonetworks_gdsp
-  UBOOT_IMAGE:=u-boot.fip
-  BL2_BOOTDEV:=nor
-  BL2_SOC:=mt7981
-  BL2_DDRTYPE:=ddr3
-  DEPENDS:=+trusted-firmware-a-mt7981-nor-ddr3
-  FIP_COMPRESS:=1
 endef
 
 define U-Boot/mt7981_rfb-nor
@@ -1074,6 +1086,42 @@ define U-Boot/mt7987_bananapi_bpi-r4-lite-nor
   FIP_COMPRESS:=1
 endef
 
+define U-Boot/mt7987_rfb-emmc
+  NAME:=MT7987 Reference Board
+  BUILD_SUBTARGET:=filogic
+  BUILD_DEVICES:=mediatek_mt7987a-rfb
+  UBOOT_CONFIG:=mt7987_emmc_rfb
+  UBOOT_IMAGE:=u-boot.fip
+  BL2_BOOTDEV:=emmc
+  BL2_SOC:=mt7987
+  BL2_DDRTYPE:=comb
+  DEPENDS:=+trusted-firmware-a-mt7987-emmc-comb
+endef
+
+define U-Boot/mt7987_rfb-spim-nand
+  NAME:=MT7987 Reference Board
+  BUILD_SUBTARGET:=filogic
+  BUILD_DEVICES:=mediatek_mt7987a-rfb
+  UBOOT_CONFIG:=mt7987_rfb
+  UBOOT_IMAGE:=u-boot.fip
+  BL2_BOOTDEV:=spim-nand0-ubi
+  BL2_SOC:=mt7987
+  BL2_DDRTYPE:=comb
+  DEPENDS:=+trusted-firmware-a-mt7987-spim-nand0-ubi-comb
+endef
+
+define U-Boot/mt7987_rfb-sd
+  NAME:=MT7987 Reference Board
+  BUILD_SUBTARGET:=filogic
+  BUILD_DEVICES:=mediatek_mt7987a-rfb
+  UBOOT_CONFIG:=mt7987_sd_rfb
+  UBOOT_IMAGE:=u-boot.fip
+  BL2_BOOTDEV:=sdmmc
+  BL2_SOC:=mt7987
+  BL2_DDRTYPE:=comb
+  DEPENDS:=+trusted-firmware-a-mt7987-sdmmc-comb
+endef
+
 define U-Boot/mt7987_routerich_be7200
   NAME:=Routerich BE7200
   BUILD_SUBTARGET:=filogic
@@ -1217,42 +1265,6 @@ define U-Boot/mt7988_tplink_tl-7dr7250-v1
   DEPENDS:=+trusted-firmware-a-mt7988-spim-nand-ddr4
 endef
 
-define U-Boot/mt7987_rfb-emmc
-  NAME:=MT7987 Reference Board
-  BUILD_SUBTARGET:=filogic
-  BUILD_DEVICES:=mediatek_mt7987a-rfb
-  UBOOT_CONFIG:=mt7987_emmc_rfb
-  UBOOT_IMAGE:=u-boot.fip
-  BL2_BOOTDEV:=sdmmc
-  BL2_SOC:=mt7987
-  BL2_DDRTYPE:=comb
-  DEPENDS:=+trusted-firmware-a-mt7987-emmc-comb
-endef
-
-define U-Boot/mt7987_rfb-spim-nand
-  NAME:=MT7987 Reference Board
-  BUILD_SUBTARGET:=filogic
-  BUILD_DEVICES:=mediatek_mt7987a-rfb
-  UBOOT_CONFIG:=mt7987_rfb
-  UBOOT_IMAGE:=u-boot.fip
-  BL2_BOOTDEV:=spim-nand0-ubi
-  BL2_SOC:=mt7987
-  BL2_DDRTYPE:=comb
-  DEPENDS:=+trusted-firmware-a-mt7987-spim-nand0-ubi-comb
-endef
-
-define U-Boot/mt7987_rfb-sd
-  NAME:=MT7987 Reference Board
-  BUILD_SUBTARGET:=filogic
-  BUILD_DEVICES:=mediatek_mt7987a-rfb
-  UBOOT_CONFIG:=mt7987_sd_rfb
-  UBOOT_IMAGE:=u-boot.fip
-  BL2_BOOTDEV:=sdmmc
-  BL2_SOC:=mt7987
-  BL2_DDRTYPE:=comb
-  DEPENDS:=+trusted-firmware-a-mt7987-sdmmc-comb
-endef
-
 define U-Boot/mt7988_rfb-spim-nand
   NAME:=MT7988 Reference Board
   BUILD_SUBTARGET:=filogic
@@ -1363,6 +1375,7 @@ UBOOT_TARGETS := \
 	mt7981_konka_komi-a31-emmc \
 	mt7981_konka_komi-a31-nor \
 	mt7981_livinet_zr-3020 \
+	mt7981_netis_eap930-v1 \
 	mt7981_netis_nx30v2 \
 	mt7981_netis_nx31 \
 	mt7981_netis_nx32u \

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/arch/arm/dts/mt7981-globitel-bt-r320.dts
-@@ -0,0 +1,160 @@
+@@ -0,0 +1,158 @@
 +// SPDX-License-Identifier: GPL-2.0
 +
 +/dts-v1/;
@@ -161,7 +161,7 @@
 +};
 --- /dev/null
 +++ b/defenvs/mt7981_globitel_bt-r320_env
-@@ -0,0 +1,52 @@
+@@ -0,0 +1,53 @@
 +ipaddr=192.168.1.1
 +serverip=192.168.1.254
 +loadaddr=0x46000000
@@ -217,7 +217,7 @@
 +_bootmenu_update_title=setenv _bootmenu_update_title ; setenv bootmenu_title "$bootmenu_title       [33m$ver[0m"
 --- /dev/null
 +++ b/configs/mt7981_globitel_bt-r320_defconfig
-@@ -0,0 +1,126 @@
+@@ -0,0 +1,128 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_SMCCC=y
 +CONFIG_SYS_HAS_NONCACHED_MEMORY=y
