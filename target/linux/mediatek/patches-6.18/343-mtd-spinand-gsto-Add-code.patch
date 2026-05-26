@@ -27,7 +27,7 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
  obj-$(CONFIG_MTD_SPI_NAND) += spinand.o
 --- a/drivers/mtd/nand/spi/core.c
 +++ b/drivers/mtd/nand/spi/core.c
-@@ -1243,6 +1243,7 @@ static const struct spinand_manufacturer
+@@ -1234,6 +1234,7 @@ static const struct spinand_manufacturer
  	&fmsh_spinand_manufacturer,
  	&foresee_spinand_manufacturer,
  	&gigadevice_spinand_manufacturer,
@@ -177,7 +177,7 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
 +};
 --- a/include/linux/mtd/spinand.h
 +++ b/include/linux/mtd/spinand.h
-@@ -361,6 +361,7 @@ extern const struct spinand_manufacturer
+@@ -367,6 +367,7 @@ extern const struct spinand_manufacturer
  extern const struct spinand_manufacturer fmsh_spinand_manufacturer;
  extern const struct spinand_manufacturer foresee_spinand_manufacturer;
  extern const struct spinand_manufacturer gigadevice_spinand_manufacturer;

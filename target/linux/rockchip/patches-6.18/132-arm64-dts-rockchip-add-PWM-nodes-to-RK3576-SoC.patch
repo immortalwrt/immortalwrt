@@ -52,7 +52,7 @@ Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
  		pmu: power-management@27380000 {
  			compatible = "rockchip,rk3576-pmu", "syscon", "simple-mfd";
  			reg = <0x0 0x27380000 0x0 0x800>;
-@@ -2480,6 +2506,188 @@
+@@ -2481,6 +2507,188 @@
  			status = "disabled";
  		};
  
