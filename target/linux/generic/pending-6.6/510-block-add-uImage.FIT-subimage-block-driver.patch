@@ -36,7 +36,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -22020,6 +22020,12 @@ F:	Documentation/filesystems/ubifs-authe
+@@ -22028,6 +22028,12 @@ F:	Documentation/filesystems/ubifs-authe
  F:	Documentation/filesystems/ubifs.rst
  F:	fs/ubifs/
  

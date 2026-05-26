@@ -78,7 +78,7 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
 
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -3796,6 +3796,15 @@ L:	bpf@vger.kernel.org
+@@ -3804,6 +3804,15 @@ L:	bpf@vger.kernel.org
  S:	Odd Fixes
  K:	(?:\b|_)bpf(?:\b|_)
  
@@ -1125,7 +1125,7 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
  	MAX_BPF_LINK_TYPE,
  };
  
-@@ -1662,6 +1665,13 @@ union bpf_attr {
+@@ -1664,6 +1667,13 @@ union bpf_attr {
  				__u32		flags;
  				__u32		pid;
  			} uprobe_multi;
@@ -1139,7 +1139,7 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
  		};
  	} link_create;
  
-@@ -6587,6 +6597,10 @@ struct bpf_link_info {
+@@ -6589,6 +6599,10 @@ struct bpf_link_info {
  			__u32 ifindex;
  			__u32 attach_type;
  		} tcx;
@@ -1284,7 +1284,7 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
  	MAX_BPF_LINK_TYPE,
  };
  
-@@ -1662,6 +1665,13 @@ union bpf_attr {
+@@ -1664,6 +1667,13 @@ union bpf_attr {
  				__u32		flags;
  				__u32		pid;
  			} uprobe_multi;
@@ -1298,7 +1298,7 @@ Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
  		};
  	} link_create;
  
-@@ -6590,6 +6600,10 @@ struct bpf_link_info {
+@@ -6592,6 +6602,10 @@ struct bpf_link_info {
  			__u32 ifindex;
  			__u32 attach_type;
  		} tcx;
