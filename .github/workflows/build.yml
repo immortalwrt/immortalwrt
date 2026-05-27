@@ -57,7 +57,9 @@ jobs:
             echo "Missing build config: $CONFIG_PATH"
             exit 1
           fi
-          cp "$CONFIG_PATH" .config
+          if [ "$(realpath "$CONFIG_PATH")" != "$(realpath .config)" ]; then
+            cp "$CONFIG_PATH" .config
+          fi
           make defconfig
 
       - name: Build
