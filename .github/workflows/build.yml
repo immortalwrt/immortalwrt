@@ -1,0 +1,76 @@
+name: Build ImmortalWrt
+
+on:
+  workflow_dispatch:
+    inputs:
+      config_path:
+        description: Path to the build config in the repository
+        required: false
+        default: .config
+      make_target:
+        description: Make target to run
+        required: false
+        default: world
+      make_args:
+        description: Extra arguments passed to make
+        required: false
+        default: -j$(nproc) V=s
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DEBIAN_FRONTEND: noninteractive
+  CONFIG_PATH: ${{ inputs.config_path }}
+  MAKE_TARGET: ${{ inputs.make_target }}
+  MAKE_ARGS: ${{ inputs.make_args }}
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Install build environment
+        run: |
+          set -euxo pipefail
+          curl -fsSL https://build-scripts.immortalwrt.org/init_build_environment.sh -o /tmp/init_build_environment.sh
+          sudo bash /tmp/init_build_environment.sh
+
+      - name: Prepare feeds
+        run: |
+          set -euxo pipefail
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+      - name: Load build config
+        run: |
+          set -euxo pipefail
+          if [ ! -f "$CONFIG_PATH" ]; then
+            echo "Missing build config: $CONFIG_PATH"
+            exit 1
+          fi
+          cp "$CONFIG_PATH" .config
+          make defconfig
+
+      - name: Build
+        run: |
+          set -euxo pipefail
+          make $MAKE_TARGET $MAKE_ARGS
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: immortalwrt-bin-${{ github.run_id }}
+          path: |
+            bin/targets/
+            bin/packages/
+          if-no-files-found: warn
+          retention-days: 7
