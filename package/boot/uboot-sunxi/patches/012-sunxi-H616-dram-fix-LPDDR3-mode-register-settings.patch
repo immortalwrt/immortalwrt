@@ -1,0 +1,54 @@
+From c453a80cc3b999ad515ed7fcfcf3062e8de1f696 Mon Sep 17 00:00:00 2001
+From: Andre Przywara <andre.przywara@arm.com>
+Date: Sun, 27 Jul 2025 14:04:09 +0100
+Subject: [PATCH] sunxi: H616: dram: fix LPDDR3 mode register settings
+
+The JEDEC LPDDR3 spec defines mode register 0 (MR0) as being read-only,
+so there is no point in trying to set its value.
+Also the H616 memory controller encodes the mode register index to be
+written starting from bit 8 in MRCTRL1 (for LPDDR3 and LPDDR4 chips), so
+we need to OR in that number to tell the controller which MR to program.
+
+On top of that, the mode registers between DDR3 and LPDDR3 are
+completely different, so writing values crafted for DDR3 into a LPDDR3
+chip is just wrong. Due to the above mentioned bugs the writes for
+MR0-MR2 did not have any effect (as they were all trying to set the
+read-only MR0), so the mode registers just stayed unchanged.
+
+Looking at the LPDDR3 spec and the BSP code, let's write the proper MR
+values into LPDDR3 chips, using the proper addressing mode.
+Use the opportunity to document the LPDDR3 mode register bits written.
+
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ arch/arm/mach-sunxi/dram_sun50i_h616.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+--- a/arch/arm/mach-sunxi/dram_sun50i_h616.c
++++ b/arch/arm/mach-sunxi/dram_sun50i_h616.c
+@@ -1077,18 +1077,18 @@ static bool mctl_phy_init(const struct d
+ 		mctl_await_completion(&mctl_ctl->mrctrl0, BIT(31), 0);
+ 		break;
+ 	case SUNXI_DRAM_TYPE_LPDDR3:
+-		writel(mr0, &mctl_ctl->mrctrl1);
++		/* MR0 is read-only */
++		/* MR1: nWR=14, BL8 */
++		writel(0x183, &mctl_ctl->mrctrl1);
+ 		writel(0x800000f0, &mctl_ctl->mrctrl0);
+ 		mctl_await_completion(&mctl_ctl->mrctrl0, BIT(31), 0);
+ 
+-		writel(4, &mctl_ctl->mrctrl1);
+-		writel(0x800000f0, &mctl_ctl->mrctrl0);
+-		mctl_await_completion(&mctl_ctl->mrctrl0, BIT(31), 0);
+-
+-		writel(mr2, &mctl_ctl->mrctrl1);
++		/* MR2: no WR leveling, WL set A, use nWR>9, nRL=14/nWL=8 */
++		writel(0x21c, &mctl_ctl->mrctrl1);
+ 		writel(0x800000f0, &mctl_ctl->mrctrl0);
+ 		mctl_await_completion(&mctl_ctl->mrctrl0, BIT(31), 0);
+ 
++		/* MR3: 34.3 Ohm pull-up/pull-down resistor */
+ 		writel(0x301, &mctl_ctl->mrctrl1);
+ 		writel(0x800000f0, &mctl_ctl->mrctrl0);
+ 		mctl_await_completion(&mctl_ctl->mrctrl0, BIT(31), 0);

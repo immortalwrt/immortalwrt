@@ -1,0 +1,73 @@
+From 40c687aef01fd0ccdf24285f577db1bc0d64db16 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 9 Mar 2025 07:31:42 +0100
+Subject: [PATCH] sunxi: h616: dram: Rework size detection
+
+Since there is quite a few possible DRAM configurations in terms of bus
+width, rank and rows and columns count, size detection algorithm must be
+very careful not to test combination which would be bigger than H616 is
+actually capable of handling.
+
+Ideally, we should always detect memory aliasing, even for 4 GB memory
+size, which is the maximum amount of memory that H616 is capable of
+handling. For this reason, we have to configure minimum amount of
+supported rows when testing for columns and vice versa. This way test
+code will never step out of 4 GB boundary.
+
+While at it, check for 17 rows maximum. This aligns code with BSP DRAM
+driver. There is probably no such configuration which would make sense
+with 4 GB memory.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reviewed-by: Icenowy Zheng <uwu@icenowy.me>
+Reviewed-by: Andre Przywara <andre.przywara@arm.com>
+---
+ arch/arm/mach-sunxi/dram_sun50i_h616.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
+
+--- a/arch/arm/mach-sunxi/dram_sun50i_h616.c
++++ b/arch/arm/mach-sunxi/dram_sun50i_h616.c
+@@ -1363,7 +1363,7 @@ static void mctl_auto_detect_rank_width(
+ static void mctl_auto_detect_dram_size(const struct dram_para *para,
+ 				       struct dram_config *config)
+ {
+-	unsigned int shift;
++	unsigned int shift, cols, rows;
+ 
+ 	/* max. config for columns, but not rows */
+ 	config->cols = 11;
+@@ -1373,23 +1373,27 @@ static void mctl_auto_detect_dram_size(c
+ 	shift = config->bus_full_width + 1;
+ 
+ 	/* detect column address bits */
+-	for (config->cols = 8; config->cols < 11; config->cols++) {
+-		if (mctl_mem_matches(1ULL << (config->cols + shift)))
++	for (cols = 8; cols < 11; cols++) {
++		if (mctl_mem_matches(1ULL << (cols + shift)))
+ 			break;
+ 	}
+-	debug("detected %u columns\n", config->cols);
++	debug("detected %u columns\n", cols);
+ 
+ 	/* reconfigure to make sure that all active rows are accessible */
+-	config->rows = 18;
++	config->cols = 8;
++	config->rows = 17;
+ 	mctl_core_init(para, config);
+ 
+ 	/* detect row address bits */
+ 	shift = config->bus_full_width + 4 + config->cols;
+-	for (config->rows = 13; config->rows < 18; config->rows++) {
+-		if (mctl_mem_matches(1ULL << (config->rows + shift)))
++	for (rows = 13; rows < 17; rows++) {
++		if (mctl_mem_matches(1ULL << (rows + shift)))
+ 			break;
+ 	}
+-	debug("detected %u rows\n", config->rows);
++	debug("detected %u rows\n", rows);
++
++	config->cols = cols;
++	config->rows = rows;
+ }
+ 
+ static unsigned long mctl_calc_size(const struct dram_config *config)

@@ -16,7 +16,7 @@ Signed-off-by: Icenowy Zheng <uwu@icenowy.me>
 
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -647,7 +647,8 @@ dtb-$(CONFIG_STM32H7) += stm32h743i-disc
+@@ -538,7 +538,8 @@ dtb-$(CONFIG_STM32H7) += stm32h743i-disc
  	stm32h750i-art-pi.dtb
  
  dtb-$(CONFIG_MACH_SUNIV) += \
