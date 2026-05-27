@@ -1,0 +1,32 @@
+From 5a24cc0740e1afcca830dd83d9f1062034fff2d6 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 5 Apr 2026 21:59:26 +0200
+Subject: [PATCH] sunxi: H616: dram: fix LPDDR3 TPR6 parsing
+
+Allwinner's DRAM initialisation code defines a parameter named TPR6,
+presumably containing some "Vref" parameter, but containing values for
+*all* DRAM types. The runtime code selects one byte based on the DRAM
+type used.
+This selection code was wrong for LPDDR3, the value is encoded in
+bits [23:16], not [15:8]. Fix that in the code, which also aligns it
+with the very similar code for the A133 and A523.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Reported-by: Philippe Simons <simons.philippe@gmail.com>
+Reviewed-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Paul Kocialkowski <paulk@sys-base.io>
+---
+ arch/arm/mach-sunxi/dram_sun50i_h616.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/arch/arm/mach-sunxi/dram_sun50i_h616.c
++++ b/arch/arm/mach-sunxi/dram_sun50i_h616.c
+@@ -956,7 +956,7 @@ static bool mctl_phy_init(const struct d
+ 		val = para->tpr6 & 0xff;
+ 		break;
+ 	case SUNXI_DRAM_TYPE_LPDDR3:
+-		val = para->tpr6 >> 8 & 0xff;
++		val = para->tpr6 >> 16 & 0xff;
+ 		break;
+ 	case SUNXI_DRAM_TYPE_LPDDR4:
+ 		val = para->tpr6 >> 24 & 0xff;

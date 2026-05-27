@@ -1,0 +1,67 @@
+From b37edefc20aa95dd8728518ff87d93321281b1f2 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Fri, 30 Aug 2024 10:55:09 -0500
+Subject: [PATCH] sunxi: H616: DRAM: Adjust size scan procedure
+
+It's safer to start scanning for columns first and then rows. Columns
+reside on LSB address pins, which means that second configuration will
+already have all needed row pins active.
+
+This is also preparation for introducing DDR4 support, which need scan
+for banks and bank groups too.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Tested-by: Chris Morgan <macromorgan@hotmail.com>
+---
+ arch/arm/mach-sunxi/dram_sun50i_h616.c | 31 +++++++++++++++-----------
+ 1 file changed, 18 insertions(+), 13 deletions(-)
+
+--- a/arch/arm/mach-sunxi/dram_sun50i_h616.c
++++ b/arch/arm/mach-sunxi/dram_sun50i_h616.c
+@@ -1344,28 +1344,33 @@ static void mctl_auto_detect_rank_width(
+ static void mctl_auto_detect_dram_size(const struct dram_para *para,
+ 				       struct dram_config *config)
+ {
+-	/* detect row address bits */
+-	config->cols = 8;
+-	config->rows = 18;
++	unsigned int shift;
++
++	/* max. config for columns, but not rows */
++	config->cols = 11;
++	config->rows = 13;
+ 	mctl_core_init(para, config);
+ 
+-	for (config->rows = 13; config->rows < 18; config->rows++) {
+-		/* 8 banks, 8 bit per byte and 16/32 bit width */
+-		if (mctl_mem_matches((1 << (config->rows + config->cols +
+-					    4 + config->bus_full_width))))
++	shift = config->bus_full_width + 1;
++
++	/* detect column address bits */
++	for (config->cols = 8; config->cols < 11; config->cols++) {
++		if (mctl_mem_matches(1ULL << (config->cols + shift)))
+ 			break;
+ 	}
++	debug("detected %u columns\n", config->cols);
+ 
+-	/* detect column address bits */
+-	config->cols = 11;
++	/* reconfigure to make sure that all active rows are accessible */
++	config->rows = 18;
+ 	mctl_core_init(para, config);
+ 
+-	for (config->cols = 8; config->cols < 11; config->cols++) {
+-		/* 8 bits per byte and 16/32 bit width */
+-		if (mctl_mem_matches(1 << (config->cols + 1 +
+-					   config->bus_full_width)))
++	/* detect row address bits */
++	shift = config->bus_full_width + 4 + config->cols;
++	for (config->rows = 13; config->rows < 18; config->rows++) {
++		if (mctl_mem_matches(1ULL << (config->rows + shift)))
+ 			break;
+ 	}
++	debug("detected %u rows\n", config->rows);
+ }
+ 
+ static unsigned long mctl_calc_size(const struct dram_config *config)

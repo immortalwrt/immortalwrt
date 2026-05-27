@@ -1,0 +1,113 @@
+From bc20c3ed24632ba4bf29064e0578c0aca68455ef Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Fri, 30 Aug 2024 10:55:06 -0500
+Subject: [PATCH] sunxi: H616: dram: LPDDR4: adjust settings
+
+Adjust H616 LPDDR4 DRAM settings to be in line with vendor driver.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Tested-by: Chris Morgan <macromorgan@hotmail.com>
+---
+ arch/arm/mach-sunxi/dram_sun50i_h616.c        | 33 +++++++++++++------
+ .../dram_timings/h616_lpddr4_2133.c           |  2 +-
+ 2 files changed, 24 insertions(+), 11 deletions(-)
+
+--- a/arch/arm/mach-sunxi/dram_sun50i_h616.c
++++ b/arch/arm/mach-sunxi/dram_sun50i_h616.c
+@@ -295,14 +295,22 @@ static void mctl_phy_configure_odt(const
+ 	dmb();
+ }
+ 
+-static bool mctl_phy_write_leveling(const struct dram_config *config)
++static bool mctl_phy_write_leveling(const struct dram_para *para,
++				    const struct dram_config *config)
+ {
+ 	bool result = true;
+ 	u32 val;
+ 
+ 	clrsetbits_le32(SUNXI_DRAM_PHY0_BASE + 8, 0xc0, 0x80);
+-	writel(4, SUNXI_DRAM_PHY0_BASE + 0xc);
+-	writel(0x40, SUNXI_DRAM_PHY0_BASE + 0x10);
++
++	if (para->type == SUNXI_DRAM_TYPE_LPDDR4) {
++		/* MR2 value */
++		writel(0x1b, SUNXI_DRAM_PHY0_BASE + 0xc);
++		writel(0, SUNXI_DRAM_PHY0_BASE + 0x10);
++	} else {
++		writel(4, SUNXI_DRAM_PHY0_BASE + 0xc);
++		writel(0x40, SUNXI_DRAM_PHY0_BASE + 0x10);
++	}
+ 
+ 	setbits_le32(SUNXI_DRAM_PHY0_BASE + 8, 4);
+ 
+@@ -861,9 +869,9 @@ static void mctl_phy_ca_bit_delay_compen
+ 		}
+ 		break;
+ 	case SUNXI_DRAM_TYPE_LPDDR4:
+-		if (para->tpr2 & 1) {
+-			writel(val, SUNXI_DRAM_PHY0_BASE + 0x788);
+-		} else {
++		writel(val, SUNXI_DRAM_PHY0_BASE + 0x788);
++		if (config->ranks == 2) {
++			val = (para->tpr10 >> 11) & 0x1e;
+ 			writel(val, SUNXI_DRAM_PHY0_BASE + 0x794);
+ 		};
+ 		break;
+@@ -1082,19 +1090,27 @@ static bool mctl_phy_init(const struct d
+ 		mctl_await_completion(&mctl_ctl->mrctrl0, BIT(31), 0);
+ 
+ 		writel(0xb04, &mctl_ctl->mrctrl1);
++		udelay(10);
+ 		writel(0x80000030, &mctl_ctl->mrctrl0);
++		udelay(10);
+ 		mctl_await_completion(&mctl_ctl->mrctrl0, BIT(31), 0);
+ 
+ 		writel(0xc72, &mctl_ctl->mrctrl1);
++		udelay(10);
+ 		writel(0x80000030, &mctl_ctl->mrctrl0);
++		udelay(10);
+ 		mctl_await_completion(&mctl_ctl->mrctrl0, BIT(31), 0);
+ 
+ 		writel(0xe09, &mctl_ctl->mrctrl1);
++		udelay(10);
+ 		writel(0x80000030, &mctl_ctl->mrctrl0);
++		udelay(10);
+ 		mctl_await_completion(&mctl_ctl->mrctrl0, BIT(31), 0);
+ 
+ 		writel(0x1624, &mctl_ctl->mrctrl1);
++		udelay(10);
+ 		writel(0x80000030, &mctl_ctl->mrctrl0);
++		udelay(10);
+ 		mctl_await_completion(&mctl_ctl->mrctrl0, BIT(31), 0);
+ 		break;
+ 	case SUNXI_DRAM_TYPE_DDR4:
+@@ -1110,7 +1126,7 @@ static bool mctl_phy_init(const struct d
+ 
+ 	if (para->tpr10 & TPR10_WRITE_LEVELING) {
+ 		for (i = 0; i < 5; i++)
+-			if (mctl_phy_write_leveling(config))
++			if (mctl_phy_write_leveling(para, config))
+ 				break;
+ 		if (i == 5) {
+ 			debug("write leveling failed!\n");
+@@ -1236,9 +1252,6 @@ static bool mctl_ctrl_init(const struct
+ 	setbits_le32(&mctl_ctl->unk_0x3180, BIT(31) | BIT(30));
+ 	setbits_le32(&mctl_ctl->unk_0x4180, BIT(31) | BIT(30));
+ 
+-	if (para->type == SUNXI_DRAM_TYPE_LPDDR4)
+-		setbits_le32(&mctl_ctl->dbictl, 0x1);
+-
+ 	setbits_le32(&mctl_ctl->rfshctl3, BIT(0));
+ 	clrbits_le32(&mctl_ctl->dfimisc, BIT(0));
+ 
+--- a/arch/arm/mach-sunxi/dram_timings/h616_lpddr4_2133.c
++++ b/arch/arm/mach-sunxi/dram_timings/h616_lpddr4_2133.c
+@@ -24,7 +24,7 @@ void mctl_set_timing_params(const struct
+ 	u8 trcd		= max(ns_to_t(18), 2);
+ 	u8 trc		= ns_to_t(65);
+ 	u8 txp		= max(ns_to_t(8), 2);
+-	u8 trtp		= max(ns_to_t(8), 4);
++	u8 trtp		= 4;
+ 	u8 trp		= ns_to_t(21);
+ 	u8 tras		= ns_to_t(42);
+ 	u16 trefi	= ns_to_t(3904) / 32;

@@ -34,15 +34,15 @@ Link: https://github.com/dgibson/dtc/pull/154
 +		resultobj = SWIG_AppendOutput(resultobj, buff);
  	}
  }
-
+ 
 @@ -1076,7 +1076,7 @@ typedef uint32_t fdt32_t;
-
+ 
  %typemap(argout) int *depth {
          PyObject *val = Py_BuildValue("i", *arg$argnum);
 -        resultobj = SWIG_Python_AppendOutput(resultobj, val);
 +        resultobj = SWIG_AppendOutput(resultobj, val);
  }
-
+ 
  %apply int *depth { int *depth };
 @@ -1092,7 +1092,7 @@ typedef uint32_t fdt32_t;
             if (PyTuple_GET_SIZE(resultobj) == 0)
@@ -52,3 +52,4 @@ Link: https://github.com/dgibson/dtc/pull/154
 +              resultobj = SWIG_AppendOutput(resultobj, val);
          }
  }
+ 
