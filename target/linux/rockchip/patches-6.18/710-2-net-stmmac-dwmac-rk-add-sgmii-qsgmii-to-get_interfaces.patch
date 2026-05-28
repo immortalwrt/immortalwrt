@@ -1,0 +1,15 @@
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
+@@ -1889,6 +1889,12 @@ static void rk_get_interfaces(struct stm
+ 
+ 	if (rk->ops->set_to_rmii)
+ 		__set_bit(PHY_INTERFACE_MODE_RMII, interfaces);
++
++	if (rk->ops->set_to_sgmii)
++		__set_bit(PHY_INTERFACE_MODE_SGMII, interfaces);
++
++	if (rk->ops->set_to_qsgmii)
++		__set_bit(PHY_INTERFACE_MODE_QSGMII, interfaces);
+ }
+ 
+ static int rk_set_clk_tx_rate(void *bsp_priv_, struct clk *clk_tx_i,
