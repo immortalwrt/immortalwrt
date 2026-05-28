@@ -37,7 +37,6 @@ define Package/ip-tiny
 $(call Package/iproute2/Default)
   TITLE:=Routing control utility (minimal)
   VARIANT:=iptiny
-  DEFAULT_VARIANT:=1
   PROVIDES:=ip
   ALTERNATIVES:=200:/sbin/ip:/usr/libexec/ip-tiny
   DEPENDS:=+libnl-tiny +(PACKAGE_devlink||PACKAGE_rdma||PACKAGE_dcb):libmnl
@@ -47,6 +46,7 @@ define Package/ip-full
 $(call Package/iproute2/Default)
   TITLE:=Routing control utility (full)
   VARIANT:=ipfull
+  DEFAULT_VARIANT:=1
   PROVIDES:=ip
   ALTERNATIVES:=300:/sbin/ip:/usr/libexec/ip-full
   DEPENDS:=+libnl-tiny +libbpf +(PACKAGE_devlink||PACKAGE_rdma||PACKAGE_dcb):libmnl
