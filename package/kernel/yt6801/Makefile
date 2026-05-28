@@ -22,7 +22,7 @@ include $(INCLUDE_DIR)/package.mk
 define KernelPackage/yt6801
   SUBMENU:=Network Devices
   TITLE:=Motorcomm YT6801 ethernet controller driver
-  DEPENDS:=@PCI_SUPPORT
+  DEPENDS:=@PCI_SUPPORT @(TARGET_armsr_armv8||TARGET_loongarch64||TARGET_x86)
   FILES:=$(PKG_BUILD_DIR)/src/yt6801.ko
   AUTOLOAD:=$(call AutoProbe,yt6801,1)
 endef
