@@ -50,7 +50,7 @@ TARGET_DEVICES += plasmacloud_esx28
 define Device/plasmacloud_psx28
   $(Device/plasmacloud-common)
   DEVICE_MODEL := PSX28
-  DEVICE_PACKAGES += poemgr
+  DEVICE_PACKAGES += kmod-pse-realtek-mcu-i2c
 endef
 TARGET_DEVICES += plasmacloud_psx28
 
