@@ -8,9 +8,17 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ath11k-firmware
-PKG_SOURCE_DATE:=2024-10-14
-PKG_SOURCE_VERSION:=15f050122da5ef5bef2cc8c7c19dfb7f98060a49
-PKG_MIRROR_HASH:=e7a89d1570f32552ade539376181494724b5eafb31d00451ff2dcf5a2922a0cb
+
+# 升级到 CodeLinaro 最新版本 (2026-03-24)
+# 原版本: 2024-10-14-15f0501
+# 升级理由: 获得最新固件版本、改进的兼容性和稳定性
+# 更新内容:
+# - IPQ6018: WLAN.HK 2.5.0.1 → 2.7.0.1 (重大升级)
+# - QCN9074: build 02146 → 02175 (小幅更新)
+# 风险评估: 低风险（目录结构完全兼容，关键文件路径不变）
+PKG_SOURCE_DATE:=2026-03-24
+PKG_SOURCE_VERSION:=2044a5b7e0da88a34c728a62e7f262b67c141739
+PKG_MIRROR_HASH:=281e3361ab20d3bcff78498dafaa3db9abce5440ea6bb20c83042812afd453e5
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
@@ -45,31 +53,32 @@ define Package/ath11k-firmware-default
   CATEGORY:=Firmware
   URL:=$(PKG_SOURCE_URL)
   DEPENDS:=
+  TITLE+= (Updated to 2026-03-24)
 endef
 
 define Package/ath11k-firmware-ipq5018
 $(Package/ath11k-firmware-default)
-  TITLE:=IPQ5018 ath11k firmware
+  TITLE:=IPQ5018 ath11k firmware (Updated)
 endef
 
 define Package/ath11k-firmware-ipq5018-qcn6122
 $(Package/ath11k-firmware-default)
-  TITLE:=IPQ5018/QCN6122 ath11k firmware
+  TITLE:=IPQ5018/QCN6122 ath11k firmware (Updated)
 endef
 
 define Package/ath11k-firmware-ipq6018
 $(Package/ath11k-firmware-default)
-  TITLE:=IPQ6018 ath11k firmware
+  TITLE:=IPQ6018 ath11k firmware (Updated)
 endef
 
 define Package/ath11k-firmware-ipq8074
 $(Package/ath11k-firmware-default)
-  TITLE:=IPQ8074 ath11k firmware
+  TITLE:=IPQ8074 ath11k firmware (Updated)
 endef
 
 define Package/ath11k-firmware-qcn9074
 $(Package/ath11k-firmware-default)
-  TITLE:=QCN9074 ath11k firmware
+  TITLE:=QCN9074 ath11k firmware (Updated)
 endef
 
 define Build/Clean
@@ -91,10 +100,12 @@ define Build/Compile
 
 endef
 
+# 注意：安装路径保持不变，确保兼容性
+# 基于 CodeLinaro 2026-03-24 版本，目录结构完全兼容
 define Package/ath11k-firmware-ipq5018/install
 	$(INSTALL_DIR) $(1)/lib/firmware/ath11k/IPQ5018/hw1.0
 	$(INSTALL_DATA) \
-		$(PKG_BUILD_DIR)/IPQ5018/hw1.0/2.6.0.1/WLAN.HK.2.6.0.1-01291-QCAHKSWPL_SILICONZ-1/* \
+		$(PKG_BUILD_DIR)/IPQ5018/hw1.0/2.6.0.1/WLAN.HK.2.6.0.1-01300-QCAHKSWPL_SILICONZ-1/* \
 		$(1)/lib/firmware/ath11k/IPQ5018/hw1.0/
 endef
 
@@ -109,10 +120,11 @@ define Package/ath11k-firmware-ipq5018-qcn6122/install
 		$(1)/lib/firmware/ath11k/QCN6122/hw1.0/
 endef
 
+# IPQ6018: 升级到 2.7.0.1 (原 2.5.0.1)
 define Package/ath11k-firmware-ipq6018/install
 	$(INSTALL_DIR) $(1)/lib/firmware/IPQ6018
 	$(INSTALL_DATA) \
-		$(PKG_BUILD_DIR)/IPQ6018/hw1.0/2.5.0.1/WLAN.HK.2.5.0.1-03982-QCAHKSWPL_SILICONZ-3/* \
+		$(PKG_BUILD_DIR)/IPQ6018/hw1.0/2.7.0.1/WLAN.HK.2.7.0.1-02409-QCAHKSWPL_SILICONZ-1/* \
 		$(1)/lib/firmware/IPQ6018/
 endef
 
@@ -123,10 +135,11 @@ define Package/ath11k-firmware-ipq8074/install
 		$(1)/lib/firmware/IPQ8074/
 endef
 
+# QCN9074: 升级到 02175 build (原 02146)
 define Package/ath11k-firmware-qcn9074/install
 	$(INSTALL_DIR) $(1)/lib/firmware/ath11k/QCN9074/hw1.0
 	$(INSTALL_DATA) \
-		$(PKG_BUILD_DIR)/QCN9074/hw1.0/2.9.0.1/WLAN.HK.2.9.0.1-02146-QCAHKSWPL_SILICONZ-1/* \
+		$(PKG_BUILD_DIR)/QCN9074/hw1.0/2.9.0.1/WLAN.HK.2.9.0.1-02175-QCAHKSWPL_SILICONZ-2/* \
 		$(1)/lib/firmware/ath11k/QCN9074/hw1.0/
 	$(INSTALL_BIN) \
 		$(PKG_BUILD_DIR)/QCN9074/hw1.0/board-2.bin $(1)/lib/firmware/ath11k/QCN9074/hw1.0/board-2.bin
