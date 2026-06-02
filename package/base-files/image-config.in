@@ -91,7 +91,7 @@ config TARGET_PREINIT_IFNAME
 config TARGET_PREINIT_IP
 	string
 	prompt "IP address for preinit network messages" if PREINITOPT
-	default "192.168.1.1"
+	default "192.168.10.1"
 	help
 		IP address used to configure interface for preinit network
 		messages, including failsafe messages
@@ -107,7 +107,7 @@ config TARGET_PREINIT_NETMASK
 config TARGET_PREINIT_BROADCAST
 	string
 	prompt "Broadcast address for preinit network messages" if PREINITOPT
-	default "192.168.1.255"
+	default "192.168.10.255"
 	help
 		Broadcast address to which to send preinit network messages, as
 		as failsafe messages
@@ -173,10 +173,10 @@ if VERSIONOPT
 	config VERSION_DIST
 		string
 		prompt "Release distribution"
-		default "ImmortalWrt"
+		default "ZagWrt"
 		help
 			This is the name of the release distribution.
-			If unspecified, it defaults to ImmortalWrt.
+			If unspecified, it defaults to ZagWrt.
 
 	config VERSION_NUMBER
 		string
@@ -198,7 +198,7 @@ if VERSIONOPT
 	config VERSION_REPO
 		string
 		prompt "Release repository"
-		default "https://downloads.immortalwrt.org/releases/25.12-SNAPSHOT"
+		default "https://pcat.qsim.top/zagwrt/immortalwrt/releases/%V"
 		help
 			This is the repository address embedded in the image, it defaults
 			to the trunk snapshot repo; the url may contain the following placeholders:
@@ -286,6 +286,50 @@ if VERSIONOPT
 			version code into the firmware image, SDK- and Image Builder archive
 			file names
 endif
+
+menuconfig TARGET_BUTTON_CUSTOMIZATION
+	bool "Target button customization" if IMAGEOPT
+	default n
+	help
+		These options allow to customize the behaviour of the buttons defined in
+		the target's /etc/rc.button/* scripts.  This is useful for release builds
+		or custom OpenWrt redistributions where certain default button handling logic
+		may be undesired.
+
+	config TARGET_BUTTON_CUSTOMIZATION_FAILSAFE_DISABLED
+		bool
+		prompt "Disable failsafe button handling" if TARGET_BUTTON_CUSTOMIZATION
+		default n
+		help
+			If set, the failsafe button handling logic in /etc/rc.button/failsafe is disabled.
+
+	config TARGET_BUTTON_CUSTOMIZATION_POWER_DISABLED
+		bool
+		prompt "Disable power button handling" if TARGET_BUTTON_CUSTOMIZATION
+		default n
+		help
+			If set, the power button handling logic in /etc/rc.button/power is disabled.
+
+	config TARGET_BUTTON_CUSTOMIZATION_REBOOT_DISABLED
+		bool
+		prompt "Disable reboot button handling" if TARGET_BUTTON_CUSTOMIZATION
+		default n
+		help
+			If set, the reboot button handling logic in /etc/rc.button/reboot is disabled.
+
+	config TARGET_BUTTON_CUSTOMIZATION_RESET_DISABLED
+		bool
+		prompt "Disable reset button handling" if TARGET_BUTTON_CUSTOMIZATION
+		default n
+		help
+			If set, the reset button handling logic in /etc/rc.button/reset is disabled.
+
+	config TARGET_BUTTON_CUSTOMIZATION_RF_KILL_DISABLED
+		bool
+		prompt "Disable rfkill button handling" if TARGET_BUTTON_CUSTOMIZATION
+		default n
+		help
+			If set, the rfkill button handling logic in /etc/rc.button/rfkill is disabled.
 
 
 menuconfig PER_FEED_REPO
