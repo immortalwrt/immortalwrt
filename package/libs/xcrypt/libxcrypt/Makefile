@@ -27,7 +27,7 @@ CONFIGURE_ARGS += \
 	--with-pic \
 	--enable-year2038 \
 	--disable-xcrypt-compat-files \
-	--disable-shared \
+	--enable-shared \
 	--disable-failure-tokens \
 	--disable-obsolete-api \
 	--enable-hashes=solaris
@@ -36,13 +36,24 @@ define Package/libxcrypt/install
 	true
 endef
 
+define Package/libxcrypt-shared
+$(Package/libxcrypt/Default)
+endef
+
+define Package/libxcrypt-shared/install
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libcrypt.so* $(1)/usr/lib/
+endef
+
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/*.h $(1)/usr/include/
 	$(INSTALL_DIR) $(1)/usr/lib/libxcrypt
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libcrypt.{a,la} $(1)/usr/lib/libxcrypt
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libcrypt.so* $(1)/usr/lib/libxcrypt
 	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/libxcrypt.pc $(1)/usr/lib/pkgconfig/
 endef
 
 $(eval $(call BuildPackage,libxcrypt))
+$(eval $(call BuildPackage,libxcrypt-shared))
