@@ -1,0 +1,13 @@
+--- a/iwinfo_nl80211.c
++++ b/iwinfo_nl80211.c
+@@ -3642,8 +3642,10 @@ static int nl80211_get_hardware_id(const char *ifname, char *buf)
+ 		{ "device", &id->device_id },
+ 		{ "subsystem_vendor", &id->subsystem_vendor_id },
+ 		{ "subsystem_device", &id->subsystem_device_id },
+-		{ "../idVendor", &id->subsystem_vendor_id },
+-		{ "../idProduct", &id->subsystem_device_id }
++		{ "../idVendor", &id->subsystem_vendor_id },
++		{ "../idProduct", &id->subsystem_device_id },
++		{ "idVendor", &id->subsystem_vendor_id },
++		{ "idProduct", &id->subsystem_device_id }
+ 	};
