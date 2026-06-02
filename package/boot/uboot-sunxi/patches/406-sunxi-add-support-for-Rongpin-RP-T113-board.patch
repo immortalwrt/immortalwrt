@@ -13,7 +13,7 @@ Signed-off-by: Zoltan HERPAI <wigyori@uid0.hu>
  create mode 100644 configs/rongpin_rp_t113_defconfig
 
 --- /dev/null
-+++ b/arch/arm/dts/sun8i-t113s-rongpin-rp-t113.dts
++++ b/dts/upstream/src/arm/allwinner/sun8i-t113s-rongpin-rp-t113.dts
 @@ -0,0 +1,99 @@
 +// SPDX-License-Identifier: (GPL-2.0+ or MIT)
 +// Copyright (C) 2022 Arm Ltd.
@@ -116,10 +116,10 @@ Signed-off-by: Zoltan HERPAI <wigyori@uid0.hu>
 +};
 --- /dev/null
 +++ b/configs/rongpin_rp_t113_defconfig
-@@ -0,0 +1,19 @@
+@@ -0,0 +1,18 @@
 +CONFIG_ARM=y
 +CONFIG_ARCH_SUNXI=y
-+CONFIG_DEFAULT_DEVICE_TREE="sun8i-t113s-rongpin-rp-t113"
++CONFIG_DEFAULT_DEVICE_TREE="allwinner/sun8i-t113s-rongpin-rp-t113"
 +CONFIG_SUNXI_MINIMUM_DRAM_MB=128
 +CONFIG_SPL=y
 +CONFIG_MACH_SUN8I_R528=y
@@ -135,4 +135,3 @@ Signed-off-by: Zoltan HERPAI <wigyori@uid0.hu>
 +CONFIG_DRAM_SUNXI_TPR12=0x46
 +CONFIG_DRAM_SUNXI_TPR13=0x34000100
 +CONFIG_UART3_PINS_PE=y
-+# CONFIG_OF_UPSTREAM is not set

@@ -1,5 +1,5 @@
 --- /dev/null
-+++ b/arch/arm/dts/sun8i-t113s-olinuxino.dts
++++ b/dts/upstream/src/arm/allwinner/sun8i-t113s-olinuxino.dts
 @@ -0,0 +1,193 @@
 +// SPDX-License-Identifier: (GPL-2.0+ or MIT)
 +// Copyright (C) 2022 Arm Ltd.
@@ -196,10 +196,10 @@
 +};
 --- /dev/null
 +++ b/configs/olimex_olinuxino_defconfig
-@@ -0,0 +1,42 @@
+@@ -0,0 +1,41 @@
 +CONFIG_ARM=y
 +CONFIG_ARCH_SUNXI=y
-+CONFIG_DEFAULT_DEVICE_TREE="sun8i-t113s-olinuxino"
++CONFIG_DEFAULT_DEVICE_TREE="allwinner/sun8i-t113s-olinuxino"
 +CONFIG_SUNXI_MINIMUM_DRAM_MB=128
 +CONFIG_SPL=y
 +CONFIG_MACH_SUN8I_R528=y
@@ -238,4 +238,3 @@
 +CONFIG_SPL_SPI_FLASH_MTD=y
 +CONFIG_SPL_SPI_SUNXI=y
 +CONFIG_SPI=y
-+# CONFIG_OF_UPSTREAM is not set
