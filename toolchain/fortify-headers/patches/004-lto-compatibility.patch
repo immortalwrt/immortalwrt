@@ -1,0 +1,21 @@
+--- a/include/fortify-headers.h
++++ b/include/fortify-headers.h
+@@ -47,15 +47,17 @@
+ #define _FORTIFY_INLINE __inline__ \
+ 	__attribute__((__always_inline__,__artificial__,__overloadable__))
+ #else
++/* LTO compatibility: remove __always_inline__ to avoid link-time conflicts */
+ #define _FORTIFY_INLINE static __inline__ \
+-	__attribute__((__always_inline__,__artificial__,__overloadable__))
++	__attribute__((__artificial__,__overloadable__))
+ #endif
+ 
+ #else /* !__clang__ */
+ 
+ #define _FORTIFY_POSN(n)
++/* LTO compatibility: remove __always_inline__ to avoid link-time conflicts */
+ #define _FORTIFY_INLINE extern __inline__ \
+-	__attribute__((__always_inline__,__gnu_inline__,__artificial__))
++	__attribute__((__gnu_inline__,__artificial__))
+ 
+ #endif /* __clang__ */

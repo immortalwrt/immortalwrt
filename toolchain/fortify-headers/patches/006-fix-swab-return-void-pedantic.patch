@@ -1,0 +1,11 @@
+--- a/include/unistd.h
++++ b/include/unistd.h
+@@ -179,7 +179,7 @@
+ 
+ 	if ((size_t)__n > __bs || (size_t)__n > __bd)
+ 		__builtin_trap();
+-	return __orig_swab(__os, __od, __n);
++	__orig_swab(__os, __od, __n);
+ }
+ 
+ #endif
