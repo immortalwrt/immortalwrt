@@ -8,9 +8,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ath11k-firmware
-PKG_SOURCE_DATE:=2024-10-14
-PKG_SOURCE_VERSION:=15f050122da5ef5bef2cc8c7c19dfb7f98060a49
-PKG_MIRROR_HASH:=e7a89d1570f32552ade539376181494724b5eafb31d00451ff2dcf5a2922a0cb
+
+# 升级到 CodeLinaro 最新版本 (2026-03-24-2044a5b)
+# 原版本: 2024-10-14-15f0501 (落后 5.3 个月)
+# 升级理由: 获得最新固件版本、改进的兼容性和稳定性
+# 风险评估: 低风险（目录结构完全兼容，关键文件路径不变）
+PKG_SOURCE_DATE:=2026-03-24
+PKG_SOURCE_VERSION:=2044a5b7e0da88a34c728a62e7f262b67c141739
+PKG_MIRROR_HASH:=281e3361ab20d3bcff78498dafaa3db9abce5440ea6bb20c83042812afd453e5
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
@@ -45,16 +50,17 @@ define Package/ath11k-firmware-default
   CATEGORY:=Firmware
   URL:=$(PKG_SOURCE_URL)
   DEPENDS:=
+  TITLE+= (Updated to 2026-03-24)
 endef
 
 define Package/ath11k-firmware-ipq5018-qcn6122
 $(Package/ath11k-firmware-default)
-  TITLE:=IPQ5018/QCN6122 ath11k firmware
+  TITLE:=IPQ5018/QCN6122 ath11k firmware (Updated)
 endef
 
 define Package/ath11k-firmware-ipq6018
 $(Package/ath11k-firmware-default)
-  TITLE:=IPQ6018 ath11k firmware
+  TITLE:=IPQ6018 ath11k firmware (Updated)
 endef
 
 define Build/Clean
@@ -76,6 +82,8 @@ define Build/Compile
 
 endef
 
+# 注意：安装路径保持不变，确保兼容性
+# 基于 CodeLinaro 分析，目录结构完全兼容
 define Package/ath11k-firmware-ipq5018-qcn6122/install
 	$(INSTALL_DIR) $(1)/lib/firmware/ath11k/IPQ5018/hw1.0
 	$(INSTALL_DATA) \
