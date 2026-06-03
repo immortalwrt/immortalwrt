@@ -208,6 +208,25 @@ endef
 $(eval $(call KernelPackage,input-matrixkmap))
 
 
+define KernelPackage/input-pwm-beeper
+  SUBMENU:=$(INPUT_MODULES_MENU)
+  TITLE:=PWM beeper support
+  DEPENDS:=@PWM_SUPPORT +kmod-input-core
+  KCONFIG:= \
+	CONFIG_INPUT_MISC=y \
+	CONFIG_INPUT_PWM_BEEPER
+  FILES:= \
+	$(LINUX_DIR)/drivers/input/misc/pwm-beeper.ko
+  AUTOLOAD:=$(call AutoLoad,50,pwm-beeper)
+endef
+
+define KernelPackage/input-pwm-beeper/description
+  Support for PWM based beeper devices
+endef
+
+$(eval $(call KernelPackage,input-pwm-beeper))
+
+
 define KernelPackage/input-touchscreen-ads7846
   SUBMENU:=$(INPUT_MODULES_MENU)
   TITLE:=ADS7846/TSC2046/AD7873 and AD(S)7843 based touchscreens
