@@ -735,7 +735,7 @@ define Device/cudy_c200p
   DEVICE_MODEL := C200P
   IMAGE_SIZE := 15872k
   UIMAGE_NAME := R74
-  DEVICE_PACKAGES := -uboot-envtools -wpad-basic-mbedtls kmod-usb3
+  DEVICE_PACKAGES := -uboot-envtools -wpad-openssl kmod-usb3
 endef
 TARGET_DEVICES += cudy_c200p
 
@@ -814,7 +814,7 @@ define Device/cudy_r700
   DEVICE_MODEL := R700
   IMAGE_SIZE := 15872k
   UIMAGE_NAME := R29
-  DEVICE_PACKAGES := -uboot-envtools -wpad-basic-mbedtls
+  DEVICE_PACKAGES := -uboot-envtools -wpad-openssl
 endef
 TARGET_DEVICES += cudy_r700
 
