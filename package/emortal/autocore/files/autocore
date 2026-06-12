@@ -9,11 +9,6 @@ start() {
 
 	sysctl -w net.core.rps_sock_flow_entries="$(( rfc * threads ))"
 
-	for fileRps in /sys/class/net/eth*/queues/rx-*/rps_cpus
-	do
-		echo "$threads" > "$fileRps"
-	done
-
 	for fileRfc in /sys/class/net/eth*/queues/rx-*/rps_flow_cnt
 	do
 		echo "$rfc" > "$fileRfc"
