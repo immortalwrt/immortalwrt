@@ -12,6 +12,17 @@ define Device/hasivo_f5800w-12s-plus
 endef
 TARGET_DEVICES += hasivo_f5800w-12s-plus
 
+define Device/hasivo_s1300wp-8xgt-4s-plus
+  SOC := rtl9313
+  DEVICE_VENDOR := Hasivo
+  DEVICE_MODEL := S1300WP-8XGT-4S+
+  IMAGE_SIZE := 29696k
+  DEVICE_PACKAGES := kmod-phy-realtek kmod-rtc-pcf8563 rtl826x-firmware \
+		     kmod-hasivo-mcu-wdt kmod-hasivo-mcu-sensor
+  $(Device/kernel-lzma)
+endef
+TARGET_DEVICES += hasivo_s1300wp-8xgt-4s-plus
+
 define Device/plasmacloud-common
   SOC := rtl9312
   UIMAGE_MAGIC := 0x93100000
