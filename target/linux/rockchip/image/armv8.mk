@@ -249,7 +249,7 @@ define Device/friendlyarm_nanopi-r5c
   $(Device/rk3568)
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R5C
-  DEVICE_PACKAGES := kmod-r8125 kmod-rtw88-8822ce rtl8822ce-firmware wpad-openssl
+  DEVICE_PACKAGES := kmod-button-hotplug kmod-input-adc-keys kmod-r8125 kmod-rtw88-8822ce rtl8822ce-firmware wpad-openssl
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r5c
 
@@ -257,7 +257,7 @@ define Device/friendlyarm_nanopi-r5s
   $(Device/rk3568)
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R5S
-  DEVICE_PACKAGES := kmod-r8125
+  DEVICE_PACKAGES := kmod-button-hotplug kmod-input-adc-keys kmod-r8125
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r5s
 

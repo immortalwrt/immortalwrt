@@ -16,8 +16,6 @@
 
 #include "rtl-otto.h"
 
-struct phylink_pcs *rtpcs_create(struct device *dev, struct device_node *np, int port);
-
 int rtldsa_port_get_stp_state(struct rtl838x_switch_priv *priv, int port)
 {
 	u32 msti = 0;
@@ -254,7 +252,7 @@ static bool rtldsa_phys_load_deferred(void)
 
 static int rtl83xx_mdio_probe(struct rtl838x_switch_priv *priv)
 {
-	struct device_node *dn, *phy_node, *pcs_node, *led_node;
+	struct device_node *dn, *phy_node, *led_node;
 	u32 pn;
 
 	/* Check if all busses of Realtek mdio controller are registered */
@@ -292,21 +290,12 @@ static int rtl83xx_mdio_probe(struct rtl838x_switch_priv *priv)
 		if (of_property_read_u32(dn, "reg", &pn))
 			continue;
 
-		pcs_node = of_parse_phandle(dn, "pcs-handle", 0);
 		phy_node = of_parse_phandle(dn, "phy-handle", 0);
-		if (pn != priv->r->cpu_port && !phy_node && !pcs_node) {
+		priv->ports[pn].has_pcs = fwnode_property_present(of_fwnode_handle(dn),
+								  "pcs-handle");
+		if (pn != priv->r->cpu_port && !phy_node && !priv->ports[pn].has_pcs) {
 			dev_err(priv->dev, "Port node %d has neither pcs-handle nor phy-handle\n", pn);
 			continue;
-		}
-
-		if (pcs_node) {
-			priv->ports[pn].pcs = rtpcs_create(priv->dev, pcs_node, pn);
-			if (IS_ERR(priv->ports[pn].pcs)) {
-				dev_err(priv->dev, "port %u failed to create PCS instance: %ld\n",
-					pn, PTR_ERR(priv->ports[pn].pcs));
-				priv->ports[pn].pcs = NULL;
-				continue;
-			}
 		}
 
 		priv->ports[pn].leds_on_this_port = 0;

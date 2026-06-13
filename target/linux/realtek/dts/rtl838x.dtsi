@@ -199,9 +199,11 @@
 		};
 	};
 
-	switchcore@1b000000 {
-		compatible = "syscon", "simple-mfd";
+	switch0: ethernet-switch@1b000000 {
+		compatible = "realtek,rtl8380-switch", "realtek,otto-switch", "syscon", "simple-mfd";
 		reg = <0x1b000000 0x10000>;
+		interrupt-parent = <&intc>;
+		interrupts = <20 2>;
 		#address-cells = <1>;
 		#size-cells = <1>;
 
@@ -252,41 +254,33 @@
 
 			serdes0: serdes@0 {
 				reg = <0>;
-				#pcs-cells = <0>;
+				#pcs-cells = <1>;
 			};
 			serdes1: serdes@1 {
 				reg = <1>;
-				#pcs-cells = <0>;
+				#pcs-cells = <1>;
 			};
 			serdes2: serdes@2 {
 				reg = <2>;
-				#pcs-cells = <0>;
+				#pcs-cells = <1>;
 			};
 			serdes3: serdes@3 {
 				reg = <3>;
-				#pcs-cells = <0>;
+				#pcs-cells = <1>;
 			};
 			serdes4: serdes@4 {
 				reg = <4>;
-				#pcs-cells = <0>;
+				#pcs-cells = <1>;
 			};
 			serdes5: serdes@5 {
 				reg = <5>;
-				#pcs-cells = <0>;
+				#pcs-cells = <1>;
 			};
 		};
 
 		soc_thermal: thermal {
 			compatible = "realtek,rtl8380-thermal";
 			#thermal-sensor-cells = <0>;
-		};
-
-		switch0: ethernet-switch {
-			compatible = "realtek,rtl8380-switch", "realtek,otto-switch";
-			status = "okay";
-
-			interrupt-parent = <&intc>;
-			interrupts = <20 2>;
 		};
 	};
 

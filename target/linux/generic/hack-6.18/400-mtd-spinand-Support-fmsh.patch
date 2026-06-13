@@ -219,7 +219,7 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
 +					      &write_cache_variants,
 +					      &update_cache_variants),
 +		     SPINAND_HAS_QE_BIT,
-+		     SPINAND_ECCINFO(&fm25g02b_ooblayout, NULL)),
++		     SPINAND_ECCINFO(&fm25g02b_ooblayout, fm25s01bi3_ecc_ecc_get_status)),
 +	SPINAND_INFO("FM25G02D",
 +		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0xF2),
 +		     NAND_MEMORG(1, 2048, 64, 64, 2048, 40, 1, 1, 1),

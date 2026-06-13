@@ -1,0 +1,11 @@
+--- a/include/configs/rk3568_common.h
++++ b/include/configs/rk3568_common.h
+@@ -15,6 +15,8 @@
+ #define CFG_SYS_SDRAM_BASE		0
+ #define SDRAM_MAX_SIZE			0xf0000000
+ 
++#define RK_DNL_ADC_CHAN			0
++
+ #ifndef ROCKCHIP_DEVICE_SETTINGS
+ #define ROCKCHIP_DEVICE_SETTINGS
+ #endif
