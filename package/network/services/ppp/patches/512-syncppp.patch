@@ -1,6 +1,6 @@
 --- a/pppd/chap.c
 +++ b/pppd/chap.c
-@@ -42,6 +42,9 @@
+@@ -36,6 +36,9 @@
  #include "chap.h"
  #include "chap-md5.h"
  
@@ -10,7 +10,7 @@
  #ifdef PPP_WITH_CHAPMS
  #include "chap_ms.h"
  #define MDTYPE_ALL (MDTYPE_MICROSOFT_V2 | MDTYPE_MICROSOFT | MDTYPE_MD5)
-@@ -520,6 +523,18 @@ chap_respond(struct chap_client_state *c
+@@ -514,6 +517,18 @@ chap_respond(struct chap_client_state *c
  	p[2] = len >> 8;
  	p[3] = len;
  
@@ -31,7 +31,7 @@
  
 --- a/pppd/Makefile.am
 +++ b/pppd/Makefile.am
-@@ -67,6 +67,7 @@ noinst_HEADERS = \
+@@ -65,6 +65,7 @@ noinst_HEADERS = \
      peap.h \
      pppd-private.h \
      spinlock.h \
@@ -39,15 +39,15 @@
      tls.h \
      tdb.h
  
-@@ -85,6 +86,7 @@ pppd_SOURCES = \
-     main.c \
+@@ -84,6 +85,7 @@ pppd_SOURCES = \
+     event-handler.c \
      options.c \
      session.c \
 +    syncppp.c \
      tty.c \
      upap.c \
      utils.c
-@@ -95,7 +97,7 @@ BUILT_SOURCE = \
+@@ -94,7 +96,7 @@ nodist_pppd_include_HEADERS = \
  
  pppd_CPPFLAGS = -DSYSCONFDIR=\"${sysconfdir}\" -DPPPD_RUNTIME_DIR='"@PPPD_RUNTIME_DIR@"' -DPPPD_LOGFILE_DIR='"@PPPD_LOGFILE_DIR@"'
  pppd_LDFLAGS =
@@ -58,27 +58,27 @@
  pppd_CPPFLAGS += -DSYSTEM_CA_PATH='"@SYSTEM_CA_PATH@"'
 --- a/pppd/options.c
 +++ b/pppd/options.c
-@@ -136,6 +136,7 @@ bool	show_options;		/* print all support
+@@ -141,6 +141,7 @@ bool	show_options;		/* print all support
  bool	dryrun;			/* print out option values and exit */
  char	*domain;		/* domain name set by domain option */
  int	child_wait = 5;		/* # seconds to wait for children at exit */
 +int	npppd = 0;		/* synchronize between multiple pppd */
  struct userenv *userenv_list;	/* user environment variables */
- int	dfl_route_metric = -1;	/* metric of the default route to set over the PPP link */
  
-@@ -339,6 +340,9 @@ struct option general_options[] = {
+ #ifdef PPP_WITH_IPV6CP
+@@ -351,6 +352,9 @@ struct option general_options[] = {
        "Unset user environment variable",
-       OPT_A2PRINTER | OPT_NOPRINT, (void *)user_unsetprint },
+       OPT_A2PRINTER | OPT_NOPRINT | OPT_PRIV, (void *)user_unsetprint },
  
 +    { "syncppp", o_int, &npppd,
 +      "sync among multiple pppd when sending chap/pap respond", OPT_PRIO },
 +
-     { "defaultroute-metric", o_int, &dfl_route_metric,
-       "Metric to use for the default route (Linux only; -1 for default behavior)",
-       OPT_PRIV|OPT_LLIMIT|OPT_INITONLY, NULL, 0, -1 },
+     { "net-init-script", o_string, path_net_init,
+       "Set pathname of net-init script",
+       OPT_PRIV|OPT_STATIC, NULL, MAXPATHLEN },
 --- a/pppd/pppd-private.h
 +++ b/pppd/pppd-private.h
-@@ -207,6 +207,7 @@ extern bool	dump_options;	/* print out o
+@@ -214,6 +214,7 @@ extern bool	dump_options;	/* print out o
  extern bool	show_options;	/* show all option names and descriptions */
  extern bool	dryrun;		/* check everything, print options, exit */
  extern int	child_wait;	/* # seconds to wait for children at end */

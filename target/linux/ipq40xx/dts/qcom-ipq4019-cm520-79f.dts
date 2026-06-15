@@ -11,8 +11,6 @@
 	compatible = "mobipromo,cm520-79f";
 
 	aliases {
-		// TODO: Verify if the ethernet0 alias is needed
-		ethernet0 = &gmac;
 		led-boot = &led_sys;
 		led-failsafe = &led_sys;
 		led-running = &led_sys;
@@ -257,6 +255,7 @@
 			partition@b80000 {
 				label = "rootfs";
 				reg = <0xb80000 0x7480000>;
+				linux,rootfs;
 			};
 		};
 	};
