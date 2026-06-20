@@ -3751,3 +3751,17 @@ ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
 endif
 endef
 TARGET_DEVICES += zyxel_wx5600-t0-ubootmod
+
+
+# Aigo AGS21
+define Device/aigo_ags21
+  DEVICE_VENDOR := Aigo
+  DEVICE_MODEL := AGS21
+  DEVICE_DTS := mt7981a-aigo-ags21
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  SUPPORTED_DEVICES := aigo,ags21
+  DEVICE_PACKAGES := kmod-mt7981-firmware mt7981-wo-firmware kmod-mmc uboot-envtools
+  IMAGES := sysupgrade.bin
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += aigo_ags21
