@@ -137,6 +137,7 @@ platform_do_upgrade() {
 	acer,predator-w6|\
 	acer,predator-w6d|\
 	acer,vero-w6m|\
+	aigo,ags21|\
 	airpi,ap3000m|\
 	arcadyan,mozart|\
 	glinet,gl-mt2500|\
@@ -364,6 +365,7 @@ platform_copy_config() {
 	acer,predator-w6|\
 	acer,predator-w6d|\
 	acer,vero-w6m|\
+	aigo,ags21|\
 	airpi,ap3000m|\
 	arcadyan,mozart|\
 	glinet,gl-mt2500|\
