@@ -15,6 +15,10 @@ abt,asr3000)
 	ucidef_set_led_netdev "wlan2g" "WLAN2G" "green:wlan-2ghz" "phy0-ap0"
 	ucidef_set_led_netdev "wlan5g" "WLAN5G" "green:wlan-5ghz" "phy1-ap0"
 	;;
+aigo,ags21)
+	ucidef_set_led_netdev "internet" "INTERNET" "green:internet" "eth1" "link tx rx"
+	ucidef_set_led_netdev "wlan" "WLAN" "white:wifi" "phy1-ap0" "link tx rx"
+	;;
 acer,predator-w6|\
 acer,predator-w6d)
 	ucidef_set_led_netdev "internet" "INTERNET" "mdio-bus:06:amber:wan" "eth1" "link_10 link_100 link_1000 tx rx"

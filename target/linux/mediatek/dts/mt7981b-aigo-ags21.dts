@@ -1,0 +1,296 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+/*
+ * Aigo AGS21 (MT7981, 1G RAM, 64G eMMC)
+ */
+
+/dts-v1/;
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/leds/common.h>
+#include <dt-bindings/pinctrl/mt65xx.h>
+
+#include "mt7981b.dtsi"
+
+/ {
+	model = "Aigo AGS21";
+	compatible = "aigo,ags21", "mediatek,mt7981";
+
+	aliases {
+		serial0 = &uart0;
+		led-boot = &status_red_led;
+		led-failsafe = &status_red_led;
+		led-running = &status_blue_led;
+		led-upgrade = &status_blue_led;
+	};
+
+	chosen {
+		bootargs = "root=PARTLABEL=rootfs rootwait rootfstype=squashfs,f2fs";
+		stdout-path = "serial0:115200n8";
+	};
+
+	memory@40000000 {
+		reg = <0 0x40000000 0 0x40000000>;
+		device_type = "memory";
+	};
+
+	reg_3p3v: regulator-3p3v {
+		compatible = "regulator-fixed";
+		regulator-name = "fixed-3.3V";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-boot-on;
+		regulator-always-on;
+	};
+
+	gpio-keys {
+		compatible = "gpio-keys";
+
+		button-reset {
+			label = "reset";
+			linux,code = <KEY_RESTART>;
+			gpios = <&pio 1 GPIO_ACTIVE_LOW>;
+		};
+
+		button-mesh {
+			label = "mesh";
+			linux,code = <BTN_9>;
+			gpios = <&pio 0 GPIO_ACTIVE_LOW>;
+		};
+	};
+
+	gpio-leds {
+		compatible = "gpio-leds";
+
+		status_red_led: led-0 {
+			label = "red:status";
+			gpios = <&pio 6 GPIO_ACTIVE_LOW>;
+		};
+
+		status_blue_led: led-1 {
+			label = "blue:status";
+			gpios = <&pio 4 GPIO_ACTIVE_LOW>;
+		};
+
+		internet_led: led-2 {
+			label = "green:internet";
+			gpios = <&pio 29 GPIO_ACTIVE_LOW>;
+		};
+
+		wifi_led: led-3 {
+			label = "white:wifi";
+			gpios = <&pio 30 GPIO_ACTIVE_LOW>;
+		};
+	};
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&watchdog {
+	status = "okay";
+};
+
+&mmc0 {
+	bus-width = <8>;
+	cap-mmc-highspeed;
+	max-frequency = <52000000>;
+	no-sd;
+	no-sdio;
+	non-removable;
+	pinctrl-names = "default", "state_uhs";
+	pinctrl-0 = <&mmc0_pins_default>;
+	pinctrl-1 = <&mmc0_pins_uhs>;
+	vmmc-supply = <&reg_3p3v>;
+	status = "okay";
+
+	card@0 {
+		compatible = "mmc-card";
+		reg = <0>;
+
+		block {
+			compatible = "block-device";
+
+			partitions {
+				block-partition-factory {
+					partname = "factory";
+
+					nvmem-layout {
+						compatible = "fixed-layout";
+						#address-cells = <1>;
+						#size-cells = <1>;
+
+						eeprom_factory_0: eeprom@0 {
+							reg = <0x0 0x1000>;
+						};
+
+						macaddr_factory_4: macaddr@4 {
+							compatible = "mac-base";
+							reg = <0x4 0x6>;
+							#nvmem-cell-cells = <1>;
+						};
+
+						macaddr_factory_24: macaddr@24 {
+							compatible = "mac-base";
+							reg = <0x24 0x6>;
+							#nvmem-cell-cells = <1>;
+						};
+
+						macaddr_factory_2a: macaddr@2a {
+							compatible = "mac-base";
+							reg = <0x2a 0x6>;
+							#nvmem-cell-cells = <1>;
+						};
+
+						macaddr_factory_30: macaddr@30 {
+							compatible = "mac-base";
+							reg = <0x30 0x6>;
+							#nvmem-cell-cells = <1>;
+						};
+					};
+				};
+			};
+		};
+	};
+};
+
+&eth {
+	status = "okay";
+
+	gmac0: mac@0 {
+		compatible = "mediatek,eth-mac";
+		reg = <0>;
+		phy-mode = "2500base-x";
+
+		nvmem-cells = <&macaddr_factory_2a 0>;
+		nvmem-cell-names = "mac-address";
+
+		fixed-link {
+			speed = <2500>;
+			full-duplex;
+			pause;
+		};
+	};
+
+	gmac1: mac@1 {
+		compatible = "mediatek,eth-mac";
+		reg = <1>;
+		phy-mode = "gmii";
+		phy-handle = <&int_gbe_phy>;
+
+		nvmem-cells = <&macaddr_factory_24 0>;
+		nvmem-cell-names = "mac-address";
+	};
+};
+
+&mdio_bus {
+	switch: switch@1f {
+		compatible = "mediatek,mt7531";
+		reg = <31>;
+		reset-gpios = <&pio 39 GPIO_ACTIVE_HIGH>;
+		interrupt-controller;
+		#interrupt-cells = <1>;
+		interrupt-parent = <&pio>;
+		interrupts = <38 IRQ_TYPE_LEVEL_HIGH>;
+	};
+};
+
+&switch {
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@1 {
+			reg = <1>;
+			label = "lan1";
+		};
+
+		port@2 {
+			reg = <2>;
+			label = "lan2";
+		};
+
+		port@6 {
+			reg = <6>;
+			ethernet = <&gmac0>;
+			phy-mode = "2500base-x";
+
+			fixed-link {
+				speed = <2500>;
+				full-duplex;
+				pause;
+			};
+		};
+	};
+};
+
+&pio {
+	mmc0_pins_default: mmc0-pins-default {
+		mux {
+			function = "flash";
+			groups = "emmc_45";
+		};
+		conf-cmd-dat {
+			pins = "SPI0_CLK", "SPI0_MOSI", "SPI0_MISO",
+				"SPI0_CS", "SPI0_HOLD", "SPI0_WP",
+				"SPI1_CLK", "SPI1_MOSI", "SPI1_MISO";
+			input-enable;
+			drive-strength = <MTK_DRIVE_12mA>;
+			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
+		};
+		conf-clk {
+			pins = "SPI1_CS";
+			drive-strength = <MTK_DRIVE_12mA>;
+			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
+		};
+	};
+
+	mmc0_pins_uhs: mmc0-pins-uhs {
+		mux {
+			function = "flash";
+			groups = "emmc_45";
+		};
+		conf-cmd-dat {
+			pins = "SPI0_CLK", "SPI0_MOSI", "SPI0_MISO",
+				"SPI0_CS", "SPI0_HOLD", "SPI0_WP",
+				"SPI1_CLK", "SPI1_MOSI", "SPI1_MISO";
+			input-enable;
+			drive-strength = <MTK_DRIVE_12mA>;
+			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
+		};
+		conf-clk {
+			pins = "SPI1_CS";
+			drive-strength = <MTK_DRIVE_12mA>;
+			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
+		};
+	};
+};
+
+&wifi {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	nvmem-cells = <&eeprom_factory_0>;
+	nvmem-cell-names = "eeprom";
+	status = "okay";
+
+	band@0 {
+		reg = <0>;
+		nvmem-cells = <&macaddr_factory_4 0>;
+		nvmem-cell-names = "mac-address";
+	};
+
+	band@1 {
+		reg = <1>;
+		nvmem-cells = <&macaddr_factory_30 0>;
+		nvmem-cell-names = "mac-address";
+	};
+};
+
+/* USB is not wired on the stock board. */
+&usb_phy {
+	status = "disabled";
+};
+
+&xhci {
+	status = "disabled";
+};
