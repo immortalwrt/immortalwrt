@@ -286,6 +286,19 @@ define Device/friendlyarm_nanopi-r76s
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r76s
 
+define Device/graperain_g3568-v2
+  $(Device/rk3568)
+  DEVICE_VENDOR := Graperain
+  DEVICE_MODEL := G3568
+  DEVICE_VARIANT := v2
+  DEVICE_DTS := rk3568-graperain-g3568-v2
+  DEVICE_PACKAGES := blkdiscard block-mount kmod-ata-ahci-dwc kmod-nvme kmod-hwmon-pwmfan \
+	kmod-input-adc-keys kmod-rtc-pcf8563 kmod-brcmfmac wpad-openssl \
+	brcmfmac-firmware-4356-sdio brcmfmac-nvram-4356-sdio
+  UBOOT_DEVICE_NAME := graperain-g3568-v2-rk3568
+endef
+TARGET_DEVICES += graperain_g3568-v2
+
 define Device/huake_guangmiao-g4c
   $(Device/rk3399)
   DEVICE_VENDOR := Huake-Cloud
