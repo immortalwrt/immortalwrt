@@ -29,7 +29,7 @@ Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 
 --- a/arch/arm64/boot/dts/rockchip/Makefile
 +++ b/arch/arm64/boot/dts/rockchip/Makefile
-@@ -157,6 +157,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3576-ar
+@@ -158,6 +158,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3576-ar
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3576-evb1-v10.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3576-luckfox-omni3576.dtb
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3576-nanopi-m5.dtb

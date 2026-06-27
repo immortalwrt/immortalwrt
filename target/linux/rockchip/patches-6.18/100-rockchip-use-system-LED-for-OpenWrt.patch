@@ -532,6 +532,27 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  		};
  	};
  
+--- a/arch/arm64/boot/dts/rockchip/rk3568-graperain-g3568-v2.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-graperain-g3568-v2.dts
+@@ -19,6 +19,10 @@
+ 		mmc1 = &sdmmc0;
+ 		mmc2 = &sdmmc2;
+ 		rtc0 = &rtc0;
++		led-boot = &led_work;
++		led-failsafe = &led_work;
++		led-running = &led_work;
++		led-upgrade = &led_work;
+ 	};
+ 
+ 	chosen {
+@@ -75,7 +79,6 @@
+ 			color = <LED_COLOR_ID_BLUE>;
+ 			function = LED_FUNCTION_HEARTBEAT;
+ 			gpios = <&gpio0 RK_PC0 GPIO_ACTIVE_HIGH>;
+-			linux,default-trigger = "heartbeat";
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&led_work_en>;
+ 		};
 --- a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5c.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5c.dts
 @@ -40,7 +40,6 @@
