@@ -24,6 +24,27 @@ buffalo_initial_setup()
 	ubiformat /dev/mtd$mtdnum -y
 }
 
+jiorouter_initial_setup()
+{
+	[ "$(rootfs_type)" = "tmpfs" ] || return 0
+
+	local mtdnum="$( find_mtd_index ubi )"
+	if [ ! "$mtdnum" ]; then
+		echo "unable to find mtd partition ubi"
+		return 1
+	fi
+
+	ubidetach -m "$mtdnum" 2>/dev/null
+	ubiformat /dev/mtd$mtdnum -y
+	ubiattach -m "$mtdnum"
+	ubimkvol /dev/ubi0 -n 0 -N u-boot-env -s 0x80000
+
+	# Set boot arguments in freshly created U-Boot environment
+	fw_setenv bootcmd 'ubi read 46000000 kernel;fdt addr $(fdtcontroladdr);fdt rm /signature;bootm 0x46000000'
+	fw_setenv bootdelay 0
+	fw_setenv ipaddr ''
+}
+
 xiaomi_initial_setup()
 {
 	# initialize UBI and setup uboot-env if it's running on initramfs
@@ -93,6 +114,7 @@ platform_do_upgrade() {
 	cmcc,rax3000m|\
 	cmcc,rax3000me|\
 	comfast,cf-wr632ax-ubootmod|\
+	creatlentem,clt-r30b1-ubi|\
 	cudy,tr3000-v1-ubootmod|\
 	cudy,wbr3000uax-v1-ubootmod|\
 	cudy,wr3000e-v1-ubootmod|\
@@ -109,6 +131,7 @@ platform_do_upgrade() {
 	mediatek,mt7981-rfb|\
 	mediatek,mt7988a-rfb|\
 	mercusys,mr90x-v1-ubi|\
+	netis,eap930-v1|\
 	netis,nx30v2|\
 	netis,nx31|\
 	netis,nx32u|\
@@ -117,6 +140,7 @@ platform_do_upgrade() {
 	netcore,n60|\
 	netcore,n60-pro|\
 	qihoo,360t7|\
+	qihoo,360t7-ubi|\
 	routerich,ax3000-ubootmod|\
 	routerich,be7200|\
 	snr,snr-cpe-ax2|\
@@ -171,7 +195,9 @@ platform_do_upgrade() {
 	buffalo,wsr-6000ax8|\
 	cudy,wr3000h-v1|\
 	cudy,wr3000p-v1|\
-	huasifei,wh3000-pro-nand)
+	huasifei,wh3000-pro-nand|\
+	huasifei,wh3000r-nand|\
+	jiorouter,ax6000-jidu6101)
 		CI_UBIPART="ubi"
 		nand_do_upgrade "$1"
 		;;
@@ -300,6 +326,7 @@ platform_check_image() {
 	cmcc,rax3000m|\
 	cmcc,rax3000me|\
 	comfast,cf-wr632ax-ubootmod|\
+	creatlentem,clt-r30b1-ubi|\
 	cudy,tr3000-v1-ubootmod|\
 	cudy,wbr3000uax-v1-ubootmod|\
 	cudy,wr3000e-v1-ubootmod|\
@@ -317,11 +344,13 @@ platform_check_image() {
 	mediatek,mt7988a-rfb|\
 	mercusys,mr90x-v1-ubi|\
 	nokia,ea0326gmp|\
+	netis,eap930-v1|\
 	netis,nx32u|\
 	openwrt,one|\
 	netcore,n60|\
 	netcore,n60-pro|\
 	qihoo,360t7|\
+	qihoo,360t7-ubi|\
 	routerich,ax3000-ubootmod|\
 	tplink,tl-7dr7230-v1|\
 	tplink,tl-7dr7230-v2|\
@@ -417,6 +446,9 @@ platform_pre_upgrade() {
 		;;
 	buffalo,wsr-6000ax8)
 		buffalo_initial_setup
+		;;
+	jiorouter,ax6000-jidu6101)
+		jiorouter_initial_setup
 		;;
 	xiaomi,mi-router-ax3000t|\
 	xiaomi,mi-router-wr30u-stock|\

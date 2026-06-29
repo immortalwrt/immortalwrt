@@ -3,7 +3,7 @@ FEATURES += minor nand
 KERNELNAME := vmlinux vmlinuz
 IMAGES_DIR := ../../..
 
-DEFAULT_PACKAGES += wpad-openssl yafut kmod-switch-ar8xxx
+DEFAULT_PACKAGES += kmod-ag71xx-legacy kmod-switch-ar8xxx wpad-openssl yafut
 
 define Target/Description
 	Build firmware images for MikroTik devices based on Qualcomm Atheros

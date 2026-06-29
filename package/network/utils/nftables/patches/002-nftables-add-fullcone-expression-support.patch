@@ -16,7 +16,7 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
 
 --- a/include/linux/netfilter/nf_tables.h
 +++ b/include/linux/netfilter/nf_tables.h
-@@ -1498,6 +1498,22 @@ enum nft_masq_attributes {
+@@ -1500,6 +1500,22 @@ enum nft_masq_attributes {
  #define NFTA_MASQ_MAX		(__NFTA_MASQ_MAX - 1)
  
  /**
@@ -51,7 +51,7 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
  
 --- a/src/netlink_delinearize.c
 +++ b/src/netlink_delinearize.c
-@@ -1506,6 +1506,53 @@ out_err:
+@@ -1521,6 +1521,53 @@ out_err:
  	stmt_free(stmt);
  }
  
@@ -105,7 +105,7 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
  static void netlink_parse_redir(struct netlink_parse_ctx *ctx,
  				const struct location *loc,
  				const struct nftnl_expr *nle)
-@@ -1936,6 +1983,7 @@ static const struct expr_handler netlink
+@@ -1952,6 +1999,7 @@ static const struct expr_handler netlink
  	{ .name = "tproxy",	.parse = netlink_parse_tproxy },
  	{ .name = "notrack",	.parse = netlink_parse_notrack },
  	{ .name = "masq",	.parse = netlink_parse_masq },
@@ -115,7 +115,7 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
  	{ .name = "queue",	.parse = netlink_parse_queue },
 --- a/src/netlink_linearize.c
 +++ b/src/netlink_linearize.c
-@@ -1252,6 +1252,13 @@ static void netlink_gen_nat_stmt(struct
+@@ -1266,6 +1266,13 @@ static void netlink_gen_nat_stmt(struct
  		nftnl_reg_pmin = NFTNL_EXPR_MASQ_REG_PROTO_MIN;
  		nftnl_reg_pmax = NFTNL_EXPR_MASQ_REG_PROTO_MAX;
  		break;
@@ -131,7 +131,7 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
  
 --- a/src/parser_bison.y
 +++ b/src/parser_bison.y
-@@ -643,6 +643,7 @@ int nft_lex(void *, void *, void *);
+@@ -668,6 +668,7 @@ int nft_lex(void *, void *, void *);
  %token SNAT			"snat"
  %token DNAT			"dnat"
  %token MASQUERADE		"masquerade"
@@ -139,7 +139,7 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
  %token REDIRECT			"redirect"
  %token RANDOM			"random"
  %token FULLY_RANDOM		"fully-random"
-@@ -789,8 +790,8 @@ int nft_lex(void *, void *, void *);
+@@ -814,8 +815,8 @@ int nft_lex(void *, void *, void *);
  %type <val>			limit_burst_pkts limit_burst_bytes limit_mode limit_bytes time_unit quota_mode
  %type <stmt>			reject_stmt reject_stmt_alloc
  %destructor { stmt_free($$); }	reject_stmt reject_stmt_alloc
@@ -150,7 +150,7 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
  %type <val>			nf_nat_flags nf_nat_flag offset_opt
  %type <stmt>			tproxy_stmt
  %destructor { stmt_free($$); }	tproxy_stmt
-@@ -3213,6 +3214,7 @@ stmt			:	verdict_stmt
+@@ -3274,6 +3275,7 @@ stmt			:	verdict_stmt
  			|	queue_stmt
  			|	ct_stmt
  			|	masq_stmt	close_scope_nat
@@ -158,7 +158,7 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
  			|	redir_stmt	close_scope_nat
  			|	dup_stmt	close_scope_dup
  			|	fwd_stmt	close_scope_fwd
-@@ -4043,6 +4045,28 @@ masq_stmt_args		:	TO 	COLON	stmt_expr
+@@ -4105,6 +4107,28 @@ masq_stmt_args		:	TO 	COLON	stmt_expr
  			{
  				$<stmt>0->nat.proto = $3;
  			}
@@ -189,7 +189,7 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
  				$<stmt>0->nat.proto = $3;
 --- a/src/scanner.l
 +++ b/src/scanner.l
-@@ -468,6 +468,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr
+@@ -470,6 +470,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr
  "snat"			{ scanner_push_start_cond(yyscanner, SCANSTATE_STMT_NAT); return SNAT; }
  "dnat"			{ scanner_push_start_cond(yyscanner, SCANSTATE_STMT_NAT); return DNAT; }
  "masquerade"		{ scanner_push_start_cond(yyscanner, SCANSTATE_STMT_NAT); return MASQUERADE; }
@@ -199,7 +199,7 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
  <SCANSTATE_STMT_NAT>{
 --- a/src/statement.c
 +++ b/src/statement.c
-@@ -680,6 +680,7 @@ const char *nat_etype2str(enum nft_nat_e
+@@ -681,6 +681,7 @@ const char *nat_etype2str(enum nft_nat_e
  		[NFT_NAT_SNAT]	= "snat",
  		[NFT_NAT_DNAT]	= "dnat",
  		[NFT_NAT_MASQ]	= "masquerade",
