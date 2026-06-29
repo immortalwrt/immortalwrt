@@ -73,7 +73,7 @@ Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
  	struct usb2phy_reg	bvalid_det_en;
  	struct usb2phy_reg	bvalid_det_st;
  	struct usb2phy_reg	bvalid_det_clr;
-@@ -203,6 +208,7 @@ struct rockchip_usb2phy_cfg {
+@@ -204,6 +209,7 @@ struct rockchip_usb2phy_cfg {
   * @event_nb: hold event notification callback.
   * @state: define OTG enumeration states before device reset.
   * @mode: the dr_mode of the controller.
@@ -81,7 +81,7 @@ Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
   */
  struct rockchip_usb2phy_port {
  	struct phy	*phy;
-@@ -222,6 +228,7 @@ struct rockchip_usb2phy_port {
+@@ -223,6 +229,7 @@ struct rockchip_usb2phy_port {
  	struct notifier_block	event_nb;
  	enum usb_otg_state	state;
  	enum usb_dr_mode	mode;
@@ -89,7 +89,7 @@ Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
  };
  
  /**
-@@ -495,6 +502,13 @@ static int rockchip_usb2phy_init(struct
+@@ -510,6 +517,13 @@ static int rockchip_usb2phy_init(struct
  	mutex_lock(&rport->mutex);
  
  	if (rport->port_id == USB2PHY_PORT_OTG) {
@@ -103,7 +103,7 @@ Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
  		if (rport->mode != USB_DR_MODE_HOST &&
  		    rport->mode != USB_DR_MODE_UNKNOWN) {
  			/* clear bvalid status and enable bvalid detect irq */
-@@ -535,8 +549,7 @@ static int rockchip_usb2phy_init(struct
+@@ -550,8 +564,7 @@ static int rockchip_usb2phy_init(struct
  			if (ret)
  				goto out;
  
@@ -113,7 +113,7 @@ Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
  		} else {
  			/* If OTG works in host only mode, do nothing. */
  			dev_dbg(&rport->phy->dev, "mode %d\n", rport->mode);
-@@ -666,8 +679,12 @@ static void rockchip_usb2phy_otg_sm_work
+@@ -679,8 +692,12 @@ static void rockchip_usb2phy_otg_sm_work
  	unsigned long delay;
  	bool vbus_attach, sch_work, notify_charger;
  
@@ -128,7 +128,7 @@ Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
  
  	sch_work = false;
  	notify_charger = false;
-@@ -1280,6 +1297,83 @@ static int rockchip_otg_event(struct not
+@@ -1286,6 +1303,83 @@ static int rockchip_otg_event(struct not
  	return NOTIFY_DONE;
  }
  
@@ -212,7 +212,7 @@ Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
  static int rockchip_usb2phy_otg_port_init(struct rockchip_usb2phy *rphy,
  					  struct rockchip_usb2phy_port *rport,
  					  struct device_node *child_np)
-@@ -1301,6 +1395,8 @@ static int rockchip_usb2phy_otg_port_ini
+@@ -1307,6 +1401,8 @@ static int rockchip_usb2phy_otg_port_ini
  
  	mutex_init(&rport->mutex);
  
@@ -221,7 +221,7 @@ Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
  	rport->mode = of_usb_get_dr_mode_by_phy(child_np, -1);
  	if (rport->mode == USB_DR_MODE_HOST ||
  	    rport->mode == USB_DR_MODE_UNKNOWN) {
-@@ -2054,6 +2150,8 @@ static const struct rockchip_usb2phy_cfg
+@@ -2134,6 +2230,8 @@ static const struct rockchip_usb2phy_cfg
  		.port_cfgs	= {
  			[USB2PHY_PORT_OTG] = {
  				.phy_sus	= { 0x0000, 8, 0, 0, 0x1d1 },
@@ -230,7 +230,7 @@ Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
  				.bvalid_det_en	= { 0x00c0, 1, 1, 0, 1 },
  				.bvalid_det_st	= { 0x00c4, 1, 1, 0, 1 },
  				.bvalid_det_clr = { 0x00c8, 1, 1, 0, 1 },
-@@ -2091,6 +2189,8 @@ static const struct rockchip_usb2phy_cfg
+@@ -2171,6 +2269,8 @@ static const struct rockchip_usb2phy_cfg
  		.port_cfgs	= {
  			[USB2PHY_PORT_OTG] = {
  				.phy_sus	= { 0x2000, 8, 0, 0, 0x1d1 },

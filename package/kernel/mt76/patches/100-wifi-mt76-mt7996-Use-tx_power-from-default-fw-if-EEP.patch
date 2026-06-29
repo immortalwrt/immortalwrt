@@ -22,7 +22,7 @@ Link: https://github.com/openwrt/mt76/pull/954
 
 --- a/mt7996/eeprom.c
 +++ b/mt7996/eeprom.c
-@@ -93,6 +93,36 @@ mt7996_eeprom_parse_stream(const u8 *eep
+@@ -95,6 +95,36 @@ mt7996_eeprom_parse_stream(const u8 *eep
  	}
  }
  
@@ -59,7 +59,7 @@ Link: https://github.com/openwrt/mt76/pull/954
  static bool mt7996_eeprom_variant_valid(struct mt7996_dev *dev, const u8 *def)
  {
  #define FEM_INT	0
-@@ -148,6 +178,8 @@ mt7996_eeprom_check_or_use_default(struc
+@@ -150,6 +180,8 @@ mt7996_eeprom_check_or_use_default(struc
  		goto out;
  	}
  

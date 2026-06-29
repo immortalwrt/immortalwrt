@@ -1,6 +1,6 @@
 --- a/arch/arm64/boot/dts/rockchip/rk3576-nanopi-r76s.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3576-nanopi-r76s.dts
-@@ -783,6 +783,7 @@
+@@ -804,6 +804,7 @@
  	status = "okay";
  
  	rtl8822cs: wifi@1 {

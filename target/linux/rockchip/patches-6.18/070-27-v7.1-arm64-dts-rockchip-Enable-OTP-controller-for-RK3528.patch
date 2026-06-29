@@ -1,7 +1,7 @@
-From a956b54f33de96e0d879e679c22a717d390e1afa Mon Sep 17 00:00:00 2001
+From 8c2c73084bd10237a9bc8f1d5fd49fe3107e4562 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Thu, 12 Mar 2026 22:30:19 +0100
-Subject: arm64: dts: rockchip: Enable OTP controller for RK3528
+Subject: [PATCH] arm64: dts: rockchip: Enable OTP controller for RK3528
 
 Enable the One Time Programmable Controller (OTPC) in RK3528 and add
 an initial nvmem fixed layout.
@@ -10,7 +10,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
 Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 Link: https://patch.msgid.link/20260312213019.13965-4-heiko@sntech.de
 ---
- arch/arm64/boot/dts/rockchip/rk3528.dtsi | 47 ++++++++++++++++++++++++++++++++
+ arch/arm64/boot/dts/rockchip/rk3528.dtsi | 47 ++++++++++++++++++++++++
  1 file changed, 47 insertions(+)
 
 --- a/arch/arm64/boot/dts/rockchip/rk3528.dtsi

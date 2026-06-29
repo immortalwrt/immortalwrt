@@ -4,6 +4,7 @@
 #include <linux/etherdevice.h>
 #include <linux/inetdevice.h>
 
+#include "l3.h"
 #include "rtl-otto.h"
 
 #define RTL930X_VLAN_PORT_TAG_STS_INTERNAL			0x0
@@ -23,6 +24,11 @@
 #define RTL930X_VLAN_PORT_TAG_STS_CTRL_IGR_P_ITAG_KEEP_MASK	GENMASK(0, 0)
 
 #define RTL930X_LED_GLB_ACTIVE_LOW				BIT(22)
+#define RTL930X_LED_CLK_SEL_MASK				GENMASK(17, 16)
+#define RTL930X_LED_CLK_SEL_800NS				0
+#define RTL930X_LED_CLK_SEL_400NS				1
+#define RTL930X_LED_CLK_SEL_200NS				2
+#define RTL930X_LED_CLK_SEL_100NS				3
 
 #define RTL930X_LED_SETX_0_CTRL(x) (RTL930X_LED_SET0_0_CTRL - (x * 8))
 #define RTL930X_LED_SETX_1_CTRL(x) (RTL930X_LED_SETX_0_CTRL(x) - 4)
@@ -1259,92 +1265,10 @@ static u32 rtl930x_l3_hash4(u32 ip, int algorithm, bool move_dip)
 // 	return hash;
 // }
 
-/* Read a prefix route entry from the L3_PREFIX_ROUTE_IPUC table
- * We currently only support IPv4 and IPv6 unicast route
- */
-static void rtl930x_route_read(int idx, struct rtl83xx_route *rt)
-{
-	u32 v, ip4_m;
-	bool host_route, default_route;
-	struct in6_addr ip6_m;
-
-	/* Read L3_PREFIX_ROUTE_IPUC table (2) via register RTL9300_TBL_1 */
-	struct table_reg *r = rtl_table_get(RTL9300_TBL_1, 2);
-
-	rtl_table_read(r, idx);
-	/* The table has a size of 11 registers */
-	rt->attr.valid = !!(sw_r32(rtl_table_data(r, 0)) & BIT(31));
-	if (!rt->attr.valid)
-		goto out;
-
-	rt->attr.type = (sw_r32(rtl_table_data(r, 0)) >> 29) & 0x3;
-
-	v = sw_r32(rtl_table_data(r, 10));
-	host_route = !!(v & BIT(21));
-	default_route = !!(v & BIT(20));
-	rt->prefix_len = -1;
-	pr_debug("%s: host route %d, default_route %d\n", __func__, host_route, default_route);
-
-	switch (rt->attr.type) {
-	case 0: /* IPv4 Unicast route */
-		rt->dst_ip = sw_r32(rtl_table_data(r, 4));
-		ip4_m = sw_r32(rtl_table_data(r, 9));
-		pr_debug("%s: Read ip4 mask: %08x\n", __func__, ip4_m);
-		rt->prefix_len = host_route ? 32 : -1;
-		rt->prefix_len = (rt->prefix_len < 0 && default_route) ? 0 : -1;
-		if (rt->prefix_len < 0)
-			rt->prefix_len = inet_mask_len(ip4_m);
-		break;
-	case 2: /* IPv6 Unicast route */
-		ipv6_addr_set(&rt->dst_ip6,
-			      sw_r32(rtl_table_data(r, 1)), sw_r32(rtl_table_data(r, 2)),
-			      sw_r32(rtl_table_data(r, 3)), sw_r32(rtl_table_data(r, 4)));
-		ipv6_addr_set(&ip6_m,
-			      sw_r32(rtl_table_data(r, 6)), sw_r32(rtl_table_data(r, 7)),
-			      sw_r32(rtl_table_data(r, 8)), sw_r32(rtl_table_data(r, 9)));
-		rt->prefix_len = host_route ? 128 : 0;
-		rt->prefix_len = (rt->prefix_len < 0 && default_route) ? 0 : -1;
-		if (rt->prefix_len < 0)
-			rt->prefix_len = find_last_bit((unsigned long *)&ip6_m.s6_addr32,
-						       128);
-		break;
-	case 1: /* IPv4 Multicast route */
-	case 3: /* IPv6 Multicast route */
-		pr_warn("%s: route type not supported\n", __func__);
-		goto out;
-	}
-
-	rt->attr.hit = !!(v & BIT(22));
-	rt->attr.action = (v >> 18) & 3;
-	rt->nh.id = (v >> 7) & 0x7ff;
-	rt->attr.ttl_dec = !!(v & BIT(6));
-	rt->attr.ttl_check = !!(v & BIT(5));
-	rt->attr.dst_null = !!(v & BIT(4));
-	rt->attr.qos_as = !!(v & BIT(3));
-	rt->attr.qos_prio =  v & 0x7;
-	pr_debug("%s: index %d is valid: %d\n", __func__, idx, rt->attr.valid);
-	pr_debug("%s: next_hop: %d, hit: %d, action :%d, ttl_dec %d, ttl_check %d, dst_null %d\n",
-		 __func__, rt->nh.id, rt->attr.hit, rt->attr.action,
-		 rt->attr.ttl_dec, rt->attr.ttl_check, rt->attr.dst_null);
-	pr_debug("%s: GW: %pI4, prefix_len: %d\n", __func__, &rt->dst_ip, rt->prefix_len);
-out:
-	rtl_table_release(r);
-}
-
-static void rtl930x_net6_mask(int prefix_len, struct in6_addr *ip6_m)
-{
-	int o, b;
-	/* Define network mask */
-	o = prefix_len >> 3;
-	b = prefix_len & 0x7;
-	memset(ip6_m->s6_addr, 0xff, o);
-	ip6_m->s6_addr[o] |= b ? 0xff00 >> b : 0x00;
-}
-
 /* Read a host route entry from the table using its index
  * We currently only support IPv4 and IPv6 unicast route
  */
-static void rtl930x_host_route_read(int idx, struct rtl83xx_route *rt)
+static void rtl930x_host_route_read(int idx, struct otto_l3_route *rt)
 {
 	u32 v;
 	/* Read L3_HOST_ROUTE_IPUC table (1) via register RTL9300_TBL_1 */
@@ -1396,7 +1320,7 @@ out:
 /* Write a host route entry from the table using its index
  * We currently only support IPv4 and IPv6 unicast route
  */
-static void rtl930x_host_route_write(int idx, struct rtl83xx_route *rt)
+static void rtl930x_host_route_write(int idx, struct otto_l3_route *rt)
 {
 	u32 v;
 	/* Access L3_HOST_ROUTE_IPUC table (1) via register RTL9300_TBL_1 */
@@ -1448,55 +1372,11 @@ out:
 	rtl_table_release(r);
 }
 
-/* Look up the index of a prefix route in the routing table CAM for unicast IPv4/6 routes
- * using hardware offload.
- */
-static int rtl930x_route_lookup_hw(struct rtl83xx_route *rt)
-{
-	u32 ip4_m, v;
-	struct in6_addr ip6_m;
-
-	if (rt->attr.type == 1 || rt->attr.type == 3) /* Hardware only supports UC routes */
-		return -1;
-
-	sw_w32_mask(0x3 << 19, rt->attr.type, RTL930X_L3_HW_LU_KEY_CTRL);
-	if (rt->attr.type) { /* IPv6 */
-		rtl930x_net6_mask(rt->prefix_len, &ip6_m);
-		for (int i = 0; i < 4; i++)
-			sw_w32(rt->dst_ip6.s6_addr32[0] & ip6_m.s6_addr32[0],
-			       RTL930X_L3_HW_LU_KEY_IP_CTRL + (i << 2));
-	} else { /* IPv4 */
-		ip4_m = inet_make_mask(rt->prefix_len);
-		sw_w32(0, RTL930X_L3_HW_LU_KEY_IP_CTRL);
-		sw_w32(0, RTL930X_L3_HW_LU_KEY_IP_CTRL + 4);
-		sw_w32(0, RTL930X_L3_HW_LU_KEY_IP_CTRL + 8);
-		v = rt->dst_ip & ip4_m;
-		pr_debug("%s: searching for %pI4\n", __func__, &v);
-		sw_w32(v, RTL930X_L3_HW_LU_KEY_IP_CTRL + 12);
-	}
-
-	/* Execute CAM lookup in SoC */
-	sw_w32(BIT(15), RTL930X_L3_HW_LU_CTRL);
-
-	/* Wait until execute bit clears and result is ready */
-	do {
-		v = sw_r32(RTL930X_L3_HW_LU_CTRL);
-	} while (v & BIT(15));
-
-	pr_debug("%s: found: %d, index: %d\n", __func__, !!(v & BIT(14)), v & 0x1ff);
-
-	/* Test if search successful (BIT 14 set) */
-	if (v & BIT(14))
-		return v & 0x1ff;
-
-	return -1;
-}
-
-static int rtl930x_find_l3_slot(struct rtl83xx_route *rt, bool must_exist)
+static int rtl930x_find_l3_slot(struct otto_l3_route *rt, bool must_exist)
 {
 	int slot_width, algorithm, addr, idx;
 	u32 hash;
-	struct rtl83xx_route route_entry;
+	struct otto_l3_route route_entry;
 
 	/* IPv6 entries take up 3 slots */
 	slot_width = (rt->attr.type == 0) || (rt->attr.type == 2) ? 1 : 3;
@@ -1524,105 +1404,6 @@ static int rtl930x_find_l3_slot(struct rtl83xx_route *rt, bool must_exist)
 	}
 
 	return -1;
-}
-
-/* Write a prefix route into the routing table CAM at position idx
- * Currently only IPv4 and IPv6 unicast routes are supported
- */
-static void rtl930x_route_write(int idx, struct rtl83xx_route *rt)
-{
-	u32 v, ip4_m;
-	struct in6_addr ip6_m;
-	/* Access L3_PREFIX_ROUTE_IPUC table (2) via register RTL9300_TBL_1 */
-	/* The table has a size of 11 registers (20 for MC) */
-	struct table_reg *r = rtl_table_get(RTL9300_TBL_1, 2);
-
-	pr_debug("%s: index %d is valid: %d\n", __func__, idx, rt->attr.valid);
-	pr_debug("%s: nexthop: %d, hit: %d, action :%d, ttl_dec %d, ttl_check %d, dst_null %d\n",
-		 __func__, rt->nh.id, rt->attr.hit, rt->attr.action,
-		 rt->attr.ttl_dec, rt->attr.ttl_check, rt->attr.dst_null);
-	pr_debug("%s: GW: %pI4, prefix_len: %d\n", __func__, &rt->dst_ip, rt->prefix_len);
-
-	v = rt->attr.valid ? BIT(31) : 0;
-	v |= (rt->attr.type & 0x3) << 29;
-	sw_w32(v, rtl_table_data(r, 0));
-
-	v = rt->attr.hit ? BIT(22) : 0;
-	v |= (rt->attr.action & 0x3) << 18;
-	v |= (rt->nh.id & 0x7ff) << 7;
-	v |= rt->attr.ttl_dec ? BIT(6) : 0;
-	v |= rt->attr.ttl_check ? BIT(5) : 0;
-	v |= rt->attr.dst_null ? BIT(6) : 0;
-	v |= rt->attr.qos_as ? BIT(6) : 0;
-	v |= rt->attr.qos_prio & 0x7;
-	v |= rt->prefix_len == 0 ? BIT(20) : 0; /* set default route bit */
-
-	/* set bit mask for entry type always to 0x3 */
-	sw_w32(0x3 << 29, rtl_table_data(r, 5));
-
-	switch (rt->attr.type) {
-	case 0: /* IPv4 Unicast route */
-		sw_w32(0, rtl_table_data(r, 1));
-		sw_w32(0, rtl_table_data(r, 2));
-		sw_w32(0, rtl_table_data(r, 3));
-		sw_w32(rt->dst_ip, rtl_table_data(r, 4));
-
-		v |= rt->prefix_len == 32 ? BIT(21) : 0; /* set host-route bit */
-		ip4_m = inet_make_mask(rt->prefix_len);
-		sw_w32(0, rtl_table_data(r, 6));
-		sw_w32(0, rtl_table_data(r, 7));
-		sw_w32(0, rtl_table_data(r, 8));
-		sw_w32(ip4_m, rtl_table_data(r, 9));
-		break;
-	case 2: /* IPv6 Unicast route */
-		sw_w32(rt->dst_ip6.s6_addr32[0], rtl_table_data(r, 1));
-		sw_w32(rt->dst_ip6.s6_addr32[1], rtl_table_data(r, 2));
-		sw_w32(rt->dst_ip6.s6_addr32[2], rtl_table_data(r, 3));
-		sw_w32(rt->dst_ip6.s6_addr32[3], rtl_table_data(r, 4));
-
-		v |= rt->prefix_len == 128 ? BIT(21) : 0; /* set host-route bit */
-
-		rtl930x_net6_mask(rt->prefix_len, &ip6_m);
-
-		sw_w32(ip6_m.s6_addr32[0], rtl_table_data(r, 6));
-		sw_w32(ip6_m.s6_addr32[1], rtl_table_data(r, 7));
-		sw_w32(ip6_m.s6_addr32[2], rtl_table_data(r, 8));
-		sw_w32(ip6_m.s6_addr32[3], rtl_table_data(r, 9));
-		break;
-	case 1: /* IPv4 Multicast route */
-	case 3: /* IPv6 Multicast route */
-		pr_warn("%s: route type not supported\n", __func__);
-		rtl_table_release(r);
-		return;
-	}
-	sw_w32(v, rtl_table_data(r, 10));
-
-	pr_debug("%s: %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x\n", __func__,
-		 sw_r32(rtl_table_data(r, 0)), sw_r32(rtl_table_data(r, 1)), sw_r32(rtl_table_data(r, 2)),
-		 sw_r32(rtl_table_data(r, 3)), sw_r32(rtl_table_data(r, 4)), sw_r32(rtl_table_data(r, 5)),
-		 sw_r32(rtl_table_data(r, 6)), sw_r32(rtl_table_data(r, 7)), sw_r32(rtl_table_data(r, 8)),
-		 sw_r32(rtl_table_data(r, 9)), sw_r32(rtl_table_data(r, 10)));
-
-	rtl_table_write(r, idx);
-	rtl_table_release(r);
-}
-
-/* Get the destination MAC and L3 egress interface ID of a nexthop entry from
- * the SoC's L3_NEXTHOP table
- */
-static void rtl930x_get_l3_nexthop(int idx, u16 *dmac_id, u16 *interface)
-{
-	u32 v;
-	/* Read L3_NEXTHOP table (3) via register RTL9300_TBL_1 */
-	struct table_reg *r = rtl_table_get(RTL9300_TBL_1, 3);
-
-	rtl_table_read(r, idx);
-	/* The table has a size of 1 register */
-	v = sw_r32(rtl_table_data(r, 0));
-	rtl_table_release(r);
-
-	*dmac_id = (v >> 7) & 0x7fff;
-	*interface = v & 0x7f;
 }
 
 // Currently not used
@@ -1708,27 +1489,6 @@ static void rtl930x_get_l3_nexthop(int idx, u16 *dmac_id, u16 *interface)
 // 		return -ENOMEM;
 // 	}
 // }
-
-/* Set the destination MAC and L3 egress interface ID for a nexthop entry in the SoC's
- * L3_NEXTHOP table. The nexthop entry is identified by idx.
- * dmac_id is the reference to the L2 entry in the L2 forwarding table, special values are
- * 0x7ffe: TRAP2CPU
- * 0x7ffd: TRAP2MASTERCPU
- * 0x7fff: DMAC_ID_DROP
- */
-static void rtl930x_set_l3_nexthop(int idx, u16 dmac_id, u16 interface)
-{
-	/* Access L3_NEXTHOP table (3) via register RTL9300_TBL_1 */
-	struct table_reg *r = rtl_table_get(RTL9300_TBL_1, 3);
-
-	pr_debug("%s: Writing to L3_NEXTHOP table, index %d, dmac_id %d, interface %d\n",
-		 __func__, idx, dmac_id, interface);
-	sw_w32(((dmac_id & 0x7fff) << 7) | (interface & 0x7f), rtl_table_data(r, 0));
-
-	pr_debug("%s: %08x\n", __func__, sw_r32(rtl_table_data(r, 0)));
-	rtl_table_write(r, idx);
-	rtl_table_release(r);
-}
 
 #endif /* CONFIG_NET_DSA_RTL83XX_RTL930X_L3_OFFLOAD */
 
@@ -2294,79 +2054,6 @@ static void rtl930x_set_l3_egress_intf(int idx, struct rtl838x_l3_intf *intf)
 	rtl_table_release(r);
 }
 
-/* Reads a MAC entry for L3 termination as entry point for routing
- * from the hardware table
- * idx is the index into the L3_ROUTER_MAC table
- */
-static void rtl930x_get_l3_router_mac(u32 idx, struct rtl93xx_rt_mac *m)
-{
-	u32 v, w;
-	/* Read L3_ROUTER_MAC table (0) via register RTL9300_TBL_1 */
-	struct table_reg *r = rtl_table_get(RTL9300_TBL_1, 0);
-
-	rtl_table_read(r, idx);
-	/* The table has a size of 7 registers, 64 entries */
-	v = sw_r32(rtl_table_data(r, 0));
-	w = sw_r32(rtl_table_data(r, 3));
-	m->valid = !!(v & BIT(20));
-	if (!m->valid)
-		goto out;
-
-	m->p_type = !!(v & BIT(19));
-	m->p_id = (v >> 13) & 0x3f;  /* trunk id of port */
-	m->vid = v & 0xfff;
-	m->vid_mask = w & 0xfff;
-	m->action = sw_r32(rtl_table_data(r, 6)) & 0x7;
-	m->mac_mask = ((((u64)sw_r32(rtl_table_data(r, 5))) << 32) & 0xffffffffffffULL) |
-		      (sw_r32(rtl_table_data(r, 4)));
-	m->mac = ((((u64)sw_r32(rtl_table_data(r, 1))) << 32) & 0xffffffffffffULL) |
-		 (sw_r32(rtl_table_data(r, 2)));
-	/* Bits L3_INTF and BMSK_L3_INTF are 0 */
-
-out:
-	rtl_table_release(r);
-}
-
-/* Writes a MAC entry for L3 termination as entry point for routing
- * into the hardware table
- * idx is the index into the L3_ROUTER_MAC table
- */
-static void rtl930x_set_l3_router_mac(u32 idx, struct rtl93xx_rt_mac *m)
-{
-	u32 v, w;
-	/* Read L3_ROUTER_MAC table (0) via register RTL9300_TBL_1 */
-	struct table_reg *r = rtl_table_get(RTL9300_TBL_1, 0);
-
-	/* The table has a size of 7 registers, 64 entries */
-	v = BIT(20); /* mac entry valid, port type is 0: individual */
-	v |= (m->p_id & 0x3f) << 13;
-	v |= (m->vid & 0xfff); /* Set the interface_id to the vlan id */
-
-	w = m->vid_mask;
-	w |= (m->p_id_mask & 0x3f) << 13;
-
-	sw_w32(v, rtl_table_data(r, 0));
-	sw_w32(w, rtl_table_data(r, 3));
-
-	/* Set MAC address, L3_INTF (bit 12 in register 1) needs to be 0 */
-	sw_w32((u32)(m->mac), rtl_table_data(r, 2));
-	sw_w32(m->mac >> 32, rtl_table_data(r, 1));
-
-	/* Set MAC address mask, BMSK_L3_INTF (bit 12 in register 5) needs to be 0 */
-	sw_w32((u32)(m->mac_mask >> 32), rtl_table_data(r, 4));
-	sw_w32((u32)m->mac_mask, rtl_table_data(r, 5));
-
-	sw_w32(m->action & 0x7, rtl_table_data(r, 6));
-
-	pr_debug("%s writing index %d: %08x %08x %08x %08x %08x %08x %08x\n", __func__, idx,
-		 sw_r32(rtl_table_data(r, 0)), sw_r32(rtl_table_data(r, 1)), sw_r32(rtl_table_data(r, 2)),
-		 sw_r32(rtl_table_data(r, 3)), sw_r32(rtl_table_data(r, 4)), sw_r32(rtl_table_data(r, 5)),
-		 sw_r32(rtl_table_data(r, 6))
-	);
-	rtl_table_write(r, idx);
-	rtl_table_release(r);
-}
-
 /* Get the Destination-MAC of an L3 egress interface or the Source MAC for routed packets
  * from the SoC's L3_EGR_INTF_MAC table
  * Indexes 0-2047 are DMACs, 2048+ are SMACs
@@ -2611,12 +2298,40 @@ static void rtl930x_led_init(struct rtl838x_switch_priv *priv)
 	struct device *dev = priv->dev;
 	u8 leds_in_set[4] = {};
 	u32 led_mode = 1;
+	u32 clk_freq;
 	u32 pm = 0;
+	int ret;
 
 	node = of_find_compatible_node(NULL, NULL, "realtek,rtl9300-leds");
 	if (!node) {
 		dev_dbg(dev, "No compatible LED node found\n");
 		return;
+	}
+
+	ret = of_property_read_u32(node, "clock-frequency", &clk_freq);
+	if (!ret) {
+		u8 clk_sel;
+
+		switch (clk_freq) {
+		case 10000000:
+			clk_sel = RTL930X_LED_CLK_SEL_100NS;
+			break;
+		case 5000000:
+			clk_sel = RTL930X_LED_CLK_SEL_200NS;
+			break;
+		case 1250000:
+			clk_sel = RTL930X_LED_CLK_SEL_800NS;
+			break;
+		default:
+			dev_warn(dev, "invalid LED clock frequency, falling back to default\n");
+			fallthrough;
+		case 2500000:
+			clk_sel = RTL930X_LED_CLK_SEL_400NS;
+			break;
+		}
+
+		sw_w32_mask(RTL930X_LED_CLK_SEL_MASK,
+			    FIELD_PREP(RTL930X_LED_CLK_SEL_MASK, clk_sel), RTL930X_LED_GLB_CTRL);
 	}
 
 	for (int set = 0; set < 4; set++) {
@@ -2859,18 +2574,11 @@ const struct rtldsa_config rtldsa_930x_cfg = {
 	.packet_cntr_read = rtl930x_packet_cntr_read,
 	.packet_cntr_clear = rtl930x_packet_cntr_clear,
 #ifdef CONFIG_NET_DSA_RTL83XX_RTL930X_L3_OFFLOAD
-	.route_read = rtl930x_route_read,
-	.route_write = rtl930x_route_write,
 	.host_route_write = rtl930x_host_route_write,
 	.l3_setup = rtl930x_l3_setup,
-	.set_l3_nexthop = rtl930x_set_l3_nexthop,
-	.get_l3_nexthop = rtl930x_get_l3_nexthop,
 	.get_l3_egress_mac = rtl930x_get_l3_egress_mac,
 	.set_l3_egress_mac = rtl930x_set_l3_egress_mac,
 	.find_l3_slot = rtl930x_find_l3_slot,
-	.route_lookup_hw = rtl930x_route_lookup_hw,
-	.get_l3_router_mac = rtl930x_get_l3_router_mac,
-	.set_l3_router_mac = rtl930x_set_l3_router_mac,
 	.set_l3_egress_intf = rtl930x_set_l3_egress_intf,
 #endif
 	.led_init = rtl930x_led_init,

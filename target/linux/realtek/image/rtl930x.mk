@@ -97,6 +97,17 @@ define Device/horaco_zx-swtgw2c8f
 endef
 TARGET_DEVICES += horaco_zx-swtgw2c8f
 
+define Device/nicgiga_s100-0800s-m
+  SOC := rtl9303
+  UIMAGE_MAGIC := 0x93030000
+  DEVICE_VENDOR := NicGiga
+  DEVICE_MODEL := S100-0800S-M
+  DEVICE_PACKAGES := kmod-gpio-pca953x
+  IMAGE_SIZE := 29696k
+  $(Device/kernel-lzma)
+endef
+TARGET_DEVICES += nicgiga_s100-0800s-m
+
 define Device/plasmacloud-common
   SOC := rtl9302
   UIMAGE_MAGIC := 0x93000000
@@ -261,16 +272,16 @@ endef
 TARGET_DEVICES += xikestor_sks8310-8x
 
 define Device/zyxel_xgs1010-12-a1
-  SOC := rtl9302
-  UIMAGE_MAGIC := 0x93001010
-  DEVICE_VENDOR := Zyxel
-  DEVICE_MODEL := XGS1010-12
+  $(Device/zyxel_xgs1010-12)
   DEVICE_VARIANT := A1
-  KERNEL_SIZE := 7168k
-  IMAGE_SIZE := 13184k
-  $(Device/kernel-lzma)
 endef
 TARGET_DEVICES += zyxel_xgs1010-12-a1
+
+define Device/zyxel_xgs1010-12-b1
+  $(Device/zyxel_xgs1010-12)
+  DEVICE_VARIANT := B1
+endef
+TARGET_DEVICES += zyxel_xgs1010-12-b1
 
 define Device/zyxel_xgs1210-12-a1
   $(Device/zyxel_xgs1210-12)

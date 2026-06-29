@@ -35,7 +35,8 @@ $(eval $(call SetupHostCommand,gcc, \
 	Please install the GNU C Compiler (gcc) 10 or later, \
 	$(CC) -dumpversion | grep -E '^(1[0-9]|[2-9][0-9])\.?', \
 	gcc -dumpversion | grep -E '^(1[0-9]|[2-9][0-9])\.?', \
-	gcc --version | grep -E 'Apple.(LLVM|clang)' ))
+	clang -dumpversion | grep -E '^(1[2-9]|[2-9][0-9])\.', \
+	clang-12 -dumpversion | grep -E '^(1[2-9]|[2-9][0-9])\.' ))
 
 $(eval $(call TestHostCommand,working-gcc, \
 	Please reinstall the GNU C Compiler (10 or later) - \
@@ -47,7 +48,8 @@ $(eval $(call SetupHostCommand,g++, \
 	Please install the GNU C++ Compiler (g++) 10 or later, \
 	$(CXX) -dumpversion | grep -E '^(1[0-9]|[2-9][0-9])\.?', \
 	g++ -dumpversion | grep -E '^(1[0-9]|[2-9][0-9])\.?', \
-	g++ --version | grep -E 'Apple.(LLVM|clang)' ))
+	clang++ -dumpversion | grep -E '^(1[2-9]|[2-9][0-9])\.', \
+	clang++-12 -dumpversion | grep -E '^(1[2-9]|[2-9][0-9])\.' ))
 
 $(eval $(call TestHostCommand,working-g++, \
 	Please reinstall the GNU C++ Compiler (10 or later) - \
@@ -185,6 +187,7 @@ $(eval $(call SetupHostCommand,perl,Please install Perl 5.x, \
 	perl --version | grep "perl.*v5"))
 
 $(eval $(call SetupHostCommand,python,Please install Python >= 3.8, \
+	python3.14 -V 2>&1 | grep 'Python 3', \
 	python3.13 -V 2>&1 | grep 'Python 3', \
 	python3.12 -V 2>&1 | grep 'Python 3', \
 	python3.11 -V 2>&1 | grep 'Python 3', \
@@ -194,6 +197,7 @@ $(eval $(call SetupHostCommand,python,Please install Python >= 3.8, \
 	python3 -V 2>&1 | grep -E 'Python 3\.([8-9]|[0-9][0-9])\.?'))
 
 $(eval $(call SetupHostCommand,python3,Please install Python >= 3.8, \
+	python3.14 -V 2>&1 | grep 'Python 3', \
 	python3.13 -V 2>&1 | grep 'Python 3', \
 	python3.12 -V 2>&1 | grep 'Python 3', \
 	python3.11 -V 2>&1 | grep 'Python 3', \

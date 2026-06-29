@@ -64,6 +64,7 @@ realtek_setup_macs()
 	netgear,gs308t-v1|\
 	netgear,gs310tp-v1|\
 	tplink,sg2008p-v1|\
+	tplink,sg2008p-v3|\
 	tplink,sg2210p-v3|\
 	tplink,sg2452p-v4|\
 	tplink,t1600g-28ts-v3|\
@@ -99,10 +100,13 @@ realtek_setup_macs()
 		;;
 	hasivo,f1100w-4sx-4xgt|\
 	hasivo,f1100w-4sx-4xgt-512mb|\
+	hasivo,f5800w-12s-plus|\
 	tplink,tl-st1008f-v2|\
-	zyxel,xgs1010-12-a1)
+	zyxel,xgs1010-12-a1|\
+	zyxel,xgs1010-12-b1)
 		lan_mac=$(mtd_get_mac_ascii u-boot-env ethaddr)
-		[ -z "$lan_mac" ] || [ "$lan_mac" = "00:e0:4c:00:00:00" ] && lan_mac=$(macaddr_random)
+		mac_prefix=$(echo "$lan_mac" | cut -d: -f1-5)
+		[ -z "$lan_mac" ] || [ "$mac_prefix" = "00:e0:4c:00:00" ] && lan_mac=$(macaddr_random)
 		lan_mac_start=$lan_mac
 		eth0_mac=$lan_mac
 		;;
