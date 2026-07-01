@@ -51,7 +51,6 @@
 		"https://cdimage.debian.org/mirror/gnu.org/savannah"
 	],
 	"@KERNEL": [
-		"https://mirror.iscas.ac.cn/kernel.org",
 		"https://mirrors.ustc.edu.cn/kernel.org",
 		"https://mirror.nju.edu.cn/kernel.org",
 		"https://cdn.kernel.org/pub",
