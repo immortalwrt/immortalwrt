@@ -60,6 +60,7 @@ mediatek_setup_interfaces()
 	jcg,q30-pro|\
 	keenetic,kn-3711|\
 	keenetic,kn-3811|\
+	livinet,li320|\
 	livinet,zr-3020|\
 	livinet,zr-3020-ubootmod|\
 	netis,nx32u|\
