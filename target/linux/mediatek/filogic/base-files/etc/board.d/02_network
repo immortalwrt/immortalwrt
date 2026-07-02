@@ -66,6 +66,7 @@ mediatek_setup_interfaces()
 	jcg,q30-pro|\
 	keenetic,kn-3711|\
 	keenetic,kn-3811|\
+	livinet,li320|\
 	livinet,zr-3020|\
 	livinet,zr-3020-ubootmod|\
 	netis,nx32u|\
@@ -154,7 +155,9 @@ mediatek_setup_interfaces()
 		;;
 	bazis,ax3000wm|\
 	cudy,m3000-v1|\
+	cudy,m3000-v1-ubootmod|\
 	cudy,m3000-v2-yt8821|\
+	cudy,m3000-v2-yt8821-ubootmod|\
 	cudy,tr3000-256mb-v1|\
 	cudy,tr3000-v1|\
 	cudy,tr3000-v1-ubootmod|\

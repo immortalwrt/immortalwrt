@@ -870,11 +870,8 @@ typedef enum {
 #define N_FIXED_FIELDS 12
 #define N_FIXED_FIELDS_RTL931X 14
 #define MAX_COUNTERS 2048
-#define MAX_ROUTES 512
-#define MAX_HOST_ROUTES 1536
 #define MAX_INTF_MTUS 8
 #define DEFAULT_MTU 1536
-#define MAX_INTERFACES 100
 #define MAX_ROUTER_MACS 64
 #define L3_EGRESS_DMACS 2048
 #define MAX_SMACS 64
@@ -897,8 +894,6 @@ typedef enum {
  * skipped and the counters are simply retrieved a lot more often from the HW.
  */
 #define RTLDSA_COUNTERS_FAST_POLL_INTERVAL	(3 * HZ)
-
-struct otto_l3_route;
 
 enum pbvlan_type {
 	PBVLAN_TYPE_INNER = 0,
@@ -1270,21 +1265,6 @@ struct pie_rule {
 	bool bypass_ibc_sc;	/* Bypass Ingress Bandwidth Control and Storm Control */
 };
 
-struct rtl838x_l3_intf {
-	u16 vid;
-	u8 smac_idx;
-	u8 ip4_mtu_id;
-	u8 ip6_mtu_id;
-	u16 ip4_mtu;
-	u16 ip6_mtu;
-	u8 ttl_scope;
-	u8 hl_scope;
-	u8 ip4_icmp_redirect;
-	u8 ip6_icmp_redirect;
-	u8 ip4_pbr_icmp_redirect;
-	u8 ip6_pbr_icmp_redirect;
-};
-
 struct rtl838x_switch_priv;
 
 struct rtl83xx_flow {
@@ -1418,12 +1398,6 @@ struct rtldsa_config {
 	void (*l2_learning_setup)(void);
 	u32 (*packet_cntr_read)(int counter);
 	void (*packet_cntr_clear)(int counter);
-	void (*host_route_write)(int idx, struct otto_l3_route *rt);
-	int (*l3_setup)(struct rtl838x_switch_priv *priv);
-	u64 (*get_l3_egress_mac)(u32 idx);
-	void (*set_l3_egress_mac)(u32 idx, u64 mac);
-	int (*find_l3_slot)(struct otto_l3_route *rt, bool must_exist);
-	void (*set_l3_egress_intf)(int idx, struct rtl838x_l3_intf *intf);
 	void (*set_receive_management_action)(int port, rma_ctrl_t type, action_type_t action);
 	void (*led_init)(struct rtl838x_switch_priv *priv);
 	void (*qos_init)(struct rtl838x_switch_priv *priv);
@@ -1484,9 +1458,6 @@ struct rtl838x_switch_priv {
 	unsigned long pie_use_bm[MAX_PIE_ENTRIES >> 5];
 	unsigned long octet_cntr_use_bm[MAX_COUNTERS >> 5];
 	unsigned long packet_cntr_use_bm[MAX_COUNTERS >> 4];
-	unsigned long route_use_bm[MAX_ROUTES >> 5];
-	unsigned long host_route_use_bm[MAX_HOST_ROUTES >> 5];
-	struct rtl838x_l3_intf *interfaces[MAX_INTERFACES];
 	u16 intf_mtus[MAX_INTF_MTUS];
 	int intf_mtu_count[MAX_INTF_MTUS];
 
