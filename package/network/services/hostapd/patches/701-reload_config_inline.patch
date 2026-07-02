@@ -43,7 +43,7 @@ as adding/removing interfaces.
  			   "error: %s", name, strerror(errno));
 --- a/hostapd/main.c
 +++ b/hostapd/main.c
-@@ -406,7 +406,11 @@ hostapd_interface_init(struct hapd_inter
+@@ -365,7 +365,11 @@ hostapd_interface_init(struct hapd_inter
  	struct hostapd_iface *iface;
  	int k;
  
@@ -58,7 +58,7 @@ as adding/removing interfaces.
  		return NULL;
 --- a/src/ap/hostapd.c
 +++ b/src/ap/hostapd.c
-@@ -2893,7 +2893,12 @@ hostapd_interface_init_bss(struct hapd_i
+@@ -3354,8 +3354,13 @@ hostapd_interface_init_bss(struct hapd_i
  		}
  	}
  
@@ -71,5 +71,6 @@ as adding/removing interfaces.
 +		wpa_printf(MSG_INFO, "Configuration file: %s (phy %s)%s",
 +		     config_fname, phy, iface ? "" : " --> new PHY");
 +	}
-	if (iface) {
-		struct hostapd_config *conf;
+ 	if (iface) {
+ 		struct hostapd_config *conf;
+ 		struct hostapd_bss_config **tmp_conf;

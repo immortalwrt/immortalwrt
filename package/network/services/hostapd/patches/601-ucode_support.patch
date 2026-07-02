@@ -622,7 +622,7 @@ as adding/removing interfaces.
  CFLAGS += -DEAP_SERVER -DEAP_SERVER_IDENTITY
 --- a/wpa_supplicant/events.c
 +++ b/wpa_supplicant/events.c
-@@ -6167,6 +6167,7 @@ void supplicant_event(void *ctx, enum wp
+@@ -6183,6 +6183,7 @@ void supplicant_event(void *ctx, enum wp
  		event_to_string(event), event);
  #endif /* CONFIG_NO_STDOUT_DEBUG */
  
