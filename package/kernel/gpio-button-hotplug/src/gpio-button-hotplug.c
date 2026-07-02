@@ -441,7 +441,7 @@ static int gpio_keys_button_probe(struct platform_device *pdev,
 	struct gpio_keys_platform_data *pdata = dev_get_platdata(dev);
 	struct gpio_keys_button_dev *bdev;
 	struct gpio_keys_button *buttons;
-	struct device_node *prev = NULL;
+	struct fwnode_handle *prev = NULL;
 	int error = 0;
 	int i;
 
@@ -522,11 +522,11 @@ static int gpio_keys_button_probe(struct platform_device *pdev,
 			}
 		} else {
 			/* Device-tree */
-			struct device_node *child =
-				of_get_next_child(dev->of_node, prev);
+			struct fwnode_handle *child =
+				device_get_next_child_node(dev, prev);
 
 			bdata->gpiod = devm_fwnode_gpiod_get(dev,
-				of_fwnode_handle(child), NULL, GPIOD_IN,
+				child, NULL, GPIOD_IN,
 				desc);
 
 			prev = child;
@@ -579,7 +579,7 @@ static int gpio_keys_button_probe(struct platform_device *pdev,
 	error = 0;
 
 out:
-	of_node_put(prev);
+	fwnode_handle_put(prev);
 	return error;
 }
 
