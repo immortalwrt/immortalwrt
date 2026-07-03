@@ -20,10 +20,8 @@ endef
 define Host/Install
 	$(call Host/Uninstall)
 	$(INSTALL_DIR) $(1)/share/aclocal
-	for m4 in $(HOST_BUILD_DIR)/m4/*.m4; do \
-		$(INSTALL_DATA) $(HOST_BUILD_DIR)/m4/$$$$(basename $$$$m4) \
-				$(1)/share/aclocal/gl_$$$$(basename $$$$m4); \
-	done
+	$(foreach m4,$(notdir $(wildcard $(HOST_BUILD_DIR)/m4/*.m4)),
+		$(INSTALL_DATA) $(HOST_BUILD_DIR)/m4/$(m4) $(1)/share/aclocal/gl_$(m4))
 	$(CP) $(HOST_BUILD_DIR)/ $(1)/share/gnulib/
 	ln -sf ../share/gnulib/gnulib-tool $(STAGING_DIR_HOST)/bin/gnulib-tool
 endef
