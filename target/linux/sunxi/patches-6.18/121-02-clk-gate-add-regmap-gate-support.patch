@@ -1,0 +1,244 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Andre Przywara <andre.przywara@arm.com>
+Date: Fri, 10 Jun 2022 18:20:29 +0100
+Subject: clk: gate: add support for regmap based gates
+
+While we have nice wrappers for simple bit-flip MMIO based clock gates,
+a single bit to toggle in a regmap still requires to write a lot of clock
+framework boilerplate.
+
+Support generic wrappers for regmap based clock gates, by adding them to
+the existing clock-gates.c file. Since a read-modify-write operation in a
+regmap can be much more complex than a readl/writel pair, we cannot use
+the .enable/.disable ops members, but do the actual flipping already in
+.prepare/.unprepare, where we can sleep. Also we cannot provide an
+.is_enabled function, since this must not sleep as well.
+On the upside all the locking for the r/m/w operation is provided by
+regmap already, so we can skip that.
+The rest of the CCF boilerplate code can be shared.
+
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+---
+ drivers/clk/clk-gate.c       | 60 +++++++++-
+ include/linux/clk-provider.h | 36 +++++-
+ 2 files changed, 89 insertions(+), 7 deletions(-)
+
+--- a/drivers/clk/clk-gate.c
++++ b/drivers/clk/clk-gate.c
+@@ -9,6 +9,7 @@
+ #include <linux/clk-provider.h>
+ #include <linux/device.h>
+ #include <linux/module.h>
++#include <linux/regmap.h>
+ #include <linux/slab.h>
+ #include <linux/io.h>
+ #include <linux/err.h>
+@@ -124,11 +125,42 @@ const struct clk_ops clk_gate_ops = {
+ };
+ EXPORT_SYMBOL_GPL(clk_gate_ops);
+ 
++static int clk_gate_regmap_setclrbit(struct clk_hw *hw, bool enable)
++{
++	struct clk_gate *gate = to_clk_gate(hw);
++	bool set = gate->flags & CLK_GATE_SET_TO_DISABLE;
++
++	set ^= enable;
++
++	if (set)
++		return regmap_set_bits(gate->regmap, gate->regmap_offs,
++				       BIT(gate->bit_idx));
++	else
++		return regmap_clear_bits(gate->regmap, gate->regmap_offs,
++					 BIT(gate->bit_idx));
++}
++
++static int clk_gate_regmap_prepare(struct clk_hw *hw)
++{
++	return clk_gate_regmap_setclrbit(hw, true);
++}
++
++static void clk_gate_regmap_unprepare(struct clk_hw *hw)
++{
++	clk_gate_regmap_setclrbit(hw, false);
++}
++
++const struct clk_ops clk_gate_regmap_ops = {
++	.prepare = clk_gate_regmap_prepare,
++	.unprepare = clk_gate_regmap_unprepare,
++};
++
+ struct clk_hw *__clk_hw_register_gate(struct device *dev,
+ 		struct device_node *np, const char *name,
+ 		const char *parent_name, const struct clk_hw *parent_hw,
+ 		const struct clk_parent_data *parent_data,
+ 		unsigned long flags,
++		struct regmap *regmap, unsigned int regmap_offs,
+ 		void __iomem *reg, u8 bit_idx,
+ 		u8 clk_gate_flags, spinlock_t *lock)
+ {
+@@ -150,7 +182,10 @@ struct clk_hw *__clk_hw_register_gate(st
+ 		return ERR_PTR(-ENOMEM);
+ 
+ 	init.name = name;
+-	init.ops = &clk_gate_ops;
++	if (regmap)
++		init.ops = &clk_gate_regmap_ops;
++	else
++		init.ops = &clk_gate_ops;
+ 	init.flags = flags;
+ 	init.parent_names = parent_name ? &parent_name : NULL;
+ 	init.parent_hws = parent_hw ? &parent_hw : NULL;
+@@ -162,6 +197,8 @@ struct clk_hw *__clk_hw_register_gate(st
+ 
+ 	/* struct clk_gate assignments */
+ 	gate->reg = reg;
++	gate->regmap = regmap;
++	gate->regmap_offs = regmap_offs;
+ 	gate->bit_idx = bit_idx;
+ 	gate->flags = clk_gate_flags;
+ 	gate->lock = lock;
+@@ -197,6 +234,22 @@ struct clk *clk_register_gate(struct dev
+ }
+ EXPORT_SYMBOL_GPL(clk_register_gate);
+ 
++struct clk *clk_register_regmap_gate(struct device *dev, const char *name,
++		const char *parent_name, unsigned long flags,
++		struct regmap *regmap, unsigned int regmap_offs,
++		u8 bit_idx, u8 clk_gate_flags)
++{
++	struct clk_hw *hw;
++
++	hw = clk_hw_register_regmap_gate(dev, name, parent_name, flags, regmap,
++					 regmap_offs, bit_idx, clk_gate_flags);
++
++	if (IS_ERR(hw))
++		return ERR_CAST(hw);
++	return hw->clk;
++}
++EXPORT_SYMBOL_GPL(clk_register_regmap_gate);
++
+ void clk_unregister_gate(struct clk *clk)
+ {
+ 	struct clk_gate *gate;
+@@ -234,6 +287,7 @@ struct clk_hw *__devm_clk_hw_register_ga
+ 		const char *parent_name, const struct clk_hw *parent_hw,
+ 		const struct clk_parent_data *parent_data,
+ 		unsigned long flags,
++		struct regmap *regmap, unsigned int regmap_offs,
+ 		void __iomem *reg, u8 bit_idx,
+ 		u8 clk_gate_flags, spinlock_t *lock)
+ {
+@@ -244,8 +298,8 @@ struct clk_hw *__devm_clk_hw_register_ga
+ 		return ERR_PTR(-ENOMEM);
+ 
+ 	hw = __clk_hw_register_gate(dev, np, name, parent_name, parent_hw,
+-				    parent_data, flags, reg, bit_idx,
+-				    clk_gate_flags, lock);
++				    parent_data, flags, regmap, regmap_offs,
++				    reg, bit_idx, clk_gate_flags, lock);
+ 
+ 	if (!IS_ERR(hw)) {
+ 		*ptr = hw;
+--- a/include/linux/clk-provider.h
++++ b/include/linux/clk-provider.h
+@@ -8,6 +8,7 @@
+ 
+ #include <linux/of.h>
+ #include <linux/of_clk.h>
++#include <linux/regmap.h>
+ 
+ /*
+  * flags used across common struct clk.  these flags should only affect the
+@@ -526,6 +527,8 @@ void of_fixed_clk_setup(struct device_no
+ struct clk_gate {
+ 	struct clk_hw hw;
+ 	void __iomem	*reg;
++	struct regmap	*regmap;
++	unsigned int	regmap_offs;
+ 	u8		bit_idx;
+ 	u8		flags;
+ 	spinlock_t	*lock;
+@@ -543,6 +546,7 @@ struct clk_hw *__clk_hw_register_gate(st
+ 		const char *parent_name, const struct clk_hw *parent_hw,
+ 		const struct clk_parent_data *parent_data,
+ 		unsigned long flags,
++		struct regmap *regmap, unsigned int regmap_offs,
+ 		void __iomem *reg, u8 bit_idx,
+ 		u8 clk_gate_flags, spinlock_t *lock);
+ struct clk_hw *__devm_clk_hw_register_gate(struct device *dev,
+@@ -550,12 +554,17 @@ struct clk_hw *__devm_clk_hw_register_ga
+ 		const char *parent_name, const struct clk_hw *parent_hw,
+ 		const struct clk_parent_data *parent_data,
+ 		unsigned long flags,
++		struct regmap *regmap, unsigned int regmap_offs,
+ 		void __iomem *reg, u8 bit_idx,
+ 		u8 clk_gate_flags, spinlock_t *lock);
+ struct clk *clk_register_gate(struct device *dev, const char *name,
+ 		const char *parent_name, unsigned long flags,
+ 		void __iomem *reg, u8 bit_idx,
+ 		u8 clk_gate_flags, spinlock_t *lock);
++struct clk *clk_register_regmap_gate(struct device *dev, const char *name,
++		const char *parent_name, unsigned long flags,
++		struct regmap *regmap, unsigned int regmap_offs,
++		u8 bit_idx, u8 clk_gate_flags);
+ /**
+  * clk_hw_register_gate - register a gate clock with the clock framework
+  * @dev: device that is registering this clock
+@@ -570,8 +579,14 @@ struct clk *clk_register_gate(struct dev
+ #define clk_hw_register_gate(dev, name, parent_name, flags, reg, bit_idx,     \
+ 			     clk_gate_flags, lock)			      \
+ 	__clk_hw_register_gate((dev), NULL, (name), (parent_name), NULL,      \
+-			       NULL, (flags), (reg), (bit_idx),		      \
++			       NULL, (flags), NULL, 0, (reg), (bit_idx),      \
+ 			       (clk_gate_flags), (lock))
++
++#define clk_hw_register_regmap_gate(dev, name, parent_name, flags, regmap,    \
++				    regmap_offs, bit_idx, clk_gate_flags)     \
++	__clk_hw_register_gate((dev), NULL, (name), (parent_name), NULL,      \
++			       NULL, (flags), regmap, regmap_offs, NULL,      \
++			       (bit_idx), (clk_gate_flags), NULL)
+ /**
+  * clk_hw_register_gate_parent_hw - register a gate clock with the clock
+  * framework
+@@ -587,8 +602,15 @@ struct clk *clk_register_gate(struct dev
+ #define clk_hw_register_gate_parent_hw(dev, name, parent_hw, flags, reg,      \
+ 				       bit_idx, clk_gate_flags, lock)	      \
+ 	__clk_hw_register_gate((dev), NULL, (name), NULL, (parent_hw),        \
+-			       NULL, (flags), (reg), (bit_idx),		      \
++			       NULL, (flags), NULL, 0, (reg), (bit_idx),      \
+ 			       (clk_gate_flags), (lock))
++
++#define clk_hw_register_regmap_gate_parent_hw(dev, name, parent_hw, flags,    \
++					      regmap, regmap_offs, bit_idx,   \
++					      clk_gate_flags)		      \
++	__clk_hw_register_gate((dev), NULL, (name), NULL, (parent_hw),        \
++			       NULL, (flags), regmap, regmap_offs, NULL,      \
++			       (bit_idx), (clk_gate_flags), NULL)
+ /**
+  * clk_hw_register_gate_parent_data - register a gate clock with the clock
+  * framework
+@@ -604,7 +626,7 @@ struct clk *clk_register_gate(struct dev
+ #define clk_hw_register_gate_parent_data(dev, name, parent_data, flags, reg,  \
+ 				       bit_idx, clk_gate_flags, lock)	      \
+ 	__clk_hw_register_gate((dev), NULL, (name), NULL, NULL, (parent_data), \
+-			       (flags), (reg), (bit_idx),		      \
++			       (flags), NULL, 0, (reg), (bit_idx),	      \
+ 			       (clk_gate_flags), (lock))
+ /**
+  * devm_clk_hw_register_gate - register a gate clock with the clock framework
+@@ -620,8 +642,14 @@ struct clk *clk_register_gate(struct dev
+ #define devm_clk_hw_register_gate(dev, name, parent_name, flags, reg, bit_idx,\
+ 				  clk_gate_flags, lock)			      \
+ 	__devm_clk_hw_register_gate((dev), NULL, (name), (parent_name), NULL, \
+-			       NULL, (flags), (reg), (bit_idx),		      \
++			       NULL, (flags), NULL, 0, (reg), (bit_idx),      \
+ 			       (clk_gate_flags), (lock))
++#define devm_clk_hw_register_regmap_gate(dev, name, parent_name, flags,	      \
++					 regmap, regmap_offs, bit_idx,	      \
++					 clk_gate_flags)		      \
++	__devm_clk_hw_register_gate((dev), NULL, (name), (parent_name), NULL, \
++			       NULL, (flags), (regmap), (regmap_offs), NULL,  \
++			       (bit_idx), (clk_gate_flags), NULL)
+ /**
+  * devm_clk_hw_register_gate_parent_hw - register a gate clock with the clock
+  * framework

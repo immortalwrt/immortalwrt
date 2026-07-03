@@ -37,7 +37,7 @@ Signed-off-by: Tianling Shen <cnsztl@gmail.com>
  		};
  
  		use-led {
-@@ -129,6 +131,25 @@
+@@ -162,6 +164,25 @@
  		reset-gpios = <&pio 7 8 GPIO_ACTIVE_LOW>; /* PH8 */
  		reset-assert-us = <10000>;
  		reset-deassert-us = <150000>;
@@ -63,7 +63,7 @@ Signed-off-by: Tianling Shen <cnsztl@gmail.com>
  	};
  };
  
-@@ -139,6 +160,25 @@
+@@ -172,6 +193,25 @@
  		reset-gpios = <&pio 9 16 GPIO_ACTIVE_LOW>; /* PJ16 */
  		reset-assert-us = <10000>;
  		reset-deassert-us = <150000>;
