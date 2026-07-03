@@ -20,15 +20,16 @@ export function parse_encryption(config, dev_config, phy_features) {
 	config.auth_type = encryption[0] ?? 'none';
 
 	/*
-	 * The SAE-EXT-KEY (SAE-GDH) AKM is only mandatory for EHT/MLO and breaks
-	 * interoperability with some clients, so only default it on where it is
-	 * both required and safe to offer: on Compatibility mode (sae-compat)
-	 * BSSes that run an EHT htmode, which carry it in a separate RSN Override
-	 * element that legacy clients ignore. It stays off for WPA3-Personal (sae)
-	 * and Transition (sae-mixed) mode and on non-EHT BSSes. An explicit
-	 * sae_ext_key option overrides this per BSS.
+	 * GCMP-256 and the SAE-EXT-KEY (SAE-GDH) AKM are only mandatory for
+	 * EHT/MLO and break interoperability with many clients, so only default
+	 * them on where they are both required and safe to offer: on Compatibility
+	 * mode (sae-compat) BSSes that run an EHT htmode, which carry them in a
+	 * separate RSN Override element that legacy clients ignore. They stay off
+	 * for WPA3-Personal (sae) and Transition (sae-mixed) mode and on non-EHT
+	 * BSSes. Explicit gcmp256 and sae_ext_key options override this per BSS.
 	 */
 	let compat = (config.auth_type == 'sae-compat');
+	config.gcmp256 ??= compat && wildcard(dev_config?.htmode ?? '', 'EHT*');
 	config.sae_ext_key ??= compat && wildcard(dev_config?.htmode ?? '', 'EHT*');
 
 	switch(config.auth_type) {
@@ -74,7 +75,7 @@ export function parse_encryption(config, dev_config, phy_features) {
 		config.wpa_pairwise = 'CCMP';
 		if (dev_config.band != '6g')
 			config.rsn_override_pairwise = 'CCMP';
-		if (phy_features?.cipher_gcmp256 && wildcard(dev_config.htmode ?? '', 'EHT*'))
+		if (config.gcmp256 && phy_features?.cipher_gcmp256)
 			config.rsn_override_pairwise_2 = 'GCMP-256';
 		break;
 
@@ -119,7 +120,7 @@ export function parse_encryption(config, dev_config, phy_features) {
 		config.wpa_pairwise ??= null;
 	else if (config.hw_mode == 'ad')
 		config.wpa_pairwise ??= 'GCMP';
-	else if (phy_features?.cipher_gcmp256)
+	else if (config.gcmp256 && phy_features?.cipher_gcmp256)
 		config.wpa_pairwise ??= 'GCMP-256 CCMP';
 	else
 		config.wpa_pairwise ??= 'CCMP';
