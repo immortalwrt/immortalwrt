@@ -643,7 +643,7 @@ Signed-off-by: Marvin Wewer <mwewer37@proton.me>
 +#endif
 --- /dev/null
 +++ b/drivers/iommu/sun55i-iommu.c
-@@ -0,0 +1,1604 @@
+@@ -0,0 +1,1606 @@
 +/* SPDX-License-Identifier: GPL-2.0-or-later */
 +/* Copyright(c) 2020 - 2023 Allwinner Technology Co.,Ltd. All rights reserved. */
 +/*******************************************************************************
@@ -1358,8 +1358,7 @@ Signed-off-by: Marvin Wewer <mwewer37@proton.me>
 +}
 +
 +static int sun55i_iommu_attach_dev(struct iommu_domain *domain,
-+                                   struct device *dev,
-+                                   struct iommu_domain *old_domain)
++				   struct device *dev)
 +{
 +	return 0;
 +}
@@ -1369,8 +1368,9 @@ Signed-off-by: Marvin Wewer <mwewer37@proton.me>
 +	struct sunxi_iommu_owner *owner = dev_iommu_priv_get(dev);
 +
 +	WARN(!dev->dma_mask || *dev->dma_mask == 0, "NULL or 0 dma mask will fail iommu setup\n");
++	iommu_setup_dma_ops(dev);
 +
-+	sun55i_enable_device_iommu(owner->data, owner->tlbid, owner->flag); 
++	sun55i_enable_device_iommu(owner->data, owner->tlbid, owner->flag);
 +}
 +
 +static struct iommu_device *sun55i_iommu_probe_device(struct device *dev)
@@ -1753,6 +1753,8 @@ Signed-off-by: Marvin Wewer <mwewer37@proton.me>
 +		sunxi_iommu_read(iommu, IOMMU_PMU_ML_REG6);
 +
 +	spin_unlock(&iommu->iommu_lock);
++err:
++	return 0;
 +
 +	len = scnprintf(
 +		buf, PAGE_SIZE,

@@ -5,7 +5,6 @@ Subject: arm64: dts: allwinner: a527-cubie-a5e: enable PCIe/USB-C combophy
 
 Signed-off-by: Marvin Wewer <mwewer37@proton.me>
 ---
----
  arch/arm64/boot/dts/allwinner/sun55i-a527-cubie-a5e.dts | 58 ++++++++++
  1 file changed, 58 insertions(+)
 
@@ -51,7 +50,7 @@ Signed-off-by: Marvin Wewer <mwewer37@proton.me>
  };
  
  &cpu0 {
-@@ -430,3 +463,28 @@
+@@ -430,3 +463,27 @@
  	usb1_vbus-supply = <&reg_usb_vbus>;
  	status = "okay";
  };
@@ -79,4 +78,3 @@ Signed-off-by: Marvin Wewer <mwewer37@proton.me>
 +	wakeup-source;
 +	status = "okay";
 +};
-+
