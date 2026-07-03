@@ -19,6 +19,18 @@ export function parse_encryption(config, dev_config, phy_features) {
 
 	config.auth_type = encryption[0] ?? 'none';
 
+	/*
+	 * The SAE-EXT-KEY (SAE-GDH) AKM is only mandatory for EHT/MLO and breaks
+	 * interoperability with some clients, so only default it on where it is
+	 * both required and safe to offer: on Compatibility mode (sae-compat)
+	 * BSSes that run an EHT htmode, which carry it in a separate RSN Override
+	 * element that legacy clients ignore. It stays off for WPA3-Personal (sae)
+	 * and Transition (sae-mixed) mode and on non-EHT BSSes. An explicit
+	 * sae_ext_key option overrides this per BSS.
+	 */
+	let compat = (config.auth_type == 'sae-compat');
+	config.sae_ext_key ??= compat && wildcard(dev_config?.htmode ?? '', 'EHT*');
+
 	switch(config.auth_type) {
 	case 'owe':
 		config.auth_type = 'owe';
@@ -185,7 +197,7 @@ export function wpa_key_mgmt(config, band) {
 			if (config.ieee80211r)
 				append_value(config, 'wpa_key_mgmt', 'FT-SAE');
 
-			if (config.sae_ext_key && config.rsn_override_pairwise_2) {
+			if (config.sae_ext_key) {
 				append_value(config, 'rsn_override_key_mgmt_2', 'SAE-EXT-KEY');
 				if (config.ieee80211r)
 					append_value(config, 'rsn_override_key_mgmt_2', 'FT-SAE-EXT-KEY');
@@ -201,7 +213,7 @@ export function wpa_key_mgmt(config, band) {
 			if (config.ieee80211r)
 				append_value(config, 'rsn_override_key_mgmt', 'FT-SAE');
 
-			if (config.sae_ext_key && config.rsn_override_pairwise_2) {
+			if (config.sae_ext_key) {
 				append_value(config, 'rsn_override_key_mgmt_2', 'SAE-EXT-KEY');
 				if (config.ieee80211r)
 					append_value(config, 'rsn_override_key_mgmt_2', 'FT-SAE-EXT-KEY');
