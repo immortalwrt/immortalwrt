@@ -371,6 +371,10 @@
 		"gas_address3": {
 			"type": "string"
 		},
+		"gcmp256": {
+			"description": "Advertise the GCMP-256 pairwise cipher on HE/EHT BSSes (alongside CCMP for sae/sae-mixed, in the RSNE Override 2 element for sae-compat). Mandatory for EHT, recommended otherwise. Defaults off for sae and sae-mixed because some clients and chipsets misbehave when GCMP-256 is offered, and on for sae-compat BSSes using an EHT htmode (where GCMP-256 is mandatory), carried in a separate RSN Override element that legacy clients ignore. Only advertised when the driver supports the GCMP-256 cipher.",
+			"type": "boolean"
+		},
 		"hidden": {
 			"type": "alias",
 			"default": "ignore_broadcast_ssid"
