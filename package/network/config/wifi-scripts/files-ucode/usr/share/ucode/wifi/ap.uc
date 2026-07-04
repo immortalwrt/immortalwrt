@@ -540,7 +540,7 @@ export function generate(interface, data, config, vlans, stas, phy_features) {
 	config.start_disabled = data.ap_start_disabled;
 	iface_setup(config);
 
-	iface.parse_encryption(config, data.config);
+	iface.parse_encryption(config, data.config, phy_features);
 	if (data.config.band == '6g') {
 		if (config.auth_type == 'psk-sae')
 			config.auth_type = 'sae';

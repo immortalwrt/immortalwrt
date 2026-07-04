@@ -3,7 +3,7 @@
 import { append_value, log } from 'wifi.common';
 import * as fs from 'fs';
 
-export function parse_encryption(config, dev_config) {
+export function parse_encryption(config, dev_config, phy_features) {
 	if (!config.encryption)
 		return;
 
@@ -58,7 +58,7 @@ export function parse_encryption(config, dev_config) {
 		config.wpa_pairwise = 'CCMP';
 		if (dev_config.band != '6g')
 			config.rsn_override_pairwise = 'CCMP';
-		if (wildcard(dev_config.htmode ?? '', 'EHT*'))
+		if (phy_features?.cipher_gcmp256 && wildcard(dev_config.htmode ?? '', 'EHT*'))
 			config.rsn_override_pairwise_2 = 'GCMP-256';
 		break;
 
@@ -103,7 +103,7 @@ export function parse_encryption(config, dev_config) {
 		config.wpa_pairwise ??= null;
 	else if (config.hw_mode == 'ad')
 		config.wpa_pairwise ??= 'GCMP';
-	else if (wildcard(dev_config?.htmode, 'EHT*') || wildcard(dev_config?.htmode, 'HE*'))
+	else if (phy_features?.cipher_gcmp256)
 		config.wpa_pairwise ??= 'GCMP-256 CCMP';
 	else
 		config.wpa_pairwise ??= 'CCMP';
