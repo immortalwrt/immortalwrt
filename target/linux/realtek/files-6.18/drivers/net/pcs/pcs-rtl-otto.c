@@ -357,14 +357,14 @@ static int rtpcs_sds_to_mmd(enum rtpcs_page sds_page, int sds_regnum)
 	return (sds_page << 8) + sds_regnum;
 }
 
-static inline int rtpcs_sign_mag_decode(unsigned int val, unsigned int sign_bit)
+static int rtpcs_sign_mag_decode(unsigned int val, unsigned int sign_bit)
 {
 	int mag = val & GENMASK(sign_bit - 1, 0);
 
 	return (val & BIT(sign_bit)) ? -mag : mag;
 }
 
-static inline unsigned int rtpcs_sign_mag_encode(int val, unsigned int sign_bit)
+static unsigned int rtpcs_sign_mag_encode(int val, unsigned int sign_bit)
 {
 	return (val < 0 ? BIT(sign_bit) : 0) | (abs(val) & GENMASK(sign_bit - 1, 0));
 }
@@ -2062,93 +2062,69 @@ static int rtpcs_930x_sds_set_debug(struct rtpcs_serdes *sds, unsigned int debug
 	return rtpcs_sds_write_bits(sds, PAGE_ANA_COM, 0x06, 11, 6, debug_sel); /* RX_DEBUG_SEL */
 }
 
-__always_unused
-static int rtpcs_930x_sds_rxcal_dcvs_manual(struct rtpcs_serdes *sds,
-					    u32 dcvs_id, bool manual, u32 dcvs_list[])
+__maybe_unused
+static int rtpcs_930x_sds_rxcal_dcvs_set_adapt(struct rtpcs_serdes *sds, unsigned int dcvs_id,
+					       bool enable)
 {
 	u8 reg[6] = { 0x1e, 0x1e, 0x1e, 0x1e, 0x01, 0x02 };
 	u8 bit[6] = { 14, 13, 12, 11, 15, 11 };
 
 	if (dcvs_id > 5)
-		return;
+		return -EINVAL;
 
-	/* set DCVS auto/manual */
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, reg[dcvs_id], bit[dcvs_id], bit[dcvs_id],
-			     manual ? 0x1 : 0x0);
-
-	if (!manual) {
-		/* give auto mode some time */
-		mdelay(1);
-		return;
-	}
-
-	switch (dcvs_id) {
-	case 0:
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x1c,  4,  4, dcvs_list[0]);
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x1c,  3,  0, dcvs_list[1]);
-		break;
-	case 1:
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x1d, 15, 15, dcvs_list[0]);
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x1d, 14, 11, dcvs_list[1]);
-		break;
-	case 2:
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x1d, 10, 10, dcvs_list[0]);
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x1d,  9,  6, dcvs_list[1]);
-		break;
-	case 3:
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x1d,  5,  5, dcvs_list[0]);
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x1d,  4,  1, dcvs_list[1]);
-		break;
-	case 4:
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x02, 10, 10, dcvs_list[0]);
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x02,  9,  6, dcvs_list[1]);
-		break;
-	case 5:
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x11,  4,  4, dcvs_list[0]);
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x11,  3,  0, dcvs_list[1]);
-		break;
-	default:
-		break;
-	}
+	return rtpcs_sds_write_bits(sds, PAGE_ANA_10G, reg[dcvs_id], bit[dcvs_id],
+				    bit[dcvs_id], enable ? 0x0 : 0x1);
 }
 
-__always_unused
-static void rtpcs_930x_sds_rxcal_dcvs_get(struct rtpcs_serdes *sds,
-					  u32 dcvs_id, u32 dcvs_list[])
+__maybe_unused
+static int rtpcs_930x_sds_rxcal_dcvs_set_coef(struct rtpcs_serdes *sds, unsigned int dcvs_id,
+					      int dcvs_coef)
+{
+	u8 reg[6] = { 0x1c, 0x1d, 0x1d, 0x1d, 0x02, 0x11 };
+	u8 lbit[6] = { 0, 11, 6, 1, 6, 0 };
+	if (dcvs_id > 5)
+		return -EINVAL;
+
+	return rtpcs_sds_write_bits(sds, PAGE_ANA_10G, reg[dcvs_id], lbit[dcvs_id] + 4,
+				    lbit[dcvs_id], rtpcs_sign_mag_encode(dcvs_coef, 4));
+}
+
+__maybe_unused
+static int rtpcs_930x_sds_rxcal_dcvs_get_coef(struct rtpcs_serdes *sds,
+					      unsigned int dcvs_id, int *dcvs_coef)
 {
 	u8 manual_reg[6] = { 0x1e, 0x1e, 0x1e, 0x1e, 0x01, 0x02 };
 	u8 coeff_sel[6] = { 0x22, 0x23, 0x24, 0x25, 0x2c, 0x2d };
 	u8 manual_bit[6] = { 14, 13, 12, 11, 15, 11 };
-	u32 dcvs_sign_out = 0, dcvs_coef_bin = 0;
-	struct rtpcs_serdes *even_sds;
-	bool dcvs_manual;
+	int ret, val;
 
 	if (dcvs_id > 5)
-		return;
+		return -EINVAL;
 
-	even_sds = rtpcs_sds_get_even(sds);
-	if (sds == even_sds)
-		rtpcs_sds_write(sds, PAGE_WDIG, 0x2, 0x2f);
-	else
-		rtpcs_sds_write(even_sds, PAGE_WDIG, 0x2, 0x31);
+	ret = rtpcs_930x_sds_set_debug(sds, 0x20);
+	if (ret < 0)
+		return ret;
 
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x15, 9, 9, 0x1);	/* REG0_RX_EN_TEST */
-	rtpcs_sds_write_bits(sds, PAGE_ANA_COM, 0x06, 11, 6, 0x20); /* REG0_RX_DEBUG_SEL */
-
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x0c, 5, 0, coeff_sel[dcvs_id]);
+	ret = rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x0c, 5, 0, coeff_sel[dcvs_id]);
+	if (ret < 0)
+		return ret;
 	mdelay(1);
 
 	/* ## DCVSX Read Out */
-	dcvs_sign_out = rtpcs_sds_read_bits(sds, PAGE_WDIG, 0x14,  4,  4);
-	dcvs_coef_bin = rtpcs_sds_read_bits(sds, PAGE_WDIG, 0x14,  3,  0);
-	dcvs_manual = !!rtpcs_sds_read_bits(sds, PAGE_ANA_10G, manual_reg[dcvs_id],
-					    manual_bit[dcvs_id], manual_bit[dcvs_id]);
+	val = rtpcs_sds_read_bits(sds, PAGE_WDIG, 0x14, 4, 0);
+	if (val < 0)
+		return val;
 
-	pr_info("%s: DCVS %u sign = %s, manual = %u, even coefficient = %u\n", __func__,
-		dcvs_id, dcvs_sign_out ? "-" : "+", dcvs_manual, dcvs_coef_bin);
+	*dcvs_coef = rtpcs_sign_mag_decode(val, 4);
+	val = rtpcs_sds_read_bits(sds, PAGE_ANA_10G, manual_reg[dcvs_id], manual_bit[dcvs_id],
+				  manual_bit[dcvs_id]);
+	if (val < 0)
+		return val;
 
-	dcvs_list[0] = dcvs_sign_out;
-	dcvs_list[1] = dcvs_coef_bin;
+	pr_debug("%s: DCVS %u, manual = %u, coefficient = %d\n", __func__,
+		 dcvs_id, val, *dcvs_coef);
+
+	return 0;
 }
 
 static void rtpcs_930x_sds_rxcal_leq_manual(struct rtpcs_serdes *sds,
