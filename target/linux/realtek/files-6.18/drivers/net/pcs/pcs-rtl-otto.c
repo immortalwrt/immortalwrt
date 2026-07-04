@@ -2032,9 +2032,25 @@ static void rtpcs_930x_sds_tx_config(struct rtpcs_serdes *sds,
 	rtpcs_sds_write_bits(sds, page, 0x18, 15, 12, impedance);
 }
 
+static int rtpcs_930x_sds_set_debug(struct rtpcs_serdes *sds, unsigned int debug_sel)
+{
+	struct rtpcs_serdes *even_sds = rtpcs_sds_get_even(sds);
+	int ret;
+
+	ret = rtpcs_sds_write(even_sds, PAGE_WDIG, 0x2, (sds == even_sds) ? 0x2f : 0x31);
+	if (ret < 0)
+		return ret;
+
+	ret = rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x15, 9, 9, 0x1);	/* RX_EN_TEST */
+	if (ret < 0)
+		return ret;
+
+	return rtpcs_sds_write_bits(sds, PAGE_ANA_COM, 0x06, 11, 6, debug_sel); /* RX_DEBUG_SEL */
+}
+
 __always_unused
-static void rtpcs_930x_sds_rxcal_dcvs_manual(struct rtpcs_serdes *sds,
-					     u32 dcvs_id, bool manual, u32 dcvs_list[])
+static int rtpcs_930x_sds_rxcal_dcvs_manual(struct rtpcs_serdes *sds,
+					    u32 dcvs_id, bool manual, u32 dcvs_list[])
 {
 	u8 reg[6] = { 0x1e, 0x1e, 0x1e, 0x1e, 0x01, 0x02 };
 	u8 bit[6] = { 14, 13, 12, 11, 15, 11 };
@@ -2157,13 +2173,10 @@ static u32 rtpcs_930x_sds_rxcal_gray_to_binary(u32 gray_code)
 
 static u32 rtpcs_930x_sds_rxcal_leq_read(struct rtpcs_serdes *sds)
 {
-	struct rtpcs_serdes *even_sds = rtpcs_sds_get_even(sds);
 	u32 leq_gray, leq_bin;
 	bool leq_manual;
 
-	rtpcs_sds_write(even_sds, PAGE_WDIG, 0x2, (sds == even_sds) ? 0x2f : 0x31); /* REG_DBGO_SEL */
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x15, 9, 9, 0x1);	/* REG0_RX_EN_TEST */
-	rtpcs_sds_write_bits(sds, PAGE_ANA_COM, 0x06, 11, 6, 0x10);	/* REG0_RX_DEBUG_SEL */
+	rtpcs_930x_sds_set_debug(sds, 0x10);
 	mdelay(1);
 
 	/* ##LEQ Read Out */
@@ -2191,13 +2204,10 @@ static void rtpcs_930x_sds_rxcal_vth_manual(struct rtpcs_serdes *sds,
 static void rtpcs_930x_sds_rxcal_vth_get(struct rtpcs_serdes *sds,
 					 u32 vth_list[])
 {
-	struct rtpcs_serdes *even_sds = rtpcs_sds_get_even(sds);
 	int vth_manual;
 
-	rtpcs_sds_write(even_sds, PAGE_WDIG, 0x2, (sds == even_sds) ? 0x2f : 0x31); /* REG_DBGO_SEL */
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x15, 9, 9, 0x1);		/* REG0_RX_EN_TEST */
-	rtpcs_sds_write_bits(sds, PAGE_ANA_COM, 0x06, 11, 6, 0x20);	/* REG0_RX_DEBUG_SEL */
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x0c, 5, 0, 0xc);	/* REG0_COEF_SEL */
+	rtpcs_930x_sds_set_debug(sds, 0x20);
+	rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x0c, 5, 0, 0xc); /* COEF_SEL */
 
 	mdelay(1);
 
@@ -2263,7 +2273,6 @@ static void rtpcs_930x_sds_rxcal_tap_manual(struct rtpcs_serdes *sds,
 static void rtpcs_930x_sds_rxcal_tap_get(struct rtpcs_serdes *sds,
 					 u32 tap_id, u32 tap_list[])
 {
-	struct rtpcs_serdes *even_sds = rtpcs_sds_get_even(sds);
 	u32 tap0_sign_out;
 	u32 tap0_coef_bin;
 	u32 tap_sign_out_even;
@@ -2272,12 +2281,9 @@ static void rtpcs_930x_sds_rxcal_tap_get(struct rtpcs_serdes *sds,
 	u32 tap_coef_bin_odd;
 	bool tap_manual;
 
-	rtpcs_sds_write(even_sds, PAGE_WDIG, 0x2, (sds == even_sds) ? 0x2f : 0x31); /* REG_DBGO_SEL */
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x15, 9, 9, 0x1);	/* REG0_RX_EN_TEST */
-	rtpcs_sds_write_bits(sds, PAGE_ANA_COM, 0x06, 11, 6, 0x20);	/* REG0_RX_DEBUG_SEL */
-
+	rtpcs_930x_sds_set_debug(sds, 0x20);
 	if (!tap_id) {
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x0c, 5, 0, 0);	/* REG0_COEF_SEL */
+		rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x0c, 5, 0, 0);	/* COEF_SEL */
 		/* ##Tap1 Even Read Out */
 		mdelay(1);
 		tap0_sign_out = rtpcs_sds_read_bits(sds, PAGE_WDIG, 0x14, 5, 5);
@@ -2292,13 +2298,13 @@ static void rtpcs_930x_sds_rxcal_tap_get(struct rtpcs_serdes *sds,
 		tap_manual = !!rtpcs_sds_read_bits(sds, PAGE_ANA_10G, 0x0f, 7, 7);
 		pr_info("tap0: manual = %u\n", tap_manual);
 	} else {
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x0c, 5, 0, tap_id); /* REG0_COEF_SEL */
+		rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x0c, 5, 0, tap_id); /* COEF_SEL */
 		mdelay(1);
 		/* ##Tap1 Even Read Out */
 		tap_sign_out_even = rtpcs_sds_read_bits(sds, PAGE_WDIG, 0x14, 5, 5);
 		tap_coef_bin_even = rtpcs_sds_read_bits(sds, PAGE_WDIG, 0x14, 4, 0);
 
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x0c, 5, 0, (tap_id + 5)); /* REG0_COEF_SEL */
+		rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x0c, 5, 0, (tap_id + 5)); /* COEF_SEL */
 		/* ##Tap1 Odd Read Out */
 		tap_sign_out_odd = rtpcs_sds_read_bits(sds, PAGE_WDIG, 0x14, 5, 5);
 		tap_coef_bin_odd = rtpcs_sds_read_bits(sds, PAGE_WDIG, 0x14, 4, 0);
@@ -2410,7 +2416,6 @@ static void rtpcs_930x_sds_rxcal_init(struct rtpcs_serdes *sds, enum rtpcs_sds_m
 
 static void rtpcs_930x_sds_rxcal_fgcal(struct rtpcs_serdes *sds)
 {
-	struct rtpcs_serdes *even_sds = rtpcs_sds_get_even(sds);
 	u32 fgcal_binary, fgcal_gray;
 	u32 offset_range;
 
@@ -2431,15 +2436,11 @@ static void rtpcs_930x_sds_rxcal_fgcal(struct rtpcs_serdes *sds)
 	/* Foreground Calibration --- */
 
 	for (int run = 0; run < 10; run++) {
-		/* REG_DBGO_SEL */
-		rtpcs_sds_write(even_sds, PAGE_WDIG, 0x2, (sds == even_sds) ? 0x2f : 0x31);
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x15, 9, 9, 0x1);	/* REG0_RX_EN_TEST */
-		rtpcs_sds_write_bits(sds, PAGE_ANA_COM, 0x06, 11, 6, 0x20);	/* REG0_RX_DEBUG_SEL */
-
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x0c, 5, 0, 0xf); /* REG0_COEF_SEL */
+		rtpcs_930x_sds_set_debug(sds, 0x20);
+		rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x0c, 5, 0, 0xf); /* COEF_SEL */
 		/* ##FGCAL read gray */
 		fgcal_gray = rtpcs_sds_read_bits(sds, PAGE_WDIG, 0x14, 5, 0);
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x0c, 5, 0, 0xe); /* REG0_COEF_SEL */
+		rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x0c, 5, 0, 0xe); /* COEF_SEL */
 		/* ##FGCAL read binary */
 		fgcal_binary = rtpcs_sds_read_bits(sds, PAGE_WDIG, 0x14, 5, 0);
 
