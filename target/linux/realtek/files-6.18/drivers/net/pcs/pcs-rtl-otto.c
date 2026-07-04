@@ -350,9 +350,23 @@ struct rtpcs_sds_tx_config {
 	u8 post_amp;
 };
 
+/* Calculation helpers */
+
 static int rtpcs_sds_to_mmd(enum rtpcs_page sds_page, int sds_regnum)
 {
 	return (sds_page << 8) + sds_regnum;
+}
+
+static inline int rtpcs_sign_mag_decode(unsigned int val, unsigned int sign_bit)
+{
+	int mag = val & GENMASK(sign_bit - 1, 0);
+
+	return (val & BIT(sign_bit)) ? -mag : mag;
+}
+
+static inline unsigned int rtpcs_sign_mag_encode(int val, unsigned int sign_bit)
+{
+	return (val < 0 ? BIT(sign_bit) : 0) | (abs(val) & GENMASK(sign_bit - 1, 0));
 }
 
 /*
@@ -2070,8 +2084,8 @@ static int rtpcs_930x_sds_rxcal_dcvs_manual(struct rtpcs_serdes *sds,
 
 	switch (dcvs_id) {
 	case 0:
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x03,  5,  5, dcvs_list[0]);
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x03,  4,  0, dcvs_list[1]);
+		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x1c,  4,  4, dcvs_list[0]);
+		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x1c,  3,  0, dcvs_list[1]);
 		break;
 	case 1:
 		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x1d, 15, 15, dcvs_list[0]);
@@ -2086,8 +2100,8 @@ static int rtpcs_930x_sds_rxcal_dcvs_manual(struct rtpcs_serdes *sds,
 		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x1d,  4,  1, dcvs_list[1]);
 		break;
 	case 4:
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x11, 10, 10, dcvs_list[0]);
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x11,  9,  6, dcvs_list[1]);
+		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x02, 10, 10, dcvs_list[0]);
+		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x02,  9,  6, dcvs_list[1]);
 		break;
 	case 5:
 		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x11,  4,  4, dcvs_list[0]);
