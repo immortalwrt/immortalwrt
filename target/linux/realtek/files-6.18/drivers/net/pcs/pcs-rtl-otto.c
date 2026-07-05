@@ -2320,8 +2320,7 @@ static void rtpcs_930x_sds_rxcal_tap_get(struct rtpcs_serdes *sds,
 	}
 }
 
-static void rtpcs_930x_sds_do_rx_calibration_1(struct rtpcs_serdes *sds,
-					       enum rtpcs_sds_mode hw_mode)
+static void rtpcs_930x_sds_rxcal_init(struct rtpcs_serdes *sds, enum rtpcs_sds_mode hw_mode)
 {
 	/* From both rtl9300_rxCaliConf_serdes_myParam and rtl9300_rxCaliConf_phy_myParam */
 	int tap0_init_val = 0x1f; /* Initial Decision Fed Equalizer 0 tap */
@@ -2584,7 +2583,7 @@ static void rtpcs_930x_sds_do_rx_calibration(struct rtpcs_serdes *sds,
 {
 	u32 latch_sts;
 
-	rtpcs_930x_sds_do_rx_calibration_1(sds, hw_mode);
+	rtpcs_930x_sds_rxcal_init(sds, hw_mode);
 	rtpcs_930x_sds_rxcal_fgcal(sds);
 	rtpcs_930x_sds_rxcal_vth_tap0_adapt_lock(sds);
 
