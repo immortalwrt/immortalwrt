@@ -2125,27 +2125,27 @@ static int rtpcs_930x_sds_rxcal_dcvs_get_coef(struct rtpcs_serdes *sds,
 	return 0;
 }
 
-static void rtpcs_930x_sds_rxcal_leq_manual(struct rtpcs_serdes *sds,
-					    bool manual, u32 leq_gray)
+static int rtpcs_930x_sds_rxcal_leq_set_adapt(struct rtpcs_serdes *sds, bool enable)
 {
-	if (manual) {
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x18, 15, 15, 0x1);
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x16, 14, 10, leq_gray);
-	} else {
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x18, 15, 15, 0x0);
+	int ret;
+
+	ret = rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x18, 15, 15, enable ? 0x0 : 0x1);
+	if (!ret && enable)
 		mdelay(100);
-	}
+
+	return ret;
 }
 
-static void rtpcs_930x_sds_rxcal_leq_offset_manual(struct rtpcs_serdes *sds,
-						   bool manual, u32 offset)
+static int rtpcs_930x_sds_rxcal_leq_set_coef(struct rtpcs_serdes *sds, unsigned int leq_gray,
+					     unsigned int offset)
 {
-	if (manual) {
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x17, 6, 2, offset);
-	} else {
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x17, 6, 2, offset);
-		mdelay(1);
-	}
+	int ret;
+
+	ret = rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x17, 6, 2, offset);
+	if (ret < 0)
+		return ret;
+
+	return rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x16, 14, 10, leq_gray);
 }
 
 static u32 rtpcs_930x_sds_rxcal_gray_to_binary(u32 gray_code)
@@ -2159,21 +2159,28 @@ static u32 rtpcs_930x_sds_rxcal_gray_to_binary(u32 gray_code)
 	return binary;
 }
 
-static u32 rtpcs_930x_sds_rxcal_leq_read(struct rtpcs_serdes *sds)
+static int rtpcs_930x_sds_rxcal_leq_get_coef(struct rtpcs_serdes *sds)
 {
-	u32 leq_gray, leq_bin;
-	bool leq_manual;
+	int bin, gray, manual, ret;
 
-	rtpcs_930x_sds_set_debug(sds, 0x10);
+	ret = rtpcs_930x_sds_set_debug(sds, 0x10);
+	if (ret < 0)
+		return ret;
 	mdelay(1);
 
 	/* ##LEQ Read Out */
-	leq_gray = rtpcs_sds_read_bits(sds, PAGE_WDIG, 0x14, 7, 3);
-	leq_manual = !!rtpcs_sds_read_bits(sds, PAGE_ANA_10G, 0x18, 15, 15);
-	leq_bin = rtpcs_930x_sds_rxcal_gray_to_binary(leq_gray);
+	gray = rtpcs_sds_read_bits(sds, PAGE_WDIG, 0x14, 7, 3);
+	if (gray < 0)
+		return gray;
 
-	pr_info("LEQ gray: %u, LEQ bin: %u, LEQ manual: %u\n", leq_gray, leq_bin, leq_manual);
-	return leq_bin;
+	bin = rtpcs_930x_sds_rxcal_gray_to_binary(gray);
+
+	manual = rtpcs_sds_read_bits(sds, PAGE_ANA_10G, 0x18, 15, 15);
+	if (manual < 0)
+		return manual;
+
+	pr_debug("LEQ gray: %d, LEQ bin: %d, LEQ manual: %u\n", gray, bin, manual);
+	return bin;
 }
 
 static void rtpcs_930x_sds_rxcal_vth_manual(struct rtpcs_serdes *sds,
@@ -2463,17 +2470,21 @@ static void rtpcs_930x_sds_rxcal_leq_adapt_lock(struct rtpcs_serdes *sds)
 			     sds->media == RTPCS_SDS_MEDIA_DAC_SHORT ||
 			     sds->media == RTPCS_SDS_MEDIA_DAC_LONG;
 	u32 sum10 = 0, avg10;
-	int i;
+	int i, val;
 
 	/* 1.3.1: release LEQ auto-adapt, let it settle from zero */
 	if (!direct_serdes)
 		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0xc, 8, 8, 0x0);
 	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x17, 7, 7, 0x0);
-	rtpcs_930x_sds_rxcal_leq_manual(sds, false, 0);
+	rtpcs_930x_sds_rxcal_leq_set_adapt(sds, true);
 
 	/* 1.3.2: sample the auto-adapted LEQ value 10 times over ~100ms */
 	for (i = 0; i < 10; i++) {
-		sum10 += rtpcs_930x_sds_rxcal_leq_read(sds);
+		val = rtpcs_930x_sds_rxcal_leq_get_coef(sds);
+		if (val < 0)
+			return;
+
+		sum10 += val;
 		mdelay(10);
 	}
 
@@ -2503,12 +2514,12 @@ static void rtpcs_930x_sds_rxcal_leq_adapt_lock(struct rtpcs_serdes *sds)
 
 	/* lock LEQ at corrected value for direct SerDes; PHY-attached stays in auto-adapt */
 	if (direct_serdes) {
-		rtpcs_930x_sds_rxcal_leq_offset_manual(sds, 1, 0);
 		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x17, 7, 7, 0x1);
-		rtpcs_930x_sds_rxcal_leq_manual(sds, true, avg10);
+		rtpcs_930x_sds_rxcal_leq_set_adapt(sds, false);
+		rtpcs_930x_sds_rxcal_leq_set_coef(sds, avg10, 0);
 	}
 
-	pr_info("SDS %u LEQ = %u", sds->id, rtpcs_930x_sds_rxcal_leq_read(sds));
+	pr_info("SDS %u LEQ = %u", sds->id, rtpcs_930x_sds_rxcal_leq_get_coef(sds));
 }
 
 static void rtpcs_930x_sds_rxcal_vth_tap0_adapt_lock(struct rtpcs_serdes *sds)
