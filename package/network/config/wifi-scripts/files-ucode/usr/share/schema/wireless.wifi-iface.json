@@ -853,10 +853,20 @@
 			"default": true
 		},
 		"priv_key": {
-			"type": "string"
+			"type": "alias",
+			"default": "private_key"
 		},
 		"priv_key_pwd": {
-			"type": "string"
+			"type": "alias",
+			"default": "private_key_passwd"
+		},
+		"priv_key2": {
+			"type": "alias",
+			"default": "private_key2"
+		},
+		"priv_key2_pwd": {
+			"type": "alias",
+			"default": "private_key2_passwd"
 		},
 		"private_key": {
 			"description": "Private key matching with the server certificate for EAP-TLS/PEAP/TTLS",
