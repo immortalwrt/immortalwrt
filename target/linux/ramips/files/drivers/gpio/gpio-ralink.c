@@ -206,9 +206,9 @@ static int ralink_get_multiple(struct gpio_chip *gc, unsigned long *mask,
 static int ralink_gpio_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
-	struct device_node *np = dev->of_node;
+	struct fwnode_handle *fw = dev_fwnode(dev);
 	struct ralink_gpio_chip *rg;
-	struct of_phandle_args args;
+	struct fwnode_reference_args args;
 	u32 ngpios = 0;
 	int ret;
 
@@ -220,20 +220,20 @@ static int ralink_gpio_probe(struct platform_device *pdev)
 	if (IS_ERR(rg->membase))
 		return PTR_ERR(rg->membase);
 
-	if (of_property_read_u8_array(np, "ralink,register-map",
+	if (device_property_read_u8_array(dev, "ralink,register-map",
 			rg->regs, GPIO_REG_MAX)) {
 		dev_err(dev, "failed to read register definition\n");
 		return -EINVAL;
 	}
 
-	if (of_property_read_u32(np, "ngpios", &ngpios) < 0)
+	if (device_property_read_u32(dev, "ngpios", &ngpios) < 0)
 		ngpios = 0;
 
 	if (ngpios == 0) {
-		if (of_parse_phandle_with_args(np, "gpio-ranges", "#gpio-cells", 0, &args) == 0) {
-			if (args.args_count > 0)
-				ngpios = args.args[args.args_count - 1];
-			of_node_put(args.np);
+		if (!fwnode_property_get_reference_args(fw, "gpio-ranges", "#gpio-cells", 0, 0, &args)) {
+			if (args.nargs > 0)
+				ngpios = args.args[args.nargs - 1];
+			fwnode_handle_put(args.fwnode);
 		}
 	}
 
