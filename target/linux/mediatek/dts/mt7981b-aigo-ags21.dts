@@ -83,12 +83,45 @@
 	};
 };
 
-&uart0 {
+&eth {
 	status = "okay";
+
+	gmac0: mac@0 {
+		compatible = "mediatek,eth-mac";
+		reg = <0>;
+		phy-mode = "2500base-x";
+
+		nvmem-cells = <&macaddr_factory_2a 0>;
+		nvmem-cell-names = "mac-address";
+
+		fixed-link {
+			speed = <2500>;
+			full-duplex;
+			pause;
+		};
+	};
+
+	gmac1: mac@1 {
+		compatible = "mediatek,eth-mac";
+		reg = <1>;
+		phy-mode = "gmii";
+		phy-handle = <&int_gbe_phy>;
+
+		nvmem-cells = <&macaddr_factory_24 0>;
+		nvmem-cell-names = "mac-address";
+	};
 };
 
-&watchdog {
-	status = "okay";
+&mdio_bus {
+	switch: switch@1f {
+		compatible = "mediatek,mt7531";
+		reg = <31>;
+		reset-gpios = <&pio 39 GPIO_ACTIVE_HIGH>;
+		interrupt-controller;
+		#interrupt-cells = <1>;
+		interrupt-parent = <&pio>;
+		interrupts = <38 IRQ_TYPE_LEVEL_HIGH>;
+	};
 };
 
 &mmc0 {
@@ -154,76 +187,6 @@
 	};
 };
 
-&eth {
-	status = "okay";
-
-	gmac0: mac@0 {
-		compatible = "mediatek,eth-mac";
-		reg = <0>;
-		phy-mode = "2500base-x";
-
-		nvmem-cells = <&macaddr_factory_2a 0>;
-		nvmem-cell-names = "mac-address";
-
-		fixed-link {
-			speed = <2500>;
-			full-duplex;
-			pause;
-		};
-	};
-
-	gmac1: mac@1 {
-		compatible = "mediatek,eth-mac";
-		reg = <1>;
-		phy-mode = "gmii";
-		phy-handle = <&int_gbe_phy>;
-
-		nvmem-cells = <&macaddr_factory_24 0>;
-		nvmem-cell-names = "mac-address";
-	};
-};
-
-&mdio_bus {
-	switch: switch@1f {
-		compatible = "mediatek,mt7531";
-		reg = <31>;
-		reset-gpios = <&pio 39 GPIO_ACTIVE_HIGH>;
-		interrupt-controller;
-		#interrupt-cells = <1>;
-		interrupt-parent = <&pio>;
-		interrupts = <38 IRQ_TYPE_LEVEL_HIGH>;
-	};
-};
-
-&switch {
-	ports {
-		#address-cells = <1>;
-		#size-cells = <0>;
-
-		port@1 {
-			reg = <1>;
-			label = "lan1";
-		};
-
-		port@2 {
-			reg = <2>;
-			label = "lan2";
-		};
-
-		port@6 {
-			reg = <6>;
-			ethernet = <&gmac0>;
-			phy-mode = "2500base-x";
-
-			fixed-link {
-				speed = <2500>;
-				full-duplex;
-				pause;
-			};
-		};
-	};
-};
-
 &pio {
 	mmc0_pins_default: mmc0-pins-default {
 		mux {
@@ -266,6 +229,43 @@
 	};
 };
 
+&switch {
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@1 {
+			reg = <1>;
+			label = "lan1";
+		};
+
+		port@2 {
+			reg = <2>;
+			label = "lan2";
+		};
+
+		port@6 {
+			reg = <6>;
+			ethernet = <&gmac0>;
+			phy-mode = "2500base-x";
+
+			fixed-link {
+				speed = <2500>;
+				full-duplex;
+				pause;
+			};
+		};
+	};
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&watchdog {
+	status = "okay";
+};
+
 &wifi {
 	#address-cells = <1>;
 	#size-cells = <0>;
@@ -284,13 +284,4 @@
 		nvmem-cells = <&macaddr_factory_30 0>;
 		nvmem-cell-names = "mac-address";
 	};
-};
-
-/* USB is not wired on the stock board. */
-&usb_phy {
-	status = "disabled";
-};
-
-&xhci {
-	status = "disabled";
 };

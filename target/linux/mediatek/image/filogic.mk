@@ -272,6 +272,20 @@ define Device/acer_vero-w6m
 endef
 TARGET_DEVICES += acer_vero-w6m
 
+define Device/aigo_ags21
+  DEVICE_VENDOR := Aigo
+  DEVICE_MODEL := AGS21
+  DEVICE_DTS := mt7981b-aigo-ags21
+  DEVICE_DTS_DIR := ../dts
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware \
+	kmod-mmc mmc-utils f2fsck mkf2fs blkid blockdev fdisk
+  KERNEL := kernel-bin | lzma | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
+  KERNEL_INITRAMFS := kernel-bin | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += aigo_ags21
+
 define Device/alwaylink_m01k43
   DEVICE_VENDOR := AlwayLink
   DEVICE_MODEL := M01K43
@@ -3984,21 +3998,3 @@ ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
 endif
 endef
 TARGET_DEVICES += zyxel_wx5600-t0-ubootmod
-
-
-# Aigo AGS21
-define Device/aigo_ags21
-  DEVICE_VENDOR := Aigo
-  DEVICE_MODEL := AGS21
-  DEVICE_DTS := mt7981b-aigo-ags21
-  DEVICE_DTS_DIR := ../dts
-  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7981-firmware mt7981-wo-firmware \
-	kmod-mmc mmc-utils automount f2fsck mkf2fs blkid blockdev fdisk
-  KERNEL := kernel-bin | lzma | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
-  KERNEL_INITRAMFS := kernel-bin | lzma | \
-	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
-  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
-  ARTIFACTS := emmc-gpt.bin
-  ARTIFACT/emmc-gpt.bin := mt798x-gpt emmc
-endef
-TARGET_DEVICES += aigo_ags21
