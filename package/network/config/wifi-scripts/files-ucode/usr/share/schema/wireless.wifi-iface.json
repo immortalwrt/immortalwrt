@@ -196,6 +196,10 @@
 			"description": "Specifies the path the CA certificate used for authentication",
 			"type": "string"
 		},
+		"ca_cert2": {
+			"description": "Path to the inner-tunnel (phase 2) CA certificate for EAP-TLS",
+			"type": "string"
+		},
 		"ca_cert2_usesystem": {
 			"type": "boolean"
 		},
@@ -213,6 +217,10 @@
 		},
 		"client_cert": {
 			"description": "File path to client certificate file (PEM/DER)",
+			"type": "string"
+		},
+		"client_cert2": {
+			"description": "File path to the inner-tunnel (phase 2) client certificate for EAP-TLS",
 			"type": "string"
 		},
 		"dae_client": {
@@ -854,8 +862,16 @@
 			"description": "Private key matching with the server certificate for EAP-TLS/PEAP/TTLS",
 			"type": "string"
 		},
+		"private_key2": {
+			"description": "Inner-tunnel (phase 2) private key for EAP-TLS",
+			"type": "string"
+		},
 		"private_key_passwd": {
 			"description": "Passphrase for private key",
+			"type": "string"
+		},
+		"private_key2_passwd": {
+			"description": "Passphrase for the inner-tunnel (phase 2) private key",
 			"type": "string"
 		},
 		"proxy_arp": {
