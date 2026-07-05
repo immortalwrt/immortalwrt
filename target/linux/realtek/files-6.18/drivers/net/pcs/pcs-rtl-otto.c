@@ -2183,36 +2183,53 @@ static int rtpcs_930x_sds_rxcal_leq_get_coef(struct rtpcs_serdes *sds)
 	return bin;
 }
 
-static void rtpcs_930x_sds_rxcal_vth_manual(struct rtpcs_serdes *sds,
-					    bool manual, u32 vth_list[])
+static int rtpcs_930x_sds_rxcal_vth_set_adapt(struct rtpcs_serdes *sds, bool enable)
 {
-	/* REG0_LOAD_IN_INIT, [13:13] = VTH */
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x0f, 13, 13, manual ? 0x1 : 0x0);
-
-	if (manual) {
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x13,  5,  3, vth_list[0]);
-		rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x13,  2,  0, vth_list[1]);
-	} else
-		mdelay(10);
+	return rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x0f, 13, 13, enable ? 0 : 1);
 }
 
-static void rtpcs_930x_sds_rxcal_vth_get(struct rtpcs_serdes *sds,
-					 u32 vth_list[])
+static int rtpcs_930x_sds_rxcal_vth_set_value(struct rtpcs_serdes *sds, unsigned int vth_p,
+					      unsigned int vth_n)
 {
-	int vth_manual;
+	int ret;
 
-	rtpcs_930x_sds_set_debug(sds, 0x20);
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x0c, 5, 0, 0xc); /* COEF_SEL */
+	ret = rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x13,  5,  3, vth_p);
+	if (ret < 0)
+		return ret;
 
+	ret = rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x13,  2,  0, vth_n);
+	if (ret < 0)
+		return ret;
+
+	return 0;
+}
+
+static int rtpcs_930x_sds_rxcal_vth_get(struct rtpcs_serdes *sds, unsigned int *vth_p,
+					unsigned int *vth_n)
+{
+	int manual, ret, val;
+
+	ret = rtpcs_930x_sds_set_debug(sds, 0x20);
+	if (ret < 0)
+		return ret;
+
+	ret = rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x0c, 5, 0, 0xc); /* COEF_SEL */
+	if (ret < 0)
+		return ret;
 	mdelay(1);
 
 	/* ##VthP & VthN Read Out */
-	vth_list[0] = rtpcs_sds_read_bits(sds, PAGE_WDIG, 0x14, 2, 0); /* v_thp set bin */
-	vth_list[1] = rtpcs_sds_read_bits(sds, PAGE_WDIG, 0x14, 5, 3); /* v_thn set bin */
-	vth_manual = rtpcs_sds_read_bits(sds, PAGE_ANA_10G, 0x0f, 13, 13);
+	val = rtpcs_sds_read_bits(sds, PAGE_WDIG, 0x14, 5, 0);
+	if (val < 0)
+		return val;
 
-	pr_info("vthp_set_bin = %d, vthn_set_bin = %d, manual = %d\n", vth_list[0], vth_list[1],
-		vth_manual);
+	*vth_p = FIELD_GET(GENMASK(2, 0), val);
+	*vth_n = FIELD_GET(GENMASK(5, 3), val);
+	manual = rtpcs_sds_read_bits(sds, PAGE_ANA_10G, 0x0f, 13, 13);
+
+	pr_debug("vth_p = %d, vth_n = %d, manual = %d\n", *vth_p, *vth_n,
+		manual);
+	return 0;
 }
 
 static void rtpcs_930x_sds_rxcal_tap_manual(struct rtpcs_serdes *sds,
@@ -2524,17 +2541,19 @@ static void rtpcs_930x_sds_rxcal_leq_adapt_lock(struct rtpcs_serdes *sds)
 
 static void rtpcs_930x_sds_rxcal_vth_tap0_adapt_lock(struct rtpcs_serdes *sds)
 {
+	unsigned int vth_p, vth_n;
 	u32 tap0_list[4] = {0};
-	u32 vth_list[2] = {0};
 
 	/* run VTH/TAP auto-adapt */
-	rtpcs_930x_sds_rxcal_vth_manual(sds, false, vth_list);
+	rtpcs_930x_sds_rxcal_vth_set_adapt(sds, true);
 	rtpcs_930x_sds_rxcal_tap_manual(sds, 0, false, tap0_list);
 	mdelay(200);
 
 	/* manually set learned VTH */
-	rtpcs_930x_sds_rxcal_vth_get(sds, vth_list);
-	rtpcs_930x_sds_rxcal_vth_manual(sds, true, vth_list);
+	if (rtpcs_930x_sds_rxcal_vth_get(sds, &vth_p, &vth_n) < 0)
+		return;
+	rtpcs_930x_sds_rxcal_vth_set_value(sds, vth_p, vth_n);
+	rtpcs_930x_sds_rxcal_vth_set_adapt(sds, false);
 
 	mdelay(100);
 
