@@ -308,9 +308,4 @@ static struct platform_driver ralink_gpio_driver = {
 	},
 };
 
-static int __init ralink_gpio_init(void)
-{
-	return platform_driver_register(&ralink_gpio_driver);
-}
-
-subsys_initcall(ralink_gpio_init);
+module_platform_driver(ralink_gpio_driver);
