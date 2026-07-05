@@ -2062,7 +2062,6 @@ static int rtpcs_930x_sds_set_debug(struct rtpcs_serdes *sds, unsigned int debug
 	return rtpcs_sds_write_bits(sds, PAGE_ANA_COM, 0x06, 11, 6, debug_sel); /* RX_DEBUG_SEL */
 }
 
-__maybe_unused
 static int rtpcs_930x_sds_rxcal_dcvs_set_adapt(struct rtpcs_serdes *sds, unsigned int dcvs_id,
 					       bool enable)
 {
@@ -2076,7 +2075,6 @@ static int rtpcs_930x_sds_rxcal_dcvs_set_adapt(struct rtpcs_serdes *sds, unsigne
 				    bit[dcvs_id], enable ? 0x0 : 0x1);
 }
 
-__maybe_unused
 static int rtpcs_930x_sds_rxcal_dcvs_set_coef(struct rtpcs_serdes *sds, unsigned int dcvs_id,
 					      int dcvs_coef)
 {
@@ -2331,15 +2329,11 @@ static void rtpcs_930x_sds_rxcal_init(struct rtpcs_serdes *sds, enum rtpcs_sds_m
 	rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x02,  0,  0, 0x01);
 
 	/* DCVS */
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x1e, 14, 11, 0x00);
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x01, 15, 15, 0x00);
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x02, 11, 11, 0x00);
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x1c,  4,  0, 0x00);
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x1d, 15, 11, 0x00);
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x1d, 10,  6, 0x00);
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x1d,  5,  1, 0x00);
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x02, 10,  6, 0x00);
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x11,  4,  0, 0x00);
+	for (int i = 0; i <= 5; i++) {
+		rtpcs_930x_sds_rxcal_dcvs_set_coef(sds, i, 0);
+		rtpcs_930x_sds_rxcal_dcvs_set_adapt(sds, i, true);
+	}
+
 	rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x00,  3,  0, 0x0f);
 	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x04,  6,  6, 0x01);
 	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x04,  7,  7, 0x01);
