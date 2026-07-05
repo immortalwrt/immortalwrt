@@ -302,6 +302,25 @@ define Device/huake_guangmiao-g4c
 endef
 TARGET_DEVICES += huake_guangmiao-g4c
 
+define Device/hinlink_opc-h69k
+  $(Device/rk3568)
+  DEVICE_VENDOR := HINLINK
+  DEVICE_MODEL := OPC-H69K
+  DEVICE_DTS := rk3568-opc-h69k
+  UBOOT_DEVICE_NAME := generic-rk3568
+  DEVICE_PACKAGES := blkdiscard block-mount kmod-button-hotplug kmod-input-adc-keys \
+	kmod-nvme kmod-r8125 kmod-hwmon-pwmfan \
+	kmod-mt7915e kmod-mt7916-firmware wpad-openssl \
+	kmod-usb3 kmod-usb-storage kmod-usb-storage-uas \
+	kmod-usb-net-qmi-wwan kmod-usb-serial-option uqmi \
+	kmod-fs-ext4 kmod-fs-vfat kmod-fs-exfat kmod-fs-ntfs3 \
+	e2fsprogs dosfstools fdisk htop iperf3 curl \
+	coreutils coreutils-dd coreutils-stty coreutils-sleep \
+	adguardhome luci-app-adguardhome \
+	luci-app-passwall
+endef
+TARGET_DEVICES += hinlink_opc-h69k
+
 define Device/linkease_easepi-r1
   $(Device/rk3568)
   DEVICE_VENDOR := LinkEase
