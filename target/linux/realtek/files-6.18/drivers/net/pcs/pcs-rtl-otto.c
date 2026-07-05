@@ -2364,20 +2364,15 @@ static void rtpcs_930x_sds_rxcal_init(struct rtpcs_serdes *sds, enum rtpcs_sds_m
 	/* LEQ (Long Term Equivalent signal level) */
 	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x16, 14,  8, 0x00);
 
-	/* DFE (Decision Fed Equalizer) */
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x03,  5,  0, tap0_init_val);
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x09, 11,  6, 0x00);
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x09,  5,  0, 0x00);
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x0a,  5,  0, 0x00);
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x01,  5,  0, 0x00);
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x12,  5,  0, 0x00);
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x0a, 11,  6, 0x00);
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x06,  5,  0, 0x00);
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x01,  5,  0, 0x00);
+	/* DFE (Decision Feedback Equalizer) TAPs */
+	rtpcs_930x_sds_rxcal_tap_set_value(sds, 0, tap0_init_val, 0);
+	rtpcs_930x_sds_rxcal_tap_set_value(sds, 1, 0, 0);
+	rtpcs_930x_sds_rxcal_tap_set_value(sds, 2, 0, 0);
+	rtpcs_930x_sds_rxcal_tap_set_value(sds, 3, 0, 0);
+	rtpcs_930x_sds_rxcal_tap_set_value(sds, 4, 0, 0);
 
-	/* Vth */
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x13,  5,  3, 0x07);
-	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x13,  2,  0, 0x07);
+	/* VTH (Voltage Threshold) */
+	rtpcs_930x_sds_rxcal_vth_set_value(sds, 0x07, 0x07);
 	rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x0b,  5,  3, vth_min);
 
 	/* --- 1.1.1 */
