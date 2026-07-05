@@ -164,7 +164,20 @@ function setup_sta(data, config) {
 		case 'peap':
 		case 'ttls':
 			set_default(config, 'auth', 'MSCHAPV2');
-			config.phase2 = `"auth=${config.auth}"`;
+
+			let auth = config.auth;
+			let phase2proto = 'auth=';
+			if (index(auth, 'auth') == 0) {
+				/* user already provided a full "auth=..." spec */
+				phase2proto = '';
+			} else if (index(auth, 'EAP-') == 0) {
+				/* inner EAP method, e.g. EAP-MSCHAPV2 -> MSCHAPV2 */
+				auth = substr(auth, 4);
+				if (config.eap_type == 'ttls')
+					phase2proto = 'autheap=';
+			}
+			config.phase2 = `"${phase2proto}${auth}"`;
+
 			if (config.auth == 'EAP-TLS') {
 				if (config.ca_cert2_usesystem && fs.stat('/etc/ssl/certs/ca-certificates.crt'))
 					config.ca_cert2 = '/etc/ssl/certs/ca-certificates.crt';
