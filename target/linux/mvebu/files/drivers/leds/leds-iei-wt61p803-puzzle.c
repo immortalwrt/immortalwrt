@@ -174,16 +174,14 @@ static int iei_wt61p803_puzzle_led_set_blink(struct led_classdev *cdev,
 
 
 static int iei_wt61p803_puzzle_led_set_dt_default(struct led_classdev *cdev,
-				     struct device_node *np)
+				     struct fwnode_handle *child)
 {
 	const char *state;
 	int ret = 0;
 
-	state = of_get_property(np, "default-state", NULL);
-	if (state) {
+	if (!fwnode_property_read_string(child, "default-state", &state)) {
 		if (!strcmp(state, "on")) {
-			ret =
-			iei_wt61p803_puzzle_led_brightness_set_blocking(
+			ret = iei_wt61p803_puzzle_led_brightness_set_blocking(
 				cdev, cdev->max_brightness);
 		} else  {
 			ret = iei_wt61p803_puzzle_led_brightness_set_blocking(
@@ -197,7 +195,6 @@ static int iei_wt61p803_puzzle_led_set_dt_default(struct led_classdev *cdev,
 static int iei_wt61p803_puzzle_led_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
-	struct device_node *np = dev_of_node(dev);
 	struct iei_wt61p803_puzzle *mcu = dev_get_drvdata(dev->parent);
 	struct iei_wt61p803_puzzle_led *priv;
 	int ret;
@@ -206,41 +203,34 @@ static int iei_wt61p803_puzzle_led_probe(struct platform_device *pdev)
 	if (device_get_child_node_count(dev) > IEI_LEDS_MAX)
 		return -EINVAL;
 
-	for_each_available_child_of_node_scoped(np, child) {
+	device_for_each_child_node_scoped(dev, child) {
 		struct led_init_data init_data = {};
 
-		ret = of_property_read_u32(child, "reg", &reg);
-		if (ret) {
-			dev_err(dev, "Failed to read led 'reg' property\n");
-			goto put_child_node;
-		}
+		ret = fwnode_property_read_u32(child, "reg", &reg);
+		if (ret)
+			return dev_err_probe(dev, ret, "Failed to read led 'reg' property\n");
 
 		if (reg > IEI_LEDS_MAX) {
 			dev_err(dev, "Invalid led reg %u\n", reg);
-			ret = -EINVAL;
-			goto put_child_node;
+			return -EINVAL;
 		}
 
 		priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-		if (!priv) {
-			ret = -ENOMEM;
-			goto put_child_node;
-		}
+		if (!priv)
+			return -ENOMEM;
 
 		ret = devm_mutex_init(dev, &priv->lock);
 		if (ret)
-			goto put_child_node;
+			return ret;
 
 		dev_set_drvdata(dev, priv);
 
-		if (of_property_read_bool(child, "active-low"))
-			priv->active_low = true;
-
+		priv->active_low = fwnode_property_present(child, "active-low");
 		priv->mcu = mcu;
 		priv->id = reg;
 		priv->led_power_state = 1;
 		priv->blinking = 0;
-		init_data.fwnode = of_fwnode_handle(of_node_get(child));
+		init_data.fwnode = fwnode_handle_get(child);
 
 		priv->cdev.brightness_set_blocking = iei_wt61p803_puzzle_led_brightness_set_blocking;
 		priv->cdev.brightness_get = iei_wt61p803_puzzle_led_brightness_get;
@@ -251,21 +241,14 @@ static int iei_wt61p803_puzzle_led_probe(struct platform_device *pdev)
 		INIT_WORK(&priv->work, iei_wt61p803_puzzle_led_apply_blink);
 
 		ret = iei_wt61p803_puzzle_led_set_dt_default(&priv->cdev, child);
-		if (ret) {
-			dev_err(dev, "Could apply default from DT\n");
-			goto put_child_node;
-		}
+		if (ret)
+			return dev_err_probe(dev, ret, "Could apply default from DT\n");
 
 		ret = devm_led_classdev_register_ext(dev, &priv->cdev, &init_data);
-		if (ret) {
-			dev_err(dev, "Could not register LED\n");
-			goto put_child_node;
-		}
+		if (ret)
+			return dev_err_probe(dev, ret, "Could not register LED\n");
 	}
 
-	return ret;
-
-put_child_node:
 	return ret;
 }
 
