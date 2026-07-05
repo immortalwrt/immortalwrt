@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include <linux/delay.h>
 #include <linux/mdio.h>
 #include <linux/mfd/syscon.h>
 #include <linux/of.h>
@@ -1716,7 +1717,7 @@ static void rtpcs_930x_sds_rx_reset(struct rtpcs_serdes *sds,
 		page = PAGE_ANA_1G2;
 
 	rtpcs_sds_write_bits(sds, page, 0x15, 4, 4, 0x1);
-	mdelay(5);
+	usleep_range(5000, 6000);
 	rtpcs_sds_write_bits(sds, page, 0x15, 4, 4, 0x0);
 }
 
@@ -2106,7 +2107,7 @@ static int rtpcs_930x_sds_rxcal_dcvs_get_coef(struct rtpcs_serdes *sds,
 	ret = rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x0c, 5, 0, coeff_sel[dcvs_id]);
 	if (ret < 0)
 		return ret;
-	mdelay(1);
+	usleep_range(1000, 2000);
 
 	/* ## DCVSX Read Out */
 	val = rtpcs_sds_read_bits(sds, PAGE_WDIG, 0x14, 4, 0);
@@ -2131,7 +2132,7 @@ static int rtpcs_930x_sds_rxcal_leq_set_adapt(struct rtpcs_serdes *sds, bool ena
 
 	ret = rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0x18, 15, 15, enable ? 0x0 : 0x1);
 	if (!ret && enable)
-		mdelay(100);
+		msleep(100);
 
 	return ret;
 }
@@ -2166,7 +2167,7 @@ static int rtpcs_930x_sds_rxcal_leq_get_coef(struct rtpcs_serdes *sds)
 	ret = rtpcs_930x_sds_set_debug(sds, 0x10);
 	if (ret < 0)
 		return ret;
-	mdelay(1);
+	usleep_range(1000, 2000);
 
 	/* ##LEQ Read Out */
 	gray = rtpcs_sds_read_bits(sds, PAGE_WDIG, 0x14, 7, 3);
@@ -2216,7 +2217,7 @@ static int rtpcs_930x_sds_rxcal_vth_get(struct rtpcs_serdes *sds, unsigned int *
 	ret = rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x0c, 5, 0, 0xc); /* COEF_SEL */
 	if (ret < 0)
 		return ret;
-	mdelay(1);
+	usleep_range(1000, 2000);
 
 	/* ##VthP & VthN Read Out */
 	val = rtpcs_sds_read_bits(sds, PAGE_WDIG, 0x14, 5, 0);
@@ -2306,7 +2307,7 @@ static int rtpcs_930x_sds_rxcal_tap_get(struct rtpcs_serdes *sds, unsigned int t
 	ret = rtpcs_sds_write_bits(sds, PAGE_ANA_10G_EXT, 0x0c, 5, 0, tap_id); /* COEF_SEL */
 	if (ret < 0)
 		return ret;
-	mdelay(1);
+	usleep_range(1000, 2000);
 
 	val = rtpcs_sds_read_bits(sds, PAGE_WDIG, 0x14, 5, 0);
 	if (val < 0)
@@ -2486,7 +2487,7 @@ static void rtpcs_930x_sds_rxcal_leq_adapt_lock(struct rtpcs_serdes *sds)
 			return;
 
 		sum10 += val;
-		mdelay(10);
+		usleep_range(10000, 11000);
 	}
 
 	/* rounded average of where auto-adapt settled */
@@ -2531,7 +2532,7 @@ static void rtpcs_930x_sds_rxcal_vth_tap0_adapt_lock(struct rtpcs_serdes *sds)
 	/* run VTH/TAP auto-adapt */
 	rtpcs_930x_sds_rxcal_vth_set_adapt(sds, true);
 	rtpcs_930x_sds_rxcal_tap_set_adapt(sds, 0, true);
-	mdelay(200);
+	msleep(200);
 
 	/* manually set learned VTH */
 	if (rtpcs_930x_sds_rxcal_vth_get(sds, &vth_p, &vth_n) < 0)
@@ -2539,7 +2540,7 @@ static void rtpcs_930x_sds_rxcal_vth_tap0_adapt_lock(struct rtpcs_serdes *sds)
 	rtpcs_930x_sds_rxcal_vth_set_value(sds, vth_p, vth_n);
 	rtpcs_930x_sds_rxcal_vth_set_adapt(sds, false);
 
-	mdelay(100);
+	msleep(100);
 
 	/* manually set learned TAP0 */
 	if (rtpcs_930x_sds_rxcal_tap_get(sds, 0, &tap0, NULL) < 0)
@@ -2556,7 +2557,7 @@ static void rtpcs_930x_sds_rxcal_dfe_taps_adapt(struct rtpcs_serdes *sds)
 	rtpcs_930x_sds_rxcal_tap_set_adapt(sds, 3, true);
 	rtpcs_930x_sds_rxcal_tap_set_adapt(sds, 4, true);
 
-	mdelay(30);
+	msleep(30);
 }
 
 static void rtpcs_930x_sds_rxcal_dfe_disable(struct rtpcs_serdes *sds)
@@ -2568,7 +2569,7 @@ static void rtpcs_930x_sds_rxcal_dfe_disable(struct rtpcs_serdes *sds)
 		rtpcs_930x_sds_rxcal_tap_set_adapt(sds, i, false);
 	}
 
-	mdelay(10);
+	usleep_range(10000, 11000);
 }
 
 static void rtpcs_930x_sds_do_rx_calibration(struct rtpcs_serdes *sds,
@@ -2583,10 +2584,10 @@ static void rtpcs_930x_sds_do_rx_calibration(struct rtpcs_serdes *sds,
 	/* Do this only for 10GR mode */
 	if (hw_mode == RTPCS_SDS_MODE_10GBASER) {
 		rtpcs_930x_sds_rxcal_dfe_taps_adapt(sds);
-		mdelay(20);
+		msleep(20);
 
 		latch_sts = rtpcs_sds_read_bits(sds, PAGE_TGR_STD_0, 1, 2, 2);
-		mdelay(1);
+		usleep_range(1000, 2000);
 		latch_sts = rtpcs_sds_read_bits(sds, PAGE_TGR_STD_0, 1, 2, 2);
 		if (latch_sts) {
 			rtpcs_930x_sds_rxcal_dfe_disable(sds);
@@ -2686,7 +2687,7 @@ static int rtpcs_930x_sds_check_calibration(struct rtpcs_serdes *sds,
 
 	/* Count errors during 1ms */
 	errors1 = rtpcs_930x_sds_sym_err_get(sds, hw_mode);
-	mdelay(1);
+	usleep_range(1000, 2000);
 	errors2 = rtpcs_930x_sds_sym_err_get(sds, hw_mode);
 
 	switch (hw_mode) {
@@ -2987,7 +2988,7 @@ static int rtpcs_930x_sds_post_config(struct rtpcs_serdes *sds, enum rtpcs_sds_m
 	do {
 		rtpcs_930x_sds_do_rx_calibration(sds, hw_mode);
 		calib_tries++;
-		mdelay(50);
+		msleep(50);
 	} while (rtpcs_930x_sds_check_calibration(sds, hw_mode) && calib_tries < 3);
 	if (calib_tries >= 3)
 		pr_warn("%s: SerDes RX calibration failed\n", __func__);
@@ -3233,7 +3234,7 @@ static void rtpcs_931x_sds_rx_reset(struct rtpcs_serdes *sds)
 	rtpcs_sds_write(sds, PAGE_ANA_10G_EXT, 0x2, 0x6010);
 	rtpcs_sds_write(sds, PAGE_ANA_MISC, 0x0, 0xc30);
 
-	mdelay(50);
+	msleep(50);
 }
 
 static int rtpcs_931x_sds_cmu_page_get(enum rtpcs_sds_mode hw_mode)
