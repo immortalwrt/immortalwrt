@@ -4155,8 +4155,8 @@ static int rtpcs_probe(struct platform_device *pdev)
 			return ret;
 	}
 
-	for_each_child_of_node_scoped(dev->of_node, child) {
-		ret = of_property_read_u32(child, "reg", &sds_id);
+	device_for_each_child_node_scoped(dev, child) {
+		ret = fwnode_property_read_u32(child, "reg", &sds_id);
 		if (ret)
 			return ret;
 
@@ -4164,7 +4164,7 @@ static int rtpcs_probe(struct platform_device *pdev)
 			return -EINVAL;
 
 		sds = &ctrl->serdes[sds_id];
-		sds->fwnode = fwnode_handle_get(of_fwnode_handle(child));
+		sds->fwnode = fwnode_handle_get(child);
 		ret = devm_add_action_or_reset(dev, rtpcs_sds_put_fwnode, sds);
 		if (ret)
 			return ret;
