@@ -256,7 +256,7 @@ static int msp430_pattern_set(struct led_classdev *led_cdev,
 	return 0;
 }
 
-static int msp430_led_probe(struct spi_device *spi, struct device_node *nc, u8 id)
+static int msp430_led_probe(struct spi_device *spi, struct fwnode_handle *fw, u8 id)
 {
 	struct device *dev = &spi->dev;
 	struct led_init_data init_data = {};
@@ -271,9 +271,9 @@ static int msp430_led_probe(struct spi_device *spi, struct device_node *nc, u8 i
 	led->id = id;
 	led->spi = spi;
 
-	init_data.fwnode = of_fwnode_handle(nc);
+	init_data.fwnode = fw;
 
-	state = led_init_default_state_get(init_data.fwnode);
+	state = led_init_default_state_get(fw);
 	switch (state) {
 	case LEDS_DEFSTATE_ON:
 		led->cdev.brightness = MSP430_LED_BRIGHTNESS_MAX;
@@ -326,17 +326,18 @@ static inline int msp430_check_workmode(struct spi_device *spi)
 static int msp430_leds_probe(struct spi_device *spi)
 {
 	struct device *dev = &spi->dev;
-	struct device_node *np = dev_of_node(dev);
+	struct fwnode_handle *fw = dev_fwnode(dev);
+	struct fwnode_handle *child;
 	int rc;
 
 	rc = msp430_check_workmode(spi);
 	if (rc)
 		return rc;
 
-	for_each_available_child_of_node_scoped(np, child) {
+	fwnode_for_each_available_child_node(fw, child) {
 		u32 reg;
 
-		if (of_property_read_u32(child, "reg", &reg))
+		if (fwnode_property_read_u32(child, "reg", &reg))
 			continue;
 
 		if (reg < MSP430_LED_MIN_ID || reg > MSP430_LED_MAX_ID) {
@@ -346,8 +347,10 @@ static int msp430_leds_probe(struct spi_device *spi)
 		}
 
 		rc = msp430_led_probe(spi, child, reg);
-		if (rc < 0)
+		if (rc < 0) {
+			fwnode_handle_put(child);
 			return rc;
+		}
 	}
 
 	return 0;
