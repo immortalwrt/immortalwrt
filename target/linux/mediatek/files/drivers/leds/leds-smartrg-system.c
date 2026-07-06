@@ -166,7 +166,6 @@ static int
 srg_led_probe(struct i2c_client *client)
 {
 	struct device *dev = &client->dev;
-	struct fwnode_handle *fw = dev_fwnode(dev);
 	struct srg_led_ctrl *sysled_ctrl;
 	int err;
 
@@ -182,7 +181,7 @@ srg_led_probe(struct i2c_client *client)
 
 	i2c_set_clientdata(client, sysled_ctrl);
 
-	fwnode_for_each_available_child_node_scoped(fw, child) {
+	device_for_each_child_node_scoped(dev, child) {
 		if (srg_led_init_led(sysled_ctrl, child))
 			continue;
 
