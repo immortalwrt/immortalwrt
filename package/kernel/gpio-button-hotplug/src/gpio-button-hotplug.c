@@ -363,13 +363,12 @@ static irqreturn_t button_handle_irq(int irq, void *_bdata)
 static struct gpio_keys_platform_data *
 gpio_keys_get_devtree_pdata(struct device *dev)
 {
-	struct device_node *node = dev->of_node;
 	struct gpio_keys_platform_data *pdata;
 	struct gpio_keys_button *buttons;
 	int nbuttons;
 	int i = 0;
 
-	nbuttons = of_get_available_child_count(node);
+	nbuttons = device_get_child_node_count(dev);
 	if (nbuttons == 0)
 		return ERR_PTR(-EINVAL);
 
@@ -377,28 +376,32 @@ gpio_keys_get_devtree_pdata(struct device *dev)
 	if (!buttons)
 		return ERR_PTR(-ENOMEM);
 
-	for_each_available_child_of_node_scoped(node, pp) {
+	device_for_each_child_node_scoped(dev, pp) {
 		struct gpio_keys_button *button = &buttons[i++];
 
-		if (of_property_read_u32(pp, "linux,code", &button->code)) {
+		if (fwnode_property_read_u32(pp, "linux,code", &button->code)) {
 			dev_err(dev, "Button node '%s' without keycode\n",
-				pp->full_name);
+				fwnode_get_name(pp));
 			return ERR_PTR(-EINVAL);
 		}
 
-		button->desc = of_get_property(pp, "label", NULL);
+		if (fwnode_property_read_string(pp, "label", &button->desc))
+			button->desc = NULL;
 
-		if (of_property_read_u32(pp, "linux,input-type", &button->type))
+		if (fwnode_property_read_u32(pp, "linux,input-type", &button->type))
 			button->type = EV_KEY;
 
-		button->wakeup = of_property_present(pp, "gpio-key,wakeup");
-
-		if (of_property_read_u32(pp, "debounce-interval",
+		if (fwnode_property_read_u32(pp, "debounce-interval",
 					&button->debounce_interval))
 			button->debounce_interval = 5;
 
-		button->irq = irq_of_parse_and_map(pp, 0);
+		button->wakeup = fwnode_property_present(pp, "gpio-key,wakeup");
 		button->gpio = -ENOENT; /* mark this as device-tree */
+		button->irq = fwnode_irq_get(pp, 0);
+		if (button->irq == -EPROBE_DEFER)
+			return ERR_PTR(button->irq);
+		if (button->irq < 0)
+			button->irq = 0;
 	}
 
 	pdata = devm_kzalloc(dev, sizeof(struct gpio_keys_platform_data), GFP_KERNEL);
@@ -407,8 +410,8 @@ gpio_keys_get_devtree_pdata(struct device *dev)
 
 	pdata->nbuttons = nbuttons;
 	pdata->buttons = buttons;
-	pdata->rep = of_property_present(node, "autorepeat");
-	of_property_read_u32(node, "poll-interval", &pdata->poll_interval);
+	pdata->rep = device_property_present(dev, "autorepeat");
+	device_property_read_u32(dev, "poll-interval", &pdata->poll_interval);
 
 	return pdata;
 }
