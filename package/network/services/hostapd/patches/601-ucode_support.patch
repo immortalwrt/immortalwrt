@@ -987,7 +987,7 @@ as adding/removing interfaces.
  				       MULTI_AP_FRONTHAUL_BSS);
  	wpa_s->multi_ap_ie = 1;
  }
-@@ -6293,6 +6300,7 @@ void supplicant_event(void *ctx, enum wp
+@@ -6309,6 +6316,7 @@ void supplicant_event(void *ctx, enum wp
  		event_to_string(event), event);
  #endif /* CONFIG_NO_STDOUT_DEBUG */
  
