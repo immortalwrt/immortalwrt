@@ -1009,6 +1009,11 @@ function iface_set_config(name, config)
 {
 	let old_config = hostapd.data.config[name];
 
+	if (!config) {
+		delete hostapd.data.config[name];
+		return iface_config_remove(name, old_config);
+	}
+
 	hostapd.data.config[name] = config;
 
 	let phy = config.phy;
