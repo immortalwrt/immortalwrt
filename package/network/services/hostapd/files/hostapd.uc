@@ -130,6 +130,15 @@ function iface_freq_info(iface, config, params)
 	if (freq < 4000)
 		width = 0;
 
+	/*
+	 * 6 GHz has no HT Operation IE, so the secondary channel offset cannot
+	 * be derived the usual way. For wide channels pass a null offset so the
+	 * C helper auto-derives it and computes the segment centre frequency; a
+	 * 0 offset would make it skip the centre calculation.
+	 */
+	if (freq > 5925 && width > 0 && sec_offset == 0)
+		sec_offset = null;
+
 	return hostapd.freq_info(freq, sec_offset, width);
 }
 
