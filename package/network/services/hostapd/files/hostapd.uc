@@ -935,6 +935,16 @@ function iface_load_config(phy, radio, filename)
 			continue;
 		}
 
+		if (val[0] == "#frequency") {
+			config.radio.frequency = int(val[1]);
+			continue;
+		}
+
+		if (val[0] == "#channel_follow") {
+			config.radio.channel_follow = int(val[1]) == 1;
+			continue;
+		}
+
 		if (val[0] == "#num_global_macaddr")
 			config[substr(val[0], 1)] = int(val[1]);
 		else if (val[0] == "#macaddr_base")
