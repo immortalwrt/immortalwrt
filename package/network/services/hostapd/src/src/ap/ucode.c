@@ -297,6 +297,14 @@ uc_hostapd_bss_set_config(uc_vm_t *vm, size_t nargs)
 	started = hapd->started;
 	__uc_hostapd_bss_stop(hapd);
 
+	/*
+	 * start_disabled is only meaningful for the initial apsta bring-up. When
+	 * re-applying config to a BSS that was already started, clear it so the
+	 * restart keeps beaconing instead of silently going quiet.
+	 */
+	if (started)
+		conf->bss[idx]->start_disabled = 0;
+
 	old_bss = hapd->conf;
 	for (i = 0; i < iface->conf->num_bss; i++)
 		if (iface->conf->bss[i] == hapd->conf)
