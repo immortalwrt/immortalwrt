@@ -197,12 +197,12 @@ enum rtpcs_sds_mode {
 	RTPCS_SDS_MODE_MAX,
 };
 
-enum rtpcs_sds_media {
-	RTPCS_SDS_MEDIA_NONE,
-	RTPCS_SDS_MEDIA_FIBER,
-	RTPCS_SDS_MEDIA_DAC_SHORT,	/*  < 3m */
-	RTPCS_SDS_MEDIA_DAC_LONG,	/* >= 3m */
-	RTPCS_SDS_MEDIA_PHY,
+enum rtpcs_sds_attachment {
+	RTPCS_SDS_ATTACH_NONE,
+	RTPCS_SDS_ATTACH_FIBER,
+	RTPCS_SDS_ATTACH_DAC_SHORT,	/*  < 3m */
+	RTPCS_SDS_ATTACH_DAC_LONG,	/* >= 3m */
+	RTPCS_SDS_ATTACH_PHY,
 };
 
 enum rtpcs_sds_pll_type {
@@ -259,9 +259,9 @@ struct rtpcs_sds_ops {
 	int (*config_hw_mode)(struct rtpcs_serdes *sds, enum rtpcs_sds_mode hw_mode);
 	/* required: set hardware mode */
 	int (*set_hw_mode)(struct rtpcs_serdes *sds, enum rtpcs_sds_mode hw_mode);
-	/* optional: configure media-specific parameters */
-	int (*config_media)(struct rtpcs_serdes *sds, enum rtpcs_sds_media media,
-			    enum rtpcs_sds_mode hw_mode);
+	/* optional: configure attachment-specific parameters */
+	int (*config_attachment)(struct rtpcs_serdes *sds, enum rtpcs_sds_attachment attachment,
+				 enum rtpcs_sds_mode hw_mode);
 	/* optional: finalization that must follow power-up, e.g. RX calibration */
 	int (*post_config)(struct rtpcs_serdes *sds, enum rtpcs_sds_mode hw_mode);
 };
@@ -295,7 +295,7 @@ struct rtpcs_serdes {
 	s16 link_port[RTPCS_MAX_LINKS_PER_SDS];
 
 	enum rtpcs_sds_mode hw_mode;
-	enum rtpcs_sds_media media;
+	enum rtpcs_sds_attachment attachment;
 	u8 id;
 	u8 num_of_links;
 	bool first_start;
@@ -575,16 +575,17 @@ static int rtpcs_sds_select_hw_mode(struct rtpcs_serdes *sds, phy_interface_t if
 	return 0;
 }
 
-static int rtpcs_sds_select_media(enum rtpcs_sds_mode hw_mode, enum rtpcs_sds_media *media)
+static int rtpcs_sds_select_attachment(enum rtpcs_sds_mode hw_mode,
+				       enum rtpcs_sds_attachment *attachment)
 {
 	switch (hw_mode) {
 	case RTPCS_SDS_MODE_OFF:
-		*media = RTPCS_SDS_MEDIA_NONE;
+		*attachment = RTPCS_SDS_ATTACH_NONE;
 		break;
 	case RTPCS_SDS_MODE_1000BASEX:
 	case RTPCS_SDS_MODE_2500BASEX:
 	case RTPCS_SDS_MODE_10GBASER:
-		*media = RTPCS_SDS_MEDIA_FIBER;
+		*attachment = RTPCS_SDS_ATTACH_FIBER;
 		break;
 	default:
 		/*
@@ -593,7 +594,7 @@ static int rtpcs_sds_select_media(enum rtpcs_sds_mode hw_mode, enum rtpcs_sds_me
 		 * the SerDes-to-PHY trace is short and the PHY equalizes for
 		 * itself on the far end.
 		 */
-		*media = RTPCS_SDS_MEDIA_PHY;
+		*attachment = RTPCS_SDS_ATTACH_PHY;
 		break;
 	}
 
@@ -2502,9 +2503,9 @@ static void rtpcs_930x_sds_rxcal_leq_adapt_lock(struct rtpcs_serdes *sds)
 	 * PHY-attached ports the PHY handles its own equalization, so the SerDes LEQ is left
 	 * in auto-adapt and no correction offset is needed.
 	 */
-	bool direct_serdes = sds->media == RTPCS_SDS_MEDIA_FIBER ||
-			     sds->media == RTPCS_SDS_MEDIA_DAC_SHORT ||
-			     sds->media == RTPCS_SDS_MEDIA_DAC_LONG;
+	bool direct_serdes = sds->attachment == RTPCS_SDS_ATTACH_FIBER ||
+			     sds->attachment == RTPCS_SDS_ATTACH_DAC_SHORT ||
+			     sds->attachment == RTPCS_SDS_ATTACH_DAC_LONG;
 	u32 sum10 = 0, avg10;
 	int i, val;
 
@@ -2528,18 +2529,18 @@ static void rtpcs_930x_sds_rxcal_leq_adapt_lock(struct rtpcs_serdes *sds)
 	avg10 = (sum10 / 10) + (((sum10 % 10) >= 5) ? 1 : 0);
 
 	/*
-	 * Empirical correction based on media type.
+	 * Empirical correction based on attachment type.
 	 * Direct SerDes connections get a base offset of +3; DAC cables add further
 	 * correction for their attenuation. PHY-attached needs none.
 	 */
-	switch (sds->media) {
-	case RTPCS_SDS_MEDIA_FIBER:
+	switch (sds->attachment) {
+	case RTPCS_SDS_ATTACH_FIBER:
 		avg10 += 3;
 		break;
-	case RTPCS_SDS_MEDIA_DAC_SHORT:
+	case RTPCS_SDS_ATTACH_DAC_SHORT:
 		avg10 += 4;	/* base 3 + 1 for short DAC */
 		break;
-	case RTPCS_SDS_MEDIA_DAC_LONG:
+	case RTPCS_SDS_ATTACH_DAC_LONG:
 		avg10 += 6;	/* base 3 + 3 for long DAC */
 		break;
 	default:
@@ -2996,8 +2997,9 @@ static int rtpcs_930x_sds_config_hw_mode(struct rtpcs_serdes *sds, enum rtpcs_sd
 	return 0;
 }
 
-static int rtpcs_930x_sds_config_media(struct rtpcs_serdes *sds, enum rtpcs_sds_media media,
-				       enum rtpcs_sds_mode hw_mode)
+static int rtpcs_930x_sds_config_attachment(struct rtpcs_serdes *sds,
+					    enum rtpcs_sds_attachment attachment,
+					    enum rtpcs_sds_mode hw_mode)
 {
 	if (sds->type != RTPCS_SDS_TYPE_10G)
 		return 0;
@@ -3481,19 +3483,19 @@ static int rtpcs_931x_sds_config_tx_amps(struct rtpcs_serdes *sds, u8 pre_amp, u
  * rtpcs_931x_sds_config_tx - Configure static TX path parameters
  */
 static int rtpcs_931x_sds_config_tx(struct rtpcs_serdes *sds,
-				    enum rtpcs_sds_media sds_media)
+				    enum rtpcs_sds_attachment attachment)
 {
 	const struct rtpcs_sds_tx_config *tx_cfg;
 
 	if (sds->type != RTPCS_SDS_TYPE_10G)
 		return 0;
 
-	switch (sds_media) {
-	case RTPCS_SDS_MEDIA_DAC_SHORT:
+	switch (attachment) {
+	case RTPCS_SDS_ATTACH_DAC_SHORT:
 		tx_cfg = &rtpcs_931x_sds_tx_cfg_sdac;
 		break;
 
-	case RTPCS_SDS_MEDIA_DAC_LONG:
+	case RTPCS_SDS_ATTACH_DAC_LONG:
 		tx_cfg = &rtpcs_931x_sds_tx_cfg_ldac;
 		break;
 
@@ -3515,14 +3517,15 @@ static int rtpcs_931x_sds_config_tx(struct rtpcs_serdes *sds,
  * rtpcs_931x_sds_config_rx - Configure static RX path parameters
  */
 static int rtpcs_931x_sds_config_rx(struct rtpcs_serdes *sds,
-				    enum rtpcs_sds_media sds_media)
+				    enum rtpcs_sds_attachment attachment)
 {
 	/* TODO: Put all static RX configuration here */
 	return 0;
 }
 
-static int rtpcs_931x_sds_config_media(struct rtpcs_serdes *sds, enum rtpcs_sds_media sds_media,
-				       enum rtpcs_sds_mode hw_mode)
+static int rtpcs_931x_sds_config_attachment(struct rtpcs_serdes *sds,
+					    enum rtpcs_sds_attachment attachment,
+					    enum rtpcs_sds_mode hw_mode)
 {
 	struct rtpcs_serdes *even_sds = rtpcs_sds_get_even(sds);
 	bool is_dac, is_10g;
@@ -3555,21 +3558,21 @@ static int rtpcs_931x_sds_config_media(struct rtpcs_serdes *sds, enum rtpcs_sds_
 	rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0xf, 5, 0, 0x4);
 	rtpcs_sds_write_bits(sds, PAGE_ANA_5G0, 0x12, 7, 6, 0x1);
 
-	if (sds_media == RTPCS_SDS_MEDIA_NONE)
+	if (attachment == RTPCS_SDS_ATTACH_NONE)
 		return 0;
 
 	/* config SerDes TX path (amps, impedance, etc.) */
-	ret = rtpcs_931x_sds_config_tx(sds, sds_media);
+	ret = rtpcs_931x_sds_config_tx(sds, attachment);
 	if (ret < 0)
 		return ret;
 
 	/* config SerDes RX path (LEQ, DFE, etc.) */
-	ret = rtpcs_931x_sds_config_rx(sds, sds_media);
+	ret = rtpcs_931x_sds_config_rx(sds, attachment);
 	if (ret < 0)
 		return ret;
 
-	is_dac = (sds_media == RTPCS_SDS_MEDIA_DAC_SHORT ||
-		  sds_media == RTPCS_SDS_MEDIA_DAC_LONG);
+	is_dac = (attachment == RTPCS_SDS_ATTACH_DAC_SHORT ||
+		  attachment == RTPCS_SDS_ATTACH_DAC_LONG);
 	is_10g = (hw_mode == RTPCS_SDS_MODE_10GBASER ||
 		  hw_mode == RTPCS_SDS_MODE_XSGMII ||
 		  rtpcs_sds_mode_is_usxgmii(hw_mode));
@@ -3578,14 +3581,14 @@ static int rtpcs_931x_sds_config_media(struct rtpcs_serdes *sds, enum rtpcs_sds_
 	rtpcs_sds_write_bits(sds, PAGE_ANA_5G0, 0x7, 15, 15, is_dac ? 0x1 : 0x0);
 	rtpcs_sds_write_bits(sds, PAGE_ANA_MISC, 0x0, 11, 10, 0x3);
 
-	switch (sds_media) {
-	case RTPCS_SDS_MEDIA_DAC_SHORT:
-	case RTPCS_SDS_MEDIA_DAC_LONG:
+	switch (attachment) {
+	case RTPCS_SDS_ATTACH_DAC_SHORT:
+	case RTPCS_SDS_ATTACH_DAC_LONG:
 		rtpcs_sds_write(sds, PAGE_ANA_COM, 0x19, 0xf0a5);	/* from XS1930-10 SDK */
 		rtpcs_sds_write(even_sds, PAGE_ANA_10G, 0x8, 0x02a0); /* [10:7] impedance */
 		break;
 
-	case RTPCS_SDS_MEDIA_FIBER:
+	case RTPCS_SDS_ATTACH_FIBER:
 		if (is_10g)
 			rtpcs_sds_write_bits(sds, PAGE_ANA_10G, 0xf, 5, 0, 0x2); /* from DMS1250 SDK */
 
@@ -3888,7 +3891,7 @@ static int rtpcs_pcs_config(struct phylink_pcs *pcs, unsigned int neg_mode,
 	struct rtpcs_link *link = rtpcs_phylink_pcs_to_link(pcs);
 	struct rtpcs_ctrl *ctrl = link->ctrl;
 	struct rtpcs_serdes *sds = link->sds;
-	enum rtpcs_sds_media sds_media;
+	enum rtpcs_sds_attachment attachment;
 	enum rtpcs_sds_mode hw_mode;
 	int ret;
 
@@ -3919,14 +3922,14 @@ static int rtpcs_pcs_config(struct phylink_pcs *pcs, unsigned int neg_mode,
 			if (ret < 0)
 				return ret;
 
-			if (sds->ops->config_media) {
-				ret = rtpcs_sds_select_media(hw_mode, &sds_media);
+			if (sds->ops->config_attachment) {
+				ret = rtpcs_sds_select_attachment(hw_mode, &attachment);
 				if (ret < 0)
 					return ret;
 
-				sds->media = sds_media;
+				sds->attachment = attachment;
 
-				ret = sds->ops->config_media(sds, sds_media, hw_mode);
+				ret = sds->ops->config_attachment(sds, attachment, hw_mode);
 				if (ret < 0)
 					return ret;
 			}
@@ -4315,7 +4318,7 @@ static const struct rtpcs_sds_ops rtpcs_930x_sds_ops = {
 	.activate		= rtpcs_930x_sds_activate,
 	.config_hw_mode		= rtpcs_930x_sds_config_hw_mode,
 	.set_hw_mode		= rtpcs_930x_sds_set_mode,
-	.config_media		= rtpcs_930x_sds_config_media,
+	.config_attachment	= rtpcs_930x_sds_config_attachment,
 	.post_config		= rtpcs_930x_sds_post_config,
 };
 
@@ -4362,7 +4365,7 @@ static const struct rtpcs_sds_ops rtpcs_931x_sds_ops = {
 	.activate		= rtpcs_931x_sds_activate,
 	.config_hw_mode		= rtpcs_931x_sds_config_hw_mode,
 	.set_hw_mode		= rtpcs_931x_sds_set_mode,
-	.config_media		= rtpcs_931x_sds_config_media,
+	.config_attachment	= rtpcs_931x_sds_config_attachment,
 };
 
 static const struct rtpcs_sds_regs rtpcs_931x_sds_regs = {
