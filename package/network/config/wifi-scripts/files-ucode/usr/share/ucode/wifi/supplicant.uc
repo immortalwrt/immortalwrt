@@ -141,6 +141,8 @@ function setup_sta(data, config) {
 
 		if (config.mode == 'mesh' || config.auth_type == 'sae')
 			config.sae_password = `"${config.key}"`;
+		else if (length(config.key) == 64)
+			config.psk = config.key;
 		else
 			config.psk = `"${config.key}"`;
 
