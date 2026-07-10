@@ -142,7 +142,7 @@ const commands = {
 		drop_inactive(config.data);
 
 		let ubus = libubus.connect();
-		let data = ubus.call("hostapd", "config_get_macaddr_list", { phy: phydev.name, radio: phydev.radio ?? -1 });
+		let data = ubus.call("hostapd", "config_get_macaddr_list", { phy: phydev.phy, radio: int(phydev.radio ?? -1) });
 		let macaddr_list = [];
 		if (type(data) == "object" && data.macaddr)
 			macaddr_list = data.macaddr;
