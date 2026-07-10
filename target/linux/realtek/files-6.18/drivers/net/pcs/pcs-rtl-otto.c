@@ -581,13 +581,18 @@ static int rtpcs_sds_select_media(enum rtpcs_sds_mode hw_mode, enum rtpcs_sds_me
 	case RTPCS_SDS_MODE_OFF:
 		*media = RTPCS_SDS_MEDIA_NONE;
 		break;
-	case RTPCS_SDS_MODE_SGMII:
 	case RTPCS_SDS_MODE_1000BASEX:
 	case RTPCS_SDS_MODE_2500BASEX:
 	case RTPCS_SDS_MODE_10GBASER:
 		*media = RTPCS_SDS_MEDIA_FIBER;
 		break;
 	default:
+		/*
+		 * SGMII, QSGMII, XSGMII and USXGMII always run into a PHY, be
+		 * it on-board or embedded in an SFP copper module; either way
+		 * the SerDes-to-PHY trace is short and the PHY equalizes for
+		 * itself on the far end.
+		 */
 		*media = RTPCS_SDS_MEDIA_PCB;
 		break;
 	}
