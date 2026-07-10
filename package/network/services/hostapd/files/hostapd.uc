@@ -859,7 +859,7 @@ function iface_reload_config(name, phydev, config, old_config)
 		// with the bssid of a reused interface. reassign the reused interface
 		if (!bsscfg.default_macaddr) {
 			// can't update bssid of the first BSS, need to restart
-			if (!mac_idx < 0)
+			if (mac_idx <= 0)
 				return false;
 
 			bsscfg = config.bss[mac_idx];
