@@ -453,6 +453,12 @@ function wdev_mark_up(wdev)
 	if (wdev.state != "setup")
 		return;
 
+	if (wdev.cancel_setup || !wdev.autostart || wdev.delete) {
+		delete wdev.cancel_setup;
+		wdev.teardown();
+		return 0;
+	}
+
 	for (let section, data in wdev.handler_data) {
 		if (data.ifname)
 			handle_link(data.ifname, data, true);
