@@ -128,7 +128,8 @@ define Device/nokia_valyrian
   DEVICE_PACKAGES := kmod-spi-gpio kmod-gpio-nxp-74hc164 kmod-leds-gpio \
     kmod-i2c-an7581 kmod-i2c-gpio kmod-iio-richtek-rtq6056 \
     kmod-sfp kmod-phy-aeonsemi-as21xxx \
-    kmod-mt7996-firmware
+    kmod-mt7996-firmware airoha-en7581-mt7996-npu-firmware \
+    kmod-usb3
   ARTIFACT/preloader.bin := an7581-preloader nokia_valyrian
   ARTIFACT/bl31-uboot.fip := an7581-bl31-uboot nokia_valyrian
   ARTIFACTS := preloader.bin bl31-uboot.fip
