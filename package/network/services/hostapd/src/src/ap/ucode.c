@@ -863,13 +863,15 @@ int hostapd_ucode_sta_auth(struct hostapd_data *hapd, struct sta_info *sta)
 			size_t str_len;
 
 			cur_psk = ucv_array_get(cur, i);
+			if (ucv_type(cur_psk) != UC_STRING)
+				continue;
 			str = ucv_string_get(cur_psk);
 			str_len = strlen(str);
-			if (!str || str_len < 8 || str_len > 64)
+			if (str_len < 8 || str_len > 64)
 				continue;
 
 			p = os_zalloc(sizeof(*p));
-			if (len == 64) {
+			if (str_len == 64) {
 				if (hexstr2bin(str, p->psk, PMK_LEN) < 0) {
 					free(p);
 					continue;
