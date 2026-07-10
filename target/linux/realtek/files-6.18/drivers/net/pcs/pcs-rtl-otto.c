@@ -349,6 +349,7 @@ struct rtpcs_sds_tx_config {
 	u8 pre_amp;
 	u8 main_amp;
 	u8 post_amp;
+	u8 impedance;
 };
 
 /* Calculation helpers */
@@ -1678,6 +1679,18 @@ static const struct reg_field rtpcs_930x_usxgmii_submode_fields[] = {
 	[7] = REG_FIELD(RTPCS_930X_SDS_SUBMODE_CTRL_1, 25, 29),
 };
 
+static const struct rtpcs_sds_tx_config rtpcs_930x_sds_tx_config_1g = {
+	.pre_amp = 0x1, .main_amp = 0x9, .post_amp = 0x1, .impedance = 0x8
+};
+
+static const struct rtpcs_sds_tx_config rtpcs_930x_sds_tx_config_2g5 = {
+	.main_amp = 0x9, .post_amp = 0x8, .impedance = 0x8
+};
+
+static const struct rtpcs_sds_tx_config rtpcs_930x_sds_tx_config_10g = {
+	.main_amp = 0x10, .impedance = 0x8
+};
+
 /*
  * RTL930X needs a special mapping from logic SerDes ID to physical SerDes ID,
  * which takes the page into account. This applies to most of read/write calls.
@@ -2026,17 +2039,10 @@ static int rtpcs_930x_sds_activate(struct rtpcs_serdes *sds)
 	return rtpcs_sds_write_bits(sds, PAGE_TGR_STD_0, MII_BMCR, 11, 11, 0); /* BMCR_PDOWN */
 }
 
-static int rtpcs_930x_sds_tx_config(struct rtpcs_serdes *sds,
-				    enum rtpcs_sds_mode hw_mode)
+static int rtpcs_930x_sds_tx_config(struct rtpcs_serdes *sds, enum rtpcs_sds_mode hw_mode,
+				    const struct rtpcs_sds_tx_config *tx_conf)
 {
-	/* parameters: rtl9303_80G_txParam_s2 */
 	enum rtpcs_page page;
-	int impedance = 0x8;
-	int pre_amp = 0x2;
-	int main_amp = 0x9;
-	int post_amp = 0x2;
-	int pre_en = 0x1;
-	int post_en = 0x1;
 	int ret;
 
 	ret = rtpcs_93xx_sds_get_cmu_page(hw_mode);
@@ -2046,42 +2052,23 @@ static int rtpcs_930x_sds_tx_config(struct rtpcs_serdes *sds,
 	/* TX config happens on extended CMU page */
 	page = ret + 1;
 
-	switch (hw_mode) {
-	case RTPCS_SDS_MODE_1000BASEX:
-	case RTPCS_SDS_MODE_SGMII:
-		pre_amp = 0x1;
-		main_amp = 0x9;
-		post_amp = 0x1;
-		break;
-	case RTPCS_SDS_MODE_2500BASEX:
-		pre_amp = 0;
-		post_amp = 0x8;
-		pre_en = 0;
-		break;
-	case RTPCS_SDS_MODE_10GBASER:
-	case RTPCS_SDS_MODE_USXGMII_10GSXGMII:
-	case RTPCS_SDS_MODE_USXGMII_10GQXGMII:
-	case RTPCS_SDS_MODE_XSGMII:
-		pre_en = 0;
-		pre_amp = 0;
-		main_amp = 0x10;
-		post_amp = 0;
-		post_en	= 0;
-		break;
-	case RTPCS_SDS_MODE_QSGMII:
-		return 0;
-	default:
-		pr_err("%s: unsupported SerDes hw mode\n", __func__);
-		return -EOPNOTSUPP;
-	}
+	ret = rtpcs_sds_write_bits(sds, page, 0x18, 15, 12, tx_conf->impedance);
+	if (!ret)
+		ret = rtpcs_sds_write_bits(sds, page, 0x07, 8, 4, tx_conf->main_amp);
 
-	rtpcs_sds_write_bits(sds, page, 0x01, 15, 11, pre_amp);
-	rtpcs_sds_write_bits(sds, page, 0x06,  4,  0, post_amp);
-	rtpcs_sds_write_bits(sds, page, 0x07,  0,  0, pre_en);
-	rtpcs_sds_write_bits(sds, page, 0x07,  3,  3, post_en);
-	rtpcs_sds_write_bits(sds, page, 0x07,  8,  4, main_amp);
-	rtpcs_sds_write_bits(sds, page, 0x18, 15, 12, impedance);
-	return 0;
+	/* pre-amp */
+	if (!ret)
+		ret = rtpcs_sds_write_bits(sds, page, 0x01, 15, 11, tx_conf->pre_amp);
+	if (!ret)
+		ret = rtpcs_sds_write_bits(sds, page, 0x07, 0, 0, tx_conf->pre_amp ? 1 : 0);
+
+	/* post-amp */
+	if (!ret)
+		ret = rtpcs_sds_write_bits(sds, page, 0x06, 4, 0, tx_conf->post_amp);
+	if (!ret)
+		ret = rtpcs_sds_write_bits(sds, page, 0x07, 3, 3, tx_conf->post_amp ? 1 : 0);
+
+	return ret;
 }
 
 static int rtpcs_930x_sds_set_debug(struct rtpcs_serdes *sds, unsigned int debug_sel)
@@ -3001,17 +2988,39 @@ static int rtpcs_930x_sds_config_attachment(struct rtpcs_serdes *sds,
 					    enum rtpcs_sds_attachment attachment,
 					    enum rtpcs_sds_mode hw_mode)
 {
+	const struct rtpcs_sds_tx_config *tx_cfg;
+	int ret;
+
 	if (sds->type != RTPCS_SDS_TYPE_10G)
 		return 0;
 
 	/*
 	 * dal_longan_construct_mac_default_10gmedia_fiber: set medium to fiber.
-	 * TODO: this is unconditional regardless of hw_mode; needs mode-aware
-	 * handling.
+	 * TODO: does this apply to all fiber modes or only 10GBase-R?
 	 */
-	rtpcs_sds_write_bits(sds, PAGE_WDIG, 11, 1, 1, 1);
+	ret = rtpcs_sds_write_bits(sds, PAGE_WDIG, 11, 1, 1, 1);
+	if (ret < 0)
+		return ret;
 
-	return rtpcs_930x_sds_tx_config(sds, hw_mode);
+	switch (hw_mode) {
+	case RTPCS_SDS_MODE_1000BASEX:
+	case RTPCS_SDS_MODE_SGMII:
+		tx_cfg = &rtpcs_930x_sds_tx_config_1g;
+		break;
+	case RTPCS_SDS_MODE_2500BASEX:
+		tx_cfg = &rtpcs_930x_sds_tx_config_2g5;
+		break;
+	case RTPCS_SDS_MODE_10GBASER:
+	case RTPCS_SDS_MODE_XSGMII:
+	case RTPCS_SDS_MODE_USXGMII_10GSXGMII:
+	case RTPCS_SDS_MODE_USXGMII_10GQXGMII:
+		tx_cfg = &rtpcs_930x_sds_tx_config_10g;
+		break;
+	default:
+		return -EOPNOTSUPP;
+	}
+
+	return rtpcs_930x_sds_tx_config(sds, hw_mode, tx_cfg);
 }
 
 static int rtpcs_930x_sds_post_config(struct rtpcs_serdes *sds, enum rtpcs_sds_mode hw_mode)
