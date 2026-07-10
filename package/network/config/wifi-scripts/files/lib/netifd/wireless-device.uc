@@ -600,7 +600,7 @@ function status()
 		});
 	}
 	return {
-		up: this.state == "up",
+		up: this.state == "up" && !this.data.config.disabled,
 		pending: this.state == "setup" || this.state == "teardown",
 		autostart: this.autostart,
 		disabled: !!this.data.config.disabled,
