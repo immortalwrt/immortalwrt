@@ -380,6 +380,9 @@ uc_hostapd_bss_delete(uc_vm_t *vm, size_t nargs)
 
 	hostapd_drv_stop_ap(hapd);
 	hostapd_bss_deinit(hapd);
+	/* deinit skips these for a bss that never started; both are idempotent */
+	hostapd_ucode_free_bss(hapd);
+	hostapd_ubus_free_bss(hapd);
 	hostapd_remove_iface_bss_conf(iface->conf, hapd->conf);
 	hostapd_config_free_bss(hapd->conf);
 #ifdef CONFIG_IEEE80211BE
