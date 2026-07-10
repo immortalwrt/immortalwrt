@@ -192,6 +192,8 @@ function setup_sta(data, config) {
 	if (config.wpa_pairwise == 'GCMP') {
 		config.pairwise = 'GCMP';
 		config.group = 'GCMP';
+	} else if (config.wpa_pairwise) {
+		config.pairwise = config.wpa_pairwise;
 	}
 
 	config.key_mgmt ??= 'NONE';
