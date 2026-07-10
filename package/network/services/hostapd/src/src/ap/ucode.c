@@ -428,7 +428,7 @@ uc_hostapd_iface_add_bss(uc_vm_t *vm, size_t nargs)
 {
 	struct hostapd_iface *iface = uc_fn_thisval("hostapd.iface");
 	struct hostapd_bss_config *bss;
-	struct hostapd_config *conf;
+	struct hostapd_config *conf = NULL;
 	struct hostapd_data *hapd;
 	uc_value_t *file = uc_fn_arg(0);
 	uc_value_t *index = uc_fn_arg(1);
