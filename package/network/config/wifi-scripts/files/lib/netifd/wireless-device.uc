@@ -544,7 +544,7 @@ function notify(req)
 function hotplug(name, add)
 {
 	let dev = name;
-	let m = match(name, /(.+)\.sta.+/);
+	let m = match(name, /^(.+)\.sta[0-9]+$/);
 	if (m)
 		name = m[1];
 
