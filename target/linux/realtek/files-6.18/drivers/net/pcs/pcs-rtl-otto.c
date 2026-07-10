@@ -1692,6 +1692,17 @@ static const struct rtpcs_sds_tx_config rtpcs_930x_sds_tx_config_10g = {
 };
 
 /*
+ * PHY-attached 10G-class links (XSGMII, USXGMII): weaker than the fiber/DAC
+ * value above since the far-end PHY equalizes on its own. main_amp reuses
+ * the 1G/2.5G fiber override's value, also the vendor SDK's genuine-fiber
+ * (non-DAC) 10G value; a non-adaptive receiver needing no more than this
+ * should be a safe upper bound for a PHY that equalizes on top.
+ */
+static const struct rtpcs_sds_tx_config rtpcs_930x_sds_tx_config_phy = {
+	.main_amp = 0x9, .impedance = 0x8
+};
+
+/*
  * RTL930X needs a special mapping from logic SerDes ID to physical SerDes ID,
  * which takes the page into account. This applies to most of read/write calls.
  */
@@ -2989,6 +3000,7 @@ static int rtpcs_930x_sds_config_attachment(struct rtpcs_serdes *sds,
 					    enum rtpcs_sds_mode hw_mode)
 {
 	const struct rtpcs_sds_tx_config *tx_cfg;
+	enum rtpcs_sds_pll_speed speed;
 	int ret;
 
 	if (sds->type != RTPCS_SDS_TYPE_10G)
@@ -3002,19 +3014,26 @@ static int rtpcs_930x_sds_config_attachment(struct rtpcs_serdes *sds,
 	if (ret < 0)
 		return ret;
 
-	switch (hw_mode) {
-	case RTPCS_SDS_MODE_1000BASEX:
-	case RTPCS_SDS_MODE_SGMII:
+	ret = rtpcs_sds_select_pll_speed(hw_mode, &speed);
+	if (ret < 0)
+		return ret;
+
+	switch (speed) {
+	case RTPCS_SDS_PLL_SPD_1000:
 		tx_cfg = &rtpcs_930x_sds_tx_config_1g;
 		break;
-	case RTPCS_SDS_MODE_2500BASEX:
+	case RTPCS_SDS_PLL_SPD_2500:
 		tx_cfg = &rtpcs_930x_sds_tx_config_2g5;
 		break;
-	case RTPCS_SDS_MODE_10GBASER:
-	case RTPCS_SDS_MODE_XSGMII:
-	case RTPCS_SDS_MODE_USXGMII_10GSXGMII:
-	case RTPCS_SDS_MODE_USXGMII_10GQXGMII:
-		tx_cfg = &rtpcs_930x_sds_tx_config_10g;
+	case RTPCS_SDS_PLL_SPD_10000:
+		/*
+		 * PHY-attached links equalize on the PHY's own far-end
+		 * receiver, less amp drive needed. Real DAC-vs-fiber
+		 * detection doesn't exist yet, so both of those share
+		 * the same config for now.
+		 */
+		tx_cfg = (attachment == RTPCS_SDS_ATTACH_PHY) ? &rtpcs_930x_sds_tx_config_phy
+							      : &rtpcs_930x_sds_tx_config_10g;
 		break;
 	default:
 		return -EOPNOTSUPP;
