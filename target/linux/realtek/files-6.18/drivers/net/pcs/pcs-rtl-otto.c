@@ -202,7 +202,7 @@ enum rtpcs_sds_media {
 	RTPCS_SDS_MEDIA_FIBER,
 	RTPCS_SDS_MEDIA_DAC_SHORT,	/*  < 3m */
 	RTPCS_SDS_MEDIA_DAC_LONG,	/* >= 3m */
-	RTPCS_SDS_MEDIA_PCB,
+	RTPCS_SDS_MEDIA_PHY,
 };
 
 enum rtpcs_sds_pll_type {
@@ -593,7 +593,7 @@ static int rtpcs_sds_select_media(enum rtpcs_sds_mode hw_mode, enum rtpcs_sds_me
 		 * the SerDes-to-PHY trace is short and the PHY equalizes for
 		 * itself on the far end.
 		 */
-		*media = RTPCS_SDS_MEDIA_PCB;
+		*media = RTPCS_SDS_MEDIA_PHY;
 		break;
 	}
 
@@ -2530,7 +2530,7 @@ static void rtpcs_930x_sds_rxcal_leq_adapt_lock(struct rtpcs_serdes *sds)
 	/*
 	 * Empirical correction based on media type.
 	 * Direct SerDes connections get a base offset of +3; DAC cables add further
-	 * correction for their attenuation. PHY-attached (PCB) needs none.
+	 * correction for their attenuation. PHY-attached needs none.
 	 */
 	switch (sds->media) {
 	case RTPCS_SDS_MEDIA_FIBER:
