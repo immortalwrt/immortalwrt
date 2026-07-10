@@ -350,8 +350,7 @@ static void gpio_keys_irq_work_func(struct work_struct *work)
 
 static irqreturn_t button_handle_irq(int irq, void *_bdata)
 {
-	struct gpio_keys_button_data *bdata =
-		(struct gpio_keys_button_data *) _bdata;
+	struct gpio_keys_button_data *bdata = _bdata;
 
 	mod_delayed_work(system_wq, &bdata->work,
 			 msecs_to_jiffies(bdata->software_debounce));
