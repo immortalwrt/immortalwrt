@@ -1084,6 +1084,9 @@ function iface_load_config(phy, radio, filename)
 		if (!val[0])
 			continue;
 
+		if (substr(line, 0, 2) == "# ")
+			continue;
+
 		if (val[0] == "interface") {
 			bss = config_add_bss(config, val[1]);
 			break;
@@ -1122,6 +1125,9 @@ function iface_load_config(phy, radio, filename)
 
 		let val = split(line, "=", 2);
 		if (!val[0])
+			continue;
+
+		if (substr(line, 0, 2) == "# ")
 			continue;
 
 		if (val[0] == "bssid") {
