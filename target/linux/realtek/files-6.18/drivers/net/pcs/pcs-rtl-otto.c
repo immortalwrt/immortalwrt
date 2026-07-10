@@ -1618,6 +1618,31 @@ static void rtpcs_93xx_sds_fill_caps(struct rtpcs_serdes *sds)
 	}
 }
 
+static int rtpcs_93xx_sds_get_cmu_page(enum rtpcs_sds_mode hw_mode)
+{
+	switch (hw_mode) {
+	case RTPCS_SDS_MODE_SGMII:
+	case RTPCS_SDS_MODE_1000BASEX:
+		return PAGE_ANA_1G2;
+	case RTPCS_SDS_MODE_2500BASEX:
+		return PAGE_ANA_3G1;
+	case RTPCS_SDS_MODE_QSGMII:
+		return PAGE_ANA_5G0;
+	//	return PAGE_ANA_6G0;
+	case RTPCS_SDS_MODE_XSGMII:
+	case RTPCS_SDS_MODE_USXGMII_10GSXGMII:
+	case RTPCS_SDS_MODE_USXGMII_10GDXGMII:
+	case RTPCS_SDS_MODE_USXGMII_10GQXGMII:
+	case RTPCS_SDS_MODE_USXGMII_5GSXGMII:
+	case RTPCS_SDS_MODE_USXGMII_5GDXGMII:
+	case RTPCS_SDS_MODE_USXGMII_2_5GSXGMII:
+	case RTPCS_SDS_MODE_10GBASER:
+		return PAGE_ANA_10G;
+	default:
+		return -EOPNOTSUPP;
+	}
+}
+
 /* RTL930X */
 
 /* This mapping is not coherent so it cannot be expressed arithmetically */
@@ -3235,36 +3260,11 @@ static void rtpcs_931x_sds_rx_reset(struct rtpcs_serdes *sds)
 	msleep(50);
 }
 
-static int rtpcs_931x_sds_cmu_page_get(enum rtpcs_sds_mode hw_mode)
-{
-	switch (hw_mode) {
-	case RTPCS_SDS_MODE_SGMII:
-	case RTPCS_SDS_MODE_1000BASEX:
-		return PAGE_ANA_1G2;
-	case RTPCS_SDS_MODE_2500BASEX:
-		return PAGE_ANA_3G1;
-	case RTPCS_SDS_MODE_QSGMII:
-		return PAGE_ANA_5G0;
-	//	return PAGE_ANA_6G0;
-	case RTPCS_SDS_MODE_XSGMII:
-	case RTPCS_SDS_MODE_USXGMII_10GSXGMII:
-	case RTPCS_SDS_MODE_USXGMII_10GDXGMII:
-	case RTPCS_SDS_MODE_USXGMII_10GQXGMII:
-	case RTPCS_SDS_MODE_USXGMII_5GSXGMII:
-	case RTPCS_SDS_MODE_USXGMII_5GDXGMII:
-	case RTPCS_SDS_MODE_USXGMII_2_5GSXGMII:
-	case RTPCS_SDS_MODE_10GBASER:
-		return PAGE_ANA_10G;
-	default:
-		return -ENOTSUPP;
-	}
-}
-
 static int rtpcs_931x_sds_get_pll_select(struct rtpcs_serdes *sds, enum rtpcs_sds_pll_type *pll)
 {
 	int cmu_page, pll_sel;
 
-	cmu_page = rtpcs_931x_sds_cmu_page_get(sds->hw_mode);
+	cmu_page = rtpcs_93xx_sds_get_cmu_page(sds->hw_mode);
 	if (cmu_page < 0)
 		return cmu_page;
 
@@ -3283,7 +3283,7 @@ static int rtpcs_931x_sds_set_pll_select(struct rtpcs_serdes *sds, enum rtpcs_sd
 	int cmu_page, ret, val;
 	int frc_lc_mode_bit;
 
-	cmu_page = rtpcs_931x_sds_cmu_page_get(hw_mode);
+	cmu_page = rtpcs_93xx_sds_get_cmu_page(hw_mode);
 	if (cmu_page < 0)
 		return cmu_page;
 
