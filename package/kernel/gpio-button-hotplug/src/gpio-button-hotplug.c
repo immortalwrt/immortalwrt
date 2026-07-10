@@ -378,6 +378,7 @@ gpio_keys_get_devtree_pdata(struct device *dev)
 
 	device_for_each_child_node_scoped(dev, pp) {
 		struct gpio_keys_button *button = &buttons[i++];
+		int irq;
 
 		if (fwnode_property_read_u32(pp, "linux,code", &button->code)) {
 			dev_err(dev, "Button node '%s' without keycode\n",
@@ -397,11 +398,12 @@ gpio_keys_get_devtree_pdata(struct device *dev)
 
 		button->wakeup = fwnode_property_present(pp, "gpio-key,wakeup");
 		button->gpio = -ENOENT; /* mark this as device-tree */
-		button->irq = fwnode_irq_get(pp, 0);
-		if (button->irq == -EPROBE_DEFER)
-			return ERR_PTR(button->irq);
-		if (button->irq < 0)
-			button->irq = 0;
+
+		irq = fwnode_irq_get(pp, 0);
+		if (irq == -EPROBE_DEFER)
+			return ERR_PTR(irq);
+
+		button->irq = max(0, irq);
 	}
 
 	pdata = devm_kzalloc(dev, sizeof(struct gpio_keys_platform_data), GFP_KERNEL);
