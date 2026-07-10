@@ -234,6 +234,7 @@ function setup_sta(data, config) {
 		'domain_match', 'domain_match2',
 		'domain_suffix_match', 'domain_suffix_match2',
 		'private_key', 'private_key_passwd', 'private_key2', 'private_key2_passwd',
+		'dpp_connector',
 		 ]);
 	network_append_vars(config, [
 		'rsn_overriding', 'scan_ssid', 'noscan', 'disabled', 'multi_ap_profile', 'multi_ap_backhaul_sta',
@@ -242,7 +243,7 @@ function setup_sta(data, config) {
 		'disable_ht', 'disable_ht40', 'disable_vht', 'vht', 'max_oper_chwidth',
 		'ht40', 'beacon_int', 'ieee80211w', 'rates', 'mesh_basic_rates', 'mcast_rate',
 		'bssid_blacklist', 'bssid_whitelist', 'erp', 'eap', 'phase2',
-		'dpp_connector', 'dpp_csign', 'dpp_netaccesskey',
+		'dpp_csign', 'dpp_netaccesskey',
 	]);
 }
 
