@@ -1,4 +1,5 @@
 let libubus = require("ubus");
+import * as uloop from "uloop";
 import { open, readfile, access } from "fs";
 import { wdev_remove, is_equal, vlist_new, phy_is_fullmac, phy_open, wdev_set_radio_mask, wdev_set_up } from "common";
 
@@ -320,10 +321,21 @@ function iface_macaddr_init(phydev, config, macaddr_list)
 	return phydev.macaddr_init(macaddr_list, macaddr_data);
 }
 
+function csa_timer_cancel(name)
+{
+	let timers = hostapd.data.csa_timer;
+	if (timers && timers[name]) {
+		timers[name].cancel();
+		delete timers[name];
+	}
+}
+
 function iface_restart(phydev, config, old_config)
 {
 	let phy = phydev.name;
 	let pending = hostapd.data.pending_config[phy];
+
+	csa_timer_cancel(phy);
 
 	if (pending)
 		pending.abort();
@@ -580,6 +592,22 @@ function iface_channel_is_dfs(radio)
 	                (freq >= 5490 && freq <= 5730));
 }
 
+function iface_csa_check(name)
+{
+	if (hostapd.data.csa_timer)
+		delete hostapd.data.csa_timer[name];
+
+	let config = hostapd.data.config[name];
+	let iface = hostapd.interfaces[name];
+	if (!config || !iface || !iface.csa_in_progress())
+		return;
+
+	hostapd.printf(`Config channel switch on phy ${name} did not complete, restarting`);
+	let phydev = phy_open(config.phy, config.radio_idx);
+	if (phydev)
+		iface_restart(phydev, config, config);
+}
+
 function iface_channel_switch(name, config)
 {
 	let radio = config.radio;
@@ -618,6 +646,27 @@ function iface_channel_switch(name, config)
 		return false;
 
 	hostapd.printf(`Channel switch to ${radio.channel} on phy ${name}`);
+
+	/*
+	 * Verify the switch actually completes; if the driver never finishes it,
+	 * fall back to a full restart. Armed only here, so ubus- or apsta-
+	 * triggered channel switches are left to their own recovery.
+	 */
+	hostapd.data.csa_timer ??= {};
+	csa_timer_cancel(name);
+
+	let beacon_int = 100;
+	for (let line in config.radio.data) {
+		let m = match(line, /^beacon_int=([0-9]+)/);
+		if (m) {
+			beacon_int = int(m[1]);
+			break;
+		}
+	}
+
+	hostapd.data.csa_timer[name] = uloop.timer(freq_info.csa_count * beacon_int + 2000,
+		() => iface_csa_check(name));
+
 	return true;
 }
 

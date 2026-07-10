@@ -770,6 +770,17 @@ uc_hostapd_iface_switch_channel(uc_vm_t *vm, size_t nargs)
 }
 
 static uc_value_t *
+uc_hostapd_iface_csa_in_progress(uc_vm_t *vm, size_t nargs)
+{
+	struct hostapd_iface *iface = uc_fn_thisval("hostapd.iface");
+
+	if (!iface)
+		return NULL;
+
+	return ucv_boolean_new(hostapd_csa_in_progress(iface));
+}
+
+static uc_value_t *
 uc_hostapd_bss_rename(uc_vm_t *vm, size_t nargs)
 {
 	struct hostapd_data *hapd = uc_fn_thisval("hostapd.bss");
@@ -1225,6 +1236,7 @@ int hostapd_ucode_init(struct hapd_interfaces *ifaces)
 		{ "stop", uc_hostapd_iface_stop },
 		{ "start", uc_hostapd_iface_start },
 		{ "switch_channel", uc_hostapd_iface_switch_channel },
+		{ "csa_in_progress", uc_hostapd_iface_csa_in_progress },
 	};
 	uc_value_t *data, *proto;
 
