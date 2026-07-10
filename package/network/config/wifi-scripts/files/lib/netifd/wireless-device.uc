@@ -173,6 +173,9 @@ function wdev_teardown_cb(wdev)
 		return;
 	}
 
+	if (wdev.config_change)
+		wdev_config_init(wdev);
+
 	wdev.setup();
 }
 
@@ -441,6 +444,14 @@ function stop()
 function check()
 {
 	if (!wdev_update_disabled_vifs(this))
+		return;
+
+	/*
+	 * Defer applying a new config while a handler run is in progress: the
+	 * running script keeps its start-time config, and the setup/teardown
+	 * callback re-applies once it finishes (config_change stays set).
+	 */
+	if (this.state != "up" && this.state != "down")
 		return;
 
 	wdev_config_init(this);
