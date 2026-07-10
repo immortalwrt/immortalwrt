@@ -459,6 +459,8 @@ function wdev_mark_up(wdev)
 		return 0;
 	}
 
+	wdev_reset(wdev);
+
 	for (let section, data in wdev.handler_data) {
 		if (data.ifname)
 			handle_link(data.ifname, data, true);
