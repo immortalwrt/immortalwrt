@@ -525,12 +525,117 @@ function get_config_bss(name, config, idx)
 	return if_bss[ifname];
 }
 
+const radio_chan_fields = [
+	"op_class",
+	"vht_oper_chwidth", "vht_oper_centr_freq_seg0_idx",
+	"he_oper_chwidth", "he_oper_centr_freq_seg0_idx",
+	"eht_oper_chwidth", "eht_oper_centr_freq_seg0_idx",
+];
+
+function radio_line_is_chan(line)
+{
+	return index(radio_chan_fields, split(line, "=", 2)[0]) >= 0;
+}
+
+// The HT40+/- direction in ht_capab is channel-derived and re-applied through
+// the CSA secondary-channel offset, so strip it when comparing the base config;
+// the remaining ht_capab bits are device capabilities that require a restart.
+function radio_base(radio)
+{
+	return map(filter(radio.data, (line) => !radio_line_is_chan(line)), (line) => {
+		if (substr(line, 0, 9) != "ht_capab=")
+			return line;
+		return replace(replace(line, "[HT40+]", ""), "[HT40-]", "");
+	});
+}
+
+function radio_reload_class(old_radio, new_radio)
+{
+	if (is_equal(old_radio, new_radio))
+		return "same";
+
+	// anything beyond channel/width, or the channel-follow flag flipping,
+	// needs a full restart
+	if (!is_equal(radio_base(old_radio), radio_base(new_radio)) ||
+	    (!old_radio.channel_follow) != (!new_radio.channel_follow))
+		return "restart";
+
+	// base identical and apsta flag unchanged: only treat this as a channel
+	// switch if the channel or its derived width lines actually differ (the
+	// derived frequency field alone appearing is not a real change)
+	if (old_radio.channel == new_radio.channel &&
+	    is_equal(filter(old_radio.data, radio_line_is_chan),
+	             filter(new_radio.data, radio_line_is_chan)))
+		return "same";
+
+	return "channel";
+}
+
+function iface_channel_is_dfs(radio)
+{
+	let freq = radio.frequency;
+
+	/* 5 GHz DFS sub-bands; 2.4 GHz and 6 GHz have no radar channels */
+	return freq && ((freq >= 5250 && freq <= 5330) ||
+	                (freq >= 5490 && freq <= 5730));
+}
+
+function iface_channel_switch(name, config)
+{
+	let radio = config.radio;
+
+	/*
+	 * The runtime channel is followed from a co-located supplicant
+	 * interface (STA/mesh/adhoc) via apsta_state; the AP never picks its
+	 * own channel here. Adopt the new fallback channel without touching the
+	 * running BSSes.
+	 */
+	if (radio.channel_follow)
+		return true;
+
+	/*
+	 * A single iface-level CSA cannot coordinate the links of an MLD AP
+	 * that span multiple radios, and DFS targets need CAC before use.
+	 * Fall back to a full restart for both.
+	 */
+	for (let bss in config.bss)
+		if (bss.mld_ap)
+			return false;
+
+	if (!radio.frequency || iface_channel_is_dfs(radio))
+		return false;
+
+	let iface = hostapd.interfaces[name];
+	if (!iface || iface.state() != "ENABLED")
+		return false;
+
+	let freq_info = iface_freq_info(iface, config, { frequency: radio.frequency });
+	if (!freq_info)
+		return false;
+
+	freq_info.csa_count = 10;
+	if (!iface.switch_channel(freq_info))
+		return false;
+
+	hostapd.printf(`Channel switch to ${radio.channel} on phy ${name}`);
+	return true;
+}
+
 function iface_reload_config(name, phydev, config, old_config)
 {
 	let phy = phydev.name;
 
-	if (!old_config || !is_equal(old_config.radio, config.radio))
+	if (!old_config)
 		return false;
+
+	switch (radio_reload_class(old_config.radio, config.radio)) {
+	case "restart":
+		return false;
+	case "channel":
+		if (!iface_channel_switch(name, config))
+			return false;
+		break;
+	}
 
 	if (is_equal(old_config.bss, config.bss))
 		return true;
