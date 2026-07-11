@@ -1,0 +1,33 @@
+From 5119be91f5d9508ce9f3c86b0bb6d965186a336e Mon Sep 17 00:00:00 2001
+From: David Bauer <mail@david-bauer.net>
+Date: Tue, 9 Jun 2026 20:16:40 +0200
+Subject: odhcpd: fix out-of-bounds write in build_ia
+
+If a error status shall be indicated, odhcpd did not validate the size
+of the available buffer correctly.
+
+Account for the additionally required space and exit early in case the
+available buffer is not sufficient.
+
+Fixes: CVE-2026-53921
+Fixes: CVE-2026-53922
+Reported-by: Ying Dong <dyingc@gmail.com>
+Reported-by: Trevor Lawrence <_SiCk@afflicted.sh>
+Signed-off-by: David Bauer <mail@david-bauer.net>
+(cherry picked from commit d329a15413387027453644cd363dca06ade28328)
+---
+ src/dhcpv6-ia.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+--- a/src/dhcpv6-ia.c
++++ b/src/dhcpv6-ia.c
+@@ -1035,6 +1035,9 @@ static size_t build_ia(uint8_t *buf, siz
+ 			.val = htons(status),
+ 		};
+ 
++		if (buflen < ia_len + sizeof(o_status))
++			return 0;
++
+ 		memcpy(buf + ia_len, &o_status, sizeof(o_status));
+ 		ia_len += sizeof(o_status);
+ 

@@ -1,0 +1,62 @@
+From 4100329ec73d4767602ca2c507ec1e1c1264752f Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sat, 23 May 2026 14:17:55 +0200
+Subject: dhcpv6-ia: avoid undefined shifts in assign_pd()
+
+assign_pd() computes (1 << (64 - length)) where the literal is a plain
+int. When the prefix length is <= 32 the shift count is >= 32 bits,
+which is undefined behaviour, and even at length == 33 the result
+(1 << 31) is signed-overflow UB.
+
+In normal operation the delegated prefix length is bounded by
+dhcpv6_pd_min_len whose default keeps the shift in safe territory, but
+that knob is user-configurable down to 1 in UCI, so a misconfigured
+interface trips UB on every PD assignment. Compute the shift in
+uint64_t and truncate explicitly to uint32_t so the arithmetic is
+well-defined; for sane prefix lengths (>=33) the value is unchanged.
+
+Assisted-by: Claude:claude-opus-4-7
+Link: https://github.com/openwrt/odhcpd/pull/401
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 19bf3b73580b50030490c04e44adb6a14fe8c31c)
+---
+ src/dhcpv6-ia.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+--- a/src/dhcpv6-ia.c
++++ b/src/dhcpv6-ia.c
+@@ -769,8 +769,14 @@ static bool assign_pd(struct interface *
+ 	} else if (iface->addr6_len < 1)
+ 		return false;
+ 
+-	/* Try honoring the hint first */
+-	uint32_t current = 1, asize = (1 << (64 - assign->length)) - 1;
++	/* Try honoring the hint first.
++	 *
++	 * Subnet-id slots per delegated prefix = 2^(64 - length); the literal
++	 * 1 is plain int, so shifting it by 32-63 bits is undefined behaviour
++	 * for short prefix lengths (the user can drive this via
++	 * dhcpv6_pd_min_len). Compute the shift in uint64_t and truncate.
++	 */
++	uint32_t current = 1, asize = (uint32_t)((1ULL << (64 - assign->length)) - 1);
+ 	if (assign->assigned_subnet_id) {
+ 		list_for_each_entry(c, &iface->ia_assignments, head) {
+ 			if (c->flags & OAF_DHCPV6_NA)
+@@ -785,7 +791,7 @@ static bool assign_pd(struct interface *
+ 				return true;
+ 			}
+ 
+-			current = (c->assigned_subnet_id + (1 << (64 - c->length)));
++			current = (uint32_t)(c->assigned_subnet_id + (1ULL << (64 - c->length)));
+ 		}
+ 	}
+ 
+@@ -807,7 +813,7 @@ static bool assign_pd(struct interface *
+ 			return true;
+ 		}
+ 
+-		current = (c->assigned_subnet_id + (1 << (64 - c->length)));
++		current = (uint32_t)(c->assigned_subnet_id + (1ULL << (64 - c->length)));
+ 	}
+ 
+ 	return false;

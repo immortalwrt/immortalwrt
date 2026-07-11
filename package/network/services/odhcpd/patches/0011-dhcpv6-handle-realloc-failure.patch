@@ -1,0 +1,32 @@
+From 6bfc8547642eb61c755b36bbcc6616f742832aff Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?David=20H=C3=A4rdeman?= <david@hardeman.nu>
+Date: Sun, 23 Nov 2025 15:12:01 +0100
+Subject: dhcpv6: handle realloc failure
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Another realloc failure case.
+
+Signed-off-by: David Härdeman <david@hardeman.nu>
+Link: https://github.com/openwrt/odhcpd/pull/320
+Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+(cherry picked from commit b9db4d7061a08bf82a25222074065cce71973d0c)
+---
+ src/dhcpv6-ia.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+--- a/src/dhcpv6-ia.c
++++ b/src/dhcpv6-ia.c
+@@ -1636,8 +1636,9 @@ ssize_t dhcpv6_ia_handle_IAs(uint8_t *bu
+ 				    hdr->msg_type == DHCPV6_MSG_REQUEST ||
+ 				    hdr->msg_type == DHCPV6_MSG_REBIND)) {
+ 				if ((!(a->flags & OAF_STATIC) || !a->hostname) && hostname_len > 0) {
+-					a->hostname = realloc(a->hostname, hostname_len + 1);
+-					if (a->hostname) {
++					char *hostname = realloc(a->hostname, hostname_len + 1);
++					if (hostname) {
++						a->hostname = hostname;
+ 						memcpy(a->hostname, hostname, hostname_len);
+ 						a->hostname[hostname_len] = 0;
+ 

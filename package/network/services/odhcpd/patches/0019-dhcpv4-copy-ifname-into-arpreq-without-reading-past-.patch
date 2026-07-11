@@ -1,0 +1,42 @@
+From 60185a154c404004730c3136cc4cb63c8d61c978 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sat, 11 Jul 2026 22:15:32 +0200
+Subject: dhcpv4: copy ifname into arpreq without reading past the source
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+dhcpv4_set_dest_addr() filled arp.arp_dev (a fixed 16-byte field) via
+memcpy(..., iface->ifname, sizeof(arp.arp_dev)). iface->ifname is a
+strdup'd string whose allocation is just strlen(ifname)+1 bytes — for
+typical names like "eth0" or "br-lan" that is 5–7 bytes, so the memcpy
+reads ~10 bytes past the heap allocation. The bytes happen to be
+inside the same malloc chunk on glibc so it has never blown up in
+practice, but it is undefined behaviour and would trip valgrind / ASan.
+
+Switch to the strncpy form already used for ifr_name elsewhere; the
+struct is zero-initialised so the trailing byte stays NUL.
+
+Assisted-by: Claude:claude-opus-4-7
+Link: https://github.com/openwrt/odhcpd/pull/401
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 7c834a54ae6da732edaf2e8021fa3681e69951a3)
+---
+ src/dhcpv4.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+--- a/src/dhcpv4.c
++++ b/src/dhcpv4.c
+@@ -971,7 +971,11 @@ void dhcpv4_handle_msg(void *addr, void
+ 		if (!(iface->ifflags & IFF_NOARP)) {
+ 			memcpy(arp.arp_ha.sa_data, req->chaddr, 6);
+ 			memcpy(&arp.arp_pa, &dest, sizeof(arp.arp_pa));
+-			memcpy(arp.arp_dev, iface->ifname, sizeof(arp.arp_dev));
++			/* arp_dev is a 16-byte fixed buffer; strdup'd ifname is
++			 * typically shorter than that, so memcpy()ing the full
++			 * field length reads past the allocation. Match the
++			 * strncpy pattern used elsewhere for ifr_name. */
++			strncpy(arp.arp_dev, iface->ifname, sizeof(arp.arp_dev) - 1);
+ 
+ 			if (ioctl(sock, SIOCSARP, &arp) < 0)
+ 				syslog(LOG_ERR, "ioctl(SIOCSARP): %m");

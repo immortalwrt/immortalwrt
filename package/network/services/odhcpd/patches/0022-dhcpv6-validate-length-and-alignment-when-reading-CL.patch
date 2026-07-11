@@ -1,0 +1,45 @@
+From df87c38468a5fbd49988255f7dfaa7b3b13deb86 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sat, 23 May 2026 14:49:22 +0200
+Subject: dhcpv6: validate length and alignment when reading CLIENT_ARCH option
+
+The Client System Architecture Type option (RFC5970) carries one or
+more 16-bit architecture codes. The handler read the first code via
+((uint16_t *)odata)[0], which has two problems:
+
+  - if a client sends OPTION_CLIENT_ARCH with olen < 2 (a malformed
+    but otherwise validly framed option), this reads two bytes from
+    odata where only olen are guaranteed to be in bounds, drifting
+    into the next option header,
+  - odata is at an arbitrary offset within the wire packet, so the
+    uint16_t * cast crashes with SIGBUS on strict-alignment targets.
+
+Require olen to cover the first entry and copy it out via memcpy().
+
+Assisted-by: Claude:claude-opus-4-7
+Link: https://github.com/openwrt/odhcpd/pull/401
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit f3fdcf4d3fe2ad4dc6f906aaef0aee485e1e9c2c)
+---
+ src/dhcpv6.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+--- a/src/dhcpv6.c
++++ b/src/dhcpv6.c
+@@ -688,8 +688,14 @@ static void handle_client_request(void *
+ 					break;
+ 				}
+ 			}
+-		} else if (otype == DHCPV6_OPT_CLIENT_ARCH) {
+-			uint16_t arch_code = ntohs(((uint16_t*)odata)[0]);
++		} else if (otype == DHCPV6_OPT_CLIENT_ARCH && olen >= sizeof(uint16_t)) {
++			uint16_t arch_code;
++
++			/* odata is not guaranteed to be uint16-aligned, and
++			 * RFC5970 §3.3 mandates olen be a multiple of 2 with
++			 * at least one architecture entry — read defensively. */
++			memcpy(&arch_code, odata, sizeof(arch_code));
++			arch_code = ntohs(arch_code);
+ 			ipv6_pxe_serve_boot_url(arch_code, &iov[IOV_BOOTFILE_URL]);
+ 		}
+ 	}

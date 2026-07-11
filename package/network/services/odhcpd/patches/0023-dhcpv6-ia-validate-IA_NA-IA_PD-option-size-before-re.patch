@@ -1,0 +1,45 @@
+From 071f6525dc6b47861d15820587635a0587ecc650 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sat, 23 May 2026 14:50:42 +0200
+Subject: dhcpv6-ia: validate IA_NA/IA_PD option size before reading header
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+dhcpv6_ia_handle_IAs() casts the option payload to dhcpv6_ia_hdr and
+reads ia->iaid (followed later by t1/t2 via build_ia()) without ever
+checking that the option is long enough. The dhcpv6_for_each_option
+macro only guarantees odata + olen <= end, so a client sending an
+IA_NA or IA_PD option with olen < 12 lets us read the iaid/t1/t2
+fields out of the next adjacent option (still inside the recv buffer,
+so it's not exploitable for code execution, but it pollutes lookups
+and breaks lease matching).
+
+RFC8415 §21.4 / §21.21 fix the IA header at exactly 12 bytes plus
+sub-options, so reject anything shorter.
+
+Assisted-by: Claude:claude-opus-4-7
+Link: https://github.com/openwrt/odhcpd/pull/401
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit f2275efc72a87a95f971f159babcbadc5d241d42)
+---
+ src/dhcpv6-ia.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+--- a/src/dhcpv6-ia.c
++++ b/src/dhcpv6-ia.c
+@@ -1456,6 +1456,14 @@ ssize_t dhcpv6_ia_handle_IAs(uint8_t *bu
+ 		if (!is_pd && !is_na)
+ 			continue;
+ 
++		/* RFC8415 §21.4 / §21.21: an IA_NA/IA_PD option carries at
++		 * least 12 bytes of fixed payload (iaid + t1 + t2) before any
++		 * sub-options. Without this guard, a crafted option with
++		 * olen < 12 lets us read ia->iaid/t1/t2 out of bounds (the
++		 * iterator only enforces odata + olen <= end). */
++		if (olen < sizeof(struct dhcpv6_ia_hdr) - 4)
++			continue;
++
+ 		struct dhcpv6_ia_hdr *ia = (struct dhcpv6_ia_hdr*)&odata[-4];
+ 		size_t ia_response_len = 0;
+ 		uint8_t reqlen = (is_pd) ? 62 : 128;

@@ -1,0 +1,73 @@
+From 401fabdc7f525e7881dbcb016f1427bade57bd77 Mon Sep 17 00:00:00 2001
+From: Caesurus <caesurus@openai.com>
+Date: Thu, 14 May 2026 16:42:26 -0400
+Subject: dhcpv6-ia: avoid dangling first lease pointer
+
+odhcpd's DHCPv6 IA handler keeps a per-message `first`
+lease pointer so multiple IA options in one message reuse
+the same Reconfigure authentication key.
+
+A DHCPv6 REQUEST from an adjacent-network client can make the
+first IA set `first`, then make a later same-IAID IA fail the
+on-link check and free that same lease, leaving `first` dangling.
+
+A following IA in the same packet allocates a new lease and copies
+`first->key`, producing a 16-byte heap-use-after-free read.
+ASan confirms the UAF; native tracing shows the packet shape can
+deterministically reclaim the freed lease as the destination
+allocation, producing a zeroed Reconfigure key copy.
+
+The validated impact is unauthenticated adjacent-network denial of
+service and DHCPv6 Reconfigure/ForceRenew key confusion.
+Arbitrary PC control is not proven for this UAF alone.
+
+Fixes: CVE-2026-53918
+Reported-by: OpenAI Security Team <OutboundDisclosures@openai.com>
+Signed-off-by: David Bauer <mail@david-bauer.net>
+(cherry picked from commit 26b122007030ebf192376aff8f98d428b25e2a93)
+---
+ src/dhcpv6-ia.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+--- a/src/dhcpv6-ia.c
++++ b/src/dhcpv6-ia.c
+@@ -1410,7 +1410,8 @@ ssize_t dhcpv6_ia_handle_IAs(uint8_t *bu
+ 		const struct sockaddr_in6 *addr, const void *data, const uint8_t *end)
+ {
+ 	struct lease *l;
+-	struct dhcp_assignment *first = NULL;
++	uint8_t first_key[16];
++	bool first_key_valid = false;
+ 	const struct dhcpv6_client_header *hdr = data;
+ 	time_t now = odhcpd_time();
+ 	uint16_t otype, olen, clid_len = 0;
+@@ -1581,8 +1582,8 @@ ssize_t dhcpv6_ia_handle_IAs(uint8_t *bu
+ 						a->iface = iface;
+ 						a->flags = (is_pd ? OAF_DHCPV6_PD : OAF_DHCPV6_NA);
+ 
+-						if (first)
+-							memcpy(a->key, first->key, sizeof(a->key));
++						if (first_key_valid)
++							memcpy(a->key, first_key, sizeof(a->key));
+ 						else
+ 							odhcpd_urandom(a->key, sizeof(a->key));
+ 
+@@ -1623,7 +1624,7 @@ ssize_t dhcpv6_ia_handle_IAs(uint8_t *bu
+ 				/* Send NOTONLINK status for the IA */
+ 				status = DHCPV6_STATUS_NOTONLINK;
+ 				assigned = false;
+-			} else if (accept_reconf && assigned && !first &&
++			} else if (accept_reconf && assigned && !first_key_valid &&
+ 					hdr->msg_type != DHCPV6_MSG_REBIND &&
+ 					buflen >= handshake_len) {
+ 				buf[0] = 0;
+@@ -1652,7 +1653,8 @@ ssize_t dhcpv6_ia_handle_IAs(uint8_t *bu
+ 				buflen -= handshake_len;
+ 				response_len += handshake_len;
+ 
+-				first = a;
++				memcpy(first_key, a->key, sizeof(first_key));
++				first_key_valid = true;
+ 			}
+ 
+ 			ia_response_len = build_ia(buf, buflen, status, ia, a, iface,

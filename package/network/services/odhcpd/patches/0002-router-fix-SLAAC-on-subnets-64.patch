@@ -1,7 +1,7 @@
-From 5eac9c56ff3b0a013c5241f449ca144f70bf4c02 Mon Sep 17 00:00:00 2001
+From b655d759c4bc87ae729c86fe85617f48d74c9e40 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= <noltari@gmail.com>
 Date: Tue, 7 Oct 2025 10:30:15 +0200
-Subject: [PATCH] router: fix SLAAC on subnets > 64
+Subject: router: fix SLAAC on subnets > 64
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit

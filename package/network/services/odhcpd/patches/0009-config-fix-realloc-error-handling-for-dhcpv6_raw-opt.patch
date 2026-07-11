@@ -1,0 +1,38 @@
+From 7474f1b5fb05705d9f04ccd45eeeea995ee9f09a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?David=20H=C3=A4rdeman?= <david@hardeman.nu>
+Date: Sun, 23 Nov 2025 14:53:35 +0100
+Subject: config: fix realloc() error handling for "dhcpv6_raw" option
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Check the return value from realloc() to avoid leaking memory.
+
+Signed-off-by: David Härdeman <david@hardeman.nu>
+Link: https://github.com/openwrt/odhcpd/pull/320
+Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+(cherry picked from commit 38b0920e376b236ea0b56686d08a4ef49b4bfcbe)
+---
+ src/config.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+--- a/src/config.c
++++ b/src/config.c
+@@ -1241,8 +1241,15 @@ int config_parse_interface(void *data, s
+ 		iface->dhcpv4_forcereconf = blobmsg_get_bool(c);
+ 
+ 	if ((c = tb[IFACE_ATTR_DHCPV6_RAW])) {
+-		iface->dhcpv6_raw_len = blobmsg_data_len(c) / 2;
+-		iface->dhcpv6_raw = realloc(iface->dhcpv6_raw, iface->dhcpv6_raw_len);
++		void *tmp;
++		size_t opt_len = blobmsg_data_len(c) / 2;
++
++		tmp = realloc(iface->dhcpv6_raw, opt_len);
++		if (!tmp)
++			goto err;
++
++		iface->dhcpv6_raw = tmp;
++		iface->dhcpv6_raw_len = opt_len;
+ 		odhcpd_unhexlify(iface->dhcpv6_raw, iface->dhcpv6_raw_len, blobmsg_get_string(c));
+ 	}
+ 

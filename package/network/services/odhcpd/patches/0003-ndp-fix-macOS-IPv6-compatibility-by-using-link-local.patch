@@ -1,7 +1,7 @@
-From d402cdae431668f55f9d82b7072b0afa3b8090df Mon Sep 17 00:00:00 2001
+From bf4dbad4ba8867cdb570426de252f3d994e2db2d Mon Sep 17 00:00:00 2001
 From: Stephen Groat <stephen.groat@datadoghq.com>
 Date: Wed, 8 Oct 2025 11:54:51 -0700
-Subject: [PATCH] ndp: fix macOS IPv6 compatibility by using link-local source
+Subject: ndp: fix macOS IPv6 compatibility by using link-local source
  addresses
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8

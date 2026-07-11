@@ -1,0 +1,120 @@
+From 3c3223c0aadb8a3949f7cd4050a911a65c0abd70 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sat, 23 May 2026 14:06:55 +0200
+Subject: dhcpv6: bound nested-relay recursion to HOP_COUNT_LIMIT
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+handle_nested_message() and update_nested_message() recurse once for
+every OPTION_RELAY_MSG inside a Relay-Forward message, with no depth
+limit. A crafted UDP datagram packed full of nested Relay-Forward
+options can drive recursion ~1700 deep on a ~64KB packet and exhaust
+the daemon's stack.
+
+Each nested Relay-Forward layer is exactly one relay hop: a relay agent
+wraps the message it received in a new Relay-Forward and increments
+hop_count. So the recursion depth here is just the relay-chain length
+seen structurally. RFC8415 bounds that chain via HOP_COUNT_LIMIT
+(defined in §7.6; a relay discards an over-limit Relay-forward per
+§19.1.2), so a conforming message can never nest deeper than
+HOP_COUNT_LIMIT layers.
+
+Cap the descent at DHCPV6_HOP_COUNT_LIMIT accordingly. We count the
+actual recursion depth instead of trusting each header's on-wire
+hop_count, because an attacker controls the nesting and every per-layer
+hop_count independently (e.g. nest deeply while stamping hop_count=0
+everywhere). This is the same limit relay_client_request() already
+enforces on the outer header of a forwarded message.
+
+Note: DHCPV6_HOP_COUNT_LIMIT is 32, the value from the obsoleted
+RFC3315 §5.5; RFC8415 §7.6 lowered the default to 8. Either way 32 is a
+safe structural ceiling that drops only pathologically nested messages,
+never a legitimate relay chain.
+
+Assisted-by: Claude:claude-opus-4-7
+Link: https://github.com/openwrt/odhcpd/pull/401
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit ee0a11f40fa48302482fd6e85458e26d48de6e3a)
+---
+ src/dhcpv6.c | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
+
+--- a/src/dhcpv6.c
++++ b/src/dhcpv6.c
+@@ -188,7 +188,7 @@ enum {
+ 	IOV_TOTAL
+ };
+ 
+-static void handle_nested_message(uint8_t *data, size_t len,
++static void handle_nested_message(uint8_t *data, size_t len, unsigned depth,
+ 				  struct dhcpv6_client_header **c_hdr, uint8_t **opts,
+ 				  uint8_t **end, struct iovec iov[IOV_TOTAL])
+ {
+@@ -212,19 +212,26 @@ static void handle_nested_message(uint8_
+ 		return;
+ 	}
+ 
++	/* Each nested Relay-Forward is one relay hop; RFC8415 bounds a relay
++	 * chain via HOP_COUNT_LIMIT (defined in §7.6, enforced in §19.1.2),
++	 * so refuse to recurse deeper and avoid stack exhaustion on crafted
++	 * relay loops. */
++	if (depth >= DHCPV6_HOP_COUNT_LIMIT)
++		return;
++
+ 	dhcpv6_for_each_option(r_hdr->options, data + len, otype, olen, odata) {
+ 		if (otype == DHCPV6_OPT_RELAY_MSG) {
+ 			iov[IOV_RELAY_MSG].iov_base = odata + olen;
+ 			iov[IOV_RELAY_MSG].iov_len = (((uint8_t *)iov[IOV_NESTED].iov_base) +
+ 					iov[IOV_NESTED].iov_len) - (odata + olen);
+-			handle_nested_message(odata, olen, c_hdr, opts, end, iov);
++			handle_nested_message(odata, olen, depth + 1, c_hdr, opts, end, iov);
+ 			return;
+ 		}
+ 	}
+ }
+ 
+ 
+-static void update_nested_message(uint8_t *data, size_t len, ssize_t pdiff)
++static void update_nested_message(uint8_t *data, size_t len, unsigned depth, ssize_t pdiff)
+ {
+ 	struct dhcpv6_relay_header *hdr = (struct dhcpv6_relay_header*)data;
+ 	if (hdr->msg_type != DHCPV6_MSG_RELAY_FORW)
+@@ -232,6 +239,10 @@ static void update_nested_message(uint8_
+ 
+ 	hdr->msg_type = DHCPV6_MSG_RELAY_REPL;
+ 
++	/* Bound recursion to mirror handle_nested_message(). */
++	if (depth >= DHCPV6_HOP_COUNT_LIMIT)
++		return;
++
+ 	uint16_t otype, olen;
+ 	uint8_t *odata;
+ 	dhcpv6_for_each_option(hdr->options, data + len, otype, olen, odata) {
+@@ -239,7 +250,7 @@ static void update_nested_message(uint8_
+ 			olen += pdiff;
+ 			odata[-2] = (olen >> 8) & 0xff;
+ 			odata[-1] = olen & 0xff;
+-			update_nested_message(odata, olen - pdiff, pdiff);
++			update_nested_message(odata, olen - pdiff, depth + 1, pdiff);
+ 			return;
+ 		}
+ 	}
+@@ -564,7 +575,7 @@ static void handle_client_request(void *
+ 	};
+ 
+ 	if (hdr->msg_type == DHCPV6_MSG_RELAY_FORW)
+-		handle_nested_message(data, len, &hdr, &opts, &opts_end, iov);
++		handle_nested_message(data, len, 0, &hdr, &opts, &opts_end, iov);
+ 
+ 	switch (hdr->msg_type) {
+ 	case DHCPV6_MSG_SOLICIT:
+@@ -730,7 +741,7 @@ static void handle_client_request(void *
+ 	}
+ 
+ 	if (iov[IOV_NESTED].iov_len > 0) /* Update length */
+-		update_nested_message(data, len, iov[IOV_DEST].iov_len + iov[IOV_MAXRT].iov_len +
++		update_nested_message(data, len, 0, iov[IOV_DEST].iov_len + iov[IOV_MAXRT].iov_len +
+ 				      iov[IOV_RAPID_COMMIT].iov_len + iov[IOV_DNS].iov_len +
+ 				      iov[IOV_DNS_ADDR].iov_len + iov[IOV_SEARCH].iov_len +
+ 				      iov[IOV_SEARCH_DOMAIN].iov_len + iov[IOV_PDBUF].iov_len +

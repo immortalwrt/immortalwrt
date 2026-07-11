@@ -1,0 +1,41 @@
+From 061253933a52a394df7e79eae312212b1911d7fa Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?David=20H=C3=A4rdeman?= <david@hardeman.nu>
+Date: Sun, 23 Nov 2025 14:50:00 +0100
+Subject: config: fix realloc() handling for the "upstream" option
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Deal properly with realloc() failure.
+
+Signed-off-by: David Härdeman <david@hardeman.nu>
+Link: https://github.com/openwrt/odhcpd/pull/320
+Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+(cherry picked from commit adb2b8a1afffd805753dcc2e52c4764028116676)
+---
+ src/config.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+--- a/src/config.c
++++ b/src/config.c
+@@ -1062,16 +1062,17 @@ int config_parse_interface(void *data, s
+ 	if (overwrite && (c = tb[IFACE_ATTR_UPSTREAM])) {
+ 		struct blob_attr *cur;
+ 		unsigned rem;
++		char *tmp;
+ 
+ 		blobmsg_for_each_attr(cur, c, rem) {
+ 			if (blobmsg_type(cur) != BLOBMSG_TYPE_STRING || !blobmsg_check_attr(cur, false))
+ 				continue;
+ 
+-			iface->upstream = realloc(iface->upstream,
+-					iface->upstream_len + blobmsg_data_len(cur));
+-			if (!iface->upstream)
++			tmp = realloc(iface->upstream, iface->upstream_len + blobmsg_data_len(cur));
++			if (!tmp)
+ 				goto err;
+ 
++			iface->upstream = tmp;
+ 			memcpy(iface->upstream + iface->upstream_len, blobmsg_get_string(cur), blobmsg_data_len(cur));
+ 			iface->upstream_len += blobmsg_data_len(cur);
+ 		}

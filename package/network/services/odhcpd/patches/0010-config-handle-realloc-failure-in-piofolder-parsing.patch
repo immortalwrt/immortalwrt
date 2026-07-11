@@ -1,0 +1,33 @@
+From 4e3aeeb71ba64f5fafff779e08e902510a4baff9 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?David=20H=C3=A4rdeman?= <david@hardeman.nu>
+Date: Sun, 23 Nov 2025 15:00:45 +0100
+Subject: config: handle realloc failure in piofolder parsing
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Another realloc that goes unchecked.
+
+Signed-off-by: David Härdeman <david@hardeman.nu>
+Link: https://github.com/openwrt/odhcpd/pull/320
+Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+(cherry picked from commit 2e1042c6c07faad22bc300d1c526b24089b1ced9)
+---
+ src/config.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+--- a/src/config.c
++++ b/src/config.c
+@@ -1893,7 +1893,11 @@ void config_load_ra_pio(struct interface
+ 		free(iface->pios);
+ 		iface->pios = NULL;
+ 	} else if (iface->pio_cnt != pio_cnt) {
+-		iface->pios = realloc(iface->pios, sizeof(struct ra_pio) * iface->pio_cnt);
++		struct ra_pio *tmp;
++
++		tmp = realloc(iface->pios, sizeof(struct ra_pio) * iface->pio_cnt);
++		if (tmp)
++			iface->pios = tmp;
+ 	}
+ }
+ 

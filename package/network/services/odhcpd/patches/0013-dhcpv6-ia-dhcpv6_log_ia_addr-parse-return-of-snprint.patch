@@ -1,0 +1,51 @@
+From 67ef12f1fbd69915ed72fbd030afe70ed08c96f8 Mon Sep 17 00:00:00 2001
+From: Alexander Couzens <lynxis@fe80.eu>
+Date: Fri, 6 Feb 2026 14:15:03 +0100
+Subject: dhcpv6-ia: dhcpv6_log_ia_addr(): parse return of snprintf
+
+snprintf() returns also in the failure case how many characters would have been required
+to print the full string.
+Check return of snprintf() and ensure the log_ctxt->buf_idx never points
+outside of the given log_ctxt->buf.
+
+Fixes: TOB-OWRT-5
+Reported-by: Trail of Bits
+Signed-off-by: Alexander Couzens <lynxis@fe80.eu>
+(cherry picked from commit 13cec018c0d9bd452f4cb5e583c52fdf206cdc31)
+---
+ src/dhcpv6-ia.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+--- a/src/dhcpv6-ia.c
++++ b/src/dhcpv6-ia.c
+@@ -1266,6 +1266,7 @@ static size_t build_ia(uint8_t *buf, siz
+ struct log_ctxt {
+ 	char *buf;
+ 	int buf_len;
++	/* if full, buf_idx will point to the last valid memory in buf */
+ 	int buf_idx;
+ };
+ 
+@@ -1274,10 +1275,20 @@ static void dhcpv6_log_ia_addr(struct in
+ {
+ 	struct log_ctxt *ctxt = (struct log_ctxt *)arg;
+ 	char addrbuf[INET6_ADDRSTRLEN];
++	int ret;
++
++	/* Log buffer full */
++	if (ctxt->buf_idx >= ctxt->buf_len - 1)
++		return;
+ 
+ 	inet_ntop(AF_INET6, addr, addrbuf, sizeof(addrbuf));
+-	ctxt->buf_idx += snprintf(ctxt->buf + ctxt->buf_idx, ctxt->buf_len - ctxt->buf_idx,
+-					"%s/%d ", addrbuf, prefix);
++	ret = snprintf(ctxt->buf + ctxt->buf_idx, ctxt->buf_len - ctxt->buf_idx,
++		       "%s/%d ", addrbuf, prefix);
++
++	if (ret + ctxt->buf_idx < ctxt->buf_len - 1)
++		ctxt->buf_idx += ret;
++	else
++		ctxt->buf_idx = ctxt->buf_len - 1;
+ }
+ 
+ static void dhcpv6_log(uint8_t msgtype, struct interface *iface, time_t now,
