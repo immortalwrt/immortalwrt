@@ -24,8 +24,9 @@
 #include <linux/kobject.h>
 #include <linux/input.h>
 #include <linux/interrupt.h>
+#include <linux/of.h>
 #include <linux/platform_device.h>
-#include <linux/of_irq.h>
+#include <linux/property.h>
 #include <linux/gpio.h>
 #include <linux/gpio_keys.h>
 #include <linux/gpio/consumer.h>
