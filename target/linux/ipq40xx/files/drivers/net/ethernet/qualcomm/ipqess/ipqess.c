@@ -894,7 +894,38 @@ static int ipqess_set_mac_address(struct net_device *netdev, void *p)
 
 static void ipqess_tx_timeout(struct net_device *netdev, unsigned int txq_id)
 {
-        netdev_err(netdev, "TX timeout on queue %d\n", txq_id);
+	struct ipqess_tx_ring *tr;
+	struct ipqess *ess;
+	u32 sw_cons;
+	u32 tx_imr;
+	u32 tx_isr;
+	u32 cons;
+	u32 prod;
+	u32 idx;
+
+	ess = netdev_priv(netdev);
+	tr = &ess->tx_ring[txq_id];
+
+	idx = ipqess_r32(ess, IPQESS_REG_TPD_IDX_Q(tr->idx));
+	prod = (idx >> IPQESS_TPD_PROD_IDX_SHIFT) & IPQESS_TPD_PROD_IDX_MASK;
+	cons = (idx >> IPQESS_TPD_CONS_IDX_SHIFT) & IPQESS_TPD_CONS_IDX_MASK;
+	sw_cons = ipqess_r32(ess, IPQESS_REG_TX_SW_CONS_IDX_Q(tr->idx));
+	tx_isr = ipqess_r32(ess, IPQESS_REG_TX_ISR);
+	tx_imr = ipqess_r32(ess, IPQESS_REG_TX_INT_MASK_Q(tr->idx));
+
+	netdev_warn(netdev,
+		    "TX timeout on queue %d head=%u tail=%u hw_prod=%u hw_cons=%u sw_cons=%u tx_isr=%08x tx_imr=%08x\n",
+		    tr->idx, tr->head, tr->tail, prod, cons, sw_cons, tx_isr, tx_imr);
+
+	/* A lost or masked TX completion interrupt leaves descriptors pending
+	 * forever. Force the TX completion path to run and re-kick the producer.
+	 */
+	if (napi_schedule_prep(&tr->napi_tx)) {
+		__napi_schedule(&tr->napi_tx);
+		ipqess_w32(ess, IPQESS_REG_TX_INT_MASK_Q(tr->idx), 0x0);
+	}
+
+	ipqess_kick_tx(tr);
 }
 
 static const struct net_device_ops ipqess_axi_netdev_ops = {
