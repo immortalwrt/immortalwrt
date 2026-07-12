@@ -344,12 +344,15 @@ static u32 edma_clean_rx(struct edma_priv *priv, int budget,
 	cons = val & EDMA_RXDESC_CONS_IDX_MASK;
 
 	while (cons != prod && done < budget) {
-		rxdesc = EDMA_RXDESC_DESC(rxdesc_ring, cons);
+		u32 desc_addr, desc_status;
 
-		rxph = phys_to_virt(rxdesc->buffer_addr);
+		rxdesc = EDMA_RXDESC_DESC(rxdesc_ring, cons);
+		desc_addr = le32_to_cpu(rxdesc->buffer_addr);
+		desc_status = le32_to_cpu(rxdesc->status);
+		rxph = phys_to_virt(desc_addr);
 		page = virt_to_head_page(rxph);
 
-		pkt_len = rxdesc->status & EDMA_RXDESC_PACKET_LEN_MASK;
+		pkt_len = desc_status & EDMA_RXDESC_PACKET_LEN_MASK;
 
 		page_pool_dma_sync_for_cpu(priv->page_pool, page, 0,
 					   EDMA_RX_PREHDR_SIZE + pkt_len);
@@ -628,8 +631,11 @@ static void edma_rxdesc_drain(struct edma_priv *priv, struct edma_ring *rxdesc_r
 	prod = val & EDMA_RXDESC_PROD_IDX_MASK;
 
 	while (cons != prod) {
+		u32 desc_addr;
+
 		rxdesc = EDMA_RXDESC_DESC(rxdesc_ring, cons);
-		page = virt_to_head_page(phys_to_virt(rxdesc->buffer_addr));
+		desc_addr = le32_to_cpu(rxdesc->buffer_addr);
+		page = virt_to_head_page(phys_to_virt(desc_addr));
 		page_pool_put_full_page(priv->page_pool, page, false);
 
 		if (++cons == rxdesc_ring->count)
