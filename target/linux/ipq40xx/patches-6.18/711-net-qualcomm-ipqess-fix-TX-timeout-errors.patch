@@ -35,7 +35,7 @@ Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 
 --- a/drivers/net/ethernet/qualcomm/ipqess/ipqess.c
 +++ b/drivers/net/ethernet/qualcomm/ipqess/ipqess.c
-@@ -453,13 +453,22 @@ static int ipqess_tx_complete(struct ipq
+@@ -454,13 +454,22 @@ static int ipqess_tx_complete(struct ipq
  	tail >>= IPQESS_TPD_CONS_IDX_SHIFT;
  	tail &= IPQESS_TPD_CONS_IDX_MASK;
  

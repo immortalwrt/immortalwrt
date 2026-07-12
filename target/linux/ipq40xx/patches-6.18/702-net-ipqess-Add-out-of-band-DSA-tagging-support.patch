@@ -43,15 +43,15 @@ Signed-off-by: Matthias Schiffer <mschiffer@universe-factory.net>
  #include <linux/if_vlan.h>
  #include <linux/interrupt.h>
  #include <linux/module.h>
-@@ -22,6 +23,7 @@
- #include <linux/skbuff.h>
+@@ -23,6 +24,7 @@
+ #include <linux/version.h>
  #include <linux/vmalloc.h>
  #include <net/checksum.h>
 +#include <net/dsa.h>
  #include <net/ip6_checksum.h>
  
  #include "ipqess.h"
-@@ -327,6 +329,7 @@ static int ipqess_rx_poll(struct ipqess_
+@@ -328,6 +330,7 @@ static int ipqess_rx_poll(struct ipqess_
  	tail &= IPQESS_RFD_CONS_IDX_MASK;
  
  	while (done < budget) {
@@ -59,7 +59,7 @@ Signed-off-by: Matthias Schiffer <mschiffer@universe-factory.net>
  		struct ipqess_rx_desc *rd;
  		struct sk_buff *skb;
  
-@@ -406,6 +409,12 @@ static int ipqess_rx_poll(struct ipqess_
+@@ -407,6 +410,12 @@ static int ipqess_rx_poll(struct ipqess_
  			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021AD),
  					       le16_to_cpu(rd->rrd4));
  
@@ -72,7 +72,7 @@ Signed-off-by: Matthias Schiffer <mschiffer@universe-factory.net>
  		napi_gro_receive(&rx_ring->napi_rx, skb);
  
  		rx_ring->ess->stats.rx_packets++;
-@@ -701,6 +710,26 @@ static void ipqess_rollback_tx(struct ip
+@@ -702,6 +711,26 @@ static void ipqess_rollback_tx(struct ip
  	tx_ring->head = start_index;
  }
  
@@ -99,7 +99,7 @@ Signed-off-by: Matthias Schiffer <mschiffer@universe-factory.net>
  static int ipqess_tx_map_and_fill(struct ipqess_tx_ring *tx_ring,
  				  struct sk_buff *skb)
  {
-@@ -711,6 +740,8 @@ static int ipqess_tx_map_and_fill(struct
+@@ -712,6 +741,8 @@ static int ipqess_tx_map_and_fill(struct
  	u16 len;
  	int i;
  
@@ -108,7 +108,7 @@ Signed-off-by: Matthias Schiffer <mschiffer@universe-factory.net>
  	if (skb_is_gso(skb)) {
  		if (skb_shinfo(skb)->gso_type & SKB_GSO_TCPV4) {
  			lso_word1 |= IPQESS_TPD_IPV4_EN;
-@@ -912,6 +943,33 @@ static const struct net_device_ops ipqes
+@@ -910,6 +941,33 @@ static const struct net_device_ops ipqes
  	.ndo_tx_timeout		= ipqess_tx_timeout,
  };
  
@@ -142,7 +142,7 @@ Signed-off-by: Matthias Schiffer <mschiffer@universe-factory.net>
  static void ipqess_hw_stop(struct ipqess *ess)
  {
  	int i;
-@@ -1188,12 +1246,19 @@ static int ipqess_axi_probe(struct platf
+@@ -1186,12 +1244,19 @@ static int ipqess_axi_probe(struct platf
  		netif_napi_add(netdev, &ess->rx_ring[i].napi_rx, ipqess_rx_napi);
  	}
  

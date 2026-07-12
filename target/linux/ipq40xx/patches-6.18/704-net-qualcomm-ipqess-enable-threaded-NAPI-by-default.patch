@@ -16,7 +16,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
 
 --- a/drivers/net/ethernet/qualcomm/ipqess/ipqess.c
 +++ b/drivers/net/ethernet/qualcomm/ipqess/ipqess.c
-@@ -530,9 +530,9 @@ static irqreturn_t ipqess_interrupt_tx(i
+@@ -531,9 +531,9 @@ static irqreturn_t ipqess_interrupt_tx(i
  	struct ipqess_tx_ring *tx_ring = (struct ipqess_tx_ring *)priv;
  
  	if (likely(napi_schedule_prep(&tx_ring->napi_tx))) {
@@ -27,7 +27,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  	}
  
  	return IRQ_HANDLED;
-@@ -543,9 +543,9 @@ static irqreturn_t ipqess_interrupt_rx(i
+@@ -544,9 +544,9 @@ static irqreturn_t ipqess_interrupt_rx(i
  	struct ipqess_rx_ring *rx_ring = (struct ipqess_rx_ring *)priv;
  
  	if (likely(napi_schedule_prep(&rx_ring->napi_rx))) {
@@ -38,7 +38,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  	}
  
  	return IRQ_HANDLED;
-@@ -1268,6 +1268,8 @@ static int ipqess_axi_probe(struct platf
+@@ -1266,6 +1266,8 @@ static int ipqess_axi_probe(struct platf
  	if (err)
  		goto err_notifier_unregister;
  
