@@ -359,11 +359,11 @@ static u32 edma_clean_rx(struct edma_priv *priv, int budget,
 
 		if (EDMA_RXPH_SRC_INFO_TYPE_GET(rxph) !=
 		    EDMA_PREHDR_DSTINFO_PORTID_IND) {
-			dev_warn(
-				&pdev->dev,
-				"rx drop: src_info_type=0x%x src_info=0x%04x dst_info=0x%04x\n",
-				EDMA_RXPH_SRC_INFO_TYPE_GET(rxph),
-				rxph->src_info, rxph->dst_info);
+			dev_warn_ratelimited(&pdev->dev,
+					     "rx drop: src_info_type=%#x src_info=%#06x dst_info=%#06x\n",
+					     EDMA_RXPH_SRC_INFO_TYPE_GET(rxph),
+					     le16_to_cpu(rxph->src_info),
+					     le16_to_cpu(rxph->dst_info));
 			page_pool_put_full_page(priv->page_pool, page, true);
 			goto next;
 		}
