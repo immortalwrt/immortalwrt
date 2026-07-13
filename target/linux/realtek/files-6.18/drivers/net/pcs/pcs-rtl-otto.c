@@ -2994,6 +2994,9 @@ static int rtpcs_930x_sds_config_hw_mode(struct rtpcs_serdes *sds, enum rtpcs_sd
 static int rtpcs_930x_sds_config_media(struct rtpcs_serdes *sds, enum rtpcs_sds_media media,
 				       enum rtpcs_sds_mode hw_mode)
 {
+	if (sds->type != RTPCS_SDS_TYPE_10G)
+		return 0;
+
 	/*
 	 * dal_longan_construct_mac_default_10gmedia_fiber: set medium to fiber.
 	 * TODO: this is unconditional regardless of hw_mode; needs mode-aware
