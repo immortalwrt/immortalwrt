@@ -1191,6 +1191,10 @@ static int edma_probe(struct platform_device *pdev)
 		goto err_irq;
 	}
 
+	ret = dev_set_threaded(netdev, true);
+	if (ret)
+		dev_warn(dev, "failed to enable threaded NAPI: %d\n", ret);
+
 	platform_set_drvdata(pdev, priv);
 
 	return 0;
