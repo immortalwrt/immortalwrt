@@ -3927,11 +3927,11 @@ static int rtpcs_pcs_config(struct phylink_pcs *pcs, unsigned int neg_mode,
 				if (ret < 0)
 					return ret;
 
-				sds->attachment = attachment;
-
 				ret = sds->ops->config_attachment(sds, attachment, hw_mode);
 				if (ret < 0)
 					return ret;
+
+				sds->attachment = attachment;
 			}
 
 			ret = sds->ops->set_hw_mode(sds, hw_mode);
