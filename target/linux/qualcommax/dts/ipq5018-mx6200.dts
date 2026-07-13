@@ -49,12 +49,13 @@
 	nvmem-cell-names = "mac-address";
 };
 
-// MAC1 ---SGMII---> QCA8337 SerDes
+// MAC1 ---SGMII---> Maxlinear GPY115C
 &gmac1 {
 	status = "okay";
 
 	phy-handle = <&gpy115c>;
 	phy-mode = "sgmii";
+	managed = "in-band-status";
 
 	label = "wan";
 
