@@ -3006,15 +3006,16 @@ static int rtpcs_930x_sds_config_attachment(struct rtpcs_serdes *sds,
 	if (sds->type != RTPCS_SDS_TYPE_10G)
 		return 0;
 
-	/*
-	 * dal_longan_construct_mac_default_10gmedia_fiber: set medium to fiber.
-	 * TODO: does this apply to all fiber modes or only 10GBase-R?
-	 */
-	ret = rtpcs_sds_write_bits(sds, PAGE_WDIG, 11, 1, 1, 1);
+	ret = rtpcs_sds_select_pll_speed(hw_mode, &speed);
 	if (ret < 0)
 		return ret;
 
-	ret = rtpcs_sds_select_pll_speed(hw_mode, &speed);
+	/*
+	 * dal_longan_construct_mac_default_10gmedia_fiber: vendor sets this
+	 * for any 10G-class port regardless of attachment, despite the
+	 * name; 0 matches this register's hardware reset default.
+	 */
+	ret = rtpcs_sds_write_bits(sds, PAGE_WDIG, 11, 1, 1, speed == RTPCS_SDS_PLL_SPD_10000);
 	if (ret < 0)
 		return ret;
 
