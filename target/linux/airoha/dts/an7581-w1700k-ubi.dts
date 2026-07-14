@@ -248,6 +248,8 @@
 
 	num-lanes = <2>;
 
+	airoha,scu = <&scuclk>;
+
 	pinctrl-names = "default";
 	pinctrl-0 = <&pcie0_rst_pins>;
 	pcie@0,0 {
