@@ -43,7 +43,8 @@
 #define TX_PAD_EN_838X			BIT(5)
 
 #define SKB_MTU				1600
-#define SKB_FRAG_SIZE			1600
+/* TODO: change this to 1568 after fragment handling has been tested in the wild */
+#define SKB_FRAG_SIZE			400
 #define SKB_PAD				MAX(32, L1_CACHE_BYTES)
 #define SKB_HEADROOM_FAST		(SKB_PAD + NET_IP_ALIGN)
 #define SKB_HEADROOM_SLOW		SKB_PAD
@@ -105,6 +106,7 @@ struct rtl838x_rx_q {
 	struct rteth_ctrl *ctrl;
 	struct napi_struct napi;
 	struct page_pool *page_pool;
+	struct sk_buff *skb;
 };
 
 struct rteth_ctrl {
@@ -664,6 +666,7 @@ static void rteth_free_rx_buffers(struct rteth_ctrl *ctrl)
 			page_pool_put_full_page(ctrl->rx_qs[r].page_pool, packet->page, true);
 			packet->page = NULL;
 		}
+		rteth_free_skb(&ctrl->rx_qs[r].skb);
 	}
 }
 
@@ -710,6 +713,7 @@ static int rteth_setup_ring_buffer(struct rteth_ctrl *ctrl)
 						   RING_OWN_HW;
 		}
 
+		ctrl->rx_qs[r].skb = NULL;
 		ctrl->rx_data[r].ring[RTETH_RX_RING_SIZE - 1] |= RING_WRAP;
 		ctrl->rx_data[r].slot = 0;
 	}
@@ -1120,7 +1124,7 @@ static int rteth_start_xmit(struct sk_buff *skb, struct net_device *dev)
 static struct sk_buff *rteth_create_skb(struct rteth_ctrl *ctrl, int ring,
 					struct rteth_packet *packet)
 {
-	struct page_pool *pool = ctrl->rx_qs[ring].page_pool;
+	struct page_pool *pool = ctrl->rx_info[ring].pool;
 	unsigned int offset = packet->page_offset;
 	struct net_device *dev = ctrl->dev;
 	struct page *page = packet->page;
@@ -1157,6 +1161,26 @@ static struct sk_buff *rteth_create_skb(struct rteth_ctrl *ctrl, int ring,
 	return skb;
 }
 
+static int rteth_append_skb(struct sk_buff *skb, struct rteth_ctrl *ctrl, int ring,
+			     struct rteth_packet *packet)
+{
+	unsigned int nr_frags = skb_shinfo(skb)->nr_frags, len = packet->len;
+	struct page_pool *pool = ctrl->rx_qs[ring].page_pool;
+	unsigned int offset = packet->page_offset;
+	struct page *page = packet->page;
+
+	if (nr_frags >= MAX_SKB_FRAGS) {
+		page_pool_put_full_page(pool, packet->page, true);
+		return -ENOMEM;
+	}
+
+	page_pool_dma_sync_for_cpu(pool, page, offset + ctrl->r->skb_headroom, len);
+	skb_add_rx_frag(skb, nr_frags, page, offset + ctrl->r->skb_headroom,
+			len, PPOOL_FRAG_SIZE);
+
+	return 0;
+}
+
 static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 {
 	int slot, work_done = 0, rx_packets = 0, rx_bytes = 0, rx_dropped = 0, rx_errors = 0;
@@ -1166,11 +1190,12 @@ static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 	struct page_pool *pool;
 	struct page *new_page;
 	dma_addr_t packet_dma;
+	bool is_head, is_tail;
 	struct sk_buff *skb;
-	struct dsa_tag tag;
-	bool is_tail;
 
 	pool = ctrl->rx_qs[ring].page_pool;
+	skb = ctrl->rx_qs[ring].skb;
+	is_tail = !skb;
 
 	while (work_done < budget) {
 		slot = ctrl->rx_data[ring].slot;
@@ -1182,15 +1207,19 @@ static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 
 		packet = &ctrl->rx_data[ring].packet[slot];
 		len = packet->len;
+		is_head = is_tail;
 		is_tail = !packet->more;
 		if (is_tail)
 			work_done++;
 
 		if (unlikely(len > SKB_FRAG_SIZE)) {
 			netdev_err(dev, "invalid fragment with %d bytes received\n", len);
-			rx_errors++;
+			rx_errors += rteth_free_skb(&skb);
 			goto recycle;
 		}
+
+		if (unlikely(!skb && !is_head))
+			goto recycle;
 
 		/*
 		 * Avoid complex error handling by allocating the new page before SKB consumption.
@@ -1199,14 +1228,21 @@ static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 		new_page = page_pool_dev_alloc_frag(pool, &new_offset, PPOOL_FRAG_SIZE);
 		if (unlikely(!new_page)) {
 			netdev_err(dev, "fragment allocation failed\n");
-			rx_dropped++;
+			rx_dropped += rteth_free_skb(&skb);
 			goto recycle;
 		}
 
-		skb = rteth_create_skb(ctrl, ring, packet);
-		if (unlikely(!skb)) {
-			netdev_err(dev, "skb creation failed\n");
-			dev->stats.rx_dropped++;
+		if (is_head) {
+			skb = rteth_create_skb(ctrl, ring, packet);
+			if (unlikely(!skb)) {
+				netdev_err(dev, "skb creation failed\n");
+				rx_dropped++;
+			}
+		} else {
+			if (unlikely(rteth_append_skb(skb, ctrl, ring, packet))) {
+				netdev_err(dev, "skb append failed\n");
+				rx_dropped += rteth_free_skb(&skb);
+			}
 		}
 
 		if (is_tail && skb) {
@@ -1239,6 +1275,8 @@ recycle:
 	dev->stats.rx_errors += rx_errors;
 	dev->stats.rx_bytes += rx_bytes;
 	spin_unlock(&ctrl->rx_lock);
+
+	ctrl->rx_qs[ring].skb = skb;
 
 	return work_done;
 }
