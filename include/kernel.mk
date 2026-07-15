@@ -121,6 +121,10 @@ ifneq (,$(KERNEL_CC))
   KERNEL_MAKE_FLAGS += CC="$(KERNEL_CC)"
 endif
 
+ifeq ($(HOST_OS),Darwin)
+  KERNEL_MAKE_FLAGS += MACOSX_DEPLOYMENT_TARGET="$(shell sw_vers -productVersion)"
+endif
+
 KERNEL_NOSTDINC_FLAGS = \
 	-nostdinc $(if $(DUMP),, -isystem $(shell $(TARGET_CC) -print-file-name=include))
 
