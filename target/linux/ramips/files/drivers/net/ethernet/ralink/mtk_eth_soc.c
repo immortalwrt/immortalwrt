@@ -791,8 +791,6 @@ err_out:
 }
 
 #if IS_ENABLED(CONFIG_NET_DSA)
-#define MTK_HDR_LEN 4
-
 static netdev_features_t fe_features_check(struct sk_buff *skb,
 					   struct net_device *dev,
 					   netdev_features_t features)
@@ -804,21 +802,17 @@ static netdev_features_t fe_features_check(struct sk_buff *skb,
 	if (skb->ip_summed != CHECKSUM_PARTIAL)
 		return features;
 
-	/* DSA tag might break existing offload checks as offload feature flags
-	 * are copied to slave ports and this driver does not use csum_start. */
 	if (netdev_uses_dsa(dev)) {
 		const struct dsa_device_ops *tag_ops = dev->dsa_ptr->tag_ops;
 
-		/* If tag is Mediatek, checksum should work */
-		if (tag_ops->proto == DSA_TAG_PROTO_MTK)
-			/* However, make sure that it is not stacking another
-			 * L2 protocol, possibly a second incompatible DSA tag
-			 * 802.1Q does not increase the mac header size because
-			 * it is embedded inside mediatek tag */
-			if (skb_mac_header_len(skb) <= ETH_HLEN + MTK_HDR_LEN)
-				return features;
-
-		features &= ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
+		/* RTL8_4 hides the L2 ethertype this driver relies on for
+		 * offload. RTL8_4T (the trailing-tag variant) is unaffected
+		 * because its rtl8_4t tagger already checksums the frame in
+		 * software before appending the tag, so ip_summed is no longer
+		 * CHECKSUM_PARTIAL by the time this driver sees it.
+		 */
+		if (tag_ops->proto == DSA_TAG_PROTO_RTL8_4)
+			features &= ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
 	}
 
 	return features;

@@ -34,12 +34,12 @@
 	};
 };
 
-&dp5_syn {
+&swport5 {
 	/delete-property/ nvmem-cell-names;
 	/delete-property/ nvmem-cells;
 };
 
-&dp6_syn {
+&swport6 {
 	/delete-property/ nvmem-cell-names;
 	/delete-property/ nvmem-cells;
 };

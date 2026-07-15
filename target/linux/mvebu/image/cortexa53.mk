@@ -127,7 +127,7 @@ define Device/eMMC-methode
   IMAGE/emmc-gpt.img.gz := methode-gpt-emmc |\
     pad-to 1M  | boot-scr | boot-img-ext4 | append-boot-part |\
     pad-to 33M | append-rootfs |\
-    gzip
+    libdeflate-gzip
   BOOT_SCRIPT := udpu
 endef
 

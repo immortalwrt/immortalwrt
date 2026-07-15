@@ -326,15 +326,13 @@ static inline int msp430_check_workmode(struct spi_device *spi)
 static int msp430_leds_probe(struct spi_device *spi)
 {
 	struct device *dev = &spi->dev;
-	struct fwnode_handle *fw = dev_fwnode(dev);
-	struct fwnode_handle *child;
 	int rc;
 
 	rc = msp430_check_workmode(spi);
 	if (rc)
 		return rc;
 
-	fwnode_for_each_available_child_node(fw, child) {
+	device_for_each_child_node_scoped(dev, child) {
 		u32 reg;
 
 		if (fwnode_property_read_u32(child, "reg", &reg))
@@ -347,10 +345,8 @@ static int msp430_leds_probe(struct spi_device *spi)
 		}
 
 		rc = msp430_led_probe(spi, child, reg);
-		if (rc < 0) {
-			fwnode_handle_put(child);
+		if (rc < 0)
 			return rc;
-		}
 	}
 
 	return 0;

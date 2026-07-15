@@ -162,16 +162,6 @@ define Device/ubnt_usw-aggregation
 endef
 TARGET_DEVICES += ubnt_usw-aggregation
 
-define Device/ubnt_usw-pro-max-24-poe
-  SOC := rtl9302
-  DEVICE_VENDOR := Ubiquiti
-  DEVICE_MODEL := UniFi USW Pro Max 24 PoE
-  IMAGE_SIZE := 30272k
-  DEVICE_PACKAGES := kmod-hwmon-adt7475
-  $(Device/kernel-lzma)
-endef
-TARGET_DEVICES += ubnt_usw-pro-max-24-poe
-
 define Device/vimin_vm-s100-0800ms
   SOC := rtl9303
   UIMAGE_MAGIC := 0x93000000
@@ -371,6 +361,6 @@ TARGET_DEVICES += zyxel_xmg1915-10e
 define Device/zyxel_xmg1915-10ep
   DEVICE_MODEL := XMG1915-10EP
   $(Device/zyxel_xmg1915)
-  DEVICE_PACKAGES := realtek-poe
+  DEVICE_PACKAGES += kmod-pse-realtek-mcu-uart
 endef
 TARGET_DEVICES += zyxel_xmg1915-10ep
