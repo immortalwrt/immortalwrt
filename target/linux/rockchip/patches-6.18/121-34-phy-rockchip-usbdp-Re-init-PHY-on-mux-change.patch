@@ -1,0 +1,33 @@
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v13 34/35] phy: rockchip: usbdp: Re-init PHY on mux change
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Tue, 14 Jul 2026 21:26:35 +0200
+Message-Id: <20260714-rockchip-usbdp-cleanup-v13-34-6cb3e769d4c5@collabora.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Ensure that the right part of the PHY are powered up when the
+mode changes. This ensures the PHY is re-initialized in the
+following two scenarios, which are currently broken:
+
+ - cable orientation changes without DP being involved
+ - switching from DP-only into a mode with USB support
+
+Fixes: 2f70bbddeb45 ("phy: rockchip: add usbdp combo phy driver")
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ drivers/phy/rockchip/phy-rockchip-usbdp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/phy/rockchip/phy-rockchip-usbdp.c
++++ b/drivers/phy/rockchip/phy-rockchip-usbdp.c
+@@ -1392,7 +1392,7 @@ static int rk_udphy_typec_mux_set(struct
+ 
+ 	rk_udphy_set_typec_state(udphy, state->mode);
+ 
+-	return 0;
++	return rk_udphy_update_power_state(udphy);
+ }
+ 
+ static void rk_udphy_typec_mux_unregister(void *data)

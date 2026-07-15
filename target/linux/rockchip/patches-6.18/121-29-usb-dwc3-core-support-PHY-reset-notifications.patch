@@ -1,0 +1,214 @@
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v13 29/35] usb: dwc3: core: support PHY reset notifications
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Tue, 14 Jul 2026 21:26:30 +0200
+Message-Id: <20260714-rockchip-usbdp-cleanup-v13-29-6cb3e769d4c5@collabora.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+On recent Rockchip platforms (at least RK3588 & RK3576), DWC3 IP is used
+with a USBDP PHY providing USB3 and DP. This PHY needs to be reset when
+the mode changes, which may happen when plugging in different USB-C
+devices.
+
+If the USBDP PHY resets with the DWC3 IP running, its internal state
+corrupts resulting in the USBDP PHY not being able to lock some PLL
+clocks, which effectively renders USB3 unusable.
+
+To fix the issue this adds handling for the new PHY framework reset
+notifications, which will assert PHYSOFTRST before the actual PHY
+is disabled and will deassert it once the PHY returns.
+
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ drivers/usb/dwc3/core.c | 101 ++++++++++++++++++++++++++++++++++++++++++++++++
+ drivers/usb/dwc3/core.h |  18 +++++++++
+ 2 files changed, 119 insertions(+)
+
+--- a/drivers/usb/dwc3/core.c
++++ b/drivers/usb/dwc3/core.c
+@@ -30,6 +30,7 @@
+ #include <linux/pinctrl/devinfo.h>
+ #include <linux/reset.h>
+ #include <linux/bitfield.h>
++#include <linux/phy/phy.h>
+ 
+ #include <linux/usb/ch9.h>
+ #include <linux/usb/gadget.h>
+@@ -865,6 +866,103 @@ err_exit_usb2_phy:
+ 	return ret;
+ }
+ 
++static int dwc3_usb3_phy_notify(struct notifier_block *nb,
++				unsigned long action, void *data)
++{
++	struct dwc3_phy_nb *pnb = container_of(nb, struct dwc3_phy_nb, nb);
++	struct dwc3 *dwc = pnb->dwc;
++	int port = pnb->port_index;
++	unsigned long flags;
++	u32 reg;
++	int ret;
++
++	switch (action) {
++	case PHY_NOTIFY_PRE_RESET:
++		/*
++		 * If already suspended, the resume path will reinit GUSB3PIPECTL
++		 * via dwc3_core_init(). A forced resume is not possible as that
++		 * would call phy_init() resulting in a deadlock. Due to the
++		 * phy_init() in the resume path there is also no need to block
++		 * async RPM resume on our side, since the PHY synchronizes it
++		 * for us.
++		 *
++		 * pm_runtime_get_if_active() returns 0 when suspended (skip),
++		 * 1 when active (ref held), or -EINVAL when PM is disabled
++		 * (device always active). In the -EINVAL case PM ref counting
++		 * is a no-op, so the unconditional put in POST_RESET is safe.
++		 */
++		ret = pm_runtime_get_if_active(dwc->dev);
++		if (!ret)
++			return NOTIFY_OK;
++
++		/*
++		 * Assert USB3 PHY soft reset within DWC3 before the external
++		 * PHY resets. This disconnects the PIPE interface, preventing
++		 * the DWC3 from interfering with PHY reinitialization and
++		 * avoiding LCPLL lock failures.
++		 */
++		spin_lock_irqsave(&dwc->lock, flags);
++		dwc->phy_reset_active |= BIT(port);
++		reg = dwc3_readl(dwc, DWC3_GUSB3PIPECTL(port));
++		reg |= DWC3_GUSB3PIPECTL_PHYSOFTRST;
++		dwc3_writel(dwc, DWC3_GUSB3PIPECTL(port), reg);
++		spin_unlock_irqrestore(&dwc->lock, flags);
++		break;
++
++	case PHY_NOTIFY_POST_RESET:
++		spin_lock_irqsave(&dwc->lock, flags);
++		if (!(dwc->phy_reset_active & BIT(port))) {
++			spin_unlock_irqrestore(&dwc->lock, flags);
++			return NOTIFY_OK;
++		}
++
++		dwc->phy_reset_active &= ~BIT(port);
++
++		/*
++		 * Deassert PHY soft reset to reconnect the PIPE interface
++		 * after PHY reinitialization.
++		 */
++		reg = dwc3_readl(dwc, DWC3_GUSB3PIPECTL(port));
++		reg &= ~DWC3_GUSB3PIPECTL_PHYSOFTRST;
++		dwc3_writel(dwc, DWC3_GUSB3PIPECTL(port), reg);
++		spin_unlock_irqrestore(&dwc->lock, flags);
++
++		pm_runtime_put_autosuspend(dwc->dev);
++		break;
++	}
++
++	return NOTIFY_OK;
++}
++
++static void dwc3_phy_register_notifiers(struct dwc3 *dwc)
++{
++	int i;
++
++	for (i = 0; i < dwc->num_usb3_ports; i++) {
++		dwc->usb3_phy_nb[i].nb.notifier_call = dwc3_usb3_phy_notify;
++		dwc->usb3_phy_nb[i].dwc = dwc;
++		dwc->usb3_phy_nb[i].port_index = i;
++		phy_register_notifier(dwc->usb3_generic_phy[i],
++				      &dwc->usb3_phy_nb[i].nb);
++	}
++}
++
++static void dwc3_phy_unregister_notifiers(struct dwc3 *dwc)
++{
++	int i;
++
++	for (i = 0; i < dwc->num_usb3_ports; i++)
++		phy_unregister_notifier(dwc->usb3_generic_phy[i],
++					&dwc->usb3_phy_nb[i].nb);
++
++	/* Release any PM references from in-flight resets */
++	for (i = 0; i < dwc->num_usb3_ports; i++) {
++		if (dwc->phy_reset_active & BIT(i))
++			pm_runtime_put_autosuspend(dwc->dev);
++	}
++	dwc->phy_reset_active = 0;
++}
++
+ static void dwc3_phy_exit(struct dwc3 *dwc)
+ {
+ 	int i;
+@@ -2316,6 +2414,7 @@ int dwc3_core_probe(const struct dwc3_pr
+ 
+ 	dwc3_check_params(dwc);
+ 	dwc3_debugfs_init(dwc);
++	dwc3_phy_register_notifiers(dwc);
+ 
+ 	ret = dwc3_core_init_mode(dwc);
+ 	if (ret)
+@@ -2328,6 +2427,7 @@ int dwc3_core_probe(const struct dwc3_pr
+ 	return 0;
+ 
+ err_exit_debugfs:
++	dwc3_phy_unregister_notifiers(dwc);
+ 	dwc3_debugfs_exit(dwc);
+ 	dwc3_event_buffers_cleanup(dwc);
+ 	dwc3_phy_power_off(dwc);
+@@ -2384,6 +2484,7 @@ void dwc3_core_remove(struct dwc3 *dwc)
+ 
+ 	dwc3_core_exit_mode(dwc);
+ 	dwc3_debugfs_exit(dwc);
++	dwc3_phy_unregister_notifiers(dwc);
+ 
+ 	dwc3_core_exit(dwc);
+ 	dwc3_ulpi_exit(dwc);
+--- a/drivers/usb/dwc3/core.h
++++ b/drivers/usb/dwc3/core.h
+@@ -11,6 +11,7 @@
+ #ifndef __DRIVERS_USB_DWC3_CORE_H
+ #define __DRIVERS_USB_DWC3_CORE_H
+ 
++#include <linux/atomic.h>
+ #include <linux/device.h>
+ #include <linux/spinlock.h>
+ #include <linux/mutex.h>
+@@ -1001,6 +1002,20 @@ struct dwc3_glue_ops {
+ 	void	(*pre_run_stop)(struct dwc3 *dwc, bool is_on);
+ };
+ 
++struct dwc3;
++
++/**
++ * struct dwc3_phy_nb - wrapper for PHY notifier block
++ * @nb: notifier block
++ * @dwc: back-pointer to the DWC3 controller
++ * @port_index: USB3 port index this notifier is registered for
++ */
++struct dwc3_phy_nb {
++	struct notifier_block	nb;
++	struct dwc3		*dwc;
++	u8			port_index;
++};
++
+ /**
+  * struct dwc3 - representation of our controller
+  * @drd_work: workqueue used for role swapping
+@@ -1064,6 +1079,7 @@ struct dwc3_glue_ops {
+  * @usb3_phy: pointer to USB3 PHY
+  * @usb2_generic_phy: pointer to array of USB2 PHYs
+  * @usb3_generic_phy: pointer to array of USB3 PHYs
++ * @usb3_phy_nb: notifier blocks for USB3 PHY reset events
+  * @num_usb2_ports: number of USB2 ports
+  * @num_usb3_ports: number of USB3 ports
+  * @phys_ready: flag to indicate that PHYs are ready
+@@ -1224,6 +1240,8 @@ struct dwc3 {
+ 
+ 	struct phy		*usb2_generic_phy[DWC3_USB2_MAX_PORTS];
+ 	struct phy		*usb3_generic_phy[DWC3_USB3_MAX_PORTS];
++	struct dwc3_phy_nb	usb3_phy_nb[DWC3_USB3_MAX_PORTS];
++	u8			phy_reset_active;
+ 
+ 	u8			num_usb2_ports;
+ 	u8			num_usb3_ports;

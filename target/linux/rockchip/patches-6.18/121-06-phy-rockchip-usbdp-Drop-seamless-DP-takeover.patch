@@ -1,0 +1,86 @@
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v13 6/35] phy: rockchip: usbdp: Drop seamless DP takeover
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+Date: Tue, 14 Jul 2026 21:26:07 +0200
+Message-Id: <20260714-rockchip-usbdp-cleanup-v13-6-6cb3e769d4c5@collabora.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Right now the DRM drivers do not support seamless DP takeover and I'm
+I'm not aware of any bootloader implementing this feature either.
+
+In any case this feature would be limited to boards using the USBDP PHY
+for a DP or eDP connection instead of the more commonly USB-C connector.
+With USB-C's DP AltMode a seamless DP takeover requires handing over the
+state of the TCPM state machine from the bootloader to the kernel. This
+in turn requires a huge amount of work to keep the state machine
+implementations synchronized. It's very unlikely we will see somebody
+implementing that in the foreseeable future.
+
+As the current code is obviously buggy and untested, let's simply drop
+support for seamless DP takeover. It can be re-implemented cleanly once
+somebody adds all missing bits.
+
+Fixes: 2f70bbddeb45 ("phy: rockchip: add usbdp combo phy driver")
+Reported-by: Sashiko <sashiko-bot@kernel.org>
+Closes: https://lore.kernel.org/linux-phy/20260612164107.C7DB21F000E9@smtp.kernel.org/
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ drivers/phy/rockchip/phy-rockchip-usbdp.c | 31 -------------------------------
+ 1 file changed, 31 deletions(-)
+
+--- a/drivers/phy/rockchip/phy-rockchip-usbdp.c
++++ b/drivers/phy/rockchip/phy-rockchip-usbdp.c
+@@ -452,11 +452,6 @@ static int rk_udphy_reset_assert_all(str
+ 	return reset_control_bulk_assert(udphy->num_rsts, udphy->rsts);
+ }
+ 
+-static int rk_udphy_reset_deassert_all(struct rk_udphy *udphy)
+-{
+-	return reset_control_bulk_deassert(udphy->num_rsts, udphy->rsts);
+-}
+-
+ static int rk_udphy_reset_deassert(struct rk_udphy *udphy, char *name)
+ {
+ 	struct reset_control_bulk_data *list = udphy->rsts;
+@@ -924,28 +919,6 @@ static int rk_udphy_parse_lane_mux_data(
+ 	return 0;
+ }
+ 
+-static int rk_udphy_get_initial_status(struct rk_udphy *udphy)
+-{
+-	int ret;
+-	u32 value;
+-
+-	ret = clk_bulk_prepare_enable(udphy->num_clks, udphy->clks);
+-	if (ret) {
+-		dev_err(udphy->dev, "failed to enable clk\n");
+-		return ret;
+-	}
+-
+-	rk_udphy_reset_deassert_all(udphy);
+-
+-	regmap_read(udphy->pma_regmap, CMN_LANE_MUX_AND_EN_OFFSET, &value);
+-	if (FIELD_GET(CMN_DP_LANE_MUX_ALL, value) && FIELD_GET(CMN_DP_LANE_EN_ALL, value))
+-		udphy->status = UDPHY_MODE_DP;
+-	else
+-		rk_udphy_disable(udphy);
+-
+-	return 0;
+-}
+-
+ static int rk_udphy_parse_dt(struct rk_udphy *udphy)
+ {
+ 	struct device *dev = udphy->dev;
+@@ -1495,10 +1468,6 @@ static int rk_udphy_probe(struct platfor
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = rk_udphy_get_initial_status(udphy);
+-	if (ret)
+-		return ret;
+-
+ 	mutex_init(&udphy->mutex);
+ 	platform_set_drvdata(pdev, udphy);
+ 
