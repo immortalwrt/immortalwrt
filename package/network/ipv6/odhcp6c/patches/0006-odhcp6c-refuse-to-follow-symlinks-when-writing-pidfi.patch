@@ -1,0 +1,52 @@
+From 2b2aeabbb9550d9617878f32b6ed1ed2a38e33ad Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sat, 23 May 2026 14:20:53 +0200
+Subject: odhcp6c: refuse to follow symlinks when writing pidfile
+
+odhcp6c is generally run as root and writes its pidfile with
+fopen(pidfile, "w"), which calls open(O_WRONLY | O_CREAT | O_TRUNC)
+underneath. open() follows symlinks by default, so if an attacker (or
+a broken init script) can place a symlink at the pidfile path before
+odhcp6c starts, the symlink target gets truncated and overwritten with
+a single line containing the daemon's PID. With /var/run sometimes
+shared between services this gives a primitive for trashing arbitrary
+root-owned files, plus the file is created with the symlink target's
+ownership instead of root:root.
+
+Use open() with O_NOFOLLOW | O_CLOEXEC explicitly and fdopen() the
+result; the file is still truncated and replaced when it is a regular
+file, but a symlink in the path causes open() to fail with ELOOP and
+we simply skip pidfile creation rather than clobbering the target.
+
+Assisted-by: Claude:claude-opus-4-7
+Link: https://github.com/openwrt/odhcp6c/pull/160
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 0a19052dc9fb73530adeff9b61edb3a35f15bc2a)
+---
+ src/odhcp6c.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
+
+--- a/src/odhcp6c.c
++++ b/src/odhcp6c.c
+@@ -454,10 +454,17 @@ int main(_unused int argc, char* const a
+ 			pidfile = (char*)buf;
+ 		}
+ 
+-		FILE *fp = fopen(pidfile, "w");
+-		if (fp) {
+-			fprintf(fp, "%i\n", getpid());
+-			fclose(fp);
++		int pidfd = open(pidfile,
++				O_WRONLY | O_CREAT | O_TRUNC | O_NOFOLLOW | O_CLOEXEC,
++				0644);
++		if (pidfd >= 0) {
++			FILE *fp = fdopen(pidfd, "w");
++			if (fp) {
++				fprintf(fp, "%i\n", getpid());
++				fclose(fp);
++			} else {
++				close(pidfd);
++			}
+ 		}
+ 	}
+ 

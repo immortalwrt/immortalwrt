@@ -1,0 +1,54 @@
+From 760b53c7400c2b60cf48723509fc123843ad07f4 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sat, 23 May 2026 14:21:37 +0200
+Subject: odhcp6c: skip malformed /proc/net/if_inet6 entries
+
+The validation loop in odhcp6c_addr_in_scope() walked addr_buf
+checking each character with isxdigit() / !isupper(), but discarded
+the result: 'i' was a local that went out of scope at the end of the
+loop, and execution fell straight into the decode loop regardless. If
+the kernel ever produced unexpected characters (or someone bind-mounts
+a non-procfs over /proc/net/if_inet6), index(hex, c) would return NULL
+and the subsequent 'NULL - hex' subtraction is undefined behaviour;
+the address bytes were then derived from arbitrary pointer arithmetic.
+
+Track the validation outcome explicitly, also reject inputs whose
+length isn't 32 hex characters (one IPv6 address worth), and continue
+to the next /proc line on any failure so the decode loop only sees
+well-formed inputs.
+
+Assisted-by: Claude:claude-opus-4-7
+Link: https://github.com/openwrt/odhcp6c/pull/160
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit d6c2fbdc255c143afc4d2c670f602c9cc9308869)
+---
+ src/odhcp6c.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
+
+--- a/src/odhcp6c.c
++++ b/src/odhcp6c.c
+@@ -940,13 +940,20 @@ bool odhcp6c_addr_in_scope(const struct
+ 			(flags & (IFA_F_DADFAILED | IFA_F_TENTATIVE | IFA_F_DEPRECATED)))
+ 			continue;
+ 
+-		for (i = 0; i < strlen(addr_buf); i++) {
+-			if (!isxdigit(addr_buf[i]) || isupper(addr_buf[i]))
+-				break;
++		size_t addr_len = strlen(addr_buf);
++		bool valid = (addr_len == 2 * sizeof(inet6_addr.s6_addr));
++
++		for (i = 0; valid && i < addr_len; i++) {
++			if (!isxdigit((unsigned char)addr_buf[i]) ||
++			    isupper((unsigned char)addr_buf[i]))
++				valid = false;
+ 		}
+ 
++		if (!valid)
++			continue;
++
+ 		memset(&inet6_addr, 0, sizeof(inet6_addr));
+-		for (i = 0; i < (strlen(addr_buf) / 2); i++) {
++		for (i = 0; i < (addr_len / 2); i++) {
+ 			unsigned char byte;
+ 			static const char hex[] = "0123456789abcdef";
+ 			byte = ((index(hex, addr_buf[i * 2]) - hex) << 4) |
