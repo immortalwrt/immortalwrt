@@ -544,12 +544,16 @@ uc_bpf_map_iter_next_int(uc_vm_t *vm, size_t nargs)
 	if (!iter->has_next)
 		return NULL;
 
-	if (iter->key_size == 4)
-		intval = *(uint32_t *)iter->key;
-	else if (iter->key_size == 8)
-		intval = *(uint64_t *)iter->key;
-	else
+	if (iter->key_size == 4) {
+		uint32_t val32;
+
+		memcpy(&val32, iter->key, sizeof(val32));
+		intval = val32;
+	} else if (iter->key_size == 8) {
+		memcpy(&intval, iter->key, sizeof(intval));
+	} else {
 		return NULL;
+	}
 
 	rv = ucv_int64_new(intval);
 	iter->has_next = !bpf_map_get_next_key(iter->fd, &iter->key, &iter->key);
