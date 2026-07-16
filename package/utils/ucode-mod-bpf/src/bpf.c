@@ -339,23 +339,19 @@ uc_bpf_module_get_program(uc_vm_t *vm, size_t nargs)
 }
 
 static void *
-uc_bpf_map_arg(uc_value_t *val, const char *kind, unsigned int size)
+uc_bpf_map_arg(uc_value_t *val, const char *kind, unsigned int size,
+	       uint64_t *val_int)
 {
-	static union {
-		uint32_t u32;
-		uint64_t u64;
-	} val_int;
-
 	switch (ucv_type(val)) {
 	case UC_INTEGER:
 		if (size == 4)
-			val_int.u32 = ucv_int64_get(val);
+			*(uint32_t *)val_int = ucv_int64_get(val);
 		else if (size == 8)
-			val_int.u64 = ucv_int64_get(val);
+			*val_int = ucv_int64_get(val);
 		else
 			break;
 
-		return &val_int;
+		return val_int;
 	case UC_STRING:
 		if (size != ucv_string_length(val))
 			break;
@@ -373,12 +369,13 @@ uc_bpf_map_get(uc_vm_t *vm, size_t nargs)
 {
 	struct uc_bpf_map *map = uc_fn_thisval("bpf.map");
 	uc_value_t *a_key = uc_fn_arg(0);
+	uint64_t key_int;
 	void *key, *val;
 
 	if (!map)
 		err_return(EINVAL, NULL);
 
-	key = uc_bpf_map_arg(a_key, "key", map->key_size);
+	key = uc_bpf_map_arg(a_key, "key", map->key_size, &key_int);
 	if (!key)
 		return NULL;
 
@@ -396,17 +393,18 @@ uc_bpf_map_set(uc_vm_t *vm, size_t nargs)
 	uc_value_t *a_key = uc_fn_arg(0);
 	uc_value_t *a_val = uc_fn_arg(1);
 	uc_value_t *a_flags = uc_fn_arg(2);
+	uint64_t key_int, val_int;
 	uint64_t flags;
 	void *key, *val;
 
 	if (!map)
 		err_return(EINVAL, NULL);
 
-	key = uc_bpf_map_arg(a_key, "key", map->key_size);
+	key = uc_bpf_map_arg(a_key, "key", map->key_size, &key_int);
 	if (!key)
 		return NULL;
 
-	val = uc_bpf_map_arg(a_val, "value", map->val_size);
+	val = uc_bpf_map_arg(a_val, "value", map->val_size, &val_int);
 	if (!val)
 		return NULL;
 
@@ -430,12 +428,13 @@ uc_bpf_map_delete(uc_vm_t *vm, size_t nargs)
 	uc_value_t *a_key = uc_fn_arg(0);
 	uc_value_t *a_return = uc_fn_arg(1);
 	void *key, *val = NULL;
+	uint64_t key_int;
 	int ret;
 
 	if (!map)
 		err_return(EINVAL, NULL);
 
-	key = uc_bpf_map_arg(a_key, "key", map->key_size);
+	key = uc_bpf_map_arg(a_key, "key", map->key_size, &key_int);
 	if (!key)
 		return NULL;
 
