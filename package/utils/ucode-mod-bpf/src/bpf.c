@@ -680,9 +680,7 @@ out:
 	return TRUE;
 
 error:
-	if (fd >= 0)
-		err_return(ENOENT, NULL);
-	return NULL;
+	err_return(errno, NULL);
 }
 
 static uc_value_t *
