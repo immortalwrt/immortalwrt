@@ -220,20 +220,11 @@ uc_bpf_prog_create(uc_vm_t *vm, uc_value_t *mod, int fd, bool close)
 }
 
 static uc_value_t *
-uc_bpf_open_map(uc_vm_t *vm, size_t nargs)
+uc_bpf_open_map_fd(uc_vm_t *vm, int fd)
 {
 	struct bpf_map_info info;
-	uc_value_t *path = uc_fn_arg(0);
 	__u32 len = sizeof(info);
 	int err;
-	int fd;
-
-	if (ucv_type(path) != UC_STRING)
-		err_return(EINVAL, "module path");
-
-	fd = bpf_obj_get(ucv_string_get(path));
-	if (fd < 0)
-		err_return(errno, NULL);
 
 	err = bpf_obj_get_info_by_fd(fd, &info, &len);
 	if (err) {
@@ -246,6 +237,38 @@ uc_bpf_open_map(uc_vm_t *vm, size_t nargs)
 }
 
 static uc_value_t *
+uc_bpf_open_map(uc_vm_t *vm, size_t nargs)
+{
+	uc_value_t *path = uc_fn_arg(0);
+	int fd;
+
+	if (ucv_type(path) != UC_STRING)
+		err_return(EINVAL, "module path");
+
+	fd = bpf_obj_get(ucv_string_get(path));
+	if (fd < 0)
+		err_return(errno, NULL);
+
+	return uc_bpf_open_map_fd(vm, fd);
+}
+
+static uc_value_t *
+uc_bpf_open_map_id(uc_vm_t *vm, size_t nargs)
+{
+	uc_value_t *id = uc_fn_arg(0);
+	int fd;
+
+	if (ucv_type(id) != UC_INTEGER)
+		err_return(EINVAL, "map id");
+
+	fd = bpf_map_get_fd_by_id(ucv_int64_get(id));
+	if (fd < 0)
+		err_return(errno, NULL);
+
+	return uc_bpf_open_map_fd(vm, fd);
+}
+
+static uc_value_t *
 uc_bpf_open_program(uc_vm_t *vm, size_t nargs)
 {
 	uc_value_t *path = uc_fn_arg(0);
@@ -255,6 +278,22 @@ uc_bpf_open_program(uc_vm_t *vm, size_t nargs)
 		err_return(EINVAL, "module path");
 
 	fd = bpf_obj_get(ucv_string_get(path));
+	if (fd < 0)
+		err_return(errno, NULL);
+
+	return uc_bpf_prog_create(vm, NULL, fd, true);
+}
+
+static uc_value_t *
+uc_bpf_open_program_id(uc_vm_t *vm, size_t nargs)
+{
+	uc_value_t *id = uc_fn_arg(0);
+	int fd;
+
+	if (ucv_type(id) != UC_INTEGER)
+		err_return(EINVAL, "program id");
+
+	fd = bpf_prog_get_fd_by_id(ucv_int64_get(id));
 	if (fd < 0)
 		err_return(errno, NULL);
 
@@ -362,6 +401,22 @@ uc_bpf_map_arg(uc_value_t *val, const char *kind, unsigned int size,
 			break;
 
 		return ucv_string_get(val);
+	case UC_RESOURCE: {
+		struct uc_bpf_fd *f;
+
+		f = ucv_resource_data(val, "bpf.map");
+		if (!f)
+			f = ucv_resource_data(val, "bpf.program");
+		if (!f)
+			err_return(EINVAL, "%s type", kind);
+
+		if (size != 4)
+			break;
+
+		*(uint32_t *)val_int = f->fd;
+
+		return val_int;
+	}
 	default:
 		err_return(EINVAL, "%s type", kind);
 	}
@@ -962,7 +1017,9 @@ static const uc_function_list_t global_fns[] = {
 	{ "set_debug_handler",		uc_bpf_set_debug_handler },
 	{ "open_module",		uc_bpf_open_module },
 	{ "open_map",			uc_bpf_open_map },
+	{ "open_map_id",		uc_bpf_open_map_id },
 	{ "open_program",		uc_bpf_open_program },
+	{ "open_program_id",		uc_bpf_open_program_id },
 	{ "tc_detach",			uc_bpf_tc_detach },
 };
 
