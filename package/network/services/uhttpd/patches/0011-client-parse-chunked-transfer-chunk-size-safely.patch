@@ -1,0 +1,60 @@
+From 478e959e05e1a5fdecb49fee2ae54f265bb074c2 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Tue, 31 Mar 2026 22:56:47 +0200
+Subject: client: parse chunked transfer chunk size safely
+
+The chunk-size hex field is parsed into content_length (int). The
+previous strtoul could wrap negative-looking inputs into huge
+positive values; switching to strtol exposes negatives but leaves
+the 64-bit INT_MAX overflow window open, where a long value above
+INT_MAX truncates implementation-defined when narrowed.
+
+Parse into a long, check errno for strtol overflow, and reject any
+chunk size above INT_MAX. On malformed or out-of-range input the
+chunked transfer state is torn down as before.
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 9404e6c62bb7dc452a294a62c33eb18beb9ef433)
+---
+ client.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+--- a/client.c
++++ b/client.c
+@@ -457,6 +457,7 @@ void client_poll_post_data(struct client
+ 
+ 	while (1) {
+ 		char *sep;
++		long chunk_len;
+ 		int offset = 0;
+ 		int cur_len;
+ 
+@@ -492,18 +493,22 @@ void client_poll_post_data(struct client
+ 
+ 		*sep = 0;
+ 
+-		r->content_length = strtoul(buf + offset, &sep, 16);
+-		if (r->transfer_chunked < 2)
+-			r->transfer_chunked++;
+-		ustream_consume(cl->us, sep + 2 - buf);
++		errno = 0;
++		chunk_len = strtol(buf + offset, &sep, 16);
+ 
+ 		/* invalid chunk length */
+-		if ((sep && *sep) || r->content_length < 0) {
++		if ((sep && *sep) || errno || chunk_len < 0 || chunk_len > INT_MAX) {
++			ustream_consume(cl->us, sep + 2 - buf);
+ 			r->content_length = 0;
+ 			r->transfer_chunked = 0;
+ 			break;
+ 		}
+ 
++		if (r->transfer_chunked < 2)
++			r->transfer_chunked++;
++		ustream_consume(cl->us, sep + 2 - buf);
++		r->content_length = (int)chunk_len;
++
+ 		/* empty chunk == eof */
+ 		if (!r->content_length) {
+ 			r->transfer_chunked = false;

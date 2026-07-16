@@ -1,0 +1,53 @@
+From b81ef5a9b430dbe3829d16a04bc10222ab69a53a Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Tue, 31 Mar 2026 22:56:15 +0200
+Subject: client: parse Content-Length safely
+
+content_length is declared int but the previous strtoul cast silently
+wrapped negative inputs into huge positive values, making the < 0
+guard unreachable. Switching to strtol exposes negatives, but on
+64-bit platforms a value above INT_MAX still passes strtol's own
+range check and truncates implementation-defined when narrowed to int.
+
+Parse into a long, check errno for strtol overflow, and reject any
+value above INT_MAX or below zero before assigning. The error path
+returns 400 Bad Request as before.
+
+Pull in errno.h and limits.h for the new checks.
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 2c869c094c25e1b6b7c1ba786f22280a6c153447)
+---
+ client.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+--- a/client.c
++++ b/client.c
+@@ -19,6 +19,8 @@
+ 
+ #include <libubox/blobmsg.h>
+ #include <ctype.h>
++#include <errno.h>
++#include <limits.h>
+ 
+ #include "uhttpd.h"
+ #include "tls.h"
+@@ -391,11 +393,15 @@ static void client_parse_header(struct c
+ 			return;
+ 		}
+ 	} else if (!strcmp(data, "content-length")) {
+-		r->content_length = strtoul(val, &err, 10);
+-		if ((err && *err) || r->content_length < 0) {
++		long length;
++
++		errno = 0;
++		length = strtol(val, &err, 10);
++		if ((err && *err) || errno || length < 0 || length > INT_MAX) {
+ 			uh_header_error(cl, 400, "Bad Request");
+ 			return;
+ 		}
++		r->content_length = (int)length;
+ 	} else if (!strcmp(data, "transfer-encoding")) {
+ 		if (!strcmp(val, "chunked"))
+ 			r->transfer_chunked = true;

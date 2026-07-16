@@ -1,0 +1,46 @@
+From 62708e5be152027df9f0a844f6a6090a56c166d2 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sun, 3 May 2026 22:54:03 +0200
+Subject: auth: do not accept stored crypt hash as plaintext password
+
+uh_auth_check first compared the supplied password to the stored
+credential with strcmp() and only fell through to crypt() on
+mismatch. The strcmp branch is meant to support plaintext
+credentials in /etc/httpd.conf, but it also matched when the stored
+credential is a crypt hash and the request supplies that exact hash
+as the password.
+
+When the password line uses the '$p$<user>' indirection, realm->pass
+is populated from /etc/shadow or /etc/passwd. Anyone who manages to
+read the hash (a backup, an unrelated disclosure bug, an offline
+copy) can therefore authenticate by sending the hash itself,
+bypassing the need to recover the underlying password.
+
+Skip the plaintext compare when realm->pass starts with '$', which
+is the marker for every modular crypt(3) format (md5crypt, sha256,
+sha512, bcrypt, yescrypt, ...). Plaintext credentials configured
+via httpd.conf still work; stored hashes are only honored through
+crypt().
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit b33ca5d377189f0fa7f6ee1b325ec08078a64c91)
+---
+ auth.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+--- a/auth.c
++++ b/auth.c
+@@ -125,8 +125,11 @@ bool uh_auth_check(struct client *cl, co
+ 	if (!req->realm)
+ 		return true;
+ 
++	/* The leading '$' check distinguishes a stored plaintext password from a
++	 * modern crypt(3) hash ($id$salt$...). It blocks the case where a client
++	 * sends the stored hash itself as the password and matches via strcmp. */
+ 	if (user_match &&
+-	    (!strcmp(pass, realm->pass) ||
++	    ((realm->pass[0] != '$' && !strcmp(pass, realm->pass)) ||
+ 	     !strcmp(crypt(pass, realm->pass), realm->pass))) {
+ 		if (uptr)
+ 			*uptr = user;

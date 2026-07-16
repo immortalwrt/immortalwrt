@@ -1,0 +1,40 @@
+From 34460b8211d676ef1b9f40d6b775c5e112933690 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sat, 13 Jun 2026 02:40:40 +0200
+Subject: client: close connection on invalid chunk length
+
+When client_poll_post_data() encounters an invalid chunk-length line it
+consumes the chunk-size line and clears content_length and
+transfer_chunked, which makes the request look complete. The remaining
+buffered body was neither drained nor was connection_close set, so the
+keep-alive parser re-entered CLIENT_STATE_INIT and parsed the leftover
+body bytes as a new HTTP request (request smuggling). An oversized
+chunk length (e.g. 80000000) can be used to align an embedded request
+on the chunk boundary.
+
+Force connection_close in the invalid chunk-length branch so the
+out-of-sync connection is torn down instead of being reused.
+
+Link: https://github.com/openwrt/uhttpd/security/advisories/GHSA-p55c-rmhc-qfm5
+Reported-by: @dyingc
+Assisted-by: Claude:claude-opus-4-8
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit b78f518478794e16ba3568fc1258e40bf3e8eb3b)
+---
+ client.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+--- a/client.c
++++ b/client.c
+@@ -509,6 +509,11 @@ void client_poll_post_data(struct client
+ 			ustream_consume(cl->us, sep + 2 - buf);
+ 			r->content_length = 0;
+ 			r->transfer_chunked = 0;
++			/* The remaining buffered body is left unconsumed and its
++			 * framing is now unknown. Close the connection so the
++			 * leftover bytes are not reparsed as the next request
++			 * (request smuggling). */
++			r->connection_close = true;
+ 			break;
+ 		}
+ 

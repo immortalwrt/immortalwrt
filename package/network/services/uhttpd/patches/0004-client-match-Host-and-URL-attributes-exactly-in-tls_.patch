@@ -1,0 +1,44 @@
+From ca7e659b807864b713ea449cd46110ac28a8e389 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sun, 3 May 2026 22:49:47 +0200
+Subject: client: match Host and URL attributes exactly in tls_redirect_check
+
+The TLS redirect logic walked the header blob with strncmp(name,
+\"host\", 4) and strncmp(name, \"URL\", 3), so any header whose
+lowercased name started with \"host\" (for example \"host-foo\" or
+\"hostess\") would be picked up as the request authority, and any
+attribute starting with \"URL\" would be picked up as the request
+target.
+
+The Host value is then echoed verbatim into the Location header of
+the 307 response. A client without a real Host header but with
+\"Hostess: attacker.example\" would therefore receive a redirect
+pointing at the attacker, turning the TLS-redirect feature into an
+open redirect.
+
+Use strcmp so only the canonical \"host\" header (lowercased by
+client_parse_header) and the synthetic \"URL\" attribute set by
+client_parse_request can match.
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 07f0afb3bf9160b90111009829676da1758060ff)
+---
+ client.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- a/client.c
++++ b/client.c
+@@ -294,10 +294,10 @@ static bool tls_redirect_check(struct cl
+ 		return true;
+ 
+ 	blob_for_each_attr(cur, cl->hdr.head, rem) {
+-		if (!strncmp(blobmsg_name(cur), "host", 4))
++		if (!strcmp(blobmsg_name(cur), "host"))
+ 			host = blobmsg_get_string(cur);
+ 
+-		if (!strncmp(blobmsg_name(cur), "URL", 3))
++		if (!strcmp(blobmsg_name(cur), "URL"))
+ 			url = blobmsg_get_string(cur);
+ 
+ 		if (url && host)
