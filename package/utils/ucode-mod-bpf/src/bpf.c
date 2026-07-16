@@ -32,6 +32,7 @@ struct uc_bpf_fd {
 
 struct uc_bpf_map {
 	struct uc_bpf_fd fd; /* must be first */
+	unsigned int type;
 	unsigned int key_size, val_size;
 };
 
@@ -187,8 +188,8 @@ uc_bpf_open_module(uc_vm_t *vm, size_t nargs)
 }
 
 static uc_value_t *
-uc_bpf_map_create(uc_vm_t *vm, uc_value_t *mod, int fd, unsigned int key_size,
-		  unsigned int val_size, bool close)
+uc_bpf_map_create(uc_vm_t *vm, uc_value_t *mod, int fd, unsigned int type,
+		  unsigned int key_size, unsigned int val_size, bool close)
 {
 	struct uc_bpf_map *uc_map;
 	uc_value_t *res;
@@ -196,6 +197,7 @@ uc_bpf_map_create(uc_vm_t *vm, uc_value_t *mod, int fd, unsigned int key_size,
 	res = ucv_resource_create_ex(vm, "bpf.map", (void **)&uc_map, 1, sizeof(*uc_map));
 	ucv_resource_value_set(res, 0, ucv_get(mod));
 	uc_map->fd.fd = fd;
+	uc_map->type = type;
 	uc_map->key_size = key_size;
 	uc_map->val_size = val_size;
 	uc_map->fd.close = close;
@@ -239,7 +241,8 @@ uc_bpf_open_map(uc_vm_t *vm, size_t nargs)
 		err_return(errno, NULL);
 	}
 
-	return uc_bpf_map_create(vm, NULL, fd, info.key_size, info.value_size, true);
+	return uc_bpf_map_create(vm, NULL, fd, info.type, info.key_size,
+				 info.value_size, true);
 }
 
 static uc_value_t *
@@ -295,7 +298,9 @@ uc_bpf_module_get_map(uc_vm_t *vm, size_t nargs)
 	if (fd < 0)
 		err_return(EINVAL, NULL);
 
-	return uc_bpf_map_create(vm, _uc_fn_this_res(vm), fd, bpf_map__key_size(map), bpf_map__value_size(map), false);
+	return uc_bpf_map_create(vm, _uc_fn_this_res(vm), fd, bpf_map__type(map),
+				 bpf_map__key_size(map), bpf_map__value_size(map),
+				 false);
 }
 
 static uc_value_t *
@@ -364,13 +369,121 @@ uc_bpf_map_arg(uc_value_t *val, const char *kind, unsigned int size,
 	err_return(EINVAL, "%s size mismatch (expected: %d)", kind, size);
 }
 
+static bool
+uc_bpf_map_is_percpu(struct uc_bpf_map *map)
+{
+	switch (map->type) {
+	case BPF_MAP_TYPE_PERCPU_HASH:
+	case BPF_MAP_TYPE_PERCPU_ARRAY:
+	case BPF_MAP_TYPE_LRU_PERCPU_HASH:
+	case BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE:
+		return true;
+	default:
+		return false;
+	}
+}
+
+static unsigned int
+uc_bpf_map_val_stride(struct uc_bpf_map *map)
+{
+	return (map->val_size + 7) & ~7U;
+}
+
+static bool
+uc_bpf_map_val_len(struct uc_bpf_map *map, unsigned int *len, int *num_cpus)
+{
+	*len = map->val_size;
+	*num_cpus = 1;
+
+	if (!uc_bpf_map_is_percpu(map))
+		return true;
+
+	*num_cpus = libbpf_num_possible_cpus();
+	if (*num_cpus <= 0) {
+		set_error(errno, "number of CPUs");
+		return false;
+	}
+
+	*len = uc_bpf_map_val_stride(map) * *num_cpus;
+
+	return true;
+}
+
+static uc_value_t *
+uc_bpf_map_val_read(uc_vm_t *vm, struct uc_bpf_map *map, void *val,
+		    int num_cpus)
+{
+	unsigned int stride = uc_bpf_map_val_stride(map);
+	uc_value_t *rv;
+	int i;
+
+	if (!uc_bpf_map_is_percpu(map))
+		return ucv_string_new_length(val, map->val_size);
+
+	rv = ucv_array_new(vm);
+	for (i = 0; i < num_cpus; i++)
+		ucv_array_set(rv, i, ucv_string_new_length((char *)val + i * stride,
+							   map->val_size));
+
+	return rv;
+}
+
+static bool
+uc_bpf_map_val_copy(struct uc_bpf_map *map, uc_value_t *a_val, void *dest)
+{
+	uint64_t val_int;
+	void *val;
+
+	val = uc_bpf_map_arg(a_val, "value", map->val_size, &val_int);
+	if (!val)
+		return false;
+
+	memcpy(dest, val, map->val_size);
+
+	return true;
+}
+
+static void *
+uc_bpf_map_val_arg(struct uc_bpf_map *map, uc_value_t *a_val, void *buf,
+		   int num_cpus)
+{
+	unsigned int stride = uc_bpf_map_val_stride(map);
+	int i;
+
+	if (!uc_bpf_map_is_percpu(map))
+		return uc_bpf_map_arg(a_val, "value", map->val_size, buf);
+
+	memset(buf, 0, stride * num_cpus);
+	if (ucv_type(a_val) != UC_ARRAY) {
+		if (!uc_bpf_map_val_copy(map, a_val, buf))
+			return NULL;
+
+		for (i = 1; i < num_cpus; i++)
+			memcpy((char *)buf + i * stride, buf, map->val_size);
+
+		return buf;
+	}
+
+	if (ucv_array_length(a_val) != (size_t)num_cpus)
+		err_return(EINVAL, "value count mismatch (expected: %d)", num_cpus);
+
+	for (i = 0; i < num_cpus; i++)
+		if (!uc_bpf_map_val_copy(map, ucv_array_get(a_val, i),
+					 (char *)buf + i * stride))
+			return NULL;
+
+	return buf;
+}
+
 static uc_value_t *
 uc_bpf_map_get(uc_vm_t *vm, size_t nargs)
 {
 	struct uc_bpf_map *map = uc_fn_thisval("bpf.map");
 	uc_value_t *a_key = uc_fn_arg(0);
+	unsigned int val_len;
 	uint64_t key_int;
 	void *key, *val;
+	int num_cpus;
 
 	if (!map)
 		err_return(EINVAL, NULL);
@@ -379,11 +492,14 @@ uc_bpf_map_get(uc_vm_t *vm, size_t nargs)
 	if (!key)
 		return NULL;
 
-	val = alloca(map->val_size);
+	if (!uc_bpf_map_val_len(map, &val_len, &num_cpus))
+		return NULL;
+
+	val = alloca(val_len);
 	if (bpf_map_lookup_elem(map->fd.fd, key, val))
 		return NULL;
 
-	return ucv_string_new_length(val, map->val_size);
+	return uc_bpf_map_val_read(vm, map, val, num_cpus);
 }
 
 static uc_value_t *
@@ -393,9 +509,11 @@ uc_bpf_map_set(uc_vm_t *vm, size_t nargs)
 	uc_value_t *a_key = uc_fn_arg(0);
 	uc_value_t *a_val = uc_fn_arg(1);
 	uc_value_t *a_flags = uc_fn_arg(2);
-	uint64_t key_int, val_int;
+	unsigned int val_len;
+	uint64_t key_int;
 	uint64_t flags;
 	void *key, *val;
+	int num_cpus;
 
 	if (!map)
 		err_return(EINVAL, NULL);
@@ -404,7 +522,11 @@ uc_bpf_map_set(uc_vm_t *vm, size_t nargs)
 	if (!key)
 		return NULL;
 
-	val = uc_bpf_map_arg(a_val, "value", map->val_size, &val_int);
+	if (!uc_bpf_map_val_len(map, &val_len, &num_cpus))
+		return NULL;
+
+	val = alloca(val_len);
+	val = uc_bpf_map_val_arg(map, a_val, val, num_cpus);
 	if (!val)
 		return NULL;
 
@@ -418,7 +540,7 @@ uc_bpf_map_set(uc_vm_t *vm, size_t nargs)
 	if (bpf_map_update_elem(map->fd.fd, key, val, flags))
 		return NULL;
 
-	return ucv_string_new_length(val, map->val_size);
+	return uc_bpf_map_val_read(vm, map, val, num_cpus);
 }
 
 static uc_value_t *
@@ -427,8 +549,10 @@ uc_bpf_map_delete(uc_vm_t *vm, size_t nargs)
 	struct uc_bpf_map *map = uc_fn_thisval("bpf.map");
 	uc_value_t *a_key = uc_fn_arg(0);
 	uc_value_t *a_return = uc_fn_arg(1);
+	unsigned int val_len;
 	void *key, *val = NULL;
 	uint64_t key_int;
+	int num_cpus;
 	int ret;
 
 	if (!map)
@@ -444,11 +568,14 @@ uc_bpf_map_delete(uc_vm_t *vm, size_t nargs)
 		return ucv_boolean_new(ret == 0);
 	}
 
-	val = alloca(map->val_size);
+	if (!uc_bpf_map_val_len(map, &val_len, &num_cpus))
+		return NULL;
+
+	val = alloca(val_len);
 	if (bpf_map_lookup_and_delete_elem(map->fd.fd, key, val))
 		return NULL;
 
-	return ucv_string_new_length(val, map->val_size);
+	return uc_bpf_map_val_read(vm, map, val, num_cpus);
 }
 
 static uc_value_t *
