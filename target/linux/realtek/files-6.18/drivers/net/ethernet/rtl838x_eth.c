@@ -174,6 +174,17 @@ static void rteth_93xx_create_tx_header(struct rteth_packet *h, unsigned int por
 	h->cpu_tag[7] = BIT_ULL(port) & 0xffff;
 }
 
+static int rteth_free_skb(struct sk_buff **skb)
+{
+	if (*skb) {
+		dev_kfree_skb_any(*skb);
+		*skb = NULL;
+		return 1;
+	}
+
+	return 0;
+}
+
 static inline void rteth_reenable_irq(struct rteth_ctrl *ctrl, int ring)
 {
 	u32 shift = ctrl->r->rx_rings % 32;
@@ -623,8 +634,7 @@ static void rteth_free_tx_buffers(struct rteth_ctrl *ctrl)
 
 			dma_unmap_single(&ctrl->pdev->dev, packet->dma,
 					 packet->skb->len, DMA_TO_DEVICE);
-			dev_kfree_skb_any(packet->skb);
-			packet->skb = NULL;
+			rteth_free_skb(&packet->skb);
 		}
 	}
 }
@@ -1056,21 +1066,18 @@ static int rteth_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		dev_consume_skb_any(packet->skb);
 	}
 
+	packet->len = len;
+	packet->skb = skb;
 	packet->dma = dma_map_single(&ctrl->pdev->dev, skb->data, len, DMA_TO_DEVICE);
 	if (unlikely(dma_mapping_error(&ctrl->pdev->dev, packet->dma))) {
-		dev_kfree_skb_any(skb);
-		packet->skb = NULL;
-		dev->stats.tx_errors++;
-
+		dev->stats.tx_errors += rteth_free_skb(&packet->skb);
 		return NETDEV_TX_OK;
 	}
 
 	if (port >= 0)
 		ctrl->r->create_tx_header(packet, port, 0); // TODO ok to set prio to 0?
 
-	/* Transfer data and hand packet over to switch */
-	packet->len = len;
-	packet->skb = skb;
+	/* Hand packet over to switch */
 	dma_wmb();
 	ctrl->tx_data[ring].ring[slot] = packet_dma | RING_OWN_HW;
 	ctrl->tx_data[ring].slot = (slot + 1) % RTETH_TX_RING_SIZE;
