@@ -129,7 +129,7 @@ uc_bpf_module_set_opts(struct bpf_object *obj, uc_value_t *opts)
 		}
 
 		if (!map)
-			err_return_int(errno, "rodata map");
+			err_return_int(ENOENT, "rodata map");
 
 		if (bpf_map__set_initial_value(map, ucv_string_get(val),
 					       ucv_string_length(val)))
