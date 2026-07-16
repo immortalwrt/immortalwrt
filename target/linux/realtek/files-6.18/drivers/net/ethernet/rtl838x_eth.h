@@ -209,6 +209,7 @@ struct rteth_config {
 	int dma_rx_base;
 	int dma_tx_base;
 	int rst_glb_ctrl;
+	int skb_headroom;
 	u32 mac_reg[RTETH_MAX_MAC_REGS];
 	int l2_tbl_flush_ctrl;
 	void (*create_tx_header)(struct rteth_packet *h, unsigned int dest_port, int prio);

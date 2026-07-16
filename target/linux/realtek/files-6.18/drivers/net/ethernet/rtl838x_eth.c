@@ -30,7 +30,6 @@
 #define RING_OWN_HW			BIT(0)
 #define RING_WRAP			BIT(1)
 
-#define RTETH_SKB_HEADROOM		(NET_SKB_PAD + NET_IP_ALIGN)
 #define RTETH_RX_RING_SIZE		128
 #define RTETH_RX_RINGS			2
 #define RTETH_TX_RING_SIZE		16
@@ -42,7 +41,11 @@
 #define RX_TRUNCATE_EN_93XX		BIT(6)
 #define RX_TRUNCATE_EN_83XX		BIT(4)
 #define TX_PAD_EN_838X			BIT(5)
-#define RING_BUFFER			1600
+
+#define SKB_FRAG_SIZE			1600
+#define SKB_PAD				MAX(32, L1_CACHE_BYTES)
+#define SKB_HEADROOM_FAST		(SKB_PAD + NET_IP_ALIGN)
+#define SKB_HEADROOM_SLOW		SKB_PAD
 
 /* Define page pool that holds 2KB fragments in 4KB pages and has 8 safety pages */
 #define PPOOL_FRAG_SIZE			2048
@@ -668,7 +671,7 @@ static int rteth_setup_ring_buffer(struct rteth_ctrl *ctrl)
 	 * and the DMA capabilities of the network adapter. Be defensive and add some checks to
 	 * assist further error analysis.
 	 */
-	BUILD_BUG_ON(RTETH_SKB_HEADROOM + RING_BUFFER +
+	BUILD_BUG_ON(SKB_HEADROOM_FAST + SKB_FRAG_SIZE +
 		     SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) > PPOOL_FRAG_SIZE);
 
 	for (int r = 0; r < RTETH_RX_RINGS; r++) {
@@ -686,8 +689,9 @@ static int rteth_setup_ring_buffer(struct rteth_ctrl *ctrl)
 			highmem |= PageHighMem(page);
 			paddr = max(paddr, page_to_phys(page));
 
-			packet->size = RING_BUFFER;
-			packet->dma = page_pool_get_dma_addr(page) + RTETH_SKB_HEADROOM + offset;
+			packet->size = SKB_FRAG_SIZE;
+			packet->dma = page_pool_get_dma_addr(page)
+				    + ctrl->r->skb_headroom + offset;
 			packet->page = page;
 			packet->page_offset = offset;
 			ctrl->rx_data[r].ring[i] = ctrl->rx_data_dma +
@@ -1126,7 +1130,7 @@ static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 		packet = &ctrl->rx_data[ring].packet[slot];
 		len = packet->len - ETH_FCS_LEN;
 
-		if (unlikely(len > RING_BUFFER)) {
+		if (unlikely(len > SKB_FRAG_SIZE)) {
 			netdev_err(dev, "invalid packet with %d bytes received\n", len);
 			dev->stats.rx_errors++;
 			goto recycle;
@@ -1144,10 +1148,11 @@ static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 
 		packet->page = new_page;
 		packet->page_offset = new_offset;
-		packet->dma = page_pool_get_dma_addr(new_page) + new_offset + RTETH_SKB_HEADROOM;
+		packet->dma = page_pool_get_dma_addr(new_page)
+			    + new_offset + ctrl->r->skb_headroom;
 
 		page_pool_dma_sync_for_cpu(ctrl->rx_qs[ring].page_pool, old_page,
-					   old_offset + RTETH_SKB_HEADROOM, len);
+					   old_offset + ctrl->r->skb_headroom, len);
 
 		skb = napi_build_skb(page_address(old_page) + old_offset, PPOOL_FRAG_SIZE);
 		if (unlikely(!skb)) {
@@ -1156,7 +1161,7 @@ static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 			goto recycle;
 		}
 
-		skb_reserve(skb, RTETH_SKB_HEADROOM);
+		skb_reserve(skb, ctrl->r->skb_headroom);
 		skb_mark_for_recycle(skb);
 		skb_put(skb, len);
 
@@ -1448,6 +1453,7 @@ static const struct rteth_config rteth_838x_cfg = {
 	.dma_tx_base = RTETH_838X_DMA_TX_BASE,
 	.mac_force_mode_ctrl = RTETH_838X_MAC_FORCE_MODE_CTRL,
 	.rst_glb_ctrl = RTL838X_RST_GLB_CTRL_0,
+	.skb_headroom = SKB_HEADROOM_SLOW,
 	.mac_reg = { RTETH_838X_MAC_ADDR_CTRL,
 		     RTETH_838X_MAC_ADDR_CTRL_ALE,
 		     RTETH_838X_MAC_ADDR_CTRL_MAC },
@@ -1494,6 +1500,7 @@ static const struct rteth_config rteth_839x_cfg = {
 	.dma_tx_base = RTETH_839X_DMA_TX_BASE,
 	.mac_force_mode_ctrl = RTETH_839X_MAC_FORCE_MODE_CTRL,
 	.rst_glb_ctrl = RTL839X_RST_GLB_CTRL,
+	.skb_headroom = SKB_HEADROOM_FAST,
 	.mac_reg = { RTETH_839X_MAC_ADDR_CTRL },
 	.l2_tbl_flush_ctrl = RTL839X_L2_TBL_FLUSH_CTRL,
 	.update_counter = rteth_83xx_update_counter,
@@ -1540,6 +1547,7 @@ static const struct rteth_config rteth_930x_cfg = {
 	.l2_ntfy_if_intr_msk = RTL930X_L2_NTFY_IF_INTR_MSK,
 	.mac_force_mode_ctrl = RTETH_930X_MAC_FORCE_MODE_CTRL,
 	.rst_glb_ctrl = RTL930X_RST_GLB_CTRL_0,
+	.skb_headroom = SKB_HEADROOM_FAST,
 	.mac_reg = { RTETH_930X_MAC_L2_ADDR_CTRL },
 	.l2_tbl_flush_ctrl = RTL930X_L2_TBL_FLUSH_CTRL,
 	.update_counter = rteth_93xx_update_counter,
@@ -1585,6 +1593,7 @@ static const struct rteth_config rteth_931x_cfg = {
 	.l2_ntfy_if_intr_msk = RTL931X_L2_NTFY_IF_INTR_MSK,
 	.mac_force_mode_ctrl = RTETH_931X_MAC_FORCE_MODE_CTRL,
 	.rst_glb_ctrl = RTL931X_RST_GLB_CTRL,
+	.skb_headroom = SKB_HEADROOM_FAST,
 	.mac_reg = { RTETH_930X_MAC_L2_ADDR_CTRL },
 	.l2_tbl_flush_ctrl = RTL931X_L2_TBL_FLUSH_CTRL,
 	.update_counter = rteth_93xx_update_counter,
