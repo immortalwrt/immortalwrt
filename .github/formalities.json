@@ -24,5 +24,6 @@
   "check_makefile_indentation": false,
   "check_pkg_release": "warning",
   "require_linked_github_account": true,
-  "enable_stale_bot": false
+  "enable_stale_bot": false,
+  "enable_labeler_yml": true
 }
