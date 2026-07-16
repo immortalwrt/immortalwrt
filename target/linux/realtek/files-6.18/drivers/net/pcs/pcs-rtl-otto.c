@@ -3262,30 +3262,6 @@ static int rtpcs_931x_sds_activate(struct rtpcs_serdes *sds)
 	return rtpcs_931x_sds_power(sds, true);
 }
 
-__maybe_unused
-static void rtpcs_931x_sds_reset(struct rtpcs_serdes *sds)
-{
-	u32 o_mode, f_bit;
-
-	/* TODO: We need to lock this! */
-
-	rtpcs_931x_sds_power(sds, false);
-
-	/* save current */
-	regmap_field_read(sds->swcore_regs.mac_mode, &o_mode);
-	regmap_field_read(sds->swcore_regs.mac_mode_force, &f_bit);
-
-	/* force off */
-	regmap_field_write(sds->swcore_regs.mac_mode, 0x1f);
-	regmap_field_write(sds->swcore_regs.mac_mode_force, 1);
-
-	/* restore previous */
-	regmap_field_write(sds->swcore_regs.mac_mode, o_mode);
-	regmap_field_write(sds->swcore_regs.mac_mode_force, f_bit);
-
-	rtpcs_931x_sds_power(sds, true);
-}
-
 static void rtpcs_931x_sds_rx_reset(struct rtpcs_serdes *sds)
 {
 	if (sds->type != RTPCS_SDS_TYPE_10G)
