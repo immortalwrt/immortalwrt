@@ -3633,17 +3633,6 @@ static int rtpcs_931x_sds_config_attachment(struct rtpcs_serdes *sds,
 	return 0;
 }
 
-static int rtpcs_931x_sds_config_fiber_1g(struct rtpcs_serdes *sds)
-{
-	rtpcs_sds_write_bits(sds, DIGI_1(PAGE_FIB_EXT), 0x13, 15, 14, 0x0);
-
-	rtpcs_sds_write_bits(sds, DIGI_1(PAGE_FIB), MII_BMCR, 6, 6, 0x1);   /* BMCR_SPEED1000 */
-	rtpcs_sds_write_bits(sds, DIGI_1(PAGE_FIB), MII_BMCR, 13, 13, 0x0); /* BMCR_SPEED100 */
-	rtpcs_sds_write_bits(sds, DIGI_1(PAGE_SDS), 0x4, 2, 2, 0x1);        /* EN_LINK_FIB1G */
-
-	return 0;
-}
-
 static int rtpcs_931x_sds_config_hw_mode(struct rtpcs_serdes *sds,
 					 enum rtpcs_sds_mode hw_mode)
 {
@@ -3652,23 +3641,23 @@ static int rtpcs_931x_sds_config_hw_mode(struct rtpcs_serdes *sds,
 		break;
 
 	case RTPCS_SDS_MODE_1000BASEX:
-		rtpcs_931x_sds_config_fiber_1g(sds);
+		rtpcs_sds_write_bits(sds, DIGI_1(PAGE_FIB_EXT), 0x13, 15, 14, 0);
+
+		/* BMCR_SPEED1000 */
+		rtpcs_sds_write_bits(sds, DIGI_1(PAGE_FIB), MII_BMCR, 6, 6, 1);
+		/* BMCR_SPEED100 */
+		rtpcs_sds_write_bits(sds, DIGI_1(PAGE_FIB), MII_BMCR, 13, 13, 0);
+		/* EN_LINK_FIB1G */
+		rtpcs_sds_write_bits(sds, DIGI_1(PAGE_SDS), 0x4, 2, 2, 1);
 		break;
 
 	case RTPCS_SDS_MODE_2500BASEX:
 		rtpcs_sds_write_bits(sds, DIGI_1(PAGE_SDS_EXT), 0x14, 8, 8, 1);
 		break;
 
-	case RTPCS_SDS_MODE_10GBASER: /* 10GR1000BX_AUTO */
+	case RTPCS_SDS_MODE_10GBASER:
 		/* configure 10GR fiber mode=1 */
 		rtpcs_sds_write_bits(sds, PAGE_WDIG, 0xb, 1, 1, 1);
-
-		rtpcs_931x_sds_config_fiber_1g(sds);
-
-		/* init auto */
-		rtpcs_sds_write_bits(sds, PAGE_WDIG, 13, 15, 0, 0x109e);
-		rtpcs_sds_write_bits(sds, PAGE_WDIG, 0x6, 14, 10, 0x8);
-		rtpcs_sds_write_bits(sds, PAGE_WDIG, 0x7, 10, 4, 0x7f);
 		break;
 
 	case RTPCS_SDS_MODE_SGMII:
