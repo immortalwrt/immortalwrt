@@ -3262,6 +3262,7 @@ static int rtpcs_931x_sds_activate(struct rtpcs_serdes *sds)
 	return rtpcs_931x_sds_power(sds, true);
 }
 
+__maybe_unused
 static void rtpcs_931x_sds_rx_reset(struct rtpcs_serdes *sds)
 {
 	if (sds->type != RTPCS_SDS_TYPE_10G)
@@ -3684,9 +3685,6 @@ static int rtpcs_931x_sds_config_hw_mode(struct rtpcs_serdes *sds,
 	case RTPCS_SDS_MODE_USXGMII_5GSXGMII:
 	case RTPCS_SDS_MODE_USXGMII_5GDXGMII:
 	case RTPCS_SDS_MODE_USXGMII_2_5GSXGMII:
-		rtpcs_931x_sds_reset_leq_dfe(sds);
-		rtpcs_931x_sds_rx_reset(sds);
-
 		rtpcs_93xx_sds_usxgmii_config(sds, RTPCS_USXGMII_AN_OPC_STD, 0xa4, 0, 1, 0x1);
 		break;
 
