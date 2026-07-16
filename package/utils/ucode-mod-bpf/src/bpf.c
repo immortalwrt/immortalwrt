@@ -802,6 +802,241 @@ uc_bpf_map_foreach(uc_vm_t *vm, size_t nargs)
 	return ucv_boolean_new(ret);
 }
 
+enum {
+	UC_BPF_BUF_CB,
+	UC_BPF_BUF_LOST_CB,
+	UC_BPF_BUF_MAP,
+	__UC_BPF_BUF_MAX
+};
+
+struct uc_bpf_buffer {
+	uc_vm_t *vm;
+	uc_value_t *res;
+	bool perf;
+	bool exception;
+	union {
+		struct ring_buffer *rb;
+		struct perf_buffer *pb;
+	};
+};
+
+static uc_value_t *
+uc_bpf_buffer_call(struct uc_bpf_buffer *buf, size_t slot, uc_value_t *arg,
+		   int cpu)
+{
+	uc_vm_t *vm = buf->vm;
+	size_t fn_nargs = 1;
+
+	uc_vm_stack_push(vm, ucv_get(ucv_resource_value_get(buf->res, slot)));
+	uc_vm_stack_push(vm, arg);
+	if (cpu >= 0) {
+		uc_vm_stack_push(vm, ucv_int64_new(cpu));
+		fn_nargs++;
+	}
+
+	if (uc_vm_call(vm, false, fn_nargs) != EXCEPTION_NONE) {
+		buf->exception = true;
+		return NULL;
+	}
+
+	return uc_vm_stack_pop(vm);
+}
+
+static int
+uc_bpf_ringbuf_sample(void *ctx, void *data, size_t size)
+{
+	struct uc_bpf_buffer *buf = ctx;
+	uc_value_t *rv;
+	int ret = 0;
+
+	if (buf->exception)
+		return -1;
+
+	rv = uc_bpf_buffer_call(buf, UC_BPF_BUF_CB,
+				ucv_string_new_length(data, size), -1);
+	if (buf->exception)
+		return -1;
+
+	if (ucv_type(rv) == UC_INTEGER)
+		ret = ucv_int64_get(rv);
+	ucv_put(rv);
+
+	return ret;
+}
+
+static void
+uc_bpf_perf_sample(void *ctx, int cpu, void *data, __u32 size)
+{
+	struct uc_bpf_buffer *buf = ctx;
+
+	if (buf->exception)
+		return;
+
+	ucv_put(uc_bpf_buffer_call(buf, UC_BPF_BUF_CB,
+				   ucv_string_new_length(data, size), cpu));
+}
+
+static void
+uc_bpf_perf_lost(void *ctx, int cpu, __u64 cnt)
+{
+	struct uc_bpf_buffer *buf = ctx;
+
+	if (buf->exception || !ucv_resource_value_get(buf->res, UC_BPF_BUF_LOST_CB))
+		return;
+
+	ucv_put(uc_bpf_buffer_call(buf, UC_BPF_BUF_LOST_CB, ucv_int64_new(cnt),
+				   cpu));
+}
+
+static uc_value_t *
+uc_bpf_map_buffer_create(uc_vm_t *vm, struct uc_bpf_map *map, bool perf,
+			 size_t pages, uc_value_t *cb, uc_value_t *lost_cb)
+{
+	struct uc_bpf_buffer *buf;
+	uc_value_t *res;
+
+	res = ucv_resource_create_ex(vm, "bpf.buffer", (void **)&buf,
+				     __UC_BPF_BUF_MAX, sizeof(*buf));
+	buf->vm = vm;
+	buf->res = res;
+	buf->perf = perf;
+	if (perf)
+		buf->pb = perf_buffer__new(map->fd.fd, pages, uc_bpf_perf_sample,
+					   uc_bpf_perf_lost, buf, NULL);
+	else
+		buf->rb = ring_buffer__new(map->fd.fd, uc_bpf_ringbuf_sample,
+					   buf, NULL);
+	if (!buf->rb) {
+		ucv_put(res);
+		err_return(errno, NULL);
+	}
+
+	ucv_resource_value_set(res, UC_BPF_BUF_CB, ucv_get(cb));
+	ucv_resource_value_set(res, UC_BPF_BUF_LOST_CB, ucv_get(lost_cb));
+	ucv_resource_value_set(res, UC_BPF_BUF_MAP, ucv_get(_uc_fn_this_res(vm)));
+
+	return res;
+}
+
+static uc_value_t *
+uc_bpf_map_ringbuf(uc_vm_t *vm, size_t nargs)
+{
+	struct uc_bpf_map *map = uc_fn_thisval("bpf.map");
+	uc_value_t *cb = uc_fn_arg(0);
+
+	if (!map)
+		err_return(EINVAL, NULL);
+
+	if (map->type != BPF_MAP_TYPE_RINGBUF)
+		err_return(EINVAL, "map type");
+
+	if (!ucv_is_callable(cb))
+		err_return(EINVAL, "callback");
+
+	return uc_bpf_map_buffer_create(vm, map, false, 0, cb, NULL);
+}
+
+static uc_value_t *
+uc_bpf_map_perf_buffer(uc_vm_t *vm, size_t nargs)
+{
+	struct uc_bpf_map *map = uc_fn_thisval("bpf.map");
+	uc_value_t *cb = uc_fn_arg(0);
+	uc_value_t *a_pages = uc_fn_arg(1);
+	uc_value_t *lost_cb = uc_fn_arg(2);
+	size_t pages = 8;
+
+	if (!map)
+		err_return(EINVAL, NULL);
+
+	if (map->type != BPF_MAP_TYPE_PERF_EVENT_ARRAY)
+		err_return(EINVAL, "map type");
+
+	if (!ucv_is_callable(cb))
+		err_return(EINVAL, "callback");
+
+	if (a_pages) {
+		if (ucv_type(a_pages) != UC_INTEGER || ucv_int64_get(a_pages) <= 0)
+			err_return(EINVAL, "page count");
+
+		pages = ucv_int64_get(a_pages);
+	}
+
+	if (lost_cb && !ucv_is_callable(lost_cb))
+		err_return(EINVAL, "lost callback");
+
+	return uc_bpf_map_buffer_create(vm, map, true, pages, cb, lost_cb);
+}
+
+static uc_value_t *
+uc_bpf_buffer_fileno(uc_vm_t *vm, size_t nargs)
+{
+	struct uc_bpf_buffer *buf = uc_fn_thisval("bpf.buffer");
+	int fd;
+
+	if (!buf)
+		err_return(EINVAL, NULL);
+
+	fd = buf->perf ? perf_buffer__epoll_fd(buf->pb) :
+			 ring_buffer__epoll_fd(buf->rb);
+	if (fd < 0)
+		err_return(errno, NULL);
+
+	return ucv_int64_new(fd);
+}
+
+static uc_value_t *
+uc_bpf_buffer_result(uc_vm_t *vm, struct uc_bpf_buffer *buf, int ret)
+{
+	if (buf->exception) {
+		buf->exception = false;
+		return NULL;
+	}
+
+	if (ret < 0)
+		err_return(errno, NULL);
+
+	return ucv_int64_new(ret);
+}
+
+static uc_value_t *
+uc_bpf_buffer_poll(uc_vm_t *vm, size_t nargs)
+{
+	struct uc_bpf_buffer *buf = uc_fn_thisval("bpf.buffer");
+	uc_value_t *a_timeout = uc_fn_arg(0);
+	int timeout = 0;
+	int ret;
+
+	if (!buf)
+		err_return(EINVAL, NULL);
+
+	if (a_timeout) {
+		if (ucv_type(a_timeout) != UC_INTEGER)
+			err_return(EINVAL, "timeout");
+
+		timeout = ucv_int64_get(a_timeout);
+	}
+
+	ret = buf->perf ? perf_buffer__poll(buf->pb, timeout) :
+			  ring_buffer__poll(buf->rb, timeout);
+
+	return uc_bpf_buffer_result(vm, buf, ret);
+}
+
+static uc_value_t *
+uc_bpf_buffer_consume(uc_vm_t *vm, size_t nargs)
+{
+	struct uc_bpf_buffer *buf = uc_fn_thisval("bpf.buffer");
+	int ret;
+
+	if (!buf)
+		err_return(EINVAL, NULL);
+
+	ret = buf->perf ? perf_buffer__consume(buf->pb) :
+			  ring_buffer__consume(buf->rb);
+
+	return uc_bpf_buffer_result(vm, buf, ret);
+}
+
 static uc_value_t *
 uc_bpf_obj_pin(uc_vm_t *vm, size_t nargs, const char *type)
 {
@@ -992,6 +1227,24 @@ static const uc_function_list_t map_fns[] = {
 	{ "delete_all",			uc_bpf_map_delete_all },
 	{ "foreach",			uc_bpf_map_foreach },
 	{ "iterator",			uc_bpf_map_iterator },
+	{ "ringbuf",			uc_bpf_map_ringbuf },
+	{ "perf_buffer",		uc_bpf_map_perf_buffer },
+};
+
+static void uc_bpf_buffer_free(void *ptr)
+{
+	struct uc_bpf_buffer *buf = ptr;
+
+	if (buf->perf)
+		perf_buffer__free(buf->pb);
+	else
+		ring_buffer__free(buf->rb);
+}
+
+static const uc_function_list_t buffer_fns[] = {
+	{ "fileno",			uc_bpf_buffer_fileno },
+	{ "poll",			uc_bpf_buffer_poll },
+	{ "consume",			uc_bpf_buffer_consume },
 };
 
 static void uc_bpf_fd_free(void *ptr)
@@ -1034,5 +1287,6 @@ void uc_module_init(uc_vm_t *vm, uc_value_t *scope)
 	uc_type_declare(vm, "bpf.module", module_fns, module_free);
 	uc_type_declare(vm, "bpf.map", map_fns, uc_bpf_fd_free);
 	uc_type_declare(vm, "bpf.map_iter", map_iter_fns, NULL);
+	uc_type_declare(vm, "bpf.buffer", buffer_fns, uc_bpf_buffer_free);
 	uc_type_declare(vm, "bpf.program", prog_fns, uc_bpf_fd_free);
 }
