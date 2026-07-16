@@ -520,6 +520,9 @@ uc_bpf_map_iter_next(uc_vm_t *vm, size_t nargs)
 	struct uc_bpf_map_iter *iter = uc_fn_thisval("bpf.map_iter");
 	uc_value_t *rv;
 
+	if (!iter)
+		err_return(EINVAL, NULL);
+
 	if (!iter->has_next)
 		return NULL;
 
@@ -535,6 +538,9 @@ uc_bpf_map_iter_next_int(uc_vm_t *vm, size_t nargs)
 	struct uc_bpf_map_iter *iter = uc_fn_thisval("bpf.map_iter");
 	uint64_t intval;
 	uc_value_t *rv;
+
+	if (!iter)
+		err_return(EINVAL, NULL);
 
 	if (!iter->has_next)
 		return NULL;
@@ -560,6 +566,9 @@ uc_bpf_map_foreach(uc_vm_t *vm, size_t nargs)
 	bool has_next;
 	void *key, *next;
 	bool ret = false;
+
+	if (!map)
+		err_return(EINVAL, NULL);
 
 	key = alloca(map->key_size);
 	next = alloca(map->key_size);
@@ -596,6 +605,9 @@ uc_bpf_obj_pin(uc_vm_t *vm, size_t nargs, const char *type)
 {
 	struct uc_bpf_fd *f = uc_fn_thisval(type);
 	uc_value_t *path = uc_fn_arg(0);
+
+	if (!f)
+		err_return(EINVAL, NULL);
 
 	if (ucv_type(path) != UC_STRING)
 		err_return(EINVAL, NULL);
