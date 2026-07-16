@@ -34,6 +34,7 @@ struct uc_bpf_map {
 	struct uc_bpf_fd fd; /* must be first */
 	unsigned int type;
 	unsigned int key_size, val_size;
+	unsigned int max_entries;
 };
 
 struct uc_bpf_map_iter {
@@ -189,7 +190,8 @@ uc_bpf_open_module(uc_vm_t *vm, size_t nargs)
 
 static uc_value_t *
 uc_bpf_map_create(uc_vm_t *vm, uc_value_t *mod, int fd, unsigned int type,
-		  unsigned int key_size, unsigned int val_size, bool close)
+		  unsigned int key_size, unsigned int val_size,
+		  unsigned int max_entries, bool close)
 {
 	struct uc_bpf_map *uc_map;
 	uc_value_t *res;
@@ -200,6 +202,7 @@ uc_bpf_map_create(uc_vm_t *vm, uc_value_t *mod, int fd, unsigned int type,
 	uc_map->type = type;
 	uc_map->key_size = key_size;
 	uc_map->val_size = val_size;
+	uc_map->max_entries = max_entries;
 	uc_map->fd.close = close;
 
 	return res;
@@ -233,7 +236,7 @@ uc_bpf_open_map_fd(uc_vm_t *vm, int fd)
 	}
 
 	return uc_bpf_map_create(vm, NULL, fd, info.type, info.key_size,
-				 info.value_size, true);
+				 info.value_size, info.max_entries, true);
 }
 
 static uc_value_t *
@@ -339,7 +342,7 @@ uc_bpf_module_get_map(uc_vm_t *vm, size_t nargs)
 
 	return uc_bpf_map_create(vm, _uc_fn_this_res(vm), fd, bpf_map__type(map),
 				 bpf_map__key_size(map), bpf_map__value_size(map),
-				 false);
+				 bpf_map__max_entries(map), false);
 }
 
 static uc_value_t *
@@ -548,6 +551,24 @@ uc_bpf_map_val_arg(struct uc_bpf_map *map, uc_value_t *a_val, void *buf,
 			return NULL;
 
 	return buf;
+}
+
+static uc_value_t *
+uc_bpf_map_info(uc_vm_t *vm, size_t nargs)
+{
+	struct uc_bpf_map *map = uc_fn_thisval("bpf.map");
+	uc_value_t *rv;
+
+	if (!map)
+		err_return(EINVAL, NULL);
+
+	rv = ucv_object_new(vm);
+	ucv_object_add(rv, "type", ucv_int64_new(map->type));
+	ucv_object_add(rv, "key_size", ucv_int64_new(map->key_size));
+	ucv_object_add(rv, "value_size", ucv_int64_new(map->val_size));
+	ucv_object_add(rv, "max_entries", ucv_int64_new(map->max_entries));
+
+	return rv;
 }
 
 static uc_value_t *
@@ -1199,6 +1220,23 @@ register_constants(uc_vm_t *vm, uc_value_t *scope)
 	ADD_CONST(BPF_PROG_TYPE_SCHED_CLS);
 	ADD_CONST(BPF_PROG_TYPE_SCHED_ACT);
 
+	ADD_CONST(BPF_MAP_TYPE_HASH);
+	ADD_CONST(BPF_MAP_TYPE_ARRAY);
+	ADD_CONST(BPF_MAP_TYPE_PROG_ARRAY);
+	ADD_CONST(BPF_MAP_TYPE_PERF_EVENT_ARRAY);
+	ADD_CONST(BPF_MAP_TYPE_PERCPU_HASH);
+	ADD_CONST(BPF_MAP_TYPE_PERCPU_ARRAY);
+	ADD_CONST(BPF_MAP_TYPE_LRU_HASH);
+	ADD_CONST(BPF_MAP_TYPE_LRU_PERCPU_HASH);
+	ADD_CONST(BPF_MAP_TYPE_LPM_TRIE);
+	ADD_CONST(BPF_MAP_TYPE_ARRAY_OF_MAPS);
+	ADD_CONST(BPF_MAP_TYPE_HASH_OF_MAPS);
+	ADD_CONST(BPF_MAP_TYPE_DEVMAP);
+	ADD_CONST(BPF_MAP_TYPE_SOCKMAP);
+	ADD_CONST(BPF_MAP_TYPE_QUEUE);
+	ADD_CONST(BPF_MAP_TYPE_STACK);
+	ADD_CONST(BPF_MAP_TYPE_RINGBUF);
+
 	ADD_CONST(BPF_ANY);
 	ADD_CONST(BPF_NOEXIST);
 	ADD_CONST(BPF_EXIST);
@@ -1221,6 +1259,7 @@ static void module_free(void *ptr)
 
 static const uc_function_list_t map_fns[] = {
 	{ "pin",			uc_bpf_map_pin },
+	{ "info",			uc_bpf_map_info },
 	{ "get",			uc_bpf_map_get },
 	{ "set",			uc_bpf_map_set },
 	{ "delete",			uc_bpf_map_delete },
