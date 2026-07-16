@@ -3637,9 +3637,9 @@ static int rtpcs_931x_sds_config_fiber_1g(struct rtpcs_serdes *sds)
 {
 	rtpcs_sds_write_bits(sds, DIGI_1(PAGE_FIB_EXT), 0x13, 15, 14, 0x0);
 
-	rtpcs_sds_write_bits(sds, DIGI_1(PAGE_FIB), 0x0, 6, 6, 0x1);
-	rtpcs_sds_write_bits(sds, DIGI_1(PAGE_FIB), 0x0, 13, 13, 0x0);
-	rtpcs_sds_write_bits(sds, DIGI_1(PAGE_SDS), 0x4, 2, 2, 0x1); /* EN_LINK_FIB1G */
+	rtpcs_sds_write_bits(sds, DIGI_1(PAGE_FIB), MII_BMCR, 6, 6, 0x1);   /* BMCR_SPEED1000 */
+	rtpcs_sds_write_bits(sds, DIGI_1(PAGE_FIB), MII_BMCR, 13, 13, 0x0); /* BMCR_SPEED100 */
+	rtpcs_sds_write_bits(sds, DIGI_1(PAGE_SDS), 0x4, 2, 2, 0x1);        /* EN_LINK_FIB1G */
 
 	return 0;
 }
