@@ -370,6 +370,26 @@ uc_bpf_map_arg(uc_value_t *val, const char *kind, unsigned int size,
 }
 
 static bool
+uc_bpf_map_key_arg(struct uc_bpf_map *map, uc_value_t *a_key, uint64_t *buf,
+		   void **key)
+{
+	if (!map->key_size) {
+		if (a_key) {
+			set_error(EINVAL, "map has no key");
+			return false;
+		}
+
+		*key = NULL;
+
+		return true;
+	}
+
+	*key = uc_bpf_map_arg(a_key, "key", map->key_size, buf);
+
+	return *key != NULL;
+}
+
+static bool
 uc_bpf_map_is_percpu(struct uc_bpf_map *map)
 {
 	switch (map->type) {
@@ -488,8 +508,7 @@ uc_bpf_map_get(uc_vm_t *vm, size_t nargs)
 	if (!map)
 		err_return(EINVAL, NULL);
 
-	key = uc_bpf_map_arg(a_key, "key", map->key_size, &key_int);
-	if (!key)
+	if (!uc_bpf_map_key_arg(map, a_key, &key_int, &key))
 		return NULL;
 
 	if (!uc_bpf_map_val_len(map, &val_len, &num_cpus))
@@ -518,8 +537,7 @@ uc_bpf_map_set(uc_vm_t *vm, size_t nargs)
 	if (!map)
 		err_return(EINVAL, NULL);
 
-	key = uc_bpf_map_arg(a_key, "key", map->key_size, &key_int);
-	if (!key)
+	if (!uc_bpf_map_key_arg(map, a_key, &key_int, &key))
 		return NULL;
 
 	if (!uc_bpf_map_val_len(map, &val_len, &num_cpus))
@@ -558,8 +576,7 @@ uc_bpf_map_delete(uc_vm_t *vm, size_t nargs)
 	if (!map)
 		err_return(EINVAL, NULL);
 
-	key = uc_bpf_map_arg(a_key, "key", map->key_size, &key_int);
-	if (!key)
+	if (!uc_bpf_map_key_arg(map, a_key, &key_int, &key))
 		return NULL;
 
 	if (!ucv_is_truish(a_return)) {
