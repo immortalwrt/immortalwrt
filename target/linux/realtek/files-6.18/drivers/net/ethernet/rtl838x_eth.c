@@ -123,7 +123,7 @@ struct rteth_ctrl {
 	u32 lastEvent;
 	struct metadata_dst *dsa_meta[RTETH_931X_CPU_PORT];
 	/* receive handling */
-	dma_addr_t		rx_data_dma;
+	dma_addr_t		rx_dma;
 	spinlock_t		rx_lock;
 	struct rteth_rx		*rx_data;
 	/* transmit handling */
@@ -544,7 +544,7 @@ static void rteth_hw_ring_setup(struct rteth_ctrl *ctrl)
 {
 	for (int r = 0; r < RTETH_RX_RINGS; r++)
 		regmap_write(ctrl->map, ctrl->r->dma_rx_base + r * 4,
-			     ctrl->rx_data_dma +
+			     ctrl->rx_dma +
 			     r * sizeof(struct rteth_rx) + offsetof(struct rteth_rx, ring));
 
 	for (int r = 0; r < RTETH_TX_RINGS; r++)
@@ -706,7 +706,7 @@ static int rteth_setup_ring_buffer(struct rteth_ctrl *ctrl)
 				    + ctrl->r->skb_headroom + offset;
 			packet->page = page;
 			packet->page_offset = offset;
-			ctrl->rx_data[r].ring[i] = ctrl->rx_data_dma +
+			ctrl->rx_data[r].ring[i] = ctrl->rx_dma +
 						   sizeof(struct rteth_rx) * r +
 						   offsetof(struct rteth_rx, packet) +
 						   sizeof(struct rteth_packet) * i +
@@ -1772,7 +1772,7 @@ static int rteth_probe(struct platform_device *pdev)
 	}
 
 	ctrl->rx_data = dmam_alloc_coherent(&pdev->dev, sizeof(struct rteth_rx) * RTETH_RX_RINGS,
-					    &ctrl->rx_data_dma, GFP_KERNEL);
+					    &ctrl->rx_dma, GFP_KERNEL);
 	ctrl->tx_data = dmam_alloc_coherent(&pdev->dev, sizeof(struct rteth_tx) * RTETH_TX_RINGS,
 					    &ctrl->tx_dma, GFP_KERNEL);
 
