@@ -2920,21 +2920,6 @@ static int rtpcs_930x_sds_config_hw_mode(struct rtpcs_serdes *sds, enum rtpcs_sd
 		rtpcs_sds_write(sds, PAGE_TGR_PRO_0, 0x0D, 0x0F00);
 		rtpcs_sds_write(sds, PAGE_TGR_PRO_0, 0x00, 0x0000);
 		rtpcs_sds_write(sds, PAGE_TGR_PRO_0, 0x01, 0xC800);
-		/*
-		 * TODO: Do the 1G and 3G sequences need to be applied? The SDK usually
-		 * uses a 10GR-1000BX automatic mode covering all speeds. But in Linux,
-		 * we switch the mode on demand so might only need to apply one sequence
-		 * at a time.
-		 */
-		ret = rtpcs_sds_apply_config(sds, rtpcs_930x_sds_cfg_ana_1g,
-					     ARRAY_SIZE(rtpcs_930x_sds_cfg_ana_1g));
-		if (ret < 0)
-			return ret;
-
-		ret = rtpcs_sds_apply_config(sds, rtpcs_930x_sds_cfg_ana_3g,
-					     ARRAY_SIZE(rtpcs_930x_sds_cfg_ana_3g));
-		if (ret < 0)
-			return ret;
 
 		ret = rtpcs_sds_apply_config(sds, rtpcs_930x_sds_cfg_ana_10g,
 					     ARRAY_SIZE(rtpcs_930x_sds_cfg_ana_10g));
@@ -2945,11 +2930,6 @@ static int rtpcs_930x_sds_config_hw_mode(struct rtpcs_serdes *sds, enum rtpcs_sd
 		break;
 
 	case RTPCS_SDS_MODE_2500BASEX:
-		ret = rtpcs_sds_apply_config(sds, rtpcs_930x_sds_cfg_ana_1g,
-					     ARRAY_SIZE(rtpcs_930x_sds_cfg_ana_1g));
-		if (ret < 0)
-			return ret;
-
 		ret = rtpcs_sds_apply_config(sds, rtpcs_930x_sds_cfg_ana_3g,
 					     ARRAY_SIZE(rtpcs_930x_sds_cfg_ana_3g));
 		if (ret < 0)
