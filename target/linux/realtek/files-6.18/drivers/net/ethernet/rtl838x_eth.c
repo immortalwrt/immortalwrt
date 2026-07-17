@@ -1141,7 +1141,7 @@ static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 			break;
 
 		packet = &ctrl->rx_data[ring].packet[slot];
-		len = packet->len - ETH_FCS_LEN;
+		len = packet->len;
 		is_tail = !packet->more;
 		if (is_tail)
 			work_done++;
@@ -1192,7 +1192,6 @@ static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 				skb->offload_fwd_mark = 1;
 		}
 
-		skb->protocol = eth_type_trans(skb, dev);
 		if (dev->features & NETIF_F_RXCSUM) {
 			if (tag.crc_error)
 				skb_checksum_none_assert(skb);
@@ -1200,10 +1199,18 @@ static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 				skb->ip_summed = CHECKSUM_UNNECESSARY;
 		}
 
-		rx_packets++;
-		rx_bytes += len;
-		napi_gro_receive(&ctrl->rx_qs[ring].napi, skb);
-
+		if (is_tail && skb) {
+			if (unlikely(skb->len < ETH_HLEN + ETH_FCS_LEN)) {
+				dev->stats.rx_errors += rteth_free_skb(&skb);
+			} else {
+				pskb_trim(skb, skb->len - ETH_FCS_LEN);
+				rx_bytes += skb->len;
+				rx_packets++;
+				skb->protocol = eth_type_trans(skb, dev);
+				napi_gro_receive(&ctrl->rx_qs[ring].napi, skb);
+				skb = NULL;
+			}
+		}
 recycle:
 		dma_wmb();
 		ctrl->rx_data[ring].ring[slot] = packet_dma | RING_OWN_HW;
