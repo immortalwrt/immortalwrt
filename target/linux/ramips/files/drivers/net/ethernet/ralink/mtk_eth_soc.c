@@ -344,8 +344,8 @@ static void fe_txd_unmap(struct device *dev, struct fe_tx_buf *tx_buf)
 			       dma_unmap_len(tx_buf, dma_len1),
 			       DMA_TO_DEVICE);
 
-	dma_unmap_len_set(tx_buf, dma_addr0, 0);
-	dma_unmap_len_set(tx_buf, dma_addr1, 0);
+	dma_unmap_len_set(tx_buf, dma_len0, 0);
+	dma_unmap_len_set(tx_buf, dma_len1, 0);
 	if (tx_buf->skb && (tx_buf->skb != (struct sk_buff *)DMA_DUMMY_DESC))
 		dev_kfree_skb_any(tx_buf->skb);
 	tx_buf->skb = NULL;
