@@ -1124,10 +1124,13 @@ static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 	unsigned int len, new_offset, old_offset;
 	struct page *old_page, *new_page;
 	struct rteth_packet *packet;
+	struct page_pool *pool;
 	dma_addr_t packet_dma;
 	struct sk_buff *skb;
 	struct dsa_tag tag;
 	bool is_tail;
+
+	pool = ctrl->rx_qs[ring].page_pool;
 
 	while (work_done < budget) {
 		slot = ctrl->rx_data[ring].slot;
@@ -1149,8 +1152,11 @@ static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 			goto recycle;
 		}
 
-		new_page = page_pool_dev_alloc_frag(ctrl->rx_qs[ring].page_pool,
-						    &new_offset, PPOOL_FRAG_SIZE);
+		/*
+		 * Avoid complex error handling by allocating the new page before SKB consumption.
+		 * In case of failure drop the data and reuse the existing page.
+		 */
+		new_page = page_pool_dev_alloc_frag(pool, &new_offset, PPOOL_FRAG_SIZE);
 		if (unlikely(!new_page)) {
 			dev->stats.rx_dropped++;
 			goto recycle;
@@ -1164,12 +1170,12 @@ static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 		packet->dma = page_pool_get_dma_addr(new_page)
 			    + new_offset + ctrl->r->skb_headroom;
 
-		page_pool_dma_sync_for_cpu(ctrl->rx_qs[ring].page_pool, old_page,
+		page_pool_dma_sync_for_cpu(pool, old_page,
 					   old_offset + ctrl->r->skb_headroom, len);
 
 		skb = napi_build_skb(page_address(old_page) + old_offset, PPOOL_FRAG_SIZE);
 		if (unlikely(!skb)) {
-			page_pool_put_full_page(ctrl->rx_qs[ring].page_pool, old_page, true);
+			page_pool_put_full_page(pool, old_page, true);
 			dev->stats.rx_dropped++;
 			goto recycle;
 		}
