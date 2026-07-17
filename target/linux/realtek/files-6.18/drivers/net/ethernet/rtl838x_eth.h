@@ -181,9 +181,6 @@
 
 #define RTL93XX_CPU_TAG1_IGNORE_STP_MASK	GENMASK(2, 2)
 
-/* Default MTU with jumbo frames support */
-#define DEFAULT_MTU 9000
-
 struct p_hdr;
 struct dsa_tag;
 struct rteth_ctrl;

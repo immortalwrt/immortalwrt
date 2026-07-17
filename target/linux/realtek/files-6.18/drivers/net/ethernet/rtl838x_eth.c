@@ -42,6 +42,7 @@
 #define RX_TRUNCATE_EN_83XX		BIT(4)
 #define TX_PAD_EN_838X			BIT(5)
 
+#define SKB_MTU				1600
 #define SKB_FRAG_SIZE			1600
 #define SKB_PAD				MAX(32, L1_CACHE_BYTES)
 #define SKB_HEADROOM_FAST		(SKB_PAD + NET_IP_ALIGN)
@@ -57,7 +58,8 @@ struct rteth_packet {
 	dma_addr_t		dma;
 	u16			reserved;
 	u16			size;
-	u16			offset;
+	u16			more:1;
+	u16			offset:15;
 	u16			len;
 	u16			cpu_tag[10];
 	/* software mangement and data part */
@@ -466,16 +468,23 @@ static void rteth_839x_hw_reset(struct rteth_ctrl *ctrl)
 
 static void rteth_93xx_hw_reset(struct rteth_ctrl *ctrl)
 {
+	/*
+	 * The counter registers track the number of packets that are allowed to be appended to
+	 * the ring buffer. On RTL93xx a ring overflow must be avoided at all cost. Defensively
+	 * calculate the space by anticipating that only fully filled packets are received.
+	 */
+	int max_frame_size = SKB_MTU + ETH_HLEN + ETH_FCS_LEN + VLAN_HLEN + 4;
+	int frags_per_pkt = DIV_ROUND_UP(max_frame_size, SKB_FRAG_SIZE);
+	int cnt = min(RTETH_RX_RING_SIZE / frags_per_pkt, 0x3ff);
+
 	rteth_nic_reset(ctrl, 0x6);
 
 	/* Setup Head of Line */
 	for (int ring = 0; ring < RTETH_RX_RINGS; ring++) {
-		int cnt = min(RTETH_RX_RING_SIZE, 0x3ff);
 		int shift = (ring % 3) * 10;
 		int reg = (ring / 3) * 4;
 		u32 v;
 
-		/* set ring size */
 		regmap_update_bits(ctrl->map, ctrl->r->dma_if_rx_ring_size + reg,
 				   0x3ff << shift, cnt << shift);
 		/* clear counters by simply writing the current register values back */
@@ -544,9 +553,9 @@ static void rteth_hw_ring_setup(struct rteth_ctrl *ctrl)
 
 static void rteth_838x_hw_en_rxtx(struct rteth_ctrl *ctrl)
 {
-	/* Truncate RX buffer to DEFAULT_MTU bytes, pad TX */
+	/* Truncate RX buffer to SKB_MTU bytes, pad TX */
 	regmap_write(ctrl->map, ctrl->r->dma_if_ctrl,
-		     (DEFAULT_MTU << 16) | RX_TRUNCATE_EN_83XX | TX_PAD_EN_838X);
+		     (SKB_MTU << 16) | RX_TRUNCATE_EN_83XX | TX_PAD_EN_838X);
 
 	rteth_enable_all_rx_irqs(ctrl);
 
@@ -570,7 +579,7 @@ static void rteth_838x_hw_en_rxtx(struct rteth_ctrl *ctrl)
 static void rteth_839x_hw_en_rxtx(struct rteth_ctrl *ctrl)
 {
 	/* Setup CPU-Port: RX Buffer */
-	regmap_write(ctrl->map, ctrl->r->dma_if_ctrl, (DEFAULT_MTU << 5) | RX_TRUNCATE_EN_83XX);
+	regmap_write(ctrl->map, ctrl->r->dma_if_ctrl, (SKB_MTU << 5) | RX_TRUNCATE_EN_83XX);
 
 	rteth_enable_all_rx_irqs(ctrl);
 
@@ -593,8 +602,8 @@ static void rteth_839x_hw_en_rxtx(struct rteth_ctrl *ctrl)
 
 static void rteth_930x_hw_en_rxtx(struct rteth_ctrl *ctrl)
 {
-	/* Setup CPU-Port: RX Buffer truncated at DEFAULT_MTU Bytes */
-	regmap_write(ctrl->map, ctrl->r->dma_if_ctrl, (DEFAULT_MTU << 16) | RX_TRUNCATE_EN_93XX);
+	/* Setup CPU-Port: RX Buffer truncated at SKB_MTU Bytes */
+	regmap_write(ctrl->map, ctrl->r->dma_if_ctrl, (SKB_MTU << 16) | RX_TRUNCATE_EN_93XX);
 
 	rteth_enable_all_rx_irqs(ctrl);
 
@@ -610,8 +619,8 @@ static void rteth_930x_hw_en_rxtx(struct rteth_ctrl *ctrl)
 
 static void rteth_931x_hw_en_rxtx(struct rteth_ctrl *ctrl)
 {
-	/* Setup CPU-Port: RX Buffer truncated at DEFAULT_MTU Bytes */
-	regmap_write(ctrl->map, ctrl->r->dma_if_ctrl, (DEFAULT_MTU << 16) | RX_TRUNCATE_EN_93XX);
+	/* Setup CPU-Port: RX Buffer truncated at SKB_MTU Bytes */
+	regmap_write(ctrl->map, ctrl->r->dma_if_ctrl, (SKB_MTU << 16) | RX_TRUNCATE_EN_93XX);
 
 	rteth_enable_all_rx_irqs(ctrl);
 
@@ -1118,6 +1127,7 @@ static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 	dma_addr_t packet_dma;
 	struct sk_buff *skb;
 	struct dsa_tag tag;
+	bool is_tail;
 
 	while (work_done < budget) {
 		slot = ctrl->rx_data[ring].slot;
@@ -1129,6 +1139,9 @@ static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 
 		packet = &ctrl->rx_data[ring].packet[slot];
 		len = packet->len - ETH_FCS_LEN;
+		is_tail = !packet->more;
+		if (is_tail)
+			work_done++;
 
 		if (unlikely(len > SKB_FRAG_SIZE)) {
 			netdev_err(dev, "invalid packet with %d bytes received\n", len);
@@ -1189,7 +1202,6 @@ recycle:
 		dma_wmb();
 		ctrl->rx_data[ring].ring[slot] = packet_dma | RING_OWN_HW;
 		ctrl->rx_data[ring].slot = (slot + 1) % RTETH_RX_RING_SIZE;
-		work_done++;
 	}
 
 	spin_lock(&ctrl->rx_lock);
@@ -1702,7 +1714,7 @@ static int rteth_probe(struct platform_device *pdev)
 
 	dev->ethtool_ops = &rteth_ethtool_ops;
 	dev->min_mtu = ETH_ZLEN;
-	dev->max_mtu = DEFAULT_MTU;
+	dev->max_mtu = SKB_MTU;
 	dev->features = NETIF_F_RXCSUM;
 	dev->hw_features = NETIF_F_RXCSUM;
 	dev->netdev_ops = ctrl->r->netdev_ops;
