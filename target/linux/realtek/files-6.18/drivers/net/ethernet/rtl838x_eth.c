@@ -1159,7 +1159,7 @@ static struct sk_buff *rteth_create_skb(struct rteth_ctrl *ctrl, int ring,
 
 static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 {
-	int slot, work_done = 0, rx_packets = 0, rx_bytes = 0;
+	int slot, work_done = 0, rx_packets = 0, rx_bytes = 0, rx_dropped = 0, rx_errors = 0;
 	struct rteth_ctrl *ctrl = netdev_priv(dev);
 	unsigned int len, new_offset;
 	struct rteth_packet *packet;
@@ -1187,8 +1187,8 @@ static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 			work_done++;
 
 		if (unlikely(len > SKB_FRAG_SIZE)) {
-			netdev_err(dev, "invalid packet with %d bytes received\n", len);
-			dev->stats.rx_errors++;
+			netdev_err(dev, "invalid fragment with %d bytes received\n", len);
+			rx_errors++;
 			goto recycle;
 		}
 
@@ -1198,7 +1198,8 @@ static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 		 */
 		new_page = page_pool_dev_alloc_frag(pool, &new_offset, PPOOL_FRAG_SIZE);
 		if (unlikely(!new_page)) {
-			dev->stats.rx_dropped++;
+			netdev_err(dev, "fragment allocation failed\n");
+			rx_dropped++;
 			goto recycle;
 		}
 
@@ -1210,7 +1211,7 @@ static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 
 		if (is_tail && skb) {
 			if (unlikely(skb->len < ETH_HLEN + ETH_FCS_LEN)) {
-				dev->stats.rx_errors += rteth_free_skb(&skb);
+				rx_errors += rteth_free_skb(&skb);
 			} else {
 				pskb_trim(skb, skb->len - ETH_FCS_LEN);
 				rx_bytes += skb->len;
@@ -1234,6 +1235,8 @@ recycle:
 	spin_lock(&ctrl->rx_lock);
 	ctrl->r->update_counter(ctrl, ring, work_done);
 	dev->stats.rx_packets += rx_packets;
+	dev->stats.rx_dropped += rx_dropped;
+	dev->stats.rx_errors += rx_errors;
 	dev->stats.rx_bytes += rx_bytes;
 	spin_unlock(&ctrl->rx_lock);
 
