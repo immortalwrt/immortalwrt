@@ -1117,14 +1117,54 @@ static int rteth_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	return NETDEV_TX_OK;
 }
 
+static struct sk_buff *rteth_create_skb(struct rteth_ctrl *ctrl, int ring,
+					struct rteth_packet *packet)
+{
+	struct page_pool *pool = ctrl->rx_qs[ring].page_pool;
+	unsigned int offset = packet->page_offset;
+	struct net_device *dev = ctrl->dev;
+	struct page *page = packet->page;
+	unsigned int len = packet->len;
+	struct sk_buff *skb;
+	struct dsa_tag tag;
+
+	page_pool_dma_sync_for_cpu(pool, page, offset + ctrl->r->skb_headroom, len);
+	skb = napi_build_skb(page_address(page) + offset, PPOOL_FRAG_SIZE);
+	if (unlikely(!skb)) {
+		page_pool_put_full_page(pool, page, true);
+		return NULL;
+	}
+
+	skb_reserve(skb, ctrl->r->skb_headroom);
+	skb_mark_for_recycle(skb);
+	skb_put(skb, len);
+
+	ctrl->r->decode_tag(packet, &tag);
+	if (netdev_uses_dsa(dev)) {
+		if (tag.port < ctrl->r->cpu_port)
+			skb_dst_set_noref(skb, &ctrl->dsa_meta[tag.port]->dst);
+		if (tag.l2_offloaded)
+			skb->offload_fwd_mark = 1;
+	}
+
+	if (dev->features & NETIF_F_RXCSUM) {
+		if (tag.crc_error)
+			skb_checksum_none_assert(skb);
+		else
+			skb->ip_summed = CHECKSUM_UNNECESSARY;
+	}
+
+	return skb;
+}
+
 static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 {
 	int slot, work_done = 0, rx_packets = 0, rx_bytes = 0;
 	struct rteth_ctrl *ctrl = netdev_priv(dev);
-	unsigned int len, new_offset, old_offset;
-	struct page *old_page, *new_page;
+	unsigned int len, new_offset;
 	struct rteth_packet *packet;
 	struct page_pool *pool;
+	struct page *new_page;
 	dma_addr_t packet_dma;
 	struct sk_buff *skb;
 	struct dsa_tag tag;
@@ -1162,41 +1202,10 @@ static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 			goto recycle;
 		}
 
-		old_page = packet->page;
-		old_offset = packet->page_offset;
-
-		packet->page = new_page;
-		packet->page_offset = new_offset;
-		packet->dma = page_pool_get_dma_addr(new_page)
-			    + new_offset + ctrl->r->skb_headroom;
-
-		page_pool_dma_sync_for_cpu(pool, old_page,
-					   old_offset + ctrl->r->skb_headroom, len);
-
-		skb = napi_build_skb(page_address(old_page) + old_offset, PPOOL_FRAG_SIZE);
+		skb = rteth_create_skb(ctrl, ring, packet);
 		if (unlikely(!skb)) {
-			page_pool_put_full_page(pool, old_page, true);
+			netdev_err(dev, "skb creation failed\n");
 			dev->stats.rx_dropped++;
-			goto recycle;
-		}
-
-		skb_reserve(skb, ctrl->r->skb_headroom);
-		skb_mark_for_recycle(skb);
-		skb_put(skb, len);
-
-		ctrl->r->decode_tag(packet, &tag);
-		if (netdev_uses_dsa(dev)) {
-			if (tag.port < ctrl->r->cpu_port)
-				skb_dst_set_noref(skb, &ctrl->dsa_meta[tag.port]->dst);
-			if (tag.l2_offloaded)
-				skb->offload_fwd_mark = 1;
-		}
-
-		if (dev->features & NETIF_F_RXCSUM) {
-			if (tag.crc_error)
-				skb_checksum_none_assert(skb);
-			else
-				skb->ip_summed = CHECKSUM_UNNECESSARY;
 		}
 
 		if (is_tail && skb) {
@@ -1211,6 +1220,11 @@ static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 				skb = NULL;
 			}
 		}
+
+		packet->page = new_page;
+		packet->page_offset = new_offset;
+		packet->dma = page_pool_get_dma_addr(new_page)
+			    + new_offset + ctrl->r->skb_headroom;
 recycle:
 		dma_wmb();
 		ctrl->rx_data[ring].ring[slot] = packet_dma | RING_OWN_HW;
