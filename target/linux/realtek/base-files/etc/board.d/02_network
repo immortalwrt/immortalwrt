@@ -140,6 +140,7 @@ realtek_setup_macs()
 	panasonic,m8eg-pn28080k|\
 	vimin,vm-s100-0800ms|\
 	zyxel,gs1900-10hp-a1|\
+	zyxel,gs1900-10hp-b1|\
 	zyxel,gs1900-16-a1|\
 	zyxel,gs1900-24-a1|\
 	zyxel,gs1900-24-b1|\

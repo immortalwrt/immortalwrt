@@ -396,6 +396,16 @@ define Device/zyxel_gs1900-10hp-a1
 endef
 TARGET_DEVICES += zyxel_gs1900-10hp-a1
 
+define Device/zyxel_gs1900-10hp-b1
+  $(Device/zyxel_gs1900)
+  SOC := rtl8380
+  DEVICE_MODEL := GS1900-10HP
+  DEVICE_VARIANT := B1
+  ZYXEL_VERS := AAZI
+  DEVICE_PACKAGES += kmod-pse-realtek-mcu-uart
+endef
+TARGET_DEVICES += zyxel_gs1900-10hp-b1
+
 define Device/zyxel_gs1900-16-a1
   $(Device/zyxel_gs1900)
   SOC := rtl8382
