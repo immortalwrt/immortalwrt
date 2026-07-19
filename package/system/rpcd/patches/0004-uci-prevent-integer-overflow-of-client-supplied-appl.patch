@@ -1,0 +1,42 @@
+From ee5070bce70a041ccbde011187cd33fb3fd5cf27 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sun, 31 May 2026 17:34:08 +0200
+Subject: uci: prevent integer overflow of client supplied apply timeout
+
+rpc_uci_apply() reads the "timeout" argument as a uint32 into an int and
+scales it with "timeout * 1000" before passing it to
+uloop_timeout_set().  A large value overflows the signed multiplication,
+and a value with the high bit set wraps to a negative int; both cases
+produce a negative millisecond value that schedules the rollback timer
+in the past, firing it immediately instead of after the requested
+window.
+
+Clamp the millisecond value to a sane range, consistent with the
+session timeout and -t argument overflow fixes.
+
+Assisted-by: Claude:claude-opus-4-8
+Link: https://github.com/openwrt/rpcd/pull/34
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit af5d6f431186bcd1847e9d3210652b09dbc90ce5)
+---
+ uci.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+--- a/uci.c
++++ b/uci.c
+@@ -1635,8 +1635,14 @@ rpc_uci_apply(struct ubus_context *ctx,
+ 		globfree(&gl);
+ 
+ 		if (rollback) {
++			/* Clamp to a sane range to avoid signed overflow of the
++			 * millisecond value for a large (or, via uint32 wraparound,
++			 * negative) client supplied timeout, which would otherwise
++			 * fire the rollback timer immediately. */
++			int msecs = (timeout > 0 && timeout <= INT_MAX / 1000)
++				? timeout * 1000 : INT_MAX;
+ 			apply_timer.cb = rpc_uci_apply_timeout;
+-			uloop_timeout_set(&apply_timer, timeout * 1000);
++			uloop_timeout_set(&apply_timer, msecs);
+ 			apply_ctx = ctx;
+ 		}
+ 	}

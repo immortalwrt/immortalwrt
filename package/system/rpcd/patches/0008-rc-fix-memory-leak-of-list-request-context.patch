@@ -1,0 +1,33 @@
+From 4591e70507777ac1bdd5cc3229b38db3a57da14e Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sun, 31 May 2026 17:38:38 +0200
+Subject: rc: fix memory leak of list request context
+
+rc_list() allocates a struct rc_list_context with calloc() and defers
+the request; rc_list_readdir() walks /etc/init.d asynchronously and,
+once the directory is exhausted (or the requested entry was found),
+sends the reply and completes the deferred request -- but never frees
+the context.  free(c) only existed in the early opendir() failure path,
+so every successful "rc list" ubus call leaked the context (which embeds
+a PATH_MAX sized path buffer), slowly exhausting memory.
+
+Free the context in the terminal path after completing the request.
+
+Assisted-by: Claude:claude-opus-4-8
+Link: https://github.com/openwrt/rpcd/pull/34
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit d06d2a81dc29d746c5f13a9cc07ce779b5ed39be)
+---
+ rc.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/rc.c
++++ b/rc.c
+@@ -193,6 +193,7 @@ static void rc_list_readdir(struct rc_li
+ 		closedir(c->dir);
+ 		ubus_send_reply(c->ctx, &c->req, c->buf->head);
+ 		ubus_complete_deferred_request(c->ctx, &c->req, UBUS_STATUS_OK);
++		free(c);
+ 		return;
+ 	}
+ 

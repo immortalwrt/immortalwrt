@@ -1,0 +1,97 @@
+From 3e026930ab4bbf6d741e9586d5ec207a6e6496d4 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sun, 31 May 2026 17:42:56 +0200
+Subject: rc: use a per-request blob_buf for the list reply
+
+rc_list() built the reply in a function-local "static struct blob_buf",
+shared by every invocation, and kept using it across the deferred,
+asynchronous directory walk.  Two overlapping "rc list" requests (the
+walk waits on forked children, so a second request is easily interleaved)
+would both blob_buf_init() and append to the same buffer, corrupting
+each other's reply or crashing.
+
+Move the blob_buf into the per-request context so each request owns its
+own buffer, and free it when the request completes.
+
+Assisted-by: Claude:claude-opus-4-8
+Link: https://github.com/openwrt/rpcd/pull/34
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 75470f4b5124074ff078ed7052bb756e3b694712)
+---
+ rc.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
+
+--- a/rc.c
++++ b/rc.c
+@@ -47,7 +47,7 @@ struct rc_list_context {
+ 	struct uloop_timeout timeout;
+ 	struct ubus_context *ctx;
+ 	struct ubus_request_data req;
+-	struct blob_buf *buf;
++	struct blob_buf buf;
+ 	DIR *dir;
+ 	bool skip_running_check;
+ 	char *req_name;
+@@ -88,17 +88,17 @@ static void rc_list_add_table(struct rc_
+ {
+ 	void *e;
+ 
+-	e = blobmsg_open_table(c->buf, c->entry.d_name);
++	e = blobmsg_open_table(&c->buf, c->entry.d_name);
+ 
+ 	if (c->entry.start >= 0)
+-		blobmsg_add_u16(c->buf, "start", c->entry.start);
++		blobmsg_add_u16(&c->buf, "start", c->entry.start);
+ 	if (c->entry.stop >= 0)
+-		blobmsg_add_u16(c->buf, "stop", c->entry.stop);
+-	blobmsg_add_u8(c->buf, "enabled", c->entry.enabled);
++		blobmsg_add_u16(&c->buf, "stop", c->entry.stop);
++	blobmsg_add_u8(&c->buf, "enabled", c->entry.enabled);
+ 	if (!c->skip_running_check && c->entry.use_procd)
+-		blobmsg_add_u8(c->buf, "running", c->entry.running);
++		blobmsg_add_u8(&c->buf, "running", c->entry.running);
+ 
+-	blobmsg_close_table(c->buf, e);
++	blobmsg_close_table(&c->buf, e);
+ }
+ 
+ static void rpc_list_exec_timeout_cb(struct uloop_timeout *t)
+@@ -191,8 +191,9 @@ static void rc_list_readdir(struct rc_li
+ 	 */
+ 	if (!e || (c->req_name && c->entry.d_name)) {
+ 		closedir(c->dir);
+-		ubus_send_reply(c->ctx, &c->req, c->buf->head);
++		ubus_send_reply(c->ctx, &c->req, c->buf.head);
+ 		ubus_complete_deferred_request(c->ctx, &c->req, UBUS_STATUS_OK);
++		blob_buf_free(&c->buf);
+ 		free(c->req_name);
+ 		free(c);
+ 		return;
+@@ -264,24 +265,23 @@ static int rc_list(struct ubus_context *
+ 		   struct blob_attr *msg)
+ {
+ 	struct blob_attr *tb[__RC_LIST_MAX];
+-	static struct blob_buf buf;
+ 	struct rc_list_context *c;
+ 
+ 	blobmsg_parse(rc_list_policy, __RC_LIST_MAX, tb, blobmsg_data(msg), blobmsg_data_len(msg));
+ 
+-	blob_buf_init(&buf, 0);
+-
+ 	c = calloc(1, sizeof(*c));
+ 	if (!c)
+ 		return UBUS_STATUS_UNKNOWN_ERROR;
+ 
+ 	c->ctx = ctx;
+-	c->buf = &buf;
+ 	c->dir = opendir("/etc/init.d");
+ 	if (!c->dir) {
+ 		free(c);
+ 		return UBUS_STATUS_UNKNOWN_ERROR;
+ 	}
++
++	blob_buf_init(&c->buf, 0);
++
+ 	if (tb[RC_LIST_SKIP_RUNNING_CHECK])
+ 		c->skip_running_check = blobmsg_get_bool(tb[RC_LIST_SKIP_RUNNING_CHECK]);
+ 	/* Copy the requested name: msg (and the ctx receive buffer it points

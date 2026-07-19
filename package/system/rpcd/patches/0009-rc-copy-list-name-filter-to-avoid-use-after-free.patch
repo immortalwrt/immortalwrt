@@ -1,0 +1,57 @@
+From 361104e320e1a5edd8fe52a28bad7bf193e83cc1 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sun, 31 May 2026 17:41:10 +0200
+Subject: rc: copy list "name" filter to avoid use-after-free
+
+rc_list() stored the "name" argument as a bare pointer into the parsed
+request message and then deferred the request.  The init.d directory is
+walked asynchronously across multiple uloop iterations (each script's
+"running" check is a forked child), during which the single per-context
+ubus receive buffer that backs the message is overwritten by any other
+incoming ubus request.  c->req_name then points at unrelated/freed data
+and is compared against directory entries, leading to wrong matches or a
+crash.
+
+Duplicate the name into the context and release it when the request
+completes.
+
+Assisted-by: Claude:claude-opus-4-8
+Link: https://github.com/openwrt/rpcd/pull/34
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 0de6668115593f2d316070573d12c29409c89078)
+---
+ rc.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+--- a/rc.c
++++ b/rc.c
+@@ -50,7 +50,7 @@ struct rc_list_context {
+ 	struct blob_buf *buf;
+ 	DIR *dir;
+ 	bool skip_running_check;
+-	const char *req_name;
++	char *req_name;
+ 
+ 	/* Info about currently processed init.d entry */
+ 	struct {
+@@ -193,6 +193,7 @@ static void rc_list_readdir(struct rc_li
+ 		closedir(c->dir);
+ 		ubus_send_reply(c->ctx, &c->req, c->buf->head);
+ 		ubus_complete_deferred_request(c->ctx, &c->req, UBUS_STATUS_OK);
++		free(c->req_name);
+ 		free(c);
+ 		return;
+ 	}
+@@ -283,8 +284,11 @@ static int rc_list(struct ubus_context *
+ 	}
+ 	if (tb[RC_LIST_SKIP_RUNNING_CHECK])
+ 		c->skip_running_check = blobmsg_get_bool(tb[RC_LIST_SKIP_RUNNING_CHECK]);
++	/* Copy the requested name: msg (and the ctx receive buffer it points
++	 * into) is only valid during this call, but req_name is dereferenced
++	 * later from the deferred, asynchronous directory walk. */
+ 	if (tb[RC_LIST_NAME])
+-		c->req_name = blobmsg_get_string(tb[RC_LIST_NAME]);
++		c->req_name = strdup(blobmsg_get_string(tb[RC_LIST_NAME]));
+ 
+ 	ubus_defer_request(ctx, req, &c->req);
+ 

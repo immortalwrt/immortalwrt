@@ -1,0 +1,103 @@
+From af062601c6b2dc1da27a24d08cb8d11814cbc09e Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sun, 31 May 2026 18:14:05 +0200
+Subject: ucode: bound recursion when converting blob arguments to ucode values
+
+rpc_ucode_blob_array_to_ucv()/rpc_ucode_blob_to_ucv() recurse once per
+nesting level of the incoming request message, which is fully attacker
+controlled.  ubus permits messages up to UBUS_MAX_MSGLEN (1 MiB) and
+libubox enforces no nesting limit, so a deeply nested array/table
+argument to a ucode plugin method can drive tens of thousands of
+recursion levels and overflow the stack, crashing rpcd.
+
+Thread a depth counter through the conversion and stop descending past
+RPC_UCODE_MAX_NESTING (32) levels, which is far beyond any legitimate
+ubus message.  Over-deep subtrees become null values instead of
+crashing.
+
+Assisted-by: Claude:claude-opus-4-8
+Link: https://github.com/openwrt/rpcd/pull/34
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit cd1d9588da6368af1dbc99596ded90d7e5e027e1)
+---
+ ucode.c | 26 ++++++++++++++++++--------
+ 1 file changed, 18 insertions(+), 8 deletions(-)
+
+--- a/ucode.c
++++ b/ucode.c
+@@ -34,6 +34,11 @@
+ 
+ #define RPC_UCSCRIPT_DIRECTORY INSTALL_PREFIX "/share/rpcd/ucode"
+ 
++/* Bound the recursion when converting a (client supplied) blob message into
++ * ucode values, so a deeply nested argument cannot overflow the stack. Real
++ * ubus messages never come anywhere near this depth. */
++#define RPC_UCODE_MAX_NESTING 32
++
+ static struct blob_buf buf;
+ static int request_timeout;
+ 
+@@ -173,23 +178,28 @@ rpc_ucode_ucv_object_to_blob(uc_value_t
+ }
+ 
+ static uc_value_t *
+-rpc_ucode_blob_to_ucv(uc_vm_t *vm, struct blob_attr *attr, bool table, const char **name);
++rpc_ucode_blob_to_ucv(uc_vm_t *vm, struct blob_attr *attr, bool table, const char **name, int depth);
+ 
+ static uc_value_t *
+-rpc_ucode_blob_array_to_ucv(uc_vm_t *vm, struct blob_attr *attr, size_t len, bool table)
++rpc_ucode_blob_array_to_ucv(uc_vm_t *vm, struct blob_attr *attr, size_t len, bool table, int depth)
+ {
+-	uc_value_t *o = table ? ucv_object_new(vm) : ucv_array_new(vm);
++	uc_value_t *o;
+ 	uc_value_t *v;
+ 	struct blob_attr *pos;
+ 	size_t rem = len;
+ 	const char *name;
+ 
++	if (depth > RPC_UCODE_MAX_NESTING)
++		return NULL;
++
++	o = table ? ucv_object_new(vm) : ucv_array_new(vm);
++
+ 	if (!o)
+ 		return NULL;
+ 
+ 	__blob_for_each_attr(pos, attr, rem) {
+ 		name = NULL;
+-		v = rpc_ucode_blob_to_ucv(vm, pos, table, &name);
++		v = rpc_ucode_blob_to_ucv(vm, pos, table, &name, depth);
+ 
+ 		if (table && name)
+ 			ucv_object_add(o, name, v);
+@@ -203,7 +213,7 @@ rpc_ucode_blob_array_to_ucv(uc_vm_t *vm,
+ }
+ 
+ static uc_value_t *
+-rpc_ucode_blob_to_ucv(uc_vm_t *vm, struct blob_attr *attr, bool table, const char **name)
++rpc_ucode_blob_to_ucv(uc_vm_t *vm, struct blob_attr *attr, bool table, const char **name, int depth)
+ {
+ 	void *data;
+ 	int len;
+@@ -245,10 +255,10 @@ rpc_ucode_blob_to_ucv(uc_vm_t *vm, struc
+ 		return ucv_string_new(data);
+ 
+ 	case BLOBMSG_TYPE_ARRAY:
+-		return rpc_ucode_blob_array_to_ucv(vm, data, len, false);
++		return rpc_ucode_blob_array_to_ucv(vm, data, len, false, depth + 1);
+ 
+ 	case BLOBMSG_TYPE_TABLE:
+-		return rpc_ucode_blob_array_to_ucv(vm, data, len, true);
++		return rpc_ucode_blob_array_to_ucv(vm, data, len, true, depth + 1);
+ 
+ 	default:
+ 		return NULL;
+@@ -313,7 +323,7 @@ rpc_ucode_validate_call_args(struct ubus
+ 		}
+ 	}
+ 
+-	*res = rpc_ucode_blob_array_to_ucv(&script->vm, blob_data(msg), blob_len(msg), true);
++	*res = rpc_ucode_blob_array_to_ucv(&script->vm, blob_data(msg), blob_len(msg), true, 0);
+ 
+ 	return UBUS_STATUS_OK;
+ 

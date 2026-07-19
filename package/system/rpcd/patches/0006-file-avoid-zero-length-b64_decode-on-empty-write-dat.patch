@@ -1,0 +1,36 @@
+From a47b5b9cbfcdbcc446ef411a0a594b76b2925ce2 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sun, 31 May 2026 18:08:25 +0200
+Subject: file: avoid zero-length b64_decode() on empty write data
+
+rpc_file_write() computes data_len as blobmsg_data_len() - 1, which is 0
+for an empty "data" string.  With base64 enabled it then called
+b64_decode(data, data, 0); b64_decode() asserts dest size > 0, so a
+request like file.write {"data":"","base64":true} aborts the daemon when
+libubox is built with assertions enabled (and is a pointless call
+otherwise).
+
+Skip the decode when there is no data; the file is still created/
+truncated and zero bytes are written, which is the correct result.
+
+Assisted-by: Claude:claude-opus-4-8
+Link: https://github.com/openwrt/rpcd/pull/34
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 79c8087c8e8eb8933980fa6fc584703526388446)
+---
+ file.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+--- a/file.c
++++ b/file.c
+@@ -405,7 +405,9 @@ rpc_file_write(struct ubus_context *ctx,
+ 	if (fd < 0)
+ 		return rpc_errno_status();
+ 
+-	if (tb[RPC_F_RW_BASE64] && blobmsg_get_bool(tb[RPC_F_RW_BASE64]))
++	/* data_len can be 0 for an empty "data" string; skip the decode in that
++	 * case since b64_decode() asserts on a zero destination size. */
++	if (data_len > 0 && tb[RPC_F_RW_BASE64] && blobmsg_get_bool(tb[RPC_F_RW_BASE64]))
+ 	{
+ 		data_len = b64_decode(data, data, data_len);
+ 		if (data_len < 0)
