@@ -12,7 +12,7 @@
 --- a/Source/cmake.cxx
 +++ b/Source/cmake.cxx
 @@ -134,7 +134,7 @@
- #  include "cmGlobalGhsMultiGenerator.h"
+ #  endif
  #endif
  
 -#if defined(__APPLE__)
