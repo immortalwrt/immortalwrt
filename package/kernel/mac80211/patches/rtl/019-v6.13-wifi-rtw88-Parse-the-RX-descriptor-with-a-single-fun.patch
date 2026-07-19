@@ -304,7 +304,7 @@ Link: https://patch.msgid.link/913f1747-38fc-4409-85a4-57bb9cee506b@gmail.com
  static void
  rtw8822b_set_tx_power_index_by_rate(struct rtw_dev *rtwdev, u8 path,
  				    u8 rs, u32 *phy_pwr_idx)
-@@ -2177,7 +2136,7 @@ static const struct rtw_prioq_addrs prio
+@@ -2178,7 +2137,7 @@ static const struct rtw_prioq_addrs prio
  static const struct rtw_chip_ops rtw8822b_ops = {
  	.phy_set_param		= rtw8822b_phy_set_param,
  	.read_efuse		= rtw8822b_read_efuse,
@@ -535,7 +535,7 @@ Link: https://patch.msgid.link/913f1747-38fc-4409-85a4-57bb9cee506b@gmail.com
  				struct rtw_rx_pkt_stat *pkt_stat);
 --- a/drivers/net/wireless/realtek/rtw88/sdio.c
 +++ b/drivers/net/wireless/realtek/rtw88/sdio.c
-@@ -983,8 +983,7 @@ static void rtw_sdio_rxfifo_recv(struct
+@@ -985,8 +985,7 @@ static void rtw_sdio_rxfifo_recv(struct
  
  	while (true) {
  		rx_desc = skb->data;
@@ -547,7 +547,7 @@ Link: https://patch.msgid.link/913f1747-38fc-4409-85a4-57bb9cee506b@gmail.com
  
 --- a/drivers/net/wireless/realtek/rtw88/usb.c
 +++ b/drivers/net/wireless/realtek/rtw88/usb.c
-@@ -625,8 +625,8 @@ static void rtw_usb_rx_handler(struct wo
+@@ -634,8 +634,8 @@ static void rtw_usb_rx_handler(struct wo
  
  		do {
  			rx_desc = skb->data;

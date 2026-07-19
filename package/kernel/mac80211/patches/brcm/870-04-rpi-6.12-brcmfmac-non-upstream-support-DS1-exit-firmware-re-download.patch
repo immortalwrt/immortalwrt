@@ -266,7 +266,7 @@ JIRA: SWWLAN-136577
  
  	return intstatus;
  }
-@@ -2580,6 +2595,182 @@ static int brcmf_sdio_intr_rstatus(struc
+@@ -2581,6 +2596,182 @@ static int brcmf_sdio_intr_rstatus(struc
  	return ret;
  }
  
@@ -449,7 +449,7 @@ JIRA: SWWLAN-136577
  static void brcmf_sdio_dpc(struct brcmf_sdio *bus)
  {
  	struct brcmf_sdio_dev *sdiod = bus->sdiodev;
-@@ -2651,8 +2842,11 @@ static void brcmf_sdio_dpc(struct brcmf_
+@@ -2652,8 +2843,11 @@ static void brcmf_sdio_dpc(struct brcmf_
  
  	/* Handle host mailbox indication */
  	if (intstatus & I_HMB_HOST_INT) {
@@ -462,7 +462,7 @@ JIRA: SWWLAN-136577
  	}
  
  	sdio_release_host(bus->sdiodev->func1);
-@@ -2697,7 +2891,7 @@ static void brcmf_sdio_dpc(struct brcmf_
+@@ -2698,7 +2892,7 @@ static void brcmf_sdio_dpc(struct brcmf_
  	brcmf_sdio_clrintr(bus);
  
  	if (bus->ctrl_frame_stat && (bus->clkstate == CLK_AVAIL) &&
@@ -471,7 +471,7 @@ JIRA: SWWLAN-136577
  		sdio_claim_host(bus->sdiodev->func1);
  		if (bus->ctrl_frame_stat) {
  			err = brcmf_sdio_tx_ctrlframe(bus,  bus->ctrl_frame_buf,
-@@ -3567,6 +3761,10 @@ static int brcmf_sdio_bus_preinit(struct
+@@ -3568,6 +3762,10 @@ static int brcmf_sdio_bus_preinit(struct
  	if (err < 0)
  		goto done;
  
@@ -482,7 +482,7 @@ JIRA: SWWLAN-136577
  	bus->tx_hdrlen = SDPCM_HWHDR_LEN + SDPCM_SWHDR_LEN;
  	if (sdiodev->sg_support) {
  		bus->txglom = false;
-@@ -4215,7 +4413,7 @@ static void brcmf_sdio_firmware_callback
+@@ -4216,7 +4414,7 @@ static void brcmf_sdio_firmware_callback
  	u8 saveclk, bpreq;
  	u8 devctl;
  
@@ -491,7 +491,7 @@ JIRA: SWWLAN-136577
  
  	if (err)
  		goto fail;
-@@ -4392,12 +4590,25 @@ static void brcmf_sdio_firmware_callback
+@@ -4393,12 +4591,25 @@ static void brcmf_sdio_firmware_callback
  	}
  
  	/* Attach to the common layer, reserve hdr space */
@@ -518,7 +518,7 @@ JIRA: SWWLAN-136577
  	/* ready */
  	return;
  
-@@ -4640,3 +4851,40 @@ int brcmf_sdio_sleep(struct brcmf_sdio *
+@@ -4642,3 +4853,40 @@ int brcmf_sdio_sleep(struct brcmf_sdio *
  
  	return ret;
  }
