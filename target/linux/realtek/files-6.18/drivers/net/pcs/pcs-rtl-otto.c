@@ -4119,7 +4119,7 @@ static int rtpcs_probe(struct platform_device *pdev)
 	mutex_init(&ctrl->lock);
 
 	ctrl->dev = dev;
-	ctrl->cfg = (const struct rtpcs_config *)device_get_match_data(ctrl->dev);
+	ctrl->cfg = device_get_match_data(ctrl->dev);
 	ctrl->map = syscon_node_to_regmap(np->parent);
 	if (IS_ERR(ctrl->map))
 		return PTR_ERR(ctrl->map);
