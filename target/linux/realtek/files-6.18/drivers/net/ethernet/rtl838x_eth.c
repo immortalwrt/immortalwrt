@@ -69,12 +69,13 @@ struct rteth_packet {
 	unsigned int		page_offset;
 } __packed __aligned(1);
 
-struct rteth_rx {
+/* SOC/driver shared coherent ring descriptors */
+struct rteth_rx_data {
 	dma_addr_t		ring[RTETH_RX_RING_SIZE];
 	struct rteth_packet	packet[RTETH_RX_RING_SIZE];
 };
 
-struct rteth_tx {
+struct rteth_tx_data {
 	int			slot;
 	dma_addr_t		ring[RTETH_TX_RING_SIZE];
 	struct rteth_packet	packet[RTETH_TX_RING_SIZE];
@@ -125,11 +126,11 @@ struct rteth_ctrl {
 	dma_addr_t		rx_dma;
 	spinlock_t		rx_lock;
 	struct rteth_rx_info	rx_info[RTETH_RX_RINGS];
-	struct rteth_rx		*rx_data;
+	struct rteth_rx_data	*rx_data;
 	/* transmit handling */
 	dma_addr_t		tx_dma;
 	spinlock_t		tx_lock;
-	struct rteth_tx		*tx_data;
+	struct rteth_tx_data	*tx_data;
 };
 
 static void rteth_838x_create_tx_header(struct rteth_packet *h, unsigned int port, int prio)
@@ -544,13 +545,13 @@ static void rteth_hw_ring_setup(struct rteth_ctrl *ctrl)
 {
 	for (int r = 0; r < RTETH_RX_RINGS; r++)
 		regmap_write(ctrl->map, ctrl->r->dma_rx_base + r * 4,
-			     ctrl->rx_dma +
-			     r * sizeof(struct rteth_rx) + offsetof(struct rteth_rx, ring));
+			     ctrl->rx_dma + r * sizeof(struct rteth_rx_data) +
+			     offsetof(struct rteth_rx_data, ring));
 
 	for (int r = 0; r < RTETH_TX_RINGS; r++)
 		regmap_write(ctrl->map, ctrl->r->dma_tx_base + r * 4,
-			     ctrl->tx_dma +
-			     r * sizeof(struct rteth_tx) + offsetof(struct rteth_tx, ring));
+			     ctrl->tx_dma + r * sizeof(struct rteth_tx_data) +
+			     offsetof(struct rteth_tx_data, ring));
 }
 
 static void rteth_838x_hw_en_rxtx(struct rteth_ctrl *ctrl)
@@ -707,8 +708,8 @@ static int rteth_setup_ring_buffer(struct rteth_ctrl *ctrl)
 			packet->page = page;
 			packet->page_offset = offset;
 			ctrl->rx_data[r].ring[i] = ctrl->rx_dma +
-						   sizeof(struct rteth_rx) * r +
-						   offsetof(struct rteth_rx, packet) +
+						   sizeof(struct rteth_rx_data) * r +
+						   offsetof(struct rteth_rx_data, packet) +
 						   sizeof(struct rteth_packet) * i +
 						   RING_OWN_HW;
 		}
@@ -722,8 +723,8 @@ static int rteth_setup_ring_buffer(struct rteth_ctrl *ctrl)
 		for (int i = 0; i < RTETH_TX_RING_SIZE; i++) {
 			ctrl->tx_data[r].packet[i].skb = NULL;
 			ctrl->tx_data[r].ring[i] = ctrl->tx_dma +
-						   sizeof(struct rteth_tx) * r +
-						   offsetof(struct rteth_tx, packet) +
+						   sizeof(struct rteth_tx_data) * r +
+						   offsetof(struct rteth_tx_data, packet) +
 						   sizeof(struct rteth_packet) * i;
 		}
 
@@ -1771,9 +1772,9 @@ static int rteth_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
-	ctrl->rx_data = dmam_alloc_coherent(&pdev->dev, sizeof(struct rteth_rx) * RTETH_RX_RINGS,
+	ctrl->rx_data = dmam_alloc_coherent(&pdev->dev, sizeof(struct rteth_rx_data) * RTETH_RX_RINGS,
 					    &ctrl->rx_dma, GFP_KERNEL);
-	ctrl->tx_data = dmam_alloc_coherent(&pdev->dev, sizeof(struct rteth_tx) * RTETH_TX_RINGS,
+	ctrl->tx_data = dmam_alloc_coherent(&pdev->dev, sizeof(struct rteth_tx_data) * RTETH_TX_RINGS,
 					    &ctrl->tx_dma, GFP_KERNEL);
 
 	spin_lock_init(&ctrl->lock);
