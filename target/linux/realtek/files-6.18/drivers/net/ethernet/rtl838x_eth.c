@@ -65,8 +65,6 @@ struct rteth_packet {
 	u16			cpu_tag[10];
 	/* software mangement and data part */
 	struct sk_buff		*skb;
-	struct page		*page;
-	unsigned int		page_offset;
 } __packed __aligned(1);
 
 /* SOC/driver shared coherent ring descriptors */
@@ -88,6 +86,8 @@ struct rteth_rx_info {
 	struct napi_struct	napi;
 	struct page_pool	*pool;
 	struct sk_buff		*skb; /* unprocessed SKB from last receive loop */
+	struct page		*page[RTETH_RX_RING_SIZE];
+	unsigned int		offset[RTETH_RX_RING_SIZE];
 };
 
 struct rteth_tx_info {
@@ -661,18 +661,18 @@ static void rteth_free_tx_buffers(struct rteth_ctrl *ctrl)
 
 static void rteth_free_rx_buffers(struct rteth_ctrl *ctrl)
 {
-	struct rteth_packet *packet;
+	struct rteth_rx_info *rx_info;
 
 	for (int r = 0; r < RTETH_RX_RINGS; r++) {
+		rx_info = &ctrl->rx_info[r];
 		for (int i = 0; i < RTETH_RX_RING_SIZE; i++) {
-			packet = &ctrl->rx_data[r].packet[i];
-			if (!packet->page)
+			if (!rx_info->page[i])
 				continue;
 
-			page_pool_put_full_page(ctrl->rx_info[r].pool, packet->page, true);
-			packet->page = NULL;
+			page_pool_put_full_page(rx_info->pool, rx_info->page[i], true);
+			rx_info->page[i] = NULL;
 		}
-		rteth_free_skb(&ctrl->rx_info[r].skb);
+		rteth_free_skb(&rx_info->skb);
 	}
 }
 
@@ -710,8 +710,8 @@ static int rteth_setup_ring_buffer(struct rteth_ctrl *ctrl)
 			packet->size = SKB_FRAG_SIZE;
 			packet->dma = page_pool_get_dma_addr(page)
 				    + ctrl->r->skb_headroom + offset;
-			packet->page = page;
-			packet->page_offset = offset;
+			ctrl->rx_info[r].page[i] = page;
+			ctrl->rx_info[r].offset[i] = offset;
 			ctrl->rx_data[r].ring[i] = ctrl->rx_dma +
 						   sizeof(struct rteth_rx_data) * r +
 						   offsetof(struct rteth_rx_data, packet) +
@@ -1130,10 +1130,10 @@ static int rteth_start_xmit(struct sk_buff *skb, struct net_device *dev)
 static struct sk_buff *rteth_create_skb(struct rteth_ctrl *ctrl, int ring, int slot)
 {
 	struct rteth_packet *packet = &ctrl->rx_data[ring].packet[slot];
+	unsigned int offset = ctrl->rx_info[ring].offset[slot];
+	struct page *page = ctrl->rx_info[ring].page[slot];
 	struct page_pool *pool = ctrl->rx_info[ring].pool;
-	unsigned int offset = packet->page_offset;
 	struct net_device *dev = ctrl->dev;
-	struct page *page = packet->page;
 	unsigned int len = packet->len;
 	struct sk_buff *skb;
 	struct dsa_tag tag;
@@ -1170,14 +1170,14 @@ static struct sk_buff *rteth_create_skb(struct rteth_ctrl *ctrl, int ring, int s
 static int rteth_append_skb(struct sk_buff *skb, struct rteth_ctrl *ctrl, int ring, int slot)
 {
 	struct rteth_packet *packet = &ctrl->rx_data[ring].packet[slot];
+	unsigned int offset = ctrl->rx_info[ring].offset[slot];
+	struct page *page = ctrl->rx_info[ring].page[slot];
 	unsigned int nr_frags = skb_shinfo(skb)->nr_frags;
 	struct page_pool *pool = ctrl->rx_info[ring].pool;
-	unsigned int offset = packet->page_offset;
-	struct page *page = packet->page;
 	unsigned int len = packet->len;
 
 	if (nr_frags >= MAX_SKB_FRAGS) {
-		page_pool_put_full_page(pool, packet->page, true);
+		page_pool_put_full_page(pool, page, true);
 		return -ENOMEM;
 	}
 
@@ -1265,8 +1265,8 @@ static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 			}
 		}
 
-		packet->page = new_page;
-		packet->page_offset = new_offset;
+		ctrl->rx_info[ring].page[slot] = new_page;
+		ctrl->rx_info[ring].offset[slot] = new_offset;
 		packet->dma = page_pool_get_dma_addr(new_page)
 			    + new_offset + ctrl->r->skb_headroom;
 recycle:
