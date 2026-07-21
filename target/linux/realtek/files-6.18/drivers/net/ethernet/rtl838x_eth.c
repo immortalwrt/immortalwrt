@@ -63,8 +63,6 @@ struct rteth_packet {
 	u16			offset:15;
 	u16			len;
 	u16			cpu_tag[10];
-	/* software mangement and data part */
-	struct sk_buff		*skb;
 } __packed __aligned(1);
 
 /* SOC/driver shared coherent ring descriptors */
@@ -92,6 +90,7 @@ struct rteth_rx_info {
 
 struct rteth_tx_info {
 	int			slot;
+	struct sk_buff		*skb[RTETH_TX_RING_SIZE];
 };
 
 struct n_event {
@@ -644,17 +643,19 @@ static void rteth_931x_hw_en_rxtx(struct rteth_ctrl *ctrl)
 
 static void rteth_free_tx_buffers(struct rteth_ctrl *ctrl)
 {
-	struct rteth_packet *packet;
+	struct rteth_tx_info *tx_info;
 
 	for (int r = 0; r < RTETH_TX_RINGS; r++) {
+		tx_info = &ctrl->tx_info[r];
 		for (int i = 0; i < RTETH_TX_RING_SIZE; i++) {
-			packet = &ctrl->tx_data[r].packet[i];
-			if (!packet->skb)
+			dma_addr_t dma = ctrl->tx_data[r].packet[i].dma;
+
+			if (!tx_info->skb[i])
 				continue;
 
-			dma_unmap_single(&ctrl->pdev->dev, packet->dma,
-					 packet->skb->len, DMA_TO_DEVICE);
-			rteth_free_skb(&packet->skb);
+			dma_unmap_single(&ctrl->pdev->dev, dma,
+					 tx_info->skb[i]->len, DMA_TO_DEVICE);
+			rteth_free_skb(&tx_info->skb[i]);
 		}
 	}
 }
@@ -726,7 +727,7 @@ static int rteth_setup_ring_buffer(struct rteth_ctrl *ctrl)
 
 	for (int r = 0; r < RTETH_TX_RINGS; r++) {
 		for (int i = 0; i < RTETH_TX_RING_SIZE; i++) {
-			ctrl->tx_data[r].packet[i].skb = NULL;
+			ctrl->tx_info[r].skb[i] = NULL;
 			ctrl->tx_data[r].ring[i] = ctrl->tx_dma +
 						   sizeof(struct rteth_tx_data) * r +
 						   offsetof(struct rteth_tx_data, packet) +
@@ -1057,6 +1058,7 @@ static int rteth_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	int port, val, slot, len = skb->len, ring = skb_get_queue_mapping(skb);
 	struct rteth_ctrl *ctrl = netdev_priv(dev);
 	struct rteth_packet *packet;
+	struct sk_buff **packet_skb;
 	dma_addr_t packet_dma;
 
 	port = rteth_get_dsa_port(skb, dev);
@@ -1074,6 +1076,7 @@ static int rteth_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	slot = ctrl->tx_info[ring].slot;
 	packet = &ctrl->tx_data[ring].packet[slot];
 	packet_dma = ctrl->tx_data[ring].ring[slot];
+	packet_skb = &ctrl->tx_info[ring].skb[slot];
 
 	if (unlikely(packet_dma & RING_OWN_HW)) {
 		netif_stop_subqueue(dev, ring);
@@ -1083,17 +1086,17 @@ static int rteth_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		return NETDEV_TX_BUSY;
 	}
 
-	if (likely(packet->skb)) {
+	if (likely(*packet_skb)) {
 		/* cleanup old data of this slot */
-		dma_unmap_single(&ctrl->pdev->dev, packet->dma, packet->skb->len, DMA_TO_DEVICE);
-		dev_consume_skb_any(packet->skb);
+		dma_unmap_single(&ctrl->pdev->dev, packet->dma, (*packet_skb)->len, DMA_TO_DEVICE);
+		dev_consume_skb_any(*packet_skb);
 	}
 
+	*packet_skb = skb;
 	packet->len = len;
-	packet->skb = skb;
 	packet->dma = dma_map_single(&ctrl->pdev->dev, skb->data, len, DMA_TO_DEVICE);
 	if (unlikely(dma_mapping_error(&ctrl->pdev->dev, packet->dma))) {
-		dev->stats.tx_errors += rteth_free_skb(&packet->skb);
+		dev->stats.tx_errors += rteth_free_skb(packet_skb);
 		return NETDEV_TX_OK;
 	}
 
