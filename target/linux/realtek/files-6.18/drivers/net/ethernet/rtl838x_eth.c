@@ -1127,9 +1127,9 @@ static int rteth_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	return NETDEV_TX_OK;
 }
 
-static struct sk_buff *rteth_create_skb(struct rteth_ctrl *ctrl, int ring,
-					struct rteth_packet *packet)
+static struct sk_buff *rteth_create_skb(struct rteth_ctrl *ctrl, int ring, int slot)
 {
+	struct rteth_packet *packet = &ctrl->rx_data[ring].packet[slot];
 	struct page_pool *pool = ctrl->rx_info[ring].pool;
 	unsigned int offset = packet->page_offset;
 	struct net_device *dev = ctrl->dev;
@@ -1167,13 +1167,14 @@ static struct sk_buff *rteth_create_skb(struct rteth_ctrl *ctrl, int ring,
 	return skb;
 }
 
-static int rteth_append_skb(struct sk_buff *skb, struct rteth_ctrl *ctrl, int ring,
-			     struct rteth_packet *packet)
+static int rteth_append_skb(struct sk_buff *skb, struct rteth_ctrl *ctrl, int ring, int slot)
 {
-	unsigned int nr_frags = skb_shinfo(skb)->nr_frags, len = packet->len;
+	struct rteth_packet *packet = &ctrl->rx_data[ring].packet[slot];
+	unsigned int nr_frags = skb_shinfo(skb)->nr_frags;
 	struct page_pool *pool = ctrl->rx_info[ring].pool;
 	unsigned int offset = packet->page_offset;
 	struct page *page = packet->page;
+	unsigned int len = packet->len;
 
 	if (nr_frags >= MAX_SKB_FRAGS) {
 		page_pool_put_full_page(pool, packet->page, true);
@@ -1239,13 +1240,13 @@ static int rteth_hw_receive(struct net_device *dev, int ring, int budget)
 		}
 
 		if (is_head) {
-			skb = rteth_create_skb(ctrl, ring, packet);
+			skb = rteth_create_skb(ctrl, ring, slot);
 			if (unlikely(!skb)) {
 				netdev_err(dev, "skb creation failed\n");
 				rx_dropped++;
 			}
 		} else {
-			if (unlikely(rteth_append_skb(skb, ctrl, ring, packet))) {
+			if (unlikely(rteth_append_skb(skb, ctrl, ring, slot))) {
 				netdev_err(dev, "skb append failed\n");
 				rx_dropped += rteth_free_skb(&skb);
 			}
