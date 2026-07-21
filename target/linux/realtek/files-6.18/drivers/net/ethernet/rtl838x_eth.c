@@ -76,9 +76,22 @@ struct rteth_rx_data {
 };
 
 struct rteth_tx_data {
-	int			slot;
 	dma_addr_t		ring[RTETH_TX_RING_SIZE];
 	struct rteth_packet	packet[RTETH_TX_RING_SIZE];
+};
+
+/* driver-only ring descriptors */
+struct rteth_rx_info {
+	int			id;
+	int			slot;
+	struct rteth_ctrl	*ctrl;
+	struct napi_struct	napi;
+	struct page_pool	*pool;
+	struct sk_buff		*skb; /* unprocessed SKB from last receive loop */
+};
+
+struct rteth_tx_info {
+	int			slot;
 };
 
 struct n_event {
@@ -101,15 +114,6 @@ struct notify_b {
 	u32			reserved2[8];
 };
 
-struct rteth_rx_info {
-	int id;
-	int slot;
-	struct rteth_ctrl *ctrl;
-	struct napi_struct napi;
-	struct page_pool *pool;
-	struct sk_buff *skb;
-};
-
 struct rteth_ctrl {
 	struct regmap *map;
 	struct net_device *dev;
@@ -130,6 +134,7 @@ struct rteth_ctrl {
 	/* transmit handling */
 	dma_addr_t		tx_dma;
 	spinlock_t		tx_lock;
+	struct rteth_tx_info	tx_info[RTETH_TX_RINGS];
 	struct rteth_tx_data	*tx_data;
 };
 
@@ -729,7 +734,7 @@ static int rteth_setup_ring_buffer(struct rteth_ctrl *ctrl)
 		}
 
 		ctrl->tx_data[r].ring[RTETH_TX_RING_SIZE - 1] |= RING_WRAP;
-		ctrl->tx_data[r].slot = 0;
+		ctrl->tx_info[r].slot = 0;
 	}
 
 	if (highmem)
@@ -1066,7 +1071,7 @@ static int rteth_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		return NETDEV_TX_OK;
 	}
 
-	slot = ctrl->tx_data[ring].slot;
+	slot = ctrl->tx_info[ring].slot;
 	packet = &ctrl->tx_data[ring].packet[slot];
 	packet_dma = ctrl->tx_data[ring].ring[slot];
 
@@ -1098,7 +1103,7 @@ static int rteth_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	/* Hand packet over to switch */
 	dma_wmb();
 	ctrl->tx_data[ring].ring[slot] = packet_dma | RING_OWN_HW;
-	ctrl->tx_data[ring].slot = (slot + 1) % RTETH_TX_RING_SIZE;
+	ctrl->tx_info[ring].slot = (slot + 1) % RTETH_TX_RING_SIZE;
 	wmb();
 
 	spin_lock(&ctrl->tx_lock);
