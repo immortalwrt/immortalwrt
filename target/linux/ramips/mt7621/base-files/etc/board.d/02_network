@@ -101,6 +101,7 @@ ramips_setup_interfaces()
 	beeline,smartbox-flash|\
 	beeline,smartbox-giga|\
 	c-life,xg1|\
+	comfast,cf-ew84|\
 	elecom,wmc-x1800gst|\
 	elecom,wrc-x1800gs|\
 	gemtek,wvrtm-127acn|\
