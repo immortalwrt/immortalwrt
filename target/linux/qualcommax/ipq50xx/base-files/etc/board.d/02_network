@@ -26,7 +26,7 @@ ipq50xx_setup_interfaces()
 		;;
 	linksys,mx6200|\
 	wpx8324,ap-mp03-5-c1)
-		ucidef_set_interface_lan "lan" "wan"
+		ucidef_set_interfaces_lan_wan "lan" "wan"
 		;;
 	yuncore,ax830|\
 	yuncore,ax850)
