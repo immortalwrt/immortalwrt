@@ -1,7 +1,7 @@
-From f0d855358b86a36efbfeb5a9de5a1d2a4d9d80fe Mon Sep 17 00:00:00 2001
+From 95a69c4cafc3a064bf4e0e0c9d06cea3411a4ba4 Mon Sep 17 00:00:00 2001
 From: Haoyi Ci <cihaoyi@outlook.com>
 Date: Thu, 2 Oct 2025 16:14:05 +0800
-Subject: [PATCH] ndp: Allow NS loopback for master iface
+Subject: ndp: Allow NS loopback for master iface
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit

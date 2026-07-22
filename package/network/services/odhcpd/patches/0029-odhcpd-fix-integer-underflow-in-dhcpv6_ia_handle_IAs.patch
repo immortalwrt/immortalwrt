@@ -1,0 +1,41 @@
+From 85105c6eb4e9c34fbbddebee7641ca68e2aa1cd3 Mon Sep 17 00:00:00 2001
+From: David Bauer <mail@david-bauer.net>
+Date: Tue, 9 Jun 2026 21:42:17 +0200
+Subject: odhcpd: fix integer underflow in dhcpv6_ia_handle_IAs
+
+With buflen underflowed to ~SIZE_MAX, every subsequent check inside
+build_ia passes, and the next matched IA serializes its IA_ADDR sub-options
+into the caller's pdbuf[512] with no effective bound, smashing the
+parent stack frame.
+
+Cap the subtraction to avoid underflowing buflen.
+
+Fixes: CVE-2026-53922
+Reported-by: Trevor Lawrence <_SiCk@afflicted.sh>
+Signed-off-by: David Bauer <mail@david-bauer.net>
+(cherry picked from commit c6792bac3905d4bf726d914e9994f6d4b98c5b57)
+---
+ src/dhcpv6-ia.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+--- a/src/dhcpv6-ia.c
++++ b/src/dhcpv6-ia.c
+@@ -1637,6 +1637,8 @@ ssize_t dhcpv6_ia_handle_IAs(uint8_t *bu
+ 					handshake_len += sizeof(auth);
+ 				}
+ 
++				if (handshake_len > buflen)
++					handshake_len = buflen;
+ 
+ 				buf += handshake_len;
+ 				buflen -= handshake_len;
+@@ -1719,6 +1721,9 @@ ssize_t dhcpv6_ia_handle_IAs(uint8_t *bu
+ 			}
+ 		}
+ 
++		if (ia_response_len > buflen)
++			ia_response_len = buflen;
++
+ 		buf += ia_response_len;
+ 		buflen -= ia_response_len;
+ 		response_len += ia_response_len;

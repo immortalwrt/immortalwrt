@@ -1,0 +1,75 @@
+From 5669df2f672f093933dc67de549b765206ae6523 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sat, 23 May 2026 14:39:03 +0200
+Subject: dhcpv6: avoid unaligned uint16_t reads in ORO option parsing
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The Option Request Option payload is an array of 16-bit codes, but the
+buffer (odata) is at an arbitrary offset inside the wire packet — on
+strict-alignment platforms (ARM v5/v6, MIPS, SPARC) reading it through
+a uint16_t * pointer triggers a misaligned access, which the kernel
+either fixes up at high cost or signals as SIGBUS. The same pattern
+appeared in the top-level ORO scan and again in the inner per-option
+loop. Use byte-pointer access plus memcpy() to extract each code
+portably.
+
+Assisted-by: Claude:claude-opus-4-7
+Link: https://github.com/openwrt/odhcpd/pull/401
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit fa270221504c32861a9457dfa815b4215eaabbb0)
+---
+ src/dhcpv6.c | 21 ++++++++++++++++-----
+ 1 file changed, 16 insertions(+), 5 deletions(-)
+
+--- a/src/dhcpv6.c
++++ b/src/dhcpv6.c
+@@ -424,7 +424,11 @@ static void handle_client_request(void *
+ 
+ 	uint16_t otype, olen;
+ 	uint8_t *odata;
+-	uint16_t *reqopts = NULL;
++	/* OPTION_ORO payload is an array of uint16_t but the underlying buffer
++	 * isn't guaranteed to be 2-byte aligned (it's at an arbitrary offset
++	 * inside the packed wire packet), so keep it as a byte pointer and
++	 * memcpy each value out rather than casting to uint16_t *. */
++	uint8_t *reqopts = NULL;
+ 	size_t reqopts_cnt = 0;
+ 
+ 	/* FIXME: this should be merged with the second loop further down */
+@@ -432,14 +436,17 @@ static void handle_client_request(void *
+ 		/* Requested options, array of uint16_t, RFC 8415 §21.7 */
+ 		if (otype == DHCPV6_OPT_ORO) {
+ 			reqopts_cnt = olen / sizeof(uint16_t);
+-			reqopts = (uint16_t *)odata;
++			reqopts = odata;
+ 			break;
+ 		}
+ 	}
+ 
+ 	/* Requested options */
+ 	for (size_t i = 0; i < reqopts_cnt; i++) {
+-		uint16_t opt = ntohs(reqopts[i]);
++		uint16_t opt;
++
++		memcpy(&opt, &reqopts[i * sizeof(uint16_t)], sizeof(opt));
++		opt = ntohs(opt);
+ 
+ 		switch (opt) {
+ 		case DHCPV6_OPT_SNTP_SERVERS:
+@@ -647,8 +654,12 @@ static void handle_client_request(void *
+ 			iov[IOV_RAPID_COMMIT].iov_len = sizeof(rapid_commit);
+ 			o_rapid_commit = true;
+ 		} else if (otype == DHCPV6_OPT_ORO) {
+-			for (int i=0; i < olen/2; i++) {
+-				uint16_t option = ntohs(((uint16_t *)odata)[i]);
++			for (int i = 0; i < olen / 2; i++) {
++				uint16_t option;
++
++				/* odata is not guaranteed to be uint16-aligned. */
++				memcpy(&option, &odata[i * 2], sizeof(option));
++				option = ntohs(option);
+ 
+ 				switch (option) {
+ #ifdef DHCPV4_SUPPORT

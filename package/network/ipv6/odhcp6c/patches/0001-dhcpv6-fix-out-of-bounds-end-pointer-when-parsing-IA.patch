@@ -1,0 +1,37 @@
+From 3d812c338eb93d897717627ebb1b7beb01646e6e Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sat, 11 Jul 2026 23:29:19 +0200
+Subject: dhcpv6: fix out-of-bounds end pointer when parsing IA in Advertise
+
+dhcpv6_handle_advert passes 'odata + olen + sizeof(*ia_hdr)' as the end
+pointer to dhcpv6_parse_ia. odata points to the start of the IA
+option's data (just past the 4-byte option header) and olen is the
+data length, so the valid sub-option range ends at 'odata + olen'.
+The extra '+ sizeof(*ia_hdr)' (16 bytes) extends the range 16 bytes
+past the IA option boundary, allowing dhcpv6_parse_ia's sub-option
+iterator to read into adjacent option bytes (or past the receive
+buffer when the IA is the last option) and parse them as bogus IA
+sub-options, polluting STATE_IA_NA / STATE_IA_PD with garbage.
+
+The sibling call site in dhcpv6_handle_reply already passes the
+correct 'odata + olen'. Match that here.
+
+Assisted-by: Claude:claude-opus-4-7
+Link: https://github.com/openwrt/odhcp6c/pull/160
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit b6f0c70f5fc26632d8a6c748efec5aa335aa4fde)
+---
+ src/dhcpv6.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/src/dhcpv6.c
++++ b/src/dhcpv6.c
+@@ -959,7 +959,7 @@ static int dhcpv6_handle_advert(enum dhc
+ 				 (otype == DHCPV6_OPT_IA_NA && na_mode != IA_MODE_NONE)) &&
+ 				olen > -4 + sizeof(struct dhcpv6_ia_hdr)) {
+ 			struct dhcpv6_ia_hdr *ia_hdr = (void*)(&odata[-4]);
+-			dhcpv6_parse_ia(ia_hdr, odata + olen + sizeof(*ia_hdr));
++			dhcpv6_parse_ia(ia_hdr, odata + olen);
+ 		}
+ 
+ 		if (otype == DHCPV6_OPT_SERVERID && olen <= 130) {

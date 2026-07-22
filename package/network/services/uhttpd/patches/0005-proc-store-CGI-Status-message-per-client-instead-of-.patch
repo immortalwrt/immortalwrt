@@ -1,0 +1,74 @@
+From 5ddd2589ac62bb8d02f5c3f53704adb0f09a2f2f Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sun, 3 May 2026 23:53:37 +0200
+Subject: proc: store CGI Status message per-client instead of in a shared
+ buffer
+
+proc_handle_header parsed the CGI \"Status:\" header into a function-
+static char status_buf[64] and pointed cl->dispatch.proc.status_msg at
+it. dispatch_proc.status_msg was a plain char *, so every client's
+status_msg ended up aliasing the same static buffer.
+
+Header parsing for one CGI is split across multiple relay_read_cb
+invocations whenever the child sends headers in chunks. Between two
+reads of the same client, uloop can dispatch another client's CGI,
+whose proc_handle_header overwrites the shared status_buf. When the
+first client's empty-line read finally arrives and proc_handle_header_end
+fires, status_msg points at the second client's text, so the
+\"HTTP/1.1 <code> <msg>\" status line emitted to the first client
+mixes its own status_code with another client's reason phrase.
+
+Replace the char * with a fixed-size char status_msg[64] embedded in
+dispatch_proc and snprintf into it directly. Each client now owns its
+own buffer, so concurrent CGI responses can no longer trample each
+other's status line.
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 05317bf30a9432aaeac1a20300f605d9cf43c64f)
+---
+ proc.c   | 7 +++----
+ uhttpd.h | 2 +-
+ 2 files changed, 4 insertions(+), 5 deletions(-)
+
+--- a/proc.c
++++ b/proc.c
+@@ -201,7 +201,6 @@ static void proc_handle_close(struct rel
+ 
+ static void proc_handle_header(struct relay *r, const char *name, const char *val)
+ {
+-	static char status_buf[64];
+ 	struct client *cl = r->cl;
+ 	char *sep;
+ 	char buf[4];
+@@ -213,8 +212,8 @@ static void proc_handle_header(struct re
+ 
+ 		memcpy(buf, val, 3);
+ 		buf[3] = 0;
+-		snprintf(status_buf, sizeof(status_buf), "%s", sep + 1);
+-		cl->dispatch.proc.status_msg = status_buf;
++		snprintf(cl->dispatch.proc.status_msg,
++			 sizeof(cl->dispatch.proc.status_msg), "%s", sep + 1);
+ 		cl->dispatch.proc.status_code = atoi(buf);
+ 		return;
+ 	}
+@@ -337,7 +336,7 @@ bool uh_create_process(struct client *cl
+ 
+ 	blob_buf_init(&proc->hdr, 0);
+ 	proc->status_code = 200;
+-	proc->status_msg = "OK";
++	strcpy(proc->status_msg, "OK");
+ 
+ 	if (pipe(rfd))
+ 		return false;
+--- a/uhttpd.h
++++ b/uhttpd.h
+@@ -206,7 +206,7 @@ struct dispatch_proc {
+ 	struct uloop_fd wrfd;
+ 	struct relay r;
+ 	int status_code;
+-	char *status_msg;
++	char status_msg[64];
+ };
+ 
+ struct dispatch_handler {

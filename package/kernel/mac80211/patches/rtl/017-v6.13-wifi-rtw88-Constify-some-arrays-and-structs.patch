@@ -284,7 +284,7 @@ Link: https://patch.msgid.link/dae7994f-3491-40de-b537-ebf68df084bb@gmail.com
  	.query_rx_desc		= rtw8821c_query_rx_desc,
 --- a/drivers/net/wireless/realtek/rtw88/rtw8822b.c
 +++ b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
-@@ -1980,13 +1980,13 @@ static const struct rtw_pwr_seq_cmd tran
+@@ -1981,13 +1981,13 @@ static const struct rtw_pwr_seq_cmd tran
  	 RTW_PWR_CMD_END, 0, 0},
  };
  
@@ -300,7 +300,7 @@ Link: https://patch.msgid.link/dae7994f-3491-40de-b537-ebf68df084bb@gmail.com
  	trans_act_to_cardemu_8822b,
  	trans_cardemu_to_carddis_8822b,
  	NULL
-@@ -2158,7 +2158,7 @@ static const struct rtw_rqpn rqpn_table_
+@@ -2159,7 +2159,7 @@ static const struct rtw_rqpn rqpn_table_
  	 RTW_DMA_MAPPING_EXTRA, RTW_DMA_MAPPING_HIGH},
  };
  
@@ -309,7 +309,7 @@ Link: https://patch.msgid.link/dae7994f-3491-40de-b537-ebf68df084bb@gmail.com
  	.prio[RTW_DMA_MAPPING_EXTRA] = {
  		.rsvd = REG_FIFOPAGE_INFO_4, .avail = REG_FIFOPAGE_INFO_4 + 2,
  	},
-@@ -2174,7 +2174,7 @@ static struct rtw_prioq_addrs prioq_addr
+@@ -2175,7 +2175,7 @@ static struct rtw_prioq_addrs prioq_addr
  	.wsize = true,
  };
  
@@ -318,7 +318,7 @@ Link: https://patch.msgid.link/dae7994f-3491-40de-b537-ebf68df084bb@gmail.com
  	.phy_set_param		= rtw8822b_phy_set_param,
  	.read_efuse		= rtw8822b_read_efuse,
  	.query_rx_desc		= rtw8822b_query_rx_desc,
-@@ -2523,7 +2523,7 @@ static const struct rtw_reg_domain coex_
+@@ -2524,7 +2524,7 @@ static const struct rtw_reg_domain coex_
  	{0xc50,  MASKBYTE0, RTW_REG_DOMAIN_MAC8},
  };
  

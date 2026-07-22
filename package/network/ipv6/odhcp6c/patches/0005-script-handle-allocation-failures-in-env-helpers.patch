@@ -1,0 +1,121 @@
+From 43f9c5e03c6bf89ef93834c8de57fe6985f88b64 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sat, 23 May 2026 14:19:39 +0200
+Subject: script: handle allocation failures in env helpers
+
+ipv6_to_env(), fqdn_to_env(), bin_to_env(), entry_to_env(),
+search_to_env(), int_to_env() and the inline PASSTHRU=... assembler
+all called realloc(NULL, ...) / malloc() without checking the result,
+then immediately wrote into the (possibly NULL) buffer with memcpy(),
+snprintf() or script_hexlify(). Under memory pressure this dereferences
+NULL inside the forked script-helper child and crashes it before
+putenv() / execv(), so the state script does not run for that
+state-change.
+
+Check each allocation and skip the corresponding environment variable
+when it fails. While at it, replace the cosmetic realloc(NULL, ...) idiom
+with plain malloc() to make intent clearer.
+
+Assisted-by: Claude:claude-opus-4-7
+Link: https://github.com/openwrt/odhcp6c/pull/160
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 01130f80338a250f94ae0df786306c11662c88fb)
+---
+ src/script.c | 42 ++++++++++++++++++++++++++++++++----------
+ 1 file changed, 32 insertions(+), 10 deletions(-)
+
+--- a/src/script.c
++++ b/src/script.c
+@@ -98,7 +98,10 @@ static void ipv6_to_env(const char *name
+ 		const struct in6_addr *addr, size_t cnt)
+ {
+ 	size_t buf_len = strlen(name);
+-	char *buf = realloc(NULL, cnt * INET6_ADDRSTRLEN + buf_len + 2);
++	char *buf = malloc(cnt * INET6_ADDRSTRLEN + buf_len + 2);
++
++	if (!buf)
++		return;
+ 
+ 	memcpy(buf, name, buf_len);
+ 	buf[buf_len++] = '=';
+@@ -121,7 +124,10 @@ static void fqdn_to_env(const char *name
+ 	size_t buf_len = strlen(name);
+ 	size_t buf_size = len + buf_len + 2;
+ 	const uint8_t *fqdn_end = fqdn + len;
+-	char *buf = realloc(NULL, len + buf_len + 2);
++	char *buf = malloc(buf_size);
++
++	if (!buf)
++		return;
+ 
+ 	memcpy(buf, name, buf_len);
+ 	buf[buf_len++] = '=';
+@@ -148,9 +154,12 @@ static void bin_to_env(uint8_t *opts, si
+ 	uint16_t otype, olen;
+ 
+ 	dhcpv6_for_each_option(opts, oend, otype, olen, odata) {
+-		char *buf = realloc(NULL, 14 + (olen * 2));
++		char *buf = malloc(14 + (olen * 2));
+ 		size_t buf_len = 0;
+ 
++		if (!buf)
++			continue;
++
+ 		snprintf(buf, 14, "OPTION_%hu=", otype);
+ 		buf_len += strlen(buf);
+ 
+@@ -173,7 +182,10 @@ static void entry_to_env(const char *nam
+ 	// Worst case: ENTRY_PREFIX with iaid != 1 and exclusion
+ 	const size_t max_entry_len = (INET6_ADDRSTRLEN-1 + 5 + 22 + 15 + 10 +
+ 				      INET6_ADDRSTRLEN-1 + 11 + 1);
+-	char *buf = realloc(NULL, buf_len + 2 + (len / sizeof(*e)) * max_entry_len);
++	char *buf = malloc(buf_len + 2 + (len / sizeof(*e)) * max_entry_len);
++
++	if (!buf)
++		return;
+ 
+ 	memcpy(buf, name, buf_len);
+ 	buf[buf_len++] = '=';
+@@ -238,8 +250,13 @@ static void entry_to_env(const char *nam
+ static void search_to_env(const char *name, const uint8_t *start, size_t len)
+ {
+ 	size_t buf_len = strlen(name);
+-	char *buf = realloc(NULL, buf_len + 2 + len);
+-	char *c = mempcpy(buf, name, buf_len);
++	char *buf = malloc(buf_len + 2 + len);
++	char *c;
++
++	if (!buf)
++		return;
++
++	c = mempcpy(buf, name, buf_len);
+ 	*c++ = '=';
+ 
+ 	for (struct odhcp6c_entry *e = (struct odhcp6c_entry*)start;
+@@ -262,7 +279,10 @@ static void search_to_env(const char *na
+ static void int_to_env(const char *name, int value)
+ {
+ 	size_t len = 13 + strlen(name);
+-	char *buf = realloc(NULL, len);
++	char *buf = malloc(len);
++
++	if (!buf)
++		return;
+ 
+ 	snprintf(buf, len, "%s=%d", name, value);
+ 	putenv(buf);
+@@ -495,9 +515,11 @@ void script_call(const char *status, int
+ 		int_to_env("RA_RETRANSMIT", ra_get_retransmit());
+ 
+ 		char *buf = malloc(10 + passthru_len * 2);
+-		strncpy(buf, "PASSTHRU=", 10);
+-		script_hexlify(&buf[9], passthru, passthru_len);
+-		putenv(buf);
++		if (buf) {
++			strncpy(buf, "PASSTHRU=", 10);
++			script_hexlify(&buf[9], passthru, passthru_len);
++			putenv(buf);
++		}
+ 
+ 		execv(argv[0], argv);
+ 		_exit(128);

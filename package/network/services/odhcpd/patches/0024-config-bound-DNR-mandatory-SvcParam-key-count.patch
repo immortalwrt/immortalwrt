@@ -1,0 +1,37 @@
+From c3791f5855cd92609df710f60b5b99ab21196b7f Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sat, 30 May 2026 23:29:16 +0200
+Subject: config: bound DNR 'mandatory' SvcParam key count
+
+The mandatory SvcParam parser collects the referenced SvcParamKeys into a
+fixed-size stack array mkeys[DNR_SVC_MAX] but only rejected unknown keys and
+keys not otherwise present in the entry -- it never bounded the number of
+written entries. RFC 9460 requires each key to appear at most once in the
+mandatory list, but the parser accepted duplicates, so a config string such
+as "mandatory=alpn,alpn,alpn,..." (with a present key repeated more than
+DNR_SVC_MAX times) writes past the end of mkeys, smashing the stack.
+
+Reject the entry once DNR_SVC_MAX keys have been recorded.
+
+Assisted-by: Claude:claude-opus-4-8
+Link: https://github.com/openwrt/odhcpd/pull/401
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 461043731085761bc067e875a31da569c321f9cd)
+---
+ src/config.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+--- a/src/config.c
++++ b/src/config.c
+@@ -772,6 +772,11 @@ static int parse_dnr_str(char *str, stru
+ 					goto err;
+ 				}
+ 
++				if (svc_val_len >= DNR_SVC_MAX) {
++					syslog(LOG_ERR, "Too many keys for SvcParam 'mandatory'");
++					goto err;
++				}
++
+ 				mkeys[svc_val_len++] = ntohs(mkey);
+ 			}
+ 

@@ -1,0 +1,62 @@
+From 72ee1787466736a109cda44ea36c60ce2b8fc168 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sun, 31 May 2026 00:12:10 +0200
+Subject: dhcpv6: validate rewritten RELAY_MSG length in
+ update_nested_message()
+
+When building a relay-reply, update_nested_message() walks the nested
+RELAY-FORW envelope of the (untrusted) request and adjusts every
+OPTION_RELAY_MSG length by pdiff, the signed difference between the assembled
+reply options and the original request options. It did this with
+
+	olen += pdiff;                                  /* olen is uint16_t */
+	odata[-2] = olen >> 8; odata[-1] = olen;
+	update_nested_message(odata, olen - pdiff, ...);
+
+If "olen + pdiff" leaves the 0..65535 range, the uint16_t wraps: the wrapped
+value is written into the on-wire RELAY_MSG length field, and "olen - pdiff"
+no longer recovers the original (iterator-validated) inner length. The bogus
+length is then passed as the recursion's buffer size, so the inner option
+walk uses "odata + bogus_len" as its end bound and reads option headers far
+past the end of the receive buffer (an out-of-bounds read, plus a 2-byte
+out-of-bounds write if a RELAY_MSG pattern is hit) driven by a crafted
+multi-level Relay-Forward packet.
+
+Compute the new length in a signed wide type, bail out if it would not fit in
+the 16-bit field, and pass the already-validated original olen to the
+recursion instead of reconstructing it from the mutated value.
+
+Assisted-by: Claude:claude-opus-4-8
+Link: https://github.com/openwrt/odhcpd/pull/401
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 5b1e3befb0b23f7b7506fb6209aed3aa9e04a6f7)
+---
+ src/dhcpv6.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
+
+--- a/src/dhcpv6.c
++++ b/src/dhcpv6.c
+@@ -247,10 +247,19 @@ static void update_nested_message(uint8_
+ 	uint8_t *odata;
+ 	dhcpv6_for_each_option(hdr->options, data + len, otype, olen, odata) {
+ 		if (otype == DHCPV6_OPT_RELAY_MSG) {
+-			olen += pdiff;
+-			odata[-2] = (olen >> 8) & 0xff;
+-			odata[-1] = olen & 0xff;
+-			update_nested_message(odata, olen - pdiff, depth + 1, pdiff);
++			ssize_t newlen = (ssize_t)olen + pdiff;
++
++			/* olen was validated to lie within the buffer by the option
++			 * iterator. Reject a pdiff that would make the rewritten
++			 * RELAY_MSG length wrap the 16-bit field, which would also feed
++			 * a bogus length into the recursion below and walk options past
++			 * the end of the (untrusted) packet buffer. */
++			if (newlen < 0 || newlen > UINT16_MAX)
++				return;
++
++			odata[-2] = (newlen >> 8) & 0xff;
++			odata[-1] = newlen & 0xff;
++			update_nested_message(odata, olen, depth + 1, pdiff);
+ 			return;
+ 		}
+ 	}

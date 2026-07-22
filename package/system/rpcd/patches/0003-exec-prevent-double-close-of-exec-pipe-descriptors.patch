@@ -1,0 +1,39 @@
+From f47d4e3764f16acf05ad802843f80695f52b3652 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sun, 31 May 2026 17:25:08 +0200
+Subject: exec: prevent double close() of exec pipe descriptors
+
+rpc_exec_process_cb() closes the stdout/stderr read descriptors after
+the child has exited, and rpc_exec_reply() closes them once more during
+teardown.  ustream_free() neither closes nor resets the stored fd, so
+both code paths operate on the same descriptor number.  In the window
+between the two closes the daemon may open another descriptor that
+reuses the freed number, which rpc_exec_reply() would then close by
+mistake.
+
+Reset the descriptors to -1 after closing them in the process callback
+so the later close() in rpc_exec_reply() becomes a harmless no-op.
+
+Assisted-by: Claude:claude-opus-4-8
+Link: https://github.com/openwrt/rpcd/pull/34
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 26dba5206e1721efb217f6e7bafa27cd225bb698)
+---
+ exec.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+--- a/exec.c
++++ b/exec.c
+@@ -203,6 +203,12 @@ rpc_exec_process_cb(struct uloop_process
+ 	close(c->opipe.fd.fd);
+ 	close(c->epipe.fd.fd);
+ 
++	/* ustream_free() does not reset the fd, and rpc_exec_reply() closes it
++	 * again later.  Mark the descriptors as consumed so that the second
++	 * close() cannot accidentally close an unrelated, meanwhile reused fd. */
++	c->opipe.fd.fd = -1;
++	c->epipe.fd.fd = -1;
++
+ 	ustream_poll(&c->opipe.stream);
+ 	ustream_poll(&c->epipe.stream);
+ }

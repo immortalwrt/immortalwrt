@@ -1,0 +1,103 @@
+From 8ea9f568dfd8164b0483b5508830f51d488a1c4b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?David=20H=C3=A4rdeman?= <david@hardeman.nu>
+Date: Fri, 17 Oct 2025 15:32:08 +0200
+Subject: ndp: correctness fix for BPF filter
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Note that AF_PACKET sockets start receiving packets as soon as they are
+created.  Thus, a packet can arrive between the creation of the socket
+and the time the real filter is installed. Fix this using the same
+technique as used in libpcap, i.e. by installing a drop-all filter,
+removing any packets from the socket, then installing the real filter
+later (an atomic operation which replaces the drop filter).
+
+Signed-off-by: David Härdeman <david@hardeman.nu>
+Link: https://github.com/openwrt/odhcpd/pull/319
+Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+(cherry picked from commit 650a5df88ebae82d956831c2f87c7c6eedd8c283)
+---
+ src/ndp.c | 56 +++++++++++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 44 insertions(+), 12 deletions(-)
+
+--- a/src/ndp.c
++++ b/src/ndp.c
+@@ -39,17 +39,6 @@ static void setup_addr_for_relaying(stru
+ static void handle_solicit(void *addr, void *data, size_t len,
+ 		struct interface *iface, void *dest);
+ 
+-/* Filter ICMPv6 messages of type neighbor solicitation */
+-static struct sock_filter bpf[] = {
+-	BPF_STMT(BPF_LD | BPF_B | BPF_ABS, offsetof(struct ip6_hdr, ip6_nxt)),
+-	BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, IPPROTO_ICMPV6, 0, 3),
+-	BPF_STMT(BPF_LD | BPF_B | BPF_ABS, sizeof(struct ip6_hdr) +
+-			offsetof(struct icmp6_hdr, icmp6_type)),
+-	BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, ND_NEIGHBOR_SOLICIT, 0, 1),
+-	BPF_STMT(BPF_RET | BPF_K, 0xffffffff),
+-	BPF_STMT(BPF_RET | BPF_K, 0),
+-};
+-static const struct sock_fprog bpf_prog = {sizeof(bpf) / sizeof(*bpf), bpf};
+ static struct netevent_handler ndp_netevent_handler = { .cb = ndp_netevent_cb, };
+ 
+ /* Initialize NDP-proxy */
+@@ -67,6 +56,30 @@ int ndp_init(void)
+ 
+ int ndp_setup_interface(struct interface *iface, bool enable)
+ {
++	/* Drop everything */
++	static const struct sock_filter bpf_drop_filter[] = {
++		BPF_STMT(BPF_RET | BPF_K, 0),
++	};
++	static const struct sock_fprog bpf_drop = {
++		.len = ARRAY_SIZE(bpf_drop_filter),
++		.filter = (struct sock_filter *)bpf_drop_filter,
++	};
++
++	/* Filter ICMPv6 messages of type neighbor solicitation */
++	static const struct sock_filter bpf[] = {
++		BPF_STMT(BPF_LD | BPF_B | BPF_ABS, offsetof(struct ip6_hdr, ip6_nxt)),
++		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, IPPROTO_ICMPV6, 0, 3),
++		BPF_STMT(BPF_LD | BPF_B | BPF_ABS, sizeof(struct ip6_hdr) +
++			 offsetof(struct icmp6_hdr, icmp6_type)),
++		BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, ND_NEIGHBOR_SOLICIT, 0, 1),
++		BPF_STMT(BPF_RET | BPF_K, 0xffffffff),
++		BPF_STMT(BPF_RET | BPF_K, 0),
++	};
++	static const struct sock_fprog bpf_prog = {
++		.len = ARRAY_SIZE(bpf),
++		.filter = (struct sock_filter *)bpf,
++	};
++
+ 	int ret = 0, procfd;
+ 	bool dump_neigh = false;
+ 	char procbuf[64];
+@@ -170,8 +183,27 @@ int ndp_setup_interface(struct interface
+ 		}
+ #endif
+ 
++		/*
++		 * AF_PACKET sockets can receive packets as soon as they are
++		 * created, so make sure we don't accept anything...
++		 */
++		if (setsockopt(iface->ndp_event.uloop.fd, SOL_SOCKET, SO_ATTACH_FILTER,
++			       &bpf_drop, sizeof(bpf_drop))) {
++			syslog(LOG_ERR, "setsockopt(SO_ATTACH_FILTER): %m");
++			ret = -1;
++			goto out;
++		}
++
++		/* ...and remove stray packets... */
++		while (true) {
++			char null[1];
++			if (recv(iface->ndp_event.uloop.fd, null, sizeof(null), MSG_DONTWAIT | MSG_TRUNC) < 0)
++				break;
++		}
++
++		/* ...until the real filter is installed */
+ 		if (setsockopt(iface->ndp_event.uloop.fd, SOL_SOCKET, SO_ATTACH_FILTER,
+-				&bpf_prog, sizeof(bpf_prog))) {
++			       &bpf_prog, sizeof(bpf_prog))) {
+ 			syslog(LOG_ERR, "setsockopt(SO_ATTACH_FILTER): %m");
+ 			ret = -1;
+ 			goto out;

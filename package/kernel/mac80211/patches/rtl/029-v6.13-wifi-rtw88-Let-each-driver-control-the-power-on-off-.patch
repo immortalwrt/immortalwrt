@@ -252,7 +252,7 @@ Link: https://patch.msgid.link/98ab839f-9100-44ae-9551-9af743a4aa3a@gmail.com
  	.query_phy_status	= query_phy_status,
 --- a/drivers/net/wireless/realtek/rtw88/rtw8822b.c
 +++ b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
-@@ -2134,6 +2134,8 @@ static const struct rtw_prioq_addrs prio
+@@ -2135,6 +2135,8 @@ static const struct rtw_prioq_addrs prio
  };
  
  static const struct rtw_chip_ops rtw8822b_ops = {

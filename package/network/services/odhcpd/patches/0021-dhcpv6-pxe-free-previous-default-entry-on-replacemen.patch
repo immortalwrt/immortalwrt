@@ -1,0 +1,39 @@
+From 17ce0e6e745009bc4dd8f9d44862bf91c5627cfa Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sat, 23 May 2026 14:41:19 +0200
+Subject: dhcpv6-pxe: free previous default entry on replacement
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+ipv6_pxe_entry_new() stores arch == 0xFFFFFFFF (the "no-arch / default"
+case) in the standalone ipv6_pxe_default pointer instead of on the
+list. When the function is called with that arch more than once
+between ipv6_pxe_clear() runs — e.g. a UCI config with two boot6
+sections that omit the arch field — the previous default was simply
+overwritten and leaked.
+
+Free the prior default before replacing it.
+
+Assisted-by: Claude:claude-opus-4-7
+Link: https://github.com/openwrt/odhcpd/pull/401
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 3e1dd3b16c9a9f83a85bc1a889ac636f2528d043)
+---
+ src/dhcpv6-pxe.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+--- a/src/dhcpv6-pxe.c
++++ b/src/dhcpv6-pxe.c
+@@ -32,6 +32,11 @@ const struct ipv6_pxe_entry* ipv6_pxe_en
+ 	ipe->bootfile_url.type = htons(DHCPV6_OPT_BOOTFILE_URL);
+ 
+ 	if (arch == 0xFFFFFFFF) {
++		/* The "default" entry lives outside ipv6_pxe_list; if config
++		 * already supplied one (e.g. two boot6 sections without an
++		 * arch), free the previous one before replacing it, otherwise
++		 * it would leak until ipv6_pxe_clear() runs. */
++		free(ipv6_pxe_default);
+ 		ipv6_pxe_default = ipe;
+ 	}
+ 	else {

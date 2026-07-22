@@ -1,0 +1,113 @@
+From 56a8ae88024efae44bfa296f3c8b01d2c350648f Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sun, 31 May 2026 17:51:23 +0200
+Subject: treat exec failures in forked children with _exit() instead of return
+
+Several handlers fork and, in the child, fall back to "return <ubus
+status>" when open()/malloc()/execv() etc. fail.  Returning a ubus
+status code from the child does not terminate it: control unwinds back
+into the ubus dispatch loop and the child keeps running as a duplicate
+rpcd, racing the parent on the ubus socket and pipes.
+
+Replace these child-side returns with _exit(127) so a child that cannot
+exec the target simply terminates, which is also what the parent's
+WEXITSTATUS based reporting expects.  Affected paths: exec.c (rpc_exec),
+file.c (rpc_file_exec_run), sys.c (rpc_cgi_password_set) and plugin.c
+(rpc_plugin_register_exec).
+
+Assisted-by: Claude:claude-opus-4-8
+Link: https://github.com/openwrt/rpcd/pull/34
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 3037a0e36856159075624fb00b5410d5577ed5fe)
+---
+ exec.c   |  2 +-
+ file.c   | 10 +++++-----
+ plugin.c |  2 +-
+ sys.c    |  4 ++--
+ 4 files changed, 9 insertions(+), 9 deletions(-)
+
+--- a/exec.c
++++ b/exec.c
+@@ -360,7 +360,7 @@ rpc_exec(const char **args, rpc_exec_wri
+ 		close(epipe[1]);
+ 
+ 		if (execv(cmd, (char * const *)args))
+-			return rpc_errno_status();
++			_exit(127);
+ 
+ 	default:
+ 		memset(c, 0, sizeof(*c));
+--- a/file.c
++++ b/file.c
+@@ -896,7 +896,7 @@ rpc_file_exec_run(const char *cmd, const
+ 		devnull = open("/dev/null", O_RDWR);
+ 
+ 		if (devnull == -1)
+-			return UBUS_STATUS_UNKNOWN_ERROR;
++			_exit(127);
+ 
+ 		dup2(devnull, 0);
+ 		dup2(opipe[1], 1);
+@@ -912,7 +912,7 @@ rpc_file_exec_run(const char *cmd, const
+ 		args = malloc(sizeof(char *) * arglen);
+ 
+ 		if (!args)
+-			return UBUS_STATUS_UNKNOWN_ERROR;
++			_exit(127);
+ 
+ 		args[0] = (char *)executable;
+ 		args[1] = NULL;
+@@ -927,7 +927,7 @@ rpc_file_exec_run(const char *cmd, const
+ 				if (arglen == 255)
+ 				{
+ 					free(args);
+-					return UBUS_STATUS_INVALID_ARGUMENT;
++					_exit(127);
+ 				}
+ 
+ 				arglen++;
+@@ -936,7 +936,7 @@ rpc_file_exec_run(const char *cmd, const
+ 				if (!tmp)
+ 				{
+ 					free(args);
+-					return UBUS_STATUS_UNKNOWN_ERROR;
++					_exit(127);
+ 				}
+ 
+ 				args = tmp;
+@@ -957,7 +957,7 @@ rpc_file_exec_run(const char *cmd, const
+ 		}
+ 
+ 		if (execv(executable, args))
+-			return rpc_errno_status();
++			_exit(127);
+ 
+ 	default:
+ 		memset(c, 0, sizeof(*c));
+--- a/plugin.c
++++ b/plugin.c
+@@ -451,7 +451,7 @@ rpc_plugin_register_exec(struct ubus_con
+ 		close(fds[1]);
+ 
+ 		if (execl(path, path, "list", NULL))
+-			return UBUS_STATUS_UNKNOWN_ERROR;
++			_exit(127);
+ 
+ 	default:
+ 		plugin = rpc_plugin_parse_exec(name + 1, fds[0]);
+--- a/sys.c
++++ b/sys.c
+@@ -129,11 +129,11 @@ rpc_cgi_password_set(struct ubus_context
+ 
+ 		ret = chdir("/");
+ 		if (ret < 0)
+-			return rpc_errno_status();
++			_exit(127);
+ 
+ 		if (execl(passwd, passwd,
+ 		          blobmsg_data(tb[RPC_P_USER]), NULL))
+-			return rpc_errno_status();
++			_exit(127);
+ 
+ 	default:
+ 		close(fds[0]);

@@ -1,0 +1,40 @@
+From e4b37d422219895d0f0bba75e49c9ccff0bc5936 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sun, 3 May 2026 22:47:29 +0200
+Subject: client: prevent transfer_chunked counter overflow
+
+The transfer_chunked field is a uint8_t used as a tri-state marker:
+0 means no chunked transfer, 1 means the first chunk header is next
+(no leading CRLF), and any value greater than 1 means a subsequent
+chunk header is next (expect a leading CRLF).
+
+The counter was incremented unconditionally on every parsed chunk,
+so after 255 chunks it wrapped back to 0. The outer loop then treats
+a wrapped value as "not chunked" and signals end-of-body, while
+later bytes on the wire are interpreted as the next pipelined
+request. An attacker could exploit this for HTTP request smuggling
+on a keep-alive connection by splitting a body into 256 or more
+small chunks.
+
+Cap the counter at 2 once the "subsequent chunk" state has been
+reached, since further increments are not meaningful.
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit d2551871b5e52b576236c0a2470f392eca81c2de)
+---
+ client.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+--- a/client.c
++++ b/client.c
+@@ -487,7 +487,8 @@ void client_poll_post_data(struct client
+ 		*sep = 0;
+ 
+ 		r->content_length = strtoul(buf + offset, &sep, 16);
+-		r->transfer_chunked++;
++		if (r->transfer_chunked < 2)
++			r->transfer_chunked++;
+ 		ustream_consume(cl->us, sep + 2 - buf);
+ 
+ 		/* invalid chunk length */

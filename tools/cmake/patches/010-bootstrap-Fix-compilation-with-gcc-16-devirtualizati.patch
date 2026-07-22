@@ -1,0 +1,31 @@
+From ea04e19daf7010781d0df980b9683a642093e381 Mon Sep 17 00:00:00 2001
+From: Brad King <brad.king@kitware.com>
+Date: Wed, 24 Sep 2025 12:02:37 -0400
+Subject: bootstrap: Fix compilation with gcc 16 devirtualization
+
+Avoid including a header for a subclass whose implementation is not
+compiled during bootstrap.
+
+Fixes: #27256
+---
+ Source/cmake.cxx | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+--- a/Source/cmake.cxx
++++ b/Source/cmake.cxx
+@@ -126,12 +126,12 @@
+ #  include "cmExtraEclipseCDT4Generator.h"
+ #  include "cmExtraKateGenerator.h"
+ #  include "cmExtraSublimeTextGenerator.h"
+-#endif
+ 
+ // NOTE: the __linux__ macro is predefined on Android host too, but
+ // main CMakeLists.txt filters out this generator by host name.
+-#if (defined(__linux__) && !defined(__ANDROID__)) || defined(_WIN32)
+-#  include "cmGlobalGhsMultiGenerator.h"
++#  if (defined(__linux__) && !defined(__ANDROID__)) || defined(_WIN32)
++#    include "cmGlobalGhsMultiGenerator.h"
++#  endif
+ #endif
+ 
+ #if defined(__APPLE__)

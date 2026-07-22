@@ -1,0 +1,68 @@
+From 86d303781a68278512e116cc0fc02ec7c43f1f1b Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Mon, 4 May 2026 00:22:00 +0200
+Subject: utils: fix one-byte overflow in uh_urldecode
+
+The output buffer was filled up to blen bytes without writing a
+trailing NUL, leaving every caller to either append one or rely on
+a happenstance zero byte. The documented contract said "not
+null-terminated" but every in-tree caller used the result as a C
+string, making the missing NUL a latent bug.
+
+Reserve one byte at the tail, write the NUL, and update the contract
+in the comment. Reject blen <= 0 as overflow.
+
+Adjust the -d option's caller to pass the actual buffer size
+(strlen + 1) rather than strlen -- the buffer was always sized for
+the NUL, only the blen argument was off-by-one. Without this the -d
+handler would reject every plain-ASCII input as "invalid encoding"
+after the contract change.
+
+Also cast ctype arguments to unsigned char to avoid undefined
+behavior on signed-char platforms.
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit ced7b15c346741982fe317cd2d9de0895e6c64a9)
+---
+ main.c  |  2 +-
+ utils.c | 10 +++++++---
+ 2 files changed, 8 insertions(+), 4 deletions(-)
+
+--- a/main.c
++++ b/main.c
+@@ -453,7 +453,7 @@ int main(int argc, char **argv)
+ 					optarg[opt] = ' ';
+ 
+ 			/* opt now contains strlen(optarg) -- no need to re-scan */
+-			if (uh_urldecode(port, opt, optarg, opt) < 0) {
++			if (uh_urldecode(port, opt + 1, optarg, opt) < 0) {
+ 				fprintf(stderr, "uhttpd: invalid encoding\n");
+ 				return -1;
+ 			}
+--- a/utils.c
++++ b/utils.c
+@@ -100,8 +100,9 @@ void uh_chunk_eof(struct client *cl)
+ }
+ 
+ /* blen is the size of buf; slen is the length of src.  The input-string need
+-** not be, and the output string will not be, null-terminated.  Returns the
+-** length of the decoded string, -1 on buffer overflow, -2 on malformed string. */
++** not be null-terminated. The output string is always null-terminated when
++** blen > 0. Returns the length of the decoded string (excluding the trailing
++** NUL), -1 on buffer overflow, -2 on malformed string. */
+ int uh_urldecode(char *buf, int blen, const char *src, int slen)
+ {
+ 	int i;
+@@ -112,7 +113,10 @@ int uh_urldecode(char *buf, int blen, co
+ 		(((x) <= 'F') ? ((x) - 'A' + 10) : \
+ 			((x) - 'a' + 10)))
+ 
+-	for (i = 0; (i < slen) && (len < blen); i++)
++	if (blen <= 0)
++		return -1;
++
++	for (i = 0; (i < slen) && (len < blen - 1); i++)
+ 	{
+ 		if (src[i] != '%') {
+ 			buf[len++] = src[i];

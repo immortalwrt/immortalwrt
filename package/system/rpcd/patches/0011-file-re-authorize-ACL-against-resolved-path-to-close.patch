@@ -1,0 +1,275 @@
+From 25ca51acb9ce43c438252bd1cb5cf7f12f5e7f0c Mon Sep 17 00:00:00 2001
+From: Jo-Philipp Wich <jo@mein.io>
+Date: Sun, 19 Jul 2026 14:57:18 +0200
+Subject: file: re-authorize ACL against resolved path to close symlink bypass
+
+The file plugin matched ACL grants against the textual, canonicalized
+path but then let open()/stat()/opendir() follow symlinks unchecked.
+A symlink placed inside an ACL-covered directory therefore let a grant
+on the link authorize read/write/list/stat access to whatever file it
+pointed to, including files entirely outside the granted scope.
+
+Re-resolve the path with realpath() and re-run the ACL check against
+the resolved target whenever it differs from the canonicalized string,
+for every operation that dereferences the final component (read,
+write, md5, list, stat). lstat and remove are left untouched since
+they either need to see the link itself or already handle it safely
+via unlink()'s no-follow semantics. Newly created files (file.write)
+and dangling symlinks pointing outside the granted scope are handled
+via the containing directory.
+
+Also mask file.write's mode parameter to 0777 and drop the local
+umask(0) override, and authorize recursive file.remove per-entry
+instead of only at the top-level path.
+
+Fixes GHSA-q5gr-86pq-vvwr.
+
+Signed-off-by: Jo-Philipp Wich <jo@mein.io>
+(cherry picked from commit e37ed9d814699098eb7e26c8b33c054840782dfb)
+---
+ file.c | 156 ++++++++++++++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 144 insertions(+), 12 deletions(-)
+
+--- a/file.c
++++ b/file.c
+@@ -77,6 +77,7 @@ struct rpc_file_exec_context {
+ 
+ static struct blob_buf buf;
+ static char *canonpath;
++static char *resolvedpath;
+ static char cmdstr[RPC_CMDLINE_MAX_SIZE];
+ 
+ enum {
+@@ -246,10 +247,122 @@ next:
+ 	return canonpath;
+ }
+ 
++/*
++ * rpc_canonicalize_path() only folds "//", "/./" and "/../" textually; it
++ * never resolves symlink components. Since the ACL check above matches the
++ * textual path, a symlink placed inside an ACL-covered directory would let
++ * a grant on the link authorize whatever file the link points to once the
++ * caller's stat()/open()/opendir() follows it. Re-resolve *path with
++ * realpath() and, if that changes the path, re-run the ACL check against
++ * the resolved target so grants only ever cover the real file. If the
++ * target does not exist yet (e.g. a new file being written), resolve and
++ * re-check the containing directory instead and rebuild *path from that.
++ */
++static bool
++rpc_check_symlink_access(const struct blob_attr *sid, const char *perm, char **path)
++{
++	char resolved[PATH_MAX];
++	char dirbuf[PATH_MAX];
++	const char *base;
++	struct stat lst;
++
++	if (realpath(*path, resolved) != NULL)
++	{
++		if (strcmp(resolved, *path) == 0)
++			return true;
++
++		if (!rpc_file_access(sid, resolved, perm))
++		{
++			errno = EACCES;
++			return false;
++		}
++
++		free(resolvedpath);
++		resolvedpath = strdup(resolved);
++
++		if (resolvedpath == NULL)
++		{
++			errno = ENOMEM;
++			return false;
++		}
++
++		*path = resolvedpath;
++		return true;
++	}
++
++	if (errno == ENOENT)
++	{
++		/* realpath() also fails with ENOENT for a dangling symlink whose
++		 * final target component is missing. Distinguish that case (an
++		 * *existing* symlink we must not silently create-through, e.g.
++		 * via open(O_CREAT) on file.write) from a genuinely nonexistent
++		 * path by lstat()'ing the requested path itself. */
++		errno = (lstat(*path, &lst) == 0 && S_ISLNK(lst.st_mode)) ? EACCES : 0;
++	}
++
++	if (errno != 0)
++		return false;
++
++	base = strrchr(*path, '/');
++
++	if (base == NULL)
++	{
++		errno = ENOENT;
++		return false;
++	}
++
++	if (base == *path)
++	{
++		dirbuf[0] = '/';
++		dirbuf[1] = '\0';
++	}
++	else if ((size_t)(base - *path) >= sizeof(dirbuf))
++	{
++		errno = ENAMETOOLONG;
++		return false;
++	}
++	else
++	{
++		memcpy(dirbuf, *path, base - *path);
++		dirbuf[base - *path] = '\0';
++	}
++
++	base++;
++
++	if (realpath(dirbuf, resolved) == NULL)
++		return false;
++
++	if (strcmp(resolved, dirbuf) == 0)
++	{
++		errno = ENOENT;
++		return true;
++	}
++
++	free(resolvedpath);
++
++	if (asprintf(&resolvedpath, "%s/%s", resolved, base) < 0)
++	{
++		errno = ENOMEM;
++		return false;
++	}
++
++	if (!rpc_file_access(sid, resolvedpath, perm))
++	{
++		errno = EACCES;
++		return false;
++	}
++
++	*path = resolvedpath;
++	errno = ENOENT;
++
++	return true;
++}
++
+ static struct blob_attr **
+ __rpc_check_path(const struct blobmsg_policy *policy, size_t policy_len,
+                  int policy_path_idx, int policy_sid_idx, const char *perm,
+-                 struct blob_attr *msg, char **path, struct stat *s)
++                 struct blob_attr *msg, char **path, struct stat *s,
++                 bool resolve_symlinks)
+ {
+ 	static struct blob_attr *tb[__RPC_F_RW_MAX]; /* largest _MAX constant */
+ 
+@@ -275,18 +388,32 @@ __rpc_check_path(const struct blobmsg_po
+ 		return NULL;
+ 	}
+ 
++	if (resolve_symlinks && !rpc_check_symlink_access(tb[policy_sid_idx], perm, path))
++		return NULL;
++
+ 	if (s != NULL && stat(*path, s) != 0)
+ 		return NULL;
+ 
+ 	return tb;
+ }
+ 
++// symlinks are resolved and the ACL re-checked against the resolved target
+ #define rpc_check_path(msg, policy_selector, perm, path, s) \
+ 	__rpc_check_path(rpc_file_ ## policy_selector ## _policy, \
+ 		ARRAY_SIZE(rpc_file_ ## policy_selector ## _policy), \
+ 		RPC_F_ ## policy_selector ## _PATH, \
+ 		RPC_F_ ## policy_selector ## _SESSION, \
+-		perm, msg, path, s)
++		perm, msg, path, s, true)
++
++// symlinks are left unresolved since the caller either wants to inspect the
++// link itself or already handles it safely via unlink()'s no-follow
++// semantics (remove)
++#define rpc_check_path_no_resolve(msg, policy_selector, perm, path, s) \
++	__rpc_check_path(rpc_file_ ## policy_selector ## _policy, \
++		ARRAY_SIZE(rpc_file_ ## policy_selector ## _policy), \
++		RPC_F_ ## policy_selector ## _PATH, \
++		RPC_F_ ## policy_selector ## _SESSION, \
++		perm, msg, path, s, false)
+ 
+ static int
+ rpc_file_read(struct ubus_context *ctx, struct ubus_object *obj,
+@@ -376,7 +503,7 @@ rpc_file_write(struct ubus_context *ctx,
+ {
+ 	struct blob_attr **tb;
+ 	int append = O_TRUNC;
+-	mode_t prev_mode, mode = 0666;
++	mode_t mode = 0666;
+ 	int fd, rv = 0;
+ 	char *path = NULL;
+ 	void *data = NULL;
+@@ -397,11 +524,9 @@ rpc_file_write(struct ubus_context *ctx,
+ 		append = O_APPEND;
+ 
+ 	if (tb[RPC_F_RW_MODE])
+-		mode = blobmsg_get_u32(tb[RPC_F_RW_MODE]);
++		mode = blobmsg_get_u32(tb[RPC_F_RW_MODE]) & 0777;
+ 
+-	prev_mode = umask(0);
+ 	fd = open(path, O_CREAT | O_WRONLY | append, mode);
+-	umask(prev_mode);
+ 	if (fd < 0)
+ 		return rpc_errno_status();
+ 
+@@ -562,10 +687,10 @@ rpc_file_stat(struct ubus_context *ctx,
+ }
+ 
+ static int
+-rpc_file_remove_recursive(const char *path);
++rpc_file_remove_recursive(const struct blob_attr *sid, const char *path);
+ 
+ static int
+-rpc_file_remove_recursive(const char *path)
++rpc_file_remove_recursive(const struct blob_attr *sid, const char *path)
+ {
+ 	DIR *fd;
+ 	int err = 0;
+@@ -583,10 +708,14 @@ rpc_file_remove_recursive(const char *pa
+ 
+ 		if (asprintf(&entrypath, "%s/%s", path, e->d_name) >= 0)
+ 		{
+-			if (!lstat(entrypath, &s))
++			if (!rpc_file_access(sid, entrypath, "write"))
++			{
++				err = UBUS_STATUS_PERMISSION_DENIED;
++			}
++			else if (!lstat(entrypath, &s))
+ 			{
+ 				if (S_ISDIR(s.st_mode))
+-					err = rpc_file_remove_recursive(entrypath);
++					err = rpc_file_remove_recursive(sid, entrypath);
+ 				else if (unlink(entrypath))
+ 					err = rpc_errno_status();
+ 			}
+@@ -612,17 +741,20 @@ rpc_file_remove(struct ubus_context *ctx
+                 struct ubus_request_data *req, const char *method,
+                 struct blob_attr *msg)
+ {
++	struct blob_attr **tb;
+ 	struct stat s;
+ 	char *path = NULL;
+ 
+-	if (!rpc_check_path(msg, R, "write", &path, NULL))
++	tb = rpc_check_path_no_resolve(msg, R, "write", &path, NULL);
++
++	if (tb == NULL)
+ 		return rpc_errno_status();
+ 
+ 	if (lstat(path, &s))
+ 		return rpc_errno_status();
+ 
+ 	if (S_ISDIR(s.st_mode))
+-		return rpc_file_remove_recursive(path);
++		return rpc_file_remove_recursive(tb[RPC_F_R_SESSION], path);
+ 
+ 	if (unlink(path))
+ 		return rpc_errno_status();

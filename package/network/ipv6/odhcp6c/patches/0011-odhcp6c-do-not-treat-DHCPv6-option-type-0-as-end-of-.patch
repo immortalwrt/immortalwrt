@@ -1,0 +1,49 @@
+From 1374cbad07c63db19bba0f371c1a2f36167381dd Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sat, 23 May 2026 14:46:55 +0200
+Subject: odhcp6c: do not treat DHCPv6 option type 0 as end-of-list
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+dhcpv6_for_each_option was structured as a chain of '&&' expressions
+where each link both assigned a loop variable (otype, odata, olen)
+and gated iteration on the assigned value being truthy. The middle
+link, '((otype) = _o[0] << 8 | _o[1])', made iteration stop on
+otype == 0.
+
+DHCPv6 has no end-of-list sentinel; option code 0 is just reserved
+(RFC 8415 §21, IANA registry). A server (broken or hostile) that emits
+an option with code 0 anywhere in the response would silently truncate
+the client's view of the option list, masking everything that follows
+— including STATUS, IA_NA / IA_PD, AUTH, etc.
+
+Switch the assignments inside the for-loop condition to use the comma
+operator so all three (otype, odata, olen) are unconditionally
+written, and gate iteration purely on the bounds check
+'odata + olen <= end'. Callers see the same variables, in the same
+order, just without the spurious type-0 truncation.
+
+Assisted-by: Claude:claude-opus-4-7
+Link: https://github.com/openwrt/odhcp6c/pull/160
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 9177f236c2d74144a8a2cbdc7da0fcf2f582bc2c)
+---
+ src/odhcp6c.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+--- a/src/odhcp6c.h
++++ b/src/odhcp6c.h
+@@ -267,8 +267,10 @@ struct dhcpv6_s46_rule {
+ 
+ #define dhcpv6_for_each_option(start, end, otype, olen, odata)\
+ 	for (uint8_t *_o = (uint8_t*)(start); _o + 4 <= (uint8_t*)(end) &&\
+-		((otype) = _o[0] << 8 | _o[1]) && ((odata) = (void*)&_o[4]) &&\
+-		((olen) = _o[2] << 8 | _o[3]) + (odata) <= (uint8_t*)(end); \
++		((otype) = _o[0] << 8 | _o[1],\
++		 (odata) = (void*)&_o[4],\
++		 (olen) = _o[2] << 8 | _o[3],\
++		 (odata) + (olen) <= (uint8_t*)(end)); \
+ 		_o += 4 + (_o[2] << 8 | _o[3]))
+ 
+ 

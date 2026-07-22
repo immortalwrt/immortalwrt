@@ -1,0 +1,49 @@
+From 49f251805dd5bce1964d4d6549ff1178ae8df2a5 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sat, 30 May 2026 23:17:47 +0200
+Subject: odhcp6c: bound the address length when parsing the -P argument
+
+The -P <[pfx/]len> handler copied everything before the '/' into the
+fixed 134-byte stack buffer "buf" with
+
+    strncpy((char *)buf, optarg, optpos - optarg);
+    buf[optpos - optarg] = '\0';
+
+without checking that the address portion fits. An argument whose
+address part is 134 bytes or longer overflows buf on the stack (the
+trailing NUL store is out of bounds as well).
+
+Reject any address portion that does not fit in buf before copying.
+inet_pton() would reject such an over-long string anyway, so no valid
+invocation changes behaviour.
+
+Assisted-by: Claude:claude-opus-4-8
+Link: https://github.com/openwrt/odhcp6c/pull/160
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit e9a9e9d45f38bee5d761de0421ca52163efa28d7)
+---
+ src/odhcp6c.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+--- a/src/odhcp6c.c
++++ b/src/odhcp6c.c
+@@ -245,8 +245,17 @@ int main(_unused int argc, char* const a
+ 
+ 			optpos = strchr(optarg, '/');
+ 			if (optpos) {
+-				strncpy((char *)buf, optarg, optpos - optarg);
+-				buf[optpos - optarg] = '\0';
++				size_t addr_len = optpos - optarg;
++
++				/* Leave room for the terminating NUL; reject anything
++				 * that cannot be a valid IPv6 literal instead of
++				 * overflowing buf. */
++				if (addr_len >= sizeof(buf)) {
++					syslog(LOG_ERR, "invalid argument: '%s'", optarg);
++					return 1;
++				}
++				strncpy((char *)buf, optarg, addr_len);
++				buf[addr_len] = '\0';
+ 				if (inet_pton(AF_INET6, (char *)buf, &prefix.addr) <= 0) {
+ 					syslog(LOG_ERR, "invalid argument: '%s'", optarg);
+ 					return 1;

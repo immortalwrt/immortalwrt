@@ -1,0 +1,52 @@
+From 240ca48bb8f783177b86a21425c5b1b5bab2b7ae Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sat, 23 May 2026 14:15:36 +0200
+Subject: odhcp6c: propagate allocation failure from insert_state
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+odhcp6c_insert_state always returned 0, even when odhcp6c_resize_state
+failed (either because the state would exceed the 1024-byte cap or
+because realloc() returned NULL). The callers act on the return value:
+
+  * config_add_requested_options() logs and aborts when nonzero, but
+    silently accepts the lost option when zero — so a failed insert
+    becomes "succeeded but not actually added".
+  * dhcpv6_add_server_cand() frees the candidate's IA_NA / IA_PD only
+    when nonzero, so an insert failure both loses the candidate and
+    leaks its IA buffers.
+
+Return -1 when odhcp6c_resize_state() returns NULL, matching the
+documented contract of the function and the behaviour of
+odhcp6c_add_state().
+
+Assisted-by: Claude:claude-opus-4-7
+Link: https://github.com/openwrt/odhcp6c/pull/160
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 49d9c0112bb8cd9760cc13495caa5009b61cf2ad)
+---
+ src/odhcp6c.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+--- a/src/odhcp6c.c
++++ b/src/odhcp6c.c
+@@ -735,12 +735,13 @@ int odhcp6c_insert_state(enum odhcp6c_st
+ 
+ 	uint8_t *n = odhcp6c_resize_state(state, len);
+ 
+-	if (n) {
+-		uint8_t *sdata = state_data[state];
++	if (!n)
++		return -1;
+ 
+-		memmove(sdata + offset + len, sdata + offset, len_after);
+-		memcpy(sdata + offset, data, len);
+-	}
++	uint8_t *sdata = state_data[state];
++
++	memmove(sdata + offset + len, sdata + offset, len_after);
++	memcpy(sdata + offset, data, len);
+ 
+ 	return 0;
+ }

@@ -1,0 +1,56 @@
+From 8c00cc8447a55beb9f2dd9115de7cd09fa1f6126 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sat, 30 May 2026 23:43:36 +0200
+Subject: router: keep RA DNS option lengths within the uint8 length field
+
+The RDNSS and DNSSL option length fields (RFC 8106) are uint8_t values
+counting 8-byte units, but send_router_advert() computed them from the
+configured DNS server count / search-list size without any bound. With 128 or
+more configured DNS servers, "1 + 2*dns_addrs6_cnt" exceeds 255 and the len
+field wrapped; likewise a search list larger than UINT8_MAX*8 bytes wrapped
+search_sz/8. In both cases the actual bytes written (sized via dns_sz /
+search_sz and the iovec length) used the full untruncated size, so the
+emitted option's Length no longer matched its real size and clients would
+mis-parse or drop the whole RA.
+
+Cap the RDNSS server count at 127 (1 + 2*127 == 255) and skip the DNSSL
+option entirely when it would not fit in a valid uint8 length, matching the
+existing UINT8_MAX guard on the DHCPv4 search-list path.
+
+Assisted-by: Claude:claude-opus-4-8
+Link: https://github.com/openwrt/odhcpd/pull/401
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 60f488192d5d32023455d51e37ea9f11819e417a)
+---
+ src/router.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+--- a/src/router.c
++++ b/src/router.c
+@@ -828,6 +828,12 @@ static int send_router_advert(struct int
+ 			dns_cnt = 1;
+ 		}
+ 
++		/* The RDNSS len field is a uint8_t counting 8-byte units, so it
++		 * holds at most 127 addresses (1 + 2*127 == 255); drop any extra
++		 * so the on-wire length stays consistent with the bytes sent. */
++		if (dns_cnt > 127)
++			dns_cnt = 127;
++
+ 		if (dns_cnt) {
+ 			dns_sz = sizeof(*dns) + sizeof(struct in6_addr)*dns_cnt;
+ 
+@@ -849,7 +855,12 @@ static int send_router_advert(struct int
+ 			}
+ 		}
+ 
+-		if (search_len > 0) {
++		/* The DNSSL len field is a uint8_t counting 8-byte units, so the
++		 * whole option must fit in UINT8_MAX*8 bytes; skip it otherwise
++		 * rather than emit an option whose length field does not match
++		 * its real size. */
++		if (search_len > 0 &&
++		    sizeof(*search) + ((search_len + 7) & (~7)) + 8 <= UINT8_MAX * 8) {
+ 			size_t search_padded = ((search_len + 7) & (~7)) + 8;
+ 
+ 			search_sz = sizeof(*search) + search_padded;

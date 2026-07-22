@@ -1,0 +1,41 @@
+From b2285de129b9adc8b12f84f9a27c16c21f2b57a5 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sat, 13 Jun 2026 02:40:48 +0200
+Subject: ubus: close connection on POST body parse error
+
+uh_ubus_data_send() is only entered while there is still POST body data
+to read. When the JSON body is delivered in several TCP segments and a
+complete object has already been parsed (du->jsobj set), or the body
+exceeds UH_UBUS_MAX_POST_SIZE, the error path emits a JSON-RPC parse
+error and returns 0 without consuming the remaining declared
+Content-Length bytes. The caller neither drained the rest of the body
+nor closed the connection, so the unread body suffix was parsed as a
+new HTTP request on the same keep-alive connection (request smuggling).
+
+Set connection_close in the error path so the out-of-sync connection is
+torn down instead of being reused.
+
+Link: https://github.com/openwrt/uhttpd/security/advisories/GHSA-wgwp-64hh-f52p
+Reported-by: @dyingc
+Assisted-by: Claude:claude-opus-4-8
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 7b1bec45826bd78c8afc993435bdc0f1df2fe399)
+---
+ ubus.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+--- a/ubus.c
++++ b/ubus.c
+@@ -942,6 +942,12 @@ static int uh_ubus_data_send(struct clie
+ 	return len;
+ 
+ error:
++	/* We abort parsing the request body here without consuming the
++	 * remaining declared Content-Length bytes. Close the connection even
++	 * when keep alive is set, as the unread body suffix would otherwise be
++	 * interpreted as the start of the next request (request smuggling).
++	 */
++	cl->request.connection_close = true;
+ 	uh_ubus_single_error(cl, ERROR_PARSE);
+ 	return 0;
+ }

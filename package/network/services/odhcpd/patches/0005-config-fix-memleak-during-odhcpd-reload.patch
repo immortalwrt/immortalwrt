@@ -1,7 +1,7 @@
-From be7ca7c0792b185263ad86b961ea61129494a7f9 Mon Sep 17 00:00:00 2001
+From 7b2d0bd30306dcc014f11b15817b0c5010554e7c Mon Sep 17 00:00:00 2001
 From: Fei Lv <feilv@asrmicro.com>
 Date: Fri, 14 Nov 2025 15:31:22 +0800
-Subject: [PATCH] config: fix memleak during odhcpd reload
+Subject: config: fix memleak during odhcpd reload
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit

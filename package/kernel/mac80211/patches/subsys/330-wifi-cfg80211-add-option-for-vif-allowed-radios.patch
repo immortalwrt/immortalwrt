@@ -204,7 +204,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	if (nl80211_send_iface(msg, info->snd_portid, info->snd_seq, 0,
  			       rdev, wdev, NL80211_CMD_NEW_INTERFACE) < 0) {
  		nlmsg_free(msg);
-@@ -9192,6 +9231,9 @@ static bool cfg80211_off_channel_oper_al
+@@ -9195,6 +9234,9 @@ static bool cfg80211_off_channel_oper_al
  
  	lockdep_assert_wiphy(wdev->wiphy);
  
@@ -214,7 +214,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	if (!cfg80211_beaconing_iface_active(wdev))
  		return true;
  
-@@ -9404,7 +9446,8 @@ static int nl80211_trigger_scan(struct s
+@@ -9407,7 +9449,8 @@ static int nl80211_trigger_scan(struct s
  			}
  
  			/* ignore disabled channels */
@@ -224,7 +224,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  				continue;
  
  			request->channels[i] = chan;
-@@ -9424,7 +9467,8 @@ static int nl80211_trigger_scan(struct s
+@@ -9427,7 +9470,8 @@ static int nl80211_trigger_scan(struct s
  
  				chan = &wiphy->bands[band]->channels[j];
  
@@ -246,7 +246,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  			continue;
  
  		for (i = 0; i < rdev_req->n_channels; i++) {
-@@ -3513,9 +3514,12 @@ int cfg80211_wext_siwscan(struct net_dev
+@@ -3516,9 +3517,12 @@ int cfg80211_wext_siwscan(struct net_dev
  			continue;
  
  		for (j = 0; j < wiphy->bands[band]->n_channels; j++) {
@@ -263,7 +263,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  			/* If we have a wireless request structure and the
 --- a/net/wireless/util.c
 +++ b/net/wireless/util.c
-@@ -2970,3 +2970,32 @@ bool cfg80211_radio_chandef_valid(const
+@@ -2951,3 +2951,32 @@ bool cfg80211_radio_chandef_valid(const
  	return true;
  }
  EXPORT_SYMBOL(cfg80211_radio_chandef_valid);

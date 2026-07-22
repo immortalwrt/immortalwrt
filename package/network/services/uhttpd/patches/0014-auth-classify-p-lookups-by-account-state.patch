@@ -1,0 +1,98 @@
+From ce58f84074b9fe905be9c60e704312518a891257 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Mon, 18 May 2026 00:01:16 +0200
+Subject: auth: classify $p$ lookups by account state
+
+uh_auth_add resolves '$p$<user>' password lines by reading the named
+account's stored credential from /etc/shadow (or /etc/passwd as a
+fallback). The previous code copied that string verbatim into
+realm->pass without checking whether it was a usable crypt(3) hash.
+This broke for two distinct shadow states:
+
+ 1. Locked or placeholder credentials ("*", "x", "!", "!!", "*LK*",
+    "*NP*", "!hash" lock prefix). In uh_auth_check the plaintext
+    compare branch fires whenever realm->pass does not start with '$',
+    so any client sending the placeholder verbatim as the password
+    matched and authenticated. On OpenWrt every system account except
+    root has '*' or 'x' in /etc/shadow by default, so a realm configured as
+    '/cgi-bin/admin:adminuser:$p$daemon' (the pattern the example UCI
+    in package/network/services/uhttpd/files/uhttpd.config documents)
+    authenticated any request with password '*' and ran the CGI as
+    root.
+
+ 2. Empty password (the default OpenWrt root entry, "root:::..."):
+    handled correctly by the existing empty-pass drop but silently,
+    leaving admins unaware that '$p$root' on a fresh image produces a
+    public URL.
+
+Match login(1) semantics: locked or placeholder accounts deny all
+access, accounts with no password set permit access without
+authentication, accounts with a real hash require it. For each
+non-hash case log a distinct warning so admins notice the silent
+state. A '$p$' reference to a non-existent account is treated as a
+config typo: deny all access (consistent with the admin's stated
+intent of requiring auth) and log a warning.
+
+For the locked case, bind the realm to a sentinel that starts with
+'$' (skipping the plaintext compare branch) and cannot be produced by
+crypt(3) (failing the hash branch), so every request returns 401
+instead of falling through to a missing-realm public response.
+
+Reported-by: Amit Pinchasi <amitpinchasi123@gmail.com>
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+Link: https://github.com/openwrt/uhttpd/pull/25
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 1b624f8f814ed568608d756512892416e0431d77)
+---
+ auth.c | 38 ++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 36 insertions(+), 2 deletions(-)
+
+--- a/auth.c
++++ b/auth.c
+@@ -72,10 +72,44 @@ void uh_auth_add(const char *path, const
+ #endif
+ 		if (!new_pass) {
+ 			pwd = getpwnam(&pass[3]);
+-			if (pwd && pwd->pw_passwd && pwd->pw_passwd[0] &&
+-			    pwd->pw_passwd[0] != '!')
++			if (pwd && pwd->pw_passwd && pwd->pw_passwd[0])
+ 				new_pass = pwd->pw_passwd;
+ 		}
++
++		/* Only honour a real crypt(3) hash. Anything else from shadow
++		 * splits into two cases that mirror login(1) semantics:
++		 *
++		 *  - Empty password field ("root:::..."): the system account
++		 *    permits passwordless login, so leave new_pass empty and
++		 *    let the realm be dropped at the next check, which leaves
++		 *    the protected path unauthenticated.
++		 *
++		 *  - Any other non-'$' value ("*", "x", "!", "!!", "*LK*",
++		 *    "*NP*", "!hash" lock prefix, ...): the account is locked
++		 *    or its credential is a placeholder. Without this guard
++		 *    uh_auth_check's plaintext compare branch would fire (it
++		 *    runs whenever realm->pass does not start with '$') and a
++		 *    client could authenticate by sending the placeholder
++		 *    verbatim as the password. Bind the realm to a sentinel
++		 *    that starts with '$' (skipping the plaintext branch) and
++		 *    that crypt(3) cannot produce (failing the hash branch),
++		 *    so every request gets 401 instead of silent public
++		 *    access. */
++		if (!new_pass) {
++			fprintf(stderr, "uhttpd: account '%s' does not "
++				"exist; denying all access to %s\n",
++				&pass[3], path);
++			new_pass = "$";
++		} else if (new_pass[0] && new_pass[0] != '$') {
++			fprintf(stderr, "uhttpd: account '%s' is locked "
++				"or has a non-crypt password; denying all "
++				"access to %s\n", &pass[3], path);
++			new_pass = "$";
++		} else if (!new_pass[0]) {
++			fprintf(stderr, "uhttpd: account '%s' has no "
++				"password set; leaving %s unauthenticated\n",
++				&pass[3], path);
++		}
+ 	} else {
+ 		new_pass = pass;
+ 	}

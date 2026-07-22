@@ -1,0 +1,32 @@
+From db284b69ef64be20d45a12c3de024ab91fe3dc61 Mon Sep 17 00:00:00 2001
+From: Paul Spooren <mail@aparcar.org>
+Date: Thu, 16 Apr 2026 17:10:36 +0800
+Subject: client: use base-10 parsing for Content-Length header
+
+strtoul() with base 0 auto-detects octal (leading "0") and
+hexadecimal (leading "0x") prefixes. A Content-Length value like
+"025" was parsed as octal 21 instead of decimal 25. Since compliant
+HTTP frontends always parse Content-Length as decimal per RFC 7230,
+this mismatch enables HTTP request smuggling when uhttpd sits behind
+a reverse proxy or load balancer.
+
+Fix by explicitly passing base 10 to strtoul().
+
+Reported-by: Nicola Staller <nicola.staller@syss.de>
+Signed-off-by: Paul Spooren <mail@aparcar.org>
+(cherry picked from commit e619cb04cddba8316d6928ff99f55a49e6ddc561)
+---
+ client.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/client.c
++++ b/client.c
+@@ -391,7 +391,7 @@ static void client_parse_header(struct c
+ 			return;
+ 		}
+ 	} else if (!strcmp(data, "content-length")) {
+-		r->content_length = strtoul(val, &err, 0);
++		r->content_length = strtoul(val, &err, 10);
+ 		if ((err && *err) || r->content_length < 0) {
+ 			uh_header_error(cl, 400, "Bad Request");
+ 			return;

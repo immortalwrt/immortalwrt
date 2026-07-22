@@ -1,7 +1,7 @@
-From 30780debd691aee7567784daf1fdfd8db500a485 Mon Sep 17 00:00:00 2001
+From d9a202773d18ab9f88fc55f79b11b5f61a200085 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?David=20H=C3=A4rdeman?= <david@hardeman.nu>
 Date: Thu, 9 Oct 2025 11:08:14 +0200
-Subject: [PATCH] odhcpd: fix a compilation error
+Subject: odhcpd: fix a compilation error
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit

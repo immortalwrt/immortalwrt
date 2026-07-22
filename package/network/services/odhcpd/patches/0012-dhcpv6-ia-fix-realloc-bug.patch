@@ -1,0 +1,37 @@
+From 4ff35533494ea5b531540a69e90ede1124eaede7 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?David=20H=C3=A4rdeman?= <david@hardeman.nu>
+Date: Thu, 27 Nov 2025 11:35:09 +0100
+Subject: dhcpv6-ia: fix realloc bug
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Commit b9db4d7061a08bf82a25222074065cce71973d0c introduced a bug, the
+"hostname" variable used for the realloc would shadow the real hostname
+defined at the beginning of the function. Fix this by using a different
+variable name.
+
+Fixes: b9db4d7061a0 ("dhcpv6: handle realloc failure")
+Signed-off-by: David Härdeman <david@hardeman.nu>
+Link: https://github.com/openwrt/odhcpd/pull/326
+Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+(cherry picked from commit d21e504b38ab4c880c43b7f1649104bb2f0d2d8b)
+---
+ src/dhcpv6-ia.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+--- a/src/dhcpv6-ia.c
++++ b/src/dhcpv6-ia.c
+@@ -1636,9 +1636,9 @@ ssize_t dhcpv6_ia_handle_IAs(uint8_t *bu
+ 				    hdr->msg_type == DHCPV6_MSG_REQUEST ||
+ 				    hdr->msg_type == DHCPV6_MSG_REBIND)) {
+ 				if ((!(a->flags & OAF_STATIC) || !a->hostname) && hostname_len > 0) {
+-					char *hostname = realloc(a->hostname, hostname_len + 1);
+-					if (hostname) {
+-						a->hostname = hostname;
++					char *tmp = realloc(a->hostname, hostname_len + 1);
++					if (tmp) {
++						a->hostname = tmp;
+ 						memcpy(a->hostname, hostname, hostname_len);
+ 						a->hostname[hostname_len] = 0;
+ 

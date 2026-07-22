@@ -1,0 +1,63 @@
+From e2c01cf55d1cc97c48234b0e70ed66657631d5f1 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sat, 30 May 2026 23:43:21 +0200
+Subject: router: restore upstream DNS between relayed RAs
+
+forward_router_advertisement() forwards a single, shared packet buffer to
+every slave interface in turn. The source MAC is reset to its upstream state
+at the top of each iteration, but the RDNSS addresses -- rewritten in place
+when a slave has always_rewrite_dns -- were not. Once one slave rewrote them,
+every subsequent slave in the same loop was sent the previous slave's DNS
+servers instead of the original upstream ones, so a slave without
+always_rewrite_dns could leak another interface's DNS servers to its clients.
+
+Snapshot the upstream DNS addresses before the loop and restore them at the
+start of each iteration.
+
+Backport note: upstream additionally restores the MTU option value and the
+PIO/RA flags, which are only rewritten per-slave in later versions. 24.10
+rewrites just the DNS addresses, so only that half of the fix applies here.
+
+Assisted-by: Claude:claude-opus-4-8
+Link: https://github.com/openwrt/odhcpd/pull/401
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit d119e1abc35f61a5fe96a03bbb85811ceabca2e9)
+---
+ src/router.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+--- a/src/router.c
++++ b/src/router.c
+@@ -1105,7 +1105,7 @@ static void forward_router_advertisement
+ 	/* Rewrite options */
+ 	uint8_t *end = data + len;
+ 	uint8_t *mac_ptr = NULL;
+-	struct in6_addr *dns_ptr = NULL;
++	struct in6_addr *dns_ptr = NULL, *dns_ptr_orig = NULL;
+ 	size_t dns_count = 0;
+ 
+ 	icmpv6_for_each_option(opt, &adv[1], end) {
+@@ -1129,10 +1129,23 @@ static void forward_router_advertisement
+ 	all_nodes.sin6_family = AF_INET6;
+ 	inet_pton(AF_INET6, ALL_IPV6_NODES, &all_nodes.sin6_addr);
+ 
++	/* Preserve the upstream DNS addresses: they are rewritten in place in the
++	 * single shared packet buffer, so without restoring them a later slave
++	 * would inherit a previous slave's rewritten values. */
++	if (dns_ptr && dns_count > 0) {
++		dns_ptr_orig = alloca(dns_count * sizeof(*dns_ptr_orig));
++		memcpy(dns_ptr_orig, dns_ptr, dns_count * sizeof(*dns_ptr_orig));
++	}
++
+ 	avl_for_each_element(&interfaces, c, avl) {
+ 		if (c->ra != MODE_RELAY || c->master)
+ 			continue;
+ 
++		/* Restore the upstream DNS addresses that a previous slave may
++		 * have rewritten in the shared buffer. */
++		if (dns_ptr_orig)
++			memcpy(dns_ptr, dns_ptr_orig, dns_count * sizeof(*dns_ptr));
++
+ 		/* Fixup source hardware address option */
+ 		if (mac_ptr)
+ 			odhcpd_get_mac(c, mac_ptr);

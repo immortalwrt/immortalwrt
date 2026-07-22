@@ -1,0 +1,46 @@
+From 82dca288b46f1cb5c6f5eaffb2080ebca4a3d651 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sat, 30 May 2026 01:29:46 +0200
+Subject: dhcpv6: validate minimum length in relay_client_request()
+
+relay_server_response() refuses packets shorter than the relay header,
+but the client-side relay path skipped any length check. With UDP
+permitting zero/short payloads, a 0- or 1-byte datagram would let the
+switch read h->msg_type from data[0] and (if it happened to equal
+DHCPV6_MSG_RELAY_FORW = 12) h->hop_count from data[1] out of bounds.
+The bytes come from the kernel receive buffer so it is a contained UB
+read, but it is reachable.
+
+relay_client_request() casts data to a struct dhcpv6_relay_header and
+reads only h->msg_type (offset 0) and, for a RELAY_FORW, h->hop_count
+(offset 1); the payload is forwarded verbatim and never parsed here.
+Bound len on offsetof(struct dhcpv6_relay_header, link_address) so the
+guard names the struct the function actually uses and the exact extent
+it reads, mirroring how relay_server_response() bounds on its own
+header.
+
+Assisted-by: Claude:claude-opus-4-7
+Link: https://github.com/openwrt/odhcpd/pull/401
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit cc04882b3fac7643921a194ab65650274a69b2d6)
+---
+ src/dhcpv6.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+--- a/src/dhcpv6.c
++++ b/src/dhcpv6.c
+@@ -902,6 +902,14 @@ static void relay_client_request(struct
+ 	struct odhcpd_ipaddr *ip;
+ 	struct sockaddr_in6 s;
+ 
++	/* A bare UDP socket can deliver a zero/short payload; the relay-reply
++	 * path (relay_server_response) checks this but the client-side relay
++	 * did not. relay_client_request() reads h->msg_type, plus h->hop_count
++	 * for a RELAY_FORW, out of the relay header and forwards the rest
++	 * verbatim, so require at least those two leading header bytes. */
++	if (len < offsetof(struct dhcpv6_relay_header, link_address))
++		return;
++
+ 	if (h->msg_type == DHCPV6_MSG_RELAY_REPL ||
+ 	    h->msg_type == DHCPV6_MSG_RECONFIGURE ||
+ 	    h->msg_type == DHCPV6_MSG_REPLY ||

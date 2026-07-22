@@ -1,0 +1,48 @@
+From e587d403b689c04141cfeac638c68e898c5b565e Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sat, 23 May 2026 14:21:10 +0200
+Subject: =?UTF-8?q?ndp:=20enforce=20RFC4861=20=C2=A77.1.1=20hop-limit=20an?=
+ =?UTF-8?q?d=20ICMP-code=20checks=20on=20NS?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+handle_solicit() previously trusted whatever the AF_PACKET socket
+delivered, so a Neighbor Solicitation with Hop Limit < 255 or a
+non-zero ICMP Code was forwarded to peer interfaces (triggering proxy
+NDP lookups and an NA on the requesting interface). RFC4861 §7.1.1
+requires NS messages with those properties to be silently discarded —
+the hop-limit rule in particular is what prevents off-link attackers
+from forging NS / DAD packets onto our link.
+
+The router.c equivalent (router_icmpv6_valid + the IPV6_RECVHOPLIMIT
+cmsg check in odhcpd_receive_packets) already does this for RA/RS;
+the NDP path needs to enforce it itself because AF_PACKET sees raw
+frames with no kernel-side L3 validation.
+
+Assisted-by: Claude:claude-opus-4-7
+Link: https://github.com/openwrt/odhcpd/pull/401
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 0eade3d4b7a37106f6498f4ce952ecd6ec1b932d)
+---
+ src/ndp.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+--- a/src/ndp.c
++++ b/src/ndp.c
+@@ -382,6 +382,15 @@ static void handle_solicit(void *addr, v
+ 	if (len < sizeof(*ip6) + sizeof(*req))
+ 		return; // Invalid total length
+ 
++	/* RFC4861 §7.1.1: a Neighbor Solicitation MUST be silently discarded
++	 * if the IP Hop Limit field is not 255 or the ICMP Code is non-zero.
++	 * The hop-limit check is what protects against off-link attackers
++	 * forging NS / DAD messages, so it must not be skipped. Because the
++	 * NDP socket is AF_PACKET (not a kernel-managed ICMPv6 socket), we
++	 * have to enforce it ourselves. */
++	if (ip6->ip6_hlim != 255 || req->nd_ns_hdr.icmp6_code != 0)
++		return;
++
+ 	if (IN6_IS_ADDR_LINKLOCAL(&req->nd_ns_target) ||
+ 			IN6_IS_ADDR_LOOPBACK(&req->nd_ns_target) ||
+ 			IN6_IS_ADDR_MULTICAST(&req->nd_ns_target))

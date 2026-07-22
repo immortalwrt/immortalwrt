@@ -95,7 +95,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	if (ret)
  		return ret;
  done:
-@@ -3064,7 +3072,8 @@ static int ieee80211_set_tx_power(struct
+@@ -3054,7 +3062,8 @@ static int ieee80211_set_tx_power(struct
  	if (wdev) {
  		sdata = IEEE80211_WDEV_TO_SUB_IF(wdev);
  
@@ -105,7 +105,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  			if (!ieee80211_hw_check(&local->hw, WANT_MONITOR_VIF))
  				return -EOPNOTSUPP;
  
-@@ -3112,7 +3121,8 @@ static int ieee80211_set_tx_power(struct
+@@ -3102,7 +3111,8 @@ static int ieee80211_set_tx_power(struct
  	}
  
  	list_for_each_entry(sdata, &local->interfaces, list) {
@@ -115,7 +115,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  			has_monitor = true;
  			continue;
  		}
-@@ -3122,7 +3132,8 @@ static int ieee80211_set_tx_power(struct
+@@ -3112,7 +3122,8 @@ static int ieee80211_set_tx_power(struct
  		sdata->vif.bss_conf.txpower_type = txp_type;
  	}
  	list_for_each_entry(sdata, &local->interfaces, list) {
@@ -125,7 +125,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  			continue;
  		ieee80211_recalc_txpower(sdata, update_txp_type);
  	}
-@@ -4317,7 +4328,8 @@ static int ieee80211_cfg_get_channel(str
+@@ -4307,7 +4318,8 @@ static int ieee80211_cfg_get_channel(str
  	if (chanctx_conf) {
  		*chandef = link->conf->chanreq.oper;
  		ret = 0;
@@ -156,7 +156,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  		case NL80211_IFTYPE_P2P_CLIENT:
  		case NL80211_IFTYPE_P2P_GO:
  			WARN_ON_ONCE(1);
-@@ -956,6 +959,10 @@ void ieee80211_recalc_smps_chanctx(struc
+@@ -958,6 +961,10 @@ void ieee80211_recalc_smps_chanctx(struc
  			if (!link->sdata->u.mgd.associated)
  				continue;
  			break;
@@ -167,7 +167,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  		case NL80211_IFTYPE_AP:
  		case NL80211_IFTYPE_ADHOC:
  		case NL80211_IFTYPE_MESH_POINT:
-@@ -968,6 +975,11 @@ void ieee80211_recalc_smps_chanctx(struc
+@@ -970,6 +977,11 @@ void ieee80211_recalc_smps_chanctx(struc
  		if (rcu_access_pointer(link->conf->chanctx_conf) != &chanctx->conf)
  			continue;
  
@@ -181,7 +181,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  			WARN_ONCE(1, "Invalid SMPS mode %d\n",
 --- a/net/mac80211/debugfs.c
 +++ b/net/mac80211/debugfs.c
-@@ -465,6 +465,7 @@ static const char *hw_flag_names[] = {
+@@ -461,6 +461,7 @@ static const char *hw_flag_names[] = {
  	FLAG(SUPPORTS_DYNAMIC_PS),
  	FLAG(MFP_CAPABLE),
  	FLAG(WANT_MONITOR_VIF),
@@ -217,7 +217,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	}
  
  	/* Regardless of eth_mac_addr() return we still want to add the
-@@ -722,9 +727,11 @@ static void ieee80211_do_stop(struct iee
+@@ -726,9 +731,11 @@ static void ieee80211_do_stop(struct iee
  		ieee80211_recalc_idle(local);
  		ieee80211_recalc_offload(local);
  
@@ -230,7 +230,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  		fallthrough;
  	default:
  		if (!going_down)
-@@ -1157,7 +1164,8 @@ int ieee80211_add_virtual_monitor(struct
+@@ -1161,7 +1168,8 @@ int ieee80211_add_virtual_monitor(struct
  	ASSERT_RTNL();
  	lockdep_assert_wiphy(local->hw.wiphy);
  
@@ -240,7 +240,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  		return 0;
  
  	sdata = kzalloc(sizeof(*sdata) + local->hw.vif_data_size, GFP_KERNEL);
-@@ -1219,6 +1227,9 @@ void ieee80211_del_virtual_monitor(struc
+@@ -1223,6 +1231,9 @@ void ieee80211_del_virtual_monitor(struc
  {
  	struct ieee80211_sub_if_data *sdata;
  
@@ -250,7 +250,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	ASSERT_RTNL();
  	lockdep_assert_wiphy(local->hw.wiphy);
  
-@@ -1362,7 +1373,8 @@ int ieee80211_do_open(struct wireless_de
+@@ -1366,7 +1377,8 @@ int ieee80211_do_open(struct wireless_de
  			break;
  		}
  
@@ -284,7 +284,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  			vif = &sdata->vif;
  			break;
  		}
-@@ -3953,7 +3954,8 @@ begin:
+@@ -3959,7 +3960,8 @@ begin:
  
  	switch (tx.sdata->vif.type) {
  	case NL80211_IFTYPE_MONITOR:

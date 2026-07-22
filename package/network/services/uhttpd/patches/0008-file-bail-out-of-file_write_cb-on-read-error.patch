@@ -1,0 +1,35 @@
+From d97b4ed70fa15f5853386ef89eefe37a5ca83935 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Mon, 4 May 2026 00:23:38 +0200
+Subject: file: bail out of file_write_cb on read error
+
+The static-file delivery loop in file_write_cb only handled the
+EINTR branch of a failed read(); other failure modes (EIO on a
+backing storage error, EBADF on an unexpectedly-closed fd, etc.)
+fell through with r < 0 and reached uh_chunk_write(cl, uh_buf, r),
+which forwards the negative length to ustream_write() where it is
+interpreted as an unsigned size. The result is a chunked transfer
+of arbitrary memory adjacent to uh_buf to the client.
+
+On any non-EINTR read error, terminate the request like we already
+do for EOF instead of writing past the buffer.
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 53e7150619a3662226d1de408c5ac51f859c47f2)
+---
+ file.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+--- a/file.c
++++ b/file.c
+@@ -581,6 +581,9 @@ static void file_write_cb(struct client
+ 		if (r < 0) {
+ 			if (errno == EINTR)
+ 				continue;
++
++			uh_request_done(cl);
++			return;
+ 		}
+ 
+ 		if (!r) {

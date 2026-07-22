@@ -1,0 +1,36 @@
+From eb45f0c0534656f63b001eef32d28a9b71705433 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Mon, 13 Apr 2026 10:25:23 +0200
+Subject: utils: fix off-by-one out-of-bounds read in uh_b64decode
+
+The loop condition used `i <= slen`, which causes `str[slen]` to be
+read after processing all `slen` bytes.  This is one byte past the
+end of the declared input length and constitutes an out-of-bounds
+read for any caller that passes a non-null-terminated buffer.
+
+The existing call site in auth.c happens to pass a null-terminated C
+string, so `str[slen]` equals '\0' and the loop terminates naturally
+without memory corruption in practice.  However the function
+signature advertises only `slen` bytes of valid input, so the read is
+still incorrect.
+
+Fix by changing the condition to `i < slen`.
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit add5389470f0f5534a1b7ef79f69e98c95a5ba82)
+---
+ utils.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/utils.c
++++ b/utils.c
+@@ -176,7 +176,7 @@ int uh_b64decode(char *buf, int blen, co
+ 	int len = 0;
+ 	int i = 0;
+ 
+-	for (i = 0; (i <= slen) && (str[i] != 0); i++)
++	for (i = 0; (i < slen) && (str[i] != 0); i++)
+ 	{
+ 		cin = str[i];
+ 

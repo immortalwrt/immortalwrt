@@ -1,0 +1,50 @@
+From e37e0500d8690ea2270e98718ec2886124e72828 Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Thu, 18 Jun 2026 00:57:46 +0200
+Subject: dhcpv6-ia: fix Reconfigure Accept Auth option write offset
+
+Commit 0320032ae313 hoisted handshake_len above the Reconfigure Accept
+block and pre-added sizeof(struct dhcpv6_auth_reconfigure) so the new
+"buflen >= handshake_len" guard would reserve the full 36-byte handshake.
+It left the inner write as "memcpy(buf + handshake_len, ...)" and kept
+the now-redundant "handshake_len += sizeof(auth)", so handshake_len was
+36 (not 4) at the copy and ended at 68.
+
+As a result the 32-byte AUTH option was written at buf + 36 instead of
+buf + 4. The guard only ensures buflen >= 36, so for buflen in [36, 67]
+the copy ran past the buffer end - a reachable stack out-of-bounds write
+(a REQUEST with 21 failing IA_PD options leaves buflen == 50 and
+overflows the 512-byte pdbuf by 18 bytes). Even when the copy fit,
+buf[4..35] was left uninitialised but counted in the response, leaking
+32 bytes of stack and producing a malformed option stream.
+
+Write the AUTH option at buf + 4 and drop the double-count so
+handshake_len stays the validated full length. The "handshake_len >
+buflen" cap is now unreachable (handshake_len no longer changes inside
+the block) and is removed.
+
+Fixes: 0320032ae313 ("odhcpd: fix out of bounds write in dhcpv6_ia_handle_IAs")
+Assisted-by: Claude:claude-opus-4-8
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 03dacc23356b5789842b9d1bba0200fd005e35f3)
+---
+ src/dhcpv6-ia.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+--- a/src/dhcpv6-ia.c
++++ b/src/dhcpv6-ia.c
+@@ -1642,13 +1642,9 @@ ssize_t dhcpv6_ia_handle_IAs(uint8_t *bu
+ 						{0}
+ 					};
+ 					memcpy(auth.key, a->key, sizeof(a->key));
+-					memcpy(buf + handshake_len, &auth, sizeof(auth));
+-					handshake_len += sizeof(auth);
++					memcpy(buf + 4, &auth, sizeof(auth));
+ 				}
+ 
+-				if (handshake_len > buflen)
+-					handshake_len = buflen;
+-
+ 				buf += handshake_len;
+ 				buflen -= handshake_len;
+ 				response_len += handshake_len;

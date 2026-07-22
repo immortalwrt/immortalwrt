@@ -18,7 +18,7 @@ Signed-off-by: Stone Zhang <quic_stonez@quicinc.com>
 
 --- a/src/ap/hostapd.c
 +++ b/src/ap/hostapd.c
-@@ -4813,6 +4813,7 @@ static void hostapd_switch_color_timeout
+@@ -4818,6 +4818,7 @@ static void hostapd_switch_color_timeout
  		struct cca_settings settings;
  		int ret;
  

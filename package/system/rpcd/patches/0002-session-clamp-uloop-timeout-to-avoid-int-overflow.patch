@@ -1,0 +1,88 @@
+From e09c041c8fb027dde39ef617e24285eb1c654503 Mon Sep 17 00:00:00 2001
+From: Breeze <chanlikessummer@gmail.com>
+Date: Thu, 16 Apr 2026 23:56:19 +0800
+Subject: session: clamp uloop timeout to avoid int overflow
+
+rpc_touch_session() computes `ses->timeout * 1000` as int*int, which
+overflows INT_MAX once ses->timeout exceeds 2147483 seconds (~24.85
+days). The wrapped-around negative value passed to uloop_timeout_set()
+causes libubox to fire the session timeout callback on the very next
+uloop iteration, destroying the just-created session before the caller
+can use it.
+
+In practice this makes `ubus call session login` with e.g.
+`timeout:2592000` (30 days) return a valid-looking session id whose
+reported `expires` is a large negative number, and any subsequent
+session.set / session.get call on that SID returns "Not found". LuCI's
+ucode dispatcher passes the value of `luci.sauth.sessiontime` straight
+through as the login timeout, so users who follow common advice to bump
+sessiontime to 30 days get silently locked out of LuCI (uhttpd logs
+`accepted login`, response is 403 with no Set-Cookie) while SSH keeps
+working with the same credentials. At least one affected user resorted
+to factory-resetting multiple APs before recovering, see
+https://forum.openwrt.org/t/241892 .
+
+The same overflow lurks in rpc_session_from_blob() when thawing a
+persisted session, where `blobmsg_get_u64(EXPIRES) * 1000` is passed to
+uloop_timeout_set()'s int `msecs` parameter.
+
+Introduce a small helper that converts a seconds value to milliseconds
+with clamping to INT_MAX (and negative-input guard), and use it at both
+call sites. The cap still allows uloop timeouts of ~24.85 days, which
+is longer than any realistic administrative session.
+
+Signed-off-by: Breeze <chanlikessummer@gmail.com>
+Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>
+(cherry picked from commit d005c885dbe439745abe7f64710cb93f5da569ce)
+---
+ session.c | 28 ++++++++++++++++++++++++++--
+ 1 file changed, 26 insertions(+), 2 deletions(-)
+
+--- a/session.c
++++ b/session.c
+@@ -248,11 +248,34 @@ rpc_session_dump(struct rpc_session *ses
+ 	ubus_send_reply(ctx, req, buf.head);
+ }
+ 
++/*
++ * Convert a session timeout in seconds to a millisecond value suitable
++ * for uloop_timeout_set(), clamping to INT_MAX to avoid overflowing the
++ * int argument. Without this, any timeout exceeding ~2147483 seconds
++ * (~24.85 days) would wrap around to a negative value and cause libubox
++ * to fire the timeout callback on the next uloop iteration, destroying
++ * the session immediately after creation.
++ */
++static int
++rpc_session_timeout_ms(int64_t seconds)
++{
++	int64_t msecs;
++
++	if (seconds < 0)
++		seconds = 0;
++
++	msecs = seconds * 1000;
++	if (msecs > INT_MAX)
++		msecs = INT_MAX;
++
++	return (int)msecs;
++}
++
+ static void
+ rpc_touch_session(struct rpc_session *ses)
+ {
+ 	if (ses->timeout > 0)
+-		uloop_timeout_set(&ses->t, ses->timeout * 1000);
++		uloop_timeout_set(&ses->t, rpc_session_timeout_ms(ses->timeout));
+ }
+ 
+ static void
+@@ -1315,7 +1338,8 @@ rpc_session_from_blob(struct uci_context
+ 
+ 	avl_insert(&sessions, &ses->avl);
+ 
+-	uloop_timeout_set(&ses->t, blobmsg_get_u64(tb[RPC_DUMP_EXPIRES]) * 1000);
++	uloop_timeout_set(&ses->t,
++	                  rpc_session_timeout_ms(blobmsg_get_u64(tb[RPC_DUMP_EXPIRES])));
+ 
+ 	return true;
+ }

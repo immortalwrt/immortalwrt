@@ -1,0 +1,44 @@
+From ea8b2951efa484200bb8027fd44b67a672c89f49 Mon Sep 17 00:00:00 2001
+From: Tito Brasolin <tito.brasolin@kerberos.energy>
+Date: Fri, 5 Sep 2025 10:09:16 +0200
+Subject: ubus: unregister ubus subscriber on HTTP client disconnect
+
+Fixes a potential SIGSEGV when a client disconnects from a /ubus/subscribe/... endpoint without unsubscribing.
+The ubus subscriber is now properly unregistered in a cleanup handler, preventing callbacks on freed client structures.
+
+Fixes: #1
+Signed-off-by: Tito Brasolin <tito.brasolin@kerberos.energy>
+Link: https://github.com/openwrt/uhttpd/pull/18
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+(cherry picked from commit 506e24987b97fbc866005bfb71316bd63601a1ef)
+---
+ ubus.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+--- a/ubus.c
++++ b/ubus.c
+@@ -362,6 +362,14 @@ static void uh_ubus_subscription_notific
+ 	ops->request_done(cl);
+ }
+ 
++/* Cleanup function to unregister ubus subscriber when HTTP client closes */
++static void uh_ubus_subscription_free(struct client *cl)
++{
++	struct dispatch_ubus *du = &cl->dispatch.ubus;
++	if (du->sub.obj.id)
++		ubus_unregister_subscriber(ctx, &du->sub);
++}
++
+ static void uh_ubus_handle_get_subscribe(struct client *cl, const char *path)
+ {
+ 	struct dispatch_ubus *du = &cl->dispatch.ubus;
+@@ -399,6 +407,9 @@ static void uh_ubus_handle_get_subscribe
+ 	if (conf.events_retry)
+ 		ops->chunk_printf(cl, "retry: %d\n", conf.events_retry);
+ 
++	/* Ensure cleanup on client disconnect */
++	cl->dispatch.free = uh_ubus_subscription_free;
++
+ 	return;
+ 
+ err_unregister:

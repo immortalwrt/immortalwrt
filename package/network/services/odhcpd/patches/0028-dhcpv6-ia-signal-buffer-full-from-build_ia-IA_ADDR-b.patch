@@ -1,0 +1,33 @@
+From 6b0d954c94f71ef2ad93bcd220196b5facf06f8a Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Sun, 31 May 2026 00:25:16 +0200
+Subject: dhcpv6-ia: signal buffer-full from build_ia() IA_ADDR branch
+
+In the CONFIRM/RELEASE/DECLINE echo path of build_ia(), the IA_PREFIX branch
+returns 0 (the buffer-full failure signal) when the next IA_PREFIX option will
+not fit, but the sibling IA_ADDR branch used "continue" instead. That kept the
+option loop running and then fell through to writing the IA header length and
+returning a non-zero ia_len, so the caller treated the truncated IA -- now
+missing the IA_ADDR(s) that did not fit -- as a successfully built option and
+put it on the wire. Return 0 from the IA_ADDR branch as well so a full buffer
+is reported consistently and a malformed IA is never emitted.
+
+Assisted-by: Claude:claude-opus-4-8
+Link: https://github.com/openwrt/odhcpd/pull/401
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 1782f3f2aad21cd7971798c898355a12a9611304)
+---
+ src/dhcpv6-ia.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/src/dhcpv6-ia.c
++++ b/src/dhcpv6-ia.c
+@@ -1255,7 +1255,7 @@ static size_t build_ia(uint8_t *buf, siz
+ 					};
+ 
+ 					if (buflen < ia_len + sizeof(o_ia_a))
+-						continue;
++						return 0;
+ 
+ 					memcpy(buf + ia_len, &o_ia_a, sizeof(o_ia_a));
+ 					ia_len += sizeof(o_ia_a);
