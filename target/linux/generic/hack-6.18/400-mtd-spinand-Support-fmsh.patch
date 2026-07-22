@@ -17,7 +17,7 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
 
 --- a/drivers/mtd/nand/spi/fmsh.c
 +++ b/drivers/mtd/nand/spi/fmsh.c
-@@ -187,6 +187,115 @@ static const struct mtd_ooblayout_ops fm
+@@ -195,6 +195,115 @@ static const struct mtd_ooblayout_ops fm
  	.free = fm25s01bi3_ooblayout_free,
  };
  
@@ -133,7 +133,7 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
  static const struct spinand_info fmsh_spinand_table[] = {
  	SPINAND_INFO("FM25G01B",
  		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0xd1),
-@@ -227,6 +336,51 @@ static const struct spinand_info fmsh_sp
+@@ -235,6 +344,51 @@ static const struct spinand_info fmsh_sp
  		     SPINAND_HAS_QE_BIT,
  		     SPINAND_ECCINFO(&fm25s01bi3_ooblayout,
  				      fm25s01bi3_ecc_get_status)),
