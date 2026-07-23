@@ -74,21 +74,30 @@
 	};
 };
 
-// MAC0 -> GE Phy
+&uniphy0 {
+	status = "okay";
+
+	assigned-clocks = <&uniphy0 UNIPHY_CLK_REF>;
+	assigned-clock-rates = <UNIPHY_REFCLK_50MHZ>;
+};
+
 &gmac0 {
 	status = "okay";
 	label = "lan";
+
+	phy-mode = "sgmii";
+
 	nvmem-cells = <&hw_mac_addr 0>;
 	nvmem-cell-names = "mac-address";
-	phy-mode = "sgmii";
 };
 
-// MAC1 ---SGMII---> QCA8081
 &gmac1 {
 	status = "okay";
 	label = "wan";
+
 	phy-mode = "sgmii";
 	phy-handle = <&qca8081>;
+
 	nvmem-cells = <&hw_mac_addr 1>;
 	nvmem-cell-names = "mac-address";
 };
