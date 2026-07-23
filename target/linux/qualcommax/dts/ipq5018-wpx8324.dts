@@ -110,10 +110,12 @@
 	status = "okay";
 	pinctrl-0 = <&mdio1_pins>;
 	pinctrl-names = "default";
-	reset-gpios = <&tlmm 26 GPIO_ACTIVE_LOW>;
+
 	qca8081: ethernet-phy@28 {
 		compatible = "ethernet-phy-id004d.d101";
 		reg = <28>;
+		reset-deassert-us = <10000>;
+		reset-gpios = <&tlmm 26 GPIO_ACTIVE_LOW>;
 	};
 };
 
