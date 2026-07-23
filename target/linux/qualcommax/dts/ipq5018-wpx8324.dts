@@ -87,6 +87,7 @@
 &gmac1 {
 	status = "okay";
 	label = "wan";
+	phy-mode = "sgmii";
 	phy-handle = <&qca8081>;
 	nvmem-cells = <&hw_mac_addr 1>;
 	nvmem-cell-names = "mac-address";
