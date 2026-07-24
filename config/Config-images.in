@@ -1,386 +1,257 @@
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# Copyright (C) 2006-2013 OpenWrt.org
-
-menu "Target Images"
-
-	menuconfig TARGET_ROOTFS_INITRAMFS
-		bool "ramdisk"
-		default y if USES_INITRAMFS
-		help
-		  Embed the root filesystem into the kernel (initramfs).
-
-		choice
-			prompt "Compression"
-			default TARGET_INITRAMFS_COMPRESSION_LZMA if TARGET_apm821xx
-			default TARGET_INITRAMFS_COMPRESSION_LZMA if TARGET_ath79_mikrotik
-			default TARGET_INITRAMFS_COMPRESSION_LZMA if TARGET_lantiq
-			default TARGET_INITRAMFS_COMPRESSION_LZMA if TARGET_mpc85xx
-			default TARGET_INITRAMFS_COMPRESSION_LZMA if TARGET_ramips
-			default TARGET_INITRAMFS_COMPRESSION_ZSTD if TARGET_qualcommax
-			default TARGET_INITRAMFS_COMPRESSION_ZSTD if TARGET_microchipsw
-			default TARGET_INITRAMFS_COMPRESSION_XZ if USES_SEPARATE_INITRAMFS
-			default TARGET_INITRAMFS_COMPRESSION_NONE
-			depends on TARGET_ROOTFS_INITRAMFS
-			help
-			  Select ramdisk compression.
-
-			config TARGET_INITRAMFS_COMPRESSION_NONE
-				bool "none"
-
-			config TARGET_INITRAMFS_COMPRESSION_GZIP
-				bool "gzip"
-
-			config TARGET_INITRAMFS_COMPRESSION_BZIP2
-				bool "bzip2"
-
-			config TARGET_INITRAMFS_COMPRESSION_LZMA
-				bool "lzma"
-
-			config TARGET_INITRAMFS_COMPRESSION_LZO
-				bool "lzo"
-
-			config TARGET_INITRAMFS_COMPRESSION_LZ4
-				bool "lz4"
-
-			config TARGET_INITRAMFS_COMPRESSION_XZ
-				bool "xz"
-
-			config TARGET_INITRAMFS_COMPRESSION_ZSTD
-				bool "zstd"
-		endchoice
-
-		config EXTERNAL_CPIO
-			string
-			prompt "Use external cpio" if TARGET_ROOTFS_INITRAMFS
-			default ""
-			help
-			  Kernel uses specified external cpio as INITRAMFS_SOURCE.
-
-		config TARGET_INITRAMFS_FORCE
-			bool "Force"
-			depends on TARGET_ROOTFS_INITRAMFS
-			help
-			  Ignore the initramfs passed by the bootloader.
-
-		config TARGET_ROOTFS_INITRAMFS_SEPARATE
-			bool "separate ramdisk"
-			depends on USES_SEPARATE_INITRAMFS && TARGET_ROOTFS_INITRAMFS && !TARGET_INITRAMFS_FORCE
-			default y if USES_SEPARATE_INITRAMFS
-			help
-			  Generate separate initrd.cpio instead of embedding it.
-			  This is useful for generating images with a dedicated
-			  ramdisk e.g. in U-Boot's uImage and uImage.FIT formats.
-
-	comment "Root filesystem archives"
-
-	config TARGET_ROOTFS_CPIOGZ
-		bool "cpio.gz"
-		default y if USES_CPIOGZ
-		help
-		  Build a compressed cpio archive of the root filesystem.
-
-	config TARGET_ROOTFS_TARGZ
-		bool "tar.gz"
-		default y if USES_TARGZ
-		help
-		  Build a compressed tar archive of the root filesystem.
-
-	comment "Root filesystem images"
-
-	menuconfig TARGET_ROOTFS_EROFS
-		bool "erofs"
-		default y if USES_EROFS
-		select KERNEL_EROFS_FS
-		help
-		  Build a EROFS root filesystem.
-
-		config TARGET_EROFS_PCLUSTER_SIZE
-			int "physical cluster size (in KiB)"
-			depends on TARGET_ROOTFS_EROFS
-			default 64 if LOW_MEMORY_FOOTPRINT
-			default 1024 if (SMALL_FLASH && !LOW_MEMORY_FOOTPRINT)
-			default 256
-			help
-			  Specify the EROFS physical cluster size (must be equal
-			  to or a multiple of the filesystem block size).
-
-	menuconfig TARGET_ROOTFS_EXT4FS
-		bool "ext4"
-		default y if USES_EXT4
-		help
-		  Build an ext4 root filesystem.
-
-		config TARGET_EXT4_RESERVED_PCT
-			int "Percentage of reserved blocks in root filesystem"
-			depends on TARGET_ROOTFS_EXT4FS
-			default 0
-			help
-			  Select the percentage of reserved blocks in the root filesystem.
-
-		choice
-			prompt "Root filesystem block size"
-			default TARGET_EXT4_BLOCKSIZE_4K
-			depends on TARGET_ROOTFS_EXT4FS
-			help
-			  Select the block size of the root filesystem.
-
-			config TARGET_EXT4_BLOCKSIZE_4K
-				bool "4k"
-
-			config TARGET_EXT4_BLOCKSIZE_2K
-				bool "2k"
-
-			config TARGET_EXT4_BLOCKSIZE_1K
-				bool "1k"
-		endchoice
-
-		config TARGET_EXT4_BLOCKSIZE
-			int
-			default 4096 if TARGET_EXT4_BLOCKSIZE_4K
-			default 2048 if TARGET_EXT4_BLOCKSIZE_2K
-			default 1024 if TARGET_EXT4_BLOCKSIZE_1K
-			depends on TARGET_ROOTFS_EXT4FS
-
-		config TARGET_EXT4_JOURNAL
-			bool "Create a journaling filesystem"
-			depends on TARGET_ROOTFS_EXT4FS
-			default y
-			help
-			  Create an ext4 filesystem with a journal.
-
-	config TARGET_ROOTFS_JFFS2
-		bool "jffs2"
-		depends on USES_JFFS2
-		help
-		  Build a JFFS2 root filesystem.
-
-	config TARGET_ROOTFS_JFFS2_NAND
-		bool "jffs2 for NAND"
-		default y if USES_JFFS2_NAND
-		depends on USES_JFFS2_NAND
-		help
-		  Build a JFFS2 root filesystem for NAND flash.
-
-	menuconfig TARGET_ROOTFS_SQUASHFS
-		bool "squashfs"
-		default y if USES_SQUASHFS
-		help
-		  Build a squashfs root filesystem.
-
-		config TARGET_SQUASHFS_BLOCK_SIZE
-			int "Block size (in KiB)"
-			depends on TARGET_ROOTFS_SQUASHFS
-			default 64 if LOW_MEMORY_FOOTPRINT
-			default 1024 if (SMALL_FLASH && !LOW_MEMORY_FOOTPRINT)
-			default 256
-			help
-			  Select squashfs block size, must be one of:
-			    4, 8, 16, 32, 64, 128, 256, 512, 1024
-
-		config TARGET_SQUASHFS_BLOCK_READERS
-			int "mksquashfs tool parallel block reader threads"
-			depends on TARGET_ROOTFS_SQUASHFS
-			default 4
-			help
-			  Specify the number of parallel block reader threads
-			  (for files equal or larger than the squashfs block size).
-
-		config TARGET_SQUASHFS_SMALL_READERS
-			int "mksquashfs tool parallel small file reader threads"
-			depends on TARGET_ROOTFS_SQUASHFS
-			default 4
-			help
-			  Specify the number of parallel small file reader threads
-			  (for files less than the squashfs block size).
-
-	menuconfig TARGET_ROOTFS_UBIFS
-		bool "ubifs"
-		default y if USES_UBIFS
-		depends on USES_UBIFS
-		help
-		  Build a UBIFS root filesystem.
-
-		choice
-			prompt "compression"
-			default TARGET_UBIFS_COMPRESSION_ZLIB
-			depends on TARGET_ROOTFS_UBIFS
-			help
-			  Select compression type
-
-			config TARGET_UBIFS_COMPRESSION_NONE
-				bool "none"
-
-			config TARGET_UBIFS_COMPRESSION_LZO
-				bool "lzo"
-
-			config TARGET_UBIFS_COMPRESSION_ZLIB
-				bool "zlib"
-		endchoice
-
-		config TARGET_UBIFS_FREE_SPACE_FIXUP
-			bool "free space fixup" if TARGET_ROOTFS_UBIFS
-			default y
-			help
-			  The filesystem free space has to be fixed up on first mount.
-
-		config TARGET_UBIFS_JOURNAL_SIZE
-			string
-			prompt "journal size" if TARGET_ROOTFS_UBIFS
-			default ""
-
-	config GRUB_IMAGES
-		bool "Build GRUB images (Linux x86 or x86_64 host only)"
-		depends on TARGET_x86
-		depends on TARGET_ROOTFS_EXT4FS || TARGET_ROOTFS_JFFS2 || TARGET_ROOTFS_SQUASHFS || TARGET_ROOTFS_EROFS
-		select PACKAGE_grub2
-		select PACKAGE_grub2-bios-setup
-		default y
-
-	config GRUB_EFI_IMAGES
-		bool "Build GRUB EFI images"
-		depends on TARGET_x86 || TARGET_armsr || TARGET_loongarch64
-		depends on TARGET_ROOTFS_EXT4FS || TARGET_ROOTFS_JFFS2 || TARGET_ROOTFS_SQUASHFS || TARGET_ROOTFS_EROFS
-		select PACKAGE_grub2 if TARGET_x86
-		select PACKAGE_grub2-efi if TARGET_x86
-		select PACKAGE_grub2-bios-setup if TARGET_x86
-		select PACKAGE_grub2-efi-arm if TARGET_armsr
-		select PACKAGE_grub2-efi-loongarch64 if TARGET_loongarch64
-		select PACKAGE_kmod-fs-vfat
-		default y
-
-	config GRUB_CONSOLE
-		bool "Use Console Terminal (in addition to Serial)"
-		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
-		default y
-
-	config GRUB_BAUDRATE
-		int "Serial port baud rate"
-		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
-		default 38400 if TARGET_x86_generic
-		default 115200
-
-	config GRUB_FLOWCONTROL
-		bool "Use RTE/CTS on serial console"
-		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
-		depends on TARGET_SERIAL != ""
-
-	config GRUB_BOOTOPTS
-		string "Extra kernel boot options"
-		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
-		help
-		  If you don't know, just leave it blank.
-
-	config GRUB_TIMEOUT
-		string "Seconds to wait before booting the default entry"
-		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
-		default "0"
-		help
-		  If you don't know, 5 seconds is a reasonable default.
-
-	config GRUB_TITLE
-		string "Title for the menu entry in GRUB"
-		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
-		default "ImmortalWrt"
-		help
-		  This is the title of the GRUB menu entry.
-		  If unspecified, it defaults to OpenWrt.
-
-	config ISO_IMAGES
-		bool "Build LiveCD image (ISO)"
-		depends on TARGET_x86
-		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
-		default y if BUILDBOT
-
-	config QCOW2_IMAGES
-		bool "Build PVE/KVM image files (QCOW2)"
-		depends on TARGET_x86 || TARGET_armsr
-		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
-		select PACKAGE_kmod-e1000
-		default y if BUILDBOT
-
-	config VDI_IMAGES
-		bool "Build VirtualBox image files (VDI)"
-		depends on TARGET_x86
-		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
-		select PACKAGE_kmod-e1000
-		default y if BUILDBOT
-
-	config VMDK_IMAGES
-		bool "Build VMware image files (VMDK)"
-		depends on TARGET_x86 || TARGET_armsr
-		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
-		select PACKAGE_kmod-e1000
-		default y if BUILDBOT
-
-	config VHDX_IMAGES
-		bool "Build Hyper-V image files (VHDX)"
-		depends on TARGET_x86
-		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
-		select PACKAGE_kmod-e1000
-		default y if BUILDBOT
-
-	config ONIE_INSTALLER_IMAGES
-		bool "Build ONIE installer image (self-extracting .bin)"
-		depends on TARGET_x86
-		depends on GRUB_EFI_IMAGES
-		select PACKAGE_grub2-editenv
-		help
-		  Build a self-extracting ONIE installer .bin for installing
-		  OpenWrt on switches that ship with the Open Network Install
-		  Environment (e.g. Mellanox/NVIDIA Spectrum-based SN series).
-
-		  The resulting .bin wraps a tar payload (rootfs + kernel) in a
-		  shell script that follows the ONIE demo installer pattern:
-		  a new GPT partition labelled OPENWRT-ROOT is created for
-		  OpenWrt, and the existing ONIE-BOOT partition is preserved so
-		  ONIE rescue remains bootable.
-
-	config TARGET_SERIAL
-		string "Serial port device"
-		depends on TARGET_x86 || TARGET_armsr || TARGET_loongarch64
-		default "ttyS0"
-
-	config TARGET_IMAGES_GZIP
-		bool "GZip images"
-		depends on TARGET_ROOTFS_EXT4FS || TARGET_x86 || TARGET_armsr || TARGET_malta || TARGET_loongarch64
-		default y
-
-	comment "Image Options"
-
-	source "target/linux/*/image/Config.in"
-	source "target/linux/*/*/image/Config.in"
-
-	config TARGET_KERNEL_PARTSIZE
-		int "Kernel partition size (in MiB)"
-		depends on USES_BOOT_PART
-		default 8 if TARGET_apm821xx_sata
-		default 16 if TARGET_rockchip
-		default 64 if TARGET_bcm27xx
-		default 128 if TARGET_armsr
-		default 32
-
-	config TARGET_ROOTFS_PARTSIZE
-		int "Root filesystem partition size (in MiB)"
-		depends on USES_ROOTFS_PART || TARGET_ROOTFS_EXT4FS
-		default 300 if BUILDBOT
-		default 160
-		help
-		  Select the root filesystem partition size.
-
-	config TARGET_ROOTFS_PARTNAME
-		string "Root partition on target device"
-		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
-		help
-		  Override the root partition on the final device. If left empty,
-		  it will be mounted by PARTUUID which makes the kernel find the
-		  appropriate disk automatically.
-
-	config TARGET_ROOTFS_PERSIST_VAR
-		bool "Make /var persistent"
-		help
-		  Do not symlink /var to /tmp, so that its content will persist
-		  across reboots. When enabled, /var/run will still be linked
-		  to /tmp/run.
-
-endmenu
+z@armbian:~/immortalwrt$ make package/feeds/packages/ffmpeg/compile V=s -j1
+WARNING: Makefile 'package/feeds/video/sdl3/Makefile' has a build dependency on 'libwayland', which does not exist
+make[2]: Entering directory '/home/z/immortalwrt/scripts/config'
+make[2]: 'conf' is up to date.
+make[2]: Leaving directory '/home/z/immortalwrt/scripts/config'
+make[1]: Entering directory '/home/z/immortalwrt'
++ mkdir -p /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl
++ cd /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl
++ mkdir -p bin lib stamp usr/include usr/lib
+mkdir -p /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/stamp
+touch /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/.prepared
+make[2]: Entering directory '/home/z/immortalwrt/package/utils/lua'
+make[2]: Leaving directory '/home/z/immortalwrt/package/utils/lua'
+time: package/utils/lua/host-compile#1.76#0.56#2.24
+make[2]: Entering directory '/home/z/immortalwrt/package/system/apk'
+make[2]: Leaving directory '/home/z/immortalwrt/package/system/apk'
+time: package/system/apk/host-compile#1.68#0.49#2.07
+make[2]: Entering directory '/home/z/immortalwrt/package/libs/toolchain'
+rm -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.built
+touch /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.built_check
+cp -fpR /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libgcc_s.so.1 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/
+touch /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.built
+rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc
+/home/z/immortalwrt/scripts/ipkg-remove libgcc /home/z/immortalwrt/bin/targets/armsr/armv8/packages/libgcc1-14.4.0-r5.apk
+removed '/home/z/immortalwrt/bin/targets/armsr/armv8/packages/libgcc1-14.4.0-r5.apk'
+mkdir -p /home/z/immortalwrt/bin/targets/armsr/armv8/packages /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo
+install -d -m0755 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/lib
+cp -fpR /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libgcc_s.so.* /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/lib/
+find /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc -name '.svn' -o -name '.#*' -o -name '*~'| xargs -r rm -rf
+export CROSS="aarch64-openwrt-linux-musl-"  NO_RENAME=1 ; NM="aarch64-openwrt-linux-musl-nm" STRIP="/home/z/immortalwrt/staging_dir/host/bin/sstrip -z" STRIP_KMOD="/home/z/immortalwrt/scripts/strip-kmod.sh" PATCHELF="/home/z/immortalwrt/staging_dir/host/bin/patchelf" /home/z/immortalwrt/scripts/rstrip.sh /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc
+rstrip.sh: /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/lib/libgcc_s.so.1: shared object
+install -d -m0755 /home/z/immortalwrt/bin/targets/armsr/armv8/packages
+mkdir -p /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libgcc/
+mkdir -p /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/lib/apk/packages/
+(cd /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libgcc; )
+( echo "#!/bin/sh"; echo "[ \"\${IPKG_NO_SCRIPT}\" = \"1\" ] && exit 0"; echo "[ -s "\${IPKG_INSTROOT}/lib/functions.sh" ] || exit 0"; echo ". \${IPKG_INSTROOT}/lib/functions.sh"; echo 'export root="${IPKG_INSTROOT}"'; echo 'export pkgname="libgcc1"'; echo "add_group_and_user"; echo "default_postinst"; [ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libgcc/postinst-pkg ] || sed '/^\s*#!/d' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libgcc/postinst-pkg"; ) > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libgcc/post-install;
+( echo "#!/bin/sh"; echo 'export PKG_UPGRADE=1'; [ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libgcc/post-install ] || sed '/^\s*#!/d' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libgcc/post-install"; ) > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libgcc/post-upgrade;
+( echo "#!/bin/sh"; echo "[ -s "\${IPKG_INSTROOT}/lib/functions.sh" ] || exit 0"; echo ". \${IPKG_INSTROOT}/lib/functions.sh"; echo 'export root="${IPKG_INSTROOT}"'; echo 'export pkgname="libgcc1"'; echo "default_prerm"; [ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libgcc/prerm-pkg ] || sed '/^\s*#!/d' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libgcc/prerm-pkg"; ) > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libgcc/pre-deinstall;
+[ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libgcc/postrm ] || sed -zi 's/^\s*#!/#!/' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libgcc/postrm";
+if [ -n "" ]; then echo  > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/lib/apk/packages/libgcc1.rusers; fi;
+if [ -n "" ]; then echo  > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/lib/apk/packages/libgcc1.alternatives; fi;
+(cd /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc && find . -type f,l -printf "/%P\n" | sort > /home/z/immortalwrt/tmp/libgcc.list && mv /home/z/immortalwrt/tmp/libgcc.list /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/lib/apk/packages/libgcc1.list)
+# Move conffiles to IDIR and build conffiles_static with csums
+if [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libgcc/conffiles ]; then mv -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libgcc/conffiles /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/lib/apk/packages/libgcc1.conffiles; for file in $(cat /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/lib/apk/packages/libgcc1.conffiles); do [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/$file ] || continue; csum=$(/home/z/immortalwrt/staging_dir/host/bin/mkhash sha256 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/$file); echo $file $csum >> /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/lib/apk/packages/libgcc1.conffiles_static; done; fi
+# Some package (base-files) manually append stuff to conffiles
+# Append stuff from it and delete the CONTROL directory since everything else should be migrated
+if [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/CONTROL/conffiles ]; then echo $(IDIR_libgcc)/CONTROL/conffiles >> /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/lib/apk/packages/libgcc1.conffiles; for file in $(cat /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/CONTROL/conffiles); do [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/$file ] || continue; csum=$(/home/z/immortalwrt/staging_dir/host/bin/mkhash sha256 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/$file); echo $file $csum >> /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/lib/apk/packages/libgcc1.conffiles_static; done; rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/CONTROL/conffiles; fi
+if [ -z "$(ls -A /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/CONTROL 2>/dev/null)" ]; then rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/CONTROL; else echo "CONTROL directory /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc/CONTROL is not empty! This is not right and should be checked!" >&2; exit 1; fi
+SOURCE_DATE_EPOCH=0 /home/z/immortalwrt/staging_dir/host/bin/fakeroot /home/z/immortalwrt/staging_dir/host/bin/apk mkpkg --info "name:libgcc1" --info "version:14.4.0-r5" --info "tags:openwrt:abiversion=1 openwrt:section=libs" --info "description:GCC support library" --info "arch:aarch64_generic" --info "license:GPL-3.0-with-GCC-exception" --info "origin:feeds/base/libs/toolchain" --info "url:https://gcc.gnu.org/" --info "maintainer:Felix Fietkau <nbd@nbd.name>" --info "provides:libgcc libgcc-any" --info "provider-priority:10" --script "post-install:/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libgcc/post-install" --script "post-upgrade:/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libgcc/post-upgrade" --script "pre-deinstall:/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libgcc/pre-deinstall" --info "depends:" --files "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libgcc" --sign /home/z/immortalwrt/private-key.pem --output "/home/z/immortalwrt/bin/targets/armsr/armv8/packages/libgcc1-14.4.0-r5.apk"
+rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc
+/home/z/immortalwrt/scripts/ipkg-remove libc /home/z/immortalwrt/bin/targets/armsr/armv8/packages/libc-1.2.6-r5.apk
+removed '/home/z/immortalwrt/bin/targets/armsr/armv8/packages/libc-1.2.6-r5.apk'
+mkdir -p /home/z/immortalwrt/bin/targets/armsr/armv8/packages /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo
+echo 1.2.6-r5 > /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/libc.version; 	install -d -m0755 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/lib /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/usr/bin
+cp -fpR /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/ld-musl-*.so* /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/lib/
+cp -fpR /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libc.so* /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/lib/
+ln -sf ../../lib/libc.so /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/usr/bin/ldd
+find /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc -name '.svn' -o -name '.#*' -o -name '*~'| xargs -r rm -rf
+export CROSS="aarch64-openwrt-linux-musl-"  NO_RENAME=1 ; NM="aarch64-openwrt-linux-musl-nm" STRIP="/home/z/immortalwrt/staging_dir/host/bin/sstrip -z" STRIP_KMOD="/home/z/immortalwrt/scripts/strip-kmod.sh" PATCHELF="/home/z/immortalwrt/staging_dir/host/bin/patchelf" /home/z/immortalwrt/scripts/rstrip.sh /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc
+rstrip.sh: /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/lib/libc.so: shared object
+install -d -m0755 /home/z/immortalwrt/bin/targets/armsr/armv8/packages
+mkdir -p /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libc/
+mkdir -p /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/lib/apk/packages/
+(cd /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libc; )
+( echo "#!/bin/sh"; echo "[ \"\${IPKG_NO_SCRIPT}\" = \"1\" ] && exit 0"; echo "[ -s "\${IPKG_INSTROOT}/lib/functions.sh" ] || exit 0"; echo ". \${IPKG_INSTROOT}/lib/functions.sh"; echo 'export root="${IPKG_INSTROOT}"'; echo 'export pkgname="libc"'; echo "add_group_and_user"; echo "default_postinst"; [ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libc/postinst-pkg ] || sed '/^\s*#!/d' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libc/postinst-pkg"; ) > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libc/post-install;
+( echo "#!/bin/sh"; echo 'export PKG_UPGRADE=1'; [ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libc/post-install ] || sed '/^\s*#!/d' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libc/post-install"; ) > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libc/post-upgrade;
+( echo "#!/bin/sh"; echo "[ -s "\${IPKG_INSTROOT}/lib/functions.sh" ] || exit 0"; echo ". \${IPKG_INSTROOT}/lib/functions.sh"; echo 'export root="${IPKG_INSTROOT}"'; echo 'export pkgname="libc"'; echo "default_prerm"; [ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libc/prerm-pkg ] || sed '/^\s*#!/d' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libc/prerm-pkg"; ) > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libc/pre-deinstall;
+[ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libc/postrm ] || sed -zi 's/^\s*#!/#!/' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libc/postrm";
+if [ -n "" ]; then echo  > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/lib/apk/packages/libc.rusers; fi;
+if [ -n "" ]; then echo  > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/lib/apk/packages/libc.alternatives; fi;
+(cd /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc && find . -type f,l -printf "/%P\n" | sort > /home/z/immortalwrt/tmp/libc.list && mv /home/z/immortalwrt/tmp/libc.list /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/lib/apk/packages/libc.list)
+# Move conffiles to IDIR and build conffiles_static with csums
+if [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libc/conffiles ]; then mv -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libc/conffiles /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/lib/apk/packages/libc.conffiles; for file in $(cat /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/lib/apk/packages/libc.conffiles); do [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/$file ] || continue; csum=$(/home/z/immortalwrt/staging_dir/host/bin/mkhash sha256 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/$file); echo $file $csum >> /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/lib/apk/packages/libc.conffiles_static; done; fi
+# Some package (base-files) manually append stuff to conffiles
+# Append stuff from it and delete the CONTROL directory since everything else should be migrated
+if [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/CONTROL/conffiles ]; then echo $(IDIR_libc)/CONTROL/conffiles >> /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/lib/apk/packages/libc.conffiles; for file in $(cat /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/CONTROL/conffiles); do [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/$file ] || continue; csum=$(/home/z/immortalwrt/staging_dir/host/bin/mkhash sha256 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/$file); echo $file $csum >> /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/lib/apk/packages/libc.conffiles_static; done; rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/CONTROL/conffiles; fi
+if [ -z "$(ls -A /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/CONTROL 2>/dev/null)" ]; then rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/CONTROL; else echo "CONTROL directory /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc/CONTROL is not empty! This is not right and should be checked!" >&2; exit 1; fi
+SOURCE_DATE_EPOCH=0 /home/z/immortalwrt/staging_dir/host/bin/fakeroot /home/z/immortalwrt/staging_dir/host/bin/apk mkpkg --info "name:libc" --info "version:1.2.6-r5" --info "tags:openwrt:section=libs" --info "description:C library" --info "arch:aarch64_generic" --info "license:GPL-3.0-with-GCC-exception" --info "origin:feeds/base/libs/toolchain" --info "url:http://www.musl-libc.org/" --info "maintainer:Felix Fietkau <nbd@nbd.name>" --info "provides:libc-any"  --script "post-install:/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libc/post-install" --script "post-upgrade:/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libc/post-upgrade" --script "pre-deinstall:/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libc/pre-deinstall" --info "depends:libgcc1" --files "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libc" --sign /home/z/immortalwrt/private-key.pem --output "/home/z/immortalwrt/bin/targets/armsr/armv8/packages/libc-1.2.6-r5.apk"
+rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic
+/home/z/immortalwrt/scripts/ipkg-remove libatomic /home/z/immortalwrt/bin/targets/armsr/armv8/packages/libatomic1-14.4.0-r5.apk
+removed '/home/z/immortalwrt/bin/targets/armsr/armv8/packages/libatomic1-14.4.0-r5.apk'
+mkdir -p /home/z/immortalwrt/bin/targets/armsr/armv8/packages /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo
+install -d -m0755 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/lib
+cp -fpR /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libatomic.so.* /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/lib/
+find /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic -name '.svn' -o -name '.#*' -o -name '*~'| xargs -r rm -rf
+export CROSS="aarch64-openwrt-linux-musl-"  NO_RENAME=1 ; NM="aarch64-openwrt-linux-musl-nm" STRIP="/home/z/immortalwrt/staging_dir/host/bin/sstrip -z" STRIP_KMOD="/home/z/immortalwrt/scripts/strip-kmod.sh" PATCHELF="/home/z/immortalwrt/staging_dir/host/bin/patchelf" /home/z/immortalwrt/scripts/rstrip.sh /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic
+rstrip.sh: /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/lib/libatomic.so.1.2.0: shared object
+install -d -m0755 /home/z/immortalwrt/bin/targets/armsr/armv8/packages
+mkdir -p /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libatomic/
+mkdir -p /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/lib/apk/packages/
+(cd /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libatomic; )
+( echo "#!/bin/sh"; echo "[ \"\${IPKG_NO_SCRIPT}\" = \"1\" ] && exit 0"; echo "[ -s "\${IPKG_INSTROOT}/lib/functions.sh" ] || exit 0"; echo ". \${IPKG_INSTROOT}/lib/functions.sh"; echo 'export root="${IPKG_INSTROOT}"'; echo 'export pkgname="libatomic1"'; echo "add_group_and_user"; echo "default_postinst"; [ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libatomic/postinst-pkg ] || sed '/^\s*#!/d' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libatomic/postinst-pkg"; ) > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libatomic/post-install;
+( echo "#!/bin/sh"; echo 'export PKG_UPGRADE=1'; [ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libatomic/post-install ] || sed '/^\s*#!/d' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libatomic/post-install"; ) > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libatomic/post-upgrade;
+( echo "#!/bin/sh"; echo "[ -s "\${IPKG_INSTROOT}/lib/functions.sh" ] || exit 0"; echo ". \${IPKG_INSTROOT}/lib/functions.sh"; echo 'export root="${IPKG_INSTROOT}"'; echo 'export pkgname="libatomic1"'; echo "default_prerm"; [ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libatomic/prerm-pkg ] || sed '/^\s*#!/d' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libatomic/prerm-pkg"; ) > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libatomic/pre-deinstall;
+[ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libatomic/postrm ] || sed -zi 's/^\s*#!/#!/' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libatomic/postrm";
+if [ -n "" ]; then echo  > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/lib/apk/packages/libatomic1.rusers; fi;
+if [ -n "" ]; then echo  > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/lib/apk/packages/libatomic1.alternatives; fi;
+(cd /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic && find . -type f,l -printf "/%P\n" | sort > /home/z/immortalwrt/tmp/libatomic.list && mv /home/z/immortalwrt/tmp/libatomic.list /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/lib/apk/packages/libatomic1.list)
+# Move conffiles to IDIR and build conffiles_static with csums
+if [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libatomic/conffiles ]; then mv -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libatomic/conffiles /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/lib/apk/packages/libatomic1.conffiles; for file in $(cat /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/lib/apk/packages/libatomic1.conffiles); do [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/$file ] || continue; csum=$(/home/z/immortalwrt/staging_dir/host/bin/mkhash sha256 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/$file); echo $file $csum >> /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/lib/apk/packages/libatomic1.conffiles_static; done; fi
+# Some package (base-files) manually append stuff to conffiles
+# Append stuff from it and delete the CONTROL directory since everything else should be migrated
+if [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/CONTROL/conffiles ]; then echo $(IDIR_libatomic)/CONTROL/conffiles >> /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/lib/apk/packages/libatomic1.conffiles; for file in $(cat /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/CONTROL/conffiles); do [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/$file ] || continue; csum=$(/home/z/immortalwrt/staging_dir/host/bin/mkhash sha256 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/$file); echo $file $csum >> /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/lib/apk/packages/libatomic1.conffiles_static; done; rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/CONTROL/conffiles; fi
+if [ -z "$(ls -A /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/CONTROL 2>/dev/null)" ]; then rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/CONTROL; else echo "CONTROL directory /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic/CONTROL is not empty! This is not right and should be checked!" >&2; exit 1; fi
+SOURCE_DATE_EPOCH=0 /home/z/immortalwrt/staging_dir/host/bin/fakeroot /home/z/immortalwrt/staging_dir/host/bin/apk mkpkg --info "name:libatomic1" --info "version:14.4.0-r5" --info "tags:openwrt:abiversion=1 openwrt:section=libs" --info "description:Atomic support library" --info "arch:aarch64_generic" --info "license:GPL-3.0-with-GCC-exception" --info "origin:feeds/base/libs/toolchain" --info "url:https://gcc.gnu.org/" --info "maintainer:Felix Fietkau <nbd@nbd.name>" --info "provides:libatomic libatomic-any" --info "provider-priority:10" --script "post-install:/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libatomic/post-install" --script "post-upgrade:/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libatomic/post-upgrade" --script "pre-deinstall:/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libatomic/pre-deinstall" --info "depends:libgcc1" --files "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libatomic" --sign /home/z/immortalwrt/private-key.pem --output "/home/z/immortalwrt/bin/targets/armsr/armv8/packages/libatomic1-14.4.0-r5.apk"
+rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread
+/home/z/immortalwrt/scripts/ipkg-remove libpthread /home/z/immortalwrt/bin/targets/armsr/armv8/packages/libpthread-1.2.6-r5.apk
+removed '/home/z/immortalwrt/bin/targets/armsr/armv8/packages/libpthread-1.2.6-r5.apk'
+mkdir -p /home/z/immortalwrt/bin/targets/armsr/armv8/packages /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo
+install -d -m0755 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread/lib
+find /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread -name '.svn' -o -name '.#*' -o -name '*~'| xargs -r rm -rf
+export CROSS="aarch64-openwrt-linux-musl-"  NO_RENAME=1 ; NM="aarch64-openwrt-linux-musl-nm" STRIP="/home/z/immortalwrt/staging_dir/host/bin/sstrip -z" STRIP_KMOD="/home/z/immortalwrt/scripts/strip-kmod.sh" PATCHELF="/home/z/immortalwrt/staging_dir/host/bin/patchelf" /home/z/immortalwrt/scripts/rstrip.sh /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread
+install -d -m0755 /home/z/immortalwrt/bin/targets/armsr/armv8/packages
+mkdir -p /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libpthread/
+mkdir -p /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread/lib/apk/packages/
+(cd /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libpthread; )
+( echo "#!/bin/sh"; echo "[ \"\${IPKG_NO_SCRIPT}\" = \"1\" ] && exit 0"; echo "[ -s "\${IPKG_INSTROOT}/lib/functions.sh" ] || exit 0"; echo ". \${IPKG_INSTROOT}/lib/functions.sh"; echo 'export root="${IPKG_INSTROOT}"'; echo 'export pkgname="libpthread"'; echo "add_group_and_user"; echo "default_postinst"; [ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libpthread/postinst-pkg ] || sed '/^\s*#!/d' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libpthread/postinst-pkg"; ) > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libpthread/post-install;
+( echo "#!/bin/sh"; echo 'export PKG_UPGRADE=1'; [ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libpthread/post-install ] || sed '/^\s*#!/d' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libpthread/post-install"; ) > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libpthread/post-upgrade;
+( echo "#!/bin/sh"; echo "[ -s "\${IPKG_INSTROOT}/lib/functions.sh" ] || exit 0"; echo ". \${IPKG_INSTROOT}/lib/functions.sh"; echo 'export root="${IPKG_INSTROOT}"'; echo 'export pkgname="libpthread"'; echo "default_prerm"; [ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libpthread/prerm-pkg ] || sed '/^\s*#!/d' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libpthread/prerm-pkg"; ) > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libpthread/pre-deinstall;
+[ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libpthread/postrm ] || sed -zi 's/^\s*#!/#!/' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libpthread/postrm";
+if [ -n "" ]; then echo  > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread/lib/apk/packages/libpthread.rusers; fi;
+if [ -n "" ]; then echo  > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread/lib/apk/packages/libpthread.alternatives; fi;
+(cd /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread && find . -type f,l -printf "/%P\n" | sort > /home/z/immortalwrt/tmp/libpthread.list && mv /home/z/immortalwrt/tmp/libpthread.list /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread/lib/apk/packages/libpthread.list)
+# Move conffiles to IDIR and build conffiles_static with csums
+if [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libpthread/conffiles ]; then mv -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libpthread/conffiles /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread/lib/apk/packages/libpthread.conffiles; for file in $(cat /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread/lib/apk/packages/libpthread.conffiles); do [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread/$file ] || continue; csum=$(/home/z/immortalwrt/staging_dir/host/bin/mkhash sha256 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread/$file); echo $file $csum >> /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread/lib/apk/packages/libpthread.conffiles_static; done; fi
+# Some package (base-files) manually append stuff to conffiles
+# Append stuff from it and delete the CONTROL directory since everything else should be migrated
+if [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread/CONTROL/conffiles ]; then echo $(IDIR_libpthread)/CONTROL/conffiles >> /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread/lib/apk/packages/libpthread.conffiles; for file in $(cat /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread/CONTROL/conffiles); do [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread/$file ] || continue; csum=$(/home/z/immortalwrt/staging_dir/host/bin/mkhash sha256 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread/$file); echo $file $csum >> /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread/lib/apk/packages/libpthread.conffiles_static; done; rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread/CONTROL/conffiles; fi
+if [ -z "$(ls -A /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread/CONTROL 2>/dev/null)" ]; then rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread/CONTROL; else echo "CONTROL directory /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread/CONTROL is not empty! This is not right and should be checked!" >&2; exit 1; fi
+SOURCE_DATE_EPOCH=0 /home/z/immortalwrt/staging_dir/host/bin/fakeroot /home/z/immortalwrt/staging_dir/host/bin/apk mkpkg --info "name:libpthread" --info "version:1.2.6-r5" --info "tags:openwrt:section=libs" --info "description:POSIX thread library" --info "arch:aarch64_generic" --info "license:GPL-3.0-with-GCC-exception" --info "origin:feeds/base/libs/toolchain" --info "url:http://www.musl-libc.org/" --info "maintainer:Felix Fietkau <nbd@nbd.name>" --info "provides:libpthread-any"  --script "post-install:/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libpthread/post-install" --script "post-upgrade:/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libpthread/post-upgrade" --script "pre-deinstall:/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/libpthread/pre-deinstall" --info "depends:libgcc1" --files "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/libpthread" --sign /home/z/immortalwrt/private-key.pem --output "/home/z/immortalwrt/bin/targets/armsr/armv8/packages/libpthread-1.2.6-r5.apk"
+rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt
+/home/z/immortalwrt/scripts/ipkg-remove librt /home/z/immortalwrt/bin/targets/armsr/armv8/packages/librt-1.2.6-r5.apk
+removed '/home/z/immortalwrt/bin/targets/armsr/armv8/packages/librt-1.2.6-r5.apk'
+mkdir -p /home/z/immortalwrt/bin/targets/armsr/armv8/packages /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo
+install -d -m0755 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt/lib
+find /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt -name '.svn' -o -name '.#*' -o -name '*~'| xargs -r rm -rf
+export CROSS="aarch64-openwrt-linux-musl-"  NO_RENAME=1 ; NM="aarch64-openwrt-linux-musl-nm" STRIP="/home/z/immortalwrt/staging_dir/host/bin/sstrip -z" STRIP_KMOD="/home/z/immortalwrt/scripts/strip-kmod.sh" PATCHELF="/home/z/immortalwrt/staging_dir/host/bin/patchelf" /home/z/immortalwrt/scripts/rstrip.sh /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt
+install -d -m0755 /home/z/immortalwrt/bin/targets/armsr/armv8/packages
+mkdir -p /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/librt/
+mkdir -p /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt/lib/apk/packages/
+(cd /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/librt; )
+( echo "#!/bin/sh"; echo "[ \"\${IPKG_NO_SCRIPT}\" = \"1\" ] && exit 0"; echo "[ -s "\${IPKG_INSTROOT}/lib/functions.sh" ] || exit 0"; echo ". \${IPKG_INSTROOT}/lib/functions.sh"; echo 'export root="${IPKG_INSTROOT}"'; echo 'export pkgname="librt"'; echo "add_group_and_user"; echo "default_postinst"; [ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/librt/postinst-pkg ] || sed '/^\s*#!/d' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/librt/postinst-pkg"; ) > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/librt/post-install;
+( echo "#!/bin/sh"; echo 'export PKG_UPGRADE=1'; [ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/librt/post-install ] || sed '/^\s*#!/d' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/librt/post-install"; ) > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/librt/post-upgrade;
+( echo "#!/bin/sh"; echo "[ -s "\${IPKG_INSTROOT}/lib/functions.sh" ] || exit 0"; echo ". \${IPKG_INSTROOT}/lib/functions.sh"; echo 'export root="${IPKG_INSTROOT}"'; echo 'export pkgname="librt"'; echo "default_prerm"; [ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/librt/prerm-pkg ] || sed '/^\s*#!/d' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/librt/prerm-pkg"; ) > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/librt/pre-deinstall;
+[ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/librt/postrm ] || sed -zi 's/^\s*#!/#!/' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/librt/postrm";
+if [ -n "" ]; then echo  > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt/lib/apk/packages/librt.rusers; fi;
+if [ -n "" ]; then echo  > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt/lib/apk/packages/librt.alternatives; fi;
+(cd /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt && find . -type f,l -printf "/%P\n" | sort > /home/z/immortalwrt/tmp/librt.list && mv /home/z/immortalwrt/tmp/librt.list /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt/lib/apk/packages/librt.list)
+# Move conffiles to IDIR and build conffiles_static with csums
+if [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/librt/conffiles ]; then mv -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/librt/conffiles /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt/lib/apk/packages/librt.conffiles; for file in $(cat /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt/lib/apk/packages/librt.conffiles); do [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt/$file ] || continue; csum=$(/home/z/immortalwrt/staging_dir/host/bin/mkhash sha256 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt/$file); echo $file $csum >> /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt/lib/apk/packages/librt.conffiles_static; done; fi
+# Some package (base-files) manually append stuff to conffiles
+# Append stuff from it and delete the CONTROL directory since everything else should be migrated
+if [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt/CONTROL/conffiles ]; then echo $(IDIR_librt)/CONTROL/conffiles >> /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt/lib/apk/packages/librt.conffiles; for file in $(cat /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt/CONTROL/conffiles); do [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt/$file ] || continue; csum=$(/home/z/immortalwrt/staging_dir/host/bin/mkhash sha256 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt/$file); echo $file $csum >> /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt/lib/apk/packages/librt.conffiles_static; done; rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt/CONTROL/conffiles; fi
+if [ -z "$(ls -A /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt/CONTROL 2>/dev/null)" ]; then rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt/CONTROL; else echo "CONTROL directory /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt/CONTROL is not empty! This is not right and should be checked!" >&2; exit 1; fi
+SOURCE_DATE_EPOCH=0 /home/z/immortalwrt/staging_dir/host/bin/fakeroot /home/z/immortalwrt/staging_dir/host/bin/apk mkpkg --info "name:librt" --info "version:1.2.6-r5" --info "tags:openwrt:section=libs" --info "description:POSIX.1b RealTime extension library" --info "arch:aarch64_generic" --info "license:GPL-3.0-with-GCC-exception" --info "origin:feeds/base/libs/toolchain" --info "url:http://www.musl-libc.org/" --info "maintainer:Felix Fietkau <nbd@nbd.name>" --info "provides:librt-any"  --script "post-install:/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/librt/post-install" --script "post-upgrade:/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/librt/post-upgrade" --script "pre-deinstall:/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/apk-aarch64_generic/librt/pre-deinstall" --info "depends:libpthread" --files "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/ipkg-aarch64_generic/librt" --sign /home/z/immortalwrt/private-key.pem --output "/home/z/immortalwrt/bin/targets/armsr/armv8/packages/librt-1.2.6-r5.apk"
+rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libgcc.installed /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libgcc
+mkdir -p /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libgcc
+install -d -m0755 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libgcc/lib
+cp -fpR /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libgcc_s.so.* /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libgcc/lib/
+touch /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libgcc.installed
+mkdir -p /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/root-armsr/stamp
+echo '1' | cmp -s - /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/libgcc.version || { mkdir -p /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo; echo '1' > /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/libgcc.version;  cp /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/libgcc.version /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/libgcc-any.version;  } 
+SHELL= flock /home/z/immortalwrt/tmp/.root-copy.flock -c 'cp -fpR /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libgcc/. /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/root-armsr/'
+touch /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/root-armsr/stamp/.libgcc_installed
+echo "libgcc" >> /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/toolchain.default.install
+rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libc.installed /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libc
+mkdir -p /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libc
+echo 1.2.6-r5 > /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/libc.version; 	install -d -m0755 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libc/lib /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libc/usr/bin
+cp -fpR /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/ld-musl-*.so* /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libc/lib/
+cp -fpR /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libc.so* /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libc/lib/
+ln -sf ../../lib/libc.so /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libc/usr/bin/ldd
+cp -fpR /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libatomic.a /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libc.a /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libcrypt.a /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libdl.a /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libitm.a /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libm.a /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libpthread.a /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libresolv.a /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/librt.a /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libssp_nonshared.a /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libstdc++.a /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libstdc++exp.a /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libstdc++fs.a /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libsupc++.a /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libutil.a /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libxnet.a /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libc/lib/
+cp -fpR /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/gcc/aarch64-openwrt-linux-musl/14.4.0/libgcc_pic.a /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libc/lib/libgcc_s_pic.a; cp -fpR /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/gcc/aarch64-openwrt-linux-musl/14.4.0/libgcc.map /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libc/lib/libgcc_s_pic.map 
+touch /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libc.installed
+rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libatomic.installed /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libatomic
+mkdir -p /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libatomic
+install -d -m0755 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libatomic/lib
+cp -fpR /home/z/immortalwrt/staging_dir/toolchain-aarch64_generic_gcc-14.4.0_musl/lib/libatomic.so.* /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libatomic/lib/
+touch /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libatomic.installed
+rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libpthread.installed /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libpthread
+mkdir -p /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libpthread
+install -d -m0755 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libpthread/lib
+touch /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libpthread.installed
+rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/librt.installed /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/librt
+mkdir -p /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/librt
+install -d -m0755 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/librt/lib
+touch /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/librt.installed
+mkdir -p /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/root-armsr/stamp
+SHELL= flock /home/z/immortalwrt/tmp/.root-copy.flock -c 'cp -fpR /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libc/. /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/root-armsr/'
+touch /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/root-armsr/stamp/.libc_installed
+echo "libc" >> /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/toolchain.default.install
+mkdir -p /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/root-armsr/stamp
+echo '1' | cmp -s - /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/libatomic.version || { mkdir -p /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo; echo '1' > /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/libatomic.version;  cp /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/libatomic.version /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/libatomic-any.version;  } 
+SHELL= flock /home/z/immortalwrt/tmp/.root-copy.flock -c 'cp -fpR /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libatomic/. /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/root-armsr/'
+touch /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/root-armsr/stamp/.libatomic_installed
+echo "libatomic" >> /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/toolchain.default.install
+mkdir -p /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/root-armsr/stamp
+SHELL= flock /home/z/immortalwrt/tmp/.root-copy.flock -c 'cp -fpR /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/libpthread/. /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/root-armsr/'
+touch /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/root-armsr/stamp/.libpthread_installed
+echo "libpthread" >> /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/toolchain.default.install
+mkdir -p /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/root-armsr/stamp
+SHELL= flock /home/z/immortalwrt/tmp/.root-copy.flock -c 'cp -fpR /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/toolchain/.pkgdir/librt/. /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/root-armsr/'
+touch /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/root-armsr/stamp/.librt_installed
+echo "librt" >> /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/toolchain.default.install
+make[2]: Leaving directory '/home/z/immortalwrt/package/libs/toolchain'
+time: package/libs/toolchain/compile#3.90#4.04#8.71
+make[2]: Entering directory '/home/z/immortalwrt/package/firmware/linux-firmware'
+make[2]: Leaving directory '/home/z/immortalwrt/package/firmware/linux-firmware'
+time: package/firmware/linux-firmware/compile#1.64#0.33#1.93
+make[2]: Entering directory '/home/z/immortalwrt/package/kernel/gpio-button-hotplug'
+make[2]: Leaving directory '/home/z/immortalwrt/package/kernel/gpio-button-hotplug'
+time: package/kernel/gpio-button-hotplug/compile#1.07#0.39#1.43
+make[2]: Entering directory '/home/z/immortalwrt/package/kernel/linux'
+can't open file '/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/linux-6.12.94/.config' at /home/z/immortalwrt/scripts/kconfig.pl line 32.
+rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel
+
+mkdir -p /home/z/immortalwrt/bin/targets/armsr/armv8/packages /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo
+install -d -m0755 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/lib/modules/6.12.94
+install -m0644 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/linux-6.12.94/modules.builtin /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/lib/modules/6.12.94
+/home/z/immortalwrt/staging_dir/host/bin/sed -i -e 's,.*/,,' /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/lib/modules/6.12.94/modules.builtin
+strings /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/linux-6.12.94/modules.builtin.modinfo | grep -E -v "\.(file|parmtype)=" | tr '\n' '\0' > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/lib/modules/6.12.94/modules.builtin.modinfo
+echo 6.12.94~unknown-r1 > /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/kernel.version
+
+
+find /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel -name '.svn' -o -name '.#*' -o -name '*~'| xargs -r rm -rf
+( find /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel -name lib\*.so\* -or -name \*.ko | awk -F/ '{ print $NF }'; for file in /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/libc.provides; do if [ -f "$file" ]; then cat $file; fi; done; 	sed -e 's,.*/,,' /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/linux-6.12.94/modules.builtin; ) | sort -u > /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/kernel.provides
+for pkg in kernel-any; do cp /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/kernel.provides /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/$pkg.provides; done
+( rm -f /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/kernel.missing; ( export READELF=aarch64-openwrt-linux-musl-readelf OBJCOPY=aarch64-openwrt-linux-musl-objcopy XARGS="xargs -r"; /home/z/immortalwrt/scripts/gen-dependencies.sh "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel"; ) | while read FILE; do grep -qxF "$FILE" /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/kernel.provides || echo "$FILE" >> /home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/kernel.missing; done; if [ -f "/home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/kernel.missing" ]; then echo "Package kernel is missing dependencies for the following libraries:" >&2; cat "/home/z/immortalwrt/staging_dir/target-aarch64_generic_musl/pkginfo/kernel.missing" >&2; false; fi; )
+export CROSS="aarch64-openwrt-linux-musl-"  NO_RENAME=1 ; NM="aarch64-openwrt-linux-musl-nm" STRIP="/home/z/immortalwrt/staging_dir/host/bin/sstrip -z" STRIP_KMOD="/home/z/immortalwrt/scripts/strip-kmod.sh" PATCHELF="/home/z/immortalwrt/staging_dir/host/bin/patchelf" /home/z/immortalwrt/scripts/rstrip.sh /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel
+install -d -m0755 /home/z/immortalwrt/bin/targets/armsr/armv8/packages
+mkdir -p /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/apk-aarch64_generic/kernel/
+mkdir -p /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/lib/apk/packages/
+(cd /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/apk-aarch64_generic/kernel; )
+( echo "#!/bin/sh"; echo "[ \"\${IPKG_NO_SCRIPT}\" = \"1\" ] && exit 0"; echo "[ -s "\${IPKG_INSTROOT}/lib/functions.sh" ] || exit 0"; echo ". \${IPKG_INSTROOT}/lib/functions.sh"; echo 'export root="${IPKG_INSTROOT}"'; echo 'export pkgname="kernel"'; echo "add_group_and_user"; echo "default_postinst"; [ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/apk-aarch64_generic/kernel/postinst-pkg ] || sed '/^\s*#!/d' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/apk-aarch64_generic/kernel/postinst-pkg"; ) > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/apk-aarch64_generic/kernel/post-install;
+( echo "#!/bin/sh"; echo 'export PKG_UPGRADE=1'; [ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/apk-aarch64_generic/kernel/post-install ] || sed '/^\s*#!/d' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/apk-aarch64_generic/kernel/post-install"; ) > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/apk-aarch64_generic/kernel/post-upgrade;
+( echo "#!/bin/sh"; echo "[ -s "\${IPKG_INSTROOT}/lib/functions.sh" ] || exit 0"; echo ". \${IPKG_INSTROOT}/lib/functions.sh"; echo 'export root="${IPKG_INSTROOT}"'; echo 'export pkgname="kernel"'; echo "default_prerm"; [ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/apk-aarch64_generic/kernel/prerm-pkg ] || sed '/^\s*#!/d' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/apk-aarch64_generic/kernel/prerm-pkg"; ) > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/apk-aarch64_generic/kernel/pre-deinstall;
+[ ! -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/apk-aarch64_generic/kernel/postrm ] || sed -zi 's/^\s*#!/#!/' "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/apk-aarch64_generic/kernel/postrm";
+if [ -n "" ]; then echo  > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/lib/apk/packages/kernel.rusers; fi;
+if [ -n "" ]; then echo  > /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/lib/apk/packages/kernel.alternatives; fi;
+(cd /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel && find . -type f,l -printf "/%P\n" | sort > /home/z/immortalwrt/tmp/kernel.list && mv /home/z/immortalwrt/tmp/kernel.list /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/lib/apk/packages/kernel.list)
+# Move conffiles to IDIR and build conffiles_static with csums
+if [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/apk-aarch64_generic/kernel/conffiles ]; then mv -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/apk-aarch64_generic/kernel/conffiles /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/lib/apk/packages/kernel.conffiles; for file in $(cat /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/lib/apk/packages/kernel.conffiles); do [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/$file ] || continue; csum=$(/home/z/immortalwrt/staging_dir/host/bin/mkhash sha256 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/$file); echo $file $csum >> /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/lib/apk/packages/kernel.conffiles_static; done; fi
+# Some package (base-files) manually append stuff to conffiles
+# Append stuff from it and delete the CONTROL directory since everything else should be migrated
+if [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/CONTROL/conffiles ]; then echo $(IDIR_kernel)/CONTROL/conffiles >> /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/lib/apk/packages/kernel.conffiles; for file in $(cat /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/CONTROL/conffiles); do [ -f /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/$file ] || continue; csum=$(/home/z/immortalwrt/staging_dir/host/bin/mkhash sha256 /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/$file); echo $file $csum >> /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/lib/apk/packages/kernel.conffiles_static; done; rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/CONTROL/conffiles; fi
+if [ -z "$(ls -A /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/CONTROL 2>/dev/null)" ]; then rm -rf /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/CONTROL; else echo "CONTROL directory /home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel/CONTROL is not empty! This is not right and should be checked!" >&2; exit 1; fi
+SOURCE_DATE_EPOCH=0 /home/z/immortalwrt/staging_dir/host/bin/fakeroot /home/z/immortalwrt/staging_dir/host/bin/apk mkpkg --info "name:kernel" --info "version:6.12.94~unknown-r1" --info "tags:openwrt:section=sys openwrt:cpe=cpe:/o:linux:linux_kernel" --info "description:Virtual kernel package" --info "arch:aarch64_generic" --info "license:GPL-2.0-only" --info "origin:feeds/base/kernel/linux" --info "url:https://www.kernel.org/" --info "maintainer:" --info "provides:kernel-any"  --script "post-install:/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/apk-aarch64_generic/kernel/post-install" --script "post-upgrade:/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/apk-aarch64_generic/kernel/post-upgrade" --script "pre-deinstall:/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/apk-aarch64_generic/kernel/pre-deinstall" --info "depends:libc" --files "/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/packages/ipkg-aarch64_generic/kernel" --sign /home/z/immortalwrt/private-key.pem --output "/home/z/immortalwrt/bin/targets/armsr/armv8/packages/kernel-6.12.94~unknown-r1.apk"
+[ -f /home/z/immortalwrt/bin/targets/armsr/armv8/packages/kernel-6.12.94~unknown-r1.apk ]
+install: cannot stat '/home/z/immortalwrt/build_dir/target-aarch64_generic_musl/linux-armsr_armv8/linux-6.12.94/modules.builtin': No such file or directory
+make[2]: *** [Makefile:75: /home/z/immortalwrt/bin/targets/armsr/armv8/packages/kernel-6.12.94~unknown-r1.apk] Error 1
+make[2]: Leaving directory '/home/z/immortalwrt/package/kernel/linux'
+time: package/kernel/linux/compile#24.57#1.38#26.18
+    ERROR: package/kernel/linux failed to build.
+make[1]: *** [package/Makefile:198: package/kernel/linux/compile] Error 1
+make[1]: Leaving directory '/home/z/immortalwrt'
+make: *** [/home/z/immortalwrt/include/toplevel.mk:233: package/feeds/packages/ffmpeg/compile] Ошибка 2
+z@armbian:~/immortalwrt$ 
