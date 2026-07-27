@@ -110,7 +110,7 @@ metadata_gl_json = \
 		$(if $(filter 1.0,$(compat_version)),"supported_devices":[$(call metadata_devices,$(SUPPORTED_DEVICES))]$(comma)) \
 		"version": { \
 			"release": "$(call json_quote,$(VERSION_NUMBER))", \
-			"date": "$(shell TZ='Asia/Chongqing' date '+%Y%m%d%H%M%S')", \
+			"date": "$(shell TZ='Asia/Chongqing' date $(if $(SOURCE_DATE_EPOCH),-d@$(SOURCE_DATE_EPOCH)) '+%Y%m%d%H%M%S')", \
 			"dist": "$(call json_quote,$(VERSION_DIST))", \
 			"version": "$(call json_quote,$(VERSION_NUMBER))", \
 			"revision": "$(call json_quote,$(REVISION))", \
