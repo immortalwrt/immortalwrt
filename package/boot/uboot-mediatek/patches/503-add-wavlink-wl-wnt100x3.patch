@@ -270,10 +270,10 @@
 +bootcmd=if pstore check ; then run boot_recovery ; else run boot_ubi ; fi
 +bootconf=config-1
 +bootdelay=0
-+bootfile=openwrt-mediatek-filogic-wavlink_wl-wnt100x3-ubootmod-initramfs-recovery.itb
-+bootfile_bl2=openwrt-mediatek-filogic-wavlink_wl-wnt100x3-ubootmod-preloader.bin
-+bootfile_fip=openwrt-mediatek-filogic-wavlink_wl-wnt100x3-ubootmod-bl31-uboot.fip
-+bootfile_upg=openwrt-mediatek-filogic-wavlink_wl-wnt100x3-ubootmod-squashfs-sysupgrade.itb
++bootfile=immortalwrt-mediatek-filogic-wavlink_wl-wnt100x3-ubootmod-initramfs-recovery.itb
++bootfile_bl2=immortalwrt-mediatek-filogic-wavlink_wl-wnt100x3-ubootmod-preloader.bin
++bootfile_fip=immortalwrt-mediatek-filogic-wavlink_wl-wnt100x3-ubootmod-bl31-uboot.fip
++bootfile_upg=immortalwrt-mediatek-filogic-wavlink_wl-wnt100x3-ubootmod-squashfs-sysupgrade.itb
 +bootled_pwr=blue:status
 +bootled_rec=blue:status
 +bootmenu_confirm_return=askenv - Press ENTER to return to menu ; bootmenu 60
