@@ -3159,6 +3159,44 @@ define Device/tplink_er605-v2
 endef
 TARGET_DEVICES += tplink_er605-v2
 
+define Device/livinet_li172-v1
+  $(Device/dsa-migration)
+  IMAGE_SIZE := 15872k
+  DEVICE_VENDOR := Livinet
+  DEVICE_MODEL := Li172
+  DEVICE_VARIANT := v1
+  DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap \
+	-uboot-envtools
+  SUPPORTED_DEVICES += livinet,li172 R30
+endef
+TARGET_DEVICES += livinet_li172-v1
+
+define Device/livinet_li172-v2
+  $(Device/dsa-migration)
+  IMAGE_SIZE := 15872k
+  DEVICE_VENDOR := Livinet
+  DEVICE_MODEL := Li172
+  DEVICE_VARIANT := v2
+  DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615e kmod-mt7663-firmware-ap \
+	-uboot-envtools
+  SUPPORTED_DEVICES += livinet,li172 R30
+endef
+TARGET_DEVICES += livinet_li172-v2
+define Device/livinet_li170
+  $(Device/nand)
+  DEVICE_VENDOR := Livinet
+  DEVICE_MODEL := Li170
+  IMAGE_SIZE := 90112k
+  KERNEL_LOADADDR := 0x82000000
+  KERNEL := kernel-bin | relocate-kernel $(loadaddr-y) | lzma | \
+	fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
+  DEVICE_PACKAGES += kmod-mt7915e kmod-mt7915-firmware kmod-usb3 -uboot-envtools
+  IMAGES += factory.bin
+  IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | \
+	append-ubi | check-size
+endef
+TARGET_DEVICES += livinet_li170
+
 define Device/tplink_ex220-v1
   $(Device/dsa-migration)
   DEVICE_VENDOR := TP-Link
