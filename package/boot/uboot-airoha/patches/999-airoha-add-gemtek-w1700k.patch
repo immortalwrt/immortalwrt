@@ -159,8 +159,8 @@ Signed-off-by: Kenneth Kasilag <kenneth@kasilag.me>
 +initaddr=0x89000000
 +ipaddr=192.168.1.1
 +serverip=192.168.1.10
-+bootfile=openwrt-airoha-an7581-gemtek_w1700k-ubi-initramfs-recovery.itb
-+installfile=openwrt-airoha-an7581-gemtek_w1700k-ubi-initramfs-installer.itb
++bootfile=immortalwrt-airoha-an7581-gemtek_w1700k-ubi-initramfs-recovery.itb
++installfile=immortalwrt-airoha-an7581-gemtek_w1700k-ubi-initramfs-installer.itb
 +bootled_pwr=status:red
 +bootled_rec=status:blue
 +boot_ubi=ubi part ubi && run boot_production ; run boot_recovery

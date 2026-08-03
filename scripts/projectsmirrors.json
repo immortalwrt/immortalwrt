@@ -61,7 +61,6 @@
 		"https://www.mirrorservice.org/sites/ftp.kernel.org/pub"
 	],
 	"@GNOME": [
-		"https://mirrors.ustc.edu.cn/gnome/sources",
 		"https://mirror.nju.edu.cn/gnome",
 		"https://download.gnome.org/sources",
 		"https://mirror.csclub.uwaterloo.ca/gnome/sources",
