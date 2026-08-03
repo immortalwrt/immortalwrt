@@ -1,0 +1,119 @@
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 7/7] rockchip: mkimage: Add rk3576 align and sd-card
+ workaround
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Mon, 13 Jul 2026 14:02:48 +0400
+Message-Id: <20260713-rk3576-boost-v1-7-9d23aa08f674@flipper.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+The BootROM on RK3576 has an issue loading boot images from an SD-card.
+This issue can be worked around by injecting an initial boot image
+before TPL that:
+
+  writel(0x3ffff800, 0x3ff803b0)
+
+Prepend an image containing binary code that does this and return to
+BootROM to load next image, TPL.
+
+[switch from pre-built binary to from-source build via existing Makefiles,
+add commentary on what the magic write does based on JTAG debugging of
+the boot process]
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+Signed-off-by: Alexey Charkov <alchark@flipper.net>
+---
+ arch/arm/mach-rockchip/rk3576/Makefile       | 10 +++++++++
+ arch/arm/mach-rockchip/rk3576/rk3576-boost.c | 31 ++++++++++++++++++++++++++++
+ tools/rkcommon.c                             | 22 +++++++++++++++++++-
+ 3 files changed, 62 insertions(+), 1 deletion(-)
+
+--- a/arch/arm/mach-rockchip/rk3576/Makefile
++++ b/arch/arm/mach-rockchip/rk3576/Makefile
+@@ -7,3 +7,13 @@
+ obj-y += rk3576.o
+ obj-y += clk_rk3576.o
+ obj-y += syscon_rk3576.o
++
++# BootROM "boost" stub: a freestanding bit of AArch64 code that pokes a fix-up
++# value into SRAM so the ROM can boot from SD/eMMC. mkimage prepends it to the
++# init image, so it must exist in the build dir.
++quiet_cmd_rk3576boost = BOOST   $@
++      cmd_rk3576boost = $(CC) -nostdlib -ffreestanding -Os -c -o $@.o $< && \
++			$(OBJCOPY) -O binary -j .text $@.o $@
++$(obj)/rk3576-boost.bin: $(src)/rk3576-boost.c FORCE
++	$(call if_changed,rk3576boost)
++always-y += rk3576-boost.bin
+--- /dev/null
++++ b/arch/arm/mach-rockchip/rk3576/rk3576-boost.c
+@@ -0,0 +1,31 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++// Copyright Contributors to the U-Boot project.
++
++/*
++ * Early initialization code to be executed before RAM training on RK3576.
++ * At the moment this only contains a BootROM fixup for booting from an SD card
++ *
++ * Anything in this file is to be compiled into a freestanding raw executable
++ * binary and prepended to the RKNS image by mkimage during build
++ */
++
++#include <stdint.h>
++
++#define SYS_SRAM_BASE	0x3ff80000
++#define OFFSET		0x03b0
++
++int _start(void)
++{
++	uint32_t *sram = (void *)(SYS_SRAM_BASE + OFFSET);
++
++	/*
++	 * Relocate the SDMMC IDMAC DMA descriptor buffer to the (unused) top
++	 * of SRAM instead of the boot ROM default at 0x3ff80160, which sits
++	 * inside the ROM's global state area. This prevents large multi-page
++	 * SDMMC reads from overrunning adjacent ROM state and breaking the
++	 * boot process
++	 */
++	*(sram) = 0x3ffff800;
++
++	return 0;
++}
+--- a/tools/rkcommon.c
++++ b/tools/rkcommon.c
+@@ -158,7 +158,7 @@ static struct spl_info spl_infos[] = {
+ 	{ "rk3506", "RK35", 0xC000 - 0x1000, false, RK_HEADER_V2 },
+ 	{ "rk3528", "RK35", 0x10000 - 0x1000, false, RK_HEADER_V2 },
+ 	{ "rk3568", "RK35", 0x10000 - 0x1000, false, RK_HEADER_V2 },
+-	{ "rk3576", "RK35", 0x80000 - 0x1000, false, RK_HEADER_V2 },
++	{ "rk3576", "RK35", 0x80000 - 0x1000, false, RK_HEADER_V2, 8 },
+ 	{ "rk3588", "RK35", 0x100000 - 0x1000, false, RK_HEADER_V2 },
+ 	{ "rv1108", "RK11", 0x1800, false, RK_HEADER_V1 },
+ 	{ "rv1126", "110B", 0x10000 - 0x1000, false, RK_HEADER_V1 },
+@@ -288,6 +288,26 @@ int rkcommon_check_params(struct image_t
+ 		return EXIT_FAILURE;
+ 	}
+ 
++	if (!strcmp(params->imagename, "rk3576")) {
++		char *boost = "arch/arm/mach-rockchip/rk3576/rk3576-boost.bin";
++
++		size = rkcommon_get_aligned_filesize(params, boost);
++		if (size < 0) {
++			fprintf(stderr,
++				"Error: rk3576-boost.bin is required but missing\n");
++			return EXIT_FAILURE;
++		}
++
++		for (i = ARRAY_SIZE(spl_params.images) - 1; i > 0; i--)
++			spl_params.images[i] = spl_params.images[i - 1];
++
++		spl_params.images[0].file = boost;
++		spl_params.images[0].size = size;
++
++		spl_params.images[0].address = 0x3ffc0000;
++		spl_params.images[1].address = 0x3ff81000;
++	}
++
+ 	return EXIT_SUCCESS;
+ 
+ err_spl_info:

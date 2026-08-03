@@ -491,7 +491,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
 +++ b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dts
 @@ -95,6 +95,25 @@
  		reg = <1>;
- 		pinctrl-0 = <&eth_phy0_reset_pin>;
+ 		pinctrl-0 = <&gmac0_rstn_gpio0_c5_pin>;
  		pinctrl-names = "default";
 +
 +		leds {
