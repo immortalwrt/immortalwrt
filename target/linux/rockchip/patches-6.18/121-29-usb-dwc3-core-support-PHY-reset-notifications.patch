@@ -36,7 +36,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  
  #include <linux/usb/ch9.h>
  #include <linux/usb/gadget.h>
-@@ -865,6 +866,103 @@ err_exit_usb2_phy:
+@@ -883,6 +884,103 @@ err_exit_usb2_phy:
  	return ret;
  }
  
@@ -140,7 +140,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  static void dwc3_phy_exit(struct dwc3 *dwc)
  {
  	int i;
-@@ -2316,6 +2414,7 @@ int dwc3_core_probe(const struct dwc3_pr
+@@ -2336,6 +2434,7 @@ int dwc3_core_probe(const struct dwc3_pr
  
  	dwc3_check_params(dwc);
  	dwc3_debugfs_init(dwc);
@@ -148,7 +148,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  
  	ret = dwc3_core_init_mode(dwc);
  	if (ret)
-@@ -2328,6 +2427,7 @@ int dwc3_core_probe(const struct dwc3_pr
+@@ -2348,6 +2447,7 @@ int dwc3_core_probe(const struct dwc3_pr
  	return 0;
  
  err_exit_debugfs:
@@ -156,7 +156,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  	dwc3_debugfs_exit(dwc);
  	dwc3_event_buffers_cleanup(dwc);
  	dwc3_phy_power_off(dwc);
-@@ -2384,6 +2484,7 @@ void dwc3_core_remove(struct dwc3 *dwc)
+@@ -2404,6 +2504,7 @@ void dwc3_core_remove(struct dwc3 *dwc)
  
  	dwc3_core_exit_mode(dwc);
  	dwc3_debugfs_exit(dwc);
@@ -174,7 +174,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  #include <linux/device.h>
  #include <linux/spinlock.h>
  #include <linux/mutex.h>
-@@ -1001,6 +1002,20 @@ struct dwc3_glue_ops {
+@@ -1002,6 +1003,20 @@ struct dwc3_glue_ops {
  	void	(*pre_run_stop)(struct dwc3 *dwc, bool is_on);
  };
  
@@ -195,7 +195,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
  /**
   * struct dwc3 - representation of our controller
   * @drd_work: workqueue used for role swapping
-@@ -1064,6 +1079,7 @@ struct dwc3_glue_ops {
+@@ -1065,6 +1080,7 @@ struct dwc3_glue_ops {
   * @usb3_phy: pointer to USB3 PHY
   * @usb2_generic_phy: pointer to array of USB2 PHYs
   * @usb3_generic_phy: pointer to array of USB3 PHYs
@@ -203,7 +203,7 @@ Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
   * @num_usb2_ports: number of USB2 ports
   * @num_usb3_ports: number of USB3 ports
   * @phys_ready: flag to indicate that PHYs are ready
-@@ -1224,6 +1240,8 @@ struct dwc3 {
+@@ -1227,6 +1243,8 @@ struct dwc3 {
  
  	struct phy		*usb2_generic_phy[DWC3_USB2_MAX_PORTS];
  	struct phy		*usb3_generic_phy[DWC3_USB3_MAX_PORTS];

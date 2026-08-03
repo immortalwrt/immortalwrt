@@ -11,10 +11,12 @@
 #include <linux/module.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
+#include <linux/of_net.h>
 #include <linux/of_platform.h>
 #include <linux/property.h>
 #include <linux/regmap.h>
 #include <linux/reset.h>
+#include <linux/version.h>
 #include "qca_edma.h"
 
 static void edma_irq_disable_all(struct edma_priv *priv)
@@ -1115,6 +1117,42 @@ static const struct regmap_config edma_regmap_cfg = {
 	.val_bits = 32,
 };
 
+/*
+ * The conduit is a DMA engine behind the switch and has no address of its
+ * own, so boards describe none: fall back to the switch this conduit serves,
+ * whose ports carry the board's addresses either from DT or patched in by
+ * the bootloader. DSA user ports without one of their own inherit whatever
+ * ends up here.
+ */
+static int edma_get_mac_address(struct net_device *netdev,
+				struct device_node *np)
+{
+	struct device_node *cpu_port;
+	int ret;
+
+	ret = of_get_ethdev_address(np, netdev);
+	if (!ret || ret == -EPROBE_DEFER)
+		return ret;
+
+	for_each_node_with_property(cpu_port, "ethernet") {
+		struct device_node *conduit __free(device_node) =
+			of_parse_phandle(cpu_port, "ethernet", 0);
+
+		if (conduit != np)
+			continue;
+
+		for_each_available_child_of_node_scoped(cpu_port->parent, port) {
+			ret = of_get_ethdev_address(port, netdev);
+			if (!ret || ret == -EPROBE_DEFER) {
+				of_node_put(cpu_port);
+				return ret;
+			}
+		}
+	}
+
+	return -ENODEV;
+}
+
 static int edma_probe(struct platform_device *pdev)
 {
 	struct clk_bulk_data *clks;
@@ -1157,6 +1195,12 @@ static int edma_probe(struct platform_device *pdev)
 	priv->pdev = pdev;
 	priv->soc = device_get_match_data(dev);
 
+	ret = edma_get_mac_address(netdev, dev->of_node);
+	if (ret == -EPROBE_DEFER)
+		return dev_err_probe(dev, ret, "failed to get MAC address\n");
+	if (ret)
+		eth_hw_addr_random(netdev);
+
 	ret = edma_page_pool_create(priv);
 	if (ret)
 		return ret;
@@ -1167,7 +1211,6 @@ static int edma_probe(struct platform_device *pdev)
 
 	SET_NETDEV_DEV(netdev, dev);
 	netdev->dev.of_node = dev->of_node;
-	eth_hw_addr_random(netdev);
 	netdev->netdev_ops = &edma_netdev_ops;
 	netdev->features = NETIF_F_GRO;
 	netdev->pcpu_stat_type = NETDEV_PCPU_STAT_TSTATS;
@@ -1191,7 +1234,11 @@ static int edma_probe(struct platform_device *pdev)
 		goto err_irq;
 	}
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 18, 0)
+	ret = dev_set_threaded(netdev, NETDEV_NAPI_THREADED_ENABLED);
+#else
 	ret = dev_set_threaded(netdev, true);
+#endif
 	if (ret)
 		dev_warn(dev, "failed to enable threaded NAPI: %d\n", ret);
 

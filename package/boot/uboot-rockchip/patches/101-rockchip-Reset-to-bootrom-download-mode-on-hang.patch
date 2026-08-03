@@ -58,7 +58,7 @@ Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
 
 --- a/arch/arm/mach-rockchip/Kconfig
 +++ b/arch/arm/mach-rockchip/Kconfig
-@@ -696,6 +696,15 @@ config TPL_ROCKCHIP_EARLYRETURN_TO_BROM
+@@ -740,6 +740,15 @@ config TPL_ROCKCHIP_EARLYRETURN_TO_BROM
  	  This enables support code in the BOOT0 hook for the TPL stage
  	  to allow multiple entries.
  

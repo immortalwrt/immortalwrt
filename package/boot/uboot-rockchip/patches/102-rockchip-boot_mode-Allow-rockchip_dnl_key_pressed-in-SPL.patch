@@ -82,7 +82,7 @@ Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
  #include <asm/arch-rockchip/bootrom.h>
  #include <asm/arch-rockchip/grf_rk3568.h>
  #include <asm/arch-rockchip/hardware.h>
-@@ -143,6 +144,13 @@ int arch_cpu_init(void)
+@@ -149,6 +150,13 @@ int arch_cpu_init(void)
  	return 0;
  }
  
@@ -106,7 +106,7 @@ Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
  #include <asm/arch-rockchip/bootrom.h>
  #include <asm/arch-rockchip/hardware.h>
  
-@@ -189,6 +190,13 @@ int arch_cpu_init(void)
+@@ -196,6 +197,13 @@ int arch_cpu_init(void)
  	return 0;
  }
  
@@ -122,7 +122,7 @@ Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
  
 --- a/arch/arm/mach-rockchip/rk3588/rk3588.c
 +++ b/arch/arm/mach-rockchip/rk3588/rk3588.c
-@@ -10,6 +10,7 @@
+@@ -11,6 +11,7 @@
  #include <misc.h>
  #include <spl.h>
  #include <asm/armv8/mmu.h>
@@ -130,9 +130,9 @@ Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
  #include <asm/arch-rockchip/bootrom.h>
  #include <asm/arch-rockchip/grf_rk3588.h>
  #include <asm/arch-rockchip/hardware.h>
-@@ -211,6 +212,13 @@ int arch_cpu_init(void)
+@@ -257,6 +258,13 @@ int rockchip_dram_init_banksize_fixup(st
+ 	return 0;
  }
- #endif
  
 +#ifdef CONFIG_SPL_BUILD
 +void __weak spl_board_init(void)
@@ -143,4 +143,4 @@ Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
 +
  #define RK3588_OTP_CPU_CODE_OFFSET		0x02
  #define RK3588_OTP_SPECIFICATION_OFFSET		0x06
- 
+ #define RK3588_OTP_IP_STATE_OFFSET		0x1d
