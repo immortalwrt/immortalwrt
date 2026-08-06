@@ -216,3 +216,6 @@
 		function = "gpio";
 	};
 };
+&sdhci {
+	status = "okay";
+};
