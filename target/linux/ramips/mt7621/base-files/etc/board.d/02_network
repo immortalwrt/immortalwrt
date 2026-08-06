@@ -35,10 +35,19 @@ ramips_setup_interfaces()
 	xiaomi,mi-router-cr6608|\
 	xiaomi,mi-router-cr6609|\
 	xiaomi,redmi-router-ac2100|\
+
 	z-router,zr-2660|\
-	z-router,zr-2662|\
+	livinet,li172|\
+	livinet,li172v2|\
+	livinet,li170|\
 	zyxel,wsm20)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" "wan"
+		;;
+	qihoo,t5g)
+		ucidef_set_interfaces_lan_wan "lan1 lan0 wan"
+		;;
+	qihoo,t6m)
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan0" "wan"
 		;;
 	arcadyan,we420223-99)
 		ucidef_set_interface_lan "swp0 swp1"
@@ -308,6 +317,16 @@ ramips_setup_macs()
 	netgear,wax214v2)
 		lan_mac=$(mtd_get_mac_ascii Config ethaddr)
 		label_mac=$lan_mac
+		;;
+	qihoo,t5g)
+		lan_mac=$(mtd_get_mac_binary factory 0x4)
+		wan_mac=$(macaddr_add "$lan_mac" 1)
+		label_mac=$wan_mac
+		;;
+	qihoo,t6m)
+		lan_mac=$(mtd_get_mac_ascii factory2 lanMac)
+		wan_mac=$(macaddr_add "$lan_mac" 1)
+		label_mac=$wan_mac
 		;;
 	esac
 
