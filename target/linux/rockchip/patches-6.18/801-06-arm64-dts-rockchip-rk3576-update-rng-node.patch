@@ -1,6 +1,6 @@
 --- a/arch/arm64/boot/dts/rockchip/rk3576.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3576.dtsi
-@@ -1942,11 +1942,13 @@
+@@ -1948,11 +1948,13 @@
  		};
  
  		rng: rng@2a410000 {
