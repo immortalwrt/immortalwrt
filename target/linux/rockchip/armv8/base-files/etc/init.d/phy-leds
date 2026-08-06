@@ -79,6 +79,12 @@ boot() {
 		netled_set "stmmac-0:01:amber:lan" "eth0" "link_10 link_100 link_1000" "1" "rx tx" "0"
 		netled_set "stmmac-0:01:green:lan" "eth0" "link_10 link_100 link_1000" "0" "rx tx" "1"
 		;;
+	graperain,g3568-v2)
+		netled_set "stmmac-0:01:amber:lan" "eth1" "link_10 link_100 link_1000" "0" "rx tx" "1"
+		netled_set "stmmac-0:01:green:lan" "eth1" "link_10 link_100 link_1000" "1" "rx tx" "0"
+		netled_set "stmmac-1:01:amber:lan" "eth0" "link_10 link_100 link_1000" "0" "rx tx" "1"
+		netled_set "stmmac-1:01:green:lan" "eth0" "link_10 link_100 link_1000" "1" "rx tx" "0"
+		;;
 	huake,guangmiao-g4c)
 		netled_set "eth1-0::lan" "" "link_10 link_100 link_1000" "1" "rx tx" "0"
 		netled_set "eth1-1::lan" "" "link_10 link_100 link_1000" "0" "rx tx" "1"
