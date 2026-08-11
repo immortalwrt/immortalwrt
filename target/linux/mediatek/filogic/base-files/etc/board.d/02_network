@@ -80,6 +80,7 @@ mediatek_setup_interfaces()
 	routerich,ax3000-ubootmod|\
 	routerich,be7200|\
 	tenbay,wr3000k|\
+	teralink,tl3020-256mb|\
 	tplink,tl-7dr7250-v1)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" wan
 		;;
@@ -126,6 +127,10 @@ mediatek_setup_interfaces()
 		;;
 	comfast,cf-e393ax)
 		ucidef_set_interfaces_lan_wan "lan1" eth1
+		;;
+	comfast,cf-wa933|\
+	comfast,cf-wa933-128m)
+		ucidef_set_interfaces_lan_wan "lan1 lan2" eth1
 		;;
 	cudy,ap3000wall-v1)
 		ucidef_set_interface_lan "lan1 lan2 lan3 lan4 lan5"
