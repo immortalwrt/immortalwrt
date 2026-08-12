@@ -1,0 +1,105 @@
+From: Tianling Shen <cnsztl@immortalwrt.org>
+Subject: [PATCH] net: phy: reset PHY before reading its ID when requested
+
+Some PHYs do not respond to ID register accesses until after a hardware
+reset. Per-PHY resets normally happen only after the PHY ID has already
+been read, making such PHYs impossible to discover without incorrectly
+moving their reset GPIO to the MDIO bus node.
+
+Add an opt-in reset-before-id-read property. When present, pulse the PHY
+node's reset GPIO using the standard reset delays before attempting PHY
+discovery. Release the GPIO immediately so the normal per-PHY reset
+lifecycle can claim it after discovery, while preserving the deasserted
+state to avoid a second reset during PHY registration.
+
+Signed-off-by: Tianling Shen <cnsztl@immortalwrt.org>
+---
+ drivers/net/mdio/fwnode_mdio.c | 38 ++++++++++++++++++++++++++++++++++++++
+ drivers/net/phy/mdio_bus.c     |  6 ++++--
+ 2 files changed, 42 insertions(+), 2 deletions(-)
+
+--- a/drivers/net/mdio/fwnode_mdio.c
++++ b/drivers/net/mdio/fwnode_mdio.c
+@@ -7,8 +7,10 @@
+  */
+ 
+ #include <linux/acpi.h>
++#include <linux/delay.h>
+ #include <linux/dev_printk.h>
+ #include <linux/fwnode_mdio.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/of.h>
+ #include <linux/phy.h>
+ 
+@@ -16,6 +18,36 @@ MODULE_AUTHOR("Calvin Johnson <calvin.jo
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("FWNODE MDIO bus (Ethernet PHY) accessors");
+ 
++static int fwnode_mdiobus_reset_phy_before_id_read(struct fwnode_handle *fwnode)
++{
++	struct gpio_desc *reset_gpio;
++	u32 assert_us = 0;
++	u32 deassert_us = 0;
++
++	if (!fwnode_property_read_bool(fwnode, "reset-before-id-read"))
++		return 1;
++
++	reset_gpio = fwnode_gpiod_get_index(fwnode, "reset", 0,
++					    GPIOD_OUT_HIGH, "PHY pre-ID reset");
++	if (IS_ERR(reset_gpio))
++		return PTR_ERR(reset_gpio);
++
++	fwnode_property_read_u32(fwnode, "reset-assert-us", &assert_us);
++	fwnode_property_read_u32(fwnode, "reset-deassert-us", &deassert_us);
++
++	if (assert_us)
++		fsleep(assert_us);
++
++	gpiod_set_value_cansleep(reset_gpio, 0);
++
++	if (deassert_us)
++		fsleep(deassert_us);
++
++	gpiod_put(reset_gpio);
++
++	return 0;
++}
++
+ static struct mii_timestamper *
+ fwnode_find_mii_timestamper(struct fwnode_handle *fwnode)
+ {
+@@ -110,6 +142,10 @@ int fwnode_mdiobus_register_phy(struct m
+ 	if (IS_ERR(mii_ts))
+ 		return PTR_ERR(mii_ts);
+ 
++	rc = fwnode_mdiobus_reset_phy_before_id_read(child);
++	if (rc < 0)
++		goto clean_mii_ts;
++
+ 	is_c45 = fwnode_device_is_compatible(child, "ethernet-phy-ieee802.3-c45");
+ 	if (is_c45 || fwnode_get_phy_id(child, &phy_id))
+ 		phy = get_phy_device(bus, addr, is_c45);
+@@ -119,6 +155,8 @@ int fwnode_mdiobus_register_phy(struct m
+ 		rc = PTR_ERR(phy);
+ 		goto clean_mii_ts;
+ 	}
++	if (rc == 0)
++		phy->mdio.reset_state = 0;
+ 
+ 	if (is_acpi_node(child)) {
+ 		phy->irq = bus->irq[addr];
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -79,8 +79,10 @@ int mdiobus_register_device(struct mdio_
+ 			return err;
+ 		}
+ 
+-		/* Assert the reset signal */
+-		mdio_device_reset(mdiodev, 1);
++		if (mdiodev->reset_state < 0) {
++			/* Assert the reset signal */
++			mdio_device_reset(mdiodev, 1);
++		}
+ 	}
+ 
+ 	mdiodev->bus->mdio_map[mdiodev->addr] = mdiodev;
