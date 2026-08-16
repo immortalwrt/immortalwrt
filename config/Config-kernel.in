@@ -354,6 +354,7 @@ config KERNEL_KALLSYMS
 config KERNEL_FTRACE
 	bool "Compile the kernel with tracing support"
 	depends on !TARGET_uml
+	default y if KERNEL_DEBUG_INFO_BTF
 
 config KERNEL_FTRACE_SYSCALLS
 	bool "Trace system calls"
@@ -366,6 +367,7 @@ config KERNEL_ENABLE_DEFAULT_TRACERS
 config KERNEL_FUNCTION_TRACER
 	bool "Function tracer"
 	depends on KERNEL_FTRACE
+	default y if KERNEL_DEBUG_INFO_BTF
 
 config KERNEL_FUNCTION_GRAPH_TRACER
 	bool "Function graph tracer"
@@ -374,6 +376,7 @@ config KERNEL_FUNCTION_GRAPH_TRACER
 config KERNEL_DYNAMIC_FTRACE
 	bool "Enable/disable function tracing dynamically"
 	depends on KERNEL_FUNCTION_TRACER
+	default y if KERNEL_DEBUG_INFO_BTF
 
 config KERNEL_FUNCTION_PROFILER
 	bool "Function profiler"
