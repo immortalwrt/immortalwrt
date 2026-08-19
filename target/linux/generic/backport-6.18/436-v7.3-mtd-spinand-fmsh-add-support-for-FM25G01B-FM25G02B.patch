@@ -1,7 +1,7 @@
 From d5a5c9eb2ee9ff5b4cc0be15ac7f4879d4c2f247 Mon Sep 17 00:00:00 2001
 From: Ziyang Huang <hzyitc@outlook.com>
 Date: Tue, 23 Jun 2026 22:54:22 +0800
-Subject: [PATCH] mtd: spinand: fmsh: add support for FM25G{01,02}B
+Subject: mtd: spinand: fmsh: add support for FM25G{01,02}B
 
 Add support for FudanMicro FM25G01B SPI NAND and FudanMicro FM25G02B SPI
 NAND.
