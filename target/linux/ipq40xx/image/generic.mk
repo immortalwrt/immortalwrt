@@ -840,6 +840,32 @@ define Device/luma_wrtq-329acn
 endef
 TARGET_DEVICES += luma_wrtq-329acn
 
+define Device/mbox_hsa-500
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := Mbox
+	DEVICE_MODEL := HSA-500
+	SOC := qcom-ipq4019
+	DEVICE_DTS := qcom-ipq4019-mbox-hsa-500
+	DEVICE_DTS_CONFIG := config@ap.dk07.1-c1
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	DEVICE_PACKAGES := -kmod-ath10k-ct kmod-ath10k-ct-smallbuffers
+endef
+TARGET_DEVICES += mbox_hsa-500
+
+define Device/sony_ncp-hg100-cellular
+	$(call Device/FitImage)
+	DEVICE_VENDOR := Sony
+	DEVICE_MODEL := NCP-HG100/Cellular
+	DEVICE_DTS_CONFIG := config@ap.dk04.1-c4
+	SOC := qcom-ipq4019
+	KERNEL_SIZE := 8192k
+	IMAGE_SIZE := 128m
+	DEVICE_PACKAGES := e2fsprogs kmod-fs-ext4 uqmi
+endef
+TARGET_DEVICES += sony_ncp-hg100-cellular
+
 define Device/meraki_common
 	$(call Device/FitImage)
 	DEVICE_VENDOR := Cisco Meraki
