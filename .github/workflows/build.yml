@@ -3,18 +3,24 @@ name: Build ImmortalWrt 23.05.0 for 360T6M
 on:
   workflow_dispatch:
 
+env:
+  REPO_URL: https://github.com/immortalwrt/immortalwrt
+  REPO_TAG: v23.05.0
+  TARGET: ramips
+  SUBTARGET: mt7621
+  DEVICE_PKG: 360_t6m
+  DTS_FILE: mt7621_qihoo_360t6m.dts
+  MK_SNIPPET: 360_t6m.mk
+
 jobs:
   build:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout ImmortalWrt 23.05.0
+      - name: Checkout customization repo (files/)
         uses: actions/checkout@v4
-        with:
-          ref: openwrt-23.05
-          fetch-depth: 1
 
-      - name: Setup Swap Space
+      - name: Setup swap space
         run: |
           sudo swapoff -a || true
           sudo rm -f /swapfile
@@ -23,160 +29,156 @@ jobs:
           sudo mkswap /swapfile
           sudo swapon /swapfile
           free -h
-
-      - name: Initialization Environment
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache
+          sudo docker image prune -a -f || true
+          df -h
+      - name: Install build dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            build-essential \
-            clang \
-            flex \
-            bison \
-            gawk \
-            gettext \
-            git \
-            libncurses5-dev \
-            libssl-dev \
-            python3-distutils \
-            python3-setuptools \
-            rsync \
-            unzip \
-            zlib1g-dev \
-            file \
-            wget \
-            curl \
-            xsltproc \
-            libelf-dev \
-            libfuse-dev \
-            libsnmp-dev \
-            swig \
-            ccache \
-            cmake \
-            zstd
-
-      - name: Verify Source
+            build-essential clang flex bison gawk gettext git \
+            libncurses5-dev libssl-dev python3-distutils python3-setuptools \
+            rsync unzip zlib1g-dev file wget curl xsltproc libelf-dev \
+            libfuse-dev libsnmp-dev swig ccache cmake zstd
+      - name: Clone ImmortalWrt source (${{ env.REPO_TAG }})
         run: |
+          git clone --branch openwrt-23.05 --single-branch --depth 1 $REPO_URL openwrt
+          cd openwrt
+          git fetch --depth 1 origin tag $REPO_TAG
+          git checkout $REPO_TAG
           echo "===== SOURCE ====="
-          git branch --show-current
           git log -1 --oneline
-          echo
-
-      - name: Update Feeds
+      - name: Cache toolchain build directories
+        uses: actions/cache@v4
+        with:
+          path: |
+            openwrt/staging_dir/host
+            openwrt/staging_dir/toolchain-*
+            openwrt/build_dir/toolchain-*
+          key: toolchain-${{ env.REPO_TAG }}-${{ env.TARGET }}-${{ env.SUBTARGET }}-${{ hashFiles('openwrt/include/kernel-*.mk', 'openwrt/toolchain/**') }}
+          restore-keys: |
+            toolchain-${{ env.REPO_TAG }}-${{ env.TARGET }}-${{ env.SUBTARGET }}-
+      - name: Cache downloaded package sources
+        uses: actions/cache@v4
+        with:
+          path: openwrt/dl
+          key: dl-${{ env.REPO_TAG }}-${{ hashFiles('openwrt/feeds.conf.default') }}
+          restore-keys: |
+            dl-${{ env.REPO_TAG }}-
+      - name: Update and install feeds
         run: |
+          cd openwrt
           ./scripts/feeds update -a
           ./scripts/feeds install -a
-
-      - name: Install Custom 360T6M DTS
+      - name: Inject custom DTS
         run: |
-          DTS_FILE="target/linux/ramips/dts/mt7621_qihoo_360t6m.dts"
-
-          echo "===== DTS ====="
-
-          if [ ! -f "$DTS_FILE" ]; then
-            echo "ERROR: DTS file not found:"
-            echo "$DTS_FILE"
+          DTS_SRC="files/$DTS_FILE"
+          if [ ! -f "$DTS_SRC" ]; then
+            echo "ERROR: $DTS_SRC not found in repo — upload it under files/ first."
             exit 1
           fi
-
-          echo "Using:"
-          echo "$DTS_FILE"
-
-          ls -lh "$DTS_FILE"
-
-          echo
-          echo "===== PCIe NODE ====="
-          grep -n -A80 -B10 'pcie@1e140000' "$DTS_FILE" || true
-
-      - name: Verify 360T6M Device
+          cp "$DTS_SRC" openwrt/target/linux/ramips/dts/
+          echo "DTS copied:"
+          ls -lh "openwrt/target/linux/ramips/dts/$DTS_FILE"
+      - name: Inject switch port mapping (02_network)
         run: |
-          echo "===== CHECKING DEVICE ====="
-
-          grep -R "360_t6m" -n \
-            target/linux/ramips/image \
-            target/linux/ramips/image/mt7621.mk \
-            2>/dev/null || true
-
-          echo
-          echo "===== DTS REFERENCES ====="
-
-          grep -R "mt7621_qihoo_360t6m" -n \
-            target/linux/ramips \
-            2>/dev/null || true
-
-      - name: Load Build Configuration
+          python3 - << 'EOF'
+          import re, sys
+          path = "openwrt/target/linux/ramips/mt7621/base-files/etc/board.d/02_network"
+          with open(path) as f:
+              content = f.read()
+          if "360,360t6m" in content:
+              print("Entry already present — skipping.")
+              sys.exit(0)
+          m = re.search(r'(ramips_setup_interfaces\(\)\s*\{.*?case\s+"?\$board"?\s+in\n)', content, re.S)
+          if not m:
+              sys.exit("ERROR: could not find case anchor in 02_network — check file manually.")
+          block = (
+              '\t360,360t6m)\n'
+              '\t\tucidef_add_switch "switch0" \\\n'
+              '\t\t\t"0:lan:3" "1:lan:2" "2:lan:1" "3:wan" "6@eth0"\n'
+              '\t\t;;\n'
+          )
+          new_content = content[:m.end()] + block + content[m.end():]
+          with open(path, "w") as f:
+              f.write(new_content)
+          print("Inserted 360,360t6m switch mapping into 02_network.")
+          EOF
+      - name: Inject device definition into mt7621.mk
         run: |
+          MK_SRC="files/$MK_SNIPPET"
+          if [ ! -f "$MK_SRC" ]; then
+            echo "ERROR: $MK_SRC not found in repo — upload it under files/ first."
+            exit 1
+          fi
+          cd openwrt
+          MK=target/linux/ramips/image/mt7621.mk
+          if grep -q "Device/${DEVICE_PKG}" "$MK"; then
+            echo "Device/${DEVICE_PKG} already defined in $MK — skipping append."
+          else
+            echo "" >> "$MK"
+            cat "../$MK_SRC" >> "$MK"
+            echo "Appended device block to $MK"
+          fi
+      - name: Verify device + DTS registration
+        run: |
+          cd openwrt
+          echo "===== DEVICE BLOCK ====="
+          grep -n "360_t6m" target/linux/ramips/image/mt7621.mk || echo "NOT FOUND — build will fail"
+          echo
+          echo "===== DTS PRESENT ====="
+          ls -lh target/linux/ramips/dts/mt7621_qihoo_360t6m.dts
+      - name: Generate .config
+        run: |
+          cd openwrt
           cat << 'EOF' > .config
-
           CONFIG_TARGET_ramips=y
           CONFIG_TARGET_ramips_mt7621=y
           CONFIG_TARGET_ramips_mt7621_DEVICE_360_t6m=y
-          CONFIG_LEGACY_IMAGE_FORMAT=y
-
-          # UBI/UBIFS support
+          # UBI/UBIFS support (kernel-level, safe to force)
           CONFIG_MTD_UBI=y
           CONFIG_MTD_UBI_BEB_LIMIT=20
           CONFIG_MTD_UBI_FASTMAP=y
           CONFIG_UBIFS_FS=y
-
-          # TProxy / TUN
-          CONFIG_PACKAGE_kmod-nft-tproxy=y
-          CONFIG_PACKAGE_kmod-tun=y
-          CONFIG_PACKAGE_iptables-nft=y
+          # Netfilter kernel options for TProxy (kernel-level, safe to force)
           CONFIG_NETFILTER_XT_TARGET_TPROXY=y
           CONFIG_NETFILTER_XT_MATCH_SOCKET=y
           CONFIG_NF_CONNTRACK_MARK=y
-
-          # Wi-Fi
-          CONFIG_PACKAGE_kmod-mt76-connac=y
-          CONFIG_PACKAGE_kmod-mt76-core=y
-          CONFIG_PACKAGE_kmod-mt7915-firmware=y
-          CONFIG_PACKAGE_kmod-mt7915e=y
-          CONFIG_PACKAGE_wpad-openssl=y
-
-          # LuCI / SSH
-          CONFIG_PACKAGE_luci=y
-          CONFIG_PACKAGE_luci-ssl=y
-          CONFIG_PACKAGE_dropbear=y
-
+          # NOTE: do NOT force CONFIG_PACKAGE_* here for luci/wpad/dropbear/
+          # kmod-mt76*/kmod-nft-tproxy/kmod-tun — they are already selected
+          # via DEVICE_PACKAGES in the device's mt7621.mk block, which resolves
+          # a single consistent SSL backend (libustream-*) across the whole
+          # image. Duplicating them here caused a libustream-openssl vs
+          # libustream-mbedtls file clash during package/install.
           EOF
-
           make defconfig
-
-      - name: Verify Final Configuration
+      - name: Verify final configuration
         run: |
+          cd openwrt
           echo "===== TARGET ====="
-          grep '^CONFIG_TARGET_' .config | grep -E 'ramips|mt7621|360_t6m' || true
-
+          grep '^CONFIG_TARGET_' .config | grep -E 'ramips|mt7621|360_t6m' || echo "WARNING: device profile not enabled"
           echo
           echo "===== WIFI ====="
-          grep '^CONFIG_PACKAGE_.*mt76\|^CONFIG_PACKAGE_.*mt7915\|^CONFIG_PACKAGE_wpad' .config || true
-
-          echo
-          echo "===== TPROXY / TUN ====="
-          grep '^CONFIG_PACKAGE_kmod-nft-tproxy\|^CONFIG_PACKAGE_kmod-tun\|^CONFIG_PACKAGE_iptables-nft' .config || true
-
-      - name: Download Package Sources
+          grep -E '^CONFIG_PACKAGE_.*(mt76|mt7915|wpad)' .config || true
+      - name: Download package sources
         run: |
+          cd openwrt
           make download -j8
           find dl -size -1024c -exec rm -f {} \;
-
-      - name: Build Firmware
+      - name: Build firmware
         run: |
-          make -j$(nproc) V=s
-
-      - name: List Firmware
+          cd openwrt
+          make -j$(nproc) V=s || make -j1 V=s
+      - name: List firmware
         if: success()
         run: |
-          echo "===== FIRMWARE ====="
-          find bin/targets/ramips/mt7621/ \
-            -maxdepth 1 \
-            -type f \
-            -printf '%f\n' | sort
-
-      - name: Upload Firmware
+          find openwrt/bin/targets/$TARGET/$SUBTARGET/ -maxdepth 1 -type f -printf '%f\n' | sort
+      - name: Upload firmware artifacts
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: ImmortalWrt-23.05.0-360T6M-${{ github.run_number }}
-          path: |
-            bin/targets/ramips/mt7621/*
+          path: openwrt/bin/targets/${{ env.TARGET }}/${{ env.SUBTARGET }}/*
+          if-no-files-found: error
