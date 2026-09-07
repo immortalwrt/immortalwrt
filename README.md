@@ -76,9 +76,19 @@ For a list of supported devices see the [OpenWrt Hardware Database](https://open
   - [Developer Documentation](https://openwrt.org/docs/guide-developer/start)
   - [Technical Reference](https://openwrt.org/docs/techref/start)
 
-  ### Support Community
-  - Support Chat: group [@ctcgfw_openwrt_discuss](https://t.me/ctcgfw_openwrt_discuss) on [Telegram](https://telegram.org/).
-  - Support Chat: group [#immortalwrt](https://matrix.to/#/#immortalwrt:matrix.org) on [Matrix](https://matrix.org/).
+### Chat
+   #### Telegram
+  - This Telegram support chat is multilingual, mostly in Chinese.
+  - Steps to join:
+    1. Using [Telegram](https://telegram.org/), go to [@ctcgfw_openwrt_discuss](https://t.me/ctcgfw_openwrt_discuss)
+    2. Answer the question from the reception bot
+    3. If your answer is correct, you will be able to join
+   #### Matrix
+  - This Matrix support chat is less active and less maintained than the Telegram chat above. It is multilingual, mainly in Chinese.
+  - Steps to join:
+    1. Create a [GitHub discussion](https://github.com/immortalwrt/immortalwrt/discussions/new?category=general) to request an invite. Include your Matrix ID (MXID) in your request.
+    2. Wait. If approved, an administrator will send an invite to your MXID.
+    3. After receiving the invite, using [Matrix](https://matrix.org/), you will be able to join the room [#immortalwrt](https://matrix.to/#/#immortalwrt:matrix.org)
 
 ## License
 ImmortalWrt is licensed under [GPL-2.0-only](https://spdx.org/licenses/GPL-2.0-only.html).
