@@ -1,11 +1,11 @@
-name: Build ImmortalWrt 24.10.1 for 360T6M
+name: Build ImmortalWrt 24.10.5 for 360T6M
 
 on:
   workflow_dispatch:
 
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
-  REPO_TAG: v24.10.1
+  REPO_TAG: v24.10.5
   TARGET: ramips
   SUBTARGET: mt7621
   DEVICE_PKG: 360_t6m
