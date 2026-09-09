@@ -1,0 +1,24 @@
+From c099e43924d1d5ca53e8b2fd9428bcf9202dacea Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Wed, 10 Sep 2025 19:36:54 +0000
+Subject: [PATCH] arm64: dts: rockchip: Enable PCIe controller on Radxa ROCK 2F
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ arch/arm64/boot/dts/rockchip/rk3528-rock-2f.dts | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3528-rock-2f.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3528-rock-2f.dts
+@@ -32,3 +32,11 @@
+ &usb2phy_otg {
+ 	status = "okay";
+ };
++
++&pcie {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pciem1_pins>;
++	reset-gpios = <&gpio1 RK_PA2 GPIO_ACTIVE_HIGH>;
++	vpcie3v3-supply = <&vcc_3v3>;
++	status = "okay";
++};

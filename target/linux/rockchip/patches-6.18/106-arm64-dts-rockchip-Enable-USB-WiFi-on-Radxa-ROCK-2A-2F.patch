@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Tianling Shen <cnsztl@gmail.com>
+Date: Mon, 25 May 2026 16:03:46 +0800
+Subject: [PATCH] arm64: dts: rockchip: Enable USB WiFi on Radxa
+ ROCK 2A/2F
+
+The vcc_wifi regulator has no consumer, which will never be enabled.
+Currently there is no way to attach it, so keep it always on.
+
+Signed-off-by: Tianling Shen <cnsztl@gmail.com>
+---
+ arch/arm64/boot/dts/rockchip/rk3528-rock-2.dtsi | 2 ++
+ 1 files changed, 2 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3528-rock-2.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3528-rock-2.dtsi
+@@ -94,6 +94,8 @@
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&usb_wifi_pwr>;
+ 		regulator-name = "vcc_wifi";
++		regulator-always-on;
++		regulator-boot-on;
+ 		regulator-min-microvolt = <3300000>;
+ 		regulator-max-microvolt = <3300000>;
+ 		vin-supply = <&vcc_3v3>;

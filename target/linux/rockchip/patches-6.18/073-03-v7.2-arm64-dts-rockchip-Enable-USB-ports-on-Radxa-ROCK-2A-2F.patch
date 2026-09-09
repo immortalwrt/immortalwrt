@@ -1,0 +1,89 @@
+From 4e55d52f5f3b333a9ff5103099df97291aaeb083 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Fri, 29 May 2026 21:03:53 +0200
+Subject: [PATCH] arm64: dts: rockchip: Enable USB ports on Radxa ROCK 2A/2F
+
+The ROCK 2A has three USB 2.0 Type-A HOST ports behind an onboard
+USB hub, and one USB 3.0 Type-A port.
+
+And the ROCK 2F has two USB 2.0 Type-A HOST ports behind an onboard
+USB hub, and one USB 2.0 Type-C OTG port.
+
+Add support for using the USB ports on Radxa ROCK 2A/2F.
+
+The onboard USB hub handles OHCI so only the EHCI controller is enabled.
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patch.msgid.link/20260529190355.4148175-4-heiko@sntech.de
+---
+ arch/arm64/boot/dts/rockchip/rk3528-rock-2.dtsi | 17 +++++++++++++++++
+ arch/arm64/boot/dts/rockchip/rk3528-rock-2a.dts | 11 +++++++++++
+ arch/arm64/boot/dts/rockchip/rk3528-rock-2f.dts | 12 ++++++++++++
+ 3 files changed, 40 insertions(+)
+
+--- a/arch/arm64/boot/dts/rockchip/rk3528-rock-2.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3528-rock-2.dtsi
+@@ -166,6 +166,10 @@
+ 	};
+ };
+ 
++&combphy {
++	status = "okay";
++};
++
+ &cpu0 {
+ 	cpu-supply = <&vdd_arm>;
+ };
+@@ -291,3 +295,16 @@
+ 	pinctrl-0 = <&uart0m0_xfer>;
+ 	status = "okay";
+ };
++
++&usb_host0_ehci {
++	status = "okay";
++};
++
++&usb2phy {
++	status = "okay";
++};
++
++&usb2phy_host {
++	phy-supply = <&vcc5v0_usb20>;
++	status = "okay";
++};
+--- a/arch/arm64/boot/dts/rockchip/rk3528-rock-2a.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3528-rock-2a.dts
+@@ -80,3 +80,14 @@
+ 		};
+ 	};
+ };
++
++&usb_host0_xhci {
++	dr_mode = "host";
++	extcon = <&usb2phy>;
++	status = "okay";
++};
++
++&usb2phy_otg {
++	phy-supply = <&vcc5v0_usb30_otg>;
++	status = "okay";
++};
+--- a/arch/arm64/boot/dts/rockchip/rk3528-rock-2f.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3528-rock-2f.dts
+@@ -8,3 +8,15 @@
+ 	model = "Radxa ROCK 2F";
+ 	compatible = "radxa,rock-2f", "rockchip,rk3528";
+ };
++
++&usb_host0_xhci {
++	extcon = <&usb2phy>;
++	maximum-speed = "high-speed";
++	phys = <&usb2phy_otg>;
++	phy-names = "usb2-phy";
++	status = "okay";
++};
++
++&usb2phy_otg {
++	status = "okay";
++};
