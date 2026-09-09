@@ -1,0 +1,47 @@
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 2/2] pmdomain/rockchip: skip domains returning
+ -EPROBE_DEFER
+From: Daniel Bozeman <daniel@orb.net>
+Date: Tue, 31 Mar 2026 18:02:23 +0000
+Message-Id: <20260331180223.1682283-2-daniel@orb.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+When iterating child nodes during probe, a single domain returning
+-EPROBE_DEFER (e.g. due to clock dependencies not yet available)
+causes the entire power domain controller to fail and tear down all
+successfully registered domains.
+
+This creates a window where devices in unrelated power domains that
+would have registered successfully cannot access their hardware. On
+RK3528, PD_GPU requires CRU clocks that may not be available yet,
+but the idle-only domains (PD_RKVENC, PD_VO, PD_VPU) have no clock
+requirements. When the controller fails due to PD_GPU, GPIO
+controllers in PD_RKVENC become inaccessible, leading to synchronous
+external aborts when GPIO-controlled regulators probe.
+
+Skip domains that return -EPROBE_DEFER and continue registering the
+rest. Skipped domains have NULL entries in the provider, causing
+their consumers to receive -ENOENT and defer until available.
+
+Fixes: 7c696693a4f5 ("soc: rockchip: power-domain: Add power domain driver")
+Signed-off-by: Daniel Bozeman <daniel@orb.net>
+---
+ drivers/pmdomain/rockchip/pm-domains.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+--- a/drivers/pmdomain/rockchip/pm-domains.c
++++ b/drivers/pmdomain/rockchip/pm-domains.c
+@@ -1059,6 +1059,11 @@ static int rockchip_pm_domain_probe(stru
+ 	for_each_available_child_of_node_scoped(np, node) {
+ 		error = rockchip_pm_add_one_domain(pmu, node);
+ 		if (error) {
++			if (error == -EPROBE_DEFER) {
++				dev_dbg(dev, "skipped node %pOFn, dependencies not yet available\n",
++					node);
++				continue;
++			}
+ 			dev_err(dev, "failed to handle node %pOFn: %d\n",
+ 				node, error);
+ 			goto err_out;

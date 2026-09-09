@@ -1,0 +1,39 @@
+Upstream included all QoS that seemed to be related to each power domains
+based on e.g. vendor DTs, clock driver and other hints.
+
+Vendor kernel mostly seemed to take the easy way out and flagged all
+rk3528 power domains as always on or similar, if I recall correctly.
+
+For upstream we have instead tried to describe all power domains without
+any always on flag and instead ensure all devices belong to a power
+domain.
+
+I do not have access to any rk3528 TRM or similar, so I would not be
+surprised if there could be some wrong details. However, runtime
+testing at time of patches was sent upstream did not show any issues.
+
+I was however able to reproduce a crash using next-20260403 + rk3528 usb
+series [1][2]. Such crash was not happening at the original submission
+of the pmdomain or usb series.
+
+Looking at pmdomain core and rk pmdomain driver changes since rk3528
+merge I see that there are some changes that may have changed behavior
+of the driver since initial rk3528 merge. I.e. GENPD_FLAG_NO_STAY_ON.
+
+Following quick diff seem to remove any changed behavior introduced in
+commit 2bc12a8199a0 ("pmdomain: rockchip: Fix regulator dependency with
+GENPD_FLAG_NO_STAY_ON"), and fixes the crash for me.
+
+--- a/drivers/pmdomain/rockchip/pm-domains.c
++++ b/drivers/pmdomain/rockchip/pm-domains.c
+@@ -875,7 +875,9 @@ static int rockchip_pm_add_one_domain(st
+ 	pd->genpd.power_on = rockchip_pd_power_on;
+ 	pd->genpd.attach_dev = rockchip_pd_attach_dev;
+ 	pd->genpd.detach_dev = rockchip_pd_detach_dev;
+-	pd->genpd.flags = GENPD_FLAG_PM_CLK | GENPD_FLAG_NO_STAY_ON;
++	pd->genpd.flags = GENPD_FLAG_PM_CLK;
++	if (pd->info->pwr_mask || pd->info->status_mask)
++		pd->genpd.flags |= GENPD_FLAG_NO_STAY_ON;
+ 	if (pd_info->active_wakeup)
+ 		pd->genpd.flags |= GENPD_FLAG_ACTIVE_WAKEUP;
+ 	pm_genpd_init(&pd->genpd, NULL,
