@@ -294,6 +294,14 @@ define Device/friendlyarm_nanopi-r76s
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r76s
 
+define Device/friendlyarm_nanopi-zero2
+  $(Device/rk3528)
+  DEVICE_VENDOR := FriendlyARM
+  DEVICE_MODEL := NanoPi Zero2
+  DEVICE_PACKAGES := kmod-rtw88-8822ce wpad-openssl
+endef
+TARGET_DEVICES += friendlyarm_nanopi-zero2
+
 define Device/huake_guangmiao-g4c
   $(Device/rk3399)
   DEVICE_VENDOR := Huake-Cloud

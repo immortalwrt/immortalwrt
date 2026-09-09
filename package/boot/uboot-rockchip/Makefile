@@ -205,6 +205,13 @@ define U-Boot/mangopi-m28k-rk3528
     widora_mangopi-m28k
 endef
 
+define U-Boot/nanopi-zero2-rk3528
+  $(U-Boot/rk3528/Default)
+  NAME:=NanoPi Zero2
+  BUILD_DEVICES:= \
+    friendlyarm_nanopi-zero2
+endef
+
 define U-Boot/radxa-e20c-rk3528
   $(U-Boot/rk3528/Default)
   NAME:=E20C
@@ -546,6 +553,7 @@ UBOOT_TARGETS := \
   rock-pi-e-rk3328 \
   mangopi-m28c-rk3528 \
   mangopi-m28k-rk3528 \
+  nanopi-zero2-rk3528 \
   radxa-e20c-rk3528 \
   rock-2-rk3528 \
   nanopi-r3s-rk3566 \

@@ -261,6 +261,41 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  		};
  	};
  
+--- a/arch/arm64/boot/dts/rockchip/rk3528-nanopi-zero2.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3528-nanopi-zero2.dts
+@@ -17,6 +17,10 @@
+ 		mmc0 = &sdhci;
+ 		mmc1 = &sdmmc;
+ 		serial0 = &uart0;
++		led-boot = &power_led;
++		led-failsafe = &power_led;
++		led-running = &power_led;
++		led-upgrade = &power_led;
+ 	};
+ 
+ 	chosen {
+@@ -56,20 +60,16 @@
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&led1>, <&led_sys>;
+ 
+-		led-0 {
++		power_led: led-0 {
+ 			color = <LED_COLOR_ID_RED>;
+-			default-state = "on";
+ 			function = LED_FUNCTION_HEARTBEAT;
+ 			gpios = <&gpio4 RK_PB0 GPIO_ACTIVE_HIGH>;
+-			linux,default-trigger = "heartbeat";
+ 		};
+ 
+ 		led-1 {
+ 			color = <LED_COLOR_ID_GREEN>;
+-			default-state = "on";
+ 			function = LED_FUNCTION_STATUS;
+ 			gpios = <&gpio4 RK_PB1 GPIO_ACTIVE_HIGH>;
+-			linux,default-trigger = "default-on";
+ 		};
+ 	};
+ 
 --- a/arch/arm64/boot/dts/rockchip/rk3528-radxa-e20c.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3528-radxa-e20c.dts
 @@ -22,6 +22,11 @@
