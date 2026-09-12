@@ -201,6 +201,6 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: ImmortalWrt-24.10.1-360T6M-${{ github.run_number }}
+          name: ImmortalWrt-24.10.5-360T6M-${{ github.run_number }}
           path: openwrt/bin/targets/${{ env.TARGET }}/${{ env.SUBTARGET }}/*
           if-no-files-found: error
