@@ -567,7 +567,7 @@ define Device/cetron_ct3003-ubootmod
   IMAGE/sysupgrade.itb := append-kernel | \
         fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-static-with-rootfs | append-metadata
   ARTIFACTS := preloader.bin bl31-uboot.fip
-  ARTIFACT/preloader.bin := mt7981-bl2 spim-nand-ddr3
+  ARTIFACT/preloader.bin := mt7981-bl2 spim-nand-ddr3-1866mhz
   ARTIFACT/bl31-uboot.fip := mt7981-bl31-uboot cetron_ct3003
   DEVICE_COMPAT_VERSION := 1.2
   DEVICE_COMPAT_MESSAGE := Flash layout changes require bootloader update
