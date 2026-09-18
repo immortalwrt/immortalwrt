@@ -70,24 +70,31 @@
 		#phy-cells = <0>;
 	};
 
-	gpio0: gpio@1fbf0200 {
-		compatible = "airoha,en7523-gpio";
-		reg = <0x1fbf0204 0x4>,
-		      <0x1fbf0200 0x4>,
-		      <0x1fbf0220 0x4>,
-		      <0x1fbf0214 0x4>;
-		gpio-controller;
-		#gpio-cells = <2>;
+	system-controller@1fbf0200 {
+		compatible = "syscon", "simple-mfd";
+		reg = <0x1fbf0200 0xc0>;
+
+		pinctrl: pinctrl {
+			compatible = "econet,en7528-pinctrl";
+
+			airoha,chip-scu = <&chip_scu>;
+
+			interrupt-parent = <&gic>;
+			interrupts = <GIC_SHARED 10 IRQ_TYPE_LEVEL_HIGH>;
+
+			gpio-controller;
+			#gpio-cells = <2>;
+			/* GPIO0-GPIO41 are the pins with a GPIO function */
+			gpio-ranges = <&pinctrl 0 0 42>;
+
+			interrupt-controller;
+			#interrupt-cells = <2>;
+		};
 	};
 
-	gpio1: gpio@1fbf0270 {
-		compatible = "airoha,en7523-gpio";
-		reg = <0x1fbf0270 0x4>,
-		      <0x1fbf0260 0x4>,
-		      <0x1fbf0264 0x4>,
-		      <0x1fbf0278 0x4>;
-		gpio-controller;
-		#gpio-cells = <2>;
+	chip_scu: syscon@1fa20000 {
+		compatible = "econet,en7528-chip-scu", "syscon";
+		reg = <0x1fa20000 0x400>;
 	};
 
 	scu: system-controller@1fb00000 {
@@ -351,21 +358,81 @@
 			gsw_phy1: ethernet-phy@9 {
 				compatible = "ethernet-phy-ieee802.3-c22";
 				reg = <9>;
+
+				leds {
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+					gsw_phy1_led0: led@0 {
+						reg = <0>;
+						status = "disabled";
+					};
+
+					gsw_phy1_led1: led@1 {
+						reg = <1>;
+						status = "disabled";
+					};
+				};
 			};
 
 			gsw_phy2: ethernet-phy@a {
 				compatible = "ethernet-phy-ieee802.3-c22";
 				reg = <10>;
+
+				leds {
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+					gsw_phy2_led0: led@0 {
+						reg = <0>;
+						status = "disabled";
+					};
+
+					gsw_phy2_led1: led@1 {
+						reg = <1>;
+						status = "disabled";
+					};
+				};
 			};
 
 			gsw_phy3: ethernet-phy@b {
 				compatible = "ethernet-phy-ieee802.3-c22";
 				reg = <11>;
+
+				leds {
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+					gsw_phy3_led0: led@0 {
+						reg = <0>;
+						status = "disabled";
+					};
+
+					gsw_phy3_led1: led@1 {
+						reg = <1>;
+						status = "disabled";
+					};
+				};
 			};
 
 			gsw_phy4: ethernet-phy@c {
 				compatible = "ethernet-phy-ieee802.3-c22";
 				reg = <12>;
+
+				leds {
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+					gsw_phy4_led0: led@0 {
+						reg = <0>;
+						status = "disabled";
+					};
+
+					gsw_phy4_led1: led@1 {
+						reg = <1>;
+						status = "disabled";
+					};
+				};
 			};
 		};
 	};

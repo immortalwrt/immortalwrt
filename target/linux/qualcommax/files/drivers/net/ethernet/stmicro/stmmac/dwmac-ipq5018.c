@@ -94,6 +94,7 @@ static struct phylink_pcs *ipq5018_gmac_select_pcs(struct stmmac_priv *priv,
 {
 	switch (interface) {
 	case PHY_INTERFACE_MODE_SGMII:
+	case PHY_INTERFACE_MODE_1000BASEX:
 	case PHY_INTERFACE_MODE_2500BASEX:
 		if (priv->hw->phylink_pcs)
 			return priv->hw->phylink_pcs;
@@ -112,10 +113,12 @@ static void ipq5018_gmac_get_interfaces(struct stmmac_priv *priv, void *bsp_priv
 	/*
 	 * IPQ5018 has two GMACs:
 	 * - GMAC0 supports SGMII and is wired to the SoC's internal GE PHY
-	 * - GMAC1 supports SGMII and 2500BaseX, configurable by the UNIPHY PCS
+	 * - GMAC1 supports SGMII, 1000BaseX, and 2500BaseX, configurable by
+	 *   the UNIPHY PCS
 	 */
 	__set_bit(PHY_INTERFACE_MODE_SGMII, interfaces);
 	if (priv->hw->phylink_pcs) {
+		__set_bit(PHY_INTERFACE_MODE_1000BASEX, interfaces);
 		__set_bit(PHY_INTERFACE_MODE_2500BASEX, interfaces);
 
 		/*

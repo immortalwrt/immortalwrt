@@ -24,7 +24,6 @@
 #include <linux/phylink.h>
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
-#include <linux/version.h>
 
 #include <dt-bindings/net/qca-uniphy.h>
 
@@ -302,13 +301,13 @@ static void qca_uniphy_pcs_get_state_sgmii(struct qca_uniphy *uniphy,
 	state->duplex = (val & UNIPHY_CH_STS_DUPLEX) ? DUPLEX_FULL : DUPLEX_HALF;
 
 	switch (FIELD_GET(UNIPHY_CH_STS_SPEED_MODE, val)) {
-	case 0:
+	case UNIPHY_CH_SPEED_10:
 		state->speed = SPEED_10;
 		break;
-	case 1:
+	case UNIPHY_CH_SPEED_100:
 		state->speed = SPEED_100;
 		break;
-	case 2:
+	case UNIPHY_CH_SPEED_1000:
 		state->speed = SPEED_1000;
 		break;
 	default:
@@ -425,9 +424,7 @@ static void qca_uniphy_pcs_get_state_10base_r(struct qca_uniphy *uniphy,
 }
 
 static void qca_uniphy_pcs_get_state(struct phylink_pcs *pcs,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 18, 0)
 				     unsigned int neg_mode,
-#endif
 				     struct phylink_link_state *state)
 {
 	struct qca_uniphy_pcs *upcs = to_qca_uniphy_pcs(pcs);
@@ -454,6 +451,15 @@ static void qca_uniphy_pcs_get_state(struct phylink_pcs *pcs,
 	default:
 		break;
 	}
+}
+
+/* A fixed link carries no in-band negotiation for the channel to take its
+ * speed from, so the channel is forced and reads UNIPHY_CH_CTRL instead.
+ */
+static bool uniphy_ch_forced(struct phylink_pcs *pcs, unsigned int neg_mode)
+{
+	return neg_mode == PHYLINK_PCS_NEG_OUTBAND &&
+	       !phylink_expects_phy(pcs->phylink);
 }
 
 static int qca_uniphy_pcs_config_mode(struct phylink_pcs *pcs,
@@ -524,14 +530,17 @@ static int qca_uniphy_pcs_config_mode(struct phylink_pcs *pcs,
 			clk_prepare_enable(uniphy->ref_clk.hw.clk);
 	}
 
-	/* TODO: Fix for IPQ6018 and IPQ8074 */
-	if (uniphy->data->uniphy_type == UNIPHY_IPQ5018) {
-		//set force mode for fixed link
-		if (neg_mode == PHYLINK_PCS_NEG_OUTBAND && !phylink_expects_phy(pcs->phylink)) {
-			regmap_set_bits(uniphy->regmap,
-					UNIPHY_CH_CTRL(upcs->channel),
-					UNIPHY_CH_FORCE_MODE);
-		}
+	/* The XPCS modes drive the channel from the XPCS and never read the
+	 * force bit.
+	 */
+	if (mode_ctrl != UNIPHY_XPCS_MODE) {
+		ret = regmap_update_bits(uniphy->regmap,
+					 UNIPHY_CH_CTRL(upcs->channel),
+					 UNIPHY_CH_FORCE_MODE,
+					 uniphy_ch_forced(pcs, neg_mode) ?
+					 UNIPHY_CH_FORCE_MODE : 0);
+		if (ret)
+			return ret;
 	}
 
 	if (uniphy->interface == interface)
@@ -712,12 +721,14 @@ static int qca_uniphy_pcs_config(struct phylink_pcs *pcs,
 }
 
 static int uniphy_link_up_sgmii(struct phylink_pcs *pcs,
+				unsigned int neg_mode,
 				phy_interface_t interface,
 				int speed)
 {
 	struct qca_uniphy_pcs *upcs = to_qca_uniphy_pcs(pcs);
 	struct qca_uniphy *uniphy = upcs->uniphy;
 	unsigned long uniphy_rate;
+	u32 speed_mode;
 	int ret;
 
 	switch (interface) {
@@ -727,12 +738,15 @@ static int uniphy_link_up_sgmii(struct phylink_pcs *pcs,
 		switch (speed) {
 		case SPEED_10:
 			uniphy_rate = 2500000;
+			speed_mode = UNIPHY_CH_SPEED_10;
 			break;
 		case SPEED_100:
 			uniphy_rate = 25000000;
+			speed_mode = UNIPHY_CH_SPEED_100;
 			break;
 		case SPEED_1000:
 			uniphy_rate = 125000000;
+			speed_mode = UNIPHY_CH_SPEED_1000;
 			break;
 		default:
 			dev_err(uniphy->dev, "Invalid SGMII speed %d\n", speed);
@@ -743,6 +757,7 @@ static int uniphy_link_up_sgmii(struct phylink_pcs *pcs,
 		switch (speed) {
 		case SPEED_1000:
 			uniphy_rate = 125000000;
+			speed_mode = UNIPHY_CH_SPEED_1000;
 			break;
 		default:
 			dev_err(uniphy->dev, "Invalid 1000BaseX speed %d\n", speed);
@@ -753,6 +768,11 @@ static int uniphy_link_up_sgmii(struct phylink_pcs *pcs,
 		switch (speed) {
 		case SPEED_2500:
 			uniphy_rate = 312500000;
+			/* The field has no 2500 encoding: SGMII+ carries the
+			 * rate in the mode and leaves this at the vendor's
+			 * 1000 reset value.
+			 */
+			speed_mode = UNIPHY_CH_SPEED_1000;
 			break;
 		default:
 			dev_err(uniphy->dev, "Invalid 2500BaseX speed %d\n", speed);
@@ -765,6 +785,19 @@ static int uniphy_link_up_sgmii(struct phylink_pcs *pcs,
 
 	clk_set_rate(uniphy->clks[port_rx_clk_idx(upcs)].clk, uniphy_rate);
 	clk_set_rate(uniphy->clks[port_tx_clk_idx(upcs)].clk, uniphy_rate);
+
+	/* Only a forced channel takes its speed from here; otherwise the
+	 * in-band word carries it and the field is not consumed.
+	 */
+	if (uniphy_ch_forced(pcs, neg_mode)) {
+		ret = regmap_update_bits(uniphy->regmap,
+					 UNIPHY_CH_CTRL(upcs->channel),
+					 UNIPHY_CH_SPEED_MODE,
+					 FIELD_PREP(UNIPHY_CH_SPEED_MODE,
+						    speed_mode));
+		if (ret)
+			return ret;
+	}
 
 	ret = regmap_clear_bits(uniphy->regmap, UNIPHY_CH_CTRL(upcs->channel),
 				UNIPHY_CH_ADP_SW_RSTN);
@@ -842,7 +875,7 @@ static void qca_uniphy_pcs_link_up(struct phylink_pcs *pcs,
 	case PHY_INTERFACE_MODE_PSGMII:
 	case PHY_INTERFACE_MODE_1000BASEX:
 	case PHY_INTERFACE_MODE_2500BASEX:
-		ret = uniphy_link_up_sgmii(pcs, interface, speed);
+		ret = uniphy_link_up_sgmii(pcs, neg_mode, interface, speed);
 		break;
 	case PHY_INTERFACE_MODE_USXGMII:
 	case PHY_INTERFACE_MODE_10GBASER:
@@ -1003,6 +1036,7 @@ static const struct regmap_config uniphy_regmap_cfg = {
 
 static int qca_uniphy_probe(struct platform_device *pdev)
 {
+	struct fwnode_pcs_provider *provider;
 	struct device *dev = &pdev->dev;
 	struct clk_bulk_data *clks;
 	struct qca_uniphy *uniphy;
@@ -1055,9 +1089,6 @@ static int qca_uniphy_probe(struct platform_device *pdev)
 
 	for (i = 0; i < QCA_UNIPHY_CHANNELS; i++) {
 		uniphy->port_pcs[i].pcs.ops = &qca_uniphy_pcs_ops;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 18, 0)
-		uniphy->port_pcs[i].pcs.neg_mode = true;
-#endif
 		uniphy->port_pcs[i].pcs.poll = true;
 		uniphy->port_pcs[i].uniphy = uniphy;
 		uniphy->port_pcs[i].channel = i;
@@ -1067,8 +1098,12 @@ static int qca_uniphy_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, uniphy);
 
-	return fwnode_pcs_add_provider(dev_fwnode(dev), qca_uniphy_get,
-				       uniphy);
+	provider = devm_fwnode_pcs_add_provider(dev, dev_fwnode(dev),
+						qca_uniphy_get, uniphy);
+	if (IS_ERR(provider))
+		return dev_err_probe(dev, PTR_ERR(provider), "Failed to add PCS provider\n");
+
+	return 0;
 }
 
 static struct platform_driver qca_uniphy_driver = {

@@ -6,6 +6,7 @@
 #include <net/nexthop.h>
 #include <net/neighbour.h>
 #include <net/netevent.h>
+#include <linux/cleanup.h>
 #include <linux/etherdevice.h>
 #include <linux/if_vlan.h>
 #include <linux/inetdevice.h>
@@ -16,6 +17,7 @@
 
 #include "l3.h"
 #include "rtl-otto.h"
+#include "tc.h"
 
 int rtldsa_port_get_stp_state(struct rtl838x_switch_priv *priv, int port)
 {
@@ -30,122 +32,6 @@ int rtldsa_port_get_stp_state(struct rtl838x_switch_priv *priv, int port)
 	mutex_unlock(&priv->reg_mutex);
 
 	return state;
-}
-
-static struct table_reg rtl838x_tbl_regs[] = {
-	TBL_DESC(0x6900, 0x6908, 3, 15, 13, 1),		/* RTL8380_TBL_L2 */
-	TBL_DESC(0x6914, 0x6918, 18, 14, 12, 1),	/* RTL8380_TBL_0 */
-	TBL_DESC(0xA4C8, 0xA4CC, 6, 14, 12, 1),		/* RTL8380_TBL_1 */
-
-	TBL_DESC(0x1180, 0x1184, 3, 16, 14, 0),		/* RTL8390_TBL_L2 */
-	TBL_DESC(0x1190, 0x1194, 17, 15, 12, 0),	/* RTL8390_TBL_0 */
-	TBL_DESC(0x6B80, 0x6B84, 4, 14, 12, 0),		/* RTL8390_TBL_1 */
-	TBL_DESC(0x611C, 0x6120, 9, 8, 6, 0),		/* RTL8390_TBL_2 */
-
-	TBL_DESC(0xB320, 0xB334, 3, 18, 16, 0),		/* RTL9300_TBL_L2 */
-	TBL_DESC(0xB340, 0xB344, 19, 16, 12, 0),	/* RTL9300_TBL_0 */
-	TBL_DESC(0xB3A0, 0xB3A4, 20, 16, 13, 0),	/* RTL9300_TBL_1 */
-	TBL_DESC(0xCE04, 0xCE08, 6, 14, 12, 0),		/* RTL9300_TBL_2 */
-	TBL_DESC(0xD600, 0xD604, 30, 7, 6, 0),		/* RTL9300_TBL_HSB */
-	TBL_DESC(0x7880, 0x7884, 22, 9, 8, 0),		/* RTL9300_TBL_HSA */
-
-	TBL_DESC(0x8500, 0x8508, 8, 19, 15, 0),		/* RTL9310_TBL_0 */
-	TBL_DESC(0x40C0, 0x40C4, 22, 16, 14, 0),	/* RTL9310_TBL_1 */
-	TBL_DESC(0x8528, 0x852C, 6, 18, 14, 0),		/* RTL9310_TBL_2 */
-	TBL_DESC(0x0200, 0x0204, 9, 15, 12, 0),		/* RTL9310_TBL_3 */
-	TBL_DESC(0x20dc, 0x20e0, 29, 7, 6, 0),		/* RTL9310_TBL_4 */
-	TBL_DESC(0x7e1c, 0x7e20, 53, 8, 6, 0),		/* RTL9310_TBL_5 */
-};
-
-void rtl_table_init(void)
-{
-	for (int i = 0; i < RTL_TBL_END; i++)
-		mutex_init(&rtl838x_tbl_regs[i].lock);
-}
-
-/* Request access to table t in table access register r
- * Returns a handle to a lock for that table
- */
-struct table_reg *rtl_table_get(rtl838x_tbl_reg_t r, int t)
-{
-	if (r >= RTL_TBL_END)
-		return NULL;
-
-	if (t >= BIT(rtl838x_tbl_regs[r].c_bit - rtl838x_tbl_regs[r].t_bit))
-		return NULL;
-
-	mutex_lock(&rtl838x_tbl_regs[r].lock);
-	rtl838x_tbl_regs[r].tbl = t;
-
-	return &rtl838x_tbl_regs[r];
-}
-
-/* Release a table r, unlock the corresponding lock */
-void rtl_table_release(struct table_reg *r)
-{
-	if (!r)
-		return;
-
-/*	pr_info("Unlocking %08x\n", (u32)r); */
-	mutex_unlock(&r->lock);
-/*	pr_info("Unlock done\n"); */
-}
-
-static int rtl_table_exec(struct table_reg *r, bool is_write, int idx)
-{
-	int ret = 0;
-	u32 cmd, val;
-
-	/* Read/write bit has inverted meaning on RTL838x */
-	if (r->rmode)
-		cmd = is_write ? 0 : BIT(r->c_bit);
-	else
-		cmd = is_write ? BIT(r->c_bit) : 0;
-
-	cmd |= BIT(r->c_bit + 1); /* Execute bit */
-	cmd |= r->tbl << r->t_bit; /* Table type */
-	cmd |= idx & (BIT(r->t_bit) - 1); /* Index */
-
-	sw_w32(cmd, r->addr);
-
-	ret = readx_poll_timeout(sw_r32, r->addr, val,
-				 !(val & BIT(r->c_bit + 1)), 20, 10000);
-	if (ret)
-		pr_err("%s: timeout\n", __func__);
-
-	return ret;
-}
-
-/* Reads table index idx into the data registers of the table */
-int rtl_table_read(struct table_reg *r, int idx)
-{
-	return rtl_table_exec(r, false, idx);
-}
-
-/* Writes the content of the table data registers into the table at index idx */
-int rtl_table_write(struct table_reg *r, int idx)
-{
-	return rtl_table_exec(r, true, idx);
-}
-
-/* Returns the address of the ith data register of table register r
- * the address is relative to the beginning of the Switch-IO block at 0xbb000000
- */
-inline u16 rtl_table_data(struct table_reg *r, int i)
-{
-	if (i >= r->max_data)
-		i = r->max_data - 1;
-	return r->data + i * 4;
-}
-
-inline u32 rtl_table_data_r(struct table_reg *r, int i)
-{
-	return sw_r32(rtl_table_data(r, i));
-}
-
-inline void rtl_table_data_w(struct table_reg *r, u32 v, int i)
-{
-	sw_w32(v, rtl_table_data(r, i));
 }
 
 /* Port register accessor functions for the RTL838x and RTL930X SoCs */
@@ -509,16 +395,13 @@ static int rtldsa_93xx_lag_set_group2ports(struct rtl838x_switch_priv *priv, int
 	int i;
 
 	/* Read lag table using Table control register 2 */
-	struct table_reg *r = priv->r->lag_table();
+	int tbl = priv->r->lag_table();
 
-	rtl_table_read(r, group);
+	__otto_table_read(tbl, group, &data);
 
 	bitmap_clear(ports, 0, ARRAY_SIZE(priv->ports));
 	bitmap_from_arr64(ports, &priv->lags_port_members[group],
 			  ARRAY_SIZE(priv->ports));
-
-	for (i = 0; i < 3; i++)
-		data[i] = sw_r32(rtl_table_data(r, i));
 
 	priv->r->lag_fill_data(data, &e);
 
@@ -527,7 +410,7 @@ static int rtldsa_93xx_lag_set_group2ports(struct rtl838x_switch_priv *priv, int
 		pr_err("%s: Number of LAG ports too high: %u", __func__,
 		       num_of_lag_ports);
 
-		rtl_table_release(r);
+		otto_table_release(tbl);
 		return -ENOSPC;
 	}
 
@@ -575,17 +458,15 @@ static int rtldsa_93xx_lag_set_group2ports(struct rtl838x_switch_priv *priv, int
 			e.ip4_hash_mask_idx = RTL93XX_HASH_MASK_INDEX_L23;
 			e.ip6_hash_mask_idx = RTL93XX_HASH_MASK_INDEX_L23;
 		} else {
-			rtl_table_release(r);
+			otto_table_release(tbl);
 			return -EOPNOTSUPP;
 		}
 	}
 
 	priv->r->lag_write_data(data, &e);
 
-	for (i = 0; i < 3; i++)
-		sw_w32(data[i], rtl_table_data(r, i));
-	rtl_table_write(r, group);
-	rtl_table_release(r);
+	__otto_table_write(tbl, group, &data);
+	otto_table_release(tbl);
 
 	return 0;
 }
@@ -664,38 +545,93 @@ int rtldsa_93xx_lag_set_port_members(struct rtl838x_switch_priv *priv, int group
 // 	return idx;
 // }
 
-/* Allocate a 32-bit packet counter
- * 2 32-bit packet counters share the location of a 64-bit octet counter
- * Initially there are no free packet counters and 2 new ones need to be freed
- * by allocating the corresponding octet counter
+/*
+ * Packet counters share hardware memory with octet counters (2 packet counters
+ * per 1 octet block). Allocation relies on two complementary bitmaps:
+ *
+ *   octet_cntr_use_bm:  0 = free block, 1 = used (or split into packet counters)
+ *   packet_cntr_use_bm: 1 = free standalone counter, 0 = unavailable
+ *
+ * Allocation strategy:
+ * 1. Look for a free standalone counter from an already split block (bit = 1).
+ * 2. If none are free, claim a new octet block 'j', use counter index (2 * j),
+ *    and mark counter (2 * j + 1) as available for future allocations.
  */
-int rtl83xx_packet_cntr_alloc(struct rtl838x_switch_priv *priv)
+
+/**
+ * rtldsa_packet_cntr_alloc - Allocate a hardware packet counter.
+ * @priv: Switch driver private structure.
+ *
+ * Return: Counter index (>= 0) on success, or -1 if full.
+ */
+int rtldsa_packet_cntr_alloc(struct rtl838x_switch_priv *priv)
 {
-	int idx, j;
+	int idx, j, base = 0;
 
-	mutex_lock(&priv->reg_mutex);
-
-	/* Because initially no packet counters are free, the logic is reversed:
-	 * a 0-bit means the counter is already allocated (for octets)
+	/* On SoCs where a PIE rule implicitly logs into the LOG table entry
+	 * with its own rule ID (RTL930x), the tc cls_flower offload consumes
+	 * one LOG counter per PIE rule and does not pass through this
+	 * allocator. Keep that range reserved so a route counter handed out
+	 * here cannot alias a flow's LOG entry.
+	 *
+	 * The offload is ingress-only, so PIE rule IDs currently populate
+	 * only the lower half of that range, and a route counter's LOG entry
+	 * (idx / 2) never dips below the upper half either. If egress PIE
+	 * rules are ever wired up, this reservation needs to grow so their
+	 * LOG entries stay clear of route counters too.
 	 */
-	idx = find_first_bit(priv->packet_cntr_use_bm, MAX_COUNTERS * 2);
-	if (idx >= priv->r->n_counters * 2) {
-		j = find_first_zero_bit(priv->octet_cntr_use_bm, MAX_COUNTERS);
-		if (j >= priv->r->n_counters) {
-			mutex_unlock(&priv->reg_mutex);
-			return -1;
-		}
-		set_bit(j, priv->octet_cntr_use_bm);
-		idx = j * 2;
-		set_bit(j * 2 + 1, priv->packet_cntr_use_bm);
+	if (priv->r->pie_rule_id_is_log_counter)
+		base = priv->r->n_pie_blocks * PIE_BLOCK_SIZE;
 
-	} else {
-		clear_bit(idx, priv->packet_cntr_use_bm);
+	scoped_guard(mutex, &priv->reg_mutex) {
+		idx = find_next_bit(priv->packet_cntr_use_bm, priv->r->n_counters * 2, base);
+		if (idx >= priv->r->n_counters * 2) {
+			j = find_next_zero_bit(priv->octet_cntr_use_bm, priv->r->n_counters,
+					       base / 2);
+			if (j >= priv->r->n_counters)
+				return -1;
+
+			__set_bit(j, priv->octet_cntr_use_bm);
+			idx = j * 2;
+			__set_bit(j * 2 + 1, priv->packet_cntr_use_bm);
+		} else {
+			__clear_bit(idx, priv->packet_cntr_use_bm);
+		}
 	}
 
-	mutex_unlock(&priv->reg_mutex);
-
 	return idx;
+}
+
+/**
+ * rtldsa_packet_cntr_free - Release a packet counter from rtldsa_packet_cntr_alloc().
+ * @priv: Switch driver private structure.
+ * @idx: Packet counter index to free; a negative id is ignored.
+ *
+ * Marks the counter free again and, once both halves of its octet block are
+ * free, returns the whole block to the octet counter pool.
+ */
+void rtldsa_packet_cntr_free(struct rtl838x_switch_priv *priv, int idx)
+{
+	int j;
+
+	if (idx < 0 || idx >= priv->r->n_counters * 2)
+		return;
+
+	scoped_guard(mutex, &priv->reg_mutex) {
+		/* already free - guard against a double release */
+		if (test_bit(idx, priv->packet_cntr_use_bm))
+			return;
+
+		__set_bit(idx, priv->packet_cntr_use_bm);
+
+		j = idx / 2;
+		if (test_bit(j, priv->octet_cntr_use_bm) &&
+		    test_bit(idx ^ 1, priv->packet_cntr_use_bm)) {
+			__clear_bit(idx, priv->packet_cntr_use_bm);
+			__clear_bit(idx ^ 1, priv->packet_cntr_use_bm);
+			__clear_bit(j, priv->octet_cntr_use_bm);
+		}
+	}
 }
 
 /* Add an L2 nexthop entry for the L3 routing system / PIE forwarding in the SoC
@@ -704,7 +640,7 @@ int rtl83xx_packet_cntr_alloc(struct rtl838x_switch_priv *priv)
  * Called from the L3 layer
  * The index in the L2 hash table is filled into nh->l2_id;
  */
-int rtl83xx_l2_nexthop_add(struct rtl838x_switch_priv *priv, struct otto_l3_nexthop *nh)
+int rtldsa_l2_nexthop_add(struct rtl838x_switch_priv *priv, struct otto_l3_nexthop *nh)
 {
 	struct rtl838x_l2_entry e;
 	u64 seed = priv->r->l2_hash_seed(nh->mac, nh->rvid);
@@ -715,16 +651,12 @@ int rtl83xx_l2_nexthop_add(struct rtl838x_switch_priv *priv, struct otto_l3_next
 	pr_debug("%s searching for %08llx vid %d with key %d, seed: %016llx\n",
 		 __func__, nh->mac, nh->rvid, key, seed);
 
-	e.type = L2_UNICAST;
-	u64_to_ether_addr(nh->mac, &e.mac[0]);
-	e.port = nh->port;
-
 	/* Loop over all entries in the hash-bucket and over the second block on 93xx SoCs */
 	for (int i = 0; i < priv->r->l2_bucket_size; i++) {
 		entry = priv->r->read_l2_entry_using_hash(key, i, &e);
 
 		if (!e.valid || ((entry & 0x0fffffffffffffffULL) == seed)) {
-			idx = i > 3 ? ((key >> 14) & 0xffff) | i >> 1
+			idx = i > 3 ? ((key >> 14) & 0xffff) | (i & 3)
 					: ((key << 2) | i) & 0xffff;
 			break;
 		}
@@ -746,15 +678,15 @@ int rtl83xx_l2_nexthop_add(struct rtl838x_switch_priv *priv, struct otto_l3_next
 		if (e.next_hop)
 			return 0;
 	} else {
+		/* The reader leaves the descriptor untouched on an invalid
+		 * entry, so what it holds here is either stack contents or a
+		 * neighbour read earlier in the loop.
+		 */
+		memset(&e, 0, sizeof(e));
+		e.type = L2_UNICAST;
 		e.valid = true;
 		e.is_static = true;
 		e.rvid = nh->rvid;
-		e.is_ip_mc = false;
-		e.is_ipv6_mc = false;
-		e.block_da = false;
-		e.block_sa = false;
-		e.suspended = false;
-		e.age = 0;			/* With port-ignore */
 		e.port = priv->r->port_ignore;
 		u64_to_ether_addr(nh->mac, &e.mac[0]);
 	}
@@ -771,17 +703,31 @@ int rtl83xx_l2_nexthop_add(struct rtl838x_switch_priv *priv, struct otto_l3_next
  * If it was static, the entire entry is removed, otherwise the nexthop bit is cleared
  * and we wait until the entry ages out
  */
-int rtl83xx_l2_nexthop_rm(struct rtl838x_switch_priv *priv, struct otto_l3_nexthop *nh)
+int rtldsa_l2_nexthop_del(struct rtl838x_switch_priv *priv, struct otto_l3_nexthop *nh)
 {
-	struct rtl838x_l2_entry e;
+	u64 seed = priv->r->l2_hash_seed(nh->mac, nh->rvid);
+	struct rtl838x_l2_entry e = {};
 	u32 key = nh->l2_id >> 2;
 	int i = nh->l2_id & 0x3;
-	u64 entry = entry = priv->r->read_l2_entry_using_hash(key, i, &e);
+	u64 entry = priv->r->read_l2_entry_using_hash(key, i, &e);
 
-	pr_debug("%s: id %d, key %d, index %d\n", __func__, nh->l2_id, key, i);
-	if (!e.valid) {
-		dev_err(priv->dev, "unknown nexthop, id %x\n", nh->l2_id);
-		return -1;
+	dev_dbg(priv->dev, "next hop %d sits at key %d, index %d\n", nh->l2_id, key, i);
+
+	/* The slot is addressed by the index the installer recorded, so ask the
+	 * entry whether it is still the one that was installed, comparing it on
+	 * the seed the installer searches by. Nothing counts the routes sharing
+	 * a next hop yet, so a sibling taken down first can get here.
+	 */
+	if (!e.valid || !e.next_hop) {
+		dev_err(priv->dev, "next hop %d is no longer one, leaving it alone\n",
+			nh->l2_id);
+		return -ESTALE;
+	}
+
+	if ((entry & 0x0fffffffffffffffULL) != seed) {
+		dev_err(priv->dev, "next hop %d now holds %pM, not removing it\n",
+			nh->l2_id, e.mac);
+		return -ESTALE;
 	}
 
 	if (e.is_static)
@@ -892,8 +838,9 @@ static int rtl83xx_sw_probe(struct platform_device *pdev)
 	if (err)
 		return err;
 
-	/* Initialize access to RTL switch tables */
-	rtl_table_init();
+	err = otto_table_loaded();
+	if (err)
+		return dev_err_probe(dev, err, "no switch table access\n");
 
 	r = device_get_match_data(&pdev->dev);
 	priv = devm_kzalloc(dev, struct_size(priv, msts, r->n_mst - 1), GFP_KERNEL);
@@ -1014,6 +961,7 @@ static int rtl83xx_sw_probe(struct platform_device *pdev)
 err_register_l3:
 	dsa_switch_shutdown(priv->ds);
 err_register_switch:
+	rtldsa_tc_cleanup(priv);
 	destroy_workqueue(priv->wq);
 
 	return err;
@@ -1062,6 +1010,8 @@ static void rtl83xx_sw_remove(struct platform_device *pdev)
 	cancel_delayed_work_sync(&priv->counters_work);
 
 	dsa_switch_shutdown(priv->ds);
+
+	rtldsa_tc_cleanup(priv);
 
 	destroy_workqueue(priv->wq);
 
