@@ -60,11 +60,11 @@ struct otto_l3_nexthop {
 	u16 id;		/* ID: L3_NEXT_HOP table-index or route-index set in L2_NEXT_HOP */
 	u32 dev_id;
 	u16 port;
-	u16 vid;	/* VLAN-ID for L2 table entry (saved from L2-UC entry) */
 	u16 rvid;	/* Relay VID/FID for the L2 table entry */
 	u64 mac;	/* The MAC address of the entry in the L2_NEXT_HOP table */
 	u16 mac_id;
 	u16 l2_id;	/* Index of this next hop forwarding entry in L2 FIB table */
+	u64 l2_seed;	/* Seed the entry at l2_id was claimed on */
 	u64 gw;		/* The gateway MAC address packets are forwarded to */
 	int if_id;	/* Interface (into L3_EGR_INTF_IDX) */
 	bool l2_installed;	/* Entry written to the L2 table */
@@ -77,6 +77,7 @@ struct otto_l3_route {
 	int prefix_len;			/* Network prefix len of the destination net */
 	bool is_host_route;
 	int id;				/* ID number of this route */
+	int row;			/* Row it occupies in the prefix route table */
 	struct rhlist_head linkage;
 	struct list_head list;		/* all routes, for lookups by destination */
 	u32 tb_id;			/* routing table the route came from */
@@ -104,6 +105,7 @@ struct otto_l3_config {
 	void (*get_nexthop)(struct otto_l3_ctrl *ctrl, int idx, u16 *dmac_id, u16 *interface);
 	void (*set_nexthop)(struct otto_l3_ctrl *ctrl, int idx, u16 dmac_id, u16 interface);
 	int (*route_lookup_hw)(struct otto_l3_ctrl *ctrl, struct otto_l3_route *rt);
+	int (*route_rows_move)(struct otto_l3_ctrl *ctrl, int dst, int src, int count);
 	void (*route_read)(struct otto_l3_ctrl *ctrl, int idx, struct otto_l3_route *rt);
 	void (*route_write)(struct otto_l3_ctrl *ctrl, int idx, struct otto_l3_route *rt);
 	int (*setup)(struct otto_l3_ctrl *ctrl);
