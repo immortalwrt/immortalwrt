@@ -150,6 +150,7 @@ CONFIGURE_VARS += \
 	CFLAGS="$(TARGET_CFLAGS)" \
 	LDFLAGS="$(TARGET_LDFLAGS)" \
 	CLANG="$(CLANG)" \
+	ARCH_INCLUDES="$(patsubst %,-idirafter%,$(TOOLCHAIN_INC_DIRS))" \
 	BPFTOOL="$(STAGING_DIR_HOST)/usr/sbin/bpftool"
 
 ifneq ($(findstring s,$(OPENWRT_VERBOSE)),)

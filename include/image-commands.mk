@@ -466,8 +466,13 @@ define Build/fit
 	$(call Build/fit-image,$(1))
 endef
 
+# A slot name from the basename alone collides between two targets that share
+# it in different directories below $(KDIR).
+cache_slot = $(KDIR)/cache/$(subst /,_,$(patsubst $(KDIR)/%,%,$(1)))
+
 define Build/libdeflate-gzip
-	$(STAGING_DIR_HOST)/bin/libdeflate-gzip -f -12 -c $@ $(1) > $@.new
+	$(CACHE_RUN) $(call cache_slot,$@).gz $@ $@.new \
+		$(STAGING_DIR_HOST)/bin/libdeflate-gzip -f -12 -k -S .new $(1) $@
 	@mv $@.new $@
 endef
 
@@ -593,7 +598,8 @@ define Build/lzma
 endef
 
 define Build/lzma-no-dict
-	$(STAGING_DIR_HOST)/bin/lzma e $@ $(1) $@.new
+	$(CACHE_RUN) $(call cache_slot,$@).lzma $@ $@.new \
+		$(STAGING_DIR_HOST)/bin/lzma e $@ $(1) $@.new
 	@mv $@.new $@
 endef
 

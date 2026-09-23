@@ -6,6 +6,7 @@ use metadata;
 use Getopt::Long;
 use Time::Piece;
 use JSON::PP;
+use Digest::MD5 qw(md5_hex);
 
 my %board;
 
@@ -446,6 +447,8 @@ sub gen_package_mk() {
 	foreach my $srcname (sort {uc($a) cmp uc($b)} keys %srcpackage) {
 		my $src = $srcpackage{$srcname};
 		my $variant_default;
+		my @variants;
+		my %variant_config;
 		my %deplines = ('' => {});
 
 		foreach my $pkg (@{$src->{packages}}) {
@@ -495,12 +498,21 @@ sub gen_package_mk() {
 				if (!defined($variant_default) or $pkg->{variant_default}) {
 					$variant_default = $pkg->{variant};
 				}
-				printf "\$(curdir)/%s/variants += \$(if %s,%s)\n", $src->{path}, $config, $pkg->{variant};
+				push @variants, $pkg->{variant} unless defined $variant_config{$pkg->{variant}};
+				$variant_config{$pkg->{variant}} .= $config;
 			}
+		}
+
+		foreach my $variant (@variants) {
+			printf "\$(curdir)/%s/variants += \$(if %s,%s)\n", $src->{path}, $variant_config{$variant}, $variant;
 		}
 
 		if (defined($variant_default)) {
 			printf "\$(curdir)/%s/default-variant := %s\n", $src->{path}, $variant_default;
+		}
+
+		if ($src->{parallel_variants}) {
+			printf "\$(curdir)/%s/parallel-variants := 1\n", $src->{path};
 		}
 
 		unless (grep {!$_->{buildonly}} @{$src->{packages}}) {
@@ -585,13 +597,15 @@ sub gen_package_auxiliary() {
 		}
 		my %depends;
 		foreach my $dep (@{$pkg->{depends} || []}) {
-			if ($dep =~ m!^\+?(?:[^:]+:)?([^@]+)$!) {
-				$depends{$1}++;
-			}
+			next unless $dep =~ m!^\+?(?:([^:]+):)?([^@]+)$!;
+			my ($condition, $depname) = ($1, $2);
+			$depends{get_conditional_dep($condition, $depname)}++;
 		}
 		my @depends = sort keys %depends;
 		if (@depends > 0) {
 			foreach my $n (@{$pkg->{provides}}) {
+				# A real package of that name keeps its own dependencies
+				next if $n ne $name && $package{$n};
 				print "Package/$n/depends = @depends\n";
 			}
 		}
@@ -688,12 +702,24 @@ sub image_manifest_packages($)
 sub dump_cyclonedxsbom_json {
 	my (@components) = @_;
 
+	my $json = JSON::PP->new->canonical(1);
+	my $epoch = $ENV{SOURCE_DATE_EPOCH};
+	my $timestamp;
+
+	if (defined($epoch) && $epoch ne '') {
+		$epoch =~ /^\d+$/ or die "SOURCE_DATE_EPOCH is not a number\n";
+		$timestamp = gmtime($epoch)->datetime . 'Z';
+	} else {
+		$timestamp = gmtime->datetime . 'Z';
+	}
+
+	my $digest = md5_hex($timestamp . $json->encode([@components]));
 	my $uuid = sprintf(
-	    "%04x%04x-%04x-%04x-%04x-%04x%04x%04x",
-	    rand(0xffff), rand(0xffff), rand(0xffff),
-	    rand(0x0fff) | 0x4000,
-	    rand(0x3fff) | 0x8000,
-	    rand(0xffff), rand(0xffff), rand(0xffff)
+	    "%s-%s-3%s-%x%s-%s",
+	    substr($digest, 0, 8), substr($digest, 8, 4),
+	    substr($digest, 13, 3),
+	    (hex(substr($digest, 16, 1)) & 0x3) | 0x8, substr($digest, 17, 3),
+	    substr($digest, 20, 12)
 	);
 
 	my $cyclonedx = {
@@ -702,12 +728,12 @@ sub dump_cyclonedxsbom_json {
 		serialNumber => "urn:uuid:$uuid",
 		version => 1,
 		metadata => {
-			timestamp => gmtime->datetime . 'Z',
+			timestamp => $timestamp,
 		},
 		"components" => [@components],
 	};
 
-	return encode_json($cyclonedx);
+	return $json->encode($cyclonedx);
 }
 
 sub gen_image_cyclonedxsbom() {

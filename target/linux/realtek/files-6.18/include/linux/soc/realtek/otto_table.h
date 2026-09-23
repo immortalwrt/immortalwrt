@@ -20,8 +20,9 @@
  * them. The names, and the entry width of each table, are Realtek's own, taken
  * from the table lists in the GPL SDK
  * (src/hal/chipdef/<chip>/rtk_<chip>_table_list.c). Several tables share one
- * type value, which means they are the same rows read with a different layout;
- * they are listed separately because their entry widths differ.
+ * type value; unless they also carry an offset, that means they are the same
+ * rows read with a different layout. They are listed separately because their
+ * entry widths differ.
  */
 enum otto_table_id {
 	RTL8380_TBL_L2_UC = OTTO_TBL_ID_BASE,
@@ -143,6 +144,40 @@ enum otto_table_id {
 	RTL9310_TBL_STAT_PORT_MIB_CNTR,
 	RTL9310_TBL_STAT_PORT_PRVTE_CNTR,
 
+	RTL9607C_TBL_L2_MC_DSL,
+	RTL9607C_TBL_L2_UC,
+	RTL9607C_TBL_L3_MC,
+	RTL9607C_TBL_L3_MC_FID,
+	RTL9607C_TBL_L3_MC_VID,
+	RTL9607C_TBL_VLAN,
+	RTL9607C_TBL_ACL_DATA,
+	RTL9607C_TBL_ACL_MASK,
+	RTL9607C_TBL_ACL_ACTION_TABLE,
+	RTL9607C_TBL_CF_MASK_T0,
+	RTL9607C_TBL_CF_MASK_T1,
+	RTL9607C_TBL_CF_MASK_T2,
+	RTL9607C_TBL_CF_RULE_T0,
+	RTL9607C_TBL_CF_RULE_T1,
+	RTL9607C_TBL_CF_RULE_T2,
+	RTL9607C_TBL_CF_ACTION_DS,
+	RTL9607C_TBL_CF_ACTION_US,
+
+	RTL9607C_TBL_INTERFACE,
+	RTL9607C_TBL_ETHER_TYPE,
+	RTL9607C_TBL_CAM_TAG,
+	RTL9607C_TBL_FB_EXT_PORT,
+	RTL9607C_TBL_WAN_ACCESS_LIMIT,
+	RTL9607C_TBL_FLOW_TABLE_PATH1_2,
+	RTL9607C_TBL_FLOW_TABLE_PATH3_4,
+	RTL9607C_TBL_FLOW_TABLE_PATH5,
+	RTL9607C_TBL_FLOW_TABLE_PATH6,
+	RTL9607C_TBL_CAM,
+	RTL9607C_TBL_MAC_IDX,
+	RTL9607C_TBL_FLOW_TABLE_TAG,
+	RTL9607C_TBL_TCAM,
+	RTL9607C_TBL_TCAM_RAW_TABLE_PATH1_2,
+	RTL9607C_TBL_TCAM_RAW_TABLE_PATH3_5,
+
 	OTTO_TBL_END
 };
 
@@ -163,6 +198,9 @@ enum otto_table_id {
 	otto_table_read_bytes((id), (idx), (p), 0, otto_table_size(p))
 #define otto_table_write(id, idx, p) \
 	otto_table_write_bytes((id), (idx), (p), otto_table_size(p))
+
+#define otto_table_offset_read(id, idx, p, word_offset) \
+	otto_table_read_bytes((id), (idx), (p), (word_offset), otto_table_size(p))
 
 /* How many rows a table has, so that a caller sweeping one does not have to
  * carry its own copy of the size. Negative errno for an id that does not name
