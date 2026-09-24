@@ -135,6 +135,7 @@ TARGET_DEVICES += xunlong_orangepi-pc2
 define Device/xunlong_orangepi-zero2
   DEVICE_VENDOR := Xunlong
   DEVICE_MODEL := Orange Pi Zero 2
+  DEVICE_PACKAGES := kmod-uwe5622 wpad-openssl
   $(Device/sun50i-h616)
 endef
 TARGET_DEVICES += xunlong_orangepi-zero2
@@ -149,6 +150,7 @@ TARGET_DEVICES += xunlong_orangepi-zero2w
 define Device/xunlong_orangepi-zero3
   DEVICE_VENDOR := Xunlong
   DEVICE_MODEL := Orange Pi Zero 3
+  DEVICE_PACKAGES := kmod-uwe5622 wpad-openssl
   $(Device/sun50i-h618)
 endef
 TARGET_DEVICES += xunlong_orangepi-zero3
