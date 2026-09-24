@@ -70,11 +70,16 @@ endef
 
 define KernelPackage/aic8800-usb
   $(call KernelPackage/aic8800/Default,USB)
-  DEPENDS+= +aic8800-usb-firmware +kmod-usb-core
+  DEPENDS+= +aic8800-usb-firmware +kmod-usb-core +usb-modeswitch
   FILES:= \
 	$(PKG_BUILD_DIR)/src/USB/driver_fw/drivers/aic8800/aic_load_fw/aic_load_fw.ko \
 	$(PKG_BUILD_DIR)/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/aic8800DC_fdrv.ko
   AUTOLOAD:=$(call AutoProbe,aic_load_fw aic8800DC_fdrv)
+endef
+
+define KernelPackage/aic8800-usb/install
+	$(INSTALL_DIR) $(1)/etc/usb_modeswitch.d
+	$(INSTALL_DATA) ./usb-modeswitch/1111:1111 $(1)/etc/usb_modeswitch.d/
 endef
 
 NOSTDINC_FLAGS:= \
