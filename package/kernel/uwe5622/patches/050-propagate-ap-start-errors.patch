@@ -1,0 +1,25 @@
+Subject: [PATCH] wifi: uwe5622: report firmware AP startup failures
+
+A received START_AP response currently counts as success even when its
+firmware status is nonzero. Hostapd then reports AP-ENABLED for an AP the
+firmware has rejected.
+
+Translate START_AP rejection into a Linux error after receiving the
+response. Keep it outside the timeout path so a firmware rejection does
+not trigger a firmware assert. Leave other command behavior unchanged.
+
+--- a/unisocwifi/cmdevt.c
++++ b/unisocwifi/cmdevt.c
+@@ -615,6 +615,12 @@ int sprdwl_cmd_send_recv(struct sprdwl_p
+ 				hdr->common.ctx_id, cmd_id, cmd2str(cmd_id),
+ 				tx_msg->cmd_send);
+ 		}
++		if (cmd_id == WIFI_CMD_START_AP && hdr->status) {
++			wiphy_err(priv->wiphy, "START_AP rejected: %d (%s)\n",
++				  hdr->status, err2str(hdr->status));
++			ret = hdr->status == SPRDWL_CMD_STATUS_NOT_SUPPORT_ERROR ?
++				-EOPNOTSUPP : -EIO;
++		}
+ 	} else {
+ 		wl_err("ctx_id:%d cmd: %s[%d] rsp timeout (mstime = %d), num=%d\n",
+ 		       ctx_id, cmd2str(cmd_id), cmd_id, le32_to_cpu(hdr->mstime),

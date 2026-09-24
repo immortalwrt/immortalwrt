@@ -147,3 +147,15 @@ define Package/brcmfmac-nvram-43752-sdio/install
 		$(1)/lib/firmware/brcm/brcmfmac43752-sdio.9tripod,x3568-v4.txt
 endef
 $(eval $(call BuildPackage,brcmfmac-nvram-43752-sdio))
+
+Package/uwe5622-firmware = $(call Package/armbian-firmware-default,UNISOC UWE5622 firmware,@TARGET_sunxi)
+define Package/uwe5622-firmware/install
+	$(INSTALL_DIR) $(1)/lib/firmware/uwe5622
+	$(INSTALL_DATA) \
+		$(PKG_BUILD_DIR)/uwe5622/wcnmodem.bin \
+		$(1)/lib/firmware/uwe5622/
+	$(INSTALL_DATA) \
+		$(PKG_BUILD_DIR)/uwe5622/wifi_2355b001_1ant.ini \
+		$(1)/lib/firmware/uwe5622/
+endef
+$(eval $(call BuildPackage,uwe5622-firmware))

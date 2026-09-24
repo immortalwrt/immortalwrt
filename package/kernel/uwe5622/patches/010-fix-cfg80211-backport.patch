@@ -1,0 +1,134 @@
+Subject: [PATCH] wifi: uwe5622: select cfg80211 backport API variants
+
+OpenWrt uses cfg80211 from mac80211 backports, whose API version can
+differ from the underlying kernel. Select the existing wireless_dev
+and remain_on_channel rx_addr variants when building for OpenWrt,
+following the aic8800 backport compatibility handling.
+
+--- a/unisocwifi/cfg80211.c
++++ b/unisocwifi/cfg80211.c
+@@ -714,7 +714,7 @@ static int sprdwl_add_cipher_key(struct
+ 	return ret;
+ }
+ 
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)) || defined(BUILD_OPENWRT)
+ static int sprdwl_cfg80211_add_key(struct wiphy *wiphy, struct wireless_dev *wdev,
+ 				   int link_id, u8 key_index, bool pairwise,
+ 				   const u8 *mac_addr,
+@@ -782,7 +782,7 @@ static int sprdwl_cfg80211_add_key(struc
+ }
+ #endif
+ 
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)) || defined(BUILD_OPENWRT)
+ static int sprdwl_cfg80211_del_key(struct wiphy *wiphy, struct wireless_dev *wdev,
+ 				   int link_id, u8 key_index, bool pairwise,
+ 				   const u8 *mac_addr)
+@@ -1159,7 +1159,7 @@ static int sprdwl_cfg80211_stop_ap(struc
+ 	return 0;
+ }
+ 
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)) || defined(BUILD_OPENWRT)
+ static int sprdwl_cfg80211_add_station(struct wiphy *wiphy,
+ 					   struct wireless_dev *wdev, const u8 *mac,
+ 					   struct station_parameters *params)
+@@ -1175,7 +1175,7 @@ static int sprdwl_cfg80211_add_station(s
+ }
+ #endif
+ 
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)) || defined(BUILD_OPENWRT)
+ static int sprdwl_cfg80211_del_station(struct wiphy *wiphy,
+ 					   struct wireless_dev *wdev,
+ #else
+@@ -1190,7 +1190,7 @@ static int sprdwl_cfg80211_del_station(s
+ 					)
+ 
+ {
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)) || defined(BUILD_OPENWRT)
+ 	struct sprdwl_vif *vif = netdev_priv(wdev->netdev);
+ #else
+ 	struct sprdwl_vif *vif = netdev_priv(ndev);
+@@ -1200,7 +1200,7 @@ static int sprdwl_cfg80211_del_station(s
+ #else
+ 	if (!mac) {
+ #endif
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)) || defined(BUILD_OPENWRT)
+ 		wl_ndev_log(L_DBG, wdev->netdev, "ignore NULL MAC address!\n");
+ #else
+ 		wl_ndev_log(L_DBG, ndev, "ignore NULL MAC address!\n");
+@@ -1208,7 +1208,7 @@ static int sprdwl_cfg80211_del_station(s
+ 		goto out;
+ 	}
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 4, 83)
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)) || defined(BUILD_OPENWRT)
+ 	wl_ndev_log(L_DBG, wdev->netdev, "%s %pM reason:%d\n", __func__, params->mac,
+ #else
+ 	wl_ndev_log(L_DBG, ndev, "%s %pM reason:%d\n", __func__, params->mac,
+@@ -1217,7 +1217,7 @@ static int sprdwl_cfg80211_del_station(s
+ 	sprdwl_del_station(vif->priv, vif->ctx_id, params->mac,
+ 			params->reason_code);
+ #else
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)) || defined(BUILD_OPENWRT)
+ 	wl_ndev_log(L_DBG, wdev->netdev, "%s %pM\n", __func__, mac);
+ #else
+ 	wl_ndev_log(L_DBG, ndev, "%s %pM\n", __func__, mac);
+@@ -1231,7 +1231,7 @@ out:
+ 	return 0;
+ }
+ 
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)) || defined(BUILD_OPENWRT)
+ static int
+ sprdwl_cfg80211_change_station(struct wiphy *wiphy,
+ 				   struct wireless_dev *wdev, const u8 *mac,
+@@ -1250,7 +1250,7 @@ sprdwl_cfg80211_change_station(struct wi
+ #endif
+ 
+ 
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)) || defined(BUILD_OPENWRT)
+ static int sprdwl_cfg80211_get_station(struct wiphy *wiphy,
+ 					   struct wireless_dev *wdev, const u8 *mac,
+ 					   struct station_info *sinfo)
+@@ -1491,14 +1491,14 @@ void sprdwl_report_softap(struct sprdwl_
+ 			netif_carrier_on(vif->ndev);
+ 			netif_wake_queue(vif->ndev);
+ 		}
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)) || defined(BUILD_OPENWRT)
+ 		cfg80211_new_sta(&vif->wdev, addr, &sinfo, GFP_KERNEL);
+ #else
+ 		cfg80211_new_sta(vif->ndev, addr, &sinfo, GFP_KERNEL);
+ #endif
+ 		wl_ndev_log(L_DBG, vif->ndev, "New station (%pM) connected\n", addr);
+ 	} else {
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)) || defined(BUILD_OPENWRT)
+ 		cfg80211_del_sta(&vif->wdev, addr, GFP_KERNEL);
+ #else
+ 		cfg80211_del_sta(vif->ndev, addr, GFP_KERNEL);
+@@ -3023,7 +3023,7 @@ static int sprdwl_cfg80211_remain_on_cha
+ 					     struct ieee80211_channel *chan,
+ 					     unsigned int duration,
+ 					     u64 cookie, const u8 *rx_addr)
+-#elif LINUX_VERSION_CODE >= KERNEL_VERSION(7, 2, 0)
++#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(7, 2, 0)) || defined(BUILD_OPENWRT)
+ static int sprdwl_cfg80211_remain_on_channel(struct wiphy *wiphy,
+ 					     struct wireless_dev *wdev,
+ 					     struct ieee80211_channel *chan,
+@@ -3037,7 +3037,7 @@ static int sprdwl_cfg80211_remain_on_cha
+ 					     u64 *cookie)
+ #endif
+ {
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 2, 0)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(7, 2, 0)) || defined(BUILD_OPENWRT)
+ 	(void)rx_addr; /* unused in this driver */
+ #endif
+ 	struct sprdwl_vif *vif = container_of(wdev, struct sprdwl_vif, wdev);

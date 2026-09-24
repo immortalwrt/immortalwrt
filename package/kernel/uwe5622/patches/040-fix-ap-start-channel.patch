@@ -1,0 +1,32 @@
+Subject: [PATCH] wifi: uwe5622: supply the AP channel in the firmware beacon
+
+The START_AP command carries a beacon template but no separate channel.
+Hostapd omits the DS Parameter Set on 5 GHz. The firmware used by the
+Orange Pi Zero 3 rejects these requests with NOT_SUPPORT_ERROR even when
+the HT Operation element contains the correct primary channel.
+
+Supply a missing DS Parameter Set in the command template using the
+requested channel, or the valid driver channel override. The head buffer
+already reserves 32 extra bytes. Keep existing DS elements unchanged.
+This makes channel 36 AP startup succeed and restores visibility on an
+independent Intel AX200 receiver.
+
+--- a/unisocwifi/cfg80211.c
++++ b/unisocwifi/cfg80211.c
+@@ -1019,6 +1019,16 @@ static int sprdwl_cfg80211_start_ap(stru
+ 		tail_len = beacon->tail_len;
+ 	}
+ 
++	/* Firmware requires a DS channel even for 5 GHz AP startup. */
++	if (!cfg80211_find_ie(WLAN_EID_DS_PARAMS,
++			head + offsetof(struct ieee80211_mgmt, u.beacon.variable),
++			head_len - offsetof(struct ieee80211_mgmt, u.beacon.variable))) {
++		head[head_len++] = WLAN_EID_DS_PARAMS;
++		head[head_len++] = 1;
++		head[head_len++] = is_valid_channel(wiphy, chn) ? chn :
++			ieee80211_frequency_to_channel(settings->chandef.chan->center_freq);
++	}
++
+ 	sprdwl_change_beacon(vif, beacon);
+ 
+ 	if (!beacon->head) {

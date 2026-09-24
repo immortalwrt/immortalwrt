@@ -1,0 +1,26 @@
+Subject: [PATCH] wifi: uwe5622: publish the permanent PHY address
+
+Interface creation selects a valid MAC but never publishes the base
+address through wiphy. Consequently the PHY macaddress sysfs attribute
+remains zero, and OpenWrt derives an invalid default BSSID from it.
+
+Set perm_addr before registering the wiphy. Use the same source priority
+as interface creation: a valid Sunxi platform address, when enabled,
+followed by the address returned in the firmware information response.
+Do not derive the permanent address from a mutable interface address.
+
+--- a/unisocwifi/main.c
++++ b/unisocwifi/main.c
+@@ -1578,6 +1578,12 @@ int sprdwl_core_init(struct device *dev,
+ 	sprdwl_setup_wiphy(wiphy, priv);
+ 	sprdwl_vendor_init(wiphy);
+ 	set_wiphy_dev(wiphy, dev);
++#if IS_ENABLED(CONFIG_SUNXI_ADDR_MGT)
++	get_custom_mac_address(1, "wifi", wiphy->perm_addr);
++#endif
++	if (!is_valid_ether_addr(wiphy->perm_addr) &&
++	    is_valid_ether_addr(priv->mac_addr))
++		ether_addr_copy(wiphy->perm_addr, priv->mac_addr);
+ 	ret = wiphy_register(wiphy);
+ 	if (ret) {
+ 		wl_err("failed to regitster wiphy(%d)!\n", ret);

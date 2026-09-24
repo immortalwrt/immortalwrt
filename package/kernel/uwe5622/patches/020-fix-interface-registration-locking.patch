@@ -1,0 +1,65 @@
+Subject: [PATCH] wifi: uwe5622: fix interface registration locking
+
+cfg80211 holds the wiphy mutex when calling add_virtual_intf and
+del_virtual_intf. Calling register_netdevice or unregister_netdevice
+from these callbacks makes the cfg80211 netdev notifier acquire the
+same mutex again, deadlocking interface creation and deletion.
+
+Use the cfg80211 netdevice helpers and take the wiphy mutex around
+interface creation and removal outside cfg80211 callbacks. Close netdevs
+before taking the mutex during driver teardown, since their close
+notifications acquire it as well.
+
+--- a/unisocwifi/main.c
++++ b/unisocwifi/main.c
+@@ -1451,7 +1451,7 @@ static struct sprdwl_vif *sprdwl_registe
+ #endif
+ 
+ 	/* register new Ethernet interface */
+-	ret = register_netdevice(ndev);
++	ret = cfg80211_register_netdevice(ndev);
+ 	if (ret) {
+ 		wl_ndev_log(L_ERR, ndev, "failed to regitster netdev(%d)!\n", ret);
+ 		goto err;
+@@ -1473,7 +1473,7 @@ static void sprdwl_unregister_netdev(str
+ 	if (vif->priv->fw_capa & SPRDWL_CAPA_MC_FILTER)
+ 		kfree(vif->mc_filter);
+ 	sprdwl_deinit_vif(vif);
+-	unregister_netdevice(vif->ndev);
++	cfg80211_unregister_netdevice(vif->ndev);
+ }
+ 
+ struct wireless_dev *sprdwl_add_iface(struct sprdwl_priv *priv,
+@@ -1533,7 +1533,12 @@ next_intf:
+ 		list_del(&vif->vif_node);
+ 		spin_unlock_bh(&priv->list_lock);
+ 		rtnl_lock();
++		/* Close before taking the wiphy lock used by netdev notifiers. */
++		if (vif->ndev)
++			dev_close(vif->ndev);
++		wiphy_lock(priv->wiphy);
+ 		sprdwl_del_iface(priv, vif);
++		wiphy_unlock(priv->wiphy);
+ 		rtnl_unlock();
+ 		goto next_intf;
+ 	}
+@@ -1583,7 +1588,9 @@ int sprdwl_core_init(struct device *dev,
+ 	if (is_valid_ether_addr(priv->mac_addr))
+ 		efuse_mac_addr = priv->mac_addr;
+ 	rtnl_lock();
++	wiphy_lock(wiphy);
+ 	wdev = sprdwl_add_iface(priv, "wlan%d", NL80211_IFTYPE_STATION, NULL);
++	wiphy_unlock(wiphy);
+ 	rtnl_unlock();
+ 	if (IS_ERR(wdev)) {
+ 		wiphy_unregister(wiphy);
+@@ -1593,7 +1600,9 @@ int sprdwl_core_init(struct device *dev,
+ 
+ #ifdef CONFIG_P2P_INTF
+ 	rtnl_lock();
++	wiphy_lock(wiphy);
+ 	wdev = sprdwl_add_iface(priv, "p2p%d", NL80211_IFTYPE_P2P_DEVICE, NULL);
++	wiphy_unlock(wiphy);
+ 	rtnl_unlock();
+ 	if (IS_ERR(wdev)) {
+ 		wiphy_unregister(wiphy);
