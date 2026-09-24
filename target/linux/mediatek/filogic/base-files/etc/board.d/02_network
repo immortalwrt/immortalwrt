@@ -171,6 +171,9 @@ mediatek_setup_interfaces()
 	openwrt,one)
 		ucidef_set_interfaces_lan_wan eth1 eth0
 		;;
+	glinet,gl-mt5000)
+		ucidef_set_interfaces_lan_wan "lan1 lan2" eth1
+		;;
 	dlink,aquila-pro-ai-e30-a1|\
 	netis,eap930-v1)
 		ucidef_set_interface_lan "lan"
