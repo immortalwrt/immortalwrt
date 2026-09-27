@@ -1,4 +1,4 @@
-name: Build RAX3000Q
+name: Patch RAX3000Q support
 on:
   workflow_dispatch:
 
@@ -6,61 +6,61 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  patch:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Cache dl
-      uses: actions/cache@v4
-      with:
-        path: dl
-        key: dl-cache
+      - name: Download RAX3000Q source files
+        run: |
+          mkdir -p target/linux/qualcommax/files/arch/arm64/boot/dts/qcom
+          mkdir -p package/firmware/ipq-wifi/files
+          BASE=https://github.com/amaxsky/openwrt-25.12.0-rc3_rax3000q/raw/main
+          curl -fsSL -o target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq5018-rax3000q.dts \
+            $BASE/target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/ipq5018-rax3000q.dts
+          curl -fsSL -o package/firmware/ipq-wifi/files/board-cmcc_rax3000q.ipq5018 \
+            $BASE/package/firmware/ipq-wifi/files/board-cmcc_rax3000q.ipq5018
+          curl -fsSL -o package/firmware/ipq-wifi/files/board-cmcc_rax3000q.qcn6122 \
+            $BASE/package/firmware/ipq-wifi/files/board-cmcc_rax3000q.qcn6122
 
-    - name: Cache ccache
-      uses: actions/cache@v4
-      with:
-        path: ~/.ccache
-        key: ccache-${{ runner.os }}
-        restore-keys: ccache-
+      - name: Patch device definition (ipq50xx.mk)
+        run: |
+          cat >> target/linux/qualcommax/image/ipq50xx.mk <<'EOF'
 
-    - name: Install dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y build-essential clang flex bison g++ gawk \
-        gcc-multilib g++-multilib gettext git libncurses5-dev libssl-dev \
-        python3-setuptools rsync unzip zlib1g-dev file wget ccache
+          define Device/cmcc_rax3000q
+          	$(call Device/FitImageLzma)
+          	$(call Device/UbiFit)
+          	DEVICE_VENDOR := CMCC
+          	DEVICE_MODEL := RAX3000Q
+          	DEVICE_DTS_CONFIG := config@mp02.1
+          	SOC := ipq5018
+          	BLOCKSIZE := 128k
+          	PAGESIZE := 2048
+          	IMAGE_SIZE := 59392k
+          	NAND_SIZE := 128m
+          	DEVICE_PACKAGES := \
+          		ath11k-firmware-ipq5018-qcn6122 \
+          		ipq-wifi-cmcc_rax3000q
+          endef
+          TARGET_DEVICES += cmcc_rax3000q
+          EOF
 
-    - name: Update & install feeds
-      run: |
-        ./scripts/feeds update -a
-        ./scripts/feeds install -a
+      - name: Patch ipq-wifi Makefile
+        run: |
+          python3 - <<'EOF'
+          p='package/firmware/ipq-wifi/Makefile'
+          s=open(p).read()
+          if 'cmcc_rax3000q' not in s:
+              s=s.replace('cmcc_mr3000d-ci \\','cmcc_mr3000d-ci \\\ncmcc_rax3000q \\',1)
+              s+='$(eval $(call generate-ipq-wifi-package,cmcc_rax3000q,CMCC RAX3000Q))\n'
+          open(p,'w').write(s)
+          EOF
 
-    - name: Generate config for RAX3000Q
-      run: |
-        rm -f .config
-        echo "CONFIG_TARGET_qualcommax=y" >> .config
-        echo "CONFIG_TARGET_qualcommax_ipq50xx=y" >> .config
-        echo "CONFIG_TARGET_qualcommax_ipq50xx_DEVICE_cmcc_rax3000q=y" >> .config
-        echo "CONFIG_PACKAGE_luci-app-nikki=y" >> .config
-        echo "CONFIG_PACKAGE_luci-i18n-nikki-zh-cn=y" >> .config
-        echo "CONFIG_PACKAGE_rtp2httpd=y" >> .config
-        echo "CONFIG_PACKAGE_luci-app-rtp2httpd=y" >> .config
-        echo "CONFIG_PACKAGE_luci-i18n-rtp2httpd-zh-cn=y" >> .config
-        make defconfig
-
-    - name: Build firmware
-      run: |
-        make -j$(nproc) || make -j1 V=s
-
-    - name: Publish to GitHub Release
-      uses: softprops/action-gh-release@v2
-      with:
-        tag_name: rax3000q-${{ github.run_id }}
-        name: RAX3000Q Firmware (build ${{ github.run_id }})
-        body: |
-          ImmortalWrt 25.12 (kernel 6.12) CMCC RAX3000Q 固件
-          含 nikki + rtp2httpd
-        files: bin/targets/qualcommax/ipq50xx/*
-        draft: false
-        prerelease: false
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add -A
+          git commit -m "Add CMCC RAX3000Q support" || echo "Nothing to commit"
+          git push
