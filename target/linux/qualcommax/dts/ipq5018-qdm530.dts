@@ -1,0 +1,688 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+/*
+ * Unbranded 5G CPE, ODM board "QDM530-GL_V2.1"
+ * Qualcomm reference design AP-MP03.6-C1 (RDP434 family).
+ *
+ * Hardware, as verified against the running vendor firmware
+ * (QSDK / Chaos Calmer, kernel 4.4.60) via its live device tree in
+ * /sys/firmware/devicetree/base, /sys/kernel/debug/pinctrl and dmesg:
+ *
+ *   SoC        IPQ5018, 2x Cortex-A53 @1.0GHz
+ *   RAM        ~400 MiB usable (MemTotal 411440 kB)
+ *   Flash      128 MiB SPI-NAND, GigaDevice F50D1G41LB (mfr 0xc8, chip 0x11)
+ *   Console    ttyMSM0 @115200n8, 0x78af000, GPIO20/21 func blsp0_uart0
+ *   Eth 1      IPQ5018 internal GE PHY, mdio0 addr 7           -> gmac0
+ *   Eth 2      Realtek RTL8221B/RTL8226B 2.5G, mdio1 addr 1,
+ *              Clause-45, reset GPIO39                         -> gmac1
+ *   WiFi 2.4G  IPQ5018 internal radio (c000000.wifi)
+ *   WiFi 5G    QCN9074 on PCIe1 (17cb:1104), PERST GPIO15
+ *   Modem      Quectel RG520N-EB on PCIe0 (17cb:0308) via MHI,
+ *              PERST GPIO18; also exposes USB AT/DIAG ports
+ *   LED/GPIO   Awinic AW9523B I2C expander @0x5b on 0x78b7000,
+ *              reset GPIO32, provides 16 further GPIOs
+ *   Buttons    WPS GPIO38, WLAN GPIO13, both active low
+ *
+ * Differences from the closest supported board, GL.iNet GL-B3000
+ * (variant AP-MP03.5-C1), that matter here: this board has no QCA8337
+ * switch (two directly attached PHYs instead), and its second radio is a
+ * PCIe QCN9074 rather than a QCN6122 on the Q6.
+ */
+
+/dts-v1/;
+
+#include "ipq5018.dtsi"
+#include "ipq5018-ess.dtsi"
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/leds/common.h>
+
+/ {
+	model = "Unbranded QDM530 5G CPE";
+	compatible = "unbranded,qdm530", "qcom,ipq5018";
+
+	aliases {
+		serial0 = &blsp1_uart1;
+		ethernet0 = &gmac0;
+		ethernet1 = &gmac1;
+		led-boot = &power_green;
+		led-failsafe = &power_red;
+		led-running = &power_green;
+		led-upgrade = &power_red;
+	};
+
+	chosen {
+		/*
+		 * driver_async_probe=qcom-pcie: the vendor U-Boot force-injects the
+		 * PCIe nodes into the kernel FDT (a status="disabled" or even a
+		 * deleted node is put back), and pcie1 (the modem) does not train
+		 * within the ~1s link-up wait - the RG520N endpoint only appears
+		 * several seconds later - so that wait blocks the boot thread long
+		 * enough that the kernel has not taken over the APSS watchdog before
+		 * its bite -> reset loop. Probing qcom-pcie asynchronously frees the
+		 * boot thread so the watchdog is handed over in time; pcie1 then trains
+		 * off the critical path. (U-Boot builds the cmdline itself and ignores
+		 * its bootargs env, so this has to live in the FDT bootargs-append.)
+		 */
+		bootargs-append = " root=/dev/ubiblock0_1 swiotlb=1 coherent_pool=2M";
+		stdout-path = "serial0:115200n8";
+	};
+
+	keys {
+		compatible = "gpio-keys";
+		pinctrl-0 = <&button_pins>;
+		pinctrl-names = "default";
+
+		button-wps {
+			label = "wps";
+			gpios = <&tlmm 38 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_WPS_BUTTON>;
+			debounce-interval = <60>;
+		};
+
+		/*
+		 * Vendor DT labels this "wlan". There is no reset button in the
+		 * vendor device tree at all, so failsafe has to be entered over
+		 * the serial console until proven otherwise.
+		 */
+		button-wlan {
+			label = "wlan";
+			gpios = <&tlmm 13 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RFKILL>;
+			debounce-interval = <60>;
+		};
+	};
+
+	/*
+	 * External hardware watchdog. Without feeding it the board resets ~1.5s
+	 * into the kernel (SBL reports "WDog Stat : 0x4"). This is the real reset
+	 * source - NOT the APSS/TZ watchdog, which is why taking over b017000 and
+	 * the SCM disable had no effect (both confirmed fed early with no effect).
+	 *
+	 * The kick line is tlmm 26, found empirically: the vendor U-Boot keeps the
+	 * board alive at its prompt by toggling exactly this pin (dumping the TLMM
+	 * GPIO_IN_OUT registers over several samples showed only gpio 26 alternating
+	 * 0<->1). The sibling ipq5018-ax830/ax850 use tlmm 27, one pin off, which is
+	 * why borrowing their node did nothing. hw_margin_ms is kept short (500 ms)
+	 * because this board's WDT bites at ~1.5s, far sooner than the ax830/ax850
+	 * 5000 ms; ARCH_INITCALL feeds it early in boot.
+	 */
+	gpio-watchdog {
+		compatible = "linux,wdt-gpio";
+		gpios = <&tlmm 26 GPIO_ACTIVE_LOW>;
+		hw_algo = "toggle";
+		hw_margin_ms = <500>;
+		always-running;
+	};
+
+	/*
+	 * The four front-panel RGB LEDs hang off the AW9523B expander on blsp1_i2c3
+	 * (see &aw9523 below) and are driven by leds-aw9523 in the chip's
+	 * constant-current LED mode. The per-channel map (which DIM channel lights
+	 * which LED and colour) was found on HW and is recorded at that node. Plain
+	 * GPIO drive does NOT light these LEDs - the pins must be in constant-current
+	 * mode - which is why this is leds-aw9523 and not gpio-leds.
+	 */
+
+	/*
+	 * USB VBUS rail, modelled as an always-on fixed 5V supply following
+	 * ipq5018-mr5500.dts. Not verified against this board's schematic: if
+	 * the rail turns out to be GPIO-gated, this needs gpio/enable-active-
+	 * high here instead.
+	 */
+	regulator_fixed_5p0: regulator-s0500 {
+		compatible = "regulator-fixed";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		regulator-name = "fixed_5p0";
+		regulator-always-on;
+		regulator-boot-on;
+	};
+};
+
+&blsp1_uart1 {
+	pinctrl-0 = <&serial_0_pins>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+/* 0x78b7000, the bus the AW9523B sits on. */
+&blsp1_i2c3 {
+	pinctrl-0 = <&i2c_pins>;
+	pinctrl-names = "default";
+	status = "okay";
+
+	/*
+	 * AW9523B 16-channel I2C constant-current LED expander - the four
+	 * front-panel RGB LEDs. Driven by leds-aw9523 (NOT pinctrl-aw9523): the pins
+	 * run in the chip's constant-current LED mode, which is how these LEDs
+	 * actually light (plain GPIO drive does nothing), and each channel shows up
+	 * as a standard LED class device (color:function).
+	 *
+	 * No RSTN handling here, on purpose. pinctrl-aw9523 requires reset-gpios and
+	 * pulsing RSTN (tlmm 32) at probe wedged the QUP I2C controller ("flush timed
+	 * out", which also raced the rootfs probe); left at its power-on level the
+	 * chip answers fine, so leds-aw9523 just soft-resets over I2C.
+	 *
+	 * reg = DIM channel index (DIM register 0x20 + reg). The map was found on HW
+	 * by walking DIM 0x20-0x2f and watching the panel; the four LEDs, from the
+	 * power button inward:
+	 *   LED1 power : R=0  G=1  B=2
+	 *   LED2 wan   : R=7  G=15 B=8
+	 *   LED3 mobile: R=3  G=10 B=11   (red at reg 3 is noticeably dimmer)
+	 *   LED4 status: G=13 B=14        (this LED has no red channel)
+	 */
+	aw9523: led-controller@5b {
+		compatible = "awinic,aw9523-led";
+		reg = <0x5b>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		/* LED1 - power / system status */
+		power_red: led@0 {
+			reg = <0>;
+			color = <LED_COLOR_ID_RED>;
+			function = LED_FUNCTION_POWER;
+		};
+
+		power_green: led@1 {
+			reg = <1>;
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_POWER;
+		};
+
+		led@2 {
+			reg = <2>;
+			color = <LED_COLOR_ID_BLUE>;
+			function = LED_FUNCTION_POWER;
+		};
+
+		/* LED2 - WAN / internet */
+		led@7 {
+			reg = <7>;
+			color = <LED_COLOR_ID_RED>;
+			function = LED_FUNCTION_WAN;
+		};
+
+		led@15 {
+			reg = <15>;
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_WAN;
+		};
+
+		led@8 {
+			reg = <8>;
+			color = <LED_COLOR_ID_BLUE>;
+			function = LED_FUNCTION_WAN;
+		};
+
+		/* LED3 - mobile / cellular signal strength */
+		led@3 {
+			reg = <3>;
+			color = <LED_COLOR_ID_RED>;
+			function = LED_FUNCTION_MOBILE;
+		};
+
+		led@10 {
+			reg = <10>;
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_MOBILE;
+		};
+
+		led@11 {
+			reg = <11>;
+			color = <LED_COLOR_ID_BLUE>;
+			function = LED_FUNCTION_MOBILE;
+		};
+
+		/* LED4 - status / modem mode (green + blue only) */
+		led@13 {
+			reg = <13>;
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_STATUS;
+		};
+
+		led@14 {
+			reg = <14>;
+			color = <LED_COLOR_ID_BLUE>;
+			function = LED_FUNCTION_STATUS;
+		};
+	};
+};
+
+&prng {
+	status = "okay";
+};
+
+&qfprom {
+	status = "disabled";
+};
+
+&qpic_bam {
+	status = "okay";
+};
+
+&qpic_nand {
+	pinctrl-0 = <&qpic_pins>;
+	pinctrl-names = "default";
+	status = "okay";
+
+	/*
+	 * GigaDevice F50D1G41LB: 128 MiB, SLC, 128 KiB erase, 2048 B page.
+	 * Partitions are read at runtime from 0:MIBIB (at 0x80000), so the
+	 * 19-entry vendor table does not need to be restated here. For
+	 * reference it runs 0:SBL1, 0:MIBIB, 0:BOOTCONFIG{,1}, 0:QSEE{,_1},
+	 * 0:DEVCFG{,_1}, 0:CDT{,_1}, 0:APPSBLENV, 0:APPSBL{,_1}, 0:ART,
+	 * 0:TRAINING, rootfs, rootfs_1, usr_config, usr_factory - occupying
+	 * 125 MiB of the 128 MiB device, with rootfs at 0x900000 (50944 KiB).
+	 */
+	nand@0 {
+		compatible = "spi-nand";
+		reg = <0>;
+		nand-ecc-engine = <&qpic_nand>;
+		nand-bus-width = <8>;
+
+		partitions {
+			compatible = "qcom,smem-part";
+		};
+	};
+};
+
+/*
+ * This board stores no MAC address anywhere: 0:ART reads back all 0xff, the
+ * U-Boot environment carries only the placeholder ethaddr=00:11:22:33:44:55 /
+ * eth1addr=...:56, the usr_factory volume has none, and both WiFi BDFs contain
+ * the same generic Atheros placeholders 00:03:7f:12:34:56..5b. There is also no
+ * runtime-readable unique identifier (the SoC serial reads 0).
+ *
+ * A local-mac-address here would have no effect anyway: the vendor U-Boot
+ * force-writes its placeholder ethaddr into both ethernet nodes during its FDT
+ * fixup (the "ethN MAC Address from ART" pass), overriding whatever the DTS
+ * carries - so the live DTB always ends up with 00:11:22:33:44:55 / :56.
+ *
+ * The MAC is therefore assigned at the OS level, after U-Boot: the uci-defaults
+ * script 24_generate-macaddr generates a random locally-administered address
+ * once on first boot and pins it in /etc/config/network (stable across reboots
+ * and config-preserving sysupgrades), overriding U-Boot's placeholder for the
+ * LAN bridge.
+ *
+ * TODO: this covers the ethernet/LAN identity only. Both WiFi radios still come
+ * up on the BDF placeholder 00:03:7f:12:34:56..5b, because the usual fix-up
+ * (ath11k_patch_mac from the caldata hotplug script) needs caldata this board
+ * does not have. Giving the radios stable MACs will need a separate hook.
+ */
+
+/*
+ * Eth 1: IPQ5018 internal GE PHY -> gmac0. phy-handle (&ge_phy) and phy-mode
+ * ("sgmii") come from ipq5018-ess.dtsi; mdio0 (below) exposes the GE PHY.
+ *
+ * Enabled, matching the same-topology ipq5018-ax830/ax850 (internal GE PHY on
+ * gmac0 + a 2.5G PHY on gmac1), which need nothing more than status/label
+ * here. Disabling it in DT is not an option regardless: the vendor U-Boot
+ * force-enables both ethernet nodes during its FDT fixup (the "ethN MAC
+ * Address from ART" pass), so a status="disabled" here is overridden and the
+ * port is probed anyway. The earlier boot loop was the missing UNIPHY0
+ * reference clock (see &uniphy0), not gmac0 itself.
+ */
+&gmac0 {
+	status = "okay";
+
+	label = "lan1";
+};
+
+/* Eth 2: Realtek RTL8221B 2.5G PHY. */
+&gmac1 {
+	status = "okay";
+
+	phy-handle = <&rtl8221b>;
+	phy-mode = "2500base-x";
+
+	label = "lan2";
+};
+
+&mdio0 {
+	status = "okay";
+};
+
+&mdio1 {
+	status = "okay";
+
+	pinctrl-0 = <&mdio1_pins>;
+	pinctrl-names = "default";
+
+	/*
+	 * TODO lan2 (RTL8221B): the PHY answers on MDIO only once the UNIPHY
+	 * PCS for its 2500base-x port has been configured (PHY_MODE + PLL
+	 * power-on + ref clock), which mainline's dwmac/phylink only does at
+	 * link-config time - AFTER the boot-time phy attach - so at boot the PHY
+	 * reads back "missing" (-ENODEV) and lan2 stays down. Confirmed the PHY
+	 * is really at addr 1 via C45 (id 0x001c) once `ip link set lan2 up`
+	 * runs the PCS config. The proper fix is to run that UNIPHY PCS config
+	 * before the mdio scan / phy attach (a dwmac-ipq5018 / pcs-qca-uniphy
+	 * ordering change); a clock-only enable was tried and is not sufficient.
+	 */
+
+	/*
+	 * Realtek RTL8221B / RTL8226B-CG 2.5G PHY. Must be described as a
+	 * generic Clause-45 PHY (not a fixed ethernet-phy-idXXXX.XXXX): the
+	 * realtek driver identifies the exact variant by reading the C45 VND2
+	 * registers via its .match_phy_device, and the fixed 0x001cc848 id we
+	 * had did not match any of its entries (RTL_8221B 0x...c840 /
+	 * VB_CG 0x...c849 / VM_CG 0x...c84a), so it fell back to the generic
+	 * C45 PHY, which does not support 2500base-x -> "cannot attach to PHY
+	 * (-EINVAL)". Every working RTL8221B in-tree (mt7622-wax206,
+	 * mt7981b-alwaylink) uses this same generic-c45 compatible. Requires
+	 * kmod-phy-realtek (CONFIG_REALTEK_PHY) in the image.
+	 *
+	 * The RSTN reset lives on the PHY node (not the mdio bus node) with a
+	 * post-deassert delay, matching the working sibling ipq5018-ax830/ax850:
+	 * on the bus node without reset-deassert-us the PHY was still coming out
+	 * of reset when the bus was scanned -> "MDIO device at address 1 is
+	 * missing" / -ENODEV. tlmm 39, RSTN active-low, 10 ms settle.
+	 */
+	rtl8221b: ethernet-phy@1 {
+		compatible = "ethernet-phy-ieee802.3-c45";
+		reg = <1>;
+		/*
+		 * RSTN is deasserted by the gpio-hog on tlmm 39 (see &tlmm) at
+		 * gpiochip probe - i.e. before the 90000.mdio bus is scanned at
+		 * ~1.5s - rather than by reset-gpios on this node. With reset-gpios
+		 * here the mdio core only pulses the reset while it probes the PHY,
+		 * and on our board the PHY needs to be out of reset AND have the
+		 * UNIPHY reference clock (see &uniphy0 / CLK_IS_CRITICAL) before it
+		 * answers on MDIO; a pulsed reset released on the first failed read
+		 * left the PHY missing. The hog keeps RSTN deasserted for good.
+		 */
+	};
+};
+
+/*
+ * UNIPHY0 is the PCS/SerDes that clocks the GMAC ports. Without a reference
+ * clock configured here the dwmac register/DMA access hangs the SoC during
+ * probe (right after reading "Synopsys ID"), which stalls the watchdog and
+ * silently resets -> boot loop. 50 MHz is the rate the 2.5G (2500base-x)
+ * ports need, matching the same-topology ipq5018-ax830/ax850 (gmac0 internal
+ * GE PHY + gmac1 2500base-x to an external PHY). gl-b3000/mr5500 use 25 MHz
+ * only because their gmac1 is plain SGMII to a QCA8337 switch.
+ */
+&uniphy0 {
+	status = "okay";
+
+	assigned-clocks = <&uniphy0 UNIPHY_CLK_REF>;
+	assigned-clock-rates = <UNIPHY_REFCLK_50MHZ>;
+};
+
+/*
+ * The APSS watchdog is left ENABLED so the kernel's qcom_wdt takes over the
+ * one U-Boot arms across the bootm hand-off. A clean serial capture showed the
+ * boot reset at ~1.5s with no panic - a silent watchdog bite - which happens
+ * when the kernel has not taken the watchdog over in time. The delay was the
+ * PCIe link-up wait (pcie1/modem never trains); it is cut down by probing PCIe
+ * asynchronously (driver_async_probe=* in chosen) and by the shortened
+ * PCIE_LINK_WAIT patch, so qcom_wdt now probes and pets well before the bite.
+ */
+
+&sleep_clk {
+	clock-frequency = <32000>;
+};
+
+&xo_board_clk {
+	clock-div = <4>;
+	clock-mult = <1>;
+};
+
+/*
+ * USB 3.0 host controller - DISABLED on this board.
+ *
+ * The IPQ5018 has a single combo PCIe/USB3 PHY at 0x7e000, shared between the
+ * pcie1 controller (the 5G modem) and USB SuperSpeed and switched by the TCSR
+ * phy-mux (0x10540). This board uses pcie1 for the modem WAN, so the combo PHY
+ * must stay with PCIe: enabling the USB3 PHY flips the mux to USB and the pcie1
+ * PHY then reads all-zero and the modem never trains (see &usbphy1 and
+ * docs/qdm530/pcie1-modem-combo-phy.md). And mainline dwc3 refuses to register
+ * its core without the SuperSpeed PHY ("dwc3-qcom: failed to register DWC3 Core"
+ * / xhci "can't setup: -110"), so there is no USB2-only fallback - with usbphy1
+ * off the whole dwc3 controller is dead. Rather than leave it stuck in a
+ * permanent deferred-probe failure, the controller and its HS PHY are disabled.
+ *
+ * Consequence: no USB host on the board - the modem's USB AT/DIAG ports do NOT
+ * enumerate and a USB-tethering/dongle WAN is not available. The modem is
+ * reached over PCIe/MHI instead (QMI-over-QRTR; AT, where the modem exposes it,
+ * over QMI). Running USB and pcie1 at once would need the vendor's TCSR-mux
+ * arrangement (write the mux to 0), which is not implemented here.
+ */
+&usbphy0 {
+	status = "disabled";
+
+	vdd-supply = <&regulator_fixed_5p0>;
+};
+
+&usbphy1 {
+	/*
+	 * USB3 SuperSpeed PHY disabled: the pcie1 PHY (0x7e000) is a COMBO
+	 * PCIe/USB3 PHY, and enabling USB3 steals it from pcie1 via the TCSR
+	 * phy-mux (0x10540) - the PHY then reads all-zero and the modem never
+	 * trains. Kept off so the combo PHY stays with pcie1. See
+	 * docs/qdm530/pcie1-modem-combo-phy.md.
+	 */
+	status = "disabled";
+
+	vdd-supply = <&regulator_fixed_5p0>;
+};
+
+&usb {
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	dr_mode = "host";
+
+	status = "disabled";
+
+	usb_port1: port@1 {
+		reg = <1>;
+		#trigger-source-cells = <0>;
+	};
+};
+
+/*
+ * Mind the numbering: mainline labels the 0xa0000000 controller pcie0 and
+ * the 0x80000000 one pcie1, which is the opposite of the Linux PCI domain
+ * numbering the vendor kernel reports. The assignment below follows the
+ * vendor DT's phy phandles - 0xa0000000 uses phy@86000 (pcie0_phy) and
+ * 0x80000000 uses phy@7e000 (pcie1_phy) - and matches the in-tree Linksys
+ * MR5500, which also hangs a QCN9074 off &pcie0 with PERST on GPIO15.
+ */
+
+/* PCIe0 (0xa0000000): QCN9074 5 GHz radio. */
+&pcie0_phy {
+	status = "okay";
+};
+
+&pcie0 {
+	status = "okay";
+
+	perst-gpios = <&tlmm 15 GPIO_ACTIVE_LOW>;
+
+	pcie@0 {
+		wifi@0,0 {
+			status = "okay";
+
+			/* QCN9074: ath11k lacks a DT compatible for PCI cards */
+			compatible = "pci17cb,1104";
+			reg = <0x00010000 0 0 0 0>;
+
+			qcom,ath11k-calibration-variant = "Unbranded-QDM530";
+		};
+	};
+};
+
+/*
+ * PCIe1 (0x80000000): Quectel RG520N-EB 5G modem (17cb:0308), over MHI.
+ *
+ * The modem is a full SDX65 that boots its own firmware and only presents its
+ * PCIe endpoint several seconds after power-on (it reaches MHI mission mode
+ * late), so qcom-pcie's ~1.6s probe logs "Phy link never came up" - harmless:
+ * the LTSSM is left enabled and the link trains in hardware once the endpoint
+ * is ready. No child/endpoint node is needed: mhi_pci_generic binds by PCI ID
+ * (17cb:0308 -> qcom-sdx65m). The modem boots from its own flash into mission
+ * mode, so no host firmware blob is loaded for normal operation (the .fw/.edl
+ * in the driver are EDL-recovery only). Data rides the IP_HW0 (rmnet/QMAP)
+ * channel; control is QMI-over-QRTR (mhi0_IPCR), brought up by wwand
+ * (device=qrtr). No modem-power regulator: the modem powers itself on this
+ * board. See docs/qdm530/pcie1-modem-combo-phy.md.
+ *
+ * Two things had to be right for the link to train (both verified on HW):
+ *   1. usbphy1 (USB3) OFF - the pcie1 PHY is a combo PCIe/USB3 PHY and USB3
+ *      steals it via the TCSR mux (see &usbphy1).
+ *   2. PERST# polarity - see the perst-gpios note below.
+ */
+&pcie1_phy {
+	status = "okay";
+};
+
+&pcie1 {
+	status = "okay";
+
+	/*
+	 * PERST# on GPIO18 is ACTIVE_LOW (standard PCIe), matching the Cudy P5,
+	 * the mainline IPQ5018 board that also trains an RG520N/RM520N on pcie1.
+	 * qcom_perst_assert() deasserts with gpiod value 0, so ACTIVE_LOW ->
+	 * physical HIGH = PERST# released = the modem endpoint comes out of reset.
+	 * (An earlier ACTIVE_HIGH attempt drove GPIO18 LOW at deassert, holding the
+	 * modem in reset forever -> LTSSM stuck in DETECT_QUIET.)
+	 */
+	perst-gpios = <&tlmm 18 GPIO_ACTIVE_LOW>;
+};
+
+&q6v5_wcss {
+	status = "okay";
+
+	firmware-name = "ath11k/IPQ5018/hw1.0/q6_fw.mdt",
+			"ath11k/IPQ5018/hw1.0/m3_fw.mdt";
+};
+
+/*
+ * 2.4 GHz radio internal to the IPQ5018.
+ *
+ * This takes the whole Q6 (qcom,rproc = <&q6v5_wcss>), unlike GL-B3000,
+ * which splits it into userpds because its QCN6122 companion radio shares
+ * the same Q6. Here the second radio is a PCIe QCN9074 with its own
+ * firmware, so there is nothing to share and no userpd to reference -
+ * q6_wcss_pd1 only exists in ipq5018-qcn6122.dtsi, which this board does
+ * not include. Same arrangement as the in-tree Linksys MR5500.
+ */
+&wifi {
+	/*
+	 * 2.4 GHz radio re-enabled 2026-09-19 for the full image. It was only
+	 * disabled during watchdog bring-up to keep early boot short; the
+	 * watchdog is now fed by the gpio-watchdog (tlmm 26), so the extra
+	 * probe time is harmless.
+	 */
+	status = "okay";
+
+	qcom,rproc = <&q6v5_wcss>;
+	qcom,ath11k-calibration-variant = "Unbranded-QDM530";
+	qcom,ath11k-fw-memory-mode = <1>;
+};
+
+&tlmm {
+	/*
+	 * Hold the RTL8221B 2.5G PHY (lan2) out of reset from gpiochip probe -
+	 * long before the 90000.mdio bus is scanned. RSTN is active-low, so
+	 * output-high = out of reset. Doing it as a hog (not reset-gpios on the
+	 * PHY node) keeps the line deasserted permanently; a pulsed reset was
+	 * released on the first failed MDIO read and the PHY read back missing.
+	 */
+	rtl8221b_reset_hog: rtl8221b-reset-hog {
+		gpio-hog;
+		gpios = <39 GPIO_ACTIVE_HIGH>;
+		output-high;
+		line-name = "rtl8221b-reset-n";
+	};
+
+	serial_0_pins: uart0-state {
+		pins = "gpio20", "gpio21";
+		function = "blsp0_uart0";
+		drive-strength = <8>;
+		bias-disable;
+	};
+
+	i2c_pins: i2c-state {
+		pins = "gpio33", "gpio34";
+		function = "blsp2_i2c0";
+		drive-strength = <8>;
+		drive-open-drain;
+		bias-pull-up;
+	};
+
+	mdio1_pins: mdio-state {
+		mdc-pins {
+			pins = "gpio36";
+			function = "mdc";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
+
+		mdio-pins {
+			pins = "gpio37";
+			function = "mdio";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
+	};
+
+	button_pins: button-state {
+		pins = "gpio13", "gpio38";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-pull-up;
+	};
+
+	qpic_pins: qpic-state {
+		clock-pins {
+			pins = "gpio9";
+			function = "qspi_clk";
+			drive-strength = <8>;
+			bias-disable;
+		};
+
+		cs-pins {
+			pins = "gpio8";
+			function = "qspi_cs";
+			drive-strength = <8>;
+			bias-disable;
+		};
+
+		data-pins {
+			pins = "gpio4", "gpio5", "gpio6", "gpio7";
+			function = "qspi_data";
+			drive-strength = <8>;
+			bias-disable;
+		};
+	};
+};
+
+/*
+ * NAND is left ENABLED (configured above at &qpic_nand/&qpic_bam): the flashed
+ * image roots on the squashfs UBI volume on NAND, so the controller must probe.
+ * It was only disabled for the throwaway RAM initramfs (~0.46s scan saved when
+ * racing the watchdog); the external WDT is now fed (see the gpio-watchdog node
+ * on tlmm 26), so the NAND probe time no longer matters.
+ */
+
+/*
+ * Thermal sensor (tsens) DISABLED - a hardware limitation, not just a workaround.
+ * This board's calibration fuses are unprogrammed: the vendor firmware's own tsens
+ * already logs "qcom-tsens 4a8000.thermal-sensor: tsens calibration failed", so SoC
+ * thermal sensing never worked on this unit (cf. the all-0xff WiFi caldata and the
+ * qfprom reads that crash the SoC - the same unprovisioned OTP). On mainline the
+ * uncalibrated tsens probe is also deferred (its qfprom/nvmem cells come up late) and
+ * runs at ~9.4s, after "Freeing unused kernel memory" freed the __init sections; its
+ * probe then calls init_tsens_v1_no_rpm() (an __init function) and the CPU faults on
+ * the freed code (IABT / level-3 translation fault) -> Oops -> reset loop. So tsens
+ * is disabled. Fixing the __init-after-free would only yield an uncalibrated (failed)
+ * reading like the vendor's; the modem carries its own thermal mitigation.
+ */
+&tsens {
+	status = "disabled";
+};

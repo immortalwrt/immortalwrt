@@ -1,0 +1,130 @@
+#
+# Build seed for the Unbranded QDM530 5G CPE.
+#
+# Regenerate a full .config from this file with:
+#
+#     cp qdm530.diffconfig .config
+#     make defconfig
+#
+# Requires the luci and packages feeds plus the wwand feed (ddimension's
+# openwrt-repo), which already ships in feeds.conf.default - no third-party feed
+# to add by hand:
+#
+#     ./scripts/feeds update luci packages wwand
+#     ./scripts/feeds install luci relayd luci-proto-relay
+#
+# Everything the board itself needs (ath11k firmware, the ipq-wifi-qdm530 BDF,
+# the MHI/QRTR modules, and the wwand modem stack with its LuCI UI) comes from
+# DEVICE_PACKAGES in target/linux/qualcommax/image/ipq50xx.mk and is selected
+# automatically, so it deliberately does not appear below.
+#
+# What is here on top of the defaults:
+#
+#   luci*, uhttpd, rpcd*      the web UI
+#   relayd, luci-proto-relay  bridged WiFi repeater ("relay" proto). The
+#                             board joins an upstream AP as a station and
+#                             rebroadcasts it, with clients landing in the
+#                             UPSTREAM router's subnet instead of behind a
+#                             second NAT. Without these, a repeater still
+#                             works but only in routed mode: clients sit on
+#                             the board's own subnet, so upstream devices
+#                             (printers, Chromecast, NAS) stop being
+#                             reachable. relayd proxies ARP/DHCP across the
+#                             two interfaces to avoid that. Tiny - relayd
+#                             depends only on libc and libubox.
+#                             Use one radio for STA and the other for AP;
+#                             doing both on a single radio halves throughput
+#                             because every frame is sent twice on the same
+#                             channel.
+#
+# The modem management UI and SMS/AT come from wwand (luci-app-wwand), pulled in
+# via DEVICE_PACKAGES - so none of the old QModem packages (qmodem,
+# luci-app-qmodem-next, modem_scan, sms-tool_q, tom_modem, ubus-at-daemon,
+# sms-forwarder-next) are selected here any more.
+#
+# The firewall is fw4 / nftables only: the legacy iptables / ipset / nft-compat
+# packages are deliberately NOT included - they were only ever pulled in for
+# mwan3, which this single-WAN board must not use (see README).
+#
+# Regenerate this file after changing the build config with:
+#
+#     ./scripts/diffconfig.sh > qdm530.diffconfig
+#
+CONFIG_TARGET_qualcommax=y
+CONFIG_TARGET_qualcommax_ipq50xx=y
+CONFIG_TARGET_qualcommax_ipq50xx_DEVICE_unbranded_qdm530=y
+# CONFIG_FEED_luci is not set
+# CONFIG_FEED_packages is not set
+CONFIG_LIBCURL_COOKIES=y
+CONFIG_LIBCURL_CRYPTO_AUTH=y
+CONFIG_LIBCURL_FILE=y
+CONFIG_LIBCURL_FTP=y
+CONFIG_LIBCURL_HTTP=y
+CONFIG_LIBCURL_HTTP2=y
+CONFIG_LIBCURL_HTTP_AUTH=y
+CONFIG_LIBCURL_OPENSSL=y
+CONFIG_LIBCURL_PROXY=y
+CONFIG_LIBCURL_TFTP=y
+CONFIG_LIBCURL_THREADED_RESOLVER=y
+CONFIG_LIBCURL_TLS_SRP=y
+CONFIG_LIBCURL_UNIX_SOCKETS=y
+CONFIG_LIBCURL_ZLIB=y
+CONFIG_LIBNCURSES_TERMINFO=""
+CONFIG_LIBSODIUM_MINIMAL=y
+CONFIG_PACKAGE_bc=y
+CONFIG_PACKAGE_cgi-io=y
+CONFIG_PACKAGE_coreutils=y
+CONFIG_PACKAGE_coreutils-stat=y
+CONFIG_PACKAGE_curl=y
+CONFIG_PACKAGE_ip-tiny=y
+CONFIG_PACKAGE_jq=y
+CONFIG_PACKAGE_kmod-nf-conncount=y
+CONFIG_PACKAGE_kmod-usb-acm=y
+CONFIG_PACKAGE_kmod-usb-ehci=y
+CONFIG_PACKAGE_kmod-usb-net-cdc-mbim=y
+CONFIG_PACKAGE_kmod-usb-net-cdc-ncm=y
+CONFIG_PACKAGE_kmod-usb-net-huawei-cdc-ncm=y
+CONFIG_PACKAGE_kmod-usb-serial-qualcomm=y
+CONFIG_PACKAGE_kmod-usb2=y
+CONFIG_PACKAGE_libatomic=y
+CONFIG_PACKAGE_libcurl=y
+CONFIG_PACKAGE_libevdev=y
+CONFIG_PACKAGE_libiwinfo=y
+CONFIG_PACKAGE_libiwinfo-data=y
+CONFIG_PACKAGE_liblucihttp=y
+CONFIG_PACKAGE_liblucihttp-ucode=y
+CONFIG_PACKAGE_libncurses=y
+CONFIG_PACKAGE_libnghttp2=y
+CONFIG_PACKAGE_libreadline=y
+CONFIG_PACKAGE_libsodium=y
+CONFIG_PACKAGE_libudev-zero=y
+CONFIG_PACKAGE_libusb-1.0=y
+CONFIG_PACKAGE_luci=y
+CONFIG_PACKAGE_luci-app-firewall=y
+CONFIG_PACKAGE_luci-app-package-manager=y
+CONFIG_PACKAGE_luci-base=y
+CONFIG_PACKAGE_luci-lib-uqr=y
+CONFIG_PACKAGE_luci-light=y
+CONFIG_PACKAGE_luci-mod-admin-full=y
+CONFIG_PACKAGE_luci-mod-network=y
+CONFIG_PACKAGE_luci-mod-status=y
+CONFIG_PACKAGE_luci-mod-system=y
+CONFIG_PACKAGE_luci-proto-ipv6=y
+CONFIG_PACKAGE_luci-proto-ppp=y
+CONFIG_PACKAGE_luci-proto-relay=y
+CONFIG_PACKAGE_luci-theme-bootstrap=y
+CONFIG_PACKAGE_relayd=y
+CONFIG_PACKAGE_rpcd=y
+CONFIG_PACKAGE_rpcd-mod-file=y
+CONFIG_PACKAGE_rpcd-mod-iwinfo=y
+CONFIG_PACKAGE_rpcd-mod-luci=y
+CONFIG_PACKAGE_rpcd-mod-rrdns=y
+CONFIG_PACKAGE_rpcd-mod-ucode=y
+CONFIG_PACKAGE_terminfo=y
+CONFIG_PACKAGE_ucode-mod-html=y
+CONFIG_PACKAGE_ucode-mod-log=y
+CONFIG_PACKAGE_uhttpd=y
+CONFIG_PACKAGE_uhttpd-mod-ubus=y
+CONFIG_PACKAGE_usbids=y
+CONFIG_PACKAGE_usbutils=y
+CONFIG_PACKAGE_xxd=y

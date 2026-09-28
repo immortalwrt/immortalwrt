@@ -45,6 +45,22 @@ ipq50xx_setup_interfaces()
 	tplink,eap650-outdoor-v1)
 		ucidef_set_interface_lan "lan" "dhcp"
 		;;
+	unbranded,qdm530)
+		# Both ethernet ports are LAN, matching the vendor firmware
+		# (network.lan.ifname='eth0 eth1'). This is a 5G CPE: its WAN is the
+		# Quectel RG520N-EB modem, not an ethernet port. lan1 = IPQ5018
+		# internal 1G GE PHY, lan2 = Realtek RTL8221B 2.5G PHY. (The third
+		# front port is an RJ12 6-pin serial console, not a network port.)
+		ucidef_set_interface_lan "lan1 lan2"
+
+		# The cellular WAN is the Quectel RG520N-EB 5G modem on PCIe/MHI,
+		# brought up by wwand over its QMI-over-QRTR control channel (the modem
+		# has no cdc-wdm node - QMI lives on the QRTR bus via qcom_mhi_qrtr).
+		# The 'wan' interface (proto 'wwand') and its wwand_modem section are
+		# seeded into /etc/config/network by uci-defaults/26_wwand-modem, not
+		# here - ucidef cannot express a proto-wwand interface. Set the carrier
+		# APN there or in the LuCI wwand UI if the SIM needs one.
+		;;
 	esac
 }
 

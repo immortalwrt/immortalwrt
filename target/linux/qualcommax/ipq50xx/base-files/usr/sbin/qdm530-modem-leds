@@ -1,0 +1,85 @@
+#!/bin/sh
+#
+# QDM530: drive the front-panel "mobile/signal" (LED3) and "status" (LED4) RGB
+# LEDs from the wwand modem state. These two LEDs have no kernel trigger that
+# fits cellular signal/connection, so a light poller reads wwand over ubus and
+# sets the LED class brightnesses. (The power LED is handled by the led-running
+# alias; the wan LED by a netdev trigger - see board.d/01_leds.)
+#
+MODEM="wwmodem"
+LEDS="/sys/class/leds"
+INTERVAL=10
+
+set_led() {
+	[ -e "$LEDS/$1/brightness" ] && echo "$2" > "$LEDS/$1/brightness" 2>/dev/null
+}
+
+# LED3 (mobile) is RGB; LED4 (status) is green+blue only.
+mobile() { set_led "red:mobile" "$1"; set_led "green:mobile" "$2"; set_led "blue:mobile" "$3"; }
+status()  { set_led "green:status" "$1"; set_led "blue:status" "$2"; }
+
+update() {
+	local st wan reg rat sig rsrp
+
+	st="$(ubus call wwand status 2>/dev/null)"
+	if [ -z "$st" ]; then
+		mobile 0 0 0; status 0 0
+		return
+	fi
+
+	wan="$(echo "$st" | jsonfilter -e '@.contexts.wan.state' 2>/dev/null)"
+	reg="$(echo "$st" | jsonfilter -e "@.modems.$MODEM.registration.registration" 2>/dev/null)"
+	rat="$(echo "$st" | jsonfilter -e "@.modems.$MODEM.rat" 2>/dev/null)"
+
+	# --- status LED (LED4): data-connection state ---
+	# green = data connected, blue = registered/connecting, off = no service
+	if [ "$wan" = "CONNECTED" ]; then
+		status 255 0
+	elif [ "$reg" = "1" ]; then
+		status 0 255
+	else
+		status 0 0
+	fi
+
+	# --- mobile LED (LED3): cellular signal strength (RSRP) ---
+	sig="$(ubus call wwand modem_signal "{\"modem\":\"$MODEM\"}" 2>/dev/null)"
+	case "$rat" in
+	*[Nn][Rr]*|*5[Gg]*)
+		rsrp="$(echo "$sig" | jsonfilter -e '@.nr5g.rsrp' 2>/dev/null)"
+		;;
+	*)
+		rsrp="$(echo "$sig" | jsonfilter -e '@.lte.rsrp' 2>/dev/null)"
+		;;
+	esac
+	# fall back to whichever radio reported one
+	[ -n "$rsrp" ] || rsrp="$(echo "$sig" | jsonfilter -e '@.lte.rsrp' 2>/dev/null)"
+	[ -n "$rsrp" ] || rsrp="$(echo "$sig" | jsonfilter -e '@.nr5g.rsrp' 2>/dev/null)"
+
+	if [ -z "$rsrp" ]; then
+		mobile 0 0 0			# no signal reading
+		return
+	fi
+
+	# integer part only (RSRP is a negative dBm, possibly fractional)
+	rsrp="${rsrp%.*}"
+	case "$rsrp" in -*) : ;; ''|*[!0-9-]*) mobile 0 0 0; return ;; esac
+
+	if [ "$rsrp" -ge -95 ]; then
+		mobile 0 255 0			# strong  -> green
+	elif [ "$rsrp" -ge -110 ]; then
+		mobile 255 110 0		# medium  -> amber
+	else
+		mobile 255 0 0			# weak    -> red
+	fi
+}
+
+# one-shot ("update") or continuous (default)
+if [ "$1" = "update" ]; then
+	update
+	exit 0
+fi
+
+while :; do
+	update
+	sleep "$INTERVAL"
+done

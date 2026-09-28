@@ -1,0 +1,32 @@
+From: Muhammad Huda Nugroho <mhudan21@gmail.com>
+Subject: [PATCH] net: pcs: qca-uniphy: keep the reference clock enabled
+
+The UNIPHY reference clock feeds external 2.5G PHYs (e.g. the RTL8221B on
+the IPQ5018 QDM530 lan2 port). It is normally enabled only in the PCS
+mac_config path, which runs after the boot-time PHY attach - so the PHY
+has no reference clock when the MDIO bus is scanned and reads back missing
+(-ENODEV), leaving the port permanently down. Mark the reference clock
+CLK_IS_CRITICAL so it is enabled from registration, before the MDIO scan.
+
+Signed-off-by: Muhammad Huda Nugroho <mhudan21@gmail.com>
+---
+--- a/drivers/net/pcs/pcs-qca-uniphy.c
++++ b/drivers/net/pcs/pcs-qca-uniphy.c
+@@ -221,8 +221,15 @@
+ 	init.parent_data = &pdata;
+ 	init.num_parents = 1;
+ 	init.ops = &qca_uniphy_refclk_ops,
+-	/* always derive rate from the UNIPHY register */
+-	init.flags = CLK_GET_RATE_NOCACHE,
++	/*
++	 * always derive rate from the UNIPHY register; keep the reference clock
++	 * enabled from registration (CLK_IS_CRITICAL) so the external 2.5G PHY
++	 * that is fed by it (e.g. the RTL8221B on the IPQ5018 QDM530) already has
++	 * its reference clock when the MDIO bus is scanned early in boot - the
++	 * PCS mac_config that would otherwise enable it runs only after the
++	 * boot-time PHY attach, too late, and the PHY reads back missing.
++	 */
++	init.flags = CLK_GET_RATE_NOCACHE | CLK_IS_CRITICAL,
+ 
+ 	uniphy->ref_clk.hw.init = &init;
+ 	uniphy->ref_clk.uniphy = uniphy;

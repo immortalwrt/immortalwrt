@@ -1,0 +1,34 @@
+#!/bin/sh
+#
+# QDM530 stores no MAC address anywhere in hardware: 0:ART reads back all 0xff,
+# the U-Boot environment carries only the placeholder 00:11:22:33:44:55 / :56,
+# usr_factory and both WiFi BDFs have none, and there is no runtime-readable
+# unique identifier (the SoC serial reads 0). U-Boot force-writes that
+# placeholder MAC into the ethernet nodes during its FDT fixup, so a
+# local-mac-address in the DTS has no effect - without this every unit would
+# present the same 00:11:22:33:44:55 on the LAN.
+#
+# Generate a random, locally-administered MAC once (on first boot) and pin it in
+# /etc/config/network so it stays stable across reboots and config-preserving
+# sysupgrades. The guard below keeps an address that a preserved config already
+# carries (so it survives sysupgrade); a full config reset re-runs this and
+# picks a fresh address.
+#
+. /lib/functions.sh
+
+[ "$(board_name)" = "unbranded,qdm530" ] || exit 0
+
+# only touch the LAN bridge device, and only if it is really br-lan
+[ "$(uci -q get network.@device[0].name)" = "br-lan" ] || exit 0
+
+# keep an already-assigned address (preserved across sysupgrade)
+[ -n "$(uci -q get network.@device[0].macaddr)" ] && exit 0
+
+# random unicast (bit0=0), locally-administered (bit1=1) MAC
+octet0=$(printf '%02x' $(( (0x$(hexdump -n1 -e '"%02x"' /dev/urandom) & 0xfe) | 0x02 )))
+rest=$(hexdump -n5 -e '5/1 ":%02x"' /dev/urandom)
+
+uci -q set network.@device[0].macaddr="${octet0}${rest}"
+uci -q commit network
+
+exit 0

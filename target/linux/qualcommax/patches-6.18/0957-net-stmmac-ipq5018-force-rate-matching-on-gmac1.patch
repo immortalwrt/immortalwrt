@@ -1,0 +1,46 @@
+From: Muhammad Huda Nugroho <mhudan21@gmail.com>
+Subject: [PATCH] net: stmmac: dwmac-ipq5018: advertise only 2500BASEX on PCS GMAC1
+
+GMAC1 on the IPQ5018 drives an external 2.5G PHY (the RTL8221B on the
+QDM530 lan2 port) through the UNIPHY PCS. The driver advertises SGMII,
+1000BASEX and 2500BASEX for that port. Because the RTL8221B is a
+Clause-45 PHY, offering SGMII alongside 2500BASEX makes it select the
+2500BASEX/SGMII auto-switch SerDes mode (rate_matching = NONE): for a 1G
+copper peer the PHY drops its SerDes to SGMII and expects the UNIPHY to
+be reconfigured to SGMII at runtime. That runtime switch is unreliable
+on this hardware - the 1G link comes up but data does not flow reliably.
+
+Advertise only 2500BASEX for the PCS-backed GMAC1 so the RTL8221B stays
+in the fixed 2500BASEX rate-matching mode (rate_matching = PAUSE): its
+SerDes is pinned at 2500BASEX and it pause-rate-adapts 1G/100/10 copper
+speeds internally, leaving the UNIPHY permanently at 2500BASEX. GMAC0
+(no PCS, internal GE PHY) keeps plain SGMII.
+
+Signed-off-by: Muhammad Huda Nugroho <mhudan21@gmail.com>
+---
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq5018.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-ipq5018.c
+@@ -112,13 +112,18 @@
+ 
+ 	/*
+ 	 * IPQ5018 has two GMACs:
+-	 * - GMAC0 supports SGMII and is wired to the SoC's internal GE PHY
+-	 * - GMAC1 supports SGMII, 1000BaseX, and 2500BaseX, configurable by
+-	 *   the UNIPHY PCS
++	 * - GMAC0 is wired to the SoC's internal GE PHY over SGMII (no PCS).
++	 * - GMAC1 drives an external 2.5G PHY through the UNIPHY PCS.
++	 *
++	 * For GMAC1 advertise only 2500BASEX (not SGMII/1000BASEX) so a
++	 * rate-matching capable PHY (e.g. the RTL8221B) keeps its SerDes
++	 * fixed at 2500BASEX and pause-rate-adapts slower copper speeds
++	 * internally. Advertising SGMII as well makes such PHYs pick the
++	 * 2500BASEX/SGMII auto-switch mode, which needs the UNIPHY switched
++	 * to SGMII at runtime for 1G links; that switch is unreliable here
++	 * and leaves 1G peers linked but without stable data flow.
+ 	 */
+-	__set_bit(PHY_INTERFACE_MODE_SGMII, interfaces);
+ 	if (priv->hw->phylink_pcs) {
+-		__set_bit(PHY_INTERFACE_MODE_1000BASEX, interfaces);
+ 		__set_bit(PHY_INTERFACE_MODE_2500BASEX, interfaces);
+ 
+ 		/*

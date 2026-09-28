@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+# QDM530: enable the modem-LED poller that drives the mobile(signal)/status
+# front LEDs from wwand state. (The ipq50xx base-files are shared across devices,
+# so guard by board; the service also self-guards on start.)
+#
+. /lib/functions.sh
+
+[ "$(board_name)" = "unbranded,qdm530" ] || exit 0
+
+/etc/init.d/qdm530-modem-leds enable
+
+exit 0

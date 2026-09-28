@@ -1,0 +1,53 @@
+#!/bin/sh
+#
+# QDM530: seed the cellular WAN. The WAN is the Quectel RG520N-EB 5G modem on
+# PCIe/MHI, driven by wwand. The modem exposes no cdc-wdm control node - its QMI
+# runs on the QRTR bus (mhi0_IPCR via qcom_mhi_qrtr) - so wwand's QMI-over-QRTR
+# transport is selected with the sentinel `option device 'qrtr'`. The data path
+# is rmnet/QMAP on the MHI net device mhi_hwip0 (mux child wwand0, mux_id 1).
+#
+# wwand is configured network-native (everything in /etc/config/network): a
+# wwand_modem section for the hardware and a proto-wwand interface for the
+# connection. ucidef in board.d cannot express a proto-wwand interface, so it is
+# seeded here instead.
+#
+# ep_type=3 (PCIE) / ep_id=4 is the WDA data-format endpoint for this MHI modem;
+# qmap_version=1 is pinned because the modem rejects QMAPv5 over MHI. pdp_type is
+# ipv4: the modem/SIM here provisions IPv4 only and rejects the IPv6 PDP (QMI
+# errors on every v6 dial) - set it to ipv4v6 if your carrier offers IPv6. APN is
+# left to the SIM/network default - set network.wwmodem.apn (or network.wan.apn)
+# if the carrier needs a specific one.
+#
+. /lib/functions.sh
+
+[ "$(board_name)" = "unbranded,qdm530" ] || exit 0
+
+# idempotent: only seed when the modem section is absent, so a config-preserving
+# sysupgrade (or a user who edited the WAN) is never overwritten.
+if ! uci -q get network.wwmodem >/dev/null; then
+	uci -q batch <<-EOF
+		set network.wwmodem='wwand_modem'
+		set network.wwmodem.device='qrtr'
+		set network.wwmodem.protocol='qmi'
+		set network.wwmodem.netdev='mhi_hwip0'
+		set network.wwmodem.ep_type='3'
+		set network.wwmodem.ep_id='4'
+		set network.wwmodem.qmap_version='1'
+	EOF
+fi
+
+if ! uci -q get network.wan >/dev/null; then
+	uci -q batch <<-EOF
+		set network.wan='interface'
+		set network.wan.proto='wwand'
+		set network.wan.device='wwand0'
+		set network.wan.modem='wwmodem'
+		set network.wan.autosetup='1'
+		set network.wan.mux_id='1'
+		set network.wan.pdp_type='ipv4'
+	EOF
+fi
+
+uci -q commit network
+
+exit 0

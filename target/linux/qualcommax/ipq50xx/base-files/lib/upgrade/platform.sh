@@ -275,6 +275,13 @@ platform_do_upgrade() {
 		remove_oem_ubi_volume wifi_fw
 		nand_do_upgrade "$1"
 		;;
+	unbranded,qdm530)
+		# UBI-on-NAND device: it must use nand_do_upgrade, not the generic
+		# default_do_upgrade (which does not update the UBI and leaves the old
+		# image booting). Writes the active "rootfs" volume in place.
+		CI_UBIPART="rootfs"
+		nand_do_upgrade "$1"
+		;;
 	*)
 		default_do_upgrade "$1"
 		;;

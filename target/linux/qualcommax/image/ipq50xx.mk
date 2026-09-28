@@ -287,6 +287,50 @@ define Device/tplink_eap650-outdoor-v1
 endef
 TARGET_DEVICES += tplink_eap650-outdoor-v1
 
+# Unbranded 5G CPE, ODM board QDM530-GL_V2.1 (Qualcomm AP-MP03.6-C1).
+# Single 128 MiB SPI-NAND, kernel lives in UBI; rootfs partition is
+# 0x031c0000 = 50944k. QCN9074 on PCIe for 5 GHz, IPQ5018 internal radio
+# for 2.4 GHz, Quectel RG520N-EB modem on the other PCIe link via MHI.
+#
+# Board data comes from the local ipq-wifi-qdm530 package rather than the
+# upstream ipq-wifi one, since these BDFs are not in firmware_qca-wireless
+# yet. See that package for how they were extracted and what still has to
+# be done before they can go upstream.
+define Device/unbranded_qdm530
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := Unbranded
+	DEVICE_MODEL := QDM530 5G CPE
+	SOC := ipq5018
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	NAND_SIZE := 128m
+	IMAGE_SIZE := 50944k
+	DEVICE_DTS_CONFIG := config@mp03.6-c1
+	DEVICE_PACKAGES := ath11k-firmware-ipq5018 \
+		kmod-ath11k-pci \
+		ath11k-firmware-qcn9074 \
+		ipq-wifi-qdm530 \
+		kmod-phy-realtek \
+		mdio-tools \
+		kmod-mhi-pci-generic \
+		kmod-mhi-net \
+		kmod-rmnet \
+		kmod-mhi-wwan-ctrl \
+		kmod-mhi-wwan-mbim \
+		kmod-qrtr \
+		kmod-qrtr-mhi \
+		kmod-leds-aw9523 \
+		kmod-tun \
+		wwand \
+		wwand-qmi \
+		wwand-mbim \
+		wwand-mhi \
+		luci-proto-wwand \
+		luci-app-wwand
+endef
+TARGET_DEVICES += unbranded_qdm530
+
 define Device/xiaomi_ipq50xx_ax_base
 	$(call Device/FitImage)
 	$(call Device/UbiFit)

@@ -1,6 +1,4 @@
-#
-# Copyright (C) 2015 OpenWrt.org
-#
+#!/bin/sh
 
 . /lib/functions/uci-defaults.sh
 
@@ -50,6 +48,13 @@ xiaomi,ax6000)
 	ucidef_set_led_netdev "wan-port-link" "WAN-PORT-LINK" "90000.mdio-1:08:green:wan" "wan" "tx rx link_10 link_100 link_1000 link_2500"
 	ucidef_set_led_netdev "wan-port-link-top-blue" "WAN-PORT-LINK-TOP-BLUE" "blue:wan" "wan" "link_1000 link_2500"
 	ucidef_set_led_netdev "wan-port-link-top-yellow" "WAN-PORT-LINK-TOP-YELLOW" "yellow:wan" "wan" "link_10 link_100"
+	;;
+unbranded,qdm530)
+	# Front-panel RGB LEDs on the AW9523B expander (leds-aw9523).
+	# power LED is handled by the led-boot/led-running aliases in the DTS.
+	# The wan LED follows the wan interface; the mobile (signal) and status
+	# LEDs are driven from modem state by /etc/init.d/qdm530-modem-leds.
+	ucidef_set_led_netdev "wan" "WAN" "green:wan" "wwand0"
 	;;
 esac
 

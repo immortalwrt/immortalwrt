@@ -1,0 +1,51 @@
+#!/bin/sh
+# QDM530: pin the 5 GHz radio (QCN9074 on PCIe) to channel 149 / HE20 and bring the
+# wireless stack up cleanly once that radio appears.
+#
+# The QCN9074 enumerates ~20 s into boot over PCIe - after the uci-defaults run - so
+# its channel cannot be fixed there (it is not in /etc/config/wireless yet). Its
+# board.bin carries no real per-board caldata (board_id reads 0xff), so ath11k's
+# self-managed regulatory domain exposes only the UNII-3 sub-band (ch 149-161) at
+# 20 MHz. The OpenWrt default (ch36 / HE80) is rejected ("Not supported (-95)").
+#
+# Both self-managed radios also -95 their FIRST setup attempt, before the country
+# code settles, and the boot-time bring-up can lose that race and leave a radio
+# stuck down (so Wi-Fi is not reliably up every boot). So when the (late) 5 GHz
+# radio appears, after setting its channel, do a full `wifi` reload: that re-applies
+# the country code and brings BOTH radios up cleanly, which is what reliably clears
+# the -95. `wifi` reloads only the wireless stack, so the cellular WAN (wwand on
+# PCIe/MHI) is NOT touched - unlike `ubus call network reload`, which would bounce
+# the WAN too.
+[ "${ACTION}" = "add" ] || exit 0
+
+. /lib/functions.sh
+
+[ "$(board_name)" = "unbranded,qdm530" ] || exit 0
+
+have_5g=0
+changed=0
+
+fixup_5g() {
+	local radio="$1" band
+	config_get band "$radio" band
+	[ "$band" = "5g" ] || return 0
+	have_5g=1
+	[ "$(uci -q get "wireless.$radio.channel")" = "149" ] &&
+	[ "$(uci -q get "wireless.$radio.htmode")" = "HE20" ] && return 0
+	uci -q set "wireless.$radio.channel=149"
+	uci -q set "wireless.$radio.htmode=HE20"
+	uci -q set "wireless.$radio.country=ID"
+	changed=1
+}
+
+config_load wireless
+config_foreach fixup_5g wifi-device
+
+[ "$changed" = 1 ] && uci -q commit wireless
+
+# Only when the 5 GHz radio is actually present (this is its hotplug, not the 2.4
+# GHz one): reload the wireless stack to bring both radios up cleanly. wifi touches
+# only wireless, so the WAN is left alone.
+[ "$have_5g" = 1 ] && /sbin/wifi
+
+exit 0

@@ -1,0 +1,38 @@
+#!/bin/sh
+
+. /lib/functions.sh
+
+case "$(board_name)" in
+unbranded,qdm530)
+	;;
+*)
+	exit 0
+	;;
+esac
+
+# The vendor firmware sets country=CN in its UCI config but never applies it,
+# so the radios stay on the "00" world domain: 2.4GHz is capped at 20 dBm and
+# the upper 5GHz channels this board actually operates on are unavailable.
+# Set the regulatory domain the device is sold and used in instead.
+[ -e /etc/config/wireless ] || /sbin/wifi config
+
+radios="$(uci -q show wireless | sed -n 's/^wireless\.\([^.]*\)=wifi-device$/\1/p')"
+
+# Retry on the next boot if the radios have not been detected yet: uci-defaults
+# scripts are only removed once they exit successfully.
+[ -n "$radios" ] || exit 1
+
+for radio in $radios; do
+	uci -q set "wireless.$radio.country=ID"
+done
+
+uci -q commit wireless
+
+# The 5GHz radio's channel is NOT fixed here. The QCN9074 sits on PCIe and
+# enumerates ~20s into boot, after this script runs, so it is usually not in the
+# config yet. Its channel/width (149 / HE20 - its board.bin self-managed regdomain
+# only exposes the UNII-3 sub-band, 20 MHz) is pinned from the ieee80211 hotplug
+# instead, which fires when the radio's phy appears:
+# see base-files/etc/hotplug.d/ieee80211/13-qdm530-5ghz-channel.
+
+exit 0

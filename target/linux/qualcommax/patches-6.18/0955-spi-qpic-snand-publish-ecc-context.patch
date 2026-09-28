@@ -1,0 +1,80 @@
+From: QDM530 bring-up <noreply@example.com>
+Date: Fri, 19 Sep 2026 06:40:00 +0700
+Subject: [PATCH] spi: spi-qpic-snand: publish the ECC context to snandc->qspi
+
+The driver allocated a zeroed scratch qpic_ecc in probe and assigned it to
+snandc->qspi->ecc, but qcom_spi_ecc_init_ctx_pipelined() never published the
+real ecc_cfg it built. The ooblayout callbacks (run during spinand_init() /
+mtd registration at probe time) read snandc->qspi->ecc, i.e. the stale/zeroed
+scratch, so qecc->steps was garbage and oobregion->length = steps * 4 went
+negative. mtd_ooblayout_count_bytes() then returned a negative byte count,
+spinand_init() took it as a plain error (not -EPROBE_DEFER), the driver core
+never retried, and the NAND never appeared:
+
+  spi-nand spi0.0: probe with driver spi-nand failed with error -512
+  UBI error: cannot open mtd rootfs, error -2
+  Waiting for root device /dev/ubiblock0_1...
+
+On this board (IPQ5018 + ESMT F50D1G41LB SPI-NAND) roughly half of the boots
+hung this way. Publish the ECC context when it is created and clear it on
+cleanup; drop the redundant scratch allocation and the late assignment in the
+prepare_io_req path.
+
+Fixes: 7304d1909080 ("spi: spi-qpic: add driver for QCOM SPI NAND flash Interface")
+---
+--- a/drivers/spi/spi-qpic-snand.c
++++ b/drivers/spi/spi-qpic-snand.c
+@@ -409,6 +409,8 @@
+ 	dev_dbg(snandc->dev, "ECC strength: %u bits per %u bytes\n",
+ 		ecc_cfg->strength, ecc_cfg->step_size);
+ 
++	snandc->qspi->ecc = ecc_cfg;
++
+ 	return 0;
+ 
+ err_free_ecc_cfg:
+@@ -418,8 +420,10 @@
+ 
+ static void qcom_spi_ecc_cleanup_ctx_pipelined(struct nand_device *nand)
+ {
++	struct qcom_nand_controller *snandc = nand_to_qcom_snand(nand);
+ 	struct qpic_ecc *ecc_cfg = nand_to_ecc_ctx(nand);
+ 
++	snandc->qspi->ecc = NULL;
+ 	kfree(ecc_cfg);
+ }
+ 
+@@ -427,9 +431,7 @@
+ 						 struct nand_page_io_req *req)
+ {
+ 	struct qcom_nand_controller *snandc = nand_to_qcom_snand(nand);
+-	struct qpic_ecc *ecc_cfg = nand_to_ecc_ctx(nand);
+ 
+-	snandc->qspi->ecc = ecc_cfg;
+ 	snandc->qspi->raw_rw = false;
+ 	snandc->qspi->oob_rw = false;
+ 	snandc->qspi->page_rw = false;
+@@ -1539,15 +1541,10 @@
+ 	struct spi_controller *ctlr;
+ 	struct qcom_nand_controller *snandc;
+ 	struct qpic_spi_nand *qspi;
+-	struct qpic_ecc *ecc;
+ 	struct resource *res;
+ 	const void *dev_data;
+ 	int ret;
+ 
+-	ecc = devm_kzalloc(dev, sizeof(*ecc), GFP_KERNEL);
+-	if (!ecc)
+-		return -ENOMEM;
+-
+ 	qspi = devm_kzalloc(dev, sizeof(*qspi), GFP_KERNEL);
+ 	if (!qspi)
+ 		return -ENOMEM;
+@@ -1564,7 +1561,6 @@
+ 	snandc->dev = dev;
+ 	snandc->qspi = qspi;
+ 	snandc->qspi->ctlr = ctlr;
+-	snandc->qspi->ecc = ecc;
+ 
+ 	dev_data = of_device_get_match_data(dev);
+ 	if (!dev_data) {

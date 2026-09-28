@@ -9,6 +9,14 @@ board=$(board_name)
 case "$FIRMWARE" in
 "ath11k/IPQ5018/hw1.0/cal-ahb-c000000.wifi.bin")
 	case "$board" in
+	unbranded,qdm530)
+		# 0:art is blank (all 0xff) on this board, exactly like the vendor
+		# firmware, which runs the radios on the BDF defaults with 0xff
+		# caldata. Extracting the 0xff region just gives ath11k a caldata
+		# file so it stops failing the BDF/caldata load; no valid per-unit
+		# cal or MAC exists here to patch (see the MAC note in the DTS).
+		caldata_extract "0:art" 0x1000 0x20000
+		;;
 	cmcc,mr3000d-ci)
 		caldata_extract "0:art" 0x1000 0x20000
 		wlan_mac=$(mtd_get_mac_binary 0:art 12)
@@ -155,6 +163,11 @@ case "$FIRMWARE" in
 	;;
 "ath11k/QCN9074/hw1.0/cal-pci-0000:01:00.0.bin")
 	case "$board" in
+	unbranded,qdm530)
+		# 0:art blank (0xff) - same as the 2.4 GHz radio above; extract the
+		# 0xff region so ath11k gets a caldata file and boots on BDF defaults.
+		caldata_extract "0:art" 0x26800 0x20000
+		;;
 	linksys,mr5500|\
 	linksys,mx5500|\
 	linksys,spnmx56)
