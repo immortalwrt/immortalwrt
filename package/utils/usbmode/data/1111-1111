@@ -1,0 +1,12 @@
+# AIC8800D80/D81/DC USB WiFi adapter — mode switch from storage to WiFi mode
+# Switches from 1111:1111 (virtual CD-ROM) to a69c:8d80/8d81 (WiFi)
+# Based on reverse engineering by ademasi/aic8800d80-wifi-bt-linux
+
+DefaultVendor=0x1111
+DefaultProduct=0x1111
+TargetVendor=0xa69c
+TargetProductList="8800,8801,8d80,8d81"
+
+MessageContent="555342430000000000000000800010fd0000000000000000000000000000f3"
+MessageContent2="555342430000000000000000800010fd0000000000000000000000000000f2"
+NoDriverLoading=1
