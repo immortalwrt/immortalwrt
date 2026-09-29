@@ -161,6 +161,7 @@ platform_do_upgrade() {
 	case "$board" in
 	abt,asr3000|\
 	acer,predator-w6x-ubootmod|\
+	asus,rt-ax59u-ubi|\
 	asus,zenwifi-bt8-ubootmod|\
 	bananapi,bpi-r3|\
 	bananapi,bpi-r3-mini|\
@@ -168,6 +169,7 @@ platform_do_upgrade() {
 	bananapi,bpi-r4-2g5|\
 	bananapi,bpi-r4-poe|\
 	bananapi,bpi-r4-lite|\
+	bananapi,bpi-r4-pro-4e|\
 	bananapi,bpi-r4-pro-8x|\
 	bazis,ax3000wm|\
 	cetron,ct3003-ubootmod|\
@@ -420,6 +422,7 @@ platform_check_image() {
 	case "$board" in
 	abt,asr3000|\
 	acer,predator-w6x-ubootmod|\
+	asus,rt-ax59u-ubi|\
 	asus,zenwifi-bt8-ubootmod|\
 	bananapi,bpi-r3|\
 	bananapi,bpi-r3-mini|\
@@ -427,6 +430,7 @@ platform_check_image() {
 	bananapi,bpi-r4-2g5|\
 	bananapi,bpi-r4-poe|\
 	bananapi,bpi-r4-lite|\
+	bananapi,bpi-r4-pro-4e|\
 	bananapi,bpi-r4-pro-8x|\
 	bazis,ax3000wm|\
 	cetron,ct3003-ubootmod|\
@@ -468,7 +472,6 @@ platform_check_image() {
 	routerich,ax3000-ubootmod|\
 	teralink,tl3020-256mb|\
 	tplink,be450-ubi|\
-	tplink,tl-7dr7230-v1|\
 	tplink,tl-7dr7230-v2|\
 	tplink,tl-7dr7250-v1|\
 	tplink,tl-xdr4288|\
@@ -542,6 +545,7 @@ platform_copy_config() {
 	bananapi,bpi-r4-2g5|\
 	bananapi,bpi-r4-poe|\
 	bananapi,bpi-r4-lite|\
+	bananapi,bpi-r4-pro-4e|\
 	bananapi,bpi-r4-pro-8x|\
 	cmcc,rax3000m|\
 	cmcc,rax3000me|\

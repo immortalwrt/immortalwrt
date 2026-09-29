@@ -16,7 +16,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
 --- a/drivers/net/phy/realtek/realtek_main.c
 +++ b/drivers/net/phy/realtek/realtek_main.c
-@@ -155,6 +155,18 @@
+@@ -149,6 +149,18 @@
  
  #define RTL8221B_VND2_INSR			0xa4d4
  
@@ -35,7 +35,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
  #define RTL8224_MII_RTCT			0x11
  #define RTL8224_MII_RTCT_ENABLE			BIT(0)
  #define RTL8224_MII_RTCT_PAIR_A			BIT(4)
-@@ -2056,6 +2068,151 @@ static int rtl822xb_c45_read_status(stru
+@@ -1658,6 +1670,151 @@ static int rtl822xb_c45_read_status(stru
  	return 0;
  }
  
@@ -187,7 +187,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
  static int rtl8224_cable_test_start(struct phy_device *phydev)
  {
  	u32 val;
-@@ -2728,6 +2885,10 @@ static struct phy_driver realtek_drvs[]
+@@ -2330,6 +2487,10 @@ static struct phy_driver realtek_drvs[]
  		.write_page	= rtl821x_write_page,
  		.read_mmd	= rtl822xb_read_mmd,
  		.write_mmd	= rtl822xb_write_mmd,
@@ -198,7 +198,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
  	}, {
  		.match_phy_device = rtl8221b_vm_cg_match_phy_device,
  		.name		= "RTL8221B-VM-CG 2.5Gbps PHY",
-@@ -2747,6 +2908,10 @@ static struct phy_driver realtek_drvs[]
+@@ -2349,6 +2510,10 @@ static struct phy_driver realtek_drvs[]
  		.write_page	= rtl821x_write_page,
  		.read_mmd	= rtl822xb_read_mmd,
  		.write_mmd	= rtl822xb_write_mmd,

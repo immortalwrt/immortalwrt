@@ -85,12 +85,10 @@ define Package/rtl8192se-firmware/install
 endef
 $(eval $(call BuildPackage,rtl8192se-firmware))
 
-Package/rtl8261c-firmware = $(call Package/firmware-default,RealTek RTL8261C firmware)
+Package/rtl8261c-firmware = $(call Package/firmware-default,RealTek RTL8261C PHY firmware)
 define Package/rtl8261c-firmware/install
 	$(INSTALL_DIR) $(1)/lib/firmware/rtl_nic
-	$(CP) \
-		$(PKG_BUILD_DIR)/rtl_nic/rtl8261c.bin \
-		$(1)/lib/firmware/rtl_nic
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/rtl_nic/rtl8261c.bin $(1)/lib/firmware/rtl_nic
 endef
 $(eval $(call BuildPackage,rtl8261c-firmware))
 

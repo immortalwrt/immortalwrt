@@ -20,7 +20,7 @@ Signed-off-by: Tianling Shen <cnsztl@immortalwrt.org>
 
 --- a/drivers/net/phy/realtek/realtek_main.c
 +++ b/drivers/net/phy/realtek/realtek_main.c
-@@ -2372,34 +2372,24 @@ static int rtl822xb_c45_read_status(stru
+@@ -2284,34 +2284,24 @@ static int rtl822xb_c45_read_status(stru
  	return 0;
  }
  
@@ -65,8 +65,8 @@ Signed-off-by: Tianling Shen <cnsztl@immortalwrt.org>
 +	}
  }
  
- static int rtl822xb_led_hw_is_supported(struct phy_device *phydev, u8 index,
-@@ -2506,15 +2496,9 @@ static int rtl822xb_led_hw_control_set(s
+ static int rtl8261x_led_hw_is_supported(struct phy_device *phydev, u8 index,
+@@ -2627,15 +2617,9 @@ static int rtl822xb_led_hw_control_set(s
  	act = test_bit(TRIGGER_NETDEV_RX, &rules) ||
  	      test_bit(TRIGGER_NETDEV_TX, &rules);
  
@@ -85,7 +85,7 @@ Signed-off-by: Tianling Shen <cnsztl@immortalwrt.org>
  }
  
  static int rtl8224_cable_test_start(struct phy_device *phydev)
-@@ -3882,10 +3866,10 @@ static struct phy_driver realtek_drvs[]
+@@ -4006,10 +3990,10 @@ static struct phy_driver realtek_drvs[]
  		.write_page	= rtl821x_write_page,
  		.read_mmd	= rtl822xb_read_mmd,
  		.write_mmd	= rtl822xb_write_mmd,
@@ -97,7 +97,7 @@ Signed-off-by: Tianling Shen <cnsztl@immortalwrt.org>
  	}, {
  		.match_phy_device = rtl8221b_vm_cg_match_phy_device,
  		.name		= "RTL8221B-VM-CG 2.5Gbps PHY",
-@@ -3906,10 +3890,10 @@ static struct phy_driver realtek_drvs[]
+@@ -4030,10 +4014,10 @@ static struct phy_driver realtek_drvs[]
  		.write_page	= rtl821x_write_page,
  		.read_mmd	= rtl822xb_read_mmd,
  		.write_mmd	= rtl822xb_write_mmd,

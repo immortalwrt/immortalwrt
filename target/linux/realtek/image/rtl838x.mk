@@ -268,7 +268,7 @@ define Device/netgear_gs110tpp-v1
   $(Device/netgear_nge)
   DEVICE_MODEL := GS110TPP
   DEVICE_VARIANT := v1
-  DEVICE_PACKAGES += realtek-poe
+  DEVICE_PACKAGES += kmod-pse-realtek-mcu-uart
 endef
 TARGET_DEVICES += netgear_gs110tpp-v1
 
@@ -293,7 +293,7 @@ define Device/netgear_gs310tp-v1
   DEVICE_MODEL := GS310TP
   DEVICE_VARIANT := v1
   UIMAGE_MAGIC := 0x4e474335
-  DEVICE_PACKAGES += realtek-poe
+  DEVICE_PACKAGES += kmod-i2c-gpio kmod-pse-realtek-mcu-i2c
 endef
 TARGET_DEVICES += netgear_gs310tp-v1
 

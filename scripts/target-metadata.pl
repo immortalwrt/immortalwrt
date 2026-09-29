@@ -36,7 +36,8 @@ sub target_config_features(@) {
 		/^pinctrl$/ and $ret .= "\tselect PINCTRL_SUPPORT\n";
 		/^pm$/ and $ret .= "\tselect USES_PM\n";
 		/^powerpc64$/ and $ret .= "\tselect powerpc64\n";
-		/^pwm$/ and $ret .= "\select PWM_SUPPORT\n";
+		/^pwm$/ and $ret .= "\tselect PWM_SUPPORT\n";
+		/^qcow2$/ and $ret .= "\tselect USES_QCOW2\n";
 		/^ramdisk$/ and $ret .= "\tselect USES_INITRAMFS\n";
 		/^regulator$/ and $ret .= "\tselect REGULATOR_SUPPORT\n";
 		/^rfkill$/ and $ret .= "\tselect RFKILL_SUPPORT\n";
@@ -51,7 +52,10 @@ sub target_config_features(@) {
 		/^ubifs$/ and $ret .= "\tselect USES_UBIFS\n";
 		/^usb$/ and $ret .= "\tselect USB_SUPPORT\n";
 		/^usbgadget$/ and $ret .= "\tselect USB_GADGET_SUPPORT\n";
+		/^vdi$/ and $ret .= "\tselect USES_VDI\n";
+		/^vhdx$/ and $ret .= "\tselect USES_VHDX\n";
 		/^virtio$/ and $ret .= "\tselect VIRTIO_SUPPORT\n";
+		/^vmdk$/ and $ret .= "\tselect USES_VMDK\n";
 	}
 	return $ret;
 }

@@ -294,28 +294,28 @@ menu "Target Images"
 
 	config QCOW2_IMAGES
 		bool "Build PVE/KVM image files (QCOW2)"
-		depends on TARGET_x86 || TARGET_armsr
+		depends on USES_QCOW2
 		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		select PACKAGE_kmod-e1000
 		default y if BUILDBOT
 
 	config VDI_IMAGES
 		bool "Build VirtualBox image files (VDI)"
-		depends on TARGET_x86
+		depends on USES_VDI
 		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		select PACKAGE_kmod-e1000
 		default y if BUILDBOT
 
 	config VMDK_IMAGES
 		bool "Build VMware image files (VMDK)"
-		depends on TARGET_x86 || TARGET_armsr
+		depends on USES_VMDK
 		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		select PACKAGE_kmod-e1000
 		default y if BUILDBOT
 
 	config VHDX_IMAGES
 		bool "Build Hyper-V image files (VHDX)"
-		depends on TARGET_x86
+		depends on USES_VHDX
 		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		select PACKAGE_kmod-e1000
 		default y if BUILDBOT
