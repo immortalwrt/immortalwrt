@@ -3,6 +3,7 @@
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/clock/en7523-clk.h>
+#include <dt-bindings/phy/airoha,an7581-usb-phy.h>
 #include <dt-bindings/phy/phy.h>
 #include <dt-bindings/reset/airoha,an7583-reset.h>
 #include <dt-bindings/leds/common.h>
@@ -539,6 +540,53 @@
 			status = "disabled";
 		};
 
+		usb0: usb@1fab0000 {
+			compatible = "mediatek,mtk-xhci";
+			reg = <0x0 0x1fab0000 0x0 0x3e00>,
+			      <0x0 0x1fab3e00 0x0 0x100>;
+			reg-names = "mac", "ippc";
+			interrupts = <GIC_SPI 33 IRQ_TYPE_LEVEL_HIGH>;
+
+			phys = <&usb0_u2 PHY_TYPE_USB2>, <&usb1_u2 PHY_TYPE_USB2>,
+			       <&usb0_u3 PHY_TYPE_USB3>;
+
+			status = "disabled";
+		};
+
+		usb_phy: phy@1fac0000 {
+			compatible = "airoha,an7583-usb-phy";
+			reg = <0x0 0x1fac0000 0x0 0x2000>,
+			      <0x0 0x1fa6f000 0x0 0x1000>,
+			      <0x0 0x1fa6e000 0x0 0x1000>,
+			      <0x0 0x1fa6a000 0x0 0x1000>;
+			reg-names = "phy", "ana", "pma", "dig";
+
+			status = "disabled";
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			usb0_u2: usb2-phy@0 {
+				reg = <0x0>;
+				airoha,usb2-monitor-clk-sel = <AIROHA_USB2_MONCLK_SEL1>;
+
+				#phy-cells = <1>;
+			};
+
+			usb1_u2: usb2-phy@1000 {
+				reg = <0x1000>;
+				airoha,usb2-monitor-clk-sel = <AIROHA_USB2_MONCLK_SEL2>;
+
+				#phy-cells = <1>;
+			};
+
+			usb0_u3: usb3-phy {
+				airoha,scu = <&scuclk>;
+
+				#phy-cells = <1>;
+			};
+		};
+
 		crypto@1fb70000 {
 			compatible = "inside-secure,safexcel-eip93ies";
 			reg = <0x0 0x1fb70000 0x0 0x1000>;
@@ -580,9 +628,9 @@
 			      <0x0 0x1fa86000 0x0 0x300>,
 			      <0x0 0x1fa8f000 0x0 0x1000>,
 			      <0x0 0x1fa8e000 0x0 0x1000>;
-			reg-names = "xfi_mac", "hsgmii_an", "hsgmii_pcs",
+			reg-names = "pcs_mac", "hsgmii_an", "hsgmii_pcs",
 				    "multi_sgmii", "usxgmii",
-				    "hsgmii_rate_adp", "xfi_ana", "xfi_pma";
+				    "hsgmii_rate_adp", "pcs_ana", "pcs_pma";
 
 			resets = <&scuclk AN7583_XPON_MAC_RST>,
 				 <&scuclk AN7583_XPON_PHY_RST>,
@@ -590,6 +638,8 @@
 			reset-names = "mac", "phy", "xfi";
 
 			airoha,scu = <&scuclk>;
+
+			#pcs-cells = <0>;
 		};
 
 		eth_pcs: pcs@1fa09000 {
@@ -602,15 +652,17 @@
 			      <0x0 0x1fa76000 0x0 0x300>,
 			      <0x0 0x1fa7f000 0x0 0x1000>,
 			      <0x0 0x1fa7e000 0x0 0x1000>;
-			reg-names = "xfi_mac", "hsgmii_an", "hsgmii_pcs",
+			reg-names = "pcs_mac", "hsgmii_an", "hsgmii_pcs",
 				    "multi_sgmii", "usxgmii",
-				    "hsgmii_rate_adp", "xfi_ana", "xfi_pma";
+				    "hsgmii_rate_adp", "pcs_ana", "pcs_pma";
 
 			resets = <&scuclk AN7583_XSI_MAC_RST>,
 				 <&scuclk AN7583_XSI_PHY_RST>;
 			reset-names = "mac", "phy";
 
 			airoha,scu = <&scuclk>;
+
+			#pcs-cells = <0>;
 		};
 
 		eth: ethernet@1fb50000 {
