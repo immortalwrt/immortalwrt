@@ -71,7 +71,8 @@ struct otto_l3_nexthop {
 };
 
 struct otto_l3_route {
-	u32 gw_ip;			/* IP of the route's gateway */
+	struct in6_addr gw_ip;		/* Gateway of the route, IPv4 v4-mapped */
+	int gw_ifindex;			/* Device the gateway is reached on */
 	u32 dst_ip;			/* IP of the destination net */
 	struct in6_addr dst_ip6;
 	int prefix_len;			/* Network prefix len of the destination net */
@@ -123,6 +124,7 @@ struct otto_l3_ctrl {
 	unsigned long route_use_bm[MAX_ROUTES / 32];
 	unsigned long host_route_use_bm[MAX_HOST_ROUTES / 32];
 	struct otto_l3_intf interfaces[MAX_SMACS];
+	bool prefix_rows_stale;	/* a move failed, the rows are not where we say */
 	struct mutex *lock; /* protect register access */
 };
 

@@ -465,6 +465,14 @@ function dpp_channel_handle_request(channel, req)
 			return libubus.STATUS_UNKNOWN_ERROR;
 		return 0;
 
+	case "tx_gas_comeback_req":
+		iface = dpp_find_iface(data.ifname);
+		if (!iface)
+			return libubus.STATUS_NOT_FOUND;
+		if (!iface.dpp_send_gas_comeback_req(data.dst, data.freq ?? 0, data.dialog_token ?? 0))
+			return libubus.STATUS_UNKNOWN_ERROR;
+		return 0;
+
 	case "dpp_bootstrap_gen":
 		iface = dpp_find_iface(data.ifname);
 		if (!iface)
@@ -493,8 +501,8 @@ function dpp_channel_handle_request(channel, req)
 		let chirp_cmd = "DPP_CHIRP own=" + data.id;
 		if (data.iter)
 			chirp_cmd += " iter=" + data.iter;
-		if (data.scan_interval)
-			chirp_cmd += " listen=" + data.scan_interval;
+		if (data.listen_freq)
+			chirp_cmd += " listen=" + data.listen_freq;
 		let chirp_result = iface.ctrl(chirp_cmd);
 		return (chirp_result == "OK") ? 0 : libubus.STATUS_UNKNOWN_ERROR;
 

@@ -9,6 +9,7 @@
 #include "l3.h"
 #include "pie.h"
 #include "qos.h"
+#include "mirror.h"
 #include "rtl-otto.h"
 #include "stats.h"
 #include "tc.h"
@@ -139,30 +140,6 @@ void rtldsa_930x_print_matrix(void)
 		pr_debug("> %08x\n", v);
 	}
 	otto_table_release(tbl);
-}
-
-static int rtldsa_930x_get_mirror_config(struct rtldsa_mirror_config *config,
-					 int group, int port)
-{
-	config->ctrl = RTL930X_MIR_CTRL + group * 4;
-	config->spm = RTL930X_MIR_SPM_CTRL + group * 4;
-	config->dpm = RTL930X_MIR_DPM_CTRL + group * 4;
-
-	/* Enable mirroring to destination port */
-	config->val = BIT(0);
-	config->val |= port << 9;
-
-	/* mirror mode: let mirrored packets follow TX settings of
-	 * mirroring port
-	 */
-	config->val |= BIT(5);
-
-	/* direction of traffic to be mirrored when a packet
-	 * hits both SPM and DPM ports: prefer egress
-	 */
-	config->val |= BIT(4);
-
-	return 0;
 }
 
 static inline int rtl930x_mac_force_mode_ctrl(int p)
@@ -446,39 +423,6 @@ static void rtl930x_init_eee(struct rtl838x_switch_priv *priv, bool enable)
 // 	priv->intf_mtu_count[i]++;
 
 // 	return mtu_id;
-// }
-
-// Currently not used
-// /* Creates an interface for a route by setting up the HW tables in the SoC */
-// static int rtl930x_l3_intf_add(struct rtl838x_switch_priv *priv, struct rtl838x_l3_intf *intf)
-// {
-// 	int i, intf_id, mtu_id;
-// 	/* number of MTU-values < 16384 */
-
-// 	/* Use the same IPv6 mtu as the ip4 mtu for this route if unset */
-// 	intf->ip6_mtu = intf->ip6_mtu ? intf->ip6_mtu : intf->ip4_mtu;
-
-// 	mtu_id = rtl930x_l3_mtu_add(priv, intf->ip4_mtu);
-// 	pr_debug("%s: added mtu %d with mtu-id %d\n", __func__, intf->ip4_mtu, mtu_id);
-// 	if (mtu_id < 0)
-// 		return -ENOSPC;
-// 	intf->ip4_mtu_id = mtu_id;
-// 	intf->ip6_mtu_id = mtu_id;
-
-// 	for (i = 0; i < MAX_INTERFACES; i++) {
-// 		if (!priv->interfaces[i])
-// 			break;
-// 	}
-// 	if (i >= MAX_INTERFACES) {
-// 		pr_err("%s: cannot find free interface entry\n", __func__);
-// 		return -EINVAL;
-// 	}
-// 	intf_id = i;
-// 	priv->interfaces[i] = kzalloc(sizeof(struct rtl838x_l3_intf), GFP_KERNEL);
-// 	if (!priv->interfaces[i]) {
-// 		pr_err("%s: no memory to allocate new interface\n", __func__);
-// 		return -ENOMEM;
-// 	}
 // }
 
 #endif /* CONFIG_NET_DSA_RTL83XX_RTL930X_L3_OFFLOAD */

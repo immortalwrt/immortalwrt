@@ -800,7 +800,7 @@ uc_hostapd_bss_rename(uc_vm_t *vm, size_t nargs)
 	char prev_ifname[IFNAMSIZ + 1];
 	struct sta_info *sta;
 	const char *ifname;
-	int ret;
+	int ret = 0;
 
 	if (!hapd || ucv_type(ifname_arg) != UC_STRING)
 		return NULL;
@@ -832,6 +832,7 @@ uc_hostapd_bss_rename(uc_vm_t *vm, size_t nargs)
 	if (!strncmp(hapd->conf->ssid.vlan, hapd->conf->iface, sizeof(hapd->conf->ssid.vlan)))
 		os_strlcpy(hapd->conf->ssid.vlan, ifname, sizeof(hapd->conf->ssid.vlan));
 	os_strlcpy(hapd->conf->iface, ifname, sizeof(hapd->conf->iface));
+	hostapd_set_ctrl_sock_iface(hapd);
 	hostapd_ubus_add_bss(hapd);
 
 	hostapd_ucode_update_interfaces();
@@ -987,6 +988,27 @@ uc_wpa_rkh_derive_key(uc_vm_t *vm, size_t nargs)
 }
 
 #ifdef CONFIG_DPP
+/* The BSS the caller reached carries the address of its own link. A frame that
+ * leaves under the address of one link on the channel of another is not
+ * acknowledged, so answer from the link that holds the channel.
+ */
+static struct hostapd_data *
+hostapd_dpp_freq_bss(struct hostapd_data *hapd, unsigned int freq)
+{
+#ifdef CONFIG_IEEE80211BE
+	struct hostapd_data *link;
+
+	if (!hapd->conf->mld_ap)
+		return hapd;
+
+	for_each_mld_link(link, hapd)
+		if (link->iface->freq == (int)freq)
+			return link;
+#endif /* CONFIG_IEEE80211BE */
+
+	return hapd;
+}
+
 static uc_value_t *
 uc_hostapd_bss_dpp_send_action(uc_vm_t *vm, size_t nargs)
 {
@@ -1014,6 +1036,8 @@ uc_hostapd_bss_dpp_send_action(uc_vm_t *vm, size_t nargs)
 	freq = ucv_int64_get(freq_arg);
 	if (!freq)
 		freq = hapd->iface->freq;
+	else
+		hapd = hostapd_dpp_freq_bss(hapd, freq);
 
 	frame_b64 = ucv_string_get(frame_arg);
 	frame_data = base64_decode(frame_b64, os_strlen(frame_b64), &frame_len);
@@ -1075,6 +1099,8 @@ uc_hostapd_bss_dpp_send_gas_resp(uc_vm_t *vm, size_t nargs)
 	freq = ucv_int64_get(freq_arg);
 	if (!freq)
 		freq = hapd->iface->freq;
+	else
+		hapd = hostapd_dpp_freq_bss(hapd, freq);
 
 	data_b64 = ucv_string_get(data_arg);
 	data = base64_decode(data_b64, os_strlen(data_b64), &data_len);
@@ -1127,7 +1153,8 @@ int hostapd_ucode_dpp_rx_action(struct hostapd_data *hapd, const u8 *src,
 
 struct wpabuf *hostapd_ucode_dpp_gas_req(struct hostapd_data *hapd,
 					 const u8 *sa, u8 dialog_token,
-					 const u8 *query, size_t query_len)
+					 const u8 *query, size_t query_len,
+					 unsigned int freq)
 {
 	uc_value_t *val;
 	char addr[18];
@@ -1149,9 +1176,10 @@ struct wpabuf *hostapd_ucode_dpp_gas_req(struct hostapd_data *hapd,
 	uc_value_push(ucv_string_new(addr));
 	uc_value_push(ucv_int64_new(dialog_token));
 	uc_value_push(ucv_string_new(query_b64));
+	uc_value_push(ucv_int64_new(freq));
 	os_free(query_b64);
 
-	val = wpa_ucode_call(4);
+	val = wpa_ucode_call(5);
 	if (ucv_type(val) == UC_STRING) {
 		const char *resp_b64 = ucv_string_get(val);
 		size_t resp_len;
