@@ -53,7 +53,8 @@ endef
 
 define KernelPackage/aic8800-sdio
   $(call KernelPackage/aic8800/Default,SDIO)
-  DEPENDS+= +aic8800-sdio-firmware +kmod-mmc +AIC8800_SDIO_BT_SUPPORT:kmod-bluetooth
+  DEPENDS+= +aic8800-sdio-firmware +kmod-mmc \
+	+AIC8800_SDIO_BT_SUPPORT:input-support +AIC8800_SDIO_BT_SUPPORT:kmod-bluetooth
   FILES:= \
 	$(PKG_BUILD_DIR)/src/SDIO/driver_fw/driver/aic8800/aic8800_bsp/aic8800_bsp.ko \
 	$(PKG_BUILD_DIR)/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/aic8800_fdrv.ko
