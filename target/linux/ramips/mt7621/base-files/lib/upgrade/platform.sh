@@ -150,6 +150,9 @@ platform_do_upgrade() {
 	sim,simax1800u|\
 	tplink,ec330-g5u-v1|\
 	wifire,s1500-nbn|\
+	livinet,li170|\
+	livinet,li172|\
+	livinet,li172v2|\
 	xiaomi,mi-router-3g|\
 	xiaomi,mi-router-3-pro|\
 	xiaomi,mi-router-4|\
@@ -161,6 +164,8 @@ platform_do_upgrade() {
 	z-router,zr-2660|\
 	z-router,zr-2662|\
 	zte,e8820s|\
+	qihoo,t6m|\
+	qihoo,t5g|\
 	zyxel,nwa50ax|\
 	zyxel,nwa55axe)
 		nand_do_upgrade "$1"
