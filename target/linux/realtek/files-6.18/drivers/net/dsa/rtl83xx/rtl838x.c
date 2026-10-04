@@ -11,87 +11,66 @@
 #include "pie.h"
 #include "qos.h"
 #include "mirror.h"
+#include "mac.h"
 #include "rtl-otto.h"
 #include "stats.h"
 #include "vlan.h"
 #include "stp.h"
 
-const struct rtldsa_mib_list_item rtldsa_838x_mib_list[] = {
-	MIB_LIST_ITEM("dot1dTpPortInDiscards", MIB_ITEM(MIB_REG_STD, 0xec, 1)),
-	MIB_LIST_ITEM("ifOutDiscards", MIB_ITEM(MIB_REG_STD, 0xd0, 1)),
-	MIB_LIST_ITEM("DropEvents", MIB_ITEM(MIB_REG_STD, 0xa8, 1)),
-	MIB_LIST_ITEM("tx_BroadcastPkts", MIB_ITEM(MIB_REG_STD, 0xa4, 1)),
-	MIB_LIST_ITEM("tx_MulticastPkts", MIB_ITEM(MIB_REG_STD, 0xa0, 1)),
-	MIB_LIST_ITEM("tx_UndersizePkts", MIB_ITEM(MIB_REG_STD, 0x98, 1)),
-	MIB_LIST_ITEM("rx_UndersizeDropPkts", MIB_ITEM(MIB_REG_STD, 0x90, 1)),
-	MIB_LIST_ITEM("tx_OversizePkts", MIB_ITEM(MIB_REG_STD, 0x8c, 1)),
-	MIB_LIST_ITEM("Collisions", MIB_ITEM(MIB_REG_STD, 0x7c, 1)),
-	MIB_LIST_ITEM("rx_MacDiscards", MIB_ITEM(MIB_REG_STD, 0x40, 1))
-};
+/* Register definition */
+#define RTL838X_MAC_PORT_CTRL(port)		(0xd560 + (((port) << 7)))
 
-const struct rtldsa_mib_desc rtldsa_838x_mib_desc = {
-	.symbol_errors = MIB_ITEM(MIB_REG_STD, 0xb8, 1),
+/* MAC maximum packet length (jumbo frame) control.
+ *
+ * The switch MAC drops frames whose L2 length exceeds the configured maximum.
+ * A family holds either one register per user port or a single one for the
+ * whole switch. The length is a direct byte value held in two 14-bit fields
+ * (high-speed links in [13:0], 10/100M links in [27:14]); bit 28 selects
+ * whether VLAN tag bytes count towards the limit.
+ */
 
-	.if_in_octets = MIB_ITEM(MIB_REG_STD, 0xf8, 2),
-	.if_out_octets = MIB_ITEM(MIB_REG_STD, 0xf0, 2),
-	.if_in_ucast_pkts = MIB_ITEM(MIB_REG_STD, 0xe8, 1),
-	.if_in_mcast_pkts = MIB_ITEM(MIB_REG_STD, 0xe4, 1),
-	.if_in_bcast_pkts = MIB_ITEM(MIB_REG_STD, 0xe0, 1),
-	.if_out_ucast_pkts = MIB_ITEM(MIB_REG_STD, 0xdc, 1),
-	.if_out_mcast_pkts = MIB_ITEM(MIB_REG_STD, 0xd8, 1),
-	.if_out_bcast_pkts = MIB_ITEM(MIB_REG_STD, 0xd4, 1),
-	.if_out_discards = MIB_ITEM(MIB_REG_STD, 0xd0, 1),
-	.single_collisions = MIB_ITEM(MIB_REG_STD, 0xcc, 1),
-	.multiple_collisions = MIB_ITEM(MIB_REG_STD, 0xc8, 1),
-	.deferred_transmissions = MIB_ITEM(MIB_REG_STD, 0xc4, 1),
-	.late_collisions = MIB_ITEM(MIB_REG_STD, 0xc0, 1),
-	.excessive_collisions = MIB_ITEM(MIB_REG_STD, 0xbc, 1),
-	.crc_align_errors = MIB_ITEM(MIB_REG_STD, 0x9c, 1),
+/* RTL838x and RTL839x hold one limit for the whole switch instead, bounding
+ * the CPU port with it. RTL838x mirrors it in a second register, and the
+ * vendor SDK writes both (dal_maple_switch_maxPktLenLinkSpeed_set()).
+ */
+#define RTL838X_MAC_MAX_LEN_CTRL		(0xa9e0)
+#define RTL838X_MAC_MAX_LEN_CTRL_DUP		(0x6b00)
 
-	.unsupported_opcodes = MIB_ITEM(MIB_REG_STD, 0xb4, 1),
+/* RTL838x stops at what its datasheet gives, below the vendor SDK value */
+#define RTL838X_MAX_FRAME			10000
 
-	.rx_undersize_pkts = MIB_ITEM(MIB_REG_STD, 0x94, 1),
-	.rx_oversize_pkts = MIB_ITEM(MIB_REG_STD, 0x88, 1),
-	.rx_fragments = MIB_ITEM(MIB_REG_STD, 0x84, 1),
-	.rx_jabbers = MIB_ITEM(MIB_REG_STD, 0x80, 1),
+/* MAC handling */
+#define RTL838X_MAC_LINK_STS			(0xa188)
 
-	.tx_pkts = {
-		MIB_ITEM(MIB_REG_STD, 0x78, 1),
-		MIB_ITEM(MIB_REG_STD, 0x70, 1),
-		MIB_ITEM(MIB_REG_STD, 0x68, 1),
-		MIB_ITEM(MIB_REG_STD, 0x60, 1),
-		MIB_ITEM(MIB_REG_STD, 0x58, 1),
-		MIB_ITEM(MIB_REG_STD, 0x50, 1),
-		MIB_ITEM(MIB_REG_STD, 0x48, 1)
-	},
-	.rx_pkts = {
-		MIB_ITEM(MIB_REG_STD, 0x74, 1),
-		MIB_ITEM(MIB_REG_STD, 0x6c, 1),
-		MIB_ITEM(MIB_REG_STD, 0x64, 1),
-		MIB_ITEM(MIB_REG_STD, 0x5c, 1),
-		MIB_ITEM(MIB_REG_STD, 0x54, 1),
-		MIB_ITEM(MIB_REG_STD, 0x4c, 1),
-		MIB_ITEM(MIB_REG_STD, 0x44, 1)
-	},
-	.rmon_ranges = {
-		{ 0, 64 },
-		{ 65, 127 },
-		{ 128, 255 },
-		{ 256, 511 },
-		{ 512, 1023 },
-		{ 1024, 1518 },
-		{ 1519, 10000 }
-	},
+#define RTL838X_EEE_PORT_TX_EN			(0x014c)
+#define RTL838X_EEE_PORT_RX_EN			(0x0150)
+#define RTL838X_EEE_TX_TIMER_GIGA_CTRL		(0xaa04)
+#define RTL838X_EEE_TX_TIMER_GELITE_CTRL	(0xaa08)
 
-	.drop_events = MIB_ITEM(MIB_REG_STD, 0xa8, 1),
-	.collisions = MIB_ITEM(MIB_REG_STD, 0x7c, 1),
+/* L2 functionality */
+#define RTL838X_L2_CTRL_0			(0x3200)
 
-	.rx_pause_frames = MIB_ITEM(MIB_REG_STD, 0xb0, 1),
-	.tx_pause_frames = MIB_ITEM(MIB_REG_STD, 0xac, 1),
+#define RTL838X_L2_TBL_FLUSH_CTRL		(0x3370)
 
-	.list_count = ARRAY_SIZE(rtldsa_838x_mib_list),
-	.list = rtldsa_838x_mib_list
-};
+/* 802.1X */
+#define RTL838X_RMA_BPDU_FLD_PMSK		(0x4348)
+
+#define RTL838X_SPCL_TRAP_EAPOL_CTRL		(0x6988)
+#define RTL838X_SPCL_TRAP_SWITCH_MAC_CTRL	(0x6998)
+
+/* Switch interrupts */
+#define RTL838X_IMR_GLB				(0x1100)
+#define RTL838X_IMR_PORT_LINK_STS_CHG		(0x1104)
+#define RTL838X_ISR_GLB_SRC			(0x1148)
+#define RTL838X_ISR_PORT_LINK_STS_CHG		(0x114C)
+
+#define RTL838X_SMI_GLB_CTRL			(0xa100) /* used by RTL838x EEE setup */
+
+#define RTL838X_RMA_BPDU_CTRL			(0x4330)
+
+#define RTL838X_RMA_PTP_CTRL			(0x4338)
+
+#define RTL838X_RMA_LLDP_CTRL			(0x4340)
 
 void rtldsa_838x_print_matrix(void)
 {

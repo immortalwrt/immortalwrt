@@ -14,109 +14,76 @@
 #include "vlan.h"
 #include "stp.h"
 
+#define RTL931X_MAC_L2_PORT_CTRL		(0x6000)
+
+/* MAC maximum packet length (jumbo frame) control.
+ *
+ * The switch MAC drops frames whose L2 length exceeds the configured maximum.
+ * A family holds either one register per user port or a single one for the
+ * whole switch. The length is a direct byte value held in two 14-bit fields
+ * (high-speed links in [13:0], 10/100M links in [27:14]); bit 28 selects
+ * whether VLAN tag bytes count towards the limit.
+ */
+
+/* RTL931x covers ports 0 to 55 only, one word each. The CPU port has no row:
+ * the word that would follow the array is MAC_DBG_SEL_CTRL.
+ */
+#define RTL931X_MAC_L2_PORT_MAX_LEN_CTRL	(0x5554)
+
+#define RTL931X_MAX_FRAME			12288
+
+#define RTL931X_MAC_FORCE_MODE_CTRL		(0x0DCC)
+
+#define RTL931X_MAC_LINK_STS			(0x0EC0)
+
+#define RTL931X_FORCE_EN			BIT(9)
+#define RTL931X_FORCE_LINK_EN			BIT(0)
+
+#define RTL931X_TRK_HASH_CTRL			(0xBA70)
+#define RTL931X_TRK_CTRL			(0xBA78)
+
+#define RTL931X_RMA_BPDU_FLD_PMSK		(0x8950)
+
+/* IMR_GLB does not exit on RTL931X */
+#define RTL931X_IMR_PORT_LINK_STS_CHG		(0x126C)
+#define RTL931X_ISR_GLB_SRC			(0x12B4)
+#define RTL931X_ISR_PORT_LINK_STS_CHG		(0x12B8)
+
+#define RTL931X_LED_GLB_CTRL			(0x0600)
+
+#define RTL931X_RMA_BPDU_CTRL			(0x881C)
+
+#define RTL931X_RMA_PTP_CTRL			(0x8834)
+
+#define RTL931X_RMA_LLDP_CTRL			(0x8918)
+
+#define RTL931X_RMA_EAPOL_CTRL			(0x8930)
+#define RTL931X_TRAP_ARP_GRAT_PORT_ACT		(0x8C04)
+
+#define RTL931X_LED_PORT_NUM_CTRL(p)		(0x0604 + (((p >> 4) << 2)))
+#define RTL931X_LED_SET0_0_CTRL			(0x0630)
+#define RTL931X_LED_PORT_COPR_SET_SEL_CTRL(p)	(0x0634 + (((p >> 4) << 2)))
+#define RTL931X_LED_PORT_FIB_SET_SEL_CTRL(p)	(0x0644 + (((p >> 4) << 2)))
+#define RTL931X_LED_PORT_COPR_MASK_CTRL		(0x0654)
+#define RTL931X_LED_PORT_FIB_MASK_CTRL		(0x065c)
+#define RTL931X_LED_PORT_COMBO_MASK_CTRL	(0x0664)
+
+#define RTL931X_LED_GLB_ACTIVE_LOW BIT(21)
+
+#define RTL931X_LED_SETX_0_CTRL(x) (RTL931X_LED_SET0_0_CTRL - (x * 8))
+#define RTL931X_LED_SETX_1_CTRL(x) (RTL931X_LED_SETX_0_CTRL(x) - 4)
+
+/* get register for given set and led in the set */
+#define RTL931X_LED_SETX_LEDY(x, y) (RTL931X_LED_SETX_0_CTRL(x) - 4 * (y / 2))
+
+/* get shift for given led in any set */
+#define RTL931X_LED_SET_LEDX_SHIFT(x) (16 * (x % 2))
+
 #define RTL931X_LED_CLK_SEL_MASK				GENMASK(16, 15)
 #define RTL931X_LED_CLK_SEL_800NS				0
 #define RTL931X_LED_CLK_SEL_400NS				1
 #define RTL931X_LED_CLK_SEL_200NS				2
 #define RTL931X_LED_CLK_SEL_100NS				3
-
-const struct rtldsa_mib_list_item rtldsa_931x_mib_list[] = {
-	MIB_LIST_ITEM("ifOutDiscards", MIB_ITEM(MIB_TBL_STD, 36, 1)),
-	MIB_LIST_ITEM("dot1dTpPortInDiscards", MIB_ITEM(MIB_TBL_STD, 35, 1)),
-	MIB_LIST_ITEM("DropEvents", MIB_ITEM(MIB_TBL_STD, 25, 1)),
-	MIB_LIST_ITEM("tx_BroadcastPkts", MIB_ITEM(MIB_TBL_STD, 24, 1)),
-	MIB_LIST_ITEM("tx_MulticastPkts", MIB_ITEM(MIB_TBL_STD, 23, 1)),
-	MIB_LIST_ITEM("tx_CRCAlignErrors", MIB_ITEM(MIB_TBL_STD, 22, 1)),
-	MIB_LIST_ITEM("tx_UndersizePkts", MIB_ITEM(MIB_TBL_STD, 20, 1)),
-	MIB_LIST_ITEM("tx_OversizePkts", MIB_ITEM(MIB_TBL_STD, 18, 1)),
-	MIB_LIST_ITEM("tx_Fragments", MIB_ITEM(MIB_TBL_STD, 16, 1)),
-	MIB_LIST_ITEM("tx_Jabbers", MIB_ITEM(MIB_TBL_STD, 14, 1)),
-	MIB_LIST_ITEM("tx_Collisions", MIB_ITEM(MIB_TBL_STD, 12, 1)),
-
-	MIB_LIST_ITEM("rx_UndersizeDropPkts", MIB_ITEM(MIB_TBL_PRV, 27, 1)),
-	MIB_LIST_ITEM("tx_PktsFlexibleOctetsSet1", MIB_ITEM(MIB_TBL_PRV, 22, 1)),
-	MIB_LIST_ITEM("rx_PktsFlexibleOctetsSet1", MIB_ITEM(MIB_TBL_PRV, 21, 1)),
-	MIB_LIST_ITEM("tx_PktsFlexibleOctetsCRCSet1", MIB_ITEM(MIB_TBL_PRV, 20, 1)),
-	MIB_LIST_ITEM("rx_PktsFlexibleOctetsCRCSet1", MIB_ITEM(MIB_TBL_PRV, 19, 1)),
-	MIB_LIST_ITEM("tx_PktsFlexibleOctetsSet0", MIB_ITEM(MIB_TBL_PRV, 18, 1)),
-	MIB_LIST_ITEM("rx_PktsFlexibleOctetsSet0", MIB_ITEM(MIB_TBL_PRV, 17, 1)),
-	MIB_LIST_ITEM("tx_PktsFlexibleOctetsCRCSet0", MIB_ITEM(MIB_TBL_PRV, 16, 1)),
-	MIB_LIST_ITEM("rx_PktsFlexibleOctetsCRCSet0", MIB_ITEM(MIB_TBL_PRV, 15, 1)),
-	MIB_LIST_ITEM("LengthFieldError", MIB_ITEM(MIB_TBL_PRV, 14, 1)),
-	MIB_LIST_ITEM("FalseCarrierTimes", MIB_ITEM(MIB_TBL_PRV, 13, 1)),
-	MIB_LIST_ITEM("UndersizeOctets", MIB_ITEM(MIB_TBL_PRV, 12, 1)),
-	MIB_LIST_ITEM("FramingErrors", MIB_ITEM(MIB_TBL_PRV, 11, 1)),
-	MIB_LIST_ITEM("rx_MacDiscards", MIB_ITEM(MIB_TBL_PRV, 9, 1)),
-	MIB_LIST_ITEM("rx_MacIPGShortDrop", MIB_ITEM(MIB_TBL_PRV, 8, 1))
-};
-
-const struct rtldsa_mib_desc rtldsa_931x_mib_desc = {
-	.symbol_errors = MIB_ITEM(MIB_TBL_STD, 29, 1),
-
-	.if_in_octets = MIB_ITEM(MIB_TBL_STD, 51, 2),
-	.if_out_octets = MIB_ITEM(MIB_TBL_STD, 49, 2),
-	.if_in_ucast_pkts = MIB_ITEM(MIB_TBL_STD, 47, 2),
-	.if_in_mcast_pkts = MIB_ITEM(MIB_TBL_STD, 45, 2),
-	.if_in_bcast_pkts = MIB_ITEM(MIB_TBL_STD, 43, 2),
-	.if_out_ucast_pkts = MIB_ITEM(MIB_TBL_STD, 41, 2),
-	.if_out_mcast_pkts = MIB_ITEM(MIB_TBL_STD, 39, 2),
-	.if_out_bcast_pkts = MIB_ITEM(MIB_TBL_STD, 37, 2),
-	.if_out_discards = MIB_ITEM(MIB_TBL_STD, 36, 1),
-	.single_collisions = MIB_ITEM(MIB_TBL_STD, 34, 1),
-	.multiple_collisions = MIB_ITEM(MIB_TBL_STD, 33, 1),
-	.deferred_transmissions = MIB_ITEM(MIB_TBL_STD, 32, 1),
-	.late_collisions = MIB_ITEM(MIB_TBL_STD, 31, 1),
-	.excessive_collisions = MIB_ITEM(MIB_TBL_STD, 30, 1),
-	.crc_align_errors = MIB_ITEM(MIB_TBL_STD, 21, 1),
-	.rx_pkts_over_max_octets = MIB_ITEM(MIB_TBL_PRV, 23, 1),
-
-	.unsupported_opcodes = MIB_ITEM(MIB_TBL_STD, 28, 1),
-
-	.rx_undersize_pkts = MIB_ITEM(MIB_TBL_STD, 19, 1),
-	.rx_oversize_pkts = MIB_ITEM(MIB_TBL_STD, 17, 1),
-	.rx_fragments = MIB_ITEM(MIB_TBL_STD, 15, 1),
-	.rx_jabbers = MIB_ITEM(MIB_TBL_STD, 13, 1),
-
-	.tx_pkts = {
-		MIB_ITEM(MIB_TBL_STD, 11, 1),
-		MIB_ITEM(MIB_TBL_STD, 9, 1),
-		MIB_ITEM(MIB_TBL_STD, 7, 1),
-		MIB_ITEM(MIB_TBL_STD, 5, 1),
-		MIB_ITEM(MIB_TBL_STD, 3, 1),
-		MIB_ITEM(MIB_TBL_STD, 1, 1),
-		MIB_ITEM(MIB_TBL_PRV, 26, 1),
-		MIB_ITEM(MIB_TBL_PRV, 24, 1)
-	},
-	.rx_pkts = {
-		MIB_ITEM(MIB_TBL_STD, 10, 1),
-		MIB_ITEM(MIB_TBL_STD, 8, 1),
-		MIB_ITEM(MIB_TBL_STD, 6, 1),
-		MIB_ITEM(MIB_TBL_STD, 4, 1),
-		MIB_ITEM(MIB_TBL_STD, 2, 1),
-		MIB_ITEM(MIB_TBL_STD, 0, 1),
-		MIB_ITEM(MIB_TBL_PRV, 25, 1),
-		MIB_ITEM(MIB_TBL_PRV, 23, 1),
-	},
-	.rmon_ranges = {
-		{ 0, 64 },
-		{ 65, 127 },
-		{ 128, 255 },
-		{ 256, 511 },
-		{ 512, 1023 },
-		{ 1024, 1518 },
-		{ 1519, 12288 },
-		{ 12289, 65535 }
-	},
-
-	.drop_events = MIB_ITEM(MIB_TBL_STD, 25, 1),
-	.collisions = MIB_ITEM(MIB_TBL_STD, 12, 1),
-
-	.rx_pause_frames = MIB_ITEM(MIB_TBL_STD, 27, 1),
-	.tx_pause_frames = MIB_ITEM(MIB_TBL_STD, 26, 1),
-
-	.list_count = ARRAY_SIZE(rtldsa_931x_mib_list),
-	.list = rtldsa_931x_mib_list
-};
 
 static inline int rtl931x_mac_force_mode_ctrl(int p)
 {

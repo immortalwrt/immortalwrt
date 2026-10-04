@@ -198,7 +198,8 @@ static bool rteth_838x_decode_tag(struct rteth_frag *frag, struct rteth_dsa_tag 
 	t->crc_error = t->reason == 13;
 
 	pr_debug("Reason: %d\n", t->reason);
-	if (t->reason != 6) /* NIC_RX_REASON_SPECIAL_TRAP */
+	if (t->reason != 2 && /* NIC_RX_REASON_RMA */
+	    t->reason != 6)   /* NIC_RX_REASON_SPECIAL_TRAP */
 		t->l2_offloaded = 1;
 	else
 		t->l2_offloaded = 0;
@@ -1182,6 +1183,7 @@ static struct sk_buff *rteth_create_skb(struct rteth_ctrl *ctrl, int ring, int s
 	struct page_pool *pool = ctrl->rx_info[ring].pool;
 	struct net_device *dev = ctrl->dev;
 	unsigned int len = frag->len;
+	struct metadata_dst *md_dst;
 	struct rteth_dsa_tag tag;
 	struct sk_buff *skb;
 
@@ -1197,11 +1199,9 @@ static struct sk_buff *rteth_create_skb(struct rteth_ctrl *ctrl, int ring, int s
 	skb_put(skb, len);
 
 	ctrl->cfg->decode_tag(frag, &tag);
-	if (netdev_uses_dsa(dev)) {
-		if (tag.port < ctrl->cfg->cpu_port)
-			skb_dst_set_noref(skb, &ctrl->dsa_meta[tag.port]->dst);
-		if (tag.l2_offloaded)
-			skb->offload_fwd_mark = 1;
+	if (netdev_uses_dsa(dev) && tag.port < ctrl->cfg->cpu_port) {
+		md_dst = tag.l2_offloaded ? ctrl->dsa_meta[tag.port] : ctrl->dsa_meta_trapped[tag.port];
+		skb_dst_set_noref(skb, &md_dst->dst);
 	}
 
 	if (dev->features & NETIF_F_RXCSUM) {
@@ -1737,7 +1737,7 @@ static const struct rteth_cfg rteth_931x_cfg = {
 	.mac_force_mode_ctrl	= RTETH_931X_MAC_FORCE_MODE_CTRL,
 	.rst_glb_ctrl		= RTETH_931X_RST_GLB_CTRL,
 	.skb_headroom		= RTETH_SKB_HEADROOM_FAST,
-	.mac_reg		= { RTETH_930X_MAC_L2_ADDR_CTRL },
+	.mac_reg		= { RTETH_931X_MAC_L2_ADDR_CTRL },
 	.l2_tbl_flush_ctrl	= RTETH_931X_L2_TBL_FLUSH_CTRL,
 	.confirm_disable_irqs	= rteth_93xx_confirm_disable_irqs,
 	.enable_rx_irq		= rteth_93xx_enable_rx_irq,
@@ -1765,17 +1765,26 @@ static const struct ethtool_ops rteth_ethtool_ops = {
 	.set_link_ksettings	= rteth_set_link_ksettings,
 };
 
+static struct metadata_dst *rteth_metadata_dst(unsigned int port, bool trapped)
+{
+	struct metadata_dst *md_dst = metadata_dst_alloc(0, METADATA_HW_PORT_MUX, GFP_KERNEL);
+
+	if (!md_dst)
+		return NULL;
+
+	md_dst->u.port_info.port_id = port;
+	md_dst->u.port_info.trapped = trapped;
+
+	return md_dst;
+}
+
 static int rteth_metadata_dst_alloc(struct rteth_ctrl *ctrl)
 {
-	struct metadata_dst *md_dst;
-
 	for (int i = 0; i < ARRAY_SIZE(ctrl->dsa_meta); i++) {
-		md_dst = metadata_dst_alloc(0, METADATA_HW_PORT_MUX, GFP_KERNEL);
-		if (!md_dst)
+		ctrl->dsa_meta[i] = rteth_metadata_dst(i, false);
+		ctrl->dsa_meta_trapped[i] = rteth_metadata_dst(i, true);
+		if (!ctrl->dsa_meta[i] || !ctrl->dsa_meta_trapped[i])
 			return -ENOMEM;
-
-		md_dst->u.port_info.port_id = i;
-		ctrl->dsa_meta[i] = md_dst;
 	}
 
 	return 0;
@@ -1784,10 +1793,10 @@ static int rteth_metadata_dst_alloc(struct rteth_ctrl *ctrl)
 static void rteth_metadata_dst_free(struct rteth_ctrl *ctrl)
 {
 	for (int i = 0; i < ARRAY_SIZE(ctrl->dsa_meta); i++) {
-		if (!ctrl->dsa_meta[i])
-			continue;
-
-		metadata_dst_free(ctrl->dsa_meta[i]);
+		if (ctrl->dsa_meta[i])
+			metadata_dst_free(ctrl->dsa_meta[i]);
+		if (ctrl->dsa_meta_trapped[i])
+			metadata_dst_free(ctrl->dsa_meta_trapped[i]);
 	}
 }
 
