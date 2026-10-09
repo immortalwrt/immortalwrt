@@ -251,7 +251,7 @@ Signed-off-by: David Wu <david.wu@rock-chips.com>
  	.set_speed = rk_set_clk_mac_speed,
  	.regs_valid = true,
  	.regs = {
-@@ -1462,7 +1633,7 @@ static int gmac_clk_enable(struct rk_pri
+@@ -1465,7 +1636,7 @@ static int gmac_clk_enable(struct rk_pri
  	return 0;
  }
  
@@ -260,7 +260,7 @@ Signed-off-by: David Wu <david.wu@rock-chips.com>
  {
  	struct regulator *ldo = bsp_priv->regulator;
  	struct device *dev = bsp_priv->dev;
-@@ -1575,6 +1746,18 @@ static struct rk_priv_data *rk_gmac_setu
+@@ -1578,6 +1749,18 @@ static struct rk_priv_data *rk_gmac_setu
  			return ERR_CAST(bsp_priv->php_grf);
  		}
  	}
@@ -279,7 +279,7 @@ Signed-off-by: David Wu <david.wu@rock-chips.com>
  
  	if (plat->phy_node) {
  		bsp_priv->integrated_phy = of_property_read_bool(plat->phy_node,
-@@ -1609,6 +1792,14 @@ static int rk_gmac_check_ops(struct rk_p
+@@ -1612,6 +1795,14 @@ static int rk_gmac_check_ops(struct rk_p
  		if (!bsp_priv->ops->set_to_rmii)
  			return -EINVAL;
  		break;
@@ -294,7 +294,7 @@ Signed-off-by: David Wu <david.wu@rock-chips.com>
  	default:
  		dev_err(bsp_priv->dev,
  			"unsupported interface %d", bsp_priv->phy_iface);
-@@ -1652,11 +1843,19 @@ static int rk_gmac_powerup(struct rk_pri
+@@ -1655,11 +1846,19 @@ static int rk_gmac_powerup(struct rk_pri
  		dev_info(dev, "init for RMII\n");
  		bsp_priv->ops->set_to_rmii(bsp_priv);
  		break;
@@ -315,7 +315,7 @@ Signed-off-by: David Wu <david.wu@rock-chips.com>
  	if (ret) {
  		gmac_clk_enable(bsp_priv, false);
  		return ret;
-@@ -1677,7 +1876,7 @@ static void rk_gmac_powerdown(struct rk_
+@@ -1680,7 +1879,7 @@ static void rk_gmac_powerdown(struct rk_
  
  	pm_runtime_put_sync(gmac->dev);
  
@@ -324,7 +324,7 @@ Signed-off-by: David Wu <david.wu@rock-chips.com>
  	gmac_clk_enable(gmac, false);
  }
  
-@@ -1691,6 +1890,12 @@ static void rk_get_interfaces(struct stm
+@@ -1694,6 +1893,12 @@ static void rk_get_interfaces(struct stm
  
  	if (rk->ops->set_to_rmii)
  		__set_bit(PHY_INTERFACE_MODE_RMII, interfaces);
@@ -337,7 +337,7 @@ Signed-off-by: David Wu <david.wu@rock-chips.com>
  }
  
  static int rk_set_clk_tx_rate(void *bsp_priv_, struct clk *clk_tx_i,
-@@ -1698,6 +1903,10 @@ static int rk_set_clk_tx_rate(void *bsp_
+@@ -1701,6 +1906,10 @@ static int rk_set_clk_tx_rate(void *bsp_
  {
  	struct rk_priv_data *bsp_priv = bsp_priv_;
  

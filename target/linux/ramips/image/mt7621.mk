@@ -120,8 +120,13 @@ define Build/haier-sim_wr1800k-factory
   mkdir -p "$@.tmp"
   mv "$@" "$@.tmp/UploadBrush-bin.img"
   $(MKHASH) md5 "$@.tmp/UploadBrush-bin.img" | head -c32 > "$@.tmp/check_MD5.txt"
-  $(TAR) -czf "$@.tmp.tgz" -C "$@.tmp" UploadBrush-bin.img check_MD5.txt
-  $(STAGING_DIR_HOST)/bin/openssl aes-256-cbc -e -salt -in "$@.tmp.tgz" -out "$@" -k QiLunSmartWL
+  $(TAR) -C "$@.tmp" \
+	--numeric-owner --owner=0 --group=0 --mode=go-w --sort=name \
+	$(if $(SOURCE_DATE_EPOCH),--mtime="@$(SOURCE_DATE_EPOCH)") \
+	-cf - UploadBrush-bin.img check_MD5.txt | gzip -n -9 > "$@.tmp.tgz"
+  $(STAGING_DIR_HOST)/bin/openssl aes-256-cbc -e \
+	-S 4f70656e57727421 \
+	-in "$@.tmp.tgz" -out "$@" -k QiLunSmartWL
   printf %32s $(DEVICE_MODEL) >> "$@"
   rm -rf "$@.tmp" "$@.tmp.tgz"
 endef
@@ -184,7 +189,7 @@ define Build/znet-header
 		payload_size_crc="$$(dd if=$@ ibs=1 count=$$payload_len 2>/dev/null | gzip -c | \
 			tail -c 8 | od -An -N4 -tx4 --endian big | tr -d ' \n')"; \
 		echo -ne "$(magic)" | dd bs=4 count=1 conv=sync 2>/dev/null; \
-		echo -ne "$$(printf '%08x' $$(stat -c%s $@) | fold -s2 | xargs -I {} echo \\x{} | tac | tr -d '\n')" | \
+		echo -ne "$$(printf '%08x' $$(stat -c%s $@) | fold -w2 | xargs -I {} echo \\x{} | tac | tr -d '\n')" | \
 			dd bs=4 count=1 conv=sync 2>/dev/null; \
 		echo -ne "$$(echo $$data_size_crc | sed 's/../\\x&/g')" | \
 			dd bs=4 count=1 conv=sync 2>/dev/null; \

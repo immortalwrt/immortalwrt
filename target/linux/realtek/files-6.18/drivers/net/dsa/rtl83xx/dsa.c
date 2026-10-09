@@ -160,7 +160,7 @@ static int rtldsa_83xx_setup(struct dsa_switch *ds)
 	rtldsa_stats_init_counters(priv);
 
 	rtldsa_83xx_mc_pmasks_setup(priv);
-	rtldsa_vlan_setup(priv);
+	otto_vlan_setup(priv);
 
 	rtldsa_setup_bpdu_traps(priv);
 	rtldsa_setup_lldp_traps(priv);
@@ -209,7 +209,7 @@ static int rtldsa_93xx_setup(struct dsa_switch *ds)
 	rtldsa_stats_init(priv);
 	rtldsa_stats_init_counters(priv);
 
-	rtldsa_vlan_setup(priv);
+	otto_vlan_setup(priv);
 
 	rtldsa_setup_bpdu_traps(priv);
 	rtldsa_setup_lldp_traps(priv);
@@ -1055,7 +1055,7 @@ static int rtldsa_port_fdb_dump(struct dsa_switch *ds, int port,
 			continue;
 
 		if (e.port == port || e.port == RTL930X_PORT_IGNORE)
-			cb(e.mac, e.vid, e.is_static, data);
+			cb(e.mac, e.rvid, e.is_static, data);
 
 		if (!((i + 1) % 64))
 			cond_resched();
@@ -1070,7 +1070,7 @@ static int rtldsa_port_fdb_dump(struct dsa_switch *ds, int port,
 			continue;
 
 		if (e.port == port)
-			cb(e.mac, e.vid, e.is_static, data);
+			cb(e.mac, e.rvid, e.is_static, data);
 	}
 
 	mutex_unlock(&priv->reg_mutex);
@@ -1527,11 +1527,11 @@ const struct dsa_switch_ops rtldsa_83xx_switch_ops = {
 	.port_fast_age		= rtldsa_port_fast_age,
 	.port_mst_state_set	= rtldsa_port_mst_state_set,
 
-	.port_vlan_filtering	= rtldsa_vlan_filtering,
-	.port_vlan_add		= rtldsa_vlan_add,
-	.port_vlan_del		= rtldsa_vlan_del,
-	.port_vlan_fast_age	= rtldsa_port_vlan_fast_age,
-	.vlan_msti_set		= rtldsa_vlan_msti_set,
+	.port_vlan_filtering	= otto_vlan_port_filtering,
+	.port_vlan_add		= otto_vlan_port_add,
+	.port_vlan_del		= otto_vlan_port_del,
+	.port_vlan_fast_age	= otto_vlan_port_fast_age,
+	.vlan_msti_set		= otto_vlan_msti_set,
 
 	.port_fdb_add		= rtldsa_port_fdb_add,
 	.port_fdb_del		= rtldsa_port_fdb_del,
@@ -1589,11 +1589,11 @@ const struct dsa_switch_ops rtldsa_93xx_switch_ops = {
 	.port_fast_age		= rtldsa_port_fast_age,
 	.port_mst_state_set	= rtldsa_port_mst_state_set,
 
-	.port_vlan_filtering	= rtldsa_vlan_filtering,
-	.port_vlan_add		= rtldsa_vlan_add,
-	.port_vlan_del		= rtldsa_vlan_del,
-	.port_vlan_fast_age	= rtldsa_port_vlan_fast_age,
-	.vlan_msti_set		= rtldsa_vlan_msti_set,
+	.port_vlan_filtering	= otto_vlan_port_filtering,
+	.port_vlan_add		= otto_vlan_port_add,
+	.port_vlan_del		= otto_vlan_port_del,
+	.port_vlan_fast_age	= otto_vlan_port_fast_age,
+	.vlan_msti_set		= otto_vlan_msti_set,
 
 	.port_fdb_add		= rtldsa_port_fdb_add,
 	.port_fdb_del		= rtldsa_port_fdb_del,

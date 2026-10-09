@@ -227,7 +227,7 @@ Signed-off-by: Murat Sezgin <msezgin@codeaurora.org>
  #include <net/sock.h>
  #include <net/netfilter/nf_conntrack.h>
  #include <net/netfilter/nf_conntrack_core.h>
-@@ -3760,8 +3761,31 @@ static int ctnetlink_stat_exp_cpu(struct
+@@ -3761,8 +3762,31 @@ static int ctnetlink_stat_exp_cpu(struct
  }
  
  #ifdef CONFIG_NF_CONNTRACK_EVENTS
@@ -259,7 +259,7 @@ Signed-off-by: Murat Sezgin <msezgin@codeaurora.org>
  	.exp_event = ctnetlink_expect_event,
  };
  #endif
-@@ -3855,19 +3879,42 @@ MODULE_ALIAS_NFNL_SUBSYS(NFNL_SUBSYS_CTN
+@@ -3856,19 +3880,42 @@ MODULE_ALIAS_NFNL_SUBSYS(NFNL_SUBSYS_CTN
  static int __net_init ctnetlink_net_init(struct net *net)
  {
  #ifdef CONFIG_NF_CONNTRACK_EVENTS
