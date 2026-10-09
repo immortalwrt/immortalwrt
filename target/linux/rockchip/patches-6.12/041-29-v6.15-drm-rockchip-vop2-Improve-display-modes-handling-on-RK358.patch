@@ -32,7 +32,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250223-vop2-hdmi1-disp-mod
  
  	/* optional internal rgb encoder */
  	struct rockchip_rgb *rgb;
-@@ -2266,11 +2267,14 @@ static void vop2_crtc_atomic_enable(stru
+@@ -2268,11 +2269,14 @@ static void vop2_crtc_atomic_enable(stru
  	 * Switch to HDMI PHY PLL as DCLK source for display modes up
  	 * to 4K@60Hz, if available, otherwise keep using the system CRU.
  	 */
@@ -48,7 +48,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250223-vop2-hdmi1-disp-mod
  				if (!vp->dclk_src)
  					vp->dclk_src = clk_get_parent(vp->dclk);
  
-@@ -2280,6 +2284,20 @@ static void vop2_crtc_atomic_enable(stru
+@@ -2282,6 +2286,20 @@ static void vop2_crtc_atomic_enable(stru
  						 "Could not switch to HDMI0 PHY PLL: %d\n", ret);
  				break;
  			}
@@ -69,7 +69,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250223-vop2-hdmi1-disp-mod
  		}
  	}
  
-@@ -3729,6 +3747,11 @@ static int vop2_bind(struct device *dev,
+@@ -3731,6 +3749,11 @@ static int vop2_bind(struct device *dev,
  		return PTR_ERR(vop2->pll_hdmiphy0);
  	}
  

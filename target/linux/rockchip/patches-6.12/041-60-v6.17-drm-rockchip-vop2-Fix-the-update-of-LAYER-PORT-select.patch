@@ -72,7 +72,7 @@ Link: https://lore.kernel.org/r/20250421102156.424480-1-andyshrk@163.com
  static void vop2_win_disable(struct vop2_win *win)
  {
  	vop2_win_write(win, VOP2_WIN_ENABLE, 0);
-@@ -854,6 +835,11 @@ static void vop2_enable(struct vop2 *vop
+@@ -856,6 +837,11 @@ static void vop2_enable(struct vop2 *vop
  	if (vop2->version == VOP_VERSION_RK3588)
  		rk3588_vop2_power_domain_enable_all(vop2);
  
@@ -84,7 +84,7 @@ Link: https://lore.kernel.org/r/20250421102156.424480-1-andyshrk@163.com
  	vop2_writel(vop2, RK3568_REG_CFG_DONE, RK3568_REG_CFG_DONE__GLB_CFG_DONE_EN);
  
  	/*
-@@ -2722,6 +2708,7 @@ static int vop2_bind(struct device *dev,
+@@ -2724,6 +2710,7 @@ static int vop2_bind(struct device *dev,
  		return dev_err_probe(drm->dev, vop2->irq, "cannot find irq for vop2\n");
  
  	mutex_init(&vop2->vop2_lock);

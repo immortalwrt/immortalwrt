@@ -25,7 +25,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250223-vop2-hdmi1-disp-mod
 
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
-@@ -3269,10 +3269,9 @@ static int vop2_create_crtcs(struct vop2
+@@ -3271,10 +3271,9 @@ static int vop2_create_crtcs(struct vop2
  
  		snprintf(dclk_name, sizeof(dclk_name), "dclk_vp%d", vp->id);
  		vp->dclk = devm_clk_get(vop2->dev, dclk_name);
@@ -39,7 +39,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250223-vop2-hdmi1-disp-mod
  
  		np = of_graph_get_remote_node(dev->of_node, i, -1);
  		if (!np) {
-@@ -3282,11 +3281,9 @@ static int vop2_create_crtcs(struct vop2
+@@ -3284,11 +3283,9 @@ static int vop2_create_crtcs(struct vop2
  		of_node_put(np);
  
  		port = of_graph_get_port_by_id(dev->of_node, i);
@@ -54,7 +54,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250223-vop2-hdmi1-disp-mod
  		vp->crtc.port = port;
  		nvps++;
  	}
-@@ -3326,11 +3323,9 @@ static int vop2_create_crtcs(struct vop2
+@@ -3328,11 +3325,9 @@ static int vop2_create_crtcs(struct vop2
  			possible_crtcs = (1 << nvps) - 1;
  
  		ret = vop2_plane_init(vop2, win, possible_crtcs);
@@ -69,7 +69,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250223-vop2-hdmi1-disp-mod
  	}
  
  	for (i = 0; i < vop2_data->nr_vps; i++) {
-@@ -3344,10 +3339,9 @@ static int vop2_create_crtcs(struct vop2
+@@ -3346,10 +3341,9 @@ static int vop2_create_crtcs(struct vop2
  		ret = drm_crtc_init_with_planes(drm, &vp->crtc, plane, NULL,
  						&vop2_crtc_funcs,
  						"video_port%d", vp->id);
@@ -83,7 +83,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250223-vop2-hdmi1-disp-mod
  
  		drm_crtc_helper_add(&vp->crtc, &vop2_crtc_helper_funcs);
  		if (vop2->lut_regs) {
-@@ -3674,10 +3668,9 @@ static int vop2_bind(struct device *dev,
+@@ -3676,10 +3670,9 @@ static int vop2_bind(struct device *dev,
  	dev_set_drvdata(dev, vop2);
  
  	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "vop");
@@ -97,7 +97,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250223-vop2-hdmi1-disp-mod
  
  	vop2->res = res;
  	vop2->regs = devm_ioremap_resource(dev, res);
-@@ -3702,50 +3695,50 @@ static int vop2_bind(struct device *dev,
+@@ -3704,50 +3697,50 @@ static int vop2_bind(struct device *dev,
  	if (vop2_data->feature & VOP2_FEATURE_HAS_SYS_GRF) {
  		vop2->sys_grf = syscon_regmap_lookup_by_phandle(dev->of_node, "rockchip,grf");
  		if (IS_ERR(vop2->sys_grf))
@@ -168,7 +168,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250223-vop2-hdmi1-disp-mod
  
  	vop2->pll_hdmiphy1 = devm_clk_get_optional(vop2->dev, "pll_hdmiphy1");
  	if (IS_ERR(vop2->pll_hdmiphy1))
-@@ -3753,10 +3746,8 @@ static int vop2_bind(struct device *dev,
+@@ -3755,10 +3748,8 @@ static int vop2_bind(struct device *dev,
  				     "failed to get pll_hdmiphy1\n");
  
  	vop2->irq = platform_get_irq(pdev, 0);
