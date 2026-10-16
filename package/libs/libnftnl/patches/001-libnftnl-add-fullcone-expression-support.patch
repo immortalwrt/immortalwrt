@@ -15,7 +15,7 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
 
 --- a/include/libnftnl/expr.h
 +++ b/include/libnftnl/expr.h
-@@ -273,6 +273,13 @@ enum {
+@@ -274,6 +274,13 @@ enum {
  };
  
  enum {
@@ -97,7 +97,7 @@ Signed-off-by: Syrone Wong <wong.syrone@gmail.com>
 +
 +static int
 +nftnl_expr_fullcone_set(struct nftnl_expr *e, uint16_t type,
-+		       const void *data, uint32_t data_len)
++		       const void *data, uint32_t data_len, uint32_t byteorder)
 +{
 +	struct nftnl_expr_fullcone *fullcone = nftnl_expr_data(e);
 +
