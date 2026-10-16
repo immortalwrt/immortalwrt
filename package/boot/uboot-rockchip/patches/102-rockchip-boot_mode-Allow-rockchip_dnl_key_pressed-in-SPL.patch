@@ -104,9 +104,9 @@ Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
  #include <asm/armv8/mmu.h>
 +#include <asm/arch-rockchip/boot_mode.h>
  #include <asm/arch-rockchip/bootrom.h>
- #include <asm/arch-rockchip/hardware.h>
- 
-@@ -196,6 +197,13 @@ int arch_cpu_init(void)
+ #include <asm/io.h>
+ #include <linux/hw_bitfield.h>
+@@ -206,6 +207,13 @@ int arch_cpu_init(void)
  	return 0;
  }
  
