@@ -298,7 +298,6 @@ define KernelPackage/parport-pc
 	CONFIG_PARPORT_PC_PCMCIA=n \
 	CONFIG_PARPORT_PC_SUPERIO=y \
 	CONFIG_PARPORT_SERIAL=n \
-	CONFIG_PARIDE=n \
 	CONFIG_SCSI_IMM=n \
 	CONFIG_SCSI_PPA=n
   FILES:= \
@@ -331,7 +330,6 @@ define KernelPackage/mmc
 	CONFIG_MMC \
 	CONFIG_MMC_BLOCK \
 	CONFIG_MMC_DEBUG=n \
-	CONFIG_MMC_UNSAFE_RESUME=n \
 	CONFIG_MMC_TIFM_SD=n \
 	CONFIG_MMC_WBSD=n \
 	CONFIG_SDIO_UART=n
@@ -421,8 +419,7 @@ define KernelPackage/ssb
 	CONFIG_SSB_PCIHOST=y \
 	CONFIG_SSB_PCIHOST_POSSIBLE=y \
 	CONFIG_SSB_POSSIBLE=y \
-	CONFIG_SSB_SPROM=y \
-	CONFIG_SSB_SILENT=y
+	CONFIG_SSB_SPROM=y
   FILES:=$(LINUX_DIR)/drivers/ssb/ssb.ko
   AUTOLOAD:=$(call AutoLoad,18,ssb,1)
 endef
@@ -636,7 +633,7 @@ define KernelPackage/serial-8250-exar
   KCONFIG:= CONFIG_SERIAL_8250_EXAR
   FILES:=$(LINUX_DIR)/drivers/tty/serial/8250/8250_exar.ko
   AUTOLOAD:=$(call AutoProbe,8250 8250_base 8250_exar)
-  DEPENDS:=@PCI_SUPPORT +kmod-serial-8250 +!LINUX_6_12:kmod-eeprom-93cx6
+  DEPENDS:=@PCI_SUPPORT +kmod-serial-8250 +kmod-eeprom-93cx6
 endef
 
 define KernelPackage/serial-8250-exar/description
@@ -739,7 +736,6 @@ define KernelPackage/zram
   KCONFIG:= \
 	CONFIG_ZSMALLOC \
 	CONFIG_ZRAM \
-	CONFIG_ZRAM_DEBUG=n \
 	CONFIG_ZRAM_WRITEBACK=n \
 	CONFIG_ZSMALLOC_STAT=n
   FILES:= \
@@ -932,23 +928,6 @@ define KernelPackage/thermal/description
 endef
 
 $(eval $(call KernelPackage,thermal))
-
-
-define KernelPackage/echo
-  SUBMENU:=$(OTHER_MENU)
-  TITLE:=Line Echo Canceller
-  DEPENDS:=@LINUX_6_12
-  KCONFIG:=CONFIG_ECHO
-  FILES:=$(LINUX_DIR)/drivers/misc/echo/echo.ko
-  AUTOLOAD:=$(call AutoLoad,50,echo)
-endef
-
-define KernelPackage/echo/description
- This driver provides line echo cancelling support for mISDN and
- DAHDI drivers
-endef
-
-$(eval $(call KernelPackage,echo))
 
 
 define KernelPackage/tee
