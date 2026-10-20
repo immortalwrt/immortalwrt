@@ -56,10 +56,12 @@
 
 &mdio_bus {
 	phy13: ethernet-phy@d {
-		reg = <0xd>;
+		reg = <13>;
 		compatible = "ethernet-phy-ieee802.3-c45";
-		reset-gpios = <&pio 66 GPIO_ACTIVE_LOW>;
 		reset-assert-us = <10000>;
 		reset-deassert-us = <20000>;
+		reset-gpios = <&pio 1 GPIO_ACTIVE_LOW>;
+		interrupts = <0 IRQ_TYPE_EDGE_FALLING>;
+		interrupt-parent = <&pio>;
 	};
 };
