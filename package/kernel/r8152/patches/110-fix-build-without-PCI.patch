@@ -1,0 +1,11 @@
+--- a/r8152.c
++++ b/r8152.c
+@@ -33567,7 +33567,7 @@ static int rtl_hc_support_sg(struct usb_
+ 		goto out;
+ 	}
+ 
+-	if (hc_dev->bus != &pci_bus_type)
++	if (!dev_is_pci(hc_dev))
+ 		goto out;
+ 
+ 	pdev = to_pci_dev(hc_dev);
