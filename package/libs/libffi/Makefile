@@ -75,6 +75,9 @@ define Build/InstallDev
 	$(CP) \
 		$(PKG_INSTALL_DIR)/usr/include/*.h \
 		$(1)/usr/include/
+	$(CP) \
+		$(PKG_BUILD_DIR)/$(GNU_TARGET_NAME)*/fficonfig.h \
+		$(1)/usr/include/
 endef
 
 define Package/libffi/install
