@@ -52,43 +52,20 @@ define Device/FitImageLzma
 	KERNEL_NAME := Image
 endef
 
-define Device/airoha_an7581-evb
+define Device/airoha_an7581-evb-multievb
   $(call Device/FitImageLzma)
   DEVICE_VENDOR := Airoha
-  DEVICE_MODEL := AN7581 Evaluation Board (SNAND)
-  DEVICE_PACKAGES := kmod-leds-pwm kmod-pwm-airoha kmod-input-gpio-keys-polled
-  DEVICE_DTS := an7581-evb
-  DEVICE_DTS_CONFIG := config@1
+  DEVICE_MODEL := AN7581 Evaluation Board (Multi-evb)
+  DEVICE_PACKAGES := kmod-leds-pwm kmod-pwm-airoha kmod-input-gpio-keys-polled airoha-en7581-npu-firmware \
+    kmod-mt7992-firmware airoha-en7581-mt7996-npu-firmware kmod-mt7996-firmware wpad-openssl
+  DEVICE_DTS := an7581-evb-multievb
+  DEVICE_DTS_OVERLAY := an7581-evb an7581-evb-emmc-eagle an7581-evb-emmc-kite
   IMAGE/sysupgrade.bin := append-kernel | pad-to 128k | append-rootfs | pad-rootfs | append-metadata
   ARTIFACT/preloader.bin := an7581-preloader rfb
   ARTIFACT/bl31-uboot.fip := an7581-bl31-uboot rfb
   ARTIFACTS := preloader.bin bl31-uboot.fip
 endef
-TARGET_DEVICES += airoha_an7581-evb
-
-define Device/airoha_an7581-evb-emmc-eagle
-  DEVICE_VENDOR := Airoha
-  DEVICE_MODEL := AN7581 Evaluation Board (eMMC + Eagle)
-  DEVICE_DTS := an7581-evb-emmc-eagle
-  DEVICE_PACKAGES := airoha-en7581-mt7996-npu-firmware \
-		    kmod-mt7996-firmware wpad-openssl
-  ARTIFACT/preloader.bin := an7581-preloader rfb
-  ARTIFACT/bl31-uboot.fip := an7581-bl31-uboot rfb
-  ARTIFACTS := preloader.bin bl31-uboot.fip
-endef
-TARGET_DEVICES += airoha_an7581-evb-emmc-eagle
-
-define Device/airoha_an7581-evb-emmc-kite
-  DEVICE_VENDOR := Airoha
-  DEVICE_MODEL := AN7581 Evaluation Board (eMMC + Kite)
-  DEVICE_DTS := an7581-evb-emmc-kite
-  DEVICE_PACKAGES := airoha-en7581-npu-firmware \
-		    kmod-mt7992-firmware wpad-openssl
-  ARTIFACT/preloader.bin := an7581-preloader rfb
-  ARTIFACT/bl31-uboot.fip := an7581-bl31-uboot rfb
-  ARTIFACTS := preloader.bin bl31-uboot.fip
-endef
-TARGET_DEVICES += airoha_an7581-evb-emmc-kite
+TARGET_DEVICES += airoha_an7581-evb-multievb
 
 define Device/gemtek_w1700k-ubi
   DEVICE_VENDOR := Gemtek
@@ -136,7 +113,7 @@ define Device/nokia_valyrian
     kmod-i2c-gpio kmod-iio-richtek-rtq6056 \
     kmod-sfp aeonsemi-as21xxx-firmware \
     kmod-mt7996-firmware airoha-en7581-mt7996-npu-firmware \
-    kmod-usb3
+    kmod-usb3 automount
   ARTIFACT/preloader.bin := an7581-preloader nokia_valyrian
   ARTIFACT/bl31-uboot.fip := an7581-bl31-uboot nokia_valyrian
   ARTIFACTS := preloader.bin bl31-uboot.fip
@@ -152,7 +129,7 @@ define Device/nokia_xg-040g-md-common
   UBINIZE_OPTS := -E 5
   DEVICE_PACKAGES := kmod-gpio-button-hotplug kmod-leds-gpio \
 	kmod-phy-airoha-en8811h kmod-regulator-userspace-consumer \
-	kmod-usb-ledtrig-usbport kmod-usb3
+	kmod-usb-ledtrig-usbport kmod-usb3 automount
 endef
 
 define Device/nokia_xg-040g-md

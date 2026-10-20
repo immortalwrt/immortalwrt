@@ -83,6 +83,9 @@ struct rtldsa_port {
 	bool enable:1;
 	bool phy:1;
 	bool isolated:1;
+	bool qinq:1;
+	bool bridged:1;
+	bool vlan_filtering:1;
 	unsigned long rate_police_egress;
 	unsigned long rate_police_ingress;
 	unsigned long cached_flags;
@@ -328,6 +331,7 @@ struct rtldsa_config {
 	int stat_port_std_mib;
 	int stat_port_prv_mib;
 	const struct otto_stats_mib_desc *mib_desc;
+	const struct otto_stats_drop_desc *drop_desc;
 	u64 (*stat_port_table_read)(int port, unsigned int mib_size, unsigned int offset, bool is_pvt);
 	void (*stat_counters_lock)(struct otto_dsa_priv *priv, int port);
 	void (*stat_counters_unlock)(struct otto_dsa_priv *priv, int port);
@@ -377,12 +381,16 @@ struct rtldsa_config {
 	void (*vlan_tables_read)(u32 vlan, struct otto_vlan_info *info);
 	void (*vlan_set_tagged)(u32 vlan, struct otto_vlan_info *info);
 	void (*vlan_set_untagged)(u32 vlan, u64 portmask);
-	int (*vlan_profile_get)(int index, struct rtldsa_vlan_profile *profile);
+	int (*vlan_profile_get)(struct otto_dsa_priv *priv, int index,
+				struct rtldsa_vlan_profile *profile);
 	void (*vlan_profile_dump)(struct otto_dsa_priv *priv, int index);
-	void (*vlan_profile_setup)(int profile);
-	void (*vlan_port_pvidmode_set)(int port, enum pbvlan_type type, enum pbvlan_mode mode);
-	void (*vlan_port_pvid_set)(int port, enum pbvlan_type type, int pvid);
-	void (*vlan_port_keep_tag_set)(int port, bool keep_outer, bool keep_inner);
+	void (*vlan_profile_setup)(struct otto_dsa_priv *priv, int profile);
+	void (*vlan_port_pvidmode_set)(struct otto_dsa_priv *priv, int port, enum pbvlan_type type,
+				       enum pbvlan_mode mode);
+	void (*vlan_port_pvid_set)(struct otto_dsa_priv *priv, int port, enum pbvlan_type type,
+				   int pvid);
+	void (*vlan_port_keep_tag_set)(struct otto_dsa_priv *priv, int port, bool keep_outer,
+				       bool keep_inner);
 	int (*fast_age)(struct otto_dsa_priv *priv, int port, int vid);
 	void (*set_vlan_igr_filter)(int port, enum igr_filter state);
 	void (*set_vlan_egr_filter)(int port, enum egr_filter state);
@@ -458,7 +466,10 @@ struct rtldsa_config {
 	u32 (*l2_hash_key)(struct otto_dsa_priv *priv, u64 seed);
 	u64 (*read_mcast_pmask)(int idx);
 	void (*write_mcast_pmask)(int idx, u64 portmask);
-	void (*vlan_fwd_on_inner)(int port, bool is_set);
+	u32 vlan_port_aft;
+	void (*vlan_fwd_on_inner)(struct otto_dsa_priv *priv, int port, bool is_set);
+	void (*vlan_qinq_setup)(struct otto_dsa_priv *priv);
+	void (*vlan_port_qinq_set)(struct otto_dsa_priv *priv, int port, bool enable);
 	void (*pie_init)(struct otto_dsa_priv *priv);
 	int (*pie_rule_read)(struct otto_dsa_priv *priv, int idx, struct  pie_rule *pr);
 	int (*pie_rule_write)(struct otto_dsa_priv *priv, int idx, struct pie_rule *pr);
@@ -508,6 +519,7 @@ struct otto_dsa_priv {
 	struct otto_l3_ctrl *l3_ctrl;
 	u64 irq_mask;
 	struct dentry *dbgfs_dir;
+	struct dentry *stats_dbgfs_dir;
 
 	/** @lags_port_members: Port (bit) is part of a specific LAG */
 	u64 lags_port_members[MAX_LAGS];
@@ -522,6 +534,9 @@ struct otto_dsa_priv {
 	 * first/primary port which needs to be added in the port matrix
 	 */
 	u64 lag_non_primary;
+
+	/** @vlan_proto: bridge VLAN protocol (ETH_P_*) owning each VID, 0 if none */
+	u16 vlan_proto[MAX_VLANS];
 
 	/** @lagmembers: Port (bit) is part of any LAG */
 	u64 lagmembers;

@@ -267,6 +267,7 @@ static void rtldsa_931x_led_init(struct otto_dsa_priv *priv)
 	struct device *dev = priv->dev;
 	struct device_node *node;
 	u8 leds_in_set[4] = {};
+	u32 led_mode = 1;
 	u32 clk_freq;
 	int ret;
 
@@ -372,8 +373,13 @@ static void rtldsa_931x_led_init(struct otto_dsa_priv *priv)
 		sw_w32_mask(0, set << pos, RTL931X_LED_PORT_FIB_SET_SEL_CTRL(i));
 	}
 
-	/* Set LED mode to serial (0x1) */
-	sw_w32_mask(0x3, 0x1, RTL931X_LED_GLB_CTRL);
+	/* LED interface: 1 = serial (default), 2 = single-colour scan, 3 = bi-colour scan */
+	of_property_read_u32(node, "realtek,led-mode", &led_mode);
+	if (led_mode < 1 || led_mode > 3) {
+		dev_warn(dev, "invalid realtek,led-mode %u, using serial\n", led_mode);
+		led_mode = 1;
+	}
+	sw_w32_mask(0x3, led_mode, RTL931X_LED_GLB_CTRL);
 
 	if (of_property_read_bool(node, "active-low"))
 		sw_w32_mask(RTL931X_LED_GLB_ACTIVE_LOW, 0, RTL931X_LED_GLB_CTRL);
@@ -431,6 +437,7 @@ const struct rtldsa_config rtldsa_931x_cfg = {
 	.stat_rst = RTL931X_STAT_RST,
 	.stat_port_std_mib = 0,  /* Not defined */
 	.mib_desc = &otto_stats_931x_mib_desc,
+	.drop_desc = &otto_stats_931x_drop_desc,
 	.stat_port_table_read = otto_stats_931x_port_table_read,
 	.stat_counters_lock = otto_stats_counters_lock_table,
 	.stat_counters_unlock = otto_stats_counters_unlock_table,
@@ -511,7 +518,7 @@ const struct rtldsa_config rtldsa_931x_cfg = {
 	.enable_flood = otto_l2_931x_enable_flood,
 	.enable_bcast_flood = otto_l2_931x_enable_bcast_flood,
 	.set_receive_management_action = rtldsa_931x_set_receive_management_action,
-	.qos_init = rtldsa_931x_qos_init,
+	.qos_init = otto_qos_931x_init,
 	.trk_ctrl = RTL931X_TRK_CTRL,
 	.trk_hash_ctrl = RTL931X_TRK_HASH_CTRL,
 	.prepare_lag_fdb = otto_lag_93xx_prepare_fdb,

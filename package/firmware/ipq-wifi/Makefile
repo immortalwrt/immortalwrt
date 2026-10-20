@@ -6,9 +6,9 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/firmware/qca-wireless.git
-PKG_SOURCE_DATE:=2026-10-14
-PKG_SOURCE_VERSION:=8818bb397fb27735ab80612cb88c874a2f153a64
-PKG_MIRROR_HASH:=53b7c287bb740489a133c930fbe67c9d9156e0feea80ed042ade7a550b817f79
+PKG_SOURCE_DATE:=2026-10-18
+PKG_SOURCE_VERSION:=0f8eb5d74be32befb4d8bfc8e48cb98080cc86f1
+PKG_MIRROR_HASH:=4ad228d157e14c680b3300a350d22c982b7698cb2c2f692be8834bdf246af819
 PKG_FLAGS:=nonshared
 
 include $(INCLUDE_DIR)/package.mk
@@ -34,6 +34,7 @@ ALLWIFIBOARDS:= \
 	arcadyan_aw1000 \
 	askey_sbe1v1k \
 	asus_rt-ax89x \
+	avm_fritzbox-4050 \
 	buffalo_wxr-5950ax12 \
 	cambiumnetworks_xe34 \
 	cmcc_mr3000d-ci \
@@ -118,6 +119,7 @@ ALLWIFIBOARDS:= \
 	xiaomi_ax6000 \
 	xiaomi_ax9000 \
 	xiaomi_redmi-ax5400 \
+	xunison_exigo-hub-d50-5g \
 	yuncore_ax830 \
 	yuncore_ax850 \
 	yuncore_ax880 \
@@ -129,6 +131,7 @@ ALLWIFIBOARDS:= \
 	zte_mf286c \
 	zte_mf287 \
 	zte_mf287plus \
+	zte_t5400 \
 	zyxel_nbg7815 \
 	zyxel_nwa110ax \
 	zyxel_nwa210ax \
@@ -178,6 +181,8 @@ define ipq-wifi-install-one
     $(call ipq-wifi-install-ath11-one-to,$(1),$(2),IPQ6018/hw1.0),\
   $(if $(filter $(suffix $(1)),.IPQ8074 .ipq8074),\
     $(call ipq-wifi-install-ath11-one-to,$(1),$(2),IPQ8074/hw2.0),\
+  $(if $(filter $(suffix $(1)),.IPQ9574 .ipq9574),\
+    $(call ipq-wifi-install-ath11-one-to,$(1),$(2),IPQ9574/hw1.0),\
   $(if $(filter $(suffix $(1)),.QCN6122 .qcn6122),\
     $(call ipq-wifi-install-ath11-one-to,$(1),$(2),QCN6122/hw1.0),\
   $(if $(filter $(suffix $(1)),.QCN9074 .qcn9074),\
@@ -185,7 +190,7 @@ define ipq-wifi-install-one
   $(if $(filter $(suffix $(1)),.QCN9274 .qcn9274),\
     $(call ipq-wifi-install-ath12-one-to,$(1),$(2),QCN9274/hw2.0),\
     $(error Unrecognized board-file suffix '$(suffix $(1))' for '$(1)')\
-  ))))))))))))
+  )))))))))))))
 
 endef
 # Blank line required at end of above define due to foreach context
@@ -242,6 +247,7 @@ $(eval $(call generate-ipq-wifi-package,aliyun_ap8220,Aliyun AP8220))
 $(eval $(call generate-ipq-wifi-package,arcadyan_aw1000,Arcadyan AW1000))
 $(eval $(call generate-ipq-wifi-package,askey_sbe1v1k,Askey SBE1V1K))
 $(eval $(call generate-ipq-wifi-package,asus_rt-ax89x,Asus RT-AX89X))
+$(eval $(call generate-ipq-wifi-package,avm_fritzbox-4050,AVM FRITZ!Box 4050))
 $(eval $(call generate-ipq-wifi-package,buffalo_wxr-5950ax12,Buffalo WXR-5950AX12))
 $(eval $(call generate-ipq-wifi-package,cambiumnetworks_xe34,Cambium Networks XE3-4))
 $(eval $(call generate-ipq-wifi-package,cmcc_mr3000d-ci,CMCC MR3000D-CI))
@@ -326,6 +332,7 @@ $(eval $(call generate-ipq-wifi-package,xiaomi_ax3600,Xiaomi AX3600))
 $(eval $(call generate-ipq-wifi-package,xiaomi_ax6000,Xiaomi AX6000))
 $(eval $(call generate-ipq-wifi-package,xiaomi_ax9000,Xiaomi AX9000))
 $(eval $(call generate-ipq-wifi-package,xiaomi_redmi-ax5400,Xiaomi Redmi AX5400))
+$(eval $(call generate-ipq-wifi-package,xunison_exigo-hub-d50-5g,Xunison Exigo Hub D50 5G))
 $(eval $(call generate-ipq-wifi-package,yuncore_ax830,Yuncore AX830))
 $(eval $(call generate-ipq-wifi-package,yuncore_ax850,Yuncore AX850))
 $(eval $(call generate-ipq-wifi-package,yuncore_ax880,Yuncore AX880))
@@ -337,6 +344,7 @@ $(eval $(call generate-ipq-wifi-package,zte_mf286ar,ZTE MF286A/R))
 $(eval $(call generate-ipq-wifi-package,zte_mf286c,ZTE MF286C))
 $(eval $(call generate-ipq-wifi-package,zte_mf287,ZTE MF287))
 $(eval $(call generate-ipq-wifi-package,zte_mf287plus,ZTE MF287Plus))
+$(eval $(call generate-ipq-wifi-package,zte_t5400,ZTE T5400))
 $(eval $(call generate-ipq-wifi-package,zyxel_nbg7815,Zyxel NBG7815))
 $(eval $(call generate-ipq-wifi-package,zyxel_nwa110ax,Zyxel NWA110AX))
 $(eval $(call generate-ipq-wifi-package,zyxel_nwa210ax,Zyxel NWA210AX))
