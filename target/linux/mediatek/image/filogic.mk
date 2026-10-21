@@ -2636,6 +2636,7 @@ define Device/keenetic_kn-1812-common
   IMAGES += factory.bin
   IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | \
 	append-ubi | check-size | zyimage -d $$(ZYIMAGE_ID) -v "$$(DEVICE_MODEL)"
+  DEFAULT := n
 endef
 
 define Device/keenetic_kn-1812
