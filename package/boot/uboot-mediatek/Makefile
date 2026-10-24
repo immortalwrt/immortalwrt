@@ -270,7 +270,7 @@ endef
 define U-Boot/mt7981_cmcc_rax3000m-emmc
   NAME:=CMCC RAX3000M
   BUILD_SUBTARGET:=filogic
-  BUILD_DEVICES:=cmcc_rax3000m
+  BUILD_DEVICES:=cmcc_rax3000m cmcc_xr30
   UBOOT_CONFIG:=mt7981_cmcc_rax3000m-emmc
   UBOOT_IMAGE:=u-boot.fip
   BL2_BOOTDEV:=emmc
@@ -282,7 +282,7 @@ endef
 define U-Boot/mt7981_cmcc_rax3000m-nand
   NAME:=CMCC RAX3000M
   BUILD_SUBTARGET:=filogic
-  BUILD_DEVICES:=cmcc_rax3000m
+  BUILD_DEVICES:=cmcc_rax3000m cmcc_xr30
   UBOOT_CONFIG:=mt7981_cmcc_rax3000m-nand
   UBOOT_IMAGE:=u-boot.fip
   BL2_BOOTDEV:=spim-nand
