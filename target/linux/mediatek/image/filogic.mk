@@ -1183,6 +1183,23 @@ define Device/cmcc_rax3000me
 endef
 TARGET_DEVICES += cmcc_rax3000me
 
+define Device/cmcc_xr30
+  DEVICE_VENDOR := CMCC
+  DEVICE_MODEL := XR30
+  DEVICE_DTS := mt7981b-cmcc-xr30
+  $(call Device/cmcc_rax3000m_common)
+  ARTIFACTS += emmc-preloader.bin emmc-bl31-uboot.fip \
+	nand-preloader.bin nand-bl31-uboot.fip \
+	ubi-preloader.bin ubi-bl31-uboot.fip
+  ARTIFACT/emmc-preloader.bin := mt7981-bl2 emmc-ddr4
+  ARTIFACT/emmc-bl31-uboot.fip := mt7981-bl31-uboot cmcc_rax3000m-emmc
+  ARTIFACT/nand-preloader.bin := mt7981-bl2 spim-nand-ddr4
+  ARTIFACT/nand-bl31-uboot.fip := mt7981-bl31-uboot cmcc_rax3000m-nand
+  ARTIFACT/ubi-preloader.bin  := mt7981-bl2 spim-nand-ubi-ddr4
+  ARTIFACT/ubi-bl31-uboot.fip := mt7981-bl31-uboot cmcc_rax3000m-ubi
+endef
+TARGET_DEVICES += cmcc_xr30
+
 define Device/comfast_cf-e393ax
   DEVICE_VENDOR := COMFAST
   DEVICE_MODEL := CF-E393AX

@@ -176,6 +176,7 @@ platform_do_upgrade() {
 	cmcc,a10-ubootmod|\
 	cmcc,rax3000m|\
 	cmcc,rax3000me|\
+	cmcc,xr30|\
 	comfast,cf-wa933-ubi|\
 	comfast,cf-wr632ax-ubi|\
 	comfast,cf-wr632ax-ubootmod|\
@@ -439,6 +440,7 @@ platform_check_image() {
 	cmcc,a10-ubootmod|\
 	cmcc,rax3000m|\
 	cmcc,rax3000me|\
+	cmcc,xr30|\
 	comfast,cf-wa933-ubi|\
 	comfast,cf-wr632ax-ubi|\
 	comfast,cf-wr632ax-ubootmod|\
@@ -553,6 +555,7 @@ platform_copy_config() {
 	bananapi,bpi-r4-pro-8x|\
 	cmcc,rax3000m|\
 	cmcc,rax3000me|\
+	cmcc,xr30|\
 	gatonetworks,gdsp|\
 	mediatek,mt7988a-rfb)
 		if [ "$CI_METHOD" = "emmc" ]; then
