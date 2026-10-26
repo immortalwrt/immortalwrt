@@ -1,0 +1,28 @@
+Subject: [PATCH] Preserve CPU target features when enabling ARM SHA extensions
+
+Enable crypto and SHA3 on top of the current GCC target instead of
+replacing its architecture. This preserves features such as CRC and avoids
+fortify always_inline target option mismatches on Cortex-A53 and Cortex-A72.
+
+--- a/library/sha256.c
++++ b/library/sha256.c
+@@ -102,7 +102,7 @@
+ #          error "A more recent GCC is required for MBEDTLS_SHA256_USE_ARMV8_A_CRYPTO_*"
+ #        else
+ #          pragma GCC push_options
+-#          pragma GCC target ("arch=armv8-a+crypto")
++#          pragma GCC target ("+crypto")
+ #          define MBEDTLS_POP_TARGET_PRAGMA
+ #        endif
+ #      else
+--- a/library/sha512.c
++++ b/library/sha512.c
+@@ -91,7 +91,7 @@
+ #          error "A more recent GCC is required for MBEDTLS_SHA512_USE_A64_CRYPTO_*"
+ #        else
+ #          pragma GCC push_options
+-#          pragma GCC target ("arch=armv8.2-a+sha3")
++#          pragma GCC target ("+sha3")
+ #          define MBEDTLS_POP_TARGET_PRAGMA
+ #        endif
+ #      else

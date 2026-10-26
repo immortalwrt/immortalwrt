@@ -135,8 +135,7 @@ CSR generation (gen_key, cert_req)
 endef
 
 TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) \
-	-Wno-unterminated-string-initialization \
-	$(if $(findstring cortex-a53,$(CONFIG_CPU_TYPE)),-march=armv8-a)
+	-Wno-unterminated-string-initialization
 
 CMAKE_OPTIONS += \
 	-DCMAKE_POSITION_INDEPENDENT_CODE=ON \
