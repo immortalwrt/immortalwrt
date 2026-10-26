@@ -363,7 +363,7 @@ $(eval $(call KernelPackage,drm-buddy))
 define KernelPackage/drm-display-helper
   SUBMENU:=$(VIDEO_MENU)
   TITLE:=DRM helpers for display adapters drivers
-  DEPENDS:=video-support +kmod-drm-kms-helper +LINUX_6_18:kmod-cec-core
+  DEPENDS:=video-support +kmod-drm-kms-helper +kmod-cec-core
   HIDDEN:=1
   KCONFIG:=CONFIG_DRM_DISPLAY_HELPER
   FILES:=$(LINUX_DIR)/drivers/gpu/drm/display/drm_display_helper.ko
@@ -826,16 +826,16 @@ $(eval $(call KernelPackage,drm-imx-hdmi))
 define KernelPackage/drm-imx-ldb
   SUBMENU:=$(VIDEO_MENU)
   TITLE:=Freescale i.MX LVDS DRM support
-  DEPENDS:=@(TARGET_imx&&TARGET_imx_cortexa9) +kmod-backlight +kmod-drm-panel-simple kmod-drm-imx +LINUX_6_18:kmod-drm-display-helper
+  DEPENDS:=@(TARGET_imx&&TARGET_imx_cortexa9) +kmod-backlight +kmod-drm-panel-simple kmod-drm-imx +kmod-drm-display-helper
   KCONFIG:=CONFIG_DRM_IMX_LDB \
-	CONFIG_DRM_IMX_LEGACY_BRIDGE@ge6.18 \
+	CONFIG_DRM_IMX_LEGACY_BRIDGE \
 	CONFIG_DRM_PANEL_SAMSUNG_LD9040=n \
 	CONFIG_DRM_PANEL_SAMSUNG_S6E8AA0=n \
 	CONFIG_DRM_PANEL_LG_LG4573=n \
 	CONFIG_DRM_PANEL_LVDS=n \
 	CONFIG_DRM_PANEL_SITRONIX_ST7789V=n
   FILES:= \
-	$(LINUX_DIR)/drivers/gpu/drm/bridge/imx/imx-legacy-bridge.ko@ge6.18 \
+	$(LINUX_DIR)/drivers/gpu/drm/bridge/imx/imx-legacy-bridge.ko \
 	$(LINUX_DIR)/drivers/gpu/drm/imx/ipuv3/imx-ldb.ko
   AUTOLOAD:=$(call AutoLoad,08,imx-ldb)
 endef

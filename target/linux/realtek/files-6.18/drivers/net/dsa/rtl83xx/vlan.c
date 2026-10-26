@@ -60,6 +60,7 @@
 #define RTL838X_VLAN_PORT_TAG_STS_UNTAG				0x0
 #define RTL838X_VLAN_PORT_TAG_STS_TAGGED			0x1
 #define RTL838X_VLAN_PORT_TAG_STS_PRIORITY_TAGGED		0x2
+#define RTL838X_VLAN_PORT_TAG_KEEP_FORMAT			0x1
 
 #define RTL838X_VLAN_PORT_TAG_STS_CTRL_BASE			0xA530
 /* port 0-28 */
@@ -72,6 +73,8 @@
 #define RTL838X_VLAN_PORT_TAG_STS_CTRL_IGR_P_ITAG_KEEP_MASK	GENMASK(5, 4)
 #define RTL838X_VLAN_PORT_TAG_STS_CTRL_OTAG_STS_MASK		GENMASK(3, 2)
 #define RTL838X_VLAN_PORT_TAG_STS_CTRL_ITAG_STS_MASK		GENMASK(1, 0)
+
+#define RTL838X_VLAN_PORT_OTAG_TPID_CMP_MSK(port)		(0xD574 + ((port) << 7))
 
 #define RTL839X_VLAN_PORT_TAG_STS_UNTAG				0x0
 #define RTL839X_VLAN_PORT_TAG_STS_TAGGED			0x1
@@ -109,8 +112,6 @@
 #define RTL930X_VLAN_TAG_TPID_CTRL(idx)				(0xC7AC + ((idx) << 2))
 #define RTL930X_VLAN_PORT_ITAG_TPID_CMP_MSK(port)		(0x327C + ((port) << 6))
 #define RTL930X_VLAN_PORT_OTAG_TPID_CMP_MSK(port)		(0x3280 + ((port) << 6))
-#define RTL930X_VLAN_PORT_AFT(port)				(0x8260 + ((port) << 2))
-#define RTL930X_VLAN_PORT_AFT_ACCEPT_ALL			GENMASK(3, 0)
 #define RTL930X_VLAN_PORT_EGR_TPID_CTRL(port)			(0xCE98 + ((port) << 2))
 #define RTL930X_VLAN_PORT_EGR_TPID_OTPID_IDX			GENMASK(5, 4)
 #define RTL930X_VLAN_PORT_EGR_TPID_OTPID_KEEP			BIT(3)
@@ -332,6 +333,27 @@ void otto_vlan_838x_port_pvid_set(struct otto_dsa_priv *priv, int port, enum pbv
 	else
 		regmap_write_bits(priv->map, RTL838X_VLAN_PORT_PB_VLAN + (port << 2), 0xfff << 16,
 				  pvid << 16);
+}
+
+void otto_vlan_838x_port_qinq_set(struct otto_dsa_priv *priv, int port, bool enable)
+{
+	otto_vlan_838x_port_forward_on_inner(priv, port, !enable);
+	regmap_write(priv->map, RTL838X_VLAN_PORT_OTAG_TPID_CMP_MSK(port), enable ? BIT(0) : 0);
+
+	if (!enable) {
+		otto_vlan_838x_port_keep_tag_set(priv, port, false, true);
+		return;
+	}
+
+	regmap_write(priv->map, RTL838X_VLAN_PORT_TAG_STS_CTRL(port),
+		     FIELD_PREP(RTL838X_VLAN_PORT_TAG_STS_CTRL_OTAG_STS_MASK,
+				RTL838X_VLAN_PORT_TAG_STS_TAGGED) |
+		     FIELD_PREP(RTL838X_VLAN_PORT_TAG_STS_CTRL_ITAG_STS_MASK,
+				RTL838X_VLAN_PORT_TAG_STS_UNTAG) |
+		     FIELD_PREP(RTL838X_VLAN_PORT_TAG_STS_CTRL_EGR_P_ITAG_KEEP_MASK,
+				RTL838X_VLAN_PORT_TAG_KEEP_FORMAT) |
+		     FIELD_PREP(RTL838X_VLAN_PORT_TAG_STS_CTRL_IGR_P_ITAG_KEEP_MASK,
+				RTL838X_VLAN_PORT_TAG_KEEP_FORMAT));
 }
 
 void
@@ -678,8 +700,8 @@ void otto_vlan_930x_qinq_setup(struct otto_dsa_priv *priv)
 		regmap_write(priv->map, RTL930X_VLAN_PORT_ITAG_TPID_CMP_MSK(port), BIT(0));
 		regmap_write(priv->map, RTL930X_VLAN_PORT_OTAG_TPID_CMP_MSK(port),
 			     port == cpu_port ? BIT(0) : 0);
-		regmap_write(priv->map, RTL930X_VLAN_PORT_AFT(port),
-			     RTL930X_VLAN_PORT_AFT_ACCEPT_ALL);
+		regmap_write(priv->map, priv->r->vlan_port_aft + (port << 2),
+			     RTLDSA_VLAN_PORT_AFT_ALL);
 	}
 
 	regmap_write_bits(priv->map, RTL930X_VLAN_PORT_FWD + (cpu_port << 2), GENMASK(3, 0),
