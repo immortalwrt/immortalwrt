@@ -10,7 +10,7 @@
 +			interrupts = <GIC_SPI 23 IRQ_TYPE_LEVEL_HIGH>;
 +			clocks = <&scmi_clk SCMI_HCLK_TRNG>;
 +			clock-names = "hclk_trng";
-+			resets = <&cru 0x000000a3>;
++			resets = <&cru SRST_H_TRNG_NS>;
 +			reset-names = "reset";
 +		};
 +
