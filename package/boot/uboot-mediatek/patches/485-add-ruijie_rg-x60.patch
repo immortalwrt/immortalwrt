@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/configs/mt7986_ruijie_rg-x60_defconfig
-@@ -0,0 +1,109 @@
+@@ -0,0 +1,111 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_SMCCC=y
 +CONFIG_SYS_HAS_NONCACHED_MEMORY=y
@@ -35,6 +35,8 @@
 +CONFIG_CMD_ASKENV=y
 +CONFIG_CMD_ERASEENV=y
 +CONFIG_CMD_ENV_FLAGS=y
++CONFIG_CRC32_VERIFY=y
++CONFIG_CMD_SETEXPR_FMT=y
 +CONFIG_CMD_RNG=y
 +CONFIG_CMD_STRINGS=y
 +CONFIG_CMD_DM=y
@@ -113,7 +115,7 @@
 --- /dev/null
 +++ b/defenvs/ruijie_rg-x60_env
 @@ -0,0 +1,61 @@
-+ethaddr_factory=mtd read product_info 0x40080000 0x0 0x20000 && env import -c 0x40080000 0x20000 ethaddr ; setenv ethaddr_factory
++ethaddr_factory=if mtd read product_info 0x40080000 0x0 0x20000 && setexpr.l factory_crc *0x40080000 && setexpr factory_crc fmt %08x $factory_crc && crc32 -v 0x40080004 0x1fffc $factory_crc && env import -b 0x40080004 0x1fffc ethaddr ; then setenv factory_crc ; setenv ethaddr_factory ; else setenv factory_crc ; echo Factory MAC import failed ; false ; fi
 +ipaddr=192.168.1.1
 +serverip=192.168.1.254
 +loadaddr=0x46000000
@@ -169,9 +171,9 @@
 +ubi_write_production=run ubi_create_env && run _ubi_write_production
 +_ubi_write_production=ubi check fit && ubi remove fit ; run ubi_remove_rootfs ; ubi create fit $filesize dynamic && ubi write $loadaddr fit $filesize
 +ubi_write_recovery=run ubi_create_env && run _ubi_write_recovery
-+_ubi_write_recovery=ubi check recovery && ubi remove recovery ; run ubi_remove_rootfs ; ubi create recovery $filesize dynamic && ubi write $loadaddr recovery $filesize
++_ubi_write_recovery=if ubi check recovery ; then ubi write $loadaddr recovery $filesize ; else ubi create recovery $filesize dynamic && ubi write $loadaddr recovery $filesize ; fi
 +_init_env=run ubi_create_env && run _switch_to_menu && setenv _firstboot && setenv _init_env && saveenv && saveenv
-+_firstboot=run ethaddr_factory ; if run _init_env ; then true ; else env default _firstboot _init_env _switch_to_menu _bootmenu_update_title bootmenu_0 bootmenu_0d bootdelay bootmenu_delay bootmenu_title ; echo Environment initialization failed - retry from menu ; fi ; run boot_first
++_firstboot=if run ethaddr_factory && run _init_env ; then run boot_first ; else env default ethaddr_factory _firstboot _init_env _switch_to_menu _bootmenu_update_title bootmenu_0 bootmenu_0d bootdelay bootmenu_delay bootmenu_title ; echo Environment initialization failed - retry from menu ; bootmenu -1 ; fi
 +_switch_to_menu=setenv _switch_to_menu ; setenv bootdelay 3 ; setenv bootmenu_delay 3 ; setenv bootmenu_0 $bootmenu_0d ; setenv bootmenu_0d ; run _bootmenu_update_title
 +_bootmenu_update_title=setenv _bootmenu_update_title ; setenv bootmenu_title "$bootmenu_title       [33m$ver[0m"
 --- /dev/null
@@ -385,7 +387,7 @@
 +};
 --- /dev/null
 +++ b/configs/mt7986_ruijie_rg-x60-pro_defconfig
-@@ -0,0 +1,109 @@
+@@ -0,0 +1,111 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_SMCCC=y
 +CONFIG_SYS_HAS_NONCACHED_MEMORY=y
@@ -420,6 +422,8 @@
 +CONFIG_CMD_ASKENV=y
 +CONFIG_CMD_ERASEENV=y
 +CONFIG_CMD_ENV_FLAGS=y
++CONFIG_CRC32_VERIFY=y
++CONFIG_CMD_SETEXPR_FMT=y
 +CONFIG_CMD_RNG=y
 +CONFIG_CMD_STRINGS=y
 +CONFIG_CMD_DM=y
@@ -498,7 +502,7 @@
 --- /dev/null
 +++ b/defenvs/ruijie_rg-x60-pro_env
 @@ -0,0 +1,61 @@
-+ethaddr_factory=mtd read product_info 0x40080000 0x0 0x20000 && env import -c 0x40080000 0x20000 ethaddr ; setenv ethaddr_factory
++ethaddr_factory=if mtd read product_info 0x40080000 0x0 0x20000 && setexpr.l factory_crc *0x40080000 && setexpr factory_crc fmt %08x $factory_crc && crc32 -v 0x40080004 0x1fffc $factory_crc && env import -b 0x40080004 0x1fffc ethaddr ; then setenv factory_crc ; setenv ethaddr_factory ; else setenv factory_crc ; echo Factory MAC import failed ; false ; fi
 +ipaddr=192.168.1.1
 +serverip=192.168.1.254
 +loadaddr=0x46000000
@@ -554,8 +558,8 @@
 +ubi_write_production=run ubi_create_env && run _ubi_write_production
 +_ubi_write_production=ubi check fit && ubi remove fit ; run ubi_remove_rootfs ; ubi create fit $filesize dynamic && ubi write $loadaddr fit $filesize
 +ubi_write_recovery=run ubi_create_env && run _ubi_write_recovery
-+_ubi_write_recovery=ubi check recovery && ubi remove recovery ; run ubi_remove_rootfs ; ubi create recovery $filesize dynamic && ubi write $loadaddr recovery $filesize
++_ubi_write_recovery=if ubi check recovery ; then ubi write $loadaddr recovery $filesize ; else ubi create recovery $filesize dynamic && ubi write $loadaddr recovery $filesize ; fi
 +_init_env=run ubi_create_env && run _switch_to_menu && setenv _firstboot && setenv _init_env && saveenv && saveenv
-+_firstboot=run ethaddr_factory ; if run _init_env ; then true ; else env default _firstboot _init_env _switch_to_menu _bootmenu_update_title bootmenu_0 bootmenu_0d bootdelay bootmenu_delay bootmenu_title ; echo Environment initialization failed - retry from menu ; fi ; run boot_first
++_firstboot=if run ethaddr_factory && run _init_env ; then run boot_first ; else env default ethaddr_factory _firstboot _init_env _switch_to_menu _bootmenu_update_title bootmenu_0 bootmenu_0d bootdelay bootmenu_delay bootmenu_title ; echo Environment initialization failed - retry from menu ; bootmenu -1 ; fi
 +_switch_to_menu=setenv _switch_to_menu ; setenv bootdelay 3 ; setenv bootmenu_delay 3 ; setenv bootmenu_0 $bootmenu_0d ; setenv bootmenu_0d ; run _bootmenu_update_title
 +_bootmenu_update_title=setenv _bootmenu_update_title ; setenv bootmenu_title "$bootmenu_title       [33m$ver[0m"
