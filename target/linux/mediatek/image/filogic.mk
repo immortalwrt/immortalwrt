@@ -3686,25 +3686,84 @@ define Device/routerich_be7200
 endef
 TARGET_DEVICES += routerich_be7200
 
-define Device/ruijie_rg-x60
+define Device/ruijie_rg-x60-stock
   DEVICE_VENDOR := Ruijie
   DEVICE_MODEL := RG-X60
-  DEVICE_DTS := mt7986a-ruijie-rg-x60
+  DEVICE_VARIANT := (stock layout)
+  BOARD_NAME := ruijie_rg-x60
+  DEVICE_DTS := mt7986a-ruijie-rg-x60-stock
   DEVICE_DTS_CONFIG := config@ruijie_x60_gsw_en8811h_phy
   DEVICE_DTS_DIR := ../dts
-  SUPPORTED_DEVICES += X60
+  SUPPORTED_DEVICES += ruijie,rg-x60 X60
   DEVICE_PACKAGES := kmod-mt7915e kmod-mt7986-firmware mt7986-wo-firmware kmod-phy-airoha-en8811h
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
+TARGET_DEVICES += ruijie_rg-x60-stock
+
+define Device/ruijie_rg-x60
+  DEVICE_VENDOR := Ruijie
+  DEVICE_MODEL := RG-X60
+  DEVICE_VARIANT := (OpenWrt U-Boot Layout)
+  DEVICE_DTS := mt7986a-ruijie-rg-x60
+  SUPPORTED_DEVICES := ruijie,rg-x60-openwrt
+  DEVICE_DTS_DIR := ../dts
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  KERNEL_IN_UBI := 1
+  UBOOTENV_IN_UBI := 1
+  IMAGES := sysupgrade.itb
+  KERNEL_INITRAMFS_SUFFIX := -recovery.itb
+  KERNEL := kernel-bin | libdeflate-gzip
+  KERNEL_INITRAMFS := kernel-bin | libdeflate-gzip | \
+	fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
+  IMAGE/sysupgrade.itb := append-kernel | \
+	fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-with-rootfs | \
+	append-metadata
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7986-firmware mt7986-wo-firmware kmod-phy-airoha-en8811h
+  ARTIFACTS := preloader.bin bl31-uboot.fip
+  ARTIFACT/preloader.bin := mt7986-bl2 spim-nand-ddr3
+  ARTIFACT/bl31-uboot.fip := mt7986-bl31-uboot ruijie_rg-x60
+endef
 TARGET_DEVICES += ruijie_rg-x60
+
+define Device/ruijie_rg-x60-pro-stock
+  DEVICE_VENDOR := Ruijie
+  DEVICE_MODEL := RG-X60 Pro
+  DEVICE_VARIANT := (stock layout)
+  BOARD_NAME := ruijie_rg-x60-pro
+  SUPPORTED_DEVICES += ruijie,rg-x60-pro
+  DEVICE_DTS := mt7986a-ruijie-rg-x60-pro-stock
+  DEVICE_DTS_DIR := ../dts
+  DEVICE_PACKAGES := kmod-mt7915e kmod-mt7986-firmware mt7986-wo-firmware
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += ruijie_rg-x60-pro-stock
 
 define Device/ruijie_rg-x60-pro
   DEVICE_VENDOR := Ruijie
   DEVICE_MODEL := RG-X60 Pro
+  DEVICE_VARIANT := (OpenWrt U-Boot Layout)
   DEVICE_DTS := mt7986a-ruijie-rg-x60-pro
+  SUPPORTED_DEVICES := ruijie,rg-x60-pro-openwrt
   DEVICE_DTS_DIR := ../dts
+  UBINIZE_OPTS := -E 5
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  KERNEL_IN_UBI := 1
+  UBOOTENV_IN_UBI := 1
+  IMAGES := sysupgrade.itb
+  KERNEL_INITRAMFS_SUFFIX := -recovery.itb
+  KERNEL := kernel-bin | libdeflate-gzip
+  KERNEL_INITRAMFS := kernel-bin | libdeflate-gzip | \
+	fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
+  IMAGE/sysupgrade.itb := append-kernel | \
+	fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-with-rootfs | \
+	append-metadata
   DEVICE_PACKAGES := kmod-mt7915e kmod-mt7986-firmware mt7986-wo-firmware
-  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  ARTIFACTS := preloader.bin bl31-uboot.fip
+  ARTIFACT/preloader.bin := mt7986-bl2 spim-nand-ddr3
+  ARTIFACT/bl31-uboot.fip := mt7986-bl31-uboot ruijie_rg-x60-pro
 endef
 TARGET_DEVICES += ruijie_rg-x60-pro
 

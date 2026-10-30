@@ -309,7 +309,9 @@ routerich,be7200)
 	ucidef_set_led_netdev "wan-off" "wan-off" "red:wan" "wan" "link"
 	ucidef_set_led_netdev "wlan5g" "wlan-5ghz" "blue:wlan-5ghz" "phy0.1-ap0" "link tx rx"
 	;;
-ruijie,rg-x60-pro)
+ruijie,rg-x60-pro|\
+ruijie,rg-x60-pro-stock|\
+ruijie,rg-x60-pro-openwrt)
 	ucidef_set_led_netdev "wan" "WAN" "mdio-bus:07:green:wan" "eth1"
 	;;
 smartrg,sdg-8612)

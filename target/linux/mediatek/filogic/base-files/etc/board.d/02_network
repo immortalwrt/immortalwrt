@@ -21,6 +21,8 @@ mediatek_setup_interfaces()
 	mercusys,mr80x-v3|\
 	routerich,ax3000-v1|\
 	ruijie,rg-x60|\
+	ruijie,rg-x60-stock|\
+	ruijie,rg-x60-openwrt|\
 	zbtlink,zbt-z8103ax|\
 	zbtlink,zbt-z8103ax-c)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" eth1
@@ -96,6 +98,8 @@ mediatek_setup_interfaces()
 	netcore,n60-pro|\
 	nradio,c8-668gl|\
 	ruijie,rg-x60-pro|\
+	ruijie,rg-x60-pro-stock|\
+	ruijie,rg-x60-pro-openwrt|\
 	unielec,u7981-01*|\
 	wavlink,wl-wn536ax6-a|\
 	zbtlink,zbt-z8102ax|\
