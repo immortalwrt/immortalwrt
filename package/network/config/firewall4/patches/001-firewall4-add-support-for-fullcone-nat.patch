@@ -163,6 +163,7 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  			"dnat",
  			"snat",
  			"masquerade",
+			"npt",
 +			"fullcone",
  			"accept",
  			"reject",
