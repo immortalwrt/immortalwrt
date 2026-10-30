@@ -65,6 +65,20 @@ ppp_exitcode_tostring()
 	esac
 }
 
+ppp_opt_quote() {
+	printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
+}
+
+ppp_write_auth_file() {
+	local file="$1" user="$2" pass="$3"
+
+	(
+		umask 077
+		printf 'user "%s"\npassword "%s"\n' \
+			"$(ppp_opt_quote "$user")" "$(ppp_opt_quote "$pass")" > "$file"
+	)
+}
+
 ppp_generic_init_config() {
 	proto_config_add_string username
 	proto_config_add_string password
@@ -146,7 +160,32 @@ ppp_generic_setup() {
 	[ "$delegate" != "0" ] && delegate=""
 	[ "$norelease" = "1" ] || norelease=""
 
-	proto_run_command "$config" /usr/sbin/pppd \
+	local jail arg caps=/etc/capabilities/pppd.json
+	[ -x /sbin/ujail ] && [ -f "$caps" ] && id -u ppp >/dev/null 2>&1 && {
+		jail="/sbin/ujail -t 5 -n pppd -U ppp -G ppp -C $caps -c --"
+		chown ppp /dev/ppp
+		mkdir -p /var/run/pppd
+		chown ppp /var/run/pppd
+		# pppd rewrites the peer DNS file behind /etc/ppp/resolv.conf at
+		# every connect; one left by a root-run instance refuses uid 454
+		rm -f /tmp/resolv.conf.ppp
+		# A serial link is handed its TTY as a pppd argument - first by
+		# proto_ppp_setup, last by comgt's proto_3g_setup - and a TTY is
+		# root:dialout 0660, which no capability overrides.
+		for arg in "$@"; do
+			[ -c "$arg" ] && chown ppp "$arg"
+		done
+	}
+
+	local optfile
+	[ -n "$username" ] && {
+		optfile="/var/run/pppd/$config.opts"
+		mkdir -p /var/run/pppd
+		ppp_write_auth_file "$optfile" "$username" "$password"
+		[ -n "$jail" ] && chown ppp "$optfile"
+	}
+
+	proto_run_command "$config" $jail /usr/sbin/pppd \
 		nodetach ipparam "$config" \
 		ifname "$pppname" \
 		${localip:+$localip:} \
@@ -163,7 +202,7 @@ ppp_generic_setup() {
 		usepeerdns \
 		$demand $persist maxfail $maxfail \
 		${holdoff:+holdoff "$holdoff"} \
-		${username:+user "$username" password "$password"} \
+		${optfile:+file "$optfile" net-init-script /lib/netifd/ppp-net-init} \
 		${connect:+connect "$connect"} \
 		${disconnect:+disconnect "$disconnect"} \
 		ip-up-script /lib/netifd/ppp-up \
@@ -177,6 +216,8 @@ ppp_generic_setup() {
 ppp_generic_teardown() {
 	local interface="$1"
 	local errorstring=$(ppp_exitcode_tostring $ERROR)
+
+	rm -f "/var/run/pppd/$interface.opts"
 
 	case "$ERROR" in
 		0)

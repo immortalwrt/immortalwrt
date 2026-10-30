@@ -2046,15 +2046,18 @@ static enum rtl930x_template_field_id rtl930x_fixed_templates[RTL930X_N_FIXED_TE
 	  RTL930X_TEMPLATE_FIELD_SIP0, RTL930X_TEMPLATE_FIELD_SIP1, RTL930X_TEMPLATE_FIELD_SIP2,
 	  RTL930X_TEMPLATE_FIELD_SIP3, RTL930X_TEMPLATE_FIELD_SIP4, RTL930X_TEMPLATE_FIELD_SIP5,
 	  RTL930X_TEMPLATE_FIELD_SIP6, RTL930X_TEMPLATE_FIELD_SIP7, RTL930X_TEMPLATE_FIELD_VLAN,
-	  RTL930X_TEMPLATE_FIELD_RANGE_CHK, RTL930X_TEMPLATE_FIELD_SPM1, RTL930X_TEMPLATE_FIELD_SPM1
+	  RTL930X_TEMPLATE_FIELD_RANGE_CHK, RTL930X_TEMPLATE_FIELD_SPM0, RTL930X_TEMPLATE_FIELD_SPM1
 	},
 };
 
-static void otto_pie_930x_lookup_enable(struct otto_dsa_priv *priv, int index)
+static int otto_pie_930x_lookup_enable(struct otto_dsa_priv *priv, int index)
 {
 	int block = index / PIE_BLOCK_SIZE;
 
-	regmap_write_bits(priv->map, RTL930X_PIE_BLK_LOOKUP_CTRL, BIT(block), BIT(block));
+	if (priv->pie_failed_blocks & BIT(block))
+		return -EIO;
+
+	return regmap_write_bits(priv->map, RTL930X_PIE_BLK_LOOKUP_CTRL, BIT(block), BIT(block));
 }
 
 /* Reads the intermediate representation of the templated match-fields of the
@@ -2372,40 +2375,76 @@ void otto_pie_930x_rule_dump_raw(u32 r[])
 
 int otto_pie_930x_rule_write(struct otto_dsa_priv *priv, int idx, struct pie_rule *pr)
 {
-	int tbl = otto_table_acquire(RTL9300_TBL_IACL);
-	u32 r[19];
+	u32 r[19] = {};
 	int block = idx / PIE_BLOCK_SIZE;
+	int tbl, template, err;
 	u32 t_select;
 
-	regmap_read(priv->map, RTL930X_PIE_BLK_TMPLTE_CTRL(block), &t_select);
+	if (idx < 0 || idx >= priv->r->n_pie_blocks * PIE_BLOCK_SIZE || pr->tid > 1)
+		return -EINVAL;
 
-	pr_debug("%s: %d, t_select: %08x\n", __func__, idx, t_select);
+	/* Invalidating a row must not depend on reading its template selector. */
+	if (pr->valid) {
+		err = regmap_read(priv->map, RTL930X_PIE_BLK_TMPLTE_CTRL(block), &t_select);
+		if (err)
+			return err;
+		template = (t_select >> (pr->tid * 4)) & 0xf;
+		if (template >= ARRAY_SIZE(rtl930x_fixed_templates))
+			return -EOPNOTSUPP;
 
-	for (int i = 0; i < 19; i++)
-		r[i] = 0;
-
-	if (!pr->valid) {
-		__otto_table_write(tbl, idx, &r);
-		otto_table_release(tbl);
-		return 0;
+		pr_debug("%s: %d, t_select: %08x\n", __func__, idx, t_select);
+		otto_pie_930x_write_fixed_fields(r, pr);
+		otto_pie_930x_write_templated(r, pr, rtl930x_fixed_templates[template]);
+		otto_pie_930x_write_action(r, pr);
 	}
-	otto_pie_930x_write_fixed_fields(r, pr);
 
-	pr_debug("%s: template %d\n", __func__, (t_select >> (pr->tid * 4)) & 0xf);
-	otto_pie_930x_write_templated(r, pr, rtl930x_fixed_templates[(t_select >> (pr->tid * 4)) & 0xf]);
+	tbl = otto_table_acquire(RTL9300_TBL_IACL);
+	if (tbl < 0)
+		return tbl;
 
-	otto_pie_930x_write_action(r, pr);
-
-/*	otto_pie_930x_rule_dump_raw(r); */
-
-	__otto_table_write(tbl, idx, &r);
+	err = __otto_table_write(tbl, idx, &r);
 	otto_table_release(tbl);
 
-	return 0;
+	return err;
+}
+
+/* TC discards a failed flow, so no later remove callback can withdraw it.
+ * The table API waits for the preceding command before writing the empty row.
+ * If that cannot complete, keep the whole block disabled until reprobe: a
+ * delayed write must not become active when another rule enables lookup.
+ */
+static void otto_pie_930x_rule_rollback(struct otto_dsa_priv *priv, struct pie_rule *pr)
+{
+	int block = pr->id / PIE_BLOCK_SIZE;
+	int err;
+	u32 lookup;
+
+	lockdep_assert_held(&priv->pie_mutex);
+	pr->valid = false;
+	err = otto_pie_930x_rule_write(priv, pr->id, pr);
+	if (!err) {
+		clear_bit(pr->id, priv->pie_use_bm);
+		return;
+	}
+
+	priv->pie_failed_blocks |= BIT(block);
+	bitmap_set(priv->pie_use_bm, block * PIE_BLOCK_SIZE, PIE_BLOCK_SIZE);
+	err = regmap_write_bits(priv->map, RTL930X_PIE_BLK_LOOKUP_CTRL, BIT(block), 0);
+	if (!err)
+		err = regmap_read(priv->map, RTL930X_PIE_BLK_LOOKUP_CTRL, &lookup);
+	if (err || (lookup & BIT(block)))
+		dev_crit(priv->dev, "PIE block %d could not be disabled after failed rollback; reset required\n",
+			 block);
+	else
+		dev_err(priv->dev, "PIE block %d disabled after failed rollback; its TC rules are inactive until reprobe\n",
+			block);
 }
 
 static bool otto_pie_930x_templ_has(int t, enum rtl930x_template_field_id field_type)
 {
+	if (t < 0 || t >= ARRAY_SIZE(rtl930x_fixed_templates))
+		return false;
+
 	for (int i = 0; i < N_FIXED_FIELDS; i++) {
 		enum rtl930x_template_field_id ft = rtl930x_fixed_templates[t][i];
 
@@ -2424,6 +2463,10 @@ static int otto_pie_930x_verify_template(struct otto_dsa_priv *priv,
 					 struct pie_rule *pr, int t, int block)
 {
 	int i;
+
+	if (t < 0 || t >= ARRAY_SIZE(rtl930x_fixed_templates) ||
+	    block < 0 || block >= priv->r->n_pie_blocks)
+		return -1;
 
 	if (!pr->is_ipv6 && pr->sip_m && !otto_pie_930x_templ_has(t, RTL930X_TEMPLATE_FIELD_SIP0))
 		return -1;
@@ -2477,7 +2520,7 @@ static int otto_pie_930x_verify_template(struct otto_dsa_priv *priv,
 int otto_pie_930x_rule_add(struct otto_dsa_priv *priv, struct pie_rule *pr)
 {
 	u32 t_select;
-	int idx, block, j, t;
+	int idx, block, j, t, err;
 	int min_block = 0;
 	int max_block = priv->r->n_pie_blocks / 2;
 
@@ -2490,8 +2533,12 @@ int otto_pie_930x_rule_add(struct otto_dsa_priv *priv, struct pie_rule *pr)
 	mutex_lock(&priv->pie_mutex);
 
 	for (block = min_block; block < max_block; block++) {
+		if (priv->pie_failed_blocks & BIT(block))
+			continue;
+		err = regmap_read(priv->map, RTL930X_PIE_BLK_TMPLTE_CTRL(block), &t_select);
+		if (err)
+			goto out_unlock;
 		for (j = 0; j < 2; j++) {
-			regmap_read(priv->map, RTL930X_PIE_BLK_TMPLTE_CTRL(block), &t_select);
 			t = (t_select >> (j * 4)) & 0xf;
 			pr_debug("Testing block %d, template %d, template id %d\n", block, j, t);
 			pr_debug("%s: %08x\n",
@@ -2505,8 +2552,8 @@ int otto_pie_930x_rule_add(struct otto_dsa_priv *priv, struct pie_rule *pr)
 	}
 
 	if (block >= max_block) {
-		mutex_unlock(&priv->pie_mutex);
-		return -EOPNOTSUPP;
+		err = -EOPNOTSUPP;
+		goto out_unlock;
 	}
 
 	pr_debug("Using block: %d, index %d, template-id %d\n", block, idx, j);
@@ -2517,11 +2564,17 @@ int otto_pie_930x_rule_add(struct otto_dsa_priv *priv, struct pie_rule *pr)
 	pr->tid_m = 0x1;
 	pr->id = idx;
 
-	otto_pie_930x_lookup_enable(priv, idx);
-	otto_pie_930x_rule_write(priv, idx, pr);
-
+	err = otto_pie_930x_rule_write(priv, idx, pr);
+	if (!err)
+		err = otto_pie_930x_lookup_enable(priv, idx);
+	if (err) {
+		/* A failed operation may have reached hardware. Withdraw it before reuse. */
+		otto_pie_930x_rule_rollback(priv, pr);
+		dev_err(priv->dev, "TC rule programming failed: %d\n", err);
+	}
+out_unlock:
 	mutex_unlock(&priv->pie_mutex);
-	return 0;
+	return err;
 }
 
 /* Delete a range of Packet Inspection Engine rules */
@@ -2553,6 +2606,9 @@ out:
 void otto_pie_930x_rule_rm(struct otto_dsa_priv *priv, struct pie_rule *pr)
 {
 	int idx = pr->id;
+
+	if (idx < 0 || idx >= priv->r->n_pie_blocks * PIE_BLOCK_SIZE)
+		return;
 
 	guard(mutex)(&priv->pie_mutex);
 
