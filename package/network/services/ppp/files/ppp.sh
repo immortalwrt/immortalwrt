@@ -69,14 +69,24 @@ ppp_opt_quote() {
 	printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
 }
 
-ppp_write_auth_file() {
-	local file="$1" user="$2" pass="$3"
+ppp_install_file() {
+	local file="$1" owner="$2" tmp
 
-	(
-		umask 077
-		printf 'user "%s"\npassword "%s"\n' \
-			"$(ppp_opt_quote "$user")" "$(ppp_opt_quote "$pass")" > "$file"
-	)
+	tmp=$(mktemp /var/run/.pppd.XXXXXX) || return
+	cat > "$tmp"
+	[ -z "$owner" ] || chown "$owner" "$tmp"
+	mv -f -T "$tmp" "$file" || {
+		rm -f "$tmp"
+		return 1
+	}
+}
+
+ppp_write_auth_file() {
+	local file="$1" user="$2" pass="$3" owner="$4"
+
+	printf 'user "%s"\npassword "%s"\n' \
+		"$(ppp_opt_quote "$user")" "$(ppp_opt_quote "$pass")" |
+		ppp_install_file "$file" "$owner"
 }
 
 ppp_generic_init_config() {
@@ -122,6 +132,9 @@ ppp_generic_setup() {
 		norelease=""
 	fi
 
+	[ "$(set -- $reqprefix; echo $#)" -gt 1 ] && \
+		logger -p warn -t ppp "$config: ignoring extra reqprefix values"
+
 	if [ "${demand:-0}" -gt 0 ]; then
 		demand="precompiled-active-filter /etc/ppp/filter demand idle $demand"
 	else
@@ -160,12 +173,12 @@ ppp_generic_setup() {
 	[ "$delegate" != "0" ] && delegate=""
 	[ "$norelease" = "1" ] || norelease=""
 
-	local jail arg caps=/etc/capabilities/pppd.json
+	local jail arg secret secrets caps=/etc/capabilities/pppd.json
 	[ -x /sbin/ujail ] && [ -f "$caps" ] && id -u ppp >/dev/null 2>&1 && {
 		jail="/sbin/ujail -t 5 -n pppd -U ppp -G ppp -C $caps -c --"
 		chown ppp /dev/ppp
-		mkdir -p /var/run/pppd
-		chown ppp /var/run/pppd
+		mkdir -p /var/run/pppd /var/run/pptp
+		chown ppp /var/run/pppd /var/run/pptp
 		# pppd rewrites the peer DNS file behind /etc/ppp/resolv.conf at
 		# every connect; one left by a root-run instance refuses uid 454
 		rm -f /tmp/resolv.conf.ppp
@@ -175,14 +188,19 @@ ppp_generic_setup() {
 		for arg in "$@"; do
 			[ -c "$arg" ] && chown ppp "$arg"
 		done
+		for secret in chap-secrets pap-secrets; do
+			grep -qs '^[[:space:]]*[^#[:space:]]' "/etc/ppp/$secret" || continue
+			ppp_install_file "/var/run/pppd/$config.$secret" ppp \
+				< "/etc/ppp/$secret" || continue
+			secrets="$secrets $secret /var/run/pppd/$config.$secret"
+		done
 	}
 
 	local optfile
 	[ -n "$username" ] && {
 		optfile="/var/run/pppd/$config.opts"
 		mkdir -p /var/run/pppd
-		ppp_write_auth_file "$optfile" "$username" "$password"
-		[ -n "$jail" ] && chown ppp "$optfile"
+		ppp_write_auth_file "$optfile" "$username" "$password" ${jail:+ppp}
 	}
 
 	proto_run_command "$config" $jail /usr/sbin/pppd \
@@ -192,9 +210,9 @@ ppp_generic_setup() {
 		${lcp_failure:+lcp-echo-interval $lcp_interval lcp-echo-failure $lcp_failure $lcp_adaptive} \
 		${ipv6:++ipv6} \
 		${autoipv6:+set AUTOIPV6=1} \
-		${reqprefix:+set REQPREFIX=$reqprefix} \
+		${reqprefix:+set "REQPREFIX=$reqprefix"} \
 		${norelease:+set NORELEASE=1} \
-		${ip6table:+set IP6TABLE=$ip6table} \
+		${ip6table:+set "IP6TABLE=$ip6table"} \
 		${peerdns:+set PEERDNS=$peerdns} \
 		${sourcefilter:+set NOSOURCEFILTER=1} \
 		${delegate:+set DELEGATE=0} \
@@ -203,6 +221,7 @@ ppp_generic_setup() {
 		$demand $persist maxfail $maxfail \
 		${holdoff:+holdoff "$holdoff"} \
 		${optfile:+file "$optfile" net-init-script /lib/netifd/ppp-net-init} \
+		$secrets \
 		${connect:+connect "$connect"} \
 		${disconnect:+disconnect "$disconnect"} \
 		ip-up-script /lib/netifd/ppp-up \
@@ -217,7 +236,9 @@ ppp_generic_teardown() {
 	local interface="$1"
 	local errorstring=$(ppp_exitcode_tostring $ERROR)
 
-	rm -f "/var/run/pppd/$interface.opts"
+	rm -f "/var/run/pppd/$interface.opts" \
+		"/var/run/pppd/$interface.chap-secrets" \
+		"/var/run/pppd/$interface.pap-secrets"
 
 	case "$ERROR" in
 		0)

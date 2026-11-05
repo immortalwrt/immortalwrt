@@ -111,7 +111,6 @@ struct rtldsa_port {
 	bool has_pcs;
 	bool inband;
 	int led_set;
-	enum rtldsa_flood_type flood_type;
 	int leds_on_this_port;
 	struct otto_stats_counter_state counters;
 	const struct dsa_port *dp;
@@ -365,9 +364,9 @@ struct rtldsa_config {
 	void (*stat_update_counters_atomically)(struct otto_dsa_priv *priv, int port);
 	unsigned long stat_counter_poll_interval;
 	int (*port_iso_ctrl)(int p);
-	void (*traffic_enable)(int source, int dest);
-	void (*traffic_disable)(int source, int dest);
-	void (*traffic_set)(int source, u64 dest_matrix);
+	void (*traffic_enable)(struct otto_dsa_priv *priv, int source, int dest);
+	void (*traffic_disable)(struct otto_dsa_priv *priv, int source, int dest);
+	void (*traffic_set)(struct otto_dsa_priv *priv, int source, u64 dest_matrix);
 	int l2_ctrl_0;
 	int l2_ctrl_1;
 	bool high_res_l2_age;
@@ -395,12 +394,15 @@ struct rtldsa_config {
 	enum otto_table_id l2_cam_tbl;
 	int trk_ctrl;
 	int trk_hash_ctrl;
-	void (*stp_init)(void);
+	int pri_sel_port_pri;
+	int pri_sel_remap_dscp;
+	int pri_sel_port_tbl_idx;
+	void (*stp_init)(struct otto_dsa_priv *priv);
 	void (*vlan_tables_read)(u32 vlan, struct otto_vlan_info *info);
 	void (*vlan_set_tagged)(u32 vlan, struct otto_vlan_info *info);
 	void (*vlan_set_untagged)(u32 vlan, u64 portmask);
 	int (*vlan_profile_get)(struct otto_dsa_priv *priv, int index,
-				struct rtldsa_vlan_profile *profile);
+				struct otto_vlan_profile *profile);
 	void (*vlan_profile_dump)(struct otto_dsa_priv *priv, int index);
 	void (*vlan_profile_setup)(struct otto_dsa_priv *priv, int profile);
 	void (*vlan_port_pvidmode_set)(struct otto_dsa_priv *priv, int port, enum pbvlan_type type,
@@ -410,13 +412,11 @@ struct rtldsa_config {
 	void (*vlan_port_keep_tag_set)(struct otto_dsa_priv *priv, int port, bool keep_outer,
 				       bool keep_inner);
 	int (*fast_age)(struct otto_dsa_priv *priv, int port, int vid);
-	void (*set_vlan_igr_filter)(int port, enum igr_filter state);
-	void (*set_vlan_egr_filter)(int port, enum egr_filter state);
+	void (*vlan_set_igr_filter)(struct otto_dsa_priv *priv, int port, enum igr_filter state);
+	void (*vlan_set_egr_filter)(struct otto_dsa_priv *priv, int port, enum egr_filter state);
 	void (*enable_learning)(struct otto_dsa_priv *priv, int port, bool enable);
-	void (*enable_l2_new_sa_fwd)(struct otto_dsa_priv *priv, int port,
-			      enum rtldsa_flood_type flood_type);
-	void (*enable_flood)(struct otto_dsa_priv *priv, int port,
-			    enum rtldsa_flood_type flood_type);
+	void (*set_l2_new_sa_trap)(struct otto_dsa_priv *priv, int port, bool trap);
+	void (*enable_flood)(struct otto_dsa_priv *priv, int port, bool enable);
 	void (*enable_mcast_flood)(struct otto_dsa_priv *priv, int port, bool enable);
 	void (*enable_bcast_flood)(struct otto_dsa_priv *priv, int port, bool enable);
 	void (*set_static_move_action)(struct otto_dsa_priv *priv, int port, bool forward);
@@ -466,14 +466,13 @@ struct rtldsa_config {
 	int max_frame;
 
 	int  (*l2_port_new_salrn)(int port);
-	int  (*l2_port_new_sa_fwd)(int port);
 	int (*set_ageing_time)(struct otto_dsa_priv *priv, unsigned long msec);
-	int (*get_mirror_config)(struct rtldsa_mirror_config *config, int group, int port);
+	int (*get_mirror_config)(struct otto_mirror_config *config, int group, int port);
 	int (*port_rate_police_add)(struct dsa_switch *ds, int port,
 				    const struct flow_action_entry *act, bool ingress);
 	int (*port_rate_police_del)(struct dsa_switch *ds, int port, struct flow_cls_offload *cls,
 				    bool ingress);
-	void (*print_matrix)(void);
+	void (*print_matrix)(struct otto_dsa_priv *priv);
 	u64 (*read_l2_entry_using_hash)(u32 hash, u32 position, struct rtl838x_l2_entry *e);
 	void (*write_l2_entry_using_hash)(struct otto_dsa_priv *priv, u32 hash, u32 pos,
 					struct rtl838x_l2_entry *e);
@@ -499,7 +498,8 @@ struct rtldsa_config {
 	void (*l2_learning_setup)(struct otto_dsa_priv *priv);
 	u32 (*packet_cntr_read)(struct otto_dsa_priv *priv, int counter);
 	void (*packet_cntr_clear)(struct otto_dsa_priv *priv, int counter);
-	void (*set_receive_management_action)(int port, rma_ctrl_t type, action_type_t action);
+	void (*set_receive_management_action)(struct otto_dsa_priv *priv, int port,
+					      rma_ctrl_t type, action_type_t action);
 	void (*led_init)(struct otto_dsa_priv *priv);
 	u32 (*get_egress_rate)(struct otto_dsa_priv *priv, int port);
 	int (*set_egress_rate)(struct otto_dsa_priv *priv, int port, u32 rate);
@@ -621,19 +621,18 @@ u64 rtl838x_get_port_reg(int reg);
 
 /* RTL838x-specific */
 u32 rtl838x_hash(struct otto_dsa_priv *priv, u64 seed);
-void rtldsa_838x_print_matrix(void);
+void rtldsa_838x_print_matrix(struct otto_dsa_priv *priv);
 
 /* RTL839x-specific */
 u32 rtl839x_hash(struct otto_dsa_priv *priv, u64 seed);
-void rtl839x_exec_tbl2_cmd(struct otto_dsa_priv *priv, u32 cmd);
-void rtldsa_839x_print_matrix(void);
+void rtldsa_839x_print_matrix(struct otto_dsa_priv *priv);
 
 /* RTL930x-specific */
 u32 otto_l2_930x_hash(struct otto_dsa_priv *priv, u64 seed);
-void rtldsa_930x_print_matrix(void);
+void rtldsa_930x_print_matrix(struct otto_dsa_priv *priv);
 
 /* RTL931x-specific */
-void rtldsa_931x_print_matrix(void);
+void rtldsa_931x_print_matrix(struct otto_dsa_priv *priv);
 
 /*
  * TODO: The following functions are currently not in use. So compiler will complain if
@@ -641,13 +640,10 @@ void rtldsa_931x_print_matrix(void);
  * collect them in this section.
  */
 
-void rtl9300_dump_debug(void);
+void rtl9300_dump_debug(struct otto_dsa_priv *priv);
 
 extern const struct dsa_switch_ops rtldsa_83xx_switch_ops;
 extern const struct dsa_switch_ops rtldsa_93xx_switch_ops;
-
-extern const struct phylink_mac_ops rtldsa_83xx_phylink_mac_ops;
-extern const struct phylink_mac_ops rtldsa_93xx_phylink_mac_ops;
 
 extern const struct rtldsa_config rtldsa_838x_cfg;
 extern const struct rtldsa_config rtldsa_839x_cfg;

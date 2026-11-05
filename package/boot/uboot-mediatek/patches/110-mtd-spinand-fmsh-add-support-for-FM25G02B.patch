@@ -37,9 +37,9 @@ Signed-off-by: Aleksei Sviridkin <f@lex.la>
 
 --- a/drivers/mtd/nand/spi/fmsh.c
 +++ b/drivers/mtd/nand/spi/fmsh.c
-@@ -20,6 +20,16 @@
- #define STATUS_ECC_4_6_BITFLIPS	(3 << 4)
- #define STATUS_ECC_7_8_BITFLIPS	(5 << 4)
+@@ -13,6 +13,16 @@
+ 
+ #define SPINAND_MFR_FMSH		0xA1
  
 +#define FM25G01B_STATUS_ECC_MASK		(7 << 4)
 +	#define FM25G01B_STATUS_ECC_NO_BITFLIPS		(0 << 4)
@@ -54,9 +54,9 @@ Signed-off-by: Aleksei Sviridkin <f@lex.la>
  static SPINAND_OP_VARIANTS(read_cache_variants,
  		SPINAND_PAGE_READ_FROM_CACHE_1S_4S_4S_OP(0, 2, NULL, 0, 0),
  		SPINAND_PAGE_READ_FROM_CACHE_1S_1S_4S_OP(0, 1, NULL, 0, 0),
-@@ -120,7 +130,90 @@ static int fm25s01b_ecc_get_status(struc
- 	return -EINVAL;
- }
+@@ -52,7 +62,90 @@ static const struct mtd_ooblayout_ops fm
+ 	.rfree = fm25s01a_ooblayout_free,
+ };
  
 +static SPINAND_OP_VARIANTS(fm25g_read_cache_variants,
 +		SPINAND_PAGE_READ_FROM_CACHE_1S_4S_4S_OP(0, 1, NULL, 0, 0),

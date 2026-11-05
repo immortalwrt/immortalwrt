@@ -14,7 +14,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 
 --- a/drivers/pmdomain/rockchip/pm-domains.c
 +++ b/drivers/pmdomain/rockchip/pm-domains.c
-@@ -1111,6 +1111,8 @@ static const struct rockchip_domain_info
+@@ -1125,6 +1125,8 @@ static const struct rockchip_domain_info
  };
  
  static const struct rockchip_domain_info rv1126_pm_domains[] = {

@@ -26,7 +26,7 @@ GENPD_FLAG_NO_STAY_ON"), and fixes the crash for me.
 
 --- a/drivers/pmdomain/rockchip/pm-domains.c
 +++ b/drivers/pmdomain/rockchip/pm-domains.c
-@@ -875,7 +875,9 @@ static int rockchip_pm_add_one_domain(st
+@@ -887,7 +887,9 @@ static int rockchip_pm_add_one_domain(st
  	pd->genpd.power_on = rockchip_pd_power_on;
  	pd->genpd.attach_dev = rockchip_pd_attach_dev;
  	pd->genpd.detach_dev = rockchip_pd_detach_dev;

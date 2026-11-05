@@ -27,7 +27,7 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
  obj-$(CONFIG_MTD_SPI_NAND) += spinand.o
 --- a/drivers/mtd/nand/spi/core.c
 +++ b/drivers/mtd/nand/spi/core.c
-@@ -1235,6 +1235,7 @@ static const struct spinand_manufacturer
+@@ -1254,6 +1254,7 @@ static const struct spinand_manufacturer
  	&foresee_spinand_manufacturer,
  	&gigadevice_spinand_manufacturer,
  	&heyangtek_spinand_manufacturer,

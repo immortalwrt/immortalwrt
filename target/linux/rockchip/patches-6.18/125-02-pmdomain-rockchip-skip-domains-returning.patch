@@ -33,7 +33,7 @@ Signed-off-by: Daniel Bozeman <daniel@orb.net>
 
 --- a/drivers/pmdomain/rockchip/pm-domains.c
 +++ b/drivers/pmdomain/rockchip/pm-domains.c
-@@ -1059,6 +1059,11 @@ static int rockchip_pm_domain_probe(stru
+@@ -1073,6 +1073,11 @@ static int rockchip_pm_domain_probe(stru
  	for_each_available_child_of_node_scoped(np, node) {
  		error = rockchip_pm_add_one_domain(pmu, node);
  		if (error) {
