@@ -1,11 +1,7 @@
-From git@z Thu Jan  1 00:00:00 1970
-Subject: [PATCH v13 6/35] phy: rockchip: usbdp: Drop seamless DP takeover
+From 1ab628ce8f3ab694c28dcfcd5b1eec0cf9f499b8 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 14 Jul 2026 21:26:07 +0200
-Message-Id: <20260714-rockchip-usbdp-cleanup-v13-6-6cb3e769d4c5@collabora.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Date: Tue, 15 Sep 2026 15:49:53 +0200
+Subject: [PATCH] phy: rockchip: usbdp: Drop seamless DP takeover
 
 Right now the DRM drivers do not support seamless DP takeover and I'm
 I'm not aware of any bootloader implementing this feature either.
@@ -25,9 +21,13 @@ somebody adds all missing bits.
 Fixes: 2f70bbddeb45 ("phy: rockchip: add usbdp combo phy driver")
 Reported-by: Sashiko <sashiko-bot@kernel.org>
 Closes: https://lore.kernel.org/linux-phy/20260612164107.C7DB21F000E9@smtp.kernel.org/
+Tested-by: Igor Paunovic <royalnet026@gmail.com> # Orange Pi 5 Plus
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Link: https://patch.msgid.link/20260915-rockchip-usbdp-cleanup-v15-6-80e2c11d1ce8@collabora.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
- drivers/phy/rockchip/phy-rockchip-usbdp.c | 31 -------------------------------
+ drivers/phy/rockchip/phy-rockchip-usbdp.c | 31 -----------------------
  1 file changed, 31 deletions(-)
 
 --- a/drivers/phy/rockchip/phy-rockchip-usbdp.c

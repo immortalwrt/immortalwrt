@@ -1,18 +1,18 @@
-From git@z Thu Jan  1 00:00:00 1970
-Subject: [PATCH v13 11/35] phy: rockchip: usbdp: Support single-lane DP
+From ae9b60ef1d626d1a4fdf8854f66d58f6ac56e37d Mon Sep 17 00:00:00 2001
 From: Zhang Yubing <yubing.zhang@rock-chips.com>
-Date: Tue, 14 Jul 2026 21:26:12 +0200
-Message-Id: <20260714-rockchip-usbdp-cleanup-v13-11-6cb3e769d4c5@collabora.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Date: Tue, 15 Sep 2026 15:49:58 +0200
+Subject: [PATCH] phy: rockchip: usbdp: Support single-lane DP
 
 Implement support for using just a single DisplayPort line.
 
 Signed-off-by: Zhang Yubing <yubing.zhang@rock-chips.com>
+Tested-by: Igor Paunovic <royalnet026@gmail.com> # Orange Pi 5 Plus
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Link: https://patch.msgid.link/20260915-rockchip-usbdp-cleanup-v15-11-80e2c11d1ce8@collabora.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
- drivers/phy/rockchip/phy-rockchip-usbdp.c | 64 +++++++++++++------------------
+ drivers/phy/rockchip/phy-rockchip-usbdp.c | 64 ++++++++++-------------
  1 file changed, 27 insertions(+), 37 deletions(-)
 
 --- a/drivers/phy/rockchip/phy-rockchip-usbdp.c

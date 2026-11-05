@@ -1,18 +1,17 @@
-From git@z Thu Jan  1 00:00:00 1970
-Subject: [PATCH v13 19/35] phy: rockchip: usbdp: Re-init the PHY on
- orientation change
+From 4d8349799c4be92750c0d73c9dfac09003233146 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 14 Jul 2026 21:26:20 +0200
-Message-Id: <20260714-rockchip-usbdp-cleanup-v13-19-6cb3e769d4c5@collabora.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Date: Tue, 15 Sep 2026 17:06:06 +0200
+Subject: [PATCH] phy: rockchip: usbdp: Re-init the PHY on orientation change
 
 Changing the cable orientation reconfigures the lane muxing, which
 requires re-initializing the PHY. Without this DP functionality
 breaks, if the cable is re-plugged with swapped orientation.
 
+Tested-by: Igor Paunovic <royalnet026@gmail.com> # Orange Pi 5 Plus
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Link: https://patch.msgid.link/20260915-rockchip-usbdp-cleanup-part2-v15-3-8d507cb1174f@collabora.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
  drivers/phy/rockchip/phy-rockchip-usbdp.c | 6 +++++-
  1 file changed, 5 insertions(+), 1 deletion(-)

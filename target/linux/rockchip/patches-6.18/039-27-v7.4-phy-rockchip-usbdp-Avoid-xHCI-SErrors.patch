@@ -1,11 +1,7 @@
-From git@z Thu Jan  1 00:00:00 1970
-Subject: [PATCH v13 25/35] phy: rockchip: usbdp: Avoid xHCI SErrors
+From cf3aa34e6f0798544c26ad93a6c3c2231ab09738 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 14 Jul 2026 21:26:26 +0200
-Message-Id: <20260714-rockchip-usbdp-cleanup-v13-25-6cb3e769d4c5@collabora.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Date: Tue, 15 Sep 2026 17:06:12 +0200
+Subject: [PATCH] phy: rockchip: usbdp: Avoid xHCI SErrors
 
 The USBDP PHY provides the PIPE clock to the USB3 controller, which
 means the PHY must be fully running when anything tries to access
@@ -29,7 +25,11 @@ afterwards to make sure the mux happened. The datasheet gives
 no hints how long it takes, so delay time is a guess.
 
 Fixes: 2f70bbddeb45 ("phy: rockchip: add usbdp combo phy driver")
+Tested-by: Igor Paunovic <royalnet026@gmail.com> # Orange Pi 5 Plus
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Link: https://patch.msgid.link/20260915-rockchip-usbdp-cleanup-part2-v15-9-8d507cb1174f@collabora.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
  drivers/phy/rockchip/phy-rockchip-usbdp.c | 7 +++++--
  1 file changed, 5 insertions(+), 2 deletions(-)

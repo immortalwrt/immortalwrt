@@ -1,12 +1,7 @@
-From git@z Thu Jan  1 00:00:00 1970
-Subject: [PATCH v13 10/35] phy: rockchip: usbdp: Add missing mode_change
- update
+From 5def5d61ea5ac6f391364f6fdcff13a27a52026e Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 14 Jul 2026 21:26:11 +0200
-Message-Id: <20260714-rockchip-usbdp-cleanup-v13-10-6cb3e769d4c5@collabora.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Date: Tue, 15 Sep 2026 15:49:57 +0200
+Subject: [PATCH] phy: rockchip: usbdp: Add missing mode_change update
 
 rk_udphy_set_typec_default_mapping() updates the available modes,
 but does not set the mode_change as required. This results in
@@ -16,7 +11,11 @@ Fix this issue by introducing a new helper to update the available
 modes.
 
 Reviewed-by: Neil Armstrong <neil.armstrong@linaro.org>
+Tested-by: Igor Paunovic <royalnet026@gmail.com> # Orange Pi 5 Plus
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Link: https://patch.msgid.link/20260915-rockchip-usbdp-cleanup-v15-10-80e2c11d1ce8@collabora.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
  drivers/phy/rockchip/phy-rockchip-usbdp.c | 16 +++++++++++-----
  1 file changed, 11 insertions(+), 5 deletions(-)

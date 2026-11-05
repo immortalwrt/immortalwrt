@@ -1,12 +1,7 @@
-From git@z Thu Jan  1 00:00:00 1970
-Subject: [PATCH v13 12/35] phy: rockchip: usbdp: Limit DP lane count to
- muxed lanes
+From 443997ca8d797375ff35e8f3ad3828799e88f71b Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 14 Jul 2026 21:26:13 +0200
-Message-Id: <20260714-rockchip-usbdp-cleanup-v13-12-6cb3e769d4c5@collabora.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Date: Tue, 15 Sep 2026 15:49:59 +0200
+Subject: [PATCH] phy: rockchip: usbdp: Limit DP lane count to muxed lanes
 
 In theory the DP controller could request 4 lanes when the PHY is
 restricted to 2 lanes as the other half is used by USB3.
@@ -19,7 +14,12 @@ the voltages.
 Fixes: 2f70bbddeb45 ("phy: rockchip: add usbdp combo phy driver")
 Reported-by: Sashiko <sashiko-bot@kernel.org>
 Closes: https://lore.kernel.org/linux-phy/20260612165546.98E1F1F000E9@smtp.kernel.org/
+Tested-by: Igor Paunovic <royalnet026@gmail.com> # Orange Pi 5 Plus
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Link: https://lore.kernel.org/linux-phy/20260612165546.98E1F1F000E9@smtp.kernel.org/
+Link: https://patch.msgid.link/20260915-rockchip-usbdp-cleanup-v15-12-80e2c11d1ce8@collabora.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
  drivers/phy/rockchip/phy-rockchip-usbdp.c | 3 +++
  1 file changed, 3 insertions(+)

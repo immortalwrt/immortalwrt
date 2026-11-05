@@ -1,11 +1,7 @@
-From git@z Thu Jan  1 00:00:00 1970
-Subject: [PATCH v13 16/35] phy: rockchip: usbdp: Register DP aux bridge
+From bcdb77332fe05d699e8351263d535ffca373e459 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 14 Jul 2026 21:26:17 +0200
-Message-Id: <20260714-rockchip-usbdp-cleanup-v13-16-6cb3e769d4c5@collabora.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Date: Tue, 15 Sep 2026 15:50:03 +0200
+Subject: [PATCH] phy: rockchip: usbdp: Register DP aux bridge
 
 Add support to use USB-C connectors with the DP altmode helper code on
 devicetree based platforms. To get this working there must be a DRM
@@ -30,7 +26,11 @@ bridge[2]: drm_aux_hpd_bridge_funcs
         ops: [0x4] hpd
 
 Reviewed-by: Neil Armstrong <neil.armstrong@linaro.org>
+Tested-by: Igor Paunovic <royalnet026@gmail.com> # Orange Pi 5 Plus
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Link: https://patch.msgid.link/20260915-rockchip-usbdp-cleanup-v15-16-80e2c11d1ce8@collabora.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
  drivers/phy/rockchip/Kconfig              |  2 ++
  drivers/phy/rockchip/phy-rockchip-usbdp.c | 17 +++++++++++++++++

@@ -1,12 +1,8 @@
-From git@z Thu Jan  1 00:00:00 1970
-Subject: [PATCH v13 27/35] phy: rockchip: usbdp: Only enable USB3 when not
- in high-speed mode
+From fbbf6c85b08008bf68ef49931175edeaa36ba82f Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 14 Jul 2026 21:26:28 +0200
-Message-Id: <20260714-rockchip-usbdp-cleanup-v13-27-6cb3e769d4c5@collabora.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Date: Tue, 15 Sep 2026 17:06:14 +0200
+Subject: [PATCH] phy: rockchip: usbdp: Only enable USB3 when not in high-speed
+ mode
 
 Ensure that USB3 mode is not accidently enabled during PHY re-init
 for systems that are configured as high-speed only via DT.
@@ -14,7 +10,11 @@ for systems that are configured as high-speed only via DT.
 Fixes: 2f70bbddeb45 ("phy: rockchip: add usbdp combo phy driver")
 Reported-by: Sashiko <sashiko-bot@kernel.org>
 Closes: https://sashiko.dev/#/message/20260626212424.C215E1F000E9%40smtp.kernel.org
+Tested-by: Igor Paunovic <royalnet026@gmail.com> # Orange Pi 5 Plus
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Link: https://patch.msgid.link/20260915-rockchip-usbdp-cleanup-part2-v15-11-8d507cb1174f@collabora.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
  drivers/phy/rockchip/phy-rockchip-usbdp.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

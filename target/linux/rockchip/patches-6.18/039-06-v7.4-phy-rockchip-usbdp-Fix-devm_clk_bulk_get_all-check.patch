@@ -1,12 +1,7 @@
-From git@z Thu Jan  1 00:00:00 1970
-Subject: [PATCH v13 4/35] phy: rockchip: usbdp: Fix devm_clk_bulk_get_all
- check
+From a2ddfc60a7d3ba0f571f037371b261642f8ed208 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 14 Jul 2026 21:26:05 +0200
-Message-Id: <20260714-rockchip-usbdp-cleanup-v13-4-6cb3e769d4c5@collabora.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Date: Tue, 15 Sep 2026 15:49:51 +0200
+Subject: [PATCH] phy: rockchip: usbdp: Fix devm_clk_bulk_get_all check
 
 If devm_clk_bulk_get_all() returns -EPROBE_DEFER, it is replaced with
 -ENODEV, permanently failing the driver probe instead of allowing it to
@@ -24,7 +19,12 @@ no need to backport this.
 Fixes: 2f70bbddeb45 ("phy: rockchip: add usbdp combo phy driver")
 Reported-by: Sashiko <sashiko-bot@kernel.org>
 Closes: https://lore.kernel.org/linux-phy/20260612164107.C7DB21F000E9@smtp.kernel.org/
+Tested-by: Igor Paunovic <royalnet026@gmail.com> # Orange Pi 5 Plus
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Link: https://lore.kernel.org/linux-phy/20260612164107.C7DB21F000E9@smtp.kernel.org/
+Link: https://patch.msgid.link/20260915-rockchip-usbdp-cleanup-v15-4-80e2c11d1ce8@collabora.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
  drivers/phy/rockchip/phy-rockchip-usbdp.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)

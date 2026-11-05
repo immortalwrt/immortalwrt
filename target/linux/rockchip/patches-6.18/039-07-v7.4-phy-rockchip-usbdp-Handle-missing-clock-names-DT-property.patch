@@ -1,12 +1,8 @@
-From git@z Thu Jan  1 00:00:00 1970
-Subject: [PATCH v13 5/35] phy: rockchip: usbdp: Handle missing clock-names
- DT property gracefully
+From 17cd5e026a6e806b811f915b8e02a8b9d14f6f41 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 14 Jul 2026 21:26:06 +0200
-Message-Id: <20260714-rockchip-usbdp-cleanup-v13-5-6cb3e769d4c5@collabora.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Date: Tue, 15 Sep 2026 15:49:52 +0200
+Subject: [PATCH] phy: rockchip: usbdp: Handle missing clock-names DT property
+ gracefully
 
 The rk_udphy_clk_init() function would currently try to do a strncmp for
 a NULL pointer, if DT specifies 'clocks' property, but no 'clock-names'
@@ -18,7 +14,11 @@ problem when booting a non-compliant device tree.
 Fixes: 2f70bbddeb45 ("phy: rockchip: add usbdp combo phy driver")
 Reported-by: Sashiko <sashiko-bot@kernel.org>
 Closes: https://sashiko.dev/#/message/20260619154349.071321F000E9%40smtp.kernel.org
+Tested-by: Igor Paunovic <royalnet026@gmail.com> # Orange Pi 5 Plus
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Link: https://patch.msgid.link/20260915-rockchip-usbdp-cleanup-v15-5-80e2c11d1ce8@collabora.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
  drivers/phy/rockchip/phy-rockchip-usbdp.c | 3 +++
  1 file changed, 3 insertions(+)

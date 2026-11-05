@@ -1,20 +1,19 @@
-From git@z Thu Jan  1 00:00:00 1970
-Subject: [PATCH v13 15/35] phy: rockchip: usbdp: Cleanup DP lane selection
- function
+From 9235d03d5e520178d53f5098068f2c3926457465 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 14 Jul 2026 21:26:16 +0200
-Message-Id: <20260714-rockchip-usbdp-cleanup-v13-15-6cb3e769d4c5@collabora.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Date: Tue, 15 Sep 2026 15:50:02 +0200
+Subject: [PATCH] phy: rockchip: usbdp: Cleanup DP lane selection function
 
 Use FIELD_PREP_WM16() helpers to simplify the DP lane selection
 logic.
 
 Reviewed-by: Neil Armstrong <neil.armstrong@linaro.org>
+Tested-by: Igor Paunovic <royalnet026@gmail.com> # Orange Pi 5 Plus
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Link: https://patch.msgid.link/20260915-rockchip-usbdp-cleanup-v15-15-80e2c11d1ce8@collabora.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
- drivers/phy/rockchip/phy-rockchip-usbdp.c | 28 +++++++---------------------
+ drivers/phy/rockchip/phy-rockchip-usbdp.c | 28 ++++++-----------------
  1 file changed, 7 insertions(+), 21 deletions(-)
 
 --- a/drivers/phy/rockchip/phy-rockchip-usbdp.c

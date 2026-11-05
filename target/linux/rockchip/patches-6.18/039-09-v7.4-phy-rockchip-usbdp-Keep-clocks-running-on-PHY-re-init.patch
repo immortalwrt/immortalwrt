@@ -1,12 +1,7 @@
-From git@z Thu Jan  1 00:00:00 1970
-Subject: [PATCH v13 7/35] phy: rockchip: usbdp: Keep clocks running on PHY
- re-init
+From 31fadcc97c033daa0b663dbd6e6acdf3121f1975 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 14 Jul 2026 21:26:08 +0200
-Message-Id: <20260714-rockchip-usbdp-cleanup-v13-7-6cb3e769d4c5@collabora.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Date: Tue, 15 Sep 2026 15:49:54 +0200
+Subject: [PATCH] phy: rockchip: usbdp: Keep clocks running on PHY re-init
 
 When a mode change is required rk_udphy_power_on() disables
 the clocks and then calls rk_udphy_setup(), which then enables
@@ -17,7 +12,11 @@ re-enabling the clocks is just delaying things. Avoid it by
 directly calling rk_udphy_init().
 
 Reviewed-by: Neil Armstrong <neil.armstrong@linaro.org>
+Tested-by: Igor Paunovic <royalnet026@gmail.com> # Orange Pi 5 Plus
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Link: https://patch.msgid.link/20260915-rockchip-usbdp-cleanup-v15-7-80e2c11d1ce8@collabora.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
  drivers/phy/rockchip/phy-rockchip-usbdp.c | 3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)

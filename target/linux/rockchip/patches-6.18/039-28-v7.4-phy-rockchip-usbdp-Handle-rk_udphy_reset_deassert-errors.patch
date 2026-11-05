@@ -1,12 +1,7 @@
-From git@z Thu Jan  1 00:00:00 1970
-Subject: [PATCH v13 26/35] phy: rockchip: usbdp: Handle
- rk_udphy_reset_deassert errors
+From 35101e2f49c04bf1cfc69b8a0d3f85c742369ccc Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 14 Jul 2026 21:26:27 +0200
-Message-Id: <20260714-rockchip-usbdp-cleanup-v13-26-6cb3e769d4c5@collabora.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Date: Tue, 15 Sep 2026 17:06:13 +0200
+Subject: [PATCH] phy: rockchip: usbdp: Handle rk_udphy_reset_deassert errors
 
 Handle rk_udphy_reset_deassert returning errors to avoid theoretical
 (Rockchip reset controller driver does not return errors) SError.
@@ -14,9 +9,13 @@ Handle rk_udphy_reset_deassert returning errors to avoid theoretical
 Fixes: 2f70bbddeb45 ("phy: rockchip: add usbdp combo phy driver")
 Reported-by: Sashiko <sashiko-bot@kernel.org>
 Closes: https://sashiko.dev/#/message/20260626211151.2332F1F000E9%40smtp.kernel.org
+Tested-by: Igor Paunovic <royalnet026@gmail.com> # Orange Pi 5 Plus
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Link: https://patch.msgid.link/20260915-rockchip-usbdp-cleanup-part2-v15-10-8d507cb1174f@collabora.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
- drivers/phy/rockchip/phy-rockchip-usbdp.c | 25 +++++++++++++++++++------
+ drivers/phy/rockchip/phy-rockchip-usbdp.c | 25 +++++++++++++++++------
  1 file changed, 19 insertions(+), 6 deletions(-)
 
 --- a/drivers/phy/rockchip/phy-rockchip-usbdp.c

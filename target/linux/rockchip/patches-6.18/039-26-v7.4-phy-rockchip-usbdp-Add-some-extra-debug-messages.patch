@@ -1,17 +1,16 @@
-From git@z Thu Jan  1 00:00:00 1970
-Subject: [PATCH v13 24/35] phy: rockchip: usbdp: Add some extra debug
- messages
+From 89eb5e8aec232ff494a0261f7fada6390bb3f1be Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 14 Jul 2026 21:26:25 +0200
-Message-Id: <20260714-rockchip-usbdp-cleanup-v13-24-6cb3e769d4c5@collabora.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Date: Tue, 15 Sep 2026 17:06:11 +0200
+Subject: [PATCH] phy: rockchip: usbdp: Add some extra debug messages
 
 It's useful to log PHY reinit to ease debugging issues around
 USB-C hotplugging.
 
+Tested-by: Igor Paunovic <royalnet026@gmail.com> # Orange Pi 5 Plus
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Link: https://patch.msgid.link/20260915-rockchip-usbdp-cleanup-part2-v15-8-8d507cb1174f@collabora.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
  drivers/phy/rockchip/phy-rockchip-usbdp.c | 23 +++++++++++++++++++++--
  1 file changed, 21 insertions(+), 2 deletions(-)

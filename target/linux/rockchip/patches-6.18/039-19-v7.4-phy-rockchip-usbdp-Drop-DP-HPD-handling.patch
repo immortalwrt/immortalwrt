@@ -1,11 +1,7 @@
-From git@z Thu Jan  1 00:00:00 1970
-Subject: [PATCH v13 17/35] phy: rockchip: usbdp: Drop DP HPD handling
+From 4fd2c13cbb11f5483a43cc789cb8de1c3bd23238 Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 14 Jul 2026 21:26:18 +0200
-Message-Id: <20260714-rockchip-usbdp-cleanup-v13-17-6cb3e769d4c5@collabora.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Date: Tue, 15 Sep 2026 17:06:04 +0200
+Subject: [PATCH] phy: rockchip: usbdp: Drop DP HPD handling
 
 Drop the HPD handling logic from the USBDP PHY. The registers involved
 require the display controller power domain being enabled and thus the
@@ -20,9 +16,13 @@ mainline kernel does not yet support USB-C DP AltMode on RK3588 and
 RK3576, so it is fine to drop this code without adding the counterpart
 in the DRM in an atomic change.
 
+Tested-by: Igor Paunovic <royalnet026@gmail.com> # Orange Pi 5 Plus
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Link: https://patch.msgid.link/20260915-rockchip-usbdp-cleanup-part2-v15-1-8d507cb1174f@collabora.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
- drivers/phy/rockchip/phy-rockchip-usbdp.c | 85 ++++---------------------------
+ drivers/phy/rockchip/phy-rockchip-usbdp.c | 85 +++--------------------
  1 file changed, 9 insertions(+), 76 deletions(-)
 
 --- a/drivers/phy/rockchip/phy-rockchip-usbdp.c

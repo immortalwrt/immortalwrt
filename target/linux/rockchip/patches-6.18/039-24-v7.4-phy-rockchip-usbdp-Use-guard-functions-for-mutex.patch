@@ -1,12 +1,7 @@
-From git@z Thu Jan  1 00:00:00 1970
-Subject: [PATCH v13 22/35] phy: rockchip: usbdp: Use guard functions for
- mutex
+From f8e38359fde88381c3a7b1134dfd3a406a0e611d Mon Sep 17 00:00:00 2001
 From: Sebastian Reichel <sebastian.reichel@collabora.com>
-Date: Tue, 14 Jul 2026 21:26:23 +0200
-Message-Id: <20260714-rockchip-usbdp-cleanup-v13-22-6cb3e769d4c5@collabora.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Date: Tue, 15 Sep 2026 17:06:09 +0200
+Subject: [PATCH] phy: rockchip: usbdp: Use guard functions for mutex
 
 Convert the driver to use guard functions for mutex handling as
 a small cleanup. There is a small functional change in the DP PHY
@@ -14,9 +9,13 @@ power up function, which no longer sleeps if the internal powerup
 code returns an error. This is not a problem as the sleep is only
 relevant for successful power-up.
 
+Tested-by: Igor Paunovic <royalnet026@gmail.com> # Orange Pi 5 Plus
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Link: https://patch.msgid.link/20260915-rockchip-usbdp-cleanup-part2-v15-6-8d507cb1174f@collabora.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
- drivers/phy/rockchip/phy-rockchip-usbdp.c | 54 +++++++++++++------------------
+ drivers/phy/rockchip/phy-rockchip-usbdp.c | 54 ++++++++++-------------
  1 file changed, 23 insertions(+), 31 deletions(-)
 
 --- a/drivers/phy/rockchip/phy-rockchip-usbdp.c
