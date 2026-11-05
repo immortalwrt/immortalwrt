@@ -10,6 +10,7 @@ define KernelPackage/drm-rockchip
   KCONFIG:= \
 	CONFIG_DRM_ROCKCHIP \
 	CONFIG_DRM_BRIDGE=y \
+	CONFIG_DRM_AUX_BRIDGE=y \
 	CONFIG_DRM_LOAD_EDID_FIRMWARE=y \
 	CONFIG_DRM_PANEL=y \
 	CONFIG_DRM_PANEL_BRIDGE=y \
@@ -337,3 +338,19 @@ define KernelPackage/video-rockchip-rkvenc/description
 endef
 
 $(eval $(call KernelPackage,video-rockchip-rkvenc))
+
+define KernelPackage/phy-rockchip-usbdp
+  SUBMENU:=$(USB_MENU)
+  TITLE:=Rockchip USBDP COMBO PHY Driver
+  DEPENDS:=@TARGET_rockchip_armv8
+  KCONFIG:=CONFIG_PHY_ROCKCHIP_USBDP
+  FILES:=$(LINUX_DIR)/drivers/phy/rockchip/phy-rockchip-usbdp.ko
+  AUTOLOAD:=$(call AutoProbe,phy-rockchip-usbdp)
+endef
+
+define KernelPackage/phy-rockchip-usbdp/description
+  Support the Rockchip USB3.0/DP combo PHY with Samsung IP block.
+  This is required for USB3 support on RK3588.
+endef
+
+$(eval $(call KernelPackage,phy-rockchip-usbdp))
