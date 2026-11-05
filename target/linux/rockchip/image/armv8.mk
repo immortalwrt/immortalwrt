@@ -42,6 +42,7 @@ define Device/rk3576
   SOC := rk3576
   KERNEL_LOADADDR := 0x43000000
   BOOT_FLOW := pine64-img
+  DEVICE_PACKAGES := kmod-phy-rockchip-usbdp
 endef
 
 define Device/rk3582
@@ -97,7 +98,7 @@ define Device/ariaboard_photonicat2
   $(Device/rk3576)
   DEVICE_VENDOR := Ariaboard
   DEVICE_MODEL := Photonicat2
-  DEVICE_PACKAGES := kmod-photonicat-pm kmod-aic8800-usb wpad-openssl kmod-usb-net-cdc-mbim \
+  DEVICE_PACKAGES += kmod-photonicat-pm kmod-aic8800-usb wpad-openssl kmod-usb-net-cdc-mbim \
 	kmod-usb-net-qmi-wwan kmod-usb-serial-option uqmi
 endef
 TARGET_DEVICES += ariaboard_photonicat2
@@ -187,7 +188,7 @@ define Device/friendlyarm_nanopi-m5
   $(Device/rk3576)
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi M5
-  DEVICE_PACKAGES := blkdiscard block-mount kmod-button-hotplug kmod-input-adc-keys kmod-nvme
+  DEVICE_PACKAGES += blkdiscard block-mount kmod-button-hotplug kmod-input-adc-keys kmod-nvme
 endef
 TARGET_DEVICES += friendlyarm_nanopi-m5
 
@@ -292,7 +293,7 @@ define Device/friendlyarm_nanopi-r76s
   $(Device/rk3576)
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R76S
-  DEVICE_PACKAGES := kmod-r8125 kmod-rtw88-8822cs wpad-openssl
+  DEVICE_PACKAGES += kmod-r8125 kmod-rtw88-8822cs wpad-openssl
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r76s
 
