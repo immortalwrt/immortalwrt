@@ -214,6 +214,8 @@ platform_do_upgrade() {
 	qihoo,360t7-ubi|\
 	routerich,ax3000-ubootmod|\
 	routerich,be7200|\
+	ruijie,rg-x60-openwrt|\
+	ruijie,rg-x60-pro-openwrt|\
 	snr,snr-cpe-ax2|\
 	teralink,tl3020-256mb|\
 	tplink,be450-ubi|\
@@ -476,6 +478,8 @@ platform_check_image() {
 	qihoo,360t7|\
 	qihoo,360t7-ubi|\
 	routerich,ax3000-ubootmod|\
+	ruijie,rg-x60-openwrt|\
+	ruijie,rg-x60-pro-openwrt|\
 	teralink,tl3020-256mb|\
 	tplink,be450-ubi|\
 	tplink,tl-7dr7230-v2|\
@@ -505,6 +509,11 @@ platform_check_image() {
 		}
 
 		return 0
+		;;
+	ruijie,rg-x60-stock|\
+	ruijie,rg-x60-pro-stock)
+		nand_do_platform_check "${board%-stock}" "$1"
+		return $?
 		;;
 	*)
 		nand_do_platform_check "$board" "$1"
