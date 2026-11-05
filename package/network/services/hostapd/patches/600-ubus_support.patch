@@ -7,11 +7,12 @@ probe/assoc/auth requests via object subscribe.
 
 --- a/hostapd/Makefile
 +++ b/hostapd/Makefile
-@@ -167,6 +167,12 @@ OBJS += ../src/common/hw_features_common
+@@ -167,6 +167,13 @@ OBJS += ../src/common/hw_features_common
  
  OBJS += ../src/eapol_auth/eapol_auth_sm.o
  
 +ifdef CONFIG_UBUS
++NEED_BASE64=y
 +CFLAGS += -DUBUS_SUPPORT
 +OBJS += ../src/utils/uloop.o
 +OBJS += ../src/ap/ubus.o
@@ -294,11 +295,10 @@ probe/assoc/auth requests via object subscribe.
  }
  
  
-@@ -406,7 +409,7 @@ void hostapd_handle_radio_measurement(st
- 		hostapd_handle_nei_report_req(hapd, buf, len);
+@@ -407,6 +410,7 @@ void hostapd_handle_radio_measurement(st
  		break;
  	case WLAN_RRM_LINK_MEASUREMENT_REPORT:
--		hostapd_handle_link_mesr_report(hapd, buf, len);
+ 		hostapd_handle_link_mesr_report(hapd, buf, len);
 +		hostapd_ubus_handle_link_measurement(hapd, buf, len);
  		break;
  	default:

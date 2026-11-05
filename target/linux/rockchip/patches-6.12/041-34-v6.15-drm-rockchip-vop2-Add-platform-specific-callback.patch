@@ -239,7 +239,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250218112744.34433-4-andys
  /*
   * Note:
   * The write mask function is documented but missing on rk3566/8, writes
-@@ -1728,6 +1539,7 @@ static void vop2_dither_setup(struct drm
+@@ -1730,6 +1541,7 @@ static void vop2_dither_setup(struct drm
  static void vop2_post_config(struct drm_crtc *crtc)
  {
  	struct vop2_video_port *vp = to_vop2_video_port(crtc);
@@ -247,7 +247,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250218112744.34433-4-andys
  	struct drm_display_mode *mode = &crtc->state->adjusted_mode;
  	u16 vtotal = mode->crtc_vtotal;
  	u16 hdisplay = mode->crtc_hdisplay;
-@@ -1738,18 +1550,10 @@ static void vop2_post_config(struct drm_
+@@ -1740,18 +1552,10 @@ static void vop2_post_config(struct drm_
  	u32 top_margin = 100, bottom_margin = 100;
  	u16 hsize = hdisplay * (left_margin + right_margin) / 200;
  	u16 vsize = vdisplay * (top_margin + bottom_margin) / 200;
@@ -267,7 +267,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250218112744.34433-4-andys
  
  	vsize = rounddown(vsize, 2);
  	hsize = rounddown(hsize, 2);
-@@ -1785,347 +1589,6 @@ static void vop2_post_config(struct drm_
+@@ -1787,347 +1591,6 @@ static void vop2_post_config(struct drm_
  	vop2_vp_write(vp, RK3568_VP_DSP_BG, 0);
  }
  
@@ -615,7 +615,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250218112744.34433-4-andys
  static int us_to_vertical_line(struct drm_display_mode *mode, int us)
  {
  	return us * mode->clock / mode->htotal / 1000;
-@@ -2198,7 +1661,7 @@ static void vop2_crtc_atomic_enable(stru
+@@ -2200,7 +1663,7 @@ static void vop2_crtc_atomic_enable(stru
  		 * process multi(1/2/4/8) pixels per cycle, so the dclk feed by the
  		 * system cru may be the 1/2 or 1/4 of mode->clock.
  		 */
@@ -624,7 +624,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250218112744.34433-4-andys
  	}
  
  	if (!clock) {
-@@ -2365,454 +1828,13 @@ static int vop2_crtc_atomic_check(struct
+@@ -2367,454 +1830,13 @@ static int vop2_crtc_atomic_check(struct
  	return 0;
  }
  
@@ -1080,7 +1080,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250218112744.34433-4-andys
  }
  
  static void vop2_crtc_atomic_flush(struct drm_crtc *crtc,
-@@ -3408,86 +2430,18 @@ static int vop2_find_rgb_encoder(struct
+@@ -3410,86 +2432,18 @@ static int vop2_find_rgb_encoder(struct
  	return -ENOENT;
  }
  
@@ -1173,7 +1173,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250218112744.34433-4-andys
  		};
  
  		win->reg[i] = devm_regmap_field_alloc(vop2->dev, vop2->map, field);
-@@ -3498,82 +2452,18 @@ static int vop2_cluster_init(struct vop2
+@@ -3500,82 +2454,18 @@ static int vop2_cluster_init(struct vop2
  	return 0;
  };
  
@@ -1262,7 +1262,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250218112744.34433-4-andys
  		};
  
  		win->reg[i] = devm_regmap_field_alloc(vop2->dev, vop2->map, field);
-@@ -3659,6 +2549,7 @@ static int vop2_bind(struct device *dev,
+@@ -3661,6 +2551,7 @@ static int vop2_bind(struct device *dev,
  
  	vop2->dev = dev;
  	vop2->data = vop2_data;

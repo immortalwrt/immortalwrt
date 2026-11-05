@@ -21,7 +21,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250303034436.192400-3-andy
 
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
-@@ -2345,6 +2345,10 @@ static int vop2_create_crtcs(struct vop2
+@@ -2347,6 +2347,10 @@ static int vop2_create_crtcs(struct vop2
  			if (win->base.type == DRM_PLANE_TYPE_PRIMARY)
  				continue;
  
@@ -32,7 +32,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250303034436.192400-3-andy
  			if (vop2_is_mirror_win(win))
  				continue;
  
-@@ -2375,7 +2379,19 @@ static int vop2_create_crtcs(struct vop2
+@@ -2377,7 +2381,19 @@ static int vop2_create_crtcs(struct vop2
  
  		win->type = DRM_PLANE_TYPE_OVERLAY;
  

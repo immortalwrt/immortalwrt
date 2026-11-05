@@ -78,7 +78,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20241101185545.559090-3-pZ01
  static void vop2_win_write(const struct vop2_win *win, unsigned int reg, u32 v)
  {
  	regmap_field_write(win->reg[reg], v);
-@@ -1020,6 +1029,67 @@ static void vop2_disable(struct vop2 *vo
+@@ -1022,6 +1031,67 @@ static void vop2_disable(struct vop2 *vo
  	clk_disable_unprepare(vop2->hclk);
  }
  
@@ -146,7 +146,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20241101185545.559090-3-pZ01
  static void vop2_crtc_atomic_disable(struct drm_crtc *crtc,
  				     struct drm_atomic_state *state)
  {
-@@ -1511,6 +1581,77 @@ static bool vop2_crtc_mode_fixup(struct
+@@ -1513,6 +1583,77 @@ static bool vop2_crtc_mode_fixup(struct
  	return true;
  }
  
@@ -224,7 +224,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20241101185545.559090-3-pZ01
  static void vop2_dither_setup(struct drm_crtc *crtc, u32 *dsp_ctrl)
  {
  	struct rockchip_crtc_state *vcstate = to_rockchip_crtc_state(crtc->state);
-@@ -2107,11 +2248,40 @@ static void vop2_crtc_atomic_enable(stru
+@@ -2109,11 +2250,40 @@ static void vop2_crtc_atomic_enable(stru
  
  	vop2_vp_write(vp, RK3568_VP_DSP_CTRL, dsp_ctrl);
  
@@ -265,7 +265,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20241101185545.559090-3-pZ01
  static int vop2_crtc_atomic_check(struct drm_crtc *crtc,
  				  struct drm_atomic_state *state)
  {
-@@ -2119,6 +2289,11 @@ static int vop2_crtc_atomic_check(struct
+@@ -2121,6 +2291,11 @@ static int vop2_crtc_atomic_check(struct
  	struct drm_plane *plane;
  	int nplanes = 0;
  	struct drm_crtc_state *crtc_state = drm_atomic_get_new_crtc_state(state, crtc);
@@ -277,7 +277,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20241101185545.559090-3-pZ01
  
  	drm_atomic_crtc_state_for_each_plane(plane, crtc_state)
  		nplanes++;
-@@ -2582,7 +2757,13 @@ static void vop2_crtc_atomic_begin(struc
+@@ -2584,7 +2759,13 @@ static void vop2_crtc_atomic_begin(struc
  static void vop2_crtc_atomic_flush(struct drm_crtc *crtc,
  				   struct drm_atomic_state *state)
  {
@@ -291,7 +291,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20241101185545.559090-3-pZ01
  
  	vop2_post_config(crtc);
  
-@@ -2885,7 +3066,12 @@ static int vop2_create_crtcs(struct vop2
+@@ -2887,7 +3068,12 @@ static int vop2_create_crtcs(struct vop2
  		}
  
  		drm_crtc_helper_add(&vp->crtc, &vop2_crtc_helper_funcs);

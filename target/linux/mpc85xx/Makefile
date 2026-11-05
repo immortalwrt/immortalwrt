@@ -18,8 +18,7 @@ KERNELNAME:=zImage
 include $(INCLUDE_DIR)/target.mk
 
 DEFAULT_PACKAGES += \
-	kmod-input-core kmod-input-gpio-keys kmod-button-hotplug \
-	kmod-leds-gpio swconfig kmod-ath9k wpad-openssl kmod-usb2 \
-	uboot-envtools kmod-crypto-hw-talitos
+	kmod-gpio-button-hotplug kmod-leds-gpio kmod-ath9k wpad-openssl \
+	kmod-usb2 uboot-envtools kmod-crypto-hw-talitos automount
 
 $(eval $(call BuildTarget))

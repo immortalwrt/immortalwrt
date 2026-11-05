@@ -182,7 +182,7 @@ define Build/znet-header
 		payload_size_crc="$$(dd if=$@ ibs=1 count=$$payload_len 2>/dev/null | gzip -c | \
 			tail -c 8 | od -An -N4 -tx4 --endian big | tr -d ' \n')"; \
 		echo -ne "$(magic)" | dd bs=4 count=1 conv=sync 2>/dev/null; \
-		echo -ne "$$(printf '%08x' $$(stat -c%s $@) | fold -s2 | xargs -I {} echo \\x{} | tac | tr -d '\n')" | \
+		echo -ne "$$(printf '%08x' $$(stat -c%s $@) | fold -w2 | xargs -I {} echo \\x{} | tac | tr -d '\n')" | \
 			dd bs=4 count=1 conv=sync 2>/dev/null; \
 		echo -ne "$$(echo $$data_size_crc | sed 's/../\\x&/g')" | \
 			dd bs=4 count=1 conv=sync 2>/dev/null; \
@@ -3027,6 +3027,18 @@ define Device/tplink_ec330-g5u-v1
 	append-ubi | check-size
 endef
 TARGET_DEVICES += tplink_ec330-g5u-v1
+
+define Device/tplink_er605-v1
+  DEVICE_VENDOR := TP-Link
+  DEVICE_MODEL := ER605
+  DEVICE_VARIANT := v1
+  DEVICE_ALT0_VENDOR := TP-Link
+  DEVICE_ALT0_MODEL := TL-R605
+  DEVICE_ALT0_VARIANT := v1
+  DEVICE_PACKAGES := -wpad-openssl -uboot-envtools
+  IMAGE_SIZE := 13760k
+endef
+TARGET_DEVICES += tplink_er605-v1
 
 define Device/tplink_er605-v2
   $(Device/nand)

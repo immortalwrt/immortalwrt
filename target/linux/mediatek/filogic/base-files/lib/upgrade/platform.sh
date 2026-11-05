@@ -35,9 +35,20 @@ jiorouter_initial_setup()
 	fi
 
 	ubidetach -m "$mtdnum" 2>/dev/null
-	ubiformat /dev/mtd$mtdnum -y
-	ubiattach -m "$mtdnum"
-	ubimkvol /dev/ubi0 -n 0 -N u-boot-env -s 0x80000
+	ubiformat /dev/mtd$mtdnum -y || exit 1
+	ubiattach -m "$mtdnum" || exit 1
+
+	local ubidev="$(nand_find_ubi ubi)"
+	[ -n "$ubidev" ] || { echo "cannot attach ubi"; exit 1; }
+
+	if ! ubimkvol /dev/$ubidev -n 0 -N u-boot-env -s 0x80000; then
+		echo "failed to create u-boot-env volume - aborting"
+		exit 1
+	fi
+
+	local envdev="$(nand_find_volume "$ubidev" u-boot-env)"
+	[ -n "$envdev" ] || { echo "cannot find u-boot-env volume - aborting"; exit 1; }
+	echo "/dev/$envdev 0x0 0x80000 0x1f000 5" > /etc/fw_env.config
 
 	# Set boot arguments in freshly created U-Boot environment
 	fw_setenv bootcmd 'ubi read 46000000 kernel;fdt addr $(fdtcontroladdr);fdt rm /signature;bootm 0x46000000'
@@ -188,6 +199,33 @@ platform_do_upgrade() {
 		CI_ROOTPART="rootfs"
 		emmc_do_upgrade "$1"
 		;;
+	airtel,aap4221zy)
+		# ZyXEL zloader requires a "zyfwinfo" UBI volume with valid
+		# metadata (magic + checksum) to select the boot partition.
+		# Without it, zloader refuses to boot the firmware. It has to be
+		# written before nand_do_upgrade(), which sizes rootfs_data to
+		# fill the remaining space.
+		local ubidev="$(nand_attach_ubi "${CI_UBIPART:-ubi}")"
+		[ "$ubidev" ] || nand_do_upgrade_failed
+		local vol="$(nand_find_volume "$ubidev" zyfwinfo)"
+		if [ ! "$vol" ]; then
+			# rootfs_data may occupy all LEBs, nand_do_upgrade() recreates it
+			[ "$(nand_find_volume "$ubidev" rootfs_data)" ] && \
+				ubirmvol /dev/$ubidev -N rootfs_data
+			if ! ubimkvol /dev/$ubidev -N zyfwinfo -s 256 -t dynamic; then
+				echo "cannot create zyfwinfo volume"
+				nand_do_upgrade_failed
+			fi
+			vol="$(nand_find_volume "$ubidev" zyfwinfo)"
+		fi
+		local tmpfile="/tmp/zyfwinfo.bin"
+		echo -n -e '\x45\x58\x59\x5A\x02\x00\xB3\x15\x00\x01\x00\x00' > "$tmpfile"
+		dd if=/dev/zero bs=1 count=242 >> "$tmpfile" 2>/dev/null
+		echo -n -e '\x1B\x02' >> "$tmpfile"
+		ubiupdatevol /dev/$vol -s 256 "$tmpfile"
+		rm -f "$tmpfile"
+		nand_do_upgrade "$1"
+		;;
 	asus,rt-ax52|\
 	asus,rt-ax57m|\
 	asus,rt-ax59u|\
@@ -204,7 +242,8 @@ platform_do_upgrade() {
 	cudy,wr3000p-v1|\
 	huasifei,wh3000-pro-nand|\
 	huasifei,wh3000r-nand|\
-	jiorouter,ax6000-jidu6101)
+	jiorouter,ax6000-jidu6101|\
+	jiorouter,ax6000-jidu6j01)
 		CI_UBIPART="ubi"
 		nand_do_upgrade "$1"
 		;;
@@ -464,7 +503,8 @@ platform_pre_upgrade() {
 	buffalo,wsr-6000ax8)
 		buffalo_initial_setup
 		;;
-	jiorouter,ax6000-jidu6101)
+	jiorouter,ax6000-jidu6101|\
+	jiorouter,ax6000-jidu6j01)
 		jiorouter_initial_setup
 		;;
 	xiaomi,mi-router-ax3000t|\

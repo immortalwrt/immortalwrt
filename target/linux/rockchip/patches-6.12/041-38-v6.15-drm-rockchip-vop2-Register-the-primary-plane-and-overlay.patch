@@ -19,7 +19,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250303034436.192400-2-andy
 
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop2.c
-@@ -2260,22 +2260,29 @@ static int vop2_plane_init(struct vop2 *
+@@ -2262,22 +2262,29 @@ static int vop2_plane_init(struct vop2 *
  	return 0;
  }
  
@@ -62,7 +62,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250303034436.192400-2-andy
  }
  
  static int vop2_create_crtcs(struct vop2 *vop2)
-@@ -2286,7 +2293,9 @@ static int vop2_create_crtcs(struct vop2
+@@ -2288,7 +2295,9 @@ static int vop2_create_crtcs(struct vop2
  	struct drm_plane *plane;
  	struct device_node *port;
  	struct vop2_video_port *vp;
@@ -73,7 +73,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250303034436.192400-2-andy
  	int ret;
  
  	for (i = 0; i < vop2_data->nr_vps; i++) {
-@@ -2322,42 +2331,54 @@ static int vop2_create_crtcs(struct vop2
+@@ -2324,42 +2333,54 @@ static int vop2_create_crtcs(struct vop2
  	}
  
  	nvp = 0;

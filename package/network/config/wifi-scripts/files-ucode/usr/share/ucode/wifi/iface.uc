@@ -5,7 +5,7 @@ import * as fs from 'fs';
 
 export function parse_encryption(config, dev_config, phy_features) {
 	if (!config.encryption)
-		return;
+		config.encryption = 'none';
 
 	let encryption = split(config.encryption, '+', 2);
 

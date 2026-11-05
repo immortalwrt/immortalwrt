@@ -19,7 +19,7 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
 +++ b/drivers/mtd/nand/spi/Makefile
 @@ -1,5 +1,5 @@
  # SPDX-License-Identifier: GPL-2.0
- spinand-objs := core.o alliancememory.o ato.o esmt.o etron.o fmsh.o foresee.o gigadevice.o
+ spinand-objs := core.o alliancememory.o ato.o esmt.o etron.o fmsh.o foresee.o gigadevice.o heyangtek.o
 -spinand-objs += dosilicon.o
 +spinand-objs += dosilicon.o gsto.o
  spinand-objs += macronix.o micron.o paragon.o toshiba.o winbond.o xtx.o
@@ -31,9 +31,9 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
  	&foresee_spinand_manufacturer,
  	&gigadevice_spinand_manufacturer,
 +	&gsto_spinand_manufacturer,
+ 	&heyangtek_spinand_manufacturer,
  	&macronix_spinand_manufacturer,
  	&micron_spinand_manufacturer,
- 	&paragon_spinand_manufacturer,
 --- /dev/null
 +++ b/drivers/mtd/nand/spi/gsto.c
 @@ -0,0 +1,137 @@
@@ -181,6 +181,6 @@ Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
  extern const struct spinand_manufacturer foresee_spinand_manufacturer;
  extern const struct spinand_manufacturer gigadevice_spinand_manufacturer;
 +extern const struct spinand_manufacturer gsto_spinand_manufacturer;
+ extern const struct spinand_manufacturer heyangtek_spinand_manufacturer;
  extern const struct spinand_manufacturer macronix_spinand_manufacturer;
  extern const struct spinand_manufacturer micron_spinand_manufacturer;
- extern const struct spinand_manufacturer paragon_spinand_manufacturer;
