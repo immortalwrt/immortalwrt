@@ -147,7 +147,7 @@ Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
  }
  
  static int rockchip_pd_attach_dev(struct generic_pm_domain *genpd,
-@@ -724,6 +768,7 @@ static int rockchip_pm_add_one_domain(st
+@@ -736,6 +780,7 @@ static int rockchip_pm_add_one_domain(st
  
  	pd->info = pd_info;
  	pd->pmu = pmu;
@@ -155,7 +155,7 @@ Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
  
  	pd->num_clks = of_clk_get_parent_count(node);
  	if (pd->num_clks > 0) {
-@@ -1187,35 +1232,35 @@ static const struct rockchip_domain_info
+@@ -1201,35 +1246,35 @@ static const struct rockchip_domain_info
  };
  
  static const struct rockchip_domain_info rk3588_pm_domains[] = {
