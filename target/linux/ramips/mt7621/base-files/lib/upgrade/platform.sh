@@ -151,6 +151,9 @@ platform_do_upgrade() {
 	tplink,ec330-g5u-v1|\
 	tplink,ex220-v1-nand|\
 	wifire,s1500-nbn|\
+	livinet,li170|\
+	livinet,li172|\
+	livinet,li172v2|\
 	xiaomi,mi-router-3g|\
 	xiaomi,mi-router-3-pro|\
 	xiaomi,mi-router-4|\
@@ -162,6 +165,8 @@ platform_do_upgrade() {
 	z-router,zr-2660|\
 	z-router,zr-2662|\
 	zte,e8820s|\
+	qihoo,t6m|\
+	qihoo,t5g|\
 	zyxel,nwa50ax|\
 	zyxel,nwa55axe)
 		nand_do_upgrade "$1"
