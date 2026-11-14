@@ -409,9 +409,9 @@
                         reg = <0x0 0x6>;
                     };
 
-                    wifi_caldata: wifi_caldata@4c000 {
-                        reg = <0x4c000 0x2000>;
-                    };
+                    //wifi_caldata: wifi_caldata@4c000 {
+                    //    reg = <0x4c000 0x2000>;
+                    //};
                 };
             };
         };
@@ -521,8 +521,7 @@
     status = "okay";
 
     firmware-name = "ath11k/IPQ5018/hw1.0/q6_fw.mdt",
-            "ath11k/IPQ5018/hw1.0/m3_fw.mdt",
-            "ath11k/QCN6122/hw1.0/m3_fw.mdt";
+            "ath11k/IPQ5018/hw1.0/m3_fw.mdt";
 
     // IPQ5018
     q6_wcss_pd1: pd-1 {
@@ -601,8 +600,8 @@
     qcom,rproc = <&q6_wcss_pd1>;
     qcom,ath11k-calibration-variant = "Yuncore-AX830";
     qcom,ath11k-fw-memory-mode = <1>;
-    nvmem-cells = <&wifi_caldata>;
-    nvmem-cell-names = "calibration";
+    //nvmem-cells = <&wifi_caldata>;
+    //nvmem-cell-names = "calibration";
 };
 
 &wifi1 {
@@ -612,6 +611,6 @@
     qcom,userpd-subsys-name = "q6v5_wcss_userpd3";
     qcom,ath11k-calibration-variant = "Yuncore-AX830";
     qcom,ath11k-fw-memory-mode = <1>;
-    nvmem-cells = <&wifi_caldata>;
-    nvmem-cell-names = "calibration";
+    //nvmem-cells = <&wifi_caldata>;
+    //nvmem-cell-names = "calibration";
 };
