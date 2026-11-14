@@ -6,9 +6,9 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/firmware/qca-wireless.git
-PKG_SOURCE_DATE:=2026-10-25
-PKG_SOURCE_VERSION:=49ce14c099b16044b7062df54bdabeb495b804ad
-PKG_MIRROR_HASH:=b9c6723021af9267035b7e25762b80c06887a5ea9c524b2649b0b27ea58b121c
+PKG_SOURCE_DATE:=2026-11-12
+PKG_SOURCE_VERSION:=e1c4cbaf43917e19779dbf9f8e276e31116bcaef
+PKG_MIRROR_HASH:=2d525d7af66de1dc947aff2653669265ccad678424e7fdfe71aebc6c55692437
 PKG_FLAGS:=nonshared
 
 include $(INCLUDE_DIR)/package.mk
@@ -32,6 +32,10 @@ ALLWIFIBOARDS:= \
 	alfa-network_ap120c-ax \
 	aliyun_ap8220 \
 	arcadyan_aw1000 \
+	aruba_ap-303 \
+	aruba_ap-303h \
+	aruba_ap-325 \
+	aruba_ap-365 \
 	askey_sbe1v1k \
 	asus_rt-ax89x \
 	avm_fritzbox-4050 \
@@ -247,6 +251,10 @@ $(eval $(call generate-ipq-wifi-package,8devices_mango,8devices Mango))
 $(eval $(call generate-ipq-wifi-package,alfa-network_ap120c-ax,ALFA Network AP120C-AX))
 $(eval $(call generate-ipq-wifi-package,aliyun_ap8220,Aliyun AP8220))
 $(eval $(call generate-ipq-wifi-package,arcadyan_aw1000,Arcadyan AW1000))
+$(eval $(call generate-ipq-wifi-package,aruba_ap-303,Aruba AP-303))
+$(eval $(call generate-ipq-wifi-package,aruba_ap-303h,Aruba AP-303H))
+$(eval $(call generate-ipq-wifi-package,aruba_ap-325,Aruba AP-325))
+$(eval $(call generate-ipq-wifi-package,aruba_ap-365,Aruba AP-365))
 $(eval $(call generate-ipq-wifi-package,askey_sbe1v1k,Askey SBE1V1K))
 $(eval $(call generate-ipq-wifi-package,asus_rt-ax89x,Asus RT-AX89X))
 $(eval $(call generate-ipq-wifi-package,avm_fritzbox-4050,AVM FRITZ!Box 4050))

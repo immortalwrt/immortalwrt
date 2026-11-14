@@ -5,6 +5,7 @@
 #include <linux/etherdevice.h>
 #include <linux/if_bridge.h>
 #include <linux/if_vlan.h>
+#include <linux/regmap.h>
 #include <asm/mach-rtl-otto/mach-rtl-otto.h>
 
 #include "fdb.h"
@@ -81,8 +82,8 @@ static void rtldsa_port_set_salrn(struct otto_dsa_priv *priv,
 	int shift = SALRN_PORT_SHIFT(port);
 	int val = enable ? SALRN_MODE_HARDWARE : SALRN_MODE_DISABLED;
 
-	sw_w32_mask(SALRN_MODE_MASK << shift, val << shift,
-		    priv->r->l2_port_new_salrn(port));
+	regmap_write_bits(priv->map, priv->r->l2_port_new_salrn(port),
+			  SALRN_MODE_MASK << shift, val << shift);
 }
 
 static int rtldsa_83xx_setup(struct dsa_switch *ds)
@@ -135,7 +136,7 @@ static int rtldsa_83xx_setup(struct dsa_switch *ds)
 	/* Make sure all frames sent to the switch's MAC are trapped to the CPU-port
 	 *  0: FWD, 1: DROP, 2: TRAP2CPU
 	 */
-	sw_w32(0x2, priv->r->self_mac_trap_ctrl);
+	regmap_write(priv->map, priv->r->self_mac_trap_ctrl, 0x2);
 
 	priv->r->pie_init(priv);
 
@@ -264,12 +265,6 @@ static int rtldsa_port_enable(struct dsa_switch *ds, int port, struct phy_device
 
 	/* add all other ports in the same bridge to switch mask of port */
 	priv->r->traffic_set(priv, port, priv->ports[port].pm);
-
-	/* TODO: Figure out if this is necessary */
-	if (priv->family_id == RTL9300_FAMILY_ID) {
-		sw_w32_mask(0, BIT(port), RTL930X_L2_PORT_SABLK_CTRL);
-		sw_w32_mask(0, BIT(port), RTL930X_L2_PORT_DABLK_CTRL);
-	}
 
 	return 0;
 }
@@ -434,7 +429,7 @@ void rtldsa_port_fast_age(struct dsa_switch *ds, int port)
 	mutex_unlock(&priv->reg_mutex);
 }
 
-static void rtldsa_setup_l2_mc_entry(struct rtl838x_l2_entry *e, int vid, u64 mac, int mc_group)
+static void rtldsa_setup_l2_mc_entry(struct otto_l2_entry *e, int vid, u64 mac, int mc_group)
 {
 	memset(e, 0, sizeof(*e));
 
@@ -472,7 +467,7 @@ static int rtldsa_83xx_port_mdb_add(struct dsa_switch *ds, int port,
 {
 	struct otto_dsa_priv *priv = ds->priv;
 	u64 mac = ether_addr_to_u64(mdb->addr);
-	struct rtl838x_l2_entry e;
+	struct otto_l2_entry e;
 	int err = 0, idx;
 	int vid = mdb->vid;
 	u64 seed = priv->r->l2_hash_seed(mac, vid);
@@ -558,7 +553,7 @@ static int rtldsa_port_mdb_del(struct dsa_switch *ds, int port,
 {
 	struct otto_dsa_priv *priv = ds->priv;
 	u64 mac = ether_addr_to_u64(mdb->addr);
-	struct rtl838x_l2_entry e;
+	struct otto_l2_entry e;
 	int err = 0, idx;
 	int vid = mdb->vid;
 	u64 seed = priv->r->l2_hash_seed(mac, vid);

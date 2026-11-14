@@ -18,11 +18,6 @@
 #include "vlan.h"
 #include "stp.h"
 
-/* L2 functionality */
-#define RTL838X_L2_CTRL_0			(0x3200)
-
-#define RTL838X_L2_TBL_FLUSH_CTRL		(0x3370)
-
 /* 802.1X */
 #define RTL838X_RMA_BPDU_FLD_PMSK		(0x4348)
 
@@ -122,12 +117,6 @@ const struct rtldsa_config rtldsa_838x_cfg = {
 	.fib_entries = 8192,
 	.l2_uc_tbl = RTL8380_TBL_L2_UC,
 	.l2_cam_tbl = RTL8380_TBL_L2_CAM_UC,
-	.mask_port_reg_be = rtl838x_mask_port_reg,
-	.set_port_reg_be = rtl838x_set_port_reg,
-	.get_port_reg_be = rtl838x_get_port_reg,
-	.mask_port_reg_le = rtl838x_mask_port_reg,
-	.set_port_reg_le = rtl838x_set_port_reg,
-	.get_port_reg_le = rtl838x_get_port_reg,
 	.stat_port_rst = RTL838X_STAT_PORT_RST,
 	.stat_rst = RTL838X_STAT_RST,
 	.stat_init = otto_stats_838x_init,
@@ -142,13 +131,11 @@ const struct rtldsa_config rtldsa_838x_cfg = {
 	.traffic_enable = rtl838x_traffic_enable,
 	.traffic_disable = rtl838x_traffic_disable,
 	.traffic_set = rtl838x_traffic_set,
-	.l2_ctrl_0 = RTL838X_L2_CTRL_0,
 	.l2_ctrl_1 = RTL838X_L2_CTRL_1,
 	.high_res_l2_age = true,
 	.self_mac_trap_ctrl = RTL838X_SPCL_TRAP_SWITCH_MAC_CTRL,
 	.l2_port_aging_out = RTL838X_L2_PORT_AGING_OUT,
 	.set_ageing_time = otto_l2_838x_set_ageing_time,
-	.l2_tbl_flush_ctrl = RTL838X_L2_TBL_FLUSH_CTRL,
 	.isr_glb_src = RTL838X_ISR_GLB_SRC,
 	.isr_port_link_sts_chg = RTL838X_ISR_PORT_LINK_STS_CHG,
 	.imr_port_link_sts_chg = RTL838X_IMR_PORT_LINK_STS_CHG,
@@ -224,6 +211,6 @@ const struct rtldsa_config rtldsa_838x_cfg = {
 	.set_egress_rate = otto_qos_838x_set_egress_rate,
 	.qos_init = otto_qos_838x_init,
 	.lag_set_distribution_algorithm = otto_lag_838x_set_distribution_algorithm,
-	.lag_set_port_members = otto_lag_838x_set_port_members,
+	.lag_set_port_members = otto_lag_83xx_set_port_members,
 	.lag_setup_algomask = otto_lag_83xx_setup_algomask,
 };

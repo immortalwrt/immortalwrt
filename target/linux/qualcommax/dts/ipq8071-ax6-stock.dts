@@ -44,6 +44,10 @@
 					macaddr_dp5: macaddr@18 {
 						reg = <0x18 0x6>;
 					};
+
+					caldata_art_1000: calibration@1000 {
+						reg = <0x1000 0x20000>;
+					};
 				};
 			};
 		};

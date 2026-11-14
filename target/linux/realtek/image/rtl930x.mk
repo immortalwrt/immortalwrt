@@ -186,6 +186,29 @@ define Device/hasivo_s600wp-5gt-2sx-se
 endef
 TARGET_DEVICES += hasivo_s600wp-5gt-2sx-se
 
+define Device/horaco_zx-sw82ts-l2p
+  SOC := rtl9302
+  UIMAGE_MAGIC := 0x93000000
+  HASIVO_MODEL := 9312
+  DEVICE_VENDOR := Horaco
+  DEVICE_MODEL := ZX-SW82TS-L2P
+  DEVICE_ALT0_VENDOR := Hasivo
+  DEVICE_ALT0_MODEL := S1300WP-8GT-2S+
+  DEVICE_PACKAGES := kmod-block2mtd kmod-hasivo-mcu-sensor kmod-hasivo-mcu-wdt \
+	kmod-loop kmod-mfd-hasivo-stc8 kmod-pse-hasivo-hs104 kmod-rtc-pcf8563 losetup
+  IMAGE_SIZE := 29696k
+  $(Device/kernel-lzma)
+  IMAGES += factory.tar.gz
+  IMAGE/factory.tar.gz := \
+	append-kernel | \
+	pad-to 64k | \
+	append-rootfs | \
+	pad-rootfs | \
+	check-size 7168k | \
+	hasivo-web-factory
+endef
+TARGET_DEVICES += horaco_zx-sw82ts-l2p
+
 define Device/horaco_zx-swtgw2c8f
   SOC := rtl9303
   UIMAGE_MAGIC := 0x83800000
@@ -230,6 +253,34 @@ define Device/lianguo_lg-swtgw3c8f
 	check-size
 endef
 TARGET_DEVICES += lianguo_lg-swtgw3c8f
+
+define Device/lianguo_lg510s-4t2xs
+  SOC := rtl9303
+  UIMAGE_MAGIC := 0x83800000
+  DEVICE_VENDOR := Lianguo
+  DEVICE_MODEL := LG510S-4T2XS
+  DEVICE_ALT0_VENDOR := GoodTop
+  DEVICE_ALT0_MODEL := LG510S-4T2XS
+  DEVICE_ALT1_VENDOR := Horaco
+  DEVICE_ALT1_MODEL := ZX510S-4T2XS
+  DEVICE_ALT2_VENDOR := HRUI
+  DEVICE_ALT2_MODEL := HR510S-4T2XS
+  DEVICE_ALT3_VENDOR := MokerLink
+  DEVICE_ALT3_MODEL := 10G04210GSM
+  DEVICE_ALT4_VENDOR := Sodola
+  DEVICE_ALT4_MODEL := SL510S-4T2XS
+  DEVICE_PACKAGES := rtl826x-firmware
+  IMAGE_SIZE := 12288k
+  $(Device/kernel-lzma)
+  IMAGES += factory.bix
+  IMAGE/factory.bix := \
+	append-kernel | \
+	pad-to 64k | \
+	append-rootfs | \
+	pad-rootfs | \
+	check-size
+endef
+TARGET_DEVICES += lianguo_lg510s-4t2xs
 
 define Device/mokerlink_2g080gm
   SOC := rtl9303
