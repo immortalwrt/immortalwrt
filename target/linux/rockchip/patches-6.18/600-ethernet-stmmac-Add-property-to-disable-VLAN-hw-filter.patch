@@ -15,7 +15,7 @@ Signed-off-by: jensen <jensenhuang@friendlyarm.com>
 
 --- a/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
-@@ -2261,6 +2261,7 @@
+@@ -2272,6 +2272,7 @@
  		snps,mixed-burst;
  		snps,mtl-rx-config = <&gmac1_mtl_rx_setup>;
  		snps,mtl-tx-config = <&gmac1_mtl_tx_setup>;

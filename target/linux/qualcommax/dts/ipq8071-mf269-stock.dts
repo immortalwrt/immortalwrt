@@ -43,3 +43,8 @@
 	/delete-property/ nvmem-cell-names;
 	/delete-property/ nvmem-cells;
 };
+
+&wifi {
+	/delete-property/ nvmem-cell-names;
+	/delete-property/ nvmem-cells;
+};

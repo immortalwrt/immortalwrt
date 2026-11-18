@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_VERSION:=2.14
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_HASH:=14fb6101f2ef424ec84c0296c3cbdeb7f79b22f5fbb46529bea0e362d0fab0d5
 

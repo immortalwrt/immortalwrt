@@ -6,9 +6,9 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/firmware/qca-wireless.git
-PKG_SOURCE_DATE:=2026-11-12
-PKG_SOURCE_VERSION:=e1c4cbaf43917e19779dbf9f8e276e31116bcaef
-PKG_MIRROR_HASH:=2d525d7af66de1dc947aff2653669265ccad678424e7fdfe71aebc6c55692437
+PKG_SOURCE_DATE:=2026-11-16
+PKG_SOURCE_VERSION:=c832ed2cfbd42350bc2f683175952d341f737ec0
+PKG_MIRROR_HASH:=46756b986f0182a4b317eca478c3fa3733dc585f6a56c4f99704944436360509
 PKG_FLAGS:=nonshared
 
 include $(INCLUDE_DIR)/package.mk
@@ -116,6 +116,7 @@ ALLWIFIBOARDS:= \
 	tplink_eap660hd-v1 \
 	tplink_re700x \
 	tplink_tl-wa1201-v2 \
+	ubnt_unifi-6-pro \
 	ubnt_utr \
 	wallys_dr40x9 \
 	wallys_dr5018s \
@@ -335,6 +336,7 @@ $(eval $(call generate-ipq-wifi-package,tplink_eap650-outdoor-v1,TP-Link EAP650-
 $(eval $(call generate-ipq-wifi-package,tplink_eap660hd-v1,TP-Link EAP660 HD v1))
 $(eval $(call generate-ipq-wifi-package,tplink_re700x,TP-Link RE700X))
 $(eval $(call generate-ipq-wifi-package,tplink_tl-wa1201-v2,TP-Link TL-WA1201 V2))
+$(eval $(call generate-ipq-wifi-package,ubnt_unifi-6-pro,Ubiquiti UniFi 6 Pro))
 $(eval $(call generate-ipq-wifi-package,ubnt_utr,Ubiquiti UniFi Travel Router))
 $(eval $(call generate-ipq-wifi-package,wallys_dr40x9,Wallys DR40X9))
 $(eval $(call generate-ipq-wifi-package,wallys_dr5018s,Wallys DR5018S))

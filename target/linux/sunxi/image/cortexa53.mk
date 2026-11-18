@@ -11,6 +11,12 @@ define Device/sun50i
   KERNEL_NAME := Image
 endef
 
+define Device/sun55i
+  $(call Device/FitImageLzma)
+  SUNXI_DTS_DIR := allwinner/
+  KERNEL_NAME := Image
+endef
+
 define Device/sun50i-a64
   SOC := sun50i-a64
   $(Device/sun50i)
@@ -38,7 +44,12 @@ endef
 
 define Device/sun55i-a527
   SOC := sun55i-a527
-  $(Device/sun50i)
+  $(Device/sun55i)
+endef
+
+define Device/sun55i-t527
+  SOC := sun55i-t527
+  $(Device/sun55i)
 endef
 
 define Device/friendlyarm_nanopi-neo-plus2
@@ -111,10 +122,11 @@ endef
 TARGET_DEVICES += pine64_sopine-baseboard
 
 define Device/radxa_cubie-a5e
+  $(Device/sun55i-a527)
   DEVICE_VENDOR := Radxa
   DEVICE_MODEL := Cubie A5E
+  SUPPORTED_DEVICES += cubie-a5e
   DEVICE_PACKAGES := kmod-aic8800-sdio kmod-nvme wpad-openssl
-  $(Device/sun55i-a527)
 endef
 TARGET_DEVICES += radxa_cubie-a5e
 
@@ -161,3 +173,12 @@ define Device/xunlong_orangepi-zero-plus
   $(Device/sun50i-h5)
 endef
 TARGET_DEVICES += xunlong_orangepi-zero-plus
+
+define Device/yuzukihd_avaota-a1
+  DEVICE_VENDOR := YuzukiHD
+  DEVICE_MODEL := Avaota A1
+  SUPPORTED_DEVICES += avaota-a1
+  $(Device/sun55i)
+  SOC := sun55i-t527
+endef
+TARGET_DEVICES += yuzukihd_avaota-a1

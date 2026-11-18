@@ -775,41 +775,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  
  	chosen {
-@@ -41,14 +46,42 @@
- 		};
- 	};
- 
-+	key-adc-mask {
-+		compatible = "adc-keys";
-+		io-channels = <&saradc 0>;
-+		io-channel-names = "buttons";
-+		keyup-threshold-microvolt = <1800000>;
-+		poll-interval = <100>;
-+
-+		button-mask {
-+			label = "maskrom";
-+			linux,code = <BTN_2>;
-+			press-threshold-microvolt = <0>;
-+		};
-+	};
-+
-+	key-adc-rcry {
-+		compatible = "adc-keys";
-+		io-channels = <&saradc 1>;
-+		io-channel-names = "buttons";
-+		keyup-threshold-microvolt = <1800000>;
-+		poll-interval = <100>;
-+
-+		button-rcry {
-+			label = "recovery";
-+			linux,code = <BTN_3>;
-+			press-threshold-microvolt = <0>;
-+		};
-+	};
-+
- 	keys {
- 		compatible = "gpio-keys";
- 
+@@ -75,8 +80,8 @@
  		usr_button: key-1 {
  			debounce-interval = <50>;
  			gpios = <&gpio1 RK_PA0 GPIO_ACTIVE_LOW>;
@@ -820,7 +786,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  			pinctrl-names = "default";
  			pinctrl-0 = <&usr_button_l>;
  			wakeup-source;
-@@ -60,19 +93,16 @@
+@@ -88,19 +93,16 @@
  
  		led_sys: led-0 {
  			color = <LED_COLOR_ID_RED>;
@@ -842,7 +808,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  			linux,default-trigger = "netdev";
  			pinctrl-names = "default";
  			pinctrl-0 = <&led1_h>;
-@@ -82,7 +112,6 @@
+@@ -110,7 +112,6 @@
  			color = <LED_COLOR_ID_GREEN>;
  			function = LED_FUNCTION_LAN;
  			gpios = <&gpio2 RK_PB0 GPIO_ACTIVE_HIGH>;
@@ -864,7 +830,7 @@ Signed-off-by: David Bauer <mail@david-bauer.net>
  	};
  
  	chosen {
-@@ -54,11 +59,10 @@
+@@ -68,11 +73,10 @@
  			gpios = <&gpio2 RK_PB0 GPIO_ACTIVE_HIGH>;
  		};
  

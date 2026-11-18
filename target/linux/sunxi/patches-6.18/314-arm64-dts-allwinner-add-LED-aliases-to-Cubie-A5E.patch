@@ -12,9 +12,9 @@ Signed-off-by: Tianling Shen <cnsztl@gmail.com>
 
 --- a/arch/arm64/boot/dts/allwinner/sun55i-a527-cubie-a5e.dts
 +++ b/arch/arm64/boot/dts/allwinner/sun55i-a527-cubie-a5e.dts
-@@ -19,6 +19,10 @@
- 		mmc0 = &mmc0;
- 		mmc1 = &mmc1;
+@@ -16,6 +16,10 @@
+ 		ethernet0 = &gmac0;
+ 		ethernet1 = &gmac1;
  		serial0 = &uart0;
 +		led-boot = &power_led;
 +		led-failsafe = &power_led;
@@ -23,7 +23,7 @@ Signed-off-by: Tianling Shen <cnsztl@gmail.com>
  	};
  
  	chosen {
-@@ -28,12 +32,10 @@
+@@ -25,12 +29,10 @@
  	leds {
  		compatible = "gpio-leds";
  
@@ -37,7 +37,7 @@ Signed-off-by: Tianling Shen <cnsztl@gmail.com>
  		};
  
  		use-led {
-@@ -162,6 +164,25 @@
+@@ -154,6 +156,25 @@
  		reset-gpios = <&pio 7 8 GPIO_ACTIVE_LOW>; /* PH8 */
  		reset-assert-us = <10000>;
  		reset-deassert-us = <150000>;
@@ -63,7 +63,7 @@ Signed-off-by: Tianling Shen <cnsztl@gmail.com>
  	};
  };
  
-@@ -172,6 +193,25 @@
+@@ -164,6 +185,25 @@
  		reset-gpios = <&pio 9 16 GPIO_ACTIVE_LOW>; /* PJ16 */
  		reset-assert-us = <10000>;
  		reset-deassert-us = <150000>;

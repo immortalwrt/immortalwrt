@@ -293,7 +293,7 @@ define Device/friendlyarm_nanopi-r76s
   $(Device/rk3576)
   DEVICE_VENDOR := FriendlyARM
   DEVICE_MODEL := NanoPi R76S
-  DEVICE_PACKAGES += kmod-r8125 kmod-rtw88-8822cs wpad-openssl
+  DEVICE_PACKAGES += kmod-button-hotplug kmod-input-adc-keys kmod-r8125 kmod-rtw88-8822cs wpad-openssl
 endef
 TARGET_DEVICES += friendlyarm_nanopi-r76s
 

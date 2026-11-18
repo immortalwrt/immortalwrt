@@ -757,7 +757,8 @@ static void sun55i_iommu_domain_free(struct iommu_domain *domain)
 }
 
 static int sun55i_iommu_attach_dev(struct iommu_domain *domain,
-				   struct device *dev)
+				   struct device *dev,
+				   struct iommu_domain *old)
 {
 	struct sunxi_iommu_domain *sunxi_domain =
 		container_of(domain, struct sunxi_iommu_domain, domain);

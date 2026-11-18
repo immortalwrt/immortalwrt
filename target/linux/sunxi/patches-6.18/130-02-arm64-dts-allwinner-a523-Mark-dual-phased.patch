@@ -27,7 +27,7 @@ Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 
 --- a/arch/arm64/boot/dts/allwinner/sun55i-a527-cubie-a5e.dts
 +++ b/arch/arm64/boot/dts/allwinner/sun55i-a527-cubie-a5e.dts
-@@ -320,9 +320,12 @@
+@@ -366,9 +366,12 @@
  				regulator-min-microvolt = <900000>;
  				regulator-max-microvolt = <1160000>;
  				regulator-name = "vdd-cpub";
@@ -59,7 +59,7 @@ Signed-off-by: Andre Przywara <andre.przywara@arm.com>
  				regulator-always-on;
 --- a/arch/arm64/boot/dts/allwinner/sun55i-t527-avaota-a1.dts
 +++ b/arch/arm64/boot/dts/allwinner/sun55i-t527-avaota-a1.dts
-@@ -308,9 +308,12 @@
+@@ -371,9 +371,12 @@
  				regulator-min-microvolt = <900000>;
  				regulator-max-microvolt = <1160000>;
  				regulator-name = "vdd-cpub";
@@ -75,7 +75,7 @@ Signed-off-by: Andre Przywara <andre.przywara@arm.com>
  			reg_dcdc3_323: dcdc3 {
 --- a/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
 +++ b/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
-@@ -345,9 +345,12 @@
+@@ -368,9 +368,12 @@
  				regulator-min-microvolt = <900000>;
  				regulator-max-microvolt = <1150000>;
  				regulator-name = "vdd-cpub";
