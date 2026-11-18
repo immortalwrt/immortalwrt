@@ -271,29 +271,40 @@ error:
 	return 0;
 }
 
-static int append_san(char **san, const char *value)
+static int append_value(char **list, const char *value)
 {
-	size_t old_len = *san ? strlen(*san) : 0;
+	size_t old_len = *list ? strlen(*list) : 0;
 	size_t value_len = strlen(value);
-	char *new_san;
+	char *new_list;
 
-	new_san = realloc(*san, old_len + value_len + 2);
-	if (!new_san)
+	new_list = realloc(*list, old_len + value_len + 2);
+	if (!new_list)
 		return 0;
 	if (old_len)
-		new_san[old_len++] = ',';
-	memcpy(new_san + old_len, value, value_len + 1);
+		new_list[old_len++] = ',';
+	memcpy(new_list + old_len, value, value_len + 1);
+	*list = new_list;
+	return 1;
+}
+
+static int append_san(char **san, const char *value)
+{
+	size_t offset = *san ? strlen(*san) : 0;
+
+	if (!append_value(san, value))
+		return 0;
+	if (offset)
+		offset++;
 	/* OpenSSL's SAN parser uses lowercase "email". */
 	if (!strncmp(value, "EMAIL:", 6))
-		memcpy(new_san + old_len, "email:", 6);
-	*san = new_san;
+		memcpy(*san + offset, "email:", 6);
 	return 1;
 }
 
 static int dokey(bool rsa, char **arg)
 {
 	EVP_PKEY *key;
-	unsigned int bits = 512;
+	unsigned int bits = 2048;
 	uint64_t exponent = 65537;
 	const char *curve = "P-256";
 	const char *path = NULL;
@@ -335,9 +346,9 @@ static int selfsigned(char **arg)
 	const char *subject = "";
 	const char *keypath = NULL, *certpath = NULL;
 	const char *curve = "P-256";
-	const char *eku = NULL;
+	char *eku = NULL;
 	char *san = NULL;
-	unsigned int bits = 512;
+	unsigned int bits = 2048;
 	unsigned int days = 30;
 	uint64_t exponent = 65537;
 	bool rsa = true;
@@ -385,12 +396,14 @@ static int selfsigned(char **arg)
 			if (!strncmp(*arg, "extendedKeyUsage=", 17)) {
 				const char *value = *arg + 17;
 
-				if (!strcmp(value, "serverAuth"))
-					eku = "serverAuth";
-				else if (!strcmp(value, "any"))
-					eku = "2.5.29.37.0";
-				else {
+				if (!strcmp(value, "any") || !strcmp(value, "anyExtendedKeyUsage"))
+					value = "2.5.29.37.0";
+				else if (strcmp(value, "serverAuth")) {
 					fprintf(stderr, "error: invalid extended key usage: %s\n", value);
+					goto out;
+				}
+				if (!append_value(&eku, value)) {
+					fprintf(stderr, "error: failed to append extended key usage\n");
 					goto out;
 				}
 			} else if (!strncmp(*arg, "subjectAltName=", 15)) {
@@ -398,6 +411,9 @@ static int selfsigned(char **arg)
 					fprintf(stderr, "error: invalid subject alternative name\n");
 					goto out;
 				}
+			} else {
+				fprintf(stderr, "error: unsupported extension: %s\n", *arg);
+				goto out;
 			}
 		}
 		arg++;
@@ -417,6 +433,7 @@ static int selfsigned(char **arg)
 	ret = write_cert(cert, certpath, pem);
 
 out:
+	free(eku);
 	free(san);
 	X509_free(cert);
 	EVP_PKEY_free(key);
