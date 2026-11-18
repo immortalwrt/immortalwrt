@@ -291,8 +291,8 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20241101185545.559090-3-pZ01
  
  	vop2_post_config(crtc);
  
-@@ -2887,7 +3068,12 @@ static int vop2_create_crtcs(struct vop2
- 		}
+@@ -2906,7 +3087,12 @@ static int vop2_create_crtcs(struct vop2
+ 					     "crtc init for video_port%d failed\n", i);
  
  		drm_crtc_helper_add(&vp->crtc, &vop2_crtc_helper_funcs);
 +		if (vop2->lut_regs) {

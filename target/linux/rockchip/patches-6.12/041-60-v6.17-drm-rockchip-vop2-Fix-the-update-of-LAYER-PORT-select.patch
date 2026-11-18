@@ -84,7 +84,7 @@ Link: https://lore.kernel.org/r/20250421102156.424480-1-andyshrk@163.com
  	vop2_writel(vop2, RK3568_REG_CFG_DONE, RK3568_REG_CFG_DONE__GLB_CFG_DONE_EN);
  
  	/*
-@@ -2724,6 +2710,7 @@ static int vop2_bind(struct device *dev,
+@@ -2728,6 +2714,7 @@ static int vop2_bind(struct device *dev,
  		return dev_err_probe(drm->dev, vop2->irq, "cannot find irq for vop2\n");
  
  	mutex_init(&vop2->vop2_lock);

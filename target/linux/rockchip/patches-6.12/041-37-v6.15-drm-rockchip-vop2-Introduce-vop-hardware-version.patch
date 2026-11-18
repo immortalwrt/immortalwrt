@@ -107,7 +107,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250218112744.34433-7-andys
  			vop2_win_write(win, VOP2_WIN_AFBC_AUTO_GATING_EN, 0);
  		else
  			vop2_win_write(win, VOP2_WIN_AFBC_AUTO_GATING_EN, 1);
-@@ -2532,6 +2543,7 @@ static int vop2_bind(struct device *dev,
+@@ -2557,6 +2568,7 @@ static int vop2_bind(struct device *dev,
  	vop2->dev = dev;
  	vop2->data = vop2_data;
  	vop2->ops = vop2_data->ops;

@@ -317,9 +317,9 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20241214081719.3330518-2-and
  };
  
  static irqreturn_t vop2_isr(int irq, void *data)
-@@ -3397,6 +3654,7 @@ static int vop2_bind(struct device *dev,
- 		return -EINVAL;
- 	}
+@@ -3415,6 +3672,7 @@ static int vop2_bind(struct device *dev,
+ 		return dev_err_probe(drm->dev, -EINVAL,
+ 				     "failed to get vop2 register byname\n");
  
 +	vop2->res = res;
  	vop2->regs = devm_ioremap_resource(dev, res);

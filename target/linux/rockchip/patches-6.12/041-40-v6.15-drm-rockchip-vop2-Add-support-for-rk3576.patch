@@ -181,7 +181,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250303034436.192400-8-andy
  		}
  	}
  
-@@ -2677,6 +2733,30 @@ static int vop2_bind(struct device *dev,
+@@ -2681,6 +2737,30 @@ static int vop2_bind(struct device *dev,
  	if (ret)
  		return ret;
  

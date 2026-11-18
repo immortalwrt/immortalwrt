@@ -256,11 +256,11 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250218112744.34433-4-andys
  	u32 val;
 -	u32 bg_dly;
 -	u32 pre_scan_dly;
- 
+-
 -	bg_dly = vp->data->pre_scan_max_dly[3];
 -	vop2_writel(vp->vop2, RK3568_VP_BG_MIX_CTRL(vp->id),
 -		    FIELD_PREP(RK3568_VP_BG_MIX_CTRL__BG_DLY, bg_dly));
--
+ 
 -	pre_scan_dly = ((bg_dly + (hdisplay >> 1) - 1) << 16) | hsync_len;
 -	vop2_vp_write(vp, RK3568_VP_PRE_SCAN_HTIMING, pre_scan_dly);
 +	vop2->ops->setup_bg_dly(vp);
@@ -1063,9 +1063,9 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250218112744.34433-4-andys
 -		struct vop2_win *win = to_vop2_win(plane);
 -
 -		win->delay = win->data->dly[VOP2_DLY_MODE_DEFAULT];
--
--		vp->win_mask |= BIT(win->data->phys_id);
  
+-		vp->win_mask |= BIT(win->data->phys_id);
+-
 -		if (vop2_cluster_window(win))
 -			vop2_setup_cluster_alpha(vop2, win);
 -	}
@@ -1080,7 +1080,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250218112744.34433-4-andys
  }
  
  static void vop2_crtc_atomic_flush(struct drm_crtc *crtc,
-@@ -3410,86 +2432,18 @@ static int vop2_find_rgb_encoder(struct
+@@ -3435,86 +2457,18 @@ static int vop2_find_rgb_encoder(struct
  	return -ENOENT;
  }
  
@@ -1173,7 +1173,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250218112744.34433-4-andys
  		};
  
  		win->reg[i] = devm_regmap_field_alloc(vop2->dev, vop2->map, field);
-@@ -3500,82 +2454,18 @@ static int vop2_cluster_init(struct vop2
+@@ -3525,82 +2479,18 @@ static int vop2_cluster_init(struct vop2
  	return 0;
  };
  
@@ -1262,7 +1262,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250218112744.34433-4-andys
  		};
  
  		win->reg[i] = devm_regmap_field_alloc(vop2->dev, vop2->map, field);
-@@ -3661,6 +2551,7 @@ static int vop2_bind(struct device *dev,
+@@ -3686,6 +2576,7 @@ static int vop2_bind(struct device *dev,
  
  	vop2->dev = dev;
  	vop2->data = vop2_data;

@@ -37,7 +37,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250218112744.34433-3-andys
  		}
  
  		vop2_win_write(win, VOP2_WIN_YRGB_VIR, DIV_ROUND_UP(fb->pitches[0], 4));
-@@ -3458,7 +3458,7 @@ static const struct reg_field vop2_clust
+@@ -3483,7 +3483,7 @@ static const struct reg_field vop2_clust
  	[VOP2_WIN_AFBC_TILE_NUM] = REG_FIELD(RK3568_CLUSTER_WIN_AFBCD_VIR_WIDTH, 16, 31),
  	[VOP2_WIN_AFBC_PIC_OFFSET] = REG_FIELD(RK3568_CLUSTER_WIN_AFBCD_PIC_OFFSET, 0, 31),
  	[VOP2_WIN_AFBC_DSP_OFFSET] = REG_FIELD(RK3568_CLUSTER_WIN_AFBCD_DSP_OFFSET, 0, 31),
@@ -46,7 +46,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250218112744.34433-3-andys
  	[VOP2_WIN_AFBC_ROTATE_90] = REG_FIELD(RK3568_CLUSTER_WIN_AFBCD_ROTATE_MODE, 0, 0),
  	[VOP2_WIN_AFBC_ROTATE_270] = REG_FIELD(RK3568_CLUSTER_WIN_AFBCD_ROTATE_MODE, 1, 1),
  	[VOP2_WIN_XMIRROR] = REG_FIELD(RK3568_CLUSTER_WIN_AFBCD_ROTATE_MODE, 2, 2),
-@@ -3557,7 +3557,7 @@ static const struct reg_field vop2_esmar
+@@ -3582,7 +3582,7 @@ static const struct reg_field vop2_esmar
  	[VOP2_WIN_AFBC_PIC_OFFSET] = { .reg = 0xffffffff },
  	[VOP2_WIN_AFBC_PIC_SIZE] = { .reg = 0xffffffff },
  	[VOP2_WIN_AFBC_DSP_OFFSET] = { .reg = 0xffffffff },
