@@ -8,10 +8,10 @@
 
 	aliases {
 		/* Aliases as required by u-boot to patch MAC addresses */
-		ethernet1 = &dp2;
-		ethernet2 = &dp3;
-		ethernet3 = &dp4;
-		ethernet4 = &dp5;
+		ethernet1 = &swport2;
+		ethernet2 = &swport3;
+		ethernet3 = &swport4;
+		ethernet4 = &swport5;
 	};
 
 	chosen {
@@ -31,22 +31,22 @@
 	};
 };
 
-&dp2 {
+&swport2 {
 	/delete-property/ nvmem-cells;
 	/delete-property/ nvmem-cell-names;
 };
 
-&dp3 {
+&swport3 {
 	/delete-property/ nvmem-cells;
 	/delete-property/ nvmem-cell-names;
 };
 
-&dp4 {
+&swport4 {
 	/delete-property/ nvmem-cells;
 	/delete-property/ nvmem-cell-names;
 };
 
-&dp5 {
+&swport5 {
 	/delete-property/ nvmem-cells;
 	/delete-property/ nvmem-cell-names;
 };
