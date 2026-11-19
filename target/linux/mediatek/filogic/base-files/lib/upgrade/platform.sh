@@ -245,6 +245,7 @@ platform_do_upgrade() {
 	hiveton,h5000m|\
 	huasifei,wh3000-emmc|\
 	huasifei,wh3000-pro-emmc|\
+	nradio,c2000-max|\
 	smartrg,sdg-8612|\
 	smartrg,sdg-8614|\
 	smartrg,sdg-8622|\
@@ -384,11 +385,6 @@ platform_do_upgrade() {
 		CI_DATAPART="rootfs_data"
 		CI_KERNPART="kernel_2nd"
 		CI_ROOTPART="rootfs_2nd"
-		emmc_do_upgrade "$1"
-		;;
-	nradio,c2000-max)
-		CI_KERNPART="kernel"
-		CI_ROOTPART="rootfs"
 		emmc_do_upgrade "$1"
 		;;
 	ubnt,unifi-6-plus)
