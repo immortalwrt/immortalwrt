@@ -1,12 +1,8 @@
-From git@z Thu Jan  1 00:00:00 1970
-Subject: [PATCH] phy: rockchip: naneng-combphy: Fix TX detect RX
- termination errata
+From d68e47a06c5cdc90cbd29ce2e74fa61eab5d47cc Mon Sep 17 00:00:00 2001
 From: Shawn Lin <shawn.lin@rock-chips.com>
 Date: Mon, 31 Aug 2026 14:36:44 +0800
-Message-Id: <1788158204-161347-1-git-send-email-shawn.lin@rock-chips.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH] phy: rockchip: naneng-combphy: Fix TX detect RX termination
+ errata
 
 Some PHY revisions may fail to detect the peer RX's termination
 resistor (RTERM) under certain critical temperature conditions.
@@ -24,9 +20,10 @@ Fixes: f13bff25161b ("phy: rockchip-naneng-combo: Support rk3562")
 Fixes: ba8ad7eece66 ("phy: rockchip-naneng-combo: add rk3576 support")
 Fixes: a03c44277253 ("phy: rockchip: Add naneng combo phy support for RK3588")
 Signed-off-by: Shawn Lin <shawn.lin@rock-chips.com>
+Link: https://patch.msgid.link/1788158204-161347-1-git-send-email-shawn.lin@rock-chips.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
-
- drivers/phy/rockchip/phy-rockchip-naneng-combphy.c | 19 +++++++++++++++++++
+ .../rockchip/phy-rockchip-naneng-combphy.c    | 19 +++++++++++++++++++
  1 file changed, 19 insertions(+)
 
 --- a/drivers/phy/rockchip/phy-rockchip-naneng-combphy.c

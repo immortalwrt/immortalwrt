@@ -18,7 +18,7 @@ Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
 
 --- a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
 +++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-@@ -1691,6 +1691,7 @@ int analogix_dp_resume(struct analogix_d
+@@ -1696,6 +1696,7 @@ int analogix_dp_resume(struct analogix_d
  	if (dp->plat_data->power_on)
  		dp->plat_data->power_on(dp->plat_data);
  

@@ -17,7 +17,7 @@ Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
 
 --- a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
 +++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-@@ -1513,6 +1513,10 @@ static int analogix_dp_dt_parse_pdata(st
+@@ -1514,6 +1514,10 @@ static int analogix_dp_dt_parse_pdata(st
  		video_info->max_link_rate = 0x0A;
  		video_info->max_lane_count = 0x04;
  		break;
