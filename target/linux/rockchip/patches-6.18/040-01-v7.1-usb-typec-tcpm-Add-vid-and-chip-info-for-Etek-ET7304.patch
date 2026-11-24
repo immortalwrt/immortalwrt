@@ -1,0 +1,101 @@
+From ec53fe37a56044a1a8e7751d05b13385fb30741f Mon Sep 17 00:00:00 2001
+From: Yuanshen Cao <alex.caoys@gmail.com>
+Date: Fri, 20 Feb 2026 06:22:41 +0000
+Subject: [PATCH] usb: typec: tcpm: Add vid and chip info for Etek ET7304
+
+Move VID field to chip info to accommodate different VIDs.
+Add chip info for Etek Micro ET7304. ET7304 is functionally
+identical to the Richtek RT1715, with the only difference
+being the VID.
+
+Signed-off-by: Yuanshen Cao <alex.caoys@gmail.com>
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Link: https://patch.msgid.link/20260220-et7304-v3-2-ede2d9634957@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/usb/typec/tcpm/tcpci_rt1711h.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+--- a/drivers/usb/typec/tcpm/tcpci_rt1711h.c
++++ b/drivers/usb/typec/tcpm/tcpci_rt1711h.c
+@@ -17,13 +17,15 @@
+ #include <linux/usb/tcpm.h>
+ #include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
+ 
+ #define RT1711H_VID		0x29CF
++#define ET7304_VID		0x6DCF
+ #define RT1711H_PID		0x1711
+ #define RT1711H_DID		0x2171
+ #define RT1715_DID		0x2173
++#define ET7304_DID		0x2173
+ 
+ #define RT1711H_PHYCTRL1	0x80
+ #define RT1711H_PHYCTRL2	0x81
+ 
+ #define RT1711H_RTCTRL4		0x93
+@@ -53,10 +55,11 @@
+ /* 1b0 as fixed rx threshold of rd/rp 0.55V, 1b1 depends on RTCRTL4[0] */
+ #define BMCIO_RXDZEN	BIT(0)
+ 
+ struct rt1711h_chip_info {
+ 	u32 rxdz_sel;
++	u16 vid;
+ 	u16 did;
+ 	bool enable_pd30_extended_message;
+ };
+ 
+ struct rt1711h_chip {
+@@ -306,11 +309,11 @@ static int rt1711h_check_revision(struct
+ 	int ret;
+ 
+ 	ret = i2c_smbus_read_word_data(i2c, TCPC_VENDOR_ID);
+ 	if (ret < 0)
+ 		return ret;
+-	if (ret != RT1711H_VID) {
++	if (ret != chip->info->vid) {
+ 		dev_err(&i2c->dev, "vid is not correct, 0x%04x\n", ret);
+ 		return -ENODEV;
+ 	}
+ 	ret = i2c_smbus_read_word_data(i2c, TCPC_PRODUCT_ID);
+ 	if (ret < 0)
+@@ -407,28 +410,39 @@ static int rt1711h_probe(struct i2c_clie
+ static void rt1711h_unregister_tcpci_port(void *tcpci)
+ {
+ 	tcpci_unregister_port(tcpci);
+ }
+ 
++static const struct rt1711h_chip_info et7304 = {
++	.rxdz_sel = RT1711H_BMCIO_RXDZSEL,
++	.vid = ET7304_VID,
++	.did = ET7304_DID,
++	.enable_pd30_extended_message = true,
++};
++
+ static const struct rt1711h_chip_info rt1711h = {
++	.vid = RT1711H_VID,
+ 	.did = RT1711H_DID,
+ };
+ 
+ static const struct rt1711h_chip_info rt1715 = {
+ 	.rxdz_sel = RT1711H_BMCIO_RXDZSEL,
++	.vid = RT1711H_VID,
+ 	.did = RT1715_DID,
+ 	.enable_pd30_extended_message = true,
+ };
+ 
+ static const struct i2c_device_id rt1711h_id[] = {
++	{ "et7304", (kernel_ulong_t)&et7304 },
+ 	{ "rt1711h", (kernel_ulong_t)&rt1711h },
+ 	{ "rt1715", (kernel_ulong_t)&rt1715 },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(i2c, rt1711h_id);
+ 
+ static const struct of_device_id rt1711h_of_match[] = {
++	{ .compatible = "etekmicro,et7304", .data = &et7304 },
+ 	{ .compatible = "richtek,rt1711h", .data = &rt1711h },
+ 	{ .compatible = "richtek,rt1715", .data = &rt1715 },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, rt1711h_of_match);
