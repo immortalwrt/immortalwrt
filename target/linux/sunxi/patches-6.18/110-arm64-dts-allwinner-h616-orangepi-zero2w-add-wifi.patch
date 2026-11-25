@@ -1,0 +1,51 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Vladimir <anykey196@gmail.com>
+Date: Wed, 23 Sep 2026 04:20:08 -0700
+Subject: [PATCH] arm64: dts: allwinner: h616: orangepi-zero2w: add SDIO WiFi/BT (AW859A)
+
+Enable the SDIO bus (mmc1) and power the on-board AW859A (UWE5622)
+WiFi/BT combo through an mmc-pwrseq-simple that resets WL_REG_ON (PG18)
+and gates the RTC 32 kHz fanout clock (PG10).
+
+The pwrseq clock must be named "ext_clock" (what mmc-pwrseq-simple
+requests) and its output pin must be muxed to the clock function, as
+done for the other H616/H618 boards.
+
+Tested on: OrangePi Zero 2W (Allwinner H618) with the out-of-tree
+uwe5622 driver.
+
+Signed-off-by: Vladimir <anykey196@gmail.com>
+---
+Note: unlike v3, this revision does not add separate fixed regulators:
+VCC-WIFI is the existing 3.3V reg_vcc3v3 rail and VCC-WIFI-IO is the
+AXP313A aldo1 rail, as suggested in review by Andre Przywara. Change
+made locally while carrying the patch in ImmortalWrt.
+
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero2w.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero2w.dts
+@@ -189,3 +189,25 @@
+ 	usb1_vbus-supply = <&reg_vcc5v>;
+ 	status = "okay";
+ };
++
++/ {
++	wifi_pwrseq: wifi-pwrseq {
++		compatible = "mmc-pwrseq-simple";
++		clocks = <&rtc CLK_OSC32K_FANOUT>;
++		clock-names = "ext_clock";
++		pinctrl-names = "default";
++		pinctrl-0 = <&x32clk_fanout_pin>;
++		reset-gpios = <&pio 6 18 GPIO_ACTIVE_LOW>;	/* PG18 */
++		post-power-on-delay-ms = <200>;
++	};
++};
++
++&mmc1 {
++	vmmc-supply = <&reg_vcc3v3>;
++	vqmmc-supply = <&reg_aldo1>;
++	mmc-pwrseq = <&wifi_pwrseq>;
++	bus-width = <4>;
++	non-removable;
++	mmc-ddr-1_8v;
++	status = "okay";
++};
